@@ -1,11 +1,11 @@
-package uk.gov.justice.digital.hmpps.offenderevents
+package uk.gov.justice.digital.hmpps.hmppstemplatepackagename
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication()
-class ProbationOffenderEvents
+class HmppsTemplateKotlin
 
 fun main(args: Array<String>) {
-  runApplication<ProbationOffenderEvents>(*args)
+  runApplication<HmppsTemplateKotlin>(*args)
 }

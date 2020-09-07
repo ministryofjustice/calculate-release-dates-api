@@ -1,1 +1,1 @@
-rootProject.name = "probation-offender-events"
+rootProject.name = "hmpps-template-kotlin"

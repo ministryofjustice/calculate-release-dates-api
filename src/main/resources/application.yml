@@ -1,10 +1,10 @@
 info.app:
-  name: Probation Offender Events
+  name: Hmpps-Template-Kotlin
   version: 1.0
 
 spring:
   application:
-    name: probation-offender-events
+    name: hmpps-template-kotlin
   codec:
     max-in-memory-size: 10MB
 

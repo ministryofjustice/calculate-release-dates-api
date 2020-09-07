@@ -1,10 +1,10 @@
 version: "3"
 services:
-  probation-offender-events:
+  hmpps-template-kotlin:
     build:
       context: .
     network_mode: "host"
-    container_name: probation-offender-events
+    container_name: hmpps-template-kotlin
     ports:
       - "8081:8080"
     healthcheck:
