@@ -4,7 +4,7 @@
 replicaCount: 4
 
 image:
-  repository: quay.io/hmpps/probation-offender-events
+  repository: quay.io/hmpps/hmpps-template-kotlin
   tag: latest
   port: 8080
 
@@ -12,8 +12,8 @@ ingress:
   enabled: true
   enable_whitelist: true
   hosts:
-    - host: probation-offender-events.hmpps.service.justice.gov.uk
-      cert_secret: probation-offender-events-cert
+    - host: hmpps-template-kotlin.hmpps.service.justice.gov.uk
+      cert_secret: hmpps-template-kotlin-cert
   path: /
 
 env:
