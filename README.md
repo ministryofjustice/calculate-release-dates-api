@@ -13,5 +13,7 @@ And then does a find and replace on the following:
 * `Hmpps-Template-Kotlin` with new project description
 * `HmppsTemplateKotlin` with new main class name
 * `hmppstemplatepackagename` with new main package name
+* And finally deletes itself.
 
-And finally deletes itself.
+Review circleci config
+* uncomment preprod/prod deploy jobs if needed
