@@ -51,27 +51,27 @@ workflows:
             - validate
             - build_docker
             - helm_lint
-      - request-preprod-approval:
-          type: approval
-          requires:
-            - deploy_dev
-      - hmpps/deploy_env:
-          name: deploy_preprod
-          env: "preprod"
-          context: hmpps-template-kotlin-preprod
-          requires:
-            - request-preprod-approval
-      - request-prod-approval:
-          type: approval
-          requires:
-            - deploy_preprod
-      - hmpps/deploy_env:
-          name: deploy_prod
-          env: "prod"
-          slack_notification: true
-          context: hmpps-template-kotlin-prod
-          requires:
-            - request-prod-approval
+#      - request-preprod-approval:
+#          type: approval
+#          requires:
+#            - deploy_dev
+#      - hmpps/deploy_env:
+#          name: deploy_preprod
+#          env: "preprod"
+#          context: hmpps-template-kotlin-preprod
+#          requires:
+#            - request-preprod-approval
+#      - request-prod-approval:
+#          type: approval
+#          requires:
+#            - deploy_preprod
+#      - hmpps/deploy_env:
+#          name: deploy_prod
+#          env: "prod"
+#          slack_notification: true
+#          context: hmpps-template-kotlin-prod
+#          requires:
+#            - request-prod-approval
 
   scheduled:
     triggers:
