@@ -1,7 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppstemplatepackagename.integration.health
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppstemplatepackagename.integration.IntegrationTestBase
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class InfoTest : IntegrationTestBase() {
 
@@ -14,6 +17,16 @@ class InfoTest : IntegrationTestBase() {
         .isOk
         .expectBody()
         .jsonPath("app.name").isEqualTo("Hmpps-Template-Kotlin")
+  }
+
+  @Test
+  fun `Info page reports version`() {
+    webTestClient.get().uri("/info")
+        .exchange()
+        .expectStatus().isOk
+        .expectBody().jsonPath("build.version").value<String> {
+          assertThat(it).startsWith(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE))
+        }
   }
 
 }
