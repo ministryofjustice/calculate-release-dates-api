@@ -1,19 +1,17 @@
 # hmpps-template-kotlin
 
-#TODO
+This is a skeleton project from which to create new kotlin projects from.
 
-Write a script that prompts the user for:
-* The new project name
-* The new project description
-* The main class name
-* The main package name
+# Instructions
 
-And then does a find and replace on the following:
-* `hmpps-template-kotlin` with new project name
-* `Hmpps-Template-Kotlin` with new project description
-* `HmppsTemplateKotlin` with new main class name
-* `hmppstemplatepackagename` with new main package name
-* And finally deletes itself.
+If this is a Digital Prison Services project then the project will be created as part of bootstrapping - 
+see https://github.com/ministryofjustice/dps-project-bootstrap.
 
-Review circleci config
-* uncomment preprod/prod deploy jobs if needed
+## Renaming from HMPPS Template Kotlin
+
+The `rename-project.bash` script takes a single argument - the name of the project and calculates from it:
+* The main class name (project name converted to pascal case) 
+* The project description (class name with spaces between the words)
+* The main package name (project name with hyphens removed)
+
+It then performs a search and replace and directory renames so the project is ready to be used.
