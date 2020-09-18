@@ -11,7 +11,7 @@ import javax.validation.ValidationException
 
 
 @RestControllerAdvice
-class HmppsTemplateExceptionHandler {
+class HmppsTemplateKotlinExceptionHandler {
   @ExceptionHandler(ValidationException::class)
   fun handleValidationException(e: Exception): ResponseEntity<ErrorResponse> {
     log.info("Validation exception: {}", e.message)
