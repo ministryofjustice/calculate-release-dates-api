@@ -1,0 +1,23 @@
+name: rename-project-commit
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run rename-project script
+        run: ./rename-project.bash $(echo -n $GITHUB_REPOSITORY | sed 's/ministryofjustice\///g')
+
+      - name: Delete this github actions workflow
+        run: rm .github/workflows/rename_template_project.yml
+
+      - name: Commit changes
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "updating project name after deployment from template repository"
+          git push
