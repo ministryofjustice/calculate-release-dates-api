@@ -1,4 +1,4 @@
-name: rename-project-pr
+name: rename-project-create-pr
 
 on: [workflow_dispatch]
 
@@ -9,10 +9,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Run rename-project script
-        run: ./rename-project.bash $(echo -n $GITHUB_REPOSITORY | sed 's/ministryofjustice\///g')
+        run: ./rename-project.bash ${{ github.event.repository.name }}
 
       - name: Delete this github actions workflow
-        run: rm .github/workflows/rename_template_project.yml
+        run: rm .github/workflows/rename_template_project*
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
