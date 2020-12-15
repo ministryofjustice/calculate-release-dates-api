@@ -32,13 +32,13 @@ echo "         Class name of $CLASS_NAME"
 echo "Performing search and replace"
 
 # exclude files that get in the way and don't make any difference
-EXCLUDES="( -path ./build -o -path ./out -o -path ./.git -o -path ./.gradle -o -path ./.idea -o -path ./rename-project.bash -o -path ./README.md )"
+EXCLUDES="( -path ./build -o -path ./out -o -path ./.git -o -path ./.gradle -o -path ./gradle -o -path ./.idea -o -path ./rename-project.bash -o -path ./README.md )"
 # shellcheck disable=SC2086
-find . $EXCLUDES -prune -o -type f -exec sed -i \
+find . $EXCLUDES -prune -o -type f -exec sed -i.bak \
   -e "s/hmpps-template-kotlin/$PROJECT_NAME/g" \
   -e "s/HMPPS Template Kotlin/$PROJECT_DESCRIPTION/g" \
   -e "s/HmppsTemplateKotlin/$CLASS_NAME/g" \
-  -e "s/hmppstemplatepackagename/$PACKAGE_NAME/g" {} \;
+  -e "s/hmppstemplatepackagename/$PACKAGE_NAME/g" {} \; -exec rm '{}.bak' \;
 
 echo "Performing directory renames"
 
