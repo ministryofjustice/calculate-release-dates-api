@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   owasp: entur/owasp@0.0.10
-  hmpps: ministryofjustice/hmpps@1.1.2
+  hmpps: ministryofjustice/hmpps@2.2
 
 jobs:
   validate:
@@ -43,6 +43,7 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
+          context: hmpps-common-vars
           filters:
             branches:
               only:
@@ -58,7 +59,9 @@ workflows:
 #      - hmpps/deploy_env:
 #          name: deploy_preprod
 #          env: "preprod"
-#          context: hmpps-template-kotlin-preprod
+#          context:
+#            - hmpps-common-vars
+#            - hmpps-template-kotlin-preprod
 #          requires:
 #            - request-preprod-approval
 #      - request-prod-approval:
@@ -69,7 +72,9 @@ workflows:
 #          name: deploy_prod
 #          env: "prod"
 #          slack_notification: true
-#          context: hmpps-template-kotlin-prod
+#          context:
+#            - hmpps-common-vars
+#            - hmpps-template-kotlin-prod
 #          requires:
 #            - request-prod-approval
 
