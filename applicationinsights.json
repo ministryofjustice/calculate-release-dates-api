@@ -1,0 +1,13 @@
+{
+  "role": {
+    "name": "hmpps-template-kotlin"
+  },
+  "customDimensions": {
+    "service.version": "${BUILD_NUMBER}"
+  },
+  "selfDiagnostics": {
+    "destination": "console",
+    "level": "INFO"
+  }
+}
+

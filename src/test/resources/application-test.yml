@@ -1,7 +1,3 @@
-spring:
-  profiles:
-    include: stdout
-
 server:
   shutdown: immediate
 
