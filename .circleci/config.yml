@@ -1,11 +1,13 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.0
+  hmpps: ministryofjustice/hmpps@3.1
 
 jobs:
   validate:
-    executor: hmpps/java
+    executor:
+      name: hmpps/java
+      tag: "16.0"
     steps:
       - checkout
       - restore_cache:
