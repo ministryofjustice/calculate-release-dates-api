@@ -6,3 +6,6 @@ generic-service:
 
   ingress:
     host: hmpps-template-kotlin-dev.hmpps.service.justice.gov.uk
+
+generic-prometheus-alerts:
+  alertSeverity: digital-prison-service-dev
