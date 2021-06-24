@@ -10,9 +10,7 @@ generic-service:
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
 
+# CloudPlatform AlertManager receiver to route promethues alerts to slack
+# See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
   alertSeverity: digital-prison-service-dev
-
-# CloudPlatform AlertManager receiver to route promethues alerts to slack
-generic-prometheus-alerts:
-  alertSeverity: hmpps_tech_non_prod
