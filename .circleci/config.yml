@@ -1,7 +1,15 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.2
+  hmpps: ministryofjustice/hmpps@3.5
+
+parameters:
+  alerts-slack-channel:
+    type: string
+    default: dps_alerts_security
+  releases-slack-channel:
+    type: string
+    default: dps-releases
 
 jobs:
   validate:
@@ -72,7 +80,9 @@ workflows:
 #      - hmpps/deploy_env:
 #          name: deploy_prod
 #          env: "prod"
+#          show_changelog: true
 #          slack_notification: true
+#          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
 #          context:
 #            - hmpps-common-vars
 #            - hmpps-template-kotlin-prod
@@ -89,11 +99,17 @@ workflows:
                 - main
     jobs:
       - hmpps/gradle_owasp_dependency_check:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          context:
+            - hmpps-common-vars
+      - hmpps/trivy_latest_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
       - hmpps/veracode_policy_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
-            - hmpps-common-vars
             - veracode-credentials
+            - hmpps-common-vars
 
 
