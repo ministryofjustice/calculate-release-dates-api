@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.6
+  hmpps: ministryofjustice/hmpps@3.5
 
 parameters:
   alerts-slack-channel:
@@ -80,6 +80,7 @@ workflows:
 #      - hmpps/deploy_env:
 #          name: deploy_prod
 #          env: "prod"
+#          show_changelog: true
 #          slack_notification: true
 #          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
 #          context:
