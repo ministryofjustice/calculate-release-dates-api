@@ -1,6 +1,6 @@
 {
   "role": {
-    "name": "hmpps-template-kotlin"
+    "name": "calculate-release-dates-api"
   },
   "customDimensions": {
     "service.version": "${BUILD_NUMBER}"
