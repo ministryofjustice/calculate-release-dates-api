@@ -16,7 +16,7 @@ class InfoTest : IntegrationTestBase() {
       .expectStatus()
       .isOk
       .expectBody()
-      .jsonPath("app.name").isEqualTo("HMPPS Template Kotlin")
+      .jsonPath("app.name").isEqualTo("HMPPS Calculate Release Dates")
   }
 
   @Test
