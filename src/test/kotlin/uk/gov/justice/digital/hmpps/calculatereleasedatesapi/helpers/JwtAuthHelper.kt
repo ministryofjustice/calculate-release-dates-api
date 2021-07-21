@@ -12,7 +12,7 @@ import java.util.UUID
 @Component
 class JwtAuthHelper(private val keyPair: KeyPair) {
 
-  fun setAuthorisation(user: String = "create-and-vary-a-licence-admin", roles: List<String> = listOf()): (HttpHeaders) -> Unit {
+  fun setAuthorisation(user: String = "calculate-release-dates-admin", roles: List<String> = listOf()): (HttpHeaders) -> Unit {
     val token = createJwt(subject = user, scope = listOf("read"), expiryTime = Duration.ofHours(1L), roles = roles)
     return { it.set(HttpHeaders.AUTHORIZATION, "Bearer $token") }
   }
@@ -26,7 +26,7 @@ class JwtAuthHelper(private val keyPair: KeyPair) {
   ): String =
     mutableMapOf<String, Any>()
       .also { subject?.let { subject -> it["user_name"] = subject } }
-      .also { it["client_id"] = "create-and-vary-a-licence-admin" }
+      .also { it["client_id"] = "calculate-release-dates-admin" }
       .also { roles?.let { roles -> it["authorities"] = roles } }
       .also { scope?.let { scope -> it["scope"] = scope } }
       .let {

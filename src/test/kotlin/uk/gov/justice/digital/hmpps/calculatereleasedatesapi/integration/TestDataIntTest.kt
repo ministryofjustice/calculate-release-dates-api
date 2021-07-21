@@ -13,7 +13,7 @@ class TestDataIntTest : IntegrationTestBase() {
     val result = webTestClient.get()
       .uri("/test/data")
       .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_CVL_ADMIN")))
+      .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_SENTENCE_ADMIN")))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -30,7 +30,7 @@ class TestDataIntTest : IntegrationTestBase() {
     val result = webTestClient.get()
       .uri("/test/data")
       .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_CVL_VERY_WRONG")))
+      .headers(setAuthorisation(roles = listOf("ROLE_CALCULATE_SENTENCE_VERY_WRONG")))
       .exchange()
       .expectStatus().isEqualTo(HttpStatus.FORBIDDEN.value())
       .expectBody(ErrorResponse::class.java)

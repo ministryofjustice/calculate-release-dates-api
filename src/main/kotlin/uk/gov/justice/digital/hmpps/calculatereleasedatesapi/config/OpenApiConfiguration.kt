@@ -15,9 +15,9 @@ class OpenApiConfiguration(buildProperties: BuildProperties) {
   fun customOpenAPI(buildProperties: BuildProperties): OpenAPI? = OpenAPI()
     .info(
       Info()
-        .title("Create and Vary a Licence API")
+        .title("Calculate Release Dates API")
         .version(version)
-        .description("API for access to licence data")
+        .description("API for calculating a release date")
         .contact(
           Contact()
             .name("HMPPS Digital Studio")
