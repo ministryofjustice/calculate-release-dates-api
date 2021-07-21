@@ -63,11 +63,12 @@ server:
   shutdown: graceful
   error:
     include-message: always
-  logging:
-    level:
-      org.springframework: INFO
-      org.springframework.security: INFO
-      uk.gov.justice.hmpps: INFO
+
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.security: INFO
+    uk.gov.justice.hmpps: INFO
 
 management:
   endpoints:
