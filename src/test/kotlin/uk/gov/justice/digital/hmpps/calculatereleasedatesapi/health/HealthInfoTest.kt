@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppstemplatepackagename.health
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.health
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test

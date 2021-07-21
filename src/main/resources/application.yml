@@ -1,6 +1,6 @@
 info.app:
-  name: HMPPS Calculate Release Dates
-  version: 1.0.0
+  name: HMPPS Template Kotlin
+  version: 1.0
 
 spring:
   application:
