@@ -35,7 +35,7 @@ generic-service:
     rds-instance-output:
       DB_SERVER: "rds_instance_address"
       DB_NAME: "database_name"
-      DB_USER: "database_user"
+      DB_USER: "database_username"
       DB_PASS: "database_password"
 
   allowlist:
