@@ -1,40 +1,62 @@
-# hmpps-template-kotlin
+# Calculate Release Dates
 
-This is a skeleton project from which to create new kotlin projects from.
+This service provides a calculation engine by which release dates of sentences are calculated. 
+It also allows for an existing calculation result to be retrieved.
+
+* The main client is the [Calculate Release Dates UI](https://github.com/ministryofjustice/calculate-release-dates) service.
+* It is built as  docker image and deployed to the MOJ Cloud Platform.
+
+# Dependencies
+This service requires a postgresql database.
+
+# Building the project
+Tools required:
+* JDK v16+
+* Kotlin
+* docker
+* docker-compose
+
+## Install gradle
+`$ ./gradlew`
+`$ ./gradlew clean build`
+
+# Running the service
+Start up the docker dependencies using the docker-compose file in the `calculate-release-dates-api` service
+There is a script to help, which sets local profiles, port and DB connection properties to the
+values required.
 
 # Instructions
 
 If this is a HMPPS project then the project will be created as part of bootstrapping - 
 see https://github.com/ministryofjustice/dps-project-bootstrap.
 
-## Creating a CloudPlatform namespace
+`$ ./run-full.sh`
++Or, to run with default properties set in the docker-compose file
 
-When deploying to a new namespace, you may wish to use this template kotlin project namespace as the basis for your new namespace:
+`$ docker-compose pull && docker-compose up`
 
-<https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live-1.cloud-platform.service.justice.gov.uk/hmpps-template-kotlin>
+Or, to use default port and properties
 
-Copy this folder, update all the existing namespace references, and submit a PR to the CloudPlatform team. Further instructions from the CloudPlatform team can be found here: <https://user-guide.cloud-platform.service.justice.gov.uk/#cloud-platform-user-guide>
+`$ SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun`
 
-## Renaming from HMPPS Template Kotlin - github Actions
 
-Once the new repository is deployed. Navigate to the repository in github, and select the `Actions` tab.
-Click the link to `Enable Actions on this repository`.
+# Running the unit tests
 
-Find the Action workflow named: `rename-project-create-pr` and click `Run workflow`.  This workflow will will
-execute the `rename-project.bash` and create Pull Request for you to review.  Review the PR and merge.
+Unit tests mock all external dependencies and can be run with no dependent containers.
 
-Note: ideally this workflow would run automatically however due to a recent change github Actions are not
-enabled by default on newly created repos. There is no way to enable Actions other then to click the button in the UI.
-If this situation changes we will update this project so that the workflow is triggered during the bootstrap project.
-Further reading: <https://github.community/t/workflow-isnt-enabled-in-repos-generated-from-template/136421>
+`$ ./gradlew test`
 
-## Manually renaming from HMPPS Template Kotlin
+# Running the integration tests
 
-Run the `rename-project.bash` and create a PR.
+Integration tests use Wiremock to stub any API calls required, and use a local H2 database
+that is seeded with data specific to each test suite.
 
-The `rename-project.bash` script takes a single argument - the name of the project and calculates from it:
-* The main class name (project name converted to pascal case) 
-* The project description (class name with spaces between the words)
-* The main package name (project name with hyphens removed)
+`$ ./gradlew integrationTest`
 
-It then performs a search and replace and directory renames so the project is ready to be used.
+# Linting
+
+`$ ./gradlew ktlintcheck`
+
+# OWASP Dependency Checking scanning
+
+`$ ./gradlew dependencyCheckAnalyze`
