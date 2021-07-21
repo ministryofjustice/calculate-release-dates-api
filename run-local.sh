@@ -1,5 +1,5 @@
 #
-# This script is used to run the Create and Vary a licence API locally, to interact with
+# This script is used to run the Calculate Release Dates API locally, to interact with
 # existing Postgresql, localstack, prison-api and hmpps-auth containers.
 #
 # It runs with a combination of properties from the default spring profile (in application.yaml) and supplemented
