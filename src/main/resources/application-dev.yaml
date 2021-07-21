@@ -1,0 +1,22 @@
+#
+# The "-dev" profile is for running the API service locally against pre-existing
+# docker containers that are listening on known port numbers for hmpps-auth (8090) and
+# a postgres database (5432).
+#
+
+# Most values are inherited from - application.yml - except the following:
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: classpath:local-public-key.pub
+
+  jpa:
+    show-sql: true
+
+# Container-provider local auth server
+hmpps:
+  auth:
+    url: http://localhost:8090/auth

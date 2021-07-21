@@ -14,9 +14,41 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
 
   profiles:
-    group:
-      test:
-        - "stdout"
+    include: stdout
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${hmpps.auth.url}/.well-known/jwks.json
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+
+  datasource:
+    url: 'jdbc:postgresql://${DB_SERVER}/${DB_NAME}?sslmode=verify-full'
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    hikari:
+      pool-name: Licences-DB-CP
+      connectionTimeout: 1000
+      validationTimeout: 500
+
+  flyway:
+    locations: classpath:/migration/postgres,classpath:/migration/common
+    url: ${spring.datasource.url}
+    user: ${DB_USER}
+    password: ${DB_PASS}
+
+  sql:
+    init:
+      continue-on-error: true
 
 server:
   port: 8080
@@ -31,6 +63,12 @@ server:
   shutdown: graceful
   error:
     include-message: always
+
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.security: INFO
+    uk.gov.justice.hmpps: INFO
 
 management:
   endpoints:
