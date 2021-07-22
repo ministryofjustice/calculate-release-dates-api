@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component
 
 @Component
 class AuthAwareTokenConverter : Converter<Jwt, AbstractAuthenticationToken> {
-  private val jwtGrantedAuthoritiesConverter: Converter<Jwt, Collection<GrantedAuthority>> = JwtGrantedAuthoritiesConverter()
+  private val jwtGrantedAuthoritiesConverter:
+    Converter<Jwt, Collection<GrantedAuthority>> = JwtGrantedAuthoritiesConverter()
 
   override fun convert(jwt: Jwt): AbstractAuthenticationToken {
     val claims = jwt.claims

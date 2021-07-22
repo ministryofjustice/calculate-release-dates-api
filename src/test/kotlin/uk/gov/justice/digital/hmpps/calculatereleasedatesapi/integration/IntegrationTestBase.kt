@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremoc
 **     - A logger.
 **     - SQL reset and load scripts to reset reference data - tests can then load what they need.
 */
+
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 @Sql(
   "classpath:test_data/reset-base-data.sql",
@@ -37,7 +38,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremoc
 @ExtendWith(OAuthExtension::class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
-abstract class IntegrationTestBase {
+class IntegrationTestBase internal constructor() {
 
   @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired

@@ -18,12 +18,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TestService
 class TestController(private val testService: TestService) {
 
   @GetMapping(value = ["/data"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CVL_ADMIN')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'ROLE_CALCULATE_SENTENCE_ADMIN')")
   @ResponseBody
   @Operation(
     summary = "Get a list of test data",
     description = "Just a test API to verify that the full stack of components are working together",
-    security = [SecurityRequirement(name = "ROLE_SYSTEM_USER"), SecurityRequirement(name = "ROLE_CVL_ADMIN")],
+    security = [SecurityRequirement(name = "ROLE_SYSTEM_USER"), SecurityRequirement(name = "ROLE_CALCULATE_SENTENCE_ADMIN")],
   )
   @ApiResponses(
     value = [

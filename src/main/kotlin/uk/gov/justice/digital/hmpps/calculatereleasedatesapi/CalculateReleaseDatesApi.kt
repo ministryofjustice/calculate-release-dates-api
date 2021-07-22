@@ -9,5 +9,5 @@ import org.springframework.boot.runApplication
 class CalculateReleaseDatesApi
 
 fun main(args: Array<String>) {
-  runApplication<CalculateReleaseDatesApi>(*args)
+  runApplication<CalculateReleaseDatesApi>(args = args)
 }
