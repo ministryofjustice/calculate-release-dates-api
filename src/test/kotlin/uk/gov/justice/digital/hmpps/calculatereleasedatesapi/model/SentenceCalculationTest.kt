@@ -8,7 +8,7 @@ import java.time.temporal.ChronoUnit
 internal class SentenceCalculationTest {
 
   @Test
-  fun calculatedReleaseDate() {
+  fun `Test Calculated Release Date`() {
     val duration = Duration(2.0, ChronoUnit.DAYS)
     val sentencedAt: LocalDate = LocalDate.of(2020, 1, 1)
     val sentence = Sentence(duration, sentencedAt, 0, 0)
@@ -19,7 +19,7 @@ internal class SentenceCalculationTest {
   }
 
   @Test
-  fun calculatedExpiryDate() {
+  fun `Test setting and retrieval Calculated Expiry Date`() {
     val duration = Duration(2.0, ChronoUnit.DAYS)
     val sentencedAt: LocalDate = LocalDate.of(2020, 1, 1)
     val sentence = Sentence(duration, sentencedAt, 0, 0)
@@ -30,7 +30,7 @@ internal class SentenceCalculationTest {
   }
 
   @Test
-  fun numberOfDaysToSentenceExpiryDate() {
+  fun `Test setting and retrieval of Number of Days To Sentence Expiry Date`() {
     val duration = Duration(2.0, ChronoUnit.DAYS)
     val sentencedAt: LocalDate = LocalDate.of(2020, 1, 1)
     val sentence = Sentence(duration, sentencedAt, 0, 0)
@@ -41,7 +41,7 @@ internal class SentenceCalculationTest {
   }
 
   @Test
-  fun numberOfDaysToReleaseDate() {
+  fun `Test setting and retrieval Number of Days To Release Date`() {
     val duration = Duration(2.0, ChronoUnit.DAYS)
     val sentencedAt: LocalDate = LocalDate.of(2020, 1, 1)
     val sentence = Sentence(duration, sentencedAt, 0, 0)
@@ -52,7 +52,7 @@ internal class SentenceCalculationTest {
   }
 
   @Test
-  fun calculatedTotalRemandDays() {
+  fun `Test setting and retrieval of Calculated Total RemandDays`() {
     val duration = Duration(2.0, ChronoUnit.DAYS)
     val sentencedAt: LocalDate = LocalDate.of(2020, 1, 1)
     val sentence = Sentence(duration, sentencedAt, 0, 0)
@@ -63,18 +63,18 @@ internal class SentenceCalculationTest {
   }
 
   @Test
-  fun licenseExpiryDate() {
+  fun `Test setting and retrieval of Licence Expiry Date`() {
     val duration = Duration(2.0, ChronoUnit.DAYS)
     val sentencedAt: LocalDate = LocalDate.of(2020, 1, 1)
     val sentence = Sentence(duration, sentencedAt, 0, 0)
     val sentenceCalculation = SentenceCalculation(sentence)
     val licenseExpiryDate: LocalDate = LocalDate.of(2019, 1, 1)
-    sentenceCalculation.licenseExpiryDate = licenseExpiryDate
-    assertEquals(licenseExpiryDate, sentenceCalculation.licenseExpiryDate)
+    sentenceCalculation.licenceExpiryDate = licenseExpiryDate
+    assertEquals(licenseExpiryDate, sentenceCalculation.licenceExpiryDate)
   }
 
   @Test
-  fun sentenceExpiryDate() {
+  fun `Test setting and retrieval of Sentence Expiry Date`() {
     val duration = Duration(2.0, ChronoUnit.DAYS)
     val sentencedAt: LocalDate = LocalDate.of(2020, 1, 1)
     val sentence = Sentence(duration, sentencedAt, 0, 0)
@@ -85,7 +85,7 @@ internal class SentenceCalculationTest {
   }
 
   @Test
-  fun releaseDate() {
+  fun `Test setting and retrieval of Release Date`() {
     val duration = Duration(2.0, ChronoUnit.DAYS)
     val sentencedAt: LocalDate = LocalDate.of(2020, 1, 1)
     val sentence = Sentence(duration, sentencedAt, 0, 0)
@@ -96,7 +96,7 @@ internal class SentenceCalculationTest {
   }
 
   @Test
-  fun topUpSupervisionDate() {
+  fun `Test setting and retrieval of Top Up Supervision Date`() {
     val duration = Duration(2.0, ChronoUnit.DAYS)
     val sentencedAt: LocalDate = LocalDate.of(2020, 1, 1)
     val sentence = Sentence(duration, sentencedAt, 0, 0)
@@ -107,7 +107,7 @@ internal class SentenceCalculationTest {
   }
 
   @Test
-  fun releaseDateConditional() {
+  fun `Test setting and retrieval of whether the Release Date is conditional`() {
     val duration = Duration(2.0, ChronoUnit.DAYS)
     val sentencedAt: LocalDate = LocalDate.of(2020, 1, 1)
     val sentence = Sentence(duration, sentencedAt, 0, 0)
@@ -118,7 +118,7 @@ internal class SentenceCalculationTest {
   }
 
   @Test
-  fun copy() {
+  fun `Test the copy function`() {
     val duration = Duration(2.0, ChronoUnit.DAYS)
     val sentencedAt: LocalDate = LocalDate.of(2020, 1, 1)
     val sentence = Sentence(duration, sentencedAt, 0, 0)
@@ -132,7 +132,7 @@ internal class SentenceCalculationTest {
   }
 
   @Test
-  fun testToString() {
+  fun `Test the toString function behaves as expected`() {
     val duration = Duration(2.0, ChronoUnit.DAYS)
     val sentencedAt: LocalDate = LocalDate.of(2020, 1, 1)
     val sentence = Sentence(duration, sentencedAt, 0, 0)
