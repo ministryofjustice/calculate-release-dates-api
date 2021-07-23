@@ -21,9 +21,9 @@ export SYSTEM_CLIENT_SECRET=client_secret
 # Provide the DB connection details to local container-hosted Postgresql DB
 # Match with the credentials set in docker-compose.yml
 export DB_SERVER=localhost
-export DB_NAME=releasedates
-export DB_USER=releasedates
-export DB_PASS=password
+export DB_NAME=calculate_release_dates
+export DB_USER=calculate-release-dates
+export DB_PASS=calculate-release-dates
 
 # Provide URLs to other local container-based dependent services
 # Match with ports defined in docker-compose.yml
