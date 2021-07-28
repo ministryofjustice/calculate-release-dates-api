@@ -3,7 +3,6 @@ plugins {
   kotlin("plugin.spring") version "1.5.21"
   kotlin("plugin.jpa") version "1.5.21"
   id("io.gitlab.arturbosch.detekt").version("1.18.0-RC2")
-  id("jacoco")
 }
 
 configurations {
@@ -30,8 +29,6 @@ tasks.named<Test>("test") {
 }
 
 dependencies {
-  implementation("junit:junit:4.13.1")
-  implementation("org.junit.jupiter:junit-jupiter:5.7.0")
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
   // Spring boot dependencies
@@ -67,11 +64,7 @@ dependencies {
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.0.26")
   testImplementation("org.mockito:mockito-inline:3.11.0")
   testImplementation("io.projectreactor:reactor-test")
-}
-
-jacoco {
-  // You may modify the Jacoco version here
-  toolVersion = "0.8.7"
+  testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
 }
 
 tasks {
