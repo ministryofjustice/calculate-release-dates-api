@@ -64,6 +64,7 @@ dependencies {
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.0.26")
   testImplementation("org.mockito:mockito-inline:3.11.0")
   testImplementation("io.projectreactor:reactor-test")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
 }
 
 tasks {

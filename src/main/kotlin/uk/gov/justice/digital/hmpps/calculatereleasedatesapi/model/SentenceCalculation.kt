@@ -2,19 +2,22 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import java.time.LocalDate
 
-data class SentenceCalculation(var sentence: Sentence) {
+data class SentenceCalculation(
+  var sentence: Sentence, // values here are used to store working values
+  var numberOfDaysToSentenceExpiryDate: Int,
+  val numberOfDaysToReleaseDate: Int,
+  val unadjustedExpiryDate: LocalDate,
+  val unadjustedReleaseDate: LocalDate,
+  val calculatedTotalRemandDays: Int,
+  val remandAdjustedExpiryDate: LocalDate,
+  val remandAdjustedReleaseDate: LocalDate
+) {
 
-  // values here are used to store working values
-  var numberOfDaysToSentenceExpiryDate: Int = 0
-  var numberOfDaysToReleaseDate: Int = 0
-
-  var calculatedTotalRemandDays: Int = 0
-  var calculatedExpiryDate: LocalDate? = null
-  var calculatedReleaseDate: LocalDate? = null
+  var nonParoleDate: LocalDate? = null
 
   // public values here are used to populate final calculation
   var licenceExpiryDate: LocalDate? = null
-  var sentenceExpiryDate: LocalDate? = null
+  var expiryDate: LocalDate? = null
   var releaseDate: LocalDate? = null
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false

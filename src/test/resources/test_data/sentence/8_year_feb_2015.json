@@ -1,0 +1,13 @@
+{
+  "offence": {
+    "startedAt": "2015-02-16"
+  },
+  "duration": {
+    "durationElements": {
+      "MONTHS": 8
+    }
+  },
+  "sentencedAt": "2015-02-16",
+  "remandInDays":21,
+  "taggedBailInDays":0
+}
