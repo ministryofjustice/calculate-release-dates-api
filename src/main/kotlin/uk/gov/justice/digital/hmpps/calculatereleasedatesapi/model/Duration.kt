@@ -16,20 +16,9 @@ import java.time.temporal.ChronoUnit.DAYS
   is 31 days a nearly 10% difference.
  */
 
-class Duration() {
+data class Duration(internal var durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()) {
 
-  private var durationElements: MutableMap<ChronoUnit, Double> = mutableMapOf<ChronoUnit, Double>()
-
-  constructor(length: Double, period: ChronoUnit) : this() {
-    durationElements[period] = length
-  }
-  constructor(that: Duration) : this() {
-    for (duration in that.durationElements) {
-      durationElements[duration.key] = duration.value
-    }
-  }
-
-  fun append(length: Double, period: ChronoUnit) {
+  fun append(length: Long, period: ChronoUnit) {
     if (!this.durationElements.containsKey(period)) {
       this.durationElements[period] = length
     } else {
@@ -44,9 +33,15 @@ class Duration() {
   private fun getEndDate(startDate: LocalDate): LocalDate {
     var calculatedDate = startDate
     for (duration in this.durationElements) {
-      calculatedDate = calculatedDate.plus(duration.value.toLong(), duration.key)
+      calculatedDate = calculatedDate.plus(duration.value, duration.key)
     }
     return calculatedDate.minusDays(1L)
+  }
+
+  fun copy(durationToCopy: Duration): Duration {
+    val durationOutcome = Duration()
+    durationOutcome.durationElements.putAll(durationToCopy.durationElements)
+    return durationOutcome
   }
 
   override fun toString(): String {
