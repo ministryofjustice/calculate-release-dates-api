@@ -30,7 +30,7 @@ data class Duration(internal var durationElements: MutableMap<ChronoUnit, Long> 
     return (DAYS.between(startDate, getEndDate(startDate)) + 1).toInt()
   }
 
-  private fun getEndDate(startDate: LocalDate): LocalDate {
+  fun getEndDate(startDate: LocalDate): LocalDate {
     var calculatedDate = startDate
     for (duration in this.durationElements) {
       calculatedDate = calculatedDate.plus(duration.value, duration.key)

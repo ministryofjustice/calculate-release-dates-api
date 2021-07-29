@@ -42,12 +42,18 @@ dependencies {
   // GOVUK Notify:
   implementation("uk.gov.service.notify:notifications-java-client:3.17.2-RELEASE")
 
+  // Enable kotlin reflect
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.21")
+
+  // Three Ten Date Calculations
+  implementation("org.threeten:threeten-extra:1.6.0")
+
   // Database dependencies
   runtimeOnly("com.h2database:h2")
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.2.20")
 
-  implementation("com.google.code.gson:gson:2.8.7")
+  implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
   implementation("io.arrow-kt:arrow-core:0.10.5")
 
   // OpenAPI
