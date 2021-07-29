@@ -25,8 +25,8 @@ internal class SentenceTest {
 
     assertEquals(
       "Sentence(offence=Offence(startedAt=2020-01-01, endedAt=Optional.empty, isScheduleFifteen=false), " +
-        "duration={Days=1}, sentencedAt=2020-01-01, remandInDays=0, " +
-        "taggedBailInDays=0, identifier=219db65e-d7b7-4c70-9239-98babff7bcd5)",
+        "duration={Days=1}, sentencedAt=2020-01-01, remandInDays=0, taggedBailInDays=0, " +
+        "identifier=219db65e-d7b7-4c70-9239-98babff7bcd5)",
       sentence.toString()
     )
   }

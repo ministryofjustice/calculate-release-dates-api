@@ -14,4 +14,12 @@ internal class OffenceTest {
     assertEquals(offence.startedAt, startedAt)
     assertTrue(offence.endedAt.isEmpty)
   }
+
+  @Test
+  fun testOffenceOneArgument() {
+    val startedAt = LocalDate.of(2020, 1, 1)
+    val offence = Offence(startedAt)
+    assertEquals(offence.startedAt, startedAt)
+    assertTrue(offence.endedAt.isEmpty)
+  }
 }

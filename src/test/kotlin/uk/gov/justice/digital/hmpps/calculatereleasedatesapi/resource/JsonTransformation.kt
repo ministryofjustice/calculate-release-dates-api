@@ -1,10 +1,12 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.TypeAdapter
-import com.google.gson.stream.JsonReader
-import com.google.gson.stream.JsonWriter
+import com.squareup.moshi.FromJson
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.JsonWriter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.ToJson
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -13,13 +15,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSente
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Optional
+import java.util.UUID
 
-class JsonTransformation(
-  private var gson: Gson? = GsonBuilder()
-    .setPrettyPrinting()
-    .registerTypeAdapter(LocalDate::class.java, LocalDateTypeAdapter().nullSafe())
-    .create()
-) {
+class JsonTransformation {
+
+  var moshi: Moshi = Moshi.Builder()
+    .addLast(KotlinJsonAdapterFactory())
+    .add(LocalDate::class.java, LocalDateAdapter().nullSafe())
+    .add(OptionalLocalDateAdapter())
+    .add(UUID::class.java, UUIDAdapter().nullSafe())
+    .build()
 
   fun loadOffender(testData: String): Offender {
     val json = getJsonTest("$testData.json", "offender")
@@ -42,29 +48,23 @@ class JsonTransformation(
   }
 
   private fun jsonToSentence(json: String): Sentence? {
-    return gson?.fromJson(json, Sentence::class.java)
+    val jsonAdapter = moshi.adapter(Sentence::class.java)
+    return jsonAdapter.fromJson(json)
   }
 
   private fun jsonToOffender(json: String): Offender? {
-    return gson?.fromJson(json, Offender::class.java)
+    val jsonAdapter = moshi.adapter(Offender::class.java)
+    return jsonAdapter.fromJson(json)
   }
 
   private fun jsonToOffenderSentenceProfile(json: String): OffenderSentenceProfile? {
-    return gson?.fromJson(json, OffenderSentenceProfile::class.java)
+    val jsonAdapter = moshi.adapter(OffenderSentenceProfile::class.java)
+    return jsonAdapter.fromJson(json)
   }
 
   private fun jsonToOffenderSentenceProfileCalculation(json: String): OffenderSentenceProfileCalculation? {
-    return gson?.fromJson(json, OffenderSentenceProfileCalculation::class.java)
-  }
-
-  fun offenderSentenceProfileToJson(offenderSentenceProfile: OffenderSentenceProfile): String? {
-    return gson?.toJson(offenderSentenceProfile)
-  }
-
-  fun offenderSentenceProfileCalculationToJson(
-    offenderSentenceProfileCalculation: OffenderSentenceProfileCalculation
-  ): String? {
-    return gson?.toJson(offenderSentenceProfileCalculation)
+    val jsonAdapter = moshi.adapter(OffenderSentenceProfileCalculation::class.java)
+    return jsonAdapter.fromJson(json)
   }
 
   private fun getJsonTest(fileName: String, calculationType: String): String {
@@ -81,12 +81,56 @@ class JsonTransformation(
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  class LocalDateTypeAdapter : TypeAdapter<LocalDate>() {
-
-    override fun write(out: JsonWriter, value: LocalDate) {
-      out.value(DateTimeFormatter.ISO_LOCAL_DATE.format(value))
+  class LocalDateAdapter : JsonAdapter<LocalDate>() {
+    override fun toJson(writer: JsonWriter, value: LocalDate?) {
+      value?.let { writer.value(it.format(formatter)) }
     }
 
-    override fun read(input: JsonReader): LocalDate = LocalDate.parse(input.nextString())
+    override fun fromJson(reader: JsonReader): LocalDate? {
+      return if (reader.peek() != JsonReader.Token.NULL) {
+        fromNonNullString(reader.nextString())
+      } else {
+        reader.nextNull<Any>()
+        null
+      }
+    }
+    private val formatter = DateTimeFormatter.ISO_LOCAL_DATE
+    private fun fromNonNullString(nextString: String): LocalDate = LocalDate.parse(nextString, formatter)
+  }
+
+  class UUIDAdapter : JsonAdapter<UUID>() {
+    override fun toJson(writer: JsonWriter, value: UUID?) {
+      value?.let { writer.value(it.toString()) }
+    }
+
+    override fun fromJson(jsonReader: JsonReader): UUID? {
+      val value = jsonReader.nextString()
+      return UUID.fromString(value)
+    }
+  }
+
+  class OptionalLocalDateAdapter : JsonAdapter<Optional<LocalDate>>() {
+    @ToJson
+    override fun toJson(writer: JsonWriter, value: Optional<LocalDate>?) {
+      value?.let {
+        if (value.isEmpty) {
+          writer.value("")
+        } else {
+          writer.value(value.get().format(formatter))
+        }
+      }
+    }
+
+    @FromJson
+    override fun fromJson(reader: JsonReader): Optional<LocalDate> {
+      return if (reader.peek() != JsonReader.Token.NULL) {
+        fromNonNullString(reader.nextString())
+      } else {
+        Optional.empty<LocalDate>()
+      }
+    }
+    private val formatter = DateTimeFormatter.ISO_LOCAL_DATE
+    private fun fromNonNullString(nextString: String): Optional<LocalDate> =
+      Optional.of(LocalDate.parse(nextString, formatter))
   }
 }

@@ -1,13 +1,16 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CantExtractMultipleSentencesException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceProfile
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceProfileCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 
 @Service
 class OffenderSentenceProfileCalculationService(
-  val sentenceCalculationService: SentenceCalculationService
+  val sentenceCalculationService: SentenceCalculationService,
+  val extractionService: SentencesExtractionService
 ) {
 
   fun identify(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfile {
@@ -62,14 +65,19 @@ class OffenderSentenceProfileCalculationService(
   }
 
   private fun extractMultiple(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfileCalculation {
-    // this needs to do handle the multiplicity of sentences
-    val sentenceCalculation = offenderSentenceProfile.sentences[0].sentenceCalculation
-    return OffenderSentenceProfileCalculation(
-      sentenceCalculation.licenceExpiryDate,
-      sentenceCalculation.expiryDate,
-      sentenceCalculation.releaseDate,
-      sentenceCalculation.topUpSupervisionDate,
-      sentenceCalculation.isReleaseDateConditional
-    )
+    if (
+      extractionService.hasNoConcurrentSentences(offenderSentenceProfile.sentences.stream()) &&
+      extractionService.allOverlap(offenderSentenceProfile.sentences)
+    ) {
+      return OffenderSentenceProfileCalculation(
+        extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::licenceExpiryDate),
+        extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::expiryDate),
+        extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::releaseDate),
+        extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::topUpSupervisionDate),
+        offenderSentenceProfile.sentences[0].sentenceCalculation.isReleaseDateConditional
+      )
+    } else {
+      throw CantExtractMultipleSentencesException("Can't extract a single date from multiple sentences")
+    }
   }
 }
