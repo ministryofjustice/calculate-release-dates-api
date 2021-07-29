@@ -21,11 +21,12 @@ class CalculationServiceTest {
   fun `Test PSI Example`(exampleNumber: String) {
     log.info("Testing PSI example $exampleNumber")
     val overallCalculation = jsonTransformation.loadOffenderSentenceProfile("psi-examples/$exampleNumber")
-    val offenderSentenceProfile = calculationService.calculate(overallCalculation)
+    val offenderSentenceProfileCalculation = calculationService.calculate(overallCalculation)
     assertEquals(
       jsonTransformation.loadOffenderSentenceProfileCalculation(exampleNumber),
-      offenderSentenceProfile
+      offenderSentenceProfileCalculation
     )
+    log.info("Example $exampleNumber outcome OffenderSentenceProfileCalculation: {}", offenderSentenceProfileCalculation)
   }
 
   companion object {
