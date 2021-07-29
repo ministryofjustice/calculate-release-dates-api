@@ -42,6 +42,12 @@ dependencies {
   // GOVUK Notify:
   implementation("uk.gov.service.notify:notifications-java-client:3.17.2-RELEASE")
 
+  // Enable kotlin reflect
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.21")
+
+  // Three Ten Date Calculations
+  implementation("org.threeten:threeten-extra:1.6.0")
+
   // Database dependencies
   runtimeOnly("com.h2database:h2")
   runtimeOnly("org.flywaydb:flyway-core")

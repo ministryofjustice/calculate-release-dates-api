@@ -10,8 +10,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransf
 class CalculationServiceTest {
   private val jsonTransformation = JsonTransformation()
   private val sentenceCalculationService = SentenceCalculationService()
+  private val sentencesExtractionService = SentencesExtractionService()
   private val offenderSentenceProfileCalculationService =
-    OffenderSentenceProfileCalculationService(sentenceCalculationService)
+    OffenderSentenceProfileCalculationService(sentenceCalculationService, sentencesExtractionService)
   private val calculationService =
     CalculationService(offenderSentenceProfileCalculationService)
 

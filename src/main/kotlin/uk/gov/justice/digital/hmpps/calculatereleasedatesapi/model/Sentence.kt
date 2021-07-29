@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import org.threeten.extra.LocalDateRange
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.UUID
@@ -11,7 +12,7 @@ data class Sentence(
   val sentencedAt: LocalDate,
   val remandInDays: Int,
   val taggedBailInDays: Int,
-  val identifier: UUID = UUID.randomUUID()
+  var identifier: UUID = UUID.randomUUID()
 ) {
   fun durationIsGreaterThan(length: Long, period: ChronoUnit): Boolean {
 
@@ -26,8 +27,12 @@ data class Sentence(
     return this.sentencedAt.plusDays(days)
   }
 
+  fun getDateRange(): LocalDateRange? {
+    return LocalDateRange.of(sentencedAt, duration.getEndDate(sentencedAt))
+  }
+
   lateinit var sentenceCalculation: SentenceCalculation
   lateinit var sentenceTypes: List<SentenceType>
 
-  val concurrentSentences = mutableListOf<Sentence>()
+  var concurrentSentences = mutableListOf<Sentence>()
 }

@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.gson.GsonBuilder
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.junit.jupiter.api.extension.ExtendWith
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -15,6 +15,9 @@ import org.springframework.test.context.jdbc.SqlMergeMode
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.helpers.JwtAuthHelper
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.OAuthExtension
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
+import java.time.LocalDate
+import java.util.UUID
 
 /*
 ** The abstract parent class for integration tests.
@@ -47,10 +50,12 @@ class IntegrationTestBase internal constructor() {
   @Autowired
   lateinit var jwtAuthHelper: JwtAuthHelper
 
-  @Autowired
-  lateinit var mapper: ObjectMapper
-
-  internal val gson = GsonBuilder().setPrettyPrinting().create()
+  var moshi: Moshi = Moshi.Builder()
+    .addLast(KotlinJsonAdapterFactory())
+    .add(LocalDate::class.java, JsonTransformation.LocalDateAdapter().nullSafe())
+    .add(JsonTransformation.OptionalLocalDateAdapter())
+    .add(UUID::class.java, JsonTransformation.UUIDAdapter().nullSafe())
+    .build()
 
   internal fun setAuthorisation(
     user: String = "test-client",

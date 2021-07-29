@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorRespons
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.TestData
 
 class TestDataIntTest : IntegrationTestBase() {
+
   @Test
   fun `Get a list of test data items`() {
     val result = webTestClient.get()
@@ -20,7 +21,7 @@ class TestDataIntTest : IntegrationTestBase() {
       .expectBodyList(TestData::class.java)
       .returnResult().responseBody
 
-    log.info("Expect OK: Result returned ${gson.toJson(result)}")
+    log.info("Expect OK: Result returned $result")
     assertThat(result?.size).isEqualTo(3)
     assertThat(result).extracting("key").containsAll(listOf("A", "B", "C"))
   }
@@ -36,7 +37,7 @@ class TestDataIntTest : IntegrationTestBase() {
       .expectBody(ErrorResponse::class.java)
       .returnResult().responseBody
 
-    log.info("Expect 403: Result was ${gson.toJson(result)}")
+    log.info("Expect 403: Result was $result")
     assertThat(result?.userMessage).contains("Access is denied")
   }
 
