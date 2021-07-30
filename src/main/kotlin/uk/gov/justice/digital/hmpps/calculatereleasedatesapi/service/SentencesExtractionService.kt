@@ -64,12 +64,7 @@ class SentencesExtractionService {
   }
 
   fun allSentencesContainType(sentences: MutableList<Sentence>, sentenceType: SentenceType): Boolean {
-    for (sentence in sentences) {
-      if (!sentence.sentenceTypes.contains(sentenceType)) {
-        return false
-      }
-    }
-    return true
+    return sentences.stream().allMatch { sentence -> sentence.sentenceTypes.contains(sentenceType) }
   }
 
   companion object {
