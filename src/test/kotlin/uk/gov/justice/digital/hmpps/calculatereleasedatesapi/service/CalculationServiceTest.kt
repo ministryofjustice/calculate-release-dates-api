@@ -26,7 +26,10 @@ class CalculationServiceTest {
       jsonTransformation.loadOffenderSentenceProfileCalculation(exampleNumber),
       offenderSentenceProfileCalculation
     )
-    log.info("Example $exampleNumber outcome OffenderSentenceProfileCalculation: {}", offenderSentenceProfileCalculation)
+    log.info(
+      "Example $exampleNumber outcome OffenderSentenceProfileCalculation: {}",
+      offenderSentenceProfileCalculation
+    )
   }
 
   companion object {
