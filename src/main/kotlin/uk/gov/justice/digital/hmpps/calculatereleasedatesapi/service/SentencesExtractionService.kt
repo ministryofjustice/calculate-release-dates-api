@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import java.time.LocalDate
 import java.util.stream.Stream
 import kotlin.reflect.KProperty1
@@ -60,6 +61,10 @@ class SentencesExtractionService {
 
   fun hasNoConcurrentSentences(sentenceStream: Stream<Sentence>): Boolean {
     return sentenceStream.allMatch { sentence -> sentence.concurrentSentences.isEmpty() }
+  }
+
+  fun allSentencesContainType(sentences: MutableList<Sentence>, sentenceType: SentenceType): Boolean {
+    return sentences.all { it.sentenceTypes.contains(sentenceType) }
   }
 
   companion object {
