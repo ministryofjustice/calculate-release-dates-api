@@ -106,6 +106,10 @@ class SentenceCalculationService {
       sentenceCalculation.expiryDate = sentenceCalculation.remandAdjustedExpiryDate
     }
 
+    if (sentence.sentenceTypes.contains(SentenceType.SLED)) {
+      sentenceCalculation.licenceExpiryDate = sentenceCalculation.remandAdjustedExpiryDate
+    }
+
     if (sentence.sentenceTypes.contains(SentenceType.ARD)) {
       sentenceCalculation.isReleaseDateConditional = false
     } else if (sentence.sentenceTypes.contains(SentenceType.CRD)) {

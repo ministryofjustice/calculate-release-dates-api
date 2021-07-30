@@ -6,6 +6,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSenten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceProfile
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceProfileCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
+import java.time.LocalDate
 
 @Service
 class OffenderSentenceProfileCalculationService(
@@ -54,14 +56,25 @@ class OffenderSentenceProfileCalculationService(
   }
 
   private fun extractSingle(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfileCalculation {
-    val sentenceCalculation = offenderSentenceProfile.sentences[0].sentenceCalculation
-    return OffenderSentenceProfileCalculation(
-      sentenceCalculation.licenceExpiryDate,
-      sentenceCalculation.expiryDate,
-      sentenceCalculation.releaseDate,
-      sentenceCalculation.topUpSupervisionDate,
-      sentenceCalculation.isReleaseDateConditional
-    )
+    val sentence = offenderSentenceProfile.sentences[0]
+    val sentenceCalculation = sentence.sentenceCalculation
+    if (sentence.sentenceTypes.contains(SentenceType.SLED)) {
+      return OffenderSentenceProfileCalculation(
+        null,
+        sentenceCalculation.expiryDate,
+        sentenceCalculation.releaseDate,
+        sentenceCalculation.topUpSupervisionDate,
+        sentenceCalculation.isReleaseDateConditional
+      )
+    } else {
+      return OffenderSentenceProfileCalculation(
+        sentenceCalculation.licenceExpiryDate,
+        sentenceCalculation.expiryDate,
+        sentenceCalculation.releaseDate,
+        sentenceCalculation.topUpSupervisionDate,
+        sentenceCalculation.isReleaseDateConditional
+      )
+    }
   }
 
   private fun extractMultiple(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfileCalculation {
@@ -69,8 +82,15 @@ class OffenderSentenceProfileCalculationService(
       extractionService.hasNoConcurrentSentences(offenderSentenceProfile.sentences.stream()) &&
       extractionService.allOverlap(offenderSentenceProfile.sentences)
     ) {
+      val latestLicenseExpiryDate: LocalDate? =
+        if (extractionService.allSentencesContainType(offenderSentenceProfile.sentences, SentenceType.SLED)) {
+          null
+        } else {
+          extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::licenceExpiryDate)
+        }
+
       return OffenderSentenceProfileCalculation(
-        extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::licenceExpiryDate),
+        latestLicenseExpiryDate,
         extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::expiryDate),
         extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::releaseDate),
         extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::topUpSupervisionDate),
