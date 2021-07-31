@@ -82,17 +82,30 @@ class OffenderSentenceProfileCalculationService(
       extractionService.hasNoConcurrentSentences(offenderSentenceProfile.sentences.stream()) &&
       extractionService.allOverlap(offenderSentenceProfile.sentences)
     ) {
-      val latestLicenseExpiryDate: LocalDate? =
-        if (extractionService.allSentencesContainType(offenderSentenceProfile.sentences, SentenceType.SLED)) {
-          null
-        } else {
-          extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::licenceExpiryDate)
-        }
+
+      val latestReleaseDate: LocalDate? = extractionService.mostRecent(
+        offenderSentenceProfile.sentences, SentenceCalculation::releaseDate
+      )
+      val latestExpiryDate: LocalDate? = extractionService.mostRecent(
+        offenderSentenceProfile.sentences, SentenceCalculation::expiryDate
+      )
+      var latestLicenseExpiryDate: LocalDate? = extractionService.mostRecent(
+        offenderSentenceProfile.sentences, SentenceCalculation::licenceExpiryDate
+      )
+
+      if (latestLicenseExpiryDate != null &&
+        (
+          latestLicenseExpiryDate.isEqual(latestReleaseDate) ||
+            latestLicenseExpiryDate.isEqual(latestExpiryDate)
+          )
+      ) {
+        latestLicenseExpiryDate = null
+      }
 
       return OffenderSentenceProfileCalculation(
         latestLicenseExpiryDate,
-        extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::expiryDate),
-        extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::releaseDate),
+        latestExpiryDate,
+        latestReleaseDate,
         extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::topUpSupervisionDate),
         offenderSentenceProfile.sentences[0].sentenceCalculation.isReleaseDateConditional
       )
