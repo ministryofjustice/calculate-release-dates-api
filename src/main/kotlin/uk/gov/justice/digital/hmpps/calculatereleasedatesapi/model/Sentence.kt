@@ -48,6 +48,7 @@ data class Sentence(
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val expiryDateType = if (sentenceTypes.contains(SentenceType.SLED)) "SLED" else "SED"
     val releaseDateType = if (sentenceCalculation.isReleaseDateConditional) "CRD" else "ARD"
+
     return "Sentence\t:\t\n" +
       "Duration\t:\t$duration" +
       "${duration.toPeriodString(sentencedAt)}\n" +
