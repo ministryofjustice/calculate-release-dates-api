@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import org.threeten.extra.LocalDateRange
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 import kotlin.math.roundToLong
@@ -14,10 +15,22 @@ data class Sentence(
   val taggedBailInDays: Int,
   var identifier: UUID = UUID.randomUUID()
 ) {
-  fun durationIsGreaterThan(length: Long, period: ChronoUnit): Boolean {
 
+  lateinit var sentenceCalculation: SentenceCalculation
+  lateinit var sentenceTypes: List<SentenceType>
+
+  var concurrentSentences = mutableListOf<Sentence>()
+
+  fun durationIsGreaterThan(length: Long, period: ChronoUnit): Boolean {
     return (
       duration.getLengthInDays(this.sentencedAt) >
+        ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
+      )
+  }
+
+  fun durationIsGreaterThanOrEqualTo(length: Long, period: ChronoUnit): Boolean {
+    return (
+      duration.getLengthInDays(this.sentencedAt) >=
         ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
       )
   }
@@ -31,8 +44,24 @@ data class Sentence(
     return LocalDateRange.of(sentencedAt, duration.getEndDate(sentencedAt))
   }
 
-  lateinit var sentenceCalculation: SentenceCalculation
-  lateinit var sentenceTypes: List<SentenceType>
+  fun buildString(): String {
+    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val expiryDateType = if (sentenceTypes.contains(SentenceType.SLED)) "SLED" else "SED"
+    val releaseDateType = if (sentenceCalculation.isReleaseDateConditional) "CRD" else "ARD"
 
-  var concurrentSentences = mutableListOf<Sentence>()
+    return "Sentence\t:\t\n" +
+      "Duration\t:\t$duration" +
+      "${duration.toPeriodString(sentencedAt)}\n" +
+      "Sentence Types\t:\t$sentenceTypes\n" +
+      "Number of Days in Sentence\t:\t${duration.getLengthInDays(sentencedAt)}\n" +
+      "Date of $expiryDateType\t:\t${sentenceCalculation.unadjustedExpiryDate.format(formatter)}\n" +
+      "Number of days to $releaseDateType\t:\t${sentenceCalculation.numberOfDaysToReleaseDate}\n" +
+      "Date of $releaseDateType\t:\t${sentenceCalculation.unadjustedReleaseDate.format(formatter)}\n" +
+      "Total number of days of remand / tagged bail time\t:\t${sentenceCalculation.calculatedTotalRemandDays}\n" +
+      "LED\t:\t${sentenceCalculation.licenceExpiryDate?.format(formatter)}\n" +
+      "Effective $expiryDateType\t:\t${sentenceCalculation.expiryDate?.format(formatter)}\n" +
+      "Effective $releaseDateType\t:\t${sentenceCalculation.releaseDate?.format(formatter)}\n" +
+      "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +
+      "${sentenceCalculation.topUpSupervisionDate?.format(formatter)}\n"
+  }
 }

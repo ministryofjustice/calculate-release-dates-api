@@ -13,8 +13,8 @@ internal class DurationTest {
     duration.append(1L, ChronoUnit.YEARS)
     val durationTwo = duration.copy(duration)
     durationTwo.append(1L, ChronoUnit.DAYS)
-    assertEquals("{Years=1}", duration.toString())
-    assertEquals("{Years=1, Days=1}", durationTwo.toString())
+    assertEquals("1 years", duration.toString())
+    assertEquals("1 years 1 days", durationTwo.toString())
   }
 
   @Test
@@ -22,7 +22,7 @@ internal class DurationTest {
     val duration = Duration()
     duration.append(1L, ChronoUnit.YEARS)
     duration.append(1L, ChronoUnit.YEARS)
-    assertEquals("{Years=2}", duration.toString())
+    assertEquals("2 years", duration.toString())
   }
 
   @Test
@@ -30,7 +30,7 @@ internal class DurationTest {
     val duration = Duration()
     duration.append(1L, ChronoUnit.YEARS)
     duration.append(6L, ChronoUnit.MONTHS)
-    assertEquals("{Years=1, Months=6}", duration.toString())
+    assertEquals("1 years 6 months", duration.toString())
   }
 
   @Test
