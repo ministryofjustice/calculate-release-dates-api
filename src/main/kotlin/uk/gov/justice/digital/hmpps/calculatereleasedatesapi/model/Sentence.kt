@@ -50,7 +50,7 @@ data class Sentence(
     val releaseDateType = if (sentenceCalculation.isReleaseDateConditional) "CRD" else "ARD"
 
     return "Sentence\t:\t\n" +
-      "Duration\t:\t$duration" +
+      "Duration\t:\t$duration\n" +
       "${duration.toPeriodString(sentencedAt)}\n" +
       "Sentence Types\t:\t$sentenceTypes\n" +
       "Number of Days in Sentence\t:\t${duration.getLengthInDays(sentencedAt)}\n" +
