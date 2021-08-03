@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CantExtractMultipleSentencesException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
@@ -25,6 +27,7 @@ class OffenderSentenceProfileCalculationService(
   fun calculate(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfile {
     for (sentence in offenderSentenceProfile.sentences) {
       sentenceCalculationService.calculate(sentence)
+      log.info(sentence.buildString())
     }
     return offenderSentenceProfile
   }
@@ -86,6 +89,11 @@ class OffenderSentenceProfileCalculationService(
       val latestReleaseDate: LocalDate? = extractionService.mostRecent(
         offenderSentenceProfile.sentences, SentenceCalculation::releaseDate
       )
+
+      var isReleaseDateConditional = extractionService.getAssociatedReleaseType(
+        offenderSentenceProfile.sentences, latestReleaseDate
+      )
+
       val latestExpiryDate: LocalDate? = extractionService.mostRecent(
         offenderSentenceProfile.sentences, SentenceCalculation::expiryDate
       )
@@ -100,6 +108,9 @@ class OffenderSentenceProfileCalculationService(
           )
       ) {
         latestLicenseExpiryDate = null
+      } else {
+        // PSI Example 16 Release is therefore on license which means the release date is a CRD
+        isReleaseDateConditional = true
       }
 
       return OffenderSentenceProfileCalculation(
@@ -107,10 +118,14 @@ class OffenderSentenceProfileCalculationService(
         latestExpiryDate,
         latestReleaseDate,
         extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::topUpSupervisionDate),
-        offenderSentenceProfile.sentences[0].sentenceCalculation.isReleaseDateConditional
+        isReleaseDateConditional
       )
     } else {
       throw CantExtractMultipleSentencesException("Can't extract a single date from multiple sentences")
     }
+  }
+
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }

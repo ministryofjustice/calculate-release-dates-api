@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.DAYS
 
@@ -45,6 +46,16 @@ data class Duration(internal var durationElements: MutableMap<ChronoUnit, Long> 
   }
 
   override fun toString(): String {
-    return this.durationElements.toString()
+    var durations = ""
+    for ((key, value) in this.durationElements) {
+      durations += "$value ${key.toString().lowercase()} "
+    }
+    return durations.trim()
+  }
+
+  fun toPeriodString(sentencedAt: LocalDate): String {
+    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    return "From\t:\t${sentencedAt.format(formatter)}\n" +
+      "To\t:\t${getEndDate(sentencedAt).format(formatter)}"
   }
 }

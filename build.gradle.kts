@@ -3,6 +3,7 @@ plugins {
   kotlin("plugin.spring") version "1.5.21"
   kotlin("plugin.jpa") version "1.5.21"
   id("io.gitlab.arturbosch.detekt").version("1.18.0-RC2")
+  id("jacoco")
 }
 
 configurations {
@@ -71,6 +72,11 @@ dependencies {
   testImplementation("org.mockito:mockito-inline:3.11.0")
   testImplementation("io.projectreactor:reactor-test")
   testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
+}
+
+jacoco {
+  // You may modify the Jacoco version here
+  toolVersion = "0.8.7"
 }
 
 tasks {

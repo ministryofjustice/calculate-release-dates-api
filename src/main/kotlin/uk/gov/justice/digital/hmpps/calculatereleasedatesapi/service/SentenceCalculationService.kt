@@ -23,7 +23,7 @@ class SentenceCalculationService {
 
   private fun afterCJAAndLASPO(sentence: Sentence, offender: Offender) {
 
-    if (!sentence.durationIsGreaterThan(TWELVE, ChronoUnit.MONTHS)) {
+    if (!sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
 
       if (sentence.offence.startedAt.isAfter(ImportantDates.ORA_DATE)) {
         isTopUpSentenceExpiryDateRequired(sentence, offender)
@@ -68,7 +68,7 @@ class SentenceCalculationService {
           SentenceType.SLED
         )
       }
-    } else if (sentence.durationIsGreaterThan(TWELVE, ChronoUnit.MONTHS)) {
+    } else if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
       sentence.sentenceTypes = listOf(
         SentenceType.LED,
         SentenceType.CRD,
