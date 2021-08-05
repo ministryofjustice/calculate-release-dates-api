@@ -17,6 +17,11 @@ class CalculationService(
       offenderSentenceProfileCalculationService
         .identify(workingOffenderSentenceProfile)
 
+    // associateConcurrent the types of the sentences
+    workingOffenderSentenceProfile =
+      offenderSentenceProfileCalculationService
+        .associateConsecutive(workingOffenderSentenceProfile)
+
     // calculate the dates within the sentences (Generate initial sentence calculations)
     workingOffenderSentenceProfile =
       offenderSentenceProfileCalculationService
@@ -25,7 +30,7 @@ class CalculationService(
     // aggregate the types of the sentences
     workingOffenderSentenceProfile =
       offenderSentenceProfileCalculationService
-        .aggregate(workingOffenderSentenceProfile)
+        .combine(workingOffenderSentenceProfile)
 
     // apply any rules to calculate the dates
     return offenderSentenceProfileCalculationService
