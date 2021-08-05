@@ -169,7 +169,7 @@ class SentenceCalculationService {
         .plusDays(numberOfDaysToReleaseDate.toLong())
         .minusDays(ONE)
 
-    val calculatedTotalRemandDays = sentence.remandInDays + sentence.taggedBailInDays
+    val calculatedTotalRemandDays = sentence.remandInDays + sentence.taggedBailInDays - sentence.unlawfullyAtLargeInDays
 
     val remandAdjustedExpiryDate = unadjustedExpiryDate.minusDays(
       calculatedTotalRemandDays.toLong()
