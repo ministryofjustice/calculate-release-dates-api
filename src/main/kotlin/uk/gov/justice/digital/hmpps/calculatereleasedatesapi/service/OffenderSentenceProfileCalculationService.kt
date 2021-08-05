@@ -14,12 +14,20 @@ import java.time.LocalDate
 @Service
 class OffenderSentenceProfileCalculationService(
   val sentenceCalculationService: SentenceCalculationService,
-  val extractionService: SentencesExtractionService
+  val extractionService: SentencesExtractionService,
+  val combinationService: SentenceCombinationService
 ) {
 
   fun identify(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfile {
     for (sentence in offenderSentenceProfile.sentences) {
       sentenceCalculationService.identify(sentence, offenderSentenceProfile.offender)
+    }
+    return offenderSentenceProfile
+  }
+
+  fun associateConsecutive(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfile {
+    for (sentence in offenderSentenceProfile.sentences) {
+      sentence.associateSentences(offenderSentenceProfile.sentences)
     }
     return offenderSentenceProfile
   }
@@ -44,18 +52,21 @@ class OffenderSentenceProfileCalculationService(
     }
   }
 
-  fun aggregate(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfile {
+  fun combine(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfile {
     return when (offenderSentenceProfile.sentences.size) {
       0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
       1 -> offenderSentenceProfile
       else -> {
-        aggregateMultiple(offenderSentenceProfile)
+        val workingOffenderSentenceProfile = combinationService.combineConsecutiveSentences(offenderSentenceProfile)
+        workingOffenderSentenceProfile.sentences.forEach { sentence ->
+          if (!sentence.isSentenceCalculated()) {
+            sentenceCalculationService.calculate(sentence)
+            log.info(sentence.buildString())
+          }
+        }
+        return workingOffenderSentenceProfile
       }
     }
-  }
-
-  private fun aggregateMultiple(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfile {
-    return offenderSentenceProfile
   }
 
   private fun extractSingle(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfileCalculation {
