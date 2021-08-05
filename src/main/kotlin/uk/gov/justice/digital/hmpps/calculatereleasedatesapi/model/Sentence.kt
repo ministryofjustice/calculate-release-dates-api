@@ -14,7 +14,7 @@ data class Sentence(
   val remandInDays: Int,
   val taggedBailInDays: Int,
   val unlawfullyAtLargeInDays: Int = 0,
-  var identifier: UUID = UUID.randomUUID()
+  var identifier: UUID = UUID.randomUUID(),
 ) {
 
   lateinit var sentenceCalculation: SentenceCalculation
@@ -58,7 +58,7 @@ data class Sentence(
       "Date of $expiryDateType\t:\t${sentenceCalculation.unadjustedExpiryDate.format(formatter)}\n" +
       "Number of days to $releaseDateType\t:\t${sentenceCalculation.numberOfDaysToReleaseDate}\n" +
       "Date of $releaseDateType\t:\t${sentenceCalculation.unadjustedReleaseDate.format(formatter)}\n" +
-      "Total number of days of remand / tagged bail time / unlawfully at large\t:\t${sentenceCalculation.calculatedTotalRemandDays}\n" +
+      "Total number of days of remand / tagged bail time / UAL\t:\t${sentenceCalculation.calculatedTotalRemandDays}\n" +
       "LED\t:\t${sentenceCalculation.licenceExpiryDate?.format(formatter)}\n" +
       "Effective $expiryDateType\t:\t${sentenceCalculation.expiryDate?.format(formatter)}\n" +
       "Effective $releaseDateType\t:\t${sentenceCalculation.releaseDate?.format(formatter)}\n" +
