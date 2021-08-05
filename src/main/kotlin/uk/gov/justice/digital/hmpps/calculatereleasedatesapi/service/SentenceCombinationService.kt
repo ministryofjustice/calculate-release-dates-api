@@ -19,44 +19,6 @@ class SentenceCombinationService {
     return workingOffenderSentenceProfile
   }
 
-  /*
-    // loop over the aggregate sentences and to add the duration of the sentence onto one new sentence
-    val durations: List<Duration> = concurrentSentences.stream().map(Sentence::getDuration).collect(Collectors.toList())
-    val isReleaseDateConditional: Unit =
-      concurrentSentences.get(0).getSentenceCalculation().getIsReleaseDateConditional()
-    val combinedDuration = Duration()
-    for (duration in durations) {
-      for ((key, value): Map.Entry<ChronoUnit, Double> in duration.getDurationMap().entrySet()) {
-        combinedDuration.append(value, key)
-      }
-    }
-
-    // delete all the concurrentSentencesStream sentences
-    for (concurrentSentence in concurrentSentences) {
-      offenderSentenceProfile.getSentences().remove(concurrentSentence)
-    }
-    val earliestSentencedAt: Unit = concurrentSentences.stream()
-      .map(Sentence::getSentencedAt)
-      .max(Comparator.nullsFirst(Comparator.comparing(LocalDate::toEpochDay)))
-    if (earliestSentencedAt.isPresent()) {
-      val sentence = Sentence(
-        concurrentSentences.get(0).getOffence(),
-        earliestSentencedAt.get(),
-        combinedDuration,
-        offenderSentenceProfile
-      )
-      sentence.calculate()
-      // question here about how are we supposed to deal the CRD/ARD
-      sentence.getSentenceCalculation().setIsReleaseDateConditional(isReleaseDateConditional)
-      // add a new sentence with the new duration
-      offenderSentenceProfile.addSentence(sentence)
-    }
-
-    return workingOffenderSentenceProfile
-  }
-
-   */
-
   private fun combineSentenceWithEachOfItsConcurrentSentences(
     sentence: Sentence,
     workingOffenderSentenceProfile: OffenderSentenceProfile
@@ -108,7 +70,7 @@ class SentenceCombinationService {
     offenderSentenceProfile: OffenderSentenceProfile
   ) {
 
-    for (sentence in offenderSentenceProfile.sentences) {
+    offenderSentenceProfile.sentences.forEach { sentence ->
       sentence.concurrentSentences.remove(originalSentence)
       sentence.concurrentSentences.add(replacementSentence)
       sentence.concurrentSentenceUUIDs.remove(originalSentence.identifier)

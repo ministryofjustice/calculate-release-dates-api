@@ -58,7 +58,7 @@ class OffenderSentenceProfileCalculationService(
       1 -> offenderSentenceProfile
       else -> {
         val workingOffenderSentenceProfile = combinationService.combineConsecutiveSentences(offenderSentenceProfile)
-        for (sentence in workingOffenderSentenceProfile.sentences) {
+        workingOffenderSentenceProfile.sentences.forEach { sentence ->
           if (!sentence.isSentenceCalculated()) {
             sentenceCalculationService.calculate(sentence)
             log.info(sentence.buildString())
