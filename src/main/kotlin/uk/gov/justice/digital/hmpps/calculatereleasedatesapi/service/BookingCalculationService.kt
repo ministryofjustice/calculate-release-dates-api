@@ -5,75 +5,75 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CantExtractMultipleSentencesException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceProfile
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceProfileCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import java.time.LocalDate
 
 @Service
-class OffenderSentenceProfileCalculationService(
+class BookingCalculationService(
   val sentenceCalculationService: SentenceCalculationService,
   val extractionService: SentencesExtractionService,
   val combinationService: SentenceCombinationService
 ) {
 
-  fun identify(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfile {
-    for (sentence in offenderSentenceProfile.sentences) {
-      sentenceCalculationService.identify(sentence, offenderSentenceProfile.offender)
+  fun identify(booking: Booking): Booking {
+    for (sentence in booking.sentences) {
+      sentenceCalculationService.identify(sentence, booking.offender)
     }
-    return offenderSentenceProfile
+    return booking
   }
 
-  fun associateConsecutive(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfile {
-    for (sentence in offenderSentenceProfile.sentences) {
-      sentence.associateSentences(offenderSentenceProfile.sentences)
+  fun associateConsecutive(booking: Booking): Booking {
+    for (sentence in booking.sentences) {
+      sentence.associateSentences(booking.sentences)
     }
-    return offenderSentenceProfile
+    return booking
   }
 
-  fun calculate(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfile {
-    for (sentence in offenderSentenceProfile.sentences) {
+  fun calculate(booking: Booking): Booking {
+    for (sentence in booking.sentences) {
       sentenceCalculationService.calculate(sentence)
       log.info(sentence.buildString())
     }
-    return offenderSentenceProfile
+    return booking
   }
 
   fun extract(
-    offenderSentenceProfile: OffenderSentenceProfile
-  ): OffenderSentenceProfileCalculation {
-    return when (offenderSentenceProfile.sentences.size) {
+    booking: Booking
+  ): BookingCalculation {
+    return when (booking.sentences.size) {
       0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
-      1 -> extractSingle(offenderSentenceProfile)
+      1 -> extractSingle(booking)
       else -> {
-        extractMultiple(offenderSentenceProfile)
+        extractMultiple(booking)
       }
     }
   }
 
-  fun combine(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfile {
-    return when (offenderSentenceProfile.sentences.size) {
+  fun combine(booking: Booking): Booking {
+    return when (booking.sentences.size) {
       0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
-      1 -> offenderSentenceProfile
+      1 -> booking
       else -> {
-        val workingOffenderSentenceProfile = combinationService.combineConsecutiveSentences(offenderSentenceProfile)
-        workingOffenderSentenceProfile.sentences.forEach { sentence ->
+        val workingBooking = combinationService.combineConsecutiveSentences(booking)
+        workingBooking.sentences.forEach { sentence ->
           if (!sentence.isSentenceCalculated()) {
             sentenceCalculationService.calculate(sentence)
             log.info(sentence.buildString())
           }
         }
-        return workingOffenderSentenceProfile
+        return workingBooking
       }
     }
   }
 
-  private fun extractSingle(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfileCalculation {
-    val sentence = offenderSentenceProfile.sentences[0]
+  private fun extractSingle(booking: Booking): BookingCalculation {
+    val sentence = booking.sentences[0]
     val sentenceCalculation = sentence.sentenceCalculation
     if (sentence.sentenceTypes.contains(SentenceType.SLED)) {
-      return OffenderSentenceProfileCalculation(
+      return BookingCalculation(
         null,
         sentenceCalculation.expiryDate,
         sentenceCalculation.releaseDate,
@@ -81,7 +81,7 @@ class OffenderSentenceProfileCalculationService(
         sentenceCalculation.isReleaseDateConditional
       )
     } else {
-      return OffenderSentenceProfileCalculation(
+      return BookingCalculation(
         sentenceCalculation.licenceExpiryDate,
         sentenceCalculation.expiryDate,
         sentenceCalculation.releaseDate,
@@ -91,25 +91,25 @@ class OffenderSentenceProfileCalculationService(
     }
   }
 
-  private fun extractMultiple(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfileCalculation {
+  private fun extractMultiple(booking: Booking): BookingCalculation {
     if (
-      extractionService.hasNoConcurrentSentences(offenderSentenceProfile.sentences.stream()) &&
-      extractionService.allOverlap(offenderSentenceProfile.sentences)
+      extractionService.hasNoConcurrentSentences(booking.sentences.stream()) &&
+      extractionService.allOverlap(booking.sentences)
     ) {
 
       val latestReleaseDate: LocalDate? = extractionService.mostRecent(
-        offenderSentenceProfile.sentences, SentenceCalculation::releaseDate
+        booking.sentences, SentenceCalculation::releaseDate
       )
 
       var isReleaseDateConditional = extractionService.getAssociatedReleaseType(
-        offenderSentenceProfile.sentences, latestReleaseDate
+        booking.sentences, latestReleaseDate
       )
 
       val latestExpiryDate: LocalDate? = extractionService.mostRecent(
-        offenderSentenceProfile.sentences, SentenceCalculation::expiryDate
+        booking.sentences, SentenceCalculation::expiryDate
       )
       var latestLicenseExpiryDate: LocalDate? = extractionService.mostRecent(
-        offenderSentenceProfile.sentences, SentenceCalculation::licenceExpiryDate
+        booking.sentences, SentenceCalculation::licenceExpiryDate
       )
 
       if (latestLicenseExpiryDate != null &&
@@ -124,11 +124,11 @@ class OffenderSentenceProfileCalculationService(
         isReleaseDateConditional = true
       }
 
-      return OffenderSentenceProfileCalculation(
+      return BookingCalculation(
         latestLicenseExpiryDate,
         latestExpiryDate,
         latestReleaseDate,
-        extractionService.mostRecent(offenderSentenceProfile.sentences, SentenceCalculation::topUpSupervisionDate),
+        extractionService.mostRecent(booking.sentences, SentenceCalculation::topUpSupervisionDate),
         isReleaseDateConditional
       )
     } else {

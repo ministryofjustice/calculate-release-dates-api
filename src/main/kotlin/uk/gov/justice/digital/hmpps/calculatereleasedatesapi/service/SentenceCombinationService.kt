@@ -2,51 +2,51 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CannotMergeSentencesException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceProfile
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 
 @Service
 class SentenceCombinationService {
 
-  fun combineConsecutiveSentences(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfile {
-    val workingOffenderSentenceProfile: OffenderSentenceProfile = offenderSentenceProfile.copy()
+  fun combineConsecutiveSentences(booking: Booking): Booking {
+    val workingBooking: Booking = booking.copy()
     // find a list of sentences that have concurrent sentences
-    val concurrentSentences = offenderSentenceProfile.sentences.filter { it.concurrentSentences.isNotEmpty() }
+    val concurrentSentences = booking.sentences.filter { it.concurrentSentences.isNotEmpty() }
     for (sentence in concurrentSentences) {
-      combineSentenceWithEachOfItsConcurrentSentences(sentence, workingOffenderSentenceProfile)
+      combineSentenceWithEachOfItsConcurrentSentences(sentence, workingBooking)
     }
-    return workingOffenderSentenceProfile
+    return workingBooking
   }
 
   private fun combineSentenceWithEachOfItsConcurrentSentences(
     sentence: Sentence,
-    workingOffenderSentenceProfile: OffenderSentenceProfile
+    workingBooking: Booking
   ) {
     val concurrentSentences = sentence.concurrentSentences.toList()
     for (concurrentSentence in concurrentSentences) {
-      combineTwoSentences(sentence, concurrentSentence, workingOffenderSentenceProfile)
+      combineTwoSentences(sentence, concurrentSentence, workingBooking)
     }
   }
 
   fun combineTwoSentences(
     firstSentence: Sentence,
     secondSentence: Sentence,
-    workingOffenderSentenceProfile: OffenderSentenceProfile
+    workingBooking: Booking
   ) {
 
     // I take 2 sentences, combine them into a single conjoined sentence
     val combinedSentence: Sentence = mergeSentences(firstSentence, secondSentence)
     combinedSentence.associateSentences(mutableListOf())
 
-    addSentenceToProfile(combinedSentence, workingOffenderSentenceProfile)
+    addSentenceToProfile(combinedSentence, workingBooking)
 
-    associateExistingLinksToNewSentence(firstSentence, combinedSentence, workingOffenderSentenceProfile)
-    associateExistingLinksToNewSentence(secondSentence, combinedSentence, workingOffenderSentenceProfile)
+    associateExistingLinksToNewSentence(firstSentence, combinedSentence, workingBooking)
+    associateExistingLinksToNewSentence(secondSentence, combinedSentence, workingBooking)
 
     // delete the 2 existing sentences
-    deleteSentenceFromProfile(firstSentence, workingOffenderSentenceProfile)
-    deleteSentenceFromProfile(secondSentence, workingOffenderSentenceProfile)
+    deleteSentenceFromProfile(firstSentence, workingBooking)
+    deleteSentenceFromProfile(secondSentence, workingBooking)
 
     removeSelfFromConcurrentSentences(combinedSentence)
   }
@@ -67,10 +67,10 @@ class SentenceCombinationService {
   private fun associateExistingLinksToNewSentence(
     originalSentence: Sentence,
     replacementSentence: Sentence,
-    offenderSentenceProfile: OffenderSentenceProfile
+    booking: Booking
   ) {
 
-    offenderSentenceProfile.sentences.forEach { sentence ->
+    booking.sentences.forEach { sentence ->
       sentence.concurrentSentences.remove(originalSentence)
       sentence.concurrentSentences.add(replacementSentence)
       sentence.concurrentSentenceUUIDs.remove(originalSentence.identifier)
@@ -78,12 +78,12 @@ class SentenceCombinationService {
     }
   }
 
-  private fun addSentenceToProfile(sentence: Sentence, offenderSentenceProfile: OffenderSentenceProfile) {
-    offenderSentenceProfile.sentences.add(sentence)
+  private fun addSentenceToProfile(sentence: Sentence, booking: Booking) {
+    booking.sentences.add(sentence)
   }
 
-  private fun deleteSentenceFromProfile(sentence: Sentence, offenderSentenceProfile: OffenderSentenceProfile) {
-    offenderSentenceProfile.sentences.remove(sentence)
+  private fun deleteSentenceFromProfile(sentence: Sentence, booking: Booking) {
+    booking.sentences.remove(sentence)
   }
 
   fun mergeSentences(firstSentence: Sentence, secondSentence: Sentence): Sentence {

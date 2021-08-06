@@ -13,27 +13,27 @@ class CalculationServiceTest {
   private val sentenceCalculationService = SentenceCalculationService()
   private val sentencesExtractionService = SentencesExtractionService()
   private val sentenceCombinationService = SentenceCombinationService()
-  private val offenderSentenceProfileCalculationService = OffenderSentenceProfileCalculationService(
+  private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
     sentencesExtractionService,
     sentenceCombinationService
   )
   private val calculationService =
-    CalculationService(offenderSentenceProfileCalculationService)
+    CalculationService(bookingCalculationService)
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/psi_examples.csv"], numLinesToSkip = 1)
   fun `Test PSI Example`(exampleNumber: String) {
     log.info("Testing PSI example $exampleNumber")
-    val overallCalculation = jsonTransformation.loadOffenderSentenceProfile("psi-examples/$exampleNumber")
-    val offenderSentenceProfileCalculation = calculationService.calculate(overallCalculation)
+    val booking = jsonTransformation.loadBooking("psi-examples/$exampleNumber")
+    val bookingCalculation = calculationService.calculate(booking)
     assertEquals(
-      jsonTransformation.loadOffenderSentenceProfileCalculation(exampleNumber),
-      offenderSentenceProfileCalculation
+      jsonTransformation.loadBookingCalculation(exampleNumber),
+      bookingCalculation
     )
     log.info(
-      "Example $exampleNumber outcome OffenderSentenceProfileCalculation: {}",
-      offenderSentenceProfileCalculation
+      "Example $exampleNumber outcome BookingCalculation: {}",
+      bookingCalculation
     )
   }
 
