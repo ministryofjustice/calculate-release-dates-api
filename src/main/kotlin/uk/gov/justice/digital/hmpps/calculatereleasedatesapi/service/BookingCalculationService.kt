@@ -93,7 +93,7 @@ class BookingCalculationService(
 
   private fun extractMultiple(booking: Booking): BookingCalculation {
     if (
-      extractionService.hasNoConcurrentSentences(booking.sentences.stream()) &&
+      extractionService.hasNoConsecutiveSentences(booking.sentences.stream()) &&
       extractionService.allOverlap(booking.sentences)
     ) {
 

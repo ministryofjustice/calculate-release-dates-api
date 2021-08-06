@@ -11,21 +11,21 @@ class SentenceCombinationService {
 
   fun combineConsecutiveSentences(booking: Booking): Booking {
     val workingBooking: Booking = booking.copy()
-    // find a list of sentences that have concurrent sentences
-    val concurrentSentences = booking.sentences.filter { it.concurrentSentences.isNotEmpty() }
-    for (sentence in concurrentSentences) {
-      combineSentenceWithEachOfItsConcurrentSentences(sentence, workingBooking)
+    // find a list of sentences that have consecutive sentences
+    val consecutiveSentences = booking.sentences.filter { it.consecutiveSentences.isNotEmpty() }
+    for (sentence in consecutiveSentences) {
+      combineSentenceWithEachOfItsConsecutiveSentences(sentence, workingBooking)
     }
     return workingBooking
   }
 
-  private fun combineSentenceWithEachOfItsConcurrentSentences(
+  private fun combineSentenceWithEachOfItsConsecutiveSentences(
     sentence: Sentence,
     workingBooking: Booking
   ) {
-    val concurrentSentences = sentence.concurrentSentences.toList()
-    for (concurrentSentence in concurrentSentences) {
-      combineTwoSentences(sentence, concurrentSentence, workingBooking)
+    val consecutiveSentences = sentence.consecutiveSentences.toList()
+    for (consecutiveSentence in consecutiveSentences) {
+      combineTwoSentences(sentence, consecutiveSentence, workingBooking)
     }
   }
 
@@ -48,18 +48,18 @@ class SentenceCombinationService {
     deleteSentenceFromProfile(firstSentence, workingBooking)
     deleteSentenceFromProfile(secondSentence, workingBooking)
 
-    removeSelfFromConcurrentSentences(combinedSentence)
+    removeSelfFromConsecutiveSentences(combinedSentence)
   }
 
-  private fun removeSelfFromConcurrentSentences(sentence: Sentence) {
-    for (UUID in sentence.concurrentSentenceUUIDs) {
+  private fun removeSelfFromConsecutiveSentences(sentence: Sentence) {
+    for (UUID in sentence.consecutiveSentenceUUIDs) {
       if (UUID == sentence.identifier) {
-        sentence.concurrentSentenceUUIDs.remove(UUID)
+        sentence.consecutiveSentenceUUIDs.remove(UUID)
       }
     }
-    for (sentenceObject in sentence.concurrentSentences) {
+    for (sentenceObject in sentence.consecutiveSentences) {
       if (sentenceObject == sentence) {
-        sentence.concurrentSentences.remove(sentenceObject)
+        sentence.consecutiveSentences.remove(sentenceObject)
       }
     }
   }
@@ -71,10 +71,10 @@ class SentenceCombinationService {
   ) {
 
     booking.sentences.forEach { sentence ->
-      sentence.concurrentSentences.remove(originalSentence)
-      sentence.concurrentSentences.add(replacementSentence)
-      sentence.concurrentSentenceUUIDs.remove(originalSentence.identifier)
-      sentence.concurrentSentenceUUIDs.add(replacementSentence.identifier)
+      sentence.consecutiveSentences.remove(originalSentence)
+      sentence.consecutiveSentences.add(replacementSentence)
+      sentence.consecutiveSentenceUUIDs.remove(originalSentence.identifier)
+      sentence.consecutiveSentenceUUIDs.add(replacementSentence.identifier)
     }
   }
 

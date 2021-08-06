@@ -12,9 +12,9 @@ data class Sentence(
   val duration: Duration,
   val sentencedAt: LocalDate,
   var identifier: UUID = UUID.randomUUID(),
-  var concurrentSentenceUUIDs: MutableList<UUID> = mutableListOf()
+  var consecutiveSentenceUUIDs: MutableList<UUID> = mutableListOf()
 ) {
-  lateinit var concurrentSentences: MutableList<Sentence>
+  lateinit var consecutiveSentences: MutableList<Sentence>
   lateinit var sentenceCalculation: SentenceCalculation
 
   fun isSentenceCalculated(): Boolean {
@@ -24,11 +24,11 @@ data class Sentence(
   lateinit var sentenceTypes: List<SentenceType>
 
   fun associateSentences(sentences: List<Sentence>) {
-    concurrentSentences = mutableListOf()
+    consecutiveSentences = mutableListOf()
     sentences.forEach {
       sentence ->
-      this.concurrentSentenceUUIDs.forEach {
-        if (sentence.identifier == it) { concurrentSentences.add(sentence) }
+      this.consecutiveSentenceUUIDs.forEach {
+        if (sentence.identifier == it) { consecutiveSentences.add(sentence) }
       }
     }
   }
