@@ -27,7 +27,7 @@ internal class SentenceTest {
     assertEquals(
       "Sentence(offence=Offence(startedAt=2020-01-01, endedAt=Optional.empty, isScheduleFifteen=false), " +
         "duration=1 days, sentencedAt=2020-01-01, remandInDays=0, taggedBailInDays=0, unlawfullyAtLargeInDays=0, " +
-        "identifier=219db65e-d7b7-4c70-9239-98babff7bcd5)",
+        "identifier=219db65e-d7b7-4c70-9239-98babff7bcd5, concurrentSentenceUUIDs=[])",
       sentence.toString()
     )
   }
@@ -38,10 +38,16 @@ internal class SentenceTest {
     val duration = Duration()
     duration.append(1L, ChronoUnit.DAYS)
     val offence = Offence(LocalDate.of(2020, 1, 1), Optional.empty())
-    val sentence = Sentence(offence, duration, sentencedAt, 0, 0)
-    val secondSentence = Sentence(offence, duration, sentencedAt, 0, 0)
+    val sentence = Sentence(
+      offence, duration, sentencedAt, 0, 0,
+      identifier = UUID.randomUUID(), concurrentSentenceUUIDs = mutableListOf(UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5"))
+    )
+    val secondSentence = Sentence(
+      offence, duration, sentencedAt, 0, 0,
+      identifier = UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5")
+    )
 
-    sentence.concurrentSentences.add(secondSentence)
+    sentence.associateSentences(mutableListOf(sentence, secondSentence))
     assertEquals(sentence.concurrentSentences[0], secondSentence)
   }
 }

@@ -15,12 +15,26 @@ data class Sentence(
   val taggedBailInDays: Int,
   val unlawfullyAtLargeInDays: Int = 0,
   var identifier: UUID = UUID.randomUUID(),
+  var concurrentSentenceUUIDs: MutableList<UUID> = mutableListOf()
 ) {
-
+  lateinit var concurrentSentences: MutableList<Sentence>
   lateinit var sentenceCalculation: SentenceCalculation
+
+  fun isSentenceCalculated(): Boolean {
+    return this::sentenceCalculation.isInitialized
+  }
+
   lateinit var sentenceTypes: List<SentenceType>
 
-  var concurrentSentences = mutableListOf<Sentence>()
+  fun associateSentences(sentences: List<Sentence>) {
+    concurrentSentences = mutableListOf()
+    sentences.forEach {
+      sentence ->
+      this.concurrentSentenceUUIDs.forEach {
+        if (sentence.identifier == it) { concurrentSentences.add(sentence) }
+      }
+    }
+  }
 
   fun durationIsGreaterThan(length: Long, period: ChronoUnit): Boolean {
     return (

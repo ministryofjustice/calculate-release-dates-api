@@ -58,4 +58,9 @@ data class Duration(internal var durationElements: MutableMap<ChronoUnit, Long> 
     return "From\t:\t${sentencedAt.format(formatter)}\n" +
       "To\t:\t${getEndDate(sentencedAt).format(formatter)}"
   }
+
+  fun appendAll(durationElements: MutableMap<ChronoUnit, Long>): Duration {
+    durationElements.forEach { append(it.value, it.key) }
+    return this
+  }
 }
