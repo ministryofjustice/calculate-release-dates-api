@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import java.time.LocalDate
 
-data class OffenderSentenceProfileCalculation(
+data class BookingCalculation(
   var licenceExpiryDate: LocalDate?,
   var sentenceExpiryDate: LocalDate?,
   var releaseDate: LocalDate?,

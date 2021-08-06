@@ -1,39 +1,39 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceProfile
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceProfileCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 
 @Service
 class CalculationService(
-  private val offenderSentenceProfileCalculationService: OffenderSentenceProfileCalculationService
+  private val bookingCalculationService: BookingCalculationService
 ) {
 
-  fun calculate(offenderSentenceProfile: OffenderSentenceProfile): OffenderSentenceProfileCalculation {
-    var workingOffenderSentenceProfile: OffenderSentenceProfile = offenderSentenceProfile.copy()
+  fun calculate(booking: Booking): BookingCalculation {
+    var workingBooking: Booking = booking.copy()
 
     // identify the types of the sentences
-    workingOffenderSentenceProfile =
-      offenderSentenceProfileCalculationService
-        .identify(workingOffenderSentenceProfile)
+    workingBooking =
+      bookingCalculationService
+        .identify(workingBooking)
 
     // associateConcurrent the types of the sentences
-    workingOffenderSentenceProfile =
-      offenderSentenceProfileCalculationService
-        .associateConsecutive(workingOffenderSentenceProfile)
+    workingBooking =
+      bookingCalculationService
+        .associateConsecutive(workingBooking)
 
     // calculate the dates within the sentences (Generate initial sentence calculations)
-    workingOffenderSentenceProfile =
-      offenderSentenceProfileCalculationService
-        .calculate(workingOffenderSentenceProfile)
+    workingBooking =
+      bookingCalculationService
+        .calculate(workingBooking)
 
     // aggregate the types of the sentences
-    workingOffenderSentenceProfile =
-      offenderSentenceProfileCalculationService
-        .combine(workingOffenderSentenceProfile)
+    workingBooking =
+      bookingCalculationService
+        .combine(workingBooking)
 
     // apply any rules to calculate the dates
-    return offenderSentenceProfileCalculationService
-      .extract(workingOffenderSentenceProfile)
+    return bookingCalculationService
+      .extract(workingBooking)
   }
 }
