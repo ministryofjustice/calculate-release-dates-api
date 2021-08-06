@@ -34,7 +34,7 @@ class BookingCalculationService(
 
   fun calculate(booking: Booking): Booking {
     for (sentence in booking.sentences) {
-      sentenceCalculationService.calculate(sentence)
+      sentenceCalculationService.calculate(sentence, booking)
       log.info(sentence.buildString())
     }
     return booking
@@ -60,7 +60,7 @@ class BookingCalculationService(
         val workingBooking = combinationService.combineConsecutiveSentences(booking)
         workingBooking.sentences.forEach { sentence ->
           if (!sentence.isSentenceCalculated()) {
-            sentenceCalculationService.calculate(sentence)
+            sentenceCalculationService.calculate(sentence, booking)
             log.info(sentence.buildString())
           }
         }

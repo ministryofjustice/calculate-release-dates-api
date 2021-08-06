@@ -11,9 +11,6 @@ data class Sentence(
   val offence: Offence,
   val duration: Duration,
   val sentencedAt: LocalDate,
-  val remandInDays: Int,
-  val taggedBailInDays: Int,
-  val unlawfullyAtLargeInDays: Int = 0,
   var identifier: UUID = UUID.randomUUID(),
   var concurrentSentenceUUIDs: MutableList<UUID> = mutableListOf()
 ) {

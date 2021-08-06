@@ -15,7 +15,7 @@ internal class SentenceCalculationTest {
     val duration = Duration()
     duration.append(1L, ChronoUnit.DAYS)
     val offence = Offence(LocalDate.of(2020, 1, 1), Optional.empty())
-    val sentence = Sentence(offence, duration, sentencedAt, 0, 0)
+    val sentence = Sentence(offence, duration, sentencedAt)
     val date = LocalDate.of(2021, 1, 1)
     val sentenceCalculation = SentenceCalculation(
       sentence,
@@ -35,7 +35,7 @@ internal class SentenceCalculationTest {
     assertEquals(1, sentenceCalculation.calculatedTotalRemandDays)
     assertEquals(date, sentenceCalculation.unadjustedExpiryDate)
     assertEquals(date, sentenceCalculation.unadjustedReleaseDate)
-    assertEquals(date, sentenceCalculation.remandAdjustedExpiryDate)
-    assertEquals(date, sentenceCalculation.remandAdjustedReleaseDate)
+    assertEquals(date, sentenceCalculation.adjustedExpiryDate)
+    assertEquals(date, sentenceCalculation.adjustedReleaseDate)
   }
 }
