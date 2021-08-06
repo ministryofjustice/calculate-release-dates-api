@@ -17,7 +17,7 @@ class CalculationService(
       bookingCalculationService
         .identify(workingBooking)
 
-    // associateConcurrent the types of the sentences
+    // associateConsecutive the types of the sentences
     workingBooking =
       bookingCalculationService
         .associateConsecutive(workingBooking)

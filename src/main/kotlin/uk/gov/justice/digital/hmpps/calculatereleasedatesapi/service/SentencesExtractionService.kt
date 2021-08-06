@@ -60,8 +60,8 @@ class SentencesExtractionService {
     return if (dates.isEmpty()) { null } else { dates.maxOf { it!! } }
   }
 
-  fun hasNoConcurrentSentences(sentenceStream: Stream<Sentence>): Boolean {
-    return sentenceStream.allMatch { sentence -> sentence.concurrentSentences.isEmpty() }
+  fun hasNoConsecutiveSentences(sentenceStream: Stream<Sentence>): Boolean {
+    return sentenceStream.allMatch { sentence -> sentence.consecutiveSentences.isEmpty() }
   }
 
   fun allSentencesContainType(sentences: MutableList<Sentence>, sentenceType: SentenceType): Boolean {

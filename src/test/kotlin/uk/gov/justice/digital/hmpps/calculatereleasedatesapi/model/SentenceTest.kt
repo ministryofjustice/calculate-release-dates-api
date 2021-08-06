@@ -24,13 +24,13 @@ internal class SentenceTest {
     assertEquals(
       "Sentence(offence=Offence(startedAt=2020-01-01, endedAt=Optional.empty, isScheduleFifteen=false), " +
         "duration=1 days, sentencedAt=2020-01-01, " +
-        "identifier=219db65e-d7b7-4c70-9239-98babff7bcd5, concurrentSentenceUUIDs=[])",
+        "identifier=219db65e-d7b7-4c70-9239-98babff7bcd5, consecutiveSentenceUUIDs=[])",
       sentence.toString()
     )
   }
 
   @Test
-  fun testSentenceConcurrentSentences() {
+  fun testSentenceConsecutiveSentences() {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration()
     duration.append(1L, ChronoUnit.DAYS)
@@ -45,6 +45,6 @@ internal class SentenceTest {
     )
 
     sentence.associateSentences(mutableListOf(sentence, secondSentence))
-    assertEquals(sentence.concurrentSentences[0], secondSentence)
+    assertEquals(sentence.consecutiveSentences[0], secondSentence)
   }
 }
