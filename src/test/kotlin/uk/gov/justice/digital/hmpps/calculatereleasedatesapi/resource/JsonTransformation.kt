@@ -9,9 +9,9 @@ import com.squareup.moshi.ToJson
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceProfile
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceProfileCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -37,14 +37,14 @@ class JsonTransformation {
     return jsonToSentence(json)!!
   }
 
-  fun loadOffenderSentenceProfile(testData: String): OffenderSentenceProfile {
+  fun loadBooking(testData: String): Booking {
     val json = getJsonTest("$testData.json", "overall_calculation")
-    return jsonToOffenderSentenceProfile(json)!!
+    return jsonToBooking(json)!!
   }
 
-  fun loadOffenderSentenceProfileCalculation(testData: String): OffenderSentenceProfileCalculation {
+  fun loadBookingCalculation(testData: String): BookingCalculation {
     val json = getJsonTest("$testData.json", "overall_calculation_response")
-    return jsonToOffenderSentenceProfileCalculation(json)!!
+    return jsonToBookingCalculation(json)!!
   }
 
   private fun jsonToSentence(json: String): Sentence? {
@@ -57,13 +57,13 @@ class JsonTransformation {
     return jsonAdapter.fromJson(json)
   }
 
-  private fun jsonToOffenderSentenceProfile(json: String): OffenderSentenceProfile? {
-    val jsonAdapter = moshi.adapter(OffenderSentenceProfile::class.java)
+  private fun jsonToBooking(json: String): Booking? {
+    val jsonAdapter = moshi.adapter(Booking::class.java)
     return jsonAdapter.fromJson(json)
   }
 
-  private fun jsonToOffenderSentenceProfileCalculation(json: String): OffenderSentenceProfileCalculation? {
-    val jsonAdapter = moshi.adapter(OffenderSentenceProfileCalculation::class.java)
+  private fun jsonToBookingCalculation(json: String): BookingCalculation? {
+    val jsonAdapter = moshi.adapter(BookingCalculation::class.java)
     return jsonAdapter.fromJson(json)
   }
 

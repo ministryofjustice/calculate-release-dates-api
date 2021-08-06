@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
-data class OffenderSentenceProfile(
+data class Booking(
   var offender: Offender,
   var sentences: MutableList<Sentence>
 )
