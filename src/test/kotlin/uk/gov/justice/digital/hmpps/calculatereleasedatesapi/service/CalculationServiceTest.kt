@@ -42,11 +42,6 @@ class CalculationServiceTest {
     `Test PSI Example`("17")
   }
 
-  @Test
-  fun `Test Example 18`() {
-    `Test PSI Example`("18")
-  }
-
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }

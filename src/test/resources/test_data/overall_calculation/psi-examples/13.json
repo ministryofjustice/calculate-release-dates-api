@@ -14,10 +14,12 @@
           "MONTHS": 20
         }
       },
-      "sentencedAt": "2015-03-17",
-      "remandInDays":28,
-      "taggedBailInDays":11,
-      "unlawfullyAtLargeInDays": 29
+      "sentencedAt": "2015-03-17"
     }
-  ]
+  ],
+  "adjustments": {
+    "REMAND": 28,
+    "TAGGED_BAIL": 11,
+    "UNLAWFULLY_AT_LARGE": 29
+  }
 }

@@ -13,9 +13,7 @@
         "MONTHS": 18
       }
     },
-    "sentencedAt": "2015-02-09",
-    "remandInDays": 25,
-    "taggedBailInDays": 0
+    "sentencedAt": "2015-02-09"
   },
     {
       "offence": {
@@ -26,9 +24,10 @@
           "MONTHS": 6
         }
       },
-      "sentencedAt": "2015-10-05",
-      "remandInDays": 25,
-      "taggedBailInDays": 0
+      "sentencedAt": "2015-10-05"
     }
-  ]
+  ],
+  "adjustments": {
+    "REMAND": 25
+  }
 }

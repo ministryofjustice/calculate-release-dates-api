@@ -14,9 +14,7 @@
           "YEARS": 2
         }
       },
-      "sentencedAt": "2013-11-15",
-      "remandInDays":50,
-      "taggedBailInDays":0
+      "sentencedAt": "2013-11-15"
     },
     {
       "offence": {
@@ -27,9 +25,10 @@
           "YEARS": 3
         }
       },
-      "sentencedAt": "2013-11-15",
-      "remandInDays":50,
-      "taggedBailInDays":0
+      "sentencedAt": "2013-11-15"
     }
-  ]
+  ],
+  "adjustments": {
+    "REMAND": 50
+  }
 }
