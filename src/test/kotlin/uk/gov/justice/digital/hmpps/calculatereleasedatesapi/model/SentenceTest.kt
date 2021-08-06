@@ -39,8 +39,8 @@ internal class SentenceTest {
     duration.append(1L, ChronoUnit.DAYS)
     val offence = Offence(LocalDate.of(2020, 1, 1), Optional.empty())
     val sentence = Sentence(
-      offence, duration, sentencedAt, 0, 0,
-      identifier = UUID.randomUUID(), concurrentSentenceUUIDs = mutableListOf(UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5"))
+      offence, duration, sentencedAt, 0, 0, identifier = UUID.randomUUID(),
+      concurrentSentenceUUIDs = mutableListOf(UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5"))
     )
     val secondSentence = Sentence(
       offence, duration, sentencedAt, 0, 0,
