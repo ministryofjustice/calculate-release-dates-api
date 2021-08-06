@@ -9,8 +9,8 @@ data class SentenceCalculation(
   val unadjustedExpiryDate: LocalDate,
   val unadjustedReleaseDate: LocalDate,
   val calculatedTotalRemandDays: Int,
-  val remandAdjustedExpiryDate: LocalDate,
-  val remandAdjustedReleaseDate: LocalDate
+  val adjustedExpiryDate: LocalDate,
+  val adjustedReleaseDate: LocalDate
 ) {
 
   var nonParoleDate: LocalDate? = null

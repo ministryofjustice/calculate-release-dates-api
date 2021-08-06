@@ -104,8 +104,6 @@ class SentenceCombinationService {
     } else {
       secondSentence.sentencedAt
     }
-    val combinedRemand = firstSentence.remandInDays + secondSentence.remandInDays
-    val combinedTaggedBail = firstSentence.taggedBailInDays + secondSentence.taggedBailInDays
     val combinedDuration = Duration()
       .appendAll(firstSentence.duration.durationElements)
       .appendAll(secondSentence.duration.durationElements)
@@ -113,9 +111,7 @@ class SentenceCombinationService {
     val sentence = Sentence(
       earliestOffence,
       combinedDuration,
-      sentencedAt,
-      combinedRemand,
-      combinedTaggedBail
+      sentencedAt
     )
     sentence.sentenceTypes = sentenceTypes
     return sentence

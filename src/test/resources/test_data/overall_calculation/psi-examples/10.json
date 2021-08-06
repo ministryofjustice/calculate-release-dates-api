@@ -18,5 +18,9 @@
       "remandInDays":35,
       "taggedBailInDays":10
     }
-  ]
+  ],
+  "adjustments": {
+    "REMAND": 35,
+    "TAGGED_BAIL" : 10
+  }
 }

@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -97,17 +99,17 @@ class SentenceCalculationService {
     }
   }
 
-  fun calculate(sentence: Sentence): SentenceCalculation {
+  fun calculate(sentence: Sentence, booking: Booking): SentenceCalculation {
 
-    val sentenceCalculation = getInitialCalculation(sentence)
+    val sentenceCalculation = getInitialCalculation(sentence, booking)
     // Other adjustments need to be included in the sentence calculation here
 
     if (sentence.sentenceTypes.contains(SentenceType.SLED) || sentence.sentenceTypes.contains(SentenceType.SED)) {
-      sentenceCalculation.expiryDate = sentenceCalculation.remandAdjustedExpiryDate
+      sentenceCalculation.expiryDate = sentenceCalculation.adjustedExpiryDate
     }
 
     if (sentence.sentenceTypes.contains(SentenceType.SLED)) {
-      sentenceCalculation.licenceExpiryDate = sentenceCalculation.remandAdjustedExpiryDate
+      sentenceCalculation.licenceExpiryDate = sentenceCalculation.adjustedExpiryDate
     }
 
     if (sentence.sentenceTypes.contains(SentenceType.ARD)) {
@@ -121,16 +123,16 @@ class SentenceCalculationService {
       sentence.sentenceTypes.contains(SentenceType.ARD) ||
       sentence.sentenceTypes.contains(SentenceType.PED)
     ) {
-      sentenceCalculation.releaseDate = sentenceCalculation.remandAdjustedReleaseDate
+      sentenceCalculation.releaseDate = sentenceCalculation.adjustedReleaseDate
     }
 
     if (sentence.sentenceTypes.contains(SentenceType.TUSED)) {
-      sentenceCalculation.topUpSupervisionDate = sentenceCalculation.remandAdjustedReleaseDate
+      sentenceCalculation.topUpSupervisionDate = sentenceCalculation.adjustedReleaseDate
         .plus(TWELVE, ChronoUnit.MONTHS)
     }
 
     if (sentence.sentenceTypes.contains(SentenceType.PED)) {
-      sentenceCalculation.topUpSupervisionDate = sentenceCalculation.remandAdjustedReleaseDate
+      sentenceCalculation.topUpSupervisionDate = sentenceCalculation.adjustedReleaseDate
         .plus(TWELVE, ChronoUnit.MONTHS)
     }
 
@@ -151,7 +153,7 @@ class SentenceCalculationService {
     return sentenceCalculation
   }
 
-  private fun getInitialCalculation(sentence: Sentence): SentenceCalculation {
+  private fun getInitialCalculation(sentence: Sentence, booking: Booking): SentenceCalculation {
 
     // create the intermediate values
     val numberOfDaysToSentenceExpiryDate = sentence.duration.getLengthInDays(sentence.sentencedAt)
@@ -169,14 +171,23 @@ class SentenceCalculationService {
         .plusDays(numberOfDaysToReleaseDate.toLong())
         .minusDays(ONE)
 
-    val calculatedTotalRemandDays = sentence.remandInDays + sentence.taggedBailInDays - sentence.unlawfullyAtLargeInDays
+    val calculatedTotalDeductedDays =
+      booking.getOrZero(AdjustmentType.REMAND) + booking.getOrZero(AdjustmentType.TAGGED_BAIL)
 
-    val remandAdjustedExpiryDate = unadjustedExpiryDate.minusDays(
-      calculatedTotalRemandDays.toLong()
-    )
+    val calculatedTotalAddedDays =
+      booking.getOrZero(AdjustmentType.UNLAWFULLY_AT_LARGE)
 
-    val remandAdjustedReleaseDate = unadjustedReleaseDate.minusDays(
-      calculatedTotalRemandDays.toLong()
+    val adjustedExpiryDate = unadjustedExpiryDate
+      .minusDays(
+        calculatedTotalDeductedDays.toLong()
+      ).plusDays(
+        calculatedTotalAddedDays.toLong()
+      )
+
+    val adjustedReleaseDate = unadjustedReleaseDate.minusDays(
+      calculatedTotalDeductedDays.toLong()
+    ).plusDays(
+      calculatedTotalAddedDays.toLong()
     )
 
     // create new SentenceCalculation and associate it with a sentence
@@ -186,9 +197,9 @@ class SentenceCalculationService {
       numberOfDaysToReleaseDate,
       unadjustedExpiryDate,
       unadjustedReleaseDate,
-      calculatedTotalRemandDays,
-      remandAdjustedExpiryDate,
-      remandAdjustedReleaseDate
+      calculatedTotalDeductedDays,
+      adjustedExpiryDate,
+      adjustedReleaseDate
     )
   }
 

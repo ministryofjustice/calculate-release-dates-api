@@ -2,6 +2,9 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import java.time.LocalDate
 
@@ -15,7 +18,9 @@ class SentenceCalculationServiceCalculateTest {
   fun `Example 9`() {
     val sentence = jsonTransformation.loadSentence("2_year_sep_2013")
     sentenceCalculationService.identify(sentence, offender)
-    val calculation = sentenceCalculationService.calculate(sentence)
+    val offender = Offender("A1234BC", "John Doe", LocalDate.of(1980, 1, 1))
+    val booking = Booking(offender, mutableListOf(sentence), mutableMapOf())
+    val calculation = sentenceCalculationService.calculate(sentence, booking)
     assertEquals(calculation.expiryDate, LocalDate.of(2015, 9, 20))
     assertEquals(calculation.releaseDate, LocalDate.of(2014, 9, 20))
     assertEquals("[SLED, CRD]", calculation.sentence.sentenceTypes.toString())
@@ -25,7 +30,13 @@ class SentenceCalculationServiceCalculateTest {
   fun `Example 10`() {
     val sentence = jsonTransformation.loadSentence("3_year_dec_2012")
     sentenceCalculationService.identify(sentence, offender)
-    val calculation = sentenceCalculationService.calculate(sentence)
+    val offender = Offender("A1234BC", "John Doe", LocalDate.of(1980, 1, 1))
+    val adjustments = mutableMapOf<AdjustmentType, Int>()
+    adjustments[AdjustmentType.REMAND] = 35
+    adjustments[AdjustmentType.TAGGED_BAIL] = 10
+
+    val booking = Booking(offender, mutableListOf(sentence), adjustments)
+    val calculation = sentenceCalculationService.calculate(sentence, booking)
     assertEquals(calculation.expiryDate, LocalDate.of(2015, 10, 30))
     assertEquals(calculation.releaseDate, LocalDate.of(2014, 5, 1))
     assertEquals("[SLED, CRD]", calculation.sentence.sentenceTypes.toString())
@@ -35,7 +46,11 @@ class SentenceCalculationServiceCalculateTest {
   fun `Example 11`() {
     val sentence = jsonTransformation.loadSentence("8_year_dec_2012")
     sentenceCalculationService.identify(sentence, offender)
-    val calculation = sentenceCalculationService.calculate(sentence)
+    val adjustments = mutableMapOf<AdjustmentType, Int>()
+    adjustments[AdjustmentType.REMAND] = 10
+    val offender = Offender("A1234BC", "John Doe", LocalDate.of(1980, 1, 1))
+    val booking = Booking(offender, mutableListOf(sentence), adjustments)
+    val calculation = sentenceCalculationService.calculate(sentence, booking)
     assertEquals(calculation.expiryDate, LocalDate.of(2013, 8, 6))
     assertEquals(calculation.releaseDate, LocalDate.of(2013, 4, 7))
     assertEquals("[ARD, SED]", calculation.sentence.sentenceTypes.toString())
@@ -45,7 +60,11 @@ class SentenceCalculationServiceCalculateTest {
   fun `Example 12`() {
     val sentence = jsonTransformation.loadSentence("8_year_feb_2015")
     sentenceCalculationService.identify(sentence, offender)
-    val calculation = sentenceCalculationService.calculate(sentence)
+    val adjustments = mutableMapOf<AdjustmentType, Int>()
+    adjustments[AdjustmentType.REMAND] = 21
+    val offender = Offender("A1234BC", "John Doe", LocalDate.of(1980, 1, 1))
+    val booking = Booking(offender, mutableListOf(sentence), adjustments)
+    val calculation = sentenceCalculationService.calculate(sentence, booking)
     assertEquals(calculation.expiryDate, LocalDate.of(2015, 9, 24))
     assertEquals(calculation.releaseDate, LocalDate.of(2015, 5, 26))
     assertEquals(calculation.topUpSupervisionDate, LocalDate.of(2016, 5, 26))
