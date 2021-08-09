@@ -20,3 +20,13 @@ spring:
 hmpps:
   auth:
     url: http://localhost:8090/auth
+
+# Container-provider local prison-api
+prison:
+  api:
+    url: http://localhost:8080
+
+system:
+  client:
+    id: calculate-release-dates-admin
+    secret: client_secret
