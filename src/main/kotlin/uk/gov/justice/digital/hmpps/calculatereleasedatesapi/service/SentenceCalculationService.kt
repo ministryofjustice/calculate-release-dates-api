@@ -126,9 +126,17 @@ class SentenceCalculationService {
       sentenceCalculation.releaseDate = sentenceCalculation.adjustedReleaseDate
     }
 
-    if (sentence.sentenceTypes.contains(SentenceType.TUSED)) {
-      sentenceCalculation.topUpSupervisionDate = sentenceCalculation.adjustedReleaseDate
-        .plus(TWELVE, ChronoUnit.MONTHS)
+    if (
+      (sentenceCalculation.numberOfDaysToSentenceExpiryDate - sentenceCalculation.numberOfDaysToReleaseDate)
+      >= YEAR_IN_DAYS
+    ) {
+      // PSI 03/2015: P53: The license period is one of at least 12 month.
+      // Hence, there is no requirement for a TUSED
+    } else {
+      if (sentence.sentenceTypes.contains(SentenceType.TUSED)) {
+        sentenceCalculation.topUpSupervisionDate = sentenceCalculation.adjustedReleaseDate
+          .plus(TWELVE, ChronoUnit.MONTHS)
+      }
     }
 
     if (sentence.sentenceTypes.contains(SentenceType.PED)) {
@@ -211,5 +219,6 @@ class SentenceCalculationService {
     private const val TWELVE = 12L
     private const val INT_EIGHTEEN = 18
     private const val INT_ONE = 1
+    private const val YEAR_IN_DAYS = 365
   }
 }
