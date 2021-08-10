@@ -49,3 +49,9 @@ management.endpoint:
 hmpps:
   auth:
     url: http://localhost:8090/auth
+
+# Wiremock prison-api
+prison:
+  api:
+    url: http://localhost:8332
+
