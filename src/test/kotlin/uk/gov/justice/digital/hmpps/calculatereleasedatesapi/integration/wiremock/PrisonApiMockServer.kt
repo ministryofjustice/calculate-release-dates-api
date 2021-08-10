@@ -44,17 +44,6 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
 
   private val prisonerDetails = PrisonerDetails(1L, "A1234AA")
 
-  fun stubHealthPing(status: Int) {
-    stubFor(
-      get("/health/ping").willReturn(
-        aResponse()
-          .withHeader("Content-Type", "application/json")
-          .withBody(if (status == 200) "pong" else "some error")
-          .withStatus(status)
-      )
-    )
-  }
-
   fun stubGetPrisonerDetails(prisonerId: String): StubMapping =
     stubFor(
       get("/api/offenders/$prisonerId")
