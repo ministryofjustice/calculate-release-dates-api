@@ -39,7 +39,6 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 8332
   }
 
-//  private val gson = GsonBuilder().setPrettyPrinting().create()
   var moshi: Moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
   var jsonAdapter: JsonAdapter<PrisonerDetails> = moshi.adapter<PrisonerDetails>(PrisonerDetails::class.java)
 

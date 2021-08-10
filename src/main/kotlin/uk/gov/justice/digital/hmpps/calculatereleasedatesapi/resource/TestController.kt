@@ -54,7 +54,8 @@ class TestController(
   @ResponseBody
   @Operation(
     summary = "Calculate release dates based on a prisoners booking data",
-    description = "This endpoint will calculate release dates based on a prisoners booking data (e.g. sentences and adjustments)",
+    description = "This endpoint will calculate release dates based on a prisoners booking data " +
+      "(e.g. sentences and adjustments)",
     security = [
       SecurityRequirement(name = "SYSTEM_USER"),
       SecurityRequirement(name = "CRD_ADMIN"),
@@ -68,7 +69,7 @@ class TestController(
     ]
   )
   fun calculate(@RequestBody @NotEmpty booking: String): BookingCalculation {
-    log.info("Calculate booking for  $booking")
+    log.info("Request received to calculate booking for $booking")
     return calculationService.calculate(testService.jsonToBooking(booking))
   }
 

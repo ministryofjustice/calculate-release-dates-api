@@ -13,7 +13,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.TestData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TestRepository
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 @Service
 class TestService(
@@ -39,6 +40,7 @@ class TestService(
     val jsonAdapter = moshi.adapter(Booking::class.java)
     return jsonAdapter.fromJson(json)!!
   }
+
   class LocalDateAdapter : JsonAdapter<LocalDate>() {
     override fun toJson(writer: JsonWriter, value: LocalDate?) {
       value?.let { writer.value(it.format(formatter)) }
@@ -52,6 +54,7 @@ class TestService(
         null
       }
     }
+
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE
     private fun fromNonNullString(nextString: String): LocalDate = LocalDate.parse(nextString, formatter)
   }
@@ -87,9 +90,9 @@ class TestService(
         Optional.empty<LocalDate>()
       }
     }
+
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE
     private fun fromNonNullString(nextString: String): Optional<LocalDate> =
       Optional.of(LocalDate.parse(nextString, formatter))
   }
 }
-
