@@ -67,7 +67,7 @@ class JsonTransformation {
     return jsonAdapter.fromJson(json)
   }
 
-  private fun getJsonTest(fileName: String, calculationType: String): String {
+  fun getJsonTest(fileName: String, calculationType: String): String {
     return getResourceAsText("/test_data/$calculationType/$fileName")
   }
 

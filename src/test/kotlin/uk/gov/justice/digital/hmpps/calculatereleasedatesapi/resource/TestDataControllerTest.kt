@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.TestData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TestService
 
 @ExtendWith(SpringExtension::class)
@@ -38,6 +39,9 @@ class TestDataControllerTest {
   @MockBean
   private lateinit var testService: TestService
 
+  @MockBean
+  private lateinit var calculationService: CalculationService
+
   @Autowired
   private lateinit var mvc: MockMvc
 
@@ -49,7 +53,7 @@ class TestDataControllerTest {
     reset(testService)
 
     mvc = MockMvcBuilders
-      .standaloneSetup(TestController(testService))
+      .standaloneSetup(TestController(testService, calculationService))
       .setControllerAdvice(ControllerAdvice())
       .build()
   }
