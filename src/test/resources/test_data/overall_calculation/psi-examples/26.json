@@ -1,0 +1,33 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "name": "AN. Other",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "startedAt": "2013-08-01"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 12
+        }
+      },
+      "sentencedAt": "2013-08-02",
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+    },
+    {
+      "offence": {
+        "startedAt": "2013-08-01"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2013-11-18",
+      "consecutiveSentenceUUIDs": ["5dfde034-b7d7-4c54-a86c-67d42a1fd669"]
+    }
+  ]
+}

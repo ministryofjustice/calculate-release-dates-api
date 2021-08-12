@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 
 @Service
-class SentenceCombinationService {
+class SentenceCombinationService(val sentenceCalculationService: SentenceCalculationService) {
 
   fun combineConsecutiveSentences(booking: Booking): Booking {
     val workingBooking: Booking = booking.copy()
@@ -37,6 +37,8 @@ class SentenceCombinationService {
 
     // I take 2 sentences, combine them into a single conjoined sentence
     val combinedSentence: Sentence = mergeSentences(firstSentence, secondSentence)
+
+    sentenceCalculationService.identify(combinedSentence, workingBooking.offender)
     combinedSentence.associateSentences(mutableListOf())
 
     addSentenceToProfile(combinedSentence, workingBooking)
@@ -88,11 +90,9 @@ class SentenceCombinationService {
 
   fun mergeSentences(firstSentence: Sentence, secondSentence: Sentence): Sentence {
 
-    if (!firstSentence.sentenceTypes.containsAll(secondSentence.sentenceTypes)) {
+    if (!firstSentence.canMergeWith(secondSentence)) {
       throw CannotMergeSentencesException("Incompatible sentence types")
     }
-
-    val sentenceTypes = firstSentence.sentenceTypes.toMutableList()
 
     val earliestOffence = if (firstSentence.offence.startedAt.isBefore(secondSentence.offence.startedAt)) {
       firstSentence.offence
@@ -108,12 +108,10 @@ class SentenceCombinationService {
       .appendAll(firstSentence.duration.durationElements)
       .appendAll(secondSentence.duration.durationElements)
 
-    val sentence = Sentence(
+    return Sentence(
       earliestOffence,
       combinedDuration,
       sentencedAt
     )
-    sentence.sentenceTypes = sentenceTypes
-    return sentence
   }
 }
