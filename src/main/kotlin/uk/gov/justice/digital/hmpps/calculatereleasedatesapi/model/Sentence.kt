@@ -76,4 +76,20 @@ data class Sentence(
       "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +
       "${sentenceCalculation.topUpSupervisionDate?.format(formatter)}\n"
   }
+
+  fun canMergeWith(secondSentence: Sentence): Boolean {
+    return (
+      this.sentenceTypes.containsAll(secondSentence.sentenceTypes) ||
+        this.containsSimilar(secondSentence)
+      )
+  }
+
+  private fun containsSimilar(sentence: Sentence): Boolean {
+    return (
+      this.sentenceTypes.containsAll(listOf(SentenceType.SLED, SentenceType.CRD)) &&
+        sentence.sentenceTypes.containsAll(listOf(SentenceType.SED, SentenceType.ARD)) ||
+        sentence.sentenceTypes.containsAll(listOf(SentenceType.SLED, SentenceType.CRD)) &&
+        this.sentenceTypes.containsAll(listOf(SentenceType.SED, SentenceType.ARD))
+      )
+  }
 }
