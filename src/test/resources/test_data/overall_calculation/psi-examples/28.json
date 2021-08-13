@@ -1,0 +1,24 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "name": "AN. Other",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "startedAt": "2005-01-01"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "sentencedAt": "2009-10-09"
+    }
+  ],
+  "adjustments": {
+    "REMAND": 20,
+    "TAGGED_BAIL" : 10
+  }
+}

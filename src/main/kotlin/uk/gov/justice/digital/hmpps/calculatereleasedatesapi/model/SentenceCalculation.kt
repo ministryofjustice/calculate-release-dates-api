@@ -8,11 +8,14 @@ data class SentenceCalculation(
   val numberOfDaysToReleaseDate: Int,
   val unadjustedExpiryDate: LocalDate,
   val unadjustedReleaseDate: LocalDate,
-  val calculatedTotalRemandDays: Int,
+  val calculatedTotalDeductedDays: Int,
+  val calculatedTotalAddedDays: Int,
   val adjustedExpiryDate: LocalDate,
   val adjustedReleaseDate: LocalDate
 ) {
 
+  var numberOfDaysToNonParoleDate: Long = 0
+  var numberOfDaysToLicenceExpiry: Long = 0
   var nonParoleDate: LocalDate? = null
 
   // public values here are used to populate final calculation
