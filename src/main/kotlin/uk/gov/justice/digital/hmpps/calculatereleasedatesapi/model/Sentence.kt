@@ -69,7 +69,10 @@ data class Sentence(
       "Date of $expiryDateType\t:\t${sentenceCalculation.unadjustedExpiryDate.format(formatter)}\n" +
       "Number of days to $releaseDateType\t:\t${sentenceCalculation.numberOfDaysToReleaseDate}\n" +
       "Date of $releaseDateType\t:\t${sentenceCalculation.unadjustedReleaseDate.format(formatter)}\n" +
-      "Total number of days of remand / tagged bail time / UAL\t:\t${sentenceCalculation.calculatedTotalRemandDays}\n" +
+      "Total number of days of deducted (remand / tagged bail)\t:" +
+      "\t${sentenceCalculation.calculatedTotalDeductedDays}\n" +
+      "Total number of days of added (ADA) \t:\t${sentenceCalculation.calculatedTotalAddedDays}\n" +
+      "Total number of days to licence expiry\t:\t${sentenceCalculation.numberOfDaysToLicenceExpiry}\n" +
       "LED\t:\t${sentenceCalculation.licenceExpiryDate?.format(formatter)}\n" +
       "Effective $expiryDateType\t:\t${sentenceCalculation.expiryDate?.format(formatter)}\n" +
       "Effective $releaseDateType\t:\t${sentenceCalculation.releaseDate?.format(formatter)}\n" +

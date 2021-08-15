@@ -145,15 +145,23 @@ class SentenceCalculationService {
     }
 
     if (sentence.sentenceTypes.contains(SentenceType.NPD)) {
+      sentenceCalculation.numberOfDaysToNonParoleDate =
+        ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(THREE).div(FOUR)).toLong()
+          .plus(sentenceCalculation.calculatedTotalAddedDays)
+          .minus(sentenceCalculation.calculatedTotalDeductedDays)
       sentenceCalculation.nonParoleDate = sentence.sentencedAt.plusDays(
-        ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(TWO.div(THREE))).toLong()
-      )
+        sentenceCalculation.numberOfDaysToNonParoleDate
+      ).minusDays(ONE)
     }
 
     if (sentence.sentenceTypes.contains(SentenceType.LED)) {
-      sentenceCalculation.nonParoleDate = sentence.sentencedAt.plusDays(
-        ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(THREE.div(FOUR))).toLong()
-      )
+      sentenceCalculation.numberOfDaysToLicenceExpiry =
+        ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(THREE).div(FOUR)).toLong()
+          .plus(sentenceCalculation.calculatedTotalAddedDays)
+          .minus(sentenceCalculation.calculatedTotalDeductedDays)
+      sentenceCalculation.licenceExpiryDate = sentence.sentencedAt.plusDays(
+        sentenceCalculation.numberOfDaysToLicenceExpiry
+      ).minusDays(ONE)
     }
 
     // create association between the sentence and it's calculation
@@ -206,6 +214,7 @@ class SentenceCalculationService {
       unadjustedExpiryDate,
       unadjustedReleaseDate,
       calculatedTotalDeductedDays,
+      calculatedTotalAddedDays,
       adjustedExpiryDate,
       adjustedReleaseDate
     )
