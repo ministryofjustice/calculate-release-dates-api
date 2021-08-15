@@ -25,6 +25,7 @@ internal class SentenceCalculationTest {
       date,
       date,
       1,
+      0,
       date,
       date
     )
@@ -32,7 +33,8 @@ internal class SentenceCalculationTest {
     assertEquals(sentenceCalculation.sentence, sentence)
     assertEquals(3, sentenceCalculation.numberOfDaysToSentenceExpiryDate)
     assertEquals(4, sentenceCalculation.numberOfDaysToReleaseDate)
-    assertEquals(1, sentenceCalculation.calculatedTotalRemandDays)
+    assertEquals(1, sentenceCalculation.calculatedTotalDeductedDays)
+    assertEquals(0, sentenceCalculation.calculatedTotalAddedDays)
     assertEquals(date, sentenceCalculation.unadjustedExpiryDate)
     assertEquals(date, sentenceCalculation.unadjustedReleaseDate)
     assertEquals(date, sentenceCalculation.adjustedExpiryDate)
