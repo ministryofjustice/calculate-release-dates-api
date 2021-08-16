@@ -11,9 +11,11 @@ class CalculationServiceTest {
   private val jsonTransformation = JsonTransformation()
   private val sentenceCalculationService = SentenceCalculationService()
   private val sentencesExtractionService = SentencesExtractionService()
-  private val sentenceCombinationService = SentenceCombinationService(sentenceCalculationService)
+  private val sentenceIdentificationService = SentenceIdentificationService()
+  private val sentenceCombinationService = SentenceCombinationService(sentenceIdentificationService)
   private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
+    sentenceIdentificationService,
     sentencesExtractionService,
     sentenceCombinationService
   )

@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
@@ -12,92 +11,6 @@ import kotlin.math.ceil
 
 @Service
 class SentenceCalculationService {
-  fun identify(sentence: Sentence, offender: Offender) {
-    if (
-      sentence.sentencedAt.isBefore(ImportantDates.LASPO_DATE) &&
-      sentence.offence.startedAt.isBefore(ImportantDates.CJA_DATE)
-    ) {
-      beforeCJAAndLASPO(sentence)
-    } else {
-      afterCJAAndLASPO(sentence, offender)
-    }
-  }
-
-  private fun afterCJAAndLASPO(sentence: Sentence, offender: Offender) {
-
-    if (!sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
-
-      if (sentence.offence.startedAt.isAfter(ImportantDates.ORA_DATE)) {
-        isTopUpSentenceExpiryDateRequired(sentence, offender)
-      } else {
-        sentence.sentenceTypes = listOf(
-          SentenceType.ARD,
-          SentenceType.SED
-        )
-      }
-    } else {
-      if (sentence.durationIsGreaterThan(TWO, ChronoUnit.YEARS)) {
-        sentence.sentenceTypes = listOf(
-          SentenceType.SLED,
-          SentenceType.CRD
-        )
-      } else {
-
-        if (sentence.offence.startedAt.isBefore(ImportantDates.ORA_DATE)) {
-          sentence.sentenceTypes = listOf(
-            SentenceType.SLED,
-            SentenceType.CRD
-          )
-        } else {
-          isTopUpSentenceExpiryDateRequired(sentence, offender)
-        }
-      }
-    }
-  }
-
-  private fun beforeCJAAndLASPO(sentence: Sentence) {
-    if (sentence.durationIsGreaterThan(FOUR, ChronoUnit.YEARS)) {
-      if (! sentence.offence.isScheduleFifteen) {
-        sentence.sentenceTypes = listOf(
-          SentenceType.PED,
-          SentenceType.NPD,
-          SentenceType.LED,
-          SentenceType.SED
-        )
-      } else {
-        sentence.sentenceTypes = listOf(
-          SentenceType.CRD,
-          SentenceType.SLED
-        )
-      }
-    } else if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
-      sentence.sentenceTypes = listOf(
-        SentenceType.LED,
-        SentenceType.CRD,
-        SentenceType.SED
-      )
-    } else {
-      sentence.sentenceTypes = listOf(
-        SentenceType.ARD,
-        SentenceType.SED
-      )
-    }
-  }
-
-  private fun isTopUpSentenceExpiryDateRequired(sentence: Sentence, offender: Offender) {
-    if (
-      sentence.duration.getLengthInDays(sentence.sentencedAt) <= INT_ONE ||
-      offender.getAgeOnDate(sentence.getHalfSentenceDate()) <= INT_EIGHTEEN
-    ) {
-      sentence.sentenceTypes = listOf(SentenceType.SLED, SentenceType.CRD)
-    } else {
-      sentence.sentenceTypes = listOf(
-        SentenceType.SLED,
-        SentenceType.CRD,
-        SentenceType.TUSED
-      )
-    }
-  }
 
   fun calculate(sentence: Sentence, booking: Booking): SentenceCalculation {
 
@@ -226,8 +139,6 @@ class SentenceCalculationService {
     private const val THREE = 3L
     private const val FOUR = 4L
     private const val TWELVE = 12L
-    private const val INT_EIGHTEEN = 18
-    private const val INT_ONE = 1
     private const val YEAR_IN_DAYS = 365
   }
 }
