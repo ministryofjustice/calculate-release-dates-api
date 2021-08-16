@@ -56,10 +56,17 @@ data class Sentence(
     return LocalDateRange.of(sentencedAt, duration.getEndDate(sentencedAt))
   }
 
+  fun getReleaseDateType(): SentenceType {
+    return if (sentenceTypes.contains(SentenceType.PED))
+      SentenceType.PED else if (sentenceCalculation.isReleaseDateConditional)
+      SentenceType.CRD else
+      SentenceType.ARD
+  }
+
   fun buildString(): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val expiryDateType = if (sentenceTypes.contains(SentenceType.SLED)) "SLED" else "SED"
-    val releaseDateType = if (sentenceCalculation.isReleaseDateConditional) "CRD" else "ARD"
+    val releaseDateType = getReleaseDateType().toString()
 
     return "Sentence\t:\t\n" +
       "Duration\t:\t$duration\n" +
@@ -72,8 +79,13 @@ data class Sentence(
       "Total number of days of deducted (remand / tagged bail)\t:" +
       "\t${sentenceCalculation.calculatedTotalDeductedDays}\n" +
       "Total number of days of added (ADA) \t:\t${sentenceCalculation.calculatedTotalAddedDays}\n" +
-      "Total number of days to licence expiry\t:\t${sentenceCalculation.numberOfDaysToLicenceExpiry}\n" +
+
+      "Total number of days to Licence Expiry Date (LED)\t:\t${sentenceCalculation.numberOfDaysToLicenceExpiryDate}\n" +
       "LED\t:\t${sentenceCalculation.licenceExpiryDate?.format(formatter)}\n" +
+
+      "Number of days to Non Parole Date (NPD)\t:\t${sentenceCalculation.numberOfDaysToNonParoleDate}\n" +
+      "Non Parole Date (NPD)\t:\t${sentenceCalculation.nonParoleDate?.format(formatter)}\n" +
+
       "Effective $expiryDateType\t:\t${sentenceCalculation.expiryDate?.format(formatter)}\n" +
       "Effective $releaseDateType\t:\t${sentenceCalculation.releaseDate?.format(formatter)}\n" +
       "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +

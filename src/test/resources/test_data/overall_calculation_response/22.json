@@ -1,5 +1,6 @@
 {
-  "releaseDate": "2015-11-19",
-  "sentenceExpiryDate": "2018-02-17",
-  "isReleaseDateConditional": true
+  "dates" : {
+    "SLED":"2018-02-17",
+    "CRD":"2015-11-19"
+  }
 }

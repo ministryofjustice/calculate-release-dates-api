@@ -1,6 +1,7 @@
 {
-  "sentenceExpiryDate": "2016-11-06",
-  "releaseDate": "2016-01-06",
-  "isReleaseDateConditional": true,
-  "topUpSupervisionDate": "2017-01-06"
+  "dates": {
+    "SLED":"2016-11-06",
+    "CRD":"2016-01-06",
+    "TUSED":"2017-01-06"
+  }
 }

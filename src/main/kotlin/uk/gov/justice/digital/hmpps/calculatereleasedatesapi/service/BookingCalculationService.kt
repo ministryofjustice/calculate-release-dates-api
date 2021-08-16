@@ -71,25 +71,33 @@ class BookingCalculationService(
   }
 
   private fun extractSingle(booking: Booking): BookingCalculation {
+    val bookingCalculation = BookingCalculation()
     val sentence = booking.sentences[0]
     val sentenceCalculation = sentence.sentenceCalculation
+
     if (sentence.sentenceTypes.contains(SentenceType.SLED)) {
-      return BookingCalculation(
-        null,
-        sentenceCalculation.expiryDate,
-        sentenceCalculation.releaseDate,
-        sentenceCalculation.topUpSupervisionDate,
-        sentenceCalculation.isReleaseDateConditional
-      )
+      bookingCalculation.dates[SentenceType.SLED] = sentenceCalculation.expiryDate!!
     } else {
-      return BookingCalculation(
-        sentenceCalculation.licenceExpiryDate,
-        sentenceCalculation.expiryDate,
-        sentenceCalculation.releaseDate,
-        sentenceCalculation.topUpSupervisionDate,
-        sentenceCalculation.isReleaseDateConditional
-      )
+      bookingCalculation.dates[SentenceType.SED] = sentenceCalculation.expiryDate!!
     }
+
+    bookingCalculation.dates[sentence.getReleaseDateType()] = sentenceCalculation.releaseDate!!
+
+    if (sentenceCalculation.licenceExpiryDate != null &&
+      sentenceCalculation.licenceExpiryDate != sentenceCalculation.expiryDate
+    ) {
+      bookingCalculation.dates[SentenceType.LED] = sentenceCalculation.licenceExpiryDate!!
+    }
+
+    if (sentenceCalculation.nonParoleDate != null) {
+      bookingCalculation.dates[SentenceType.NPD] = sentenceCalculation.nonParoleDate!!
+    }
+
+    if (sentenceCalculation.topUpSupervisionDate != null) {
+      bookingCalculation.dates[SentenceType.TUSED] = sentenceCalculation.topUpSupervisionDate!!
+    }
+
+    return bookingCalculation
   }
 
   private fun extractMultiple(booking: Booking): BookingCalculation {
@@ -109,29 +117,56 @@ class BookingCalculationService(
       val latestExpiryDate: LocalDate? = extractionService.mostRecent(
         booking.sentences, SentenceCalculation::expiryDate
       )
-      var latestLicenseExpiryDate: LocalDate? = extractionService.mostRecent(
+
+      val latestLicenseExpiryDate: LocalDate? = extractionService.mostRecent(
         booking.sentences, SentenceCalculation::licenceExpiryDate
       )
 
-      if (latestLicenseExpiryDate != null &&
-        (
-          latestLicenseExpiryDate.isEqual(latestReleaseDate) ||
-            latestLicenseExpiryDate.isEqual(latestExpiryDate)
-          )
+      val latestNonParoleDate: LocalDate? = extractionService.mostRecent(
+        booking.sentences, SentenceCalculation::nonParoleDate
+      )
+
+      val latestTopUpSupervisionDate: LocalDate? = extractionService.mostRecent(
+        booking.sentences, SentenceCalculation::topUpSupervisionDate
+      )
+
+      if (!(
+        (latestLicenseExpiryDate != null) &&
+          (
+            latestLicenseExpiryDate.isEqual(latestReleaseDate) ||
+              latestLicenseExpiryDate.isEqual(latestExpiryDate)
+            )
+        )
       ) {
-        latestLicenseExpiryDate = null
-      } else {
         // PSI Example 16 Release is therefore on license which means the release date is a CRD
         isReleaseDateConditional = true
       }
 
-      return BookingCalculation(
-        latestLicenseExpiryDate,
-        latestExpiryDate,
-        latestReleaseDate,
-        extractionService.mostRecent(booking.sentences, SentenceCalculation::topUpSupervisionDate),
-        isReleaseDateConditional
-      )
+      val bookingCalculation = BookingCalculation()
+      if (latestExpiryDate != null && latestExpiryDate == latestLicenseExpiryDate) {
+        bookingCalculation.dates[SentenceType.SLED] = latestExpiryDate
+      } else if (latestExpiryDate != null) {
+        bookingCalculation.dates[SentenceType.SED] = latestExpiryDate
+      }
+
+      if (isReleaseDateConditional) {
+        bookingCalculation.dates[SentenceType.CRD] = latestReleaseDate!!
+      } else {
+        bookingCalculation.dates[SentenceType.ARD] = latestReleaseDate!!
+      }
+
+      if (latestLicenseExpiryDate != null && latestExpiryDate != latestLicenseExpiryDate) {
+        bookingCalculation.dates[SentenceType.LED] = latestLicenseExpiryDate
+      }
+
+      if (latestNonParoleDate != null) {
+        bookingCalculation.dates[SentenceType.NPD] = latestNonParoleDate
+      }
+
+      if (latestTopUpSupervisionDate != null) {
+        bookingCalculation.dates[SentenceType.TUSED] = latestTopUpSupervisionDate
+      }
+      return bookingCalculation
     } else {
       throw CantExtractMultipleSentencesException("Can't extract a single date from multiple sentences")
     }

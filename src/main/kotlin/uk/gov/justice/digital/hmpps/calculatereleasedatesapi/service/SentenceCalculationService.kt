@@ -52,14 +52,9 @@ class SentenceCalculationService {
       }
     }
 
-    if (sentence.sentenceTypes.contains(SentenceType.PED)) {
-      sentenceCalculation.topUpSupervisionDate = sentenceCalculation.adjustedReleaseDate
-        .plus(TWELVE, ChronoUnit.MONTHS)
-    }
-
     if (sentence.sentenceTypes.contains(SentenceType.NPD)) {
       sentenceCalculation.numberOfDaysToNonParoleDate =
-        ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(THREE).div(FOUR)).toLong()
+        ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(TWO).div(THREE)).toLong()
           .plus(sentenceCalculation.calculatedTotalAddedDays)
           .minus(sentenceCalculation.calculatedTotalDeductedDays)
       sentenceCalculation.nonParoleDate = sentence.sentencedAt.plusDays(
@@ -68,12 +63,12 @@ class SentenceCalculationService {
     }
 
     if (sentence.sentenceTypes.contains(SentenceType.LED)) {
-      sentenceCalculation.numberOfDaysToLicenceExpiry =
+      sentenceCalculation.numberOfDaysToLicenceExpiryDate =
         ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(THREE).div(FOUR)).toLong()
           .plus(sentenceCalculation.calculatedTotalAddedDays)
           .minus(sentenceCalculation.calculatedTotalDeductedDays)
       sentenceCalculation.licenceExpiryDate = sentence.sentencedAt.plusDays(
-        sentenceCalculation.numberOfDaysToLicenceExpiry
+        sentenceCalculation.numberOfDaysToLicenceExpiryDate
       ).minusDays(ONE)
     }
 

@@ -1,5 +1,6 @@
 {
-  "releaseDate": "2013-10-10",
-  "sentenceExpiryDate": "2014-05-26",
-  "isReleaseDateConditional": false
+  "dates": {
+    "SLED":"2014-05-26",
+    "ARD":"2013-10-10"
+  }
 }
