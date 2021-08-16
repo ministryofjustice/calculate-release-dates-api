@@ -2,5 +2,10 @@
   "releaseDate": "2015-07-24",
   "sentenceExpiryDate": "2015-12-22",
   "topUpSupervisionDate": "2016-07-24",
-  "isReleaseDateConditional": true
+  "isReleaseDateConditional": true,
+  "dates" : {
+    "SLED":"2015-12-22",
+    "CRD":"2015-07-24",
+    "TUSED":"2016-07-24"
+  }
 }
