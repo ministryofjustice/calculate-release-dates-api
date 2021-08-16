@@ -1,7 +1,8 @@
 {
-  "sentenceExpiryDate": "2015-09-27",
-  "releaseDate": "2015-05-29",
-  "isReleaseDateConditional": true,
-  "topUpSupervisionDate": "2016-04-29",
-  "licenceExpiryDate": "2015-07-28"
+  "dates": {
+    "SED":"2015-09-27",
+    "CRD":"2015-05-29",
+    "TUSED":"2016-04-29",
+    "LED": "2015-07-28"
+  }
 }

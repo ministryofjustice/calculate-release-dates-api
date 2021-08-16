@@ -56,10 +56,17 @@ data class Sentence(
     return LocalDateRange.of(sentencedAt, duration.getEndDate(sentencedAt))
   }
 
+  fun getReleaseDateType(): SentenceType {
+    return if (sentenceTypes.contains(SentenceType.PED))
+      SentenceType.PED else if (sentenceCalculation.isReleaseDateConditional)
+      SentenceType.CRD else
+      SentenceType.ARD
+  }
+
   fun buildString(): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val expiryDateType = if (sentenceTypes.contains(SentenceType.SLED)) "SLED" else "SED"
-    val releaseDateType = if (sentenceCalculation.isReleaseDateConditional) "CRD" else "ARD"
+    val releaseDateType = getReleaseDateType().toString()
 
     return "Sentence\t:\t\n" +
       "Duration\t:\t$duration\n" +
@@ -69,11 +76,35 @@ data class Sentence(
       "Date of $expiryDateType\t:\t${sentenceCalculation.unadjustedExpiryDate.format(formatter)}\n" +
       "Number of days to $releaseDateType\t:\t${sentenceCalculation.numberOfDaysToReleaseDate}\n" +
       "Date of $releaseDateType\t:\t${sentenceCalculation.unadjustedReleaseDate.format(formatter)}\n" +
-      "Total number of days of remand / tagged bail time / UAL\t:\t${sentenceCalculation.calculatedTotalRemandDays}\n" +
+      "Total number of days of deducted (remand / tagged bail)\t:" +
+      "\t${sentenceCalculation.calculatedTotalDeductedDays}\n" +
+      "Total number of days of added (ADA) \t:\t${sentenceCalculation.calculatedTotalAddedDays}\n" +
+
+      "Total number of days to Licence Expiry Date (LED)\t:\t${sentenceCalculation.numberOfDaysToLicenceExpiryDate}\n" +
       "LED\t:\t${sentenceCalculation.licenceExpiryDate?.format(formatter)}\n" +
+
+      "Number of days to Non Parole Date (NPD)\t:\t${sentenceCalculation.numberOfDaysToNonParoleDate}\n" +
+      "Non Parole Date (NPD)\t:\t${sentenceCalculation.nonParoleDate?.format(formatter)}\n" +
+
       "Effective $expiryDateType\t:\t${sentenceCalculation.expiryDate?.format(formatter)}\n" +
       "Effective $releaseDateType\t:\t${sentenceCalculation.releaseDate?.format(formatter)}\n" +
       "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +
       "${sentenceCalculation.topUpSupervisionDate?.format(formatter)}\n"
+  }
+
+  fun canMergeWith(secondSentence: Sentence): Boolean {
+    return (
+      this.sentenceTypes.containsAll(secondSentence.sentenceTypes) ||
+        this.containsSimilar(secondSentence)
+      )
+  }
+
+  private fun containsSimilar(sentence: Sentence): Boolean {
+    return (
+      this.sentenceTypes.containsAll(listOf(SentenceType.SLED, SentenceType.CRD)) &&
+        sentence.sentenceTypes.containsAll(listOf(SentenceType.SED, SentenceType.ARD)) ||
+        sentence.sentenceTypes.containsAll(listOf(SentenceType.SLED, SentenceType.CRD)) &&
+        this.sentenceTypes.containsAll(listOf(SentenceType.SED, SentenceType.ARD))
+      )
   }
 }
