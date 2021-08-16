@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 
 @Service
-class SentenceCombinationService(val sentenceCalculationService: SentenceCalculationService) {
+class SentenceCombinationService(val sentenceIdentificationService: SentenceIdentificationService) {
 
   fun combineConsecutiveSentences(booking: Booking): Booking {
     val workingBooking: Booking = booking.copy()
@@ -38,7 +38,7 @@ class SentenceCombinationService(val sentenceCalculationService: SentenceCalcula
     // I take 2 sentences, combine them into a single conjoined sentence
     val combinedSentence: Sentence = mergeSentences(firstSentence, secondSentence)
 
-    sentenceCalculationService.identify(combinedSentence, workingBooking.offender)
+    sentenceIdentificationService.identify(combinedSentence, workingBooking.offender)
     combinedSentence.associateSentences(mutableListOf())
 
     addSentenceToProfile(combinedSentence, workingBooking)

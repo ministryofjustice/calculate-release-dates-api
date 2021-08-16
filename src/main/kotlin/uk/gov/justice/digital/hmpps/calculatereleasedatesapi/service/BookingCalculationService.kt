@@ -14,13 +14,14 @@ import java.time.LocalDate
 @Service
 class BookingCalculationService(
   val sentenceCalculationService: SentenceCalculationService,
+  val sentenceIdentificationService: SentenceIdentificationService,
   val extractionService: SentencesExtractionService,
   val combinationService: SentenceCombinationService
 ) {
 
   fun identify(booking: Booking): Booking {
     for (sentence in booking.sentences) {
-      sentenceCalculationService.identify(sentence, booking.offender)
+      sentenceIdentificationService.identify(sentence, booking.offender)
     }
     return booking
   }
