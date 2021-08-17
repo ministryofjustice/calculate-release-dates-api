@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import java.time.LocalDate
 
-class SentenceCalculationServiceCalculateTest {
+class SentenceCalculationServiceTest {
 
   private val sentenceCalculationService: SentenceCalculationService = SentenceCalculationService()
   private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService()
