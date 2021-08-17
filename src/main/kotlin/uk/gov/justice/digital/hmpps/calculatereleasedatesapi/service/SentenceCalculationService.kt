@@ -65,6 +65,7 @@ class SentenceCalculationService {
     if (sentence.sentenceTypes.contains(SentenceType.LED)) {
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
         ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(THREE).div(FOUR)).toLong()
+          .plus(sentenceCalculation.numberOfDaysToAddToLicenceExpiryDate)
           .plus(sentenceCalculation.calculatedTotalAddedDays)
           .minus(sentenceCalculation.calculatedTotalDeductedDays)
       sentenceCalculation.licenceExpiryDate = sentence.sentencedAt.plusDays(
@@ -101,9 +102,19 @@ class SentenceCalculationService {
     val calculatedTotalAddedDays =
       booking.getOrZero(AdjustmentType.UNLAWFULLY_AT_LARGE)
 
+    var numberOfDaysToAddToLicenceExpiryDate = 0
+
+    val calculatedExpiryTotalDeductedDays =
+      if (calculatedTotalDeductedDays >= numberOfDaysToReleaseDate) {
+        numberOfDaysToAddToLicenceExpiryDate = calculatedTotalDeductedDays - numberOfDaysToReleaseDate
+        numberOfDaysToReleaseDate.toLong()
+      } else {
+        calculatedTotalDeductedDays.toLong()
+      }
+
     val adjustedExpiryDate = unadjustedExpiryDate
       .minusDays(
-        calculatedTotalDeductedDays.toLong()
+        calculatedExpiryTotalDeductedDays
       ).plusDays(
         calculatedTotalAddedDays.toLong()
       )
@@ -124,7 +135,8 @@ class SentenceCalculationService {
       calculatedTotalDeductedDays,
       calculatedTotalAddedDays,
       adjustedExpiryDate,
-      adjustedReleaseDate
+      adjustedReleaseDate,
+      numberOfDaysToAddToLicenceExpiryDate
     )
   }
 
