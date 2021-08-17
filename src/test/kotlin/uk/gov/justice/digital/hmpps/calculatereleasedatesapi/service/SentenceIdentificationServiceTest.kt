@@ -42,7 +42,7 @@ class SentenceIdentificationServiceTest {
   fun `Identify before 2005 48M- Section 15`() {
     val sentence = jsonTransformation.loadSentence("five_years_2003_mar_section15")
     sentenceIdentificationService.identify(sentence, offender)
-    assertEquals("[CRD, SLED]", sentence.sentenceTypes.toString())
+    assertEquals("[PED, NPD, LED, SED]", sentence.sentenceTypes.toString())
   }
 
   // sentenced before: 03/12/2012
@@ -54,7 +54,7 @@ class SentenceIdentificationServiceTest {
   fun `Identify before 2005 48M-`() {
     val sentence = jsonTransformation.loadSentence("five_years_2003_mar")
     sentenceIdentificationService.identify(sentence, offender)
-    assertEquals("[PED, NPD, LED, SED]", sentence.sentenceTypes.toString())
+    assertEquals("[CRD, SLED]", sentence.sentenceTypes.toString())
   }
 
   // sentenced after: 03/12/2012

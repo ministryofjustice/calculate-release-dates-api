@@ -2,13 +2,13 @@
   "offender": {
     "reference": "ABC123D",
     "name": "AN. Other",
-    "dateOfBirth": "1970-03-03",
-    "isScheduleFifteen": "true"
+    "dateOfBirth": "1970-03-03"
   },
   "sentences": [
     {
       "offence": {
-        "startedAt": "2005-01-01"
+        "startedAt": "2005-01-01",
+        "isScheduleFifteen": true
       },
       "duration": {
         "durationElements": {
