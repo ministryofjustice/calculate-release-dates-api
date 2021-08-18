@@ -7,18 +7,17 @@
   "sentences": [
     {
       "offence": {
-        "startedAt": "2005-01-01",
-        "isScheduleFifteen": true
+        "startedAt": "2005-01-01"
       },
       "duration": {
         "durationElements": {
-          "YEARS": 6
+          "MONTHS": 12
         }
       },
-      "sentencedAt": "2009-09-17"
+      "sentencedAt": "2009-10-01"
     }
   ],
   "adjustments": {
-    "REMAND": 100
+    "REMAND": 200
   }
 }

@@ -7,8 +7,7 @@
   "sentences": [
     {
       "offence": {
-        "startedAt": "2005-01-01",
-        "isScheduleFifteen": true
+        "startedAt": "2005-01-01"
       },
       "duration": {
         "durationElements": {
@@ -17,8 +16,5 @@
       },
       "sentencedAt": "2009-09-17"
     }
-  ],
-  "adjustments": {
-    "REMAND": 100
-  }
+  ]
 }

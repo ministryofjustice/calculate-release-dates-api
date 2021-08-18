@@ -53,7 +53,7 @@ class SentenceIdentificationService {
 
   private fun beforeCJAAndLASPO(sentence: Sentence) {
     if (sentence.durationIsGreaterThan(FOUR, ChronoUnit.YEARS)) {
-      if (! sentence.offence.isScheduleFifteen) {
+      if (sentence.offence.isScheduleFifteen) {
         sentence.sentenceTypes = listOf(
           SentenceType.PED,
           SentenceType.NPD,

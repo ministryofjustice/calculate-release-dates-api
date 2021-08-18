@@ -11,7 +11,8 @@ data class SentenceCalculation(
   val calculatedTotalDeductedDays: Int,
   val calculatedTotalAddedDays: Int,
   val adjustedExpiryDate: LocalDate,
-  val adjustedReleaseDate: LocalDate
+  val adjustedReleaseDate: LocalDate,
+  val numberOfDaysToAddToLicenceExpiryDate: Int
 ) {
 
   // Non Parole Date (NPD)
