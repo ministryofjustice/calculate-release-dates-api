@@ -19,7 +19,7 @@ import java.util.UUID
 @Service
 class TestService(
   private val testRepository: TestRepository,
-  private val prisonService: PrisonerService,
+  private val prisonService: PrisonApiClient,
 ) {
 
   var moshi: Moshi = Moshi.Builder()
