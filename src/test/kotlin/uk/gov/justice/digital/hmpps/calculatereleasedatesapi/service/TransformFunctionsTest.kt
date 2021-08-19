@@ -24,13 +24,15 @@ class TransformFunctionsTest {
       startDate = FIRST_JAN_2015,
     )
 
-    assertThat(transform(request)).isEqualTo(Sentence(
-      sentencedAt = FIRST_JAN_2015,
-      duration = ZERO_DURATION,
-      offence = Offence(startedAt = FIRST_JAN_2015),
-      identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
-      consecutiveSentenceUUIDs = mutableListOf()
-    ))
+    assertThat(transform(request)).isEqualTo(
+      Sentence(
+        sentencedAt = FIRST_JAN_2015,
+        duration = ZERO_DURATION,
+        offence = Offence(startedAt = FIRST_JAN_2015),
+        identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
+        consecutiveSentenceUUIDs = mutableListOf()
+      )
+    )
   }
 
   @Test
@@ -46,13 +48,15 @@ class TransformFunctionsTest {
       consecutiveTo = consecutiveTo
     )
 
-    assertThat(transform(request)).isEqualTo(Sentence(
-      sentencedAt = FIRST_JAN_2015,
-      duration = ZERO_DURATION,
-      offence = Offence(startedAt = FIRST_JAN_2015),
-      identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
-      consecutiveSentenceUUIDs = mutableListOf(UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray()))
-    ))
+    assertThat(transform(request)).isEqualTo(
+      Sentence(
+        sentencedAt = FIRST_JAN_2015,
+        duration = ZERO_DURATION,
+        offence = Offence(startedAt = FIRST_JAN_2015),
+        identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
+        consecutiveSentenceUUIDs = mutableListOf(UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray()))
+      )
+    )
   }
 
   private companion object {
