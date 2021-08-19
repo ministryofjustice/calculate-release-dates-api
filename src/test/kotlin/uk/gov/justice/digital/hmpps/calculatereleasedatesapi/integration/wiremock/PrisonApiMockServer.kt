@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetails
+import java.time.LocalDate
 
 class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
   companion object {
@@ -42,7 +43,7 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
   var moshi: Moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
   var jsonAdapter: JsonAdapter<PrisonerDetails> = moshi.adapter<PrisonerDetails>(PrisonerDetails::class.java)
 
-  private val prisonerDetails = PrisonerDetails(1L, "A1234AA")
+  private val prisonerDetails = PrisonerDetails(1L, "A1234AA", dateOfBirth = LocalDate.of(1990, 2, 1))
 
   fun stubGetPrisonerDetails(prisonerId: String): StubMapping =
     stubFor(
