@@ -6,9 +6,11 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceTerm
 
 @Service
-class PrisonService(@Qualifier("prisonApiWebClient") private val webClient: WebClient) {
+class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: WebClient) {
   private inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T>() {}
   private val log = LoggerFactory.getLogger(this::class.java)
 
@@ -18,6 +20,24 @@ class PrisonService(@Qualifier("prisonApiWebClient") private val webClient: WebC
       .uri("/api/offenders/$prisonerId")
       .retrieve()
       .bodyToMono(typeReference<PrisonerDetails>())
+      .block()!!
+  }
+
+  fun getSentenceAdjustments(bookingId: Long): SentenceAdjustments {
+    log.info("Requesting sentence adjustment details for bookingId $bookingId")
+    return webClient.get()
+      .uri("/api/bookings/$bookingId/sentenceAdjustments")
+      .retrieve()
+      .bodyToMono(typeReference<SentenceAdjustments>())
+      .block()!!
+  }
+
+  fun getSentenceTerms(bookingId: Long): List<SentenceTerm> {
+    log.info("Requesting sentence terms for bookingId $bookingId")
+    return webClient.get()
+      .uri("/api/offender-sentences/booking/$bookingId/sentenceTerms")
+      .retrieve()
+      .bodyToMono(typeReference<List<SentenceTerm>>())
       .block()!!
   }
 }

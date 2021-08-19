@@ -19,7 +19,7 @@ import java.util.UUID
 @Service
 class TestService(
   private val testRepository: TestRepository,
-  private val prisonService: PrisonService,
+  private val prisonApiClient: PrisonApiClient,
 ) {
 
   var moshi: Moshi = Moshi.Builder()
@@ -30,7 +30,7 @@ class TestService(
     .build()
 
   fun getTestData(): List<TestData> {
-    val prisoner = prisonService.getOffenderDetail("A1234AA")
+    val prisoner = prisonApiClient.getOffenderDetail("A1234AA")
     val testData = testRepository.findAll().map { transform(it) }.toMutableList()
     testData.add(TestData(prisoner.offenderNo, prisoner.bookingId.toString()))
     return testData
