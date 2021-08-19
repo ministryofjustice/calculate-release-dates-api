@@ -33,7 +33,7 @@ class BookingServiceTest {
   }
 
   @Test
-  fun `Service returns the details of one establishment`() {
+  fun `A booking object is generated correctly when requestiong a booking for a prisonerId`() {
     val prisonerId = "A123456A"
     val sequence = 153
     val bookingId = 123456L
