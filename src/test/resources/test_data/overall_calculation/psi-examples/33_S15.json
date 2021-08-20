@@ -1,0 +1,33 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "name": "AN. Other",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "startedAt": "2005-01-01",
+        "isScheduleFifteen": true
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "sentencedAt": "2010-10-16"
+    },
+    {
+      "offence": {
+        "startedAt": "2005-01-01",
+        "isScheduleFifteen": true
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "sentencedAt": "2011-03-15"
+    }
+  ]
+}

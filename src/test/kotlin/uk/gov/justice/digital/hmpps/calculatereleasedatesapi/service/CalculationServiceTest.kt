@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
 import org.slf4j.Logger
@@ -12,12 +13,21 @@ class CalculationServiceTest {
   private val sentenceCalculationService = SentenceCalculationService()
   private val sentencesExtractionService = SentencesExtractionService()
   private val sentenceIdentificationService = SentenceIdentificationService()
-  private val sentenceCombinationService = SentenceCombinationService(sentenceIdentificationService)
+  private val sentenceCombinationService = SentenceCombinationService(
+    sentenceIdentificationService
+  )
+  private val concurrentSentenceCombinationService = ConcurrentSentenceCombinationService(
+    sentenceCombinationService
+  )
+  private val consecutiveSentenceCombinationService = ConsecutiveSentenceCombinationService(
+    sentenceCombinationService
+  )
   private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
     sentenceIdentificationService,
     sentencesExtractionService,
-    sentenceCombinationService
+    consecutiveSentenceCombinationService,
+    concurrentSentenceCombinationService
   )
   private val calculationService =
     CalculationService(bookingCalculationService)
@@ -36,6 +46,11 @@ class CalculationServiceTest {
       "Example $exampleNumber outcome BookingCalculation: {}",
       bookingCalculation
     )
+  }
+
+  @Test
+  fun `Test Example 33S15`() {
+    `Test PSI Example`("33_S15")
   }
 
   companion object {

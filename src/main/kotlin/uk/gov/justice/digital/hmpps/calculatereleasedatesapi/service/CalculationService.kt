@@ -27,10 +27,15 @@ class CalculationService(
       bookingCalculationService
         .calculate(workingBooking)
 
-    // aggregate the types of the sentences
+    // aggregate appropriate concurrent sentences
     workingBooking =
       bookingCalculationService
-        .combine(workingBooking)
+        .combineConcurrent(workingBooking)
+
+    // aggregation the consecutive sentences
+    workingBooking =
+      bookingCalculationService
+        .combineConsecutive(workingBooking)
 
     // apply any rules to calculate the dates
     return bookingCalculationService
