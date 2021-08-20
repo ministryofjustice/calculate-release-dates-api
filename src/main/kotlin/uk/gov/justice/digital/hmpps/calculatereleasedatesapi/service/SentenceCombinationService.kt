@@ -1,42 +1,25 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CannotMergeSentencesException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 @Service
 class SentenceCombinationService(val sentenceIdentificationService: SentenceIdentificationService) {
 
-  fun combineConsecutiveSentences(booking: Booking): Booking {
-    val workingBooking: Booking = booking.copy()
-    // find a list of sentences that have consecutive sentences
-    val consecutiveSentences = booking.sentences.filter { it.consecutiveSentences.isNotEmpty() }
-    for (sentence in consecutiveSentences) {
-      combineSentenceWithEachOfItsConsecutiveSentences(sentence, workingBooking)
-    }
-    return workingBooking
-  }
-
-  private fun combineSentenceWithEachOfItsConsecutiveSentences(
-    sentence: Sentence,
-    workingBooking: Booking
-  ) {
-    val consecutiveSentences = sentence.consecutiveSentences.toList()
-    for (consecutiveSentence in consecutiveSentences) {
-      combineTwoSentences(sentence, consecutiveSentence, workingBooking)
-    }
-  }
-
   fun combineTwoSentences(
     firstSentence: Sentence,
     secondSentence: Sentence,
-    workingBooking: Booking
+    workingBooking: Booking,
+    sentenceMergeFunction: (Sentence, Sentence) -> Sentence
   ) {
 
     // I take 2 sentences, combine them into a single conjoined sentence
-    val combinedSentence: Sentence = mergeSentences(firstSentence, secondSentence)
+    val combinedSentence: Sentence = sentenceMergeFunction(firstSentence, secondSentence)
 
     sentenceIdentificationService.identify(combinedSentence, workingBooking.offender)
     combinedSentence.associateSentences(mutableListOf())
@@ -88,30 +71,44 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
     booking.sentences.remove(sentence)
   }
 
-  fun mergeSentences(firstSentence: Sentence, secondSentence: Sentence): Sentence {
-
-    if (!firstSentence.canMergeWith(secondSentence)) {
-      throw CannotMergeSentencesException("Incompatible sentence types")
-    }
-
-    val earliestOffence = if (firstSentence.offence.startedAt.isBefore(secondSentence.offence.startedAt)) {
+  fun earliestOffence(firstSentence: Sentence, secondSentence: Sentence): Offence {
+    return if (firstSentence.offence.startedAt.isBefore(secondSentence.offence.startedAt)) {
       firstSentence.offence
     } else {
       secondSentence.offence
     }
-    val sentencedAt = if (firstSentence.sentencedAt.isBefore(secondSentence.sentencedAt)) {
+  }
+
+  fun combinedDuration(firstSentence: Sentence, secondSentence: Sentence): Duration {
+    return Duration()
+      .appendAll(firstSentence.duration.durationElements)
+      .appendAll(secondSentence.duration.durationElements)
+  }
+
+  fun earliestSentencedAt(firstSentence: Sentence, secondSentence: Sentence): LocalDate {
+    return if (firstSentence.sentencedAt.isBefore(secondSentence.sentencedAt)) {
       firstSentence.sentencedAt
     } else {
       secondSentence.sentencedAt
     }
-    val combinedDuration = Duration()
-      .appendAll(firstSentence.duration.durationElements)
-      .appendAll(secondSentence.duration.durationElements)
+  }
 
-    return Sentence(
-      earliestOffence,
-      combinedDuration,
-      sentencedAt
+  fun latestExpiryDate(firstSentence: Sentence, secondSentence: Sentence): LocalDate? {
+    return if (
+      firstSentence.sentenceCalculation.expiryDate?.isAfter(secondSentence.sentenceCalculation.expiryDate) == true
+    ) {
+      firstSentence.sentenceCalculation.expiryDate
+    } else {
+      secondSentence.sentenceCalculation.expiryDate
+    }
+  }
+
+  fun adjustedDuration(firstSentence: Sentence, secondSentence: Sentence): Duration {
+    val durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()
+    durationElements[ChronoUnit.DAYS] = ChronoUnit.DAYS.between(
+      earliestSentencedAt(firstSentence, secondSentence),
+      latestExpiryDate(firstSentence, secondSentence)?.plusDays(1L)
     )
+    return Duration(durationElements)
   }
 }

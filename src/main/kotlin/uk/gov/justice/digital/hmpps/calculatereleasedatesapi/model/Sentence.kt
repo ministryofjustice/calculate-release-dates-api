@@ -16,6 +16,7 @@ data class Sentence(
 ) {
   lateinit var consecutiveSentences: MutableList<Sentence>
   lateinit var sentenceCalculation: SentenceCalculation
+  lateinit var identificationTrack: SentenceIdentificationTrack
 
   fun isSentenceCalculated(): Boolean {
     return this::sentenceCalculation.isInitialized
@@ -92,14 +93,14 @@ data class Sentence(
       "${sentenceCalculation.topUpSupervisionDate?.format(formatter)}\n"
   }
 
-  fun canMergeWith(secondSentence: Sentence): Boolean {
+  fun canMergeConsecutivelyWith(secondSentence: Sentence): Boolean {
     return (
       this.sentenceTypes.containsAll(secondSentence.sentenceTypes) ||
-        this.containsSimilar(secondSentence)
+        this.containsSledOrSedAndCrdOrArd(secondSentence)
       )
   }
 
-  private fun containsSimilar(sentence: Sentence): Boolean {
+  private fun containsSledOrSedAndCrdOrArd(sentence: Sentence): Boolean {
     return (
       this.sentenceTypes.containsAll(listOf(SentenceType.SLED, SentenceType.CRD)) &&
         sentence.sentenceTypes.containsAll(listOf(SentenceType.SED, SentenceType.ARD)) ||

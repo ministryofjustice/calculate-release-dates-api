@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import java.time.temporal.ChronoUnit
 
@@ -20,6 +21,8 @@ class SentenceIdentificationService {
   }
 
   private fun afterCJAAndLASPO(sentence: Sentence, offender: Offender) {
+
+    sentence.identificationTrack = SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
 
     if (!sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
 
@@ -52,7 +55,10 @@ class SentenceIdentificationService {
   }
 
   private fun beforeCJAAndLASPO(sentence: Sentence) {
-    if (sentence.durationIsGreaterThan(FOUR, ChronoUnit.YEARS)) {
+
+    sentence.identificationTrack = SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
+
+    if (sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
       if (sentence.offence.isScheduleFifteen) {
         sentence.sentenceTypes = listOf(
           SentenceType.PED,
