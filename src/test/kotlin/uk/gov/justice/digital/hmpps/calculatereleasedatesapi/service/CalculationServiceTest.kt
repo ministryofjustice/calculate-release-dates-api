@@ -12,12 +12,21 @@ class CalculationServiceTest {
   private val sentenceCalculationService = SentenceCalculationService()
   private val sentencesExtractionService = SentencesExtractionService()
   private val sentenceIdentificationService = SentenceIdentificationService()
-  private val sentenceCombinationService = SentenceCombinationService(sentenceIdentificationService)
+  private val sentenceCombinationService = SentenceCombinationService(
+    sentenceIdentificationService
+  )
+  private val concurrentSentenceCombinationService = ConcurrentSentenceCombinationService(
+    sentenceCombinationService
+  )
+  private val consecutiveSentenceCombinationService = ConsecutiveSentenceCombinationService(
+    sentenceCombinationService
+  )
   private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
     sentenceIdentificationService,
     sentencesExtractionService,
-    sentenceCombinationService
+    consecutiveSentenceCombinationService,
+    concurrentSentenceCombinationService
   )
   private val calculationService =
     CalculationService(bookingCalculationService)

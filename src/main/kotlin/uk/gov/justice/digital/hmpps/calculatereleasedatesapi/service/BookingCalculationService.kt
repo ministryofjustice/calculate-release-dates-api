@@ -16,7 +16,8 @@ class BookingCalculationService(
   val sentenceCalculationService: SentenceCalculationService,
   val sentenceIdentificationService: SentenceIdentificationService,
   val extractionService: SentencesExtractionService,
-  val combinationService: SentenceCombinationService
+  val consecutiveSentenceCombinationService: ConsecutiveSentenceCombinationService,
+  val concurrentSentenceCombinationService: ConcurrentSentenceCombinationService
 ) {
 
   fun identify(booking: Booking): Booking {
@@ -53,21 +54,23 @@ class BookingCalculationService(
     }
   }
 
-  fun combine(booking: Booking): Booking {
+  private fun applyMultiple(booking: Booking, function: (Booking) -> Booking): Booking {
     return when (booking.sentences.size) {
       0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
       1 -> booking
       else -> {
-        val workingBooking = combinationService.combineConsecutiveSentences(booking)
-        workingBooking.sentences.forEach { sentence ->
-          if (!sentence.isSentenceCalculated()) {
-            sentenceCalculationService.calculate(sentence, booking)
-            log.info(sentence.buildString())
-          }
-        }
-        return workingBooking
+        val workingBooking = function(booking)
+        return calculate(workingBooking)
       }
     }
+  }
+
+  fun combineConsecutive(booking: Booking): Booking {
+    return applyMultiple(booking, consecutiveSentenceCombinationService::combineConsecutiveSentences)
+  }
+
+  fun combineConcurrent(booking: Booking): Booking {
+    return applyMultiple(booking, concurrentSentenceCombinationService::combineConcurrentSentences)
   }
 
   private fun extractSingle(booking: Booking): BookingCalculation {
