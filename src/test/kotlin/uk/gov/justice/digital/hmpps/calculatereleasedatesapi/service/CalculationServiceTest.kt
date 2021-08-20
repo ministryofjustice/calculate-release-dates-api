@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
 import org.slf4j.Logger
@@ -46,11 +45,6 @@ class CalculationServiceTest {
       "Example $exampleNumber outcome BookingCalculation: {}",
       bookingCalculation
     )
-  }
-
-  @Test
-  fun `Test Example 33S15`() {
-    `Test PSI Example`("33_S15")
   }
 
   companion object {
