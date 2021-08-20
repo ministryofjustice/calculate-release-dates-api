@@ -72,11 +72,13 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
   }
 
   fun earliestOffence(firstSentence: Sentence, secondSentence: Sentence): Offence {
-    return if (firstSentence.offence.startedAt.isBefore(secondSentence.offence.startedAt)) {
+    val offence = if (firstSentence.offence.startedAt.isBefore(secondSentence.offence.startedAt)) {
       firstSentence.offence
     } else {
       secondSentence.offence
     }
+    offence.isScheduleFifteen = firstSentence.offence.isScheduleFifteen || secondSentence.offence.isScheduleFifteen
+    return offence
   }
 
   fun combinedDuration(firstSentence: Sentence, secondSentence: Sentence): Duration {
