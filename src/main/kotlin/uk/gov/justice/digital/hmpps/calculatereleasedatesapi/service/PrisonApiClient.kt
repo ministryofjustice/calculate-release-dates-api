@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceTerm
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
 
 @Service
 class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: WebClient) {
@@ -32,12 +32,12 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .block()!!
   }
 
-  fun getSentenceTerms(bookingId: Long): List<SentenceTerm> {
+  fun getSentencesAndOffences(bookingId: Long): List<SentenceAndOffences> {
     log.info("Requesting sentence terms for bookingId $bookingId")
     return webClient.get()
-      .uri("/api/offender-sentences/booking/$bookingId/sentenceTerms")
+      .uri("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
       .retrieve()
-      .bodyToMono(typeReference<List<SentenceTerm>>())
+      .bodyToMono(typeReference<List<SentenceAndOffences>>())
       .block()!!
   }
 }
