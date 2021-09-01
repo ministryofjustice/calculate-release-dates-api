@@ -6,14 +6,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 
 @Service
 class BookingService(
-  private val prisonService: PrisonApiClient,
+  private val prisonApiClient: PrisonApiClient,
 ) {
   fun getBooking(prisonerId: String): Booking {
-    val prisonerDetails = prisonService.getOffenderDetail(prisonerId)
+    val prisonerDetails = prisonApiClient.getOffenderDetail(prisonerId)
     val offender = transform(prisonerDetails)
     val sentences = mutableListOf<Sentence>()
-    prisonService.getSentencesAndOffences(prisonerDetails.bookingId).forEach { sentences.addAll(transform(it)) }
-    val adjustments = transform(prisonService.getSentenceAdjustments(prisonerDetails.bookingId))
+    prisonApiClient.getSentencesAndOffences(prisonerDetails.bookingId).forEach { sentences.addAll(transform(it)) }
+    val adjustments = transform(prisonApiClient.getSentenceAdjustments(prisonerDetails.bookingId))
 
     return Booking(
       offender = offender,
