@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceTerm
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.YEARS
@@ -30,26 +30,31 @@ fun transform(testData: EntityTestData): ModelTestData {
   )
 }
 
-fun transform(sentenceTerm: SentenceTerm): Sentence {
-  val offence = Offence(startedAt = sentenceTerm.startDate)
-  val duration = Duration()
-  duration.append(sentenceTerm.days, DAYS)
-  duration.append(sentenceTerm.months, MONTHS)
-  duration.append(sentenceTerm.years, YEARS)
-  val consecutiveSentenceUUIDs = if (sentenceTerm.consecutiveTo != null)
-    mutableListOf(
-      generateUUIDForSentence(sentenceTerm.bookingId, sentenceTerm.consecutiveTo)
-    )
-  else
-    mutableListOf()
+fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
+  // There shouldn't be multiple offences associated to a single sentence; however there are at the moment (NOMIS doesnt
+  // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
+  // treated as a separate sentence
+  return sentence.offences.map { offendersOffence ->
+    val offence = Offence(startedAt = offendersOffence.offenceDate)
+    val duration = Duration()
+    duration.append(sentence.days.toLong(), DAYS)
+    duration.append(sentence.months.toLong(), MONTHS)
+    duration.append(sentence.years.toLong(), YEARS)
+    val consecutiveSentenceUUIDs = if (sentence.consecutiveToSequence != null)
+      mutableListOf(
+        generateUUIDForSentence(sentence.bookingId, sentence.consecutiveToSequence)
+      )
+    else
+      mutableListOf()
 
-  return Sentence(
-    sentencedAt = sentenceTerm.sentenceStartDate,
-    duration = duration,
-    offence = offence,
-    identifier = generateUUIDForSentence(sentenceTerm.bookingId, sentenceTerm.sentenceSequence),
-    consecutiveSentenceUUIDs = consecutiveSentenceUUIDs
-  )
+    Sentence(
+      sentencedAt = sentence.sentenceDate,
+      duration = duration,
+      offence = offence,
+      identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+      consecutiveSentenceUUIDs = consecutiveSentenceUUIDs
+    )
+  }.toMutableList()
 }
 
 private fun generateUUIDForSentence(bookingId: Long, sequence: Int) =

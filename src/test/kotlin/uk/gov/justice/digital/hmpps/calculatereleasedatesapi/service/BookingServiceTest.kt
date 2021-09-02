@@ -13,10 +13,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceTerm
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
@@ -33,19 +34,27 @@ class BookingServiceTest {
   }
 
   @Test
-  fun `A booking object is generated correctly when requestiong a booking for a prisonerId`() {
+  fun `A booking object is generated correctly when requesting a booking for a prisonerId`() {
     val prisonerId = "A123456A"
     val sequence = 153
     val bookingId = 123456L
     val consecutiveTo = 99
-    val sentenceTerms = listOf(
-      SentenceTerm(
-        bookingId = bookingId,
-        sentenceSequence = sequence,
-        sentenceStartDate = FIRST_JAN_2015,
-        startDate = FIRST_JAN_2015,
-        consecutiveTo = consecutiveTo
-      )
+    val offences = listOf(
+      OffenderOffence(
+        offenderChargeId = 1L, offenceDate = FIRST_JAN_2015, offenceCode = "RR1", offenceDescription = "Littering"
+      ),
+    )
+    val sentenceAndOffences = SentenceAndOffences(
+      bookingId = bookingId,
+      sentenceSequence = sequence,
+      consecutiveToSequence = consecutiveTo,
+      sentenceDate = FIRST_JAN_2015,
+      years = 5,
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = "SDS",
+      sentenceTypeDescription = "Standard Determinate",
+      offences = offences,
     )
     val sentenceAdjustments = SentenceAdjustments(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
@@ -59,7 +68,7 @@ class BookingServiceTest {
           lastName = "Houdini"
         )
       )
-    whenever(prisonApiClient.getSentenceTerms(123456L)).thenReturn(sentenceTerms)
+    whenever(prisonApiClient.getSentencesAndOffences(123456L)).thenReturn(listOf(sentenceAndOffences))
     whenever(prisonApiClient.getSentenceAdjustments(123456L)).thenReturn(sentenceAdjustments)
 
     val result = bookingService.getBooking(prisonerId)
@@ -74,7 +83,7 @@ class BookingServiceTest {
         sentences = mutableListOf(
           Sentence(
             sentencedAt = FIRST_JAN_2015,
-            duration = ZERO_DURATION,
+            duration = FIVE_YEAR_DURATION,
             offence = Offence(startedAt = FIRST_JAN_2015),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
             consecutiveSentenceUUIDs = mutableListOf(
@@ -88,7 +97,7 @@ class BookingServiceTest {
   }
 
   private companion object {
-    val ZERO_DURATION = Duration(mutableMapOf(DAYS to 0L, MONTHS to 0L, YEARS to 0L))
+    val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, MONTHS to 0L, YEARS to 5L))
     val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     val DOB: LocalDate = LocalDate.of(1980, 1, 1)
   }
