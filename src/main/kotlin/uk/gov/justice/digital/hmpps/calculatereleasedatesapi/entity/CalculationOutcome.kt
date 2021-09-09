@@ -4,7 +4,7 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType
 import org.hibernate.annotations.TypeDef
 import org.hibernate.annotations.TypeDefs
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
