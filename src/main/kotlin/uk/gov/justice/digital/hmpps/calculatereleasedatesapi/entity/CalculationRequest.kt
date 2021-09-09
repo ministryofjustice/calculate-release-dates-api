@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.Table
+import javax.validation.constraints.NotNull
 
 @Entity
 @Table
@@ -24,13 +25,26 @@ data class CalculationRequest(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = -1,
+
+  @NotNull
   val calculationReference: UUID = UUID.randomUUID(),
+
+  @NotNull
   val prisonerId: String = "",
+
+  @NotNull
   val bookingId: Long = -1L,
+
+  @NotNull
   val calculationStatus: String = "",
+
+  @NotNull
   val calculatedAt: LocalDateTime = LocalDateTime.now(),
+
+  @NotNull
   val calculatedByUsername: String = "",
 
+  @NotNull
   @Type(type = "json")
   @Column(columnDefinition = "jsonb")
   val inputData: JsonNode = JacksonUtil.toJsonNode("{}"),

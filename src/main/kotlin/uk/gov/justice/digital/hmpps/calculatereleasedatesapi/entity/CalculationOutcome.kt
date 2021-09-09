@@ -1,26 +1,27 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity
 
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType
-import org.hibernate.annotations.TypeDef
-import org.hibernate.annotations.TypeDefs
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.Table
+import javax.validation.constraints.NotNull
 
 @Entity
 @Table
-@TypeDefs(
-  TypeDef(name = "jsonb", typeClass = JsonBinaryType::class)
-)
 data class CalculationOutcome(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = -1,
+
+  @NotNull
   val calculationReference: UUID = UUID.randomUUID(),
+
+  @NotNull
   val outcomeDate: LocalDateTime = LocalDateTime.now(),
+
+  @NotNull
   val calculationDateType: String = "",
 )
