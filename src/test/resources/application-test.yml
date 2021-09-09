@@ -13,7 +13,7 @@ spring:
           public-key-location: classpath:local-public-key.pub
 
   datasource:
-    url: 'jdbc:h2:mem:release-dates-db;MODE=PostgreSQL'
+    url: 'jdbc:h2:mem:release-dates-db;MODE=PostgreSQL;INIT=create domain if not exists jsonb as json'
     username: create_vary
     password: dummy
 
