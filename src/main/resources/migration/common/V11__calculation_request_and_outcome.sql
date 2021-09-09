@@ -6,7 +6,7 @@ CREATE TABLE calculation_request
     booking_id             integer     NOT NULL,
     input_data             JSONB       NOT NULL,
     calculation_status     varchar(20) NOT NULL,
-    calculated_at          timestamp with time zone,
+    calculated_at          timestamp with time zone NOT NULL,
     calculated_by_username varchar(20) NOT NULL
 );
 CREATE INDEX idx_calculation_request_reference ON calculation_request(calculation_reference);

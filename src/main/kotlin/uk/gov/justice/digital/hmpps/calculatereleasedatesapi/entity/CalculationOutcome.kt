@@ -19,8 +19,7 @@ data class CalculationOutcome(
   @NotNull
   val calculationReference: UUID = UUID.randomUUID(),
 
-  @NotNull
-  val outcomeDate: LocalDateTime = LocalDateTime.now(),
+  val outcomeDate: LocalDateTime = null,
 
   @NotNull
   val calculationDateType: String = "",
