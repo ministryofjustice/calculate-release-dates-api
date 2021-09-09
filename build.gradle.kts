@@ -56,6 +56,7 @@ dependencies {
 
   implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
   implementation("io.arrow-kt:arrow-core:0.10.5")
+  implementation("com.vladmihalcea:hibernate-types-52:2.12.1")
 
   // OpenAPI
   implementation("org.springdoc:springdoc-openapi-ui:1.4.6")
