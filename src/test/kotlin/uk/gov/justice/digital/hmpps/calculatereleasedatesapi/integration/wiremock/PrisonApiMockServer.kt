@@ -48,7 +48,8 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
               "offenderNo": "A1234AA",
               "dateOfBirth": "1990-02-01"
             }
-              """.trimIndent())
+              """.trimIndent()
+            )
             .withStatus(200)
         )
     )
