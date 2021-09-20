@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.TestData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TestService
@@ -70,7 +71,7 @@ class TestController(
   )
   fun calculate(@RequestBody @NotEmpty booking: String): BookingCalculation {
     log.info("Request received to calculate booking for $booking")
-    return calculationService.calculate(testService.jsonToBooking(booking))
+    return calculationService.calculate(testService.jsonToBooking(booking), PRELIMINARY)
   }
 
   companion object {

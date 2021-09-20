@@ -1,9 +1,15 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentType.UNLAWFULLY_AT_LARGE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -11,6 +17,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetai
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.YEARS
@@ -74,4 +82,23 @@ fun transform(sentenceAdjustments: SentenceAdjustments): MutableMap<AdjustmentTy
   adjustments[TAGGED_BAIL] = sentenceAdjustments.taggedBail
   adjustments[UNLAWFULLY_AT_LARGE] = sentenceAdjustments.unlawfullyAtLarge
   return adjustments
+}
+
+fun transform(booking: Booking, username: String, calculationStatus: CalculationStatus): CalculationRequest {
+  return CalculationRequest(
+    prisonerId = booking.offender.reference,
+    bookingId = booking.bookingId,
+    calculationStatus = calculationStatus.name,
+    calculatedByUsername = username,
+//    TODO mapping to JSON needs a spike as this doesnt work out of the box
+//    inputData = JacksonUtil.toJsonNode(mapper.writeValueAsString(booking))
+  )
+}
+
+fun transform(calculationRequest: CalculationRequest, sentenceType: SentenceType, date: LocalDate): CalculationOutcome {
+  return CalculationOutcome(
+    calculationRequest = calculationRequest,
+    outcomeDate = date,
+    calculationDateType = sentenceType.name,
+  )
 }
