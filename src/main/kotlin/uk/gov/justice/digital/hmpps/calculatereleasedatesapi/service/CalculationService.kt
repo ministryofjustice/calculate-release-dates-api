@@ -1,15 +1,28 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 
 @Service
 class CalculationService(
-  private val bookingCalculationService: BookingCalculationService
+  private val bookingCalculationService: BookingCalculationService,
+  private val calculationRequestRepository: CalculationRequestRepository,
+  private val calculationOutcomeRepository: CalculationOutcomeRepository,
 ) {
 
-  fun calculate(booking: Booking): BookingCalculation {
+  fun getCurrentAuthentication(): AuthAwareAuthenticationToken =
+    SecurityContextHolder.getContext().authentication as AuthAwareAuthenticationToken?
+      ?: throw IllegalStateException("User is not authenticated")
+
+  fun calculate(booking: Booking, calculationStatus: CalculationStatus): BookingCalculation {
+    val calculationRequest =
+      calculationRequestRepository.save(transform(booking, getCurrentAuthentication().principal, calculationStatus))
     var workingBooking: Booking = booking.copy()
 
     // identify the types of the sentences
@@ -38,7 +51,11 @@ class CalculationService(
         .combineConsecutive(workingBooking)
 
     // apply any rules to calculate the dates
-    return bookingCalculationService
+    val bookingCalculation = bookingCalculationService
       .extract(workingBooking)
+    bookingCalculation.dates.forEach {
+      calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
+    }
+    return bookingCalculation
   }
 }
