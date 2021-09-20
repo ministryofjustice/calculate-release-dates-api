@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.util.Optional
 
 data class Offence(
-  val startedAt: LocalDate = LocalDate.now(),
+  val startedAt: LocalDate,
   val endedAt: Optional<LocalDate> = Optional.empty(),
   var isScheduleFifteen: Boolean = false
 )

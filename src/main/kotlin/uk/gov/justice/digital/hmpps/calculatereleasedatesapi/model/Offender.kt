@@ -6,7 +6,7 @@ import java.time.Period
 data class Offender(
   val reference: String,
   val name: String,
-  val dateOfBirth: LocalDate = LocalDate.now(),
+  val dateOfBirth: LocalDate,
 ) {
   fun getAgeOnDate(date: LocalDate): Double {
     val betweenDates = Period.between(this.dateOfBirth, date)
