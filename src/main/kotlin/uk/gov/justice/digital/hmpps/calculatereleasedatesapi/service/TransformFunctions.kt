@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.vladmihalcea.hibernate.type.json.internal.JacksonUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentType
@@ -83,13 +86,14 @@ fun transform(sentenceAdjustments: SentenceAdjustments): MutableMap<AdjustmentTy
 }
 
 fun transform(booking: Booking, username: String, calculationStatus: CalculationStatus): CalculationRequest {
+  val mapper = ObjectMapper()
+  mapper.registerModule(JavaTimeModule())
   return CalculationRequest(
     prisonerId = booking.offender.reference,
     bookingId = booking.bookingId,
     calculationStatus = calculationStatus.name,
     calculatedByUsername = username,
-//    TODO mapping to JSON needs a spike as this doesnt work out of the box
-//    inputData = JacksonUtil.toJsonNode(mapper.writeValueAsString(booking))
+    inputData = JacksonUtil.toJsonNode(mapper.writeValueAsString(booking))
   )
 }
 

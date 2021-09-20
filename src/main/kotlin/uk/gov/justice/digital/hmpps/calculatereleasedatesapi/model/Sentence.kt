@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.threeten.extra.LocalDateRange
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -14,15 +15,18 @@ data class Sentence(
   var identifier: UUID = UUID.randomUUID(),
   var consecutiveSentenceUUIDs: MutableList<UUID> = mutableListOf()
 ) {
+  @JsonIgnore
   lateinit var consecutiveSentences: MutableList<Sentence>
+  @JsonIgnore
   lateinit var sentenceCalculation: SentenceCalculation
+  @JsonIgnore
   lateinit var identificationTrack: SentenceIdentificationTrack
+  @JsonIgnore
+  lateinit var sentenceTypes: List<SentenceType>
 
   fun isSentenceCalculated(): Boolean {
     return this::sentenceCalculation.isInitialized
   }
-
-  lateinit var sentenceTypes: List<SentenceType>
 
   fun associateSentences(sentences: List<Sentence>) {
     consecutiveSentences = mutableListOf()
@@ -57,6 +61,7 @@ data class Sentence(
     return LocalDateRange.of(sentencedAt, duration.getEndDate(sentencedAt))
   }
 
+  @JsonIgnore
   fun getReleaseDateType(): SentenceType {
     return if (sentenceTypes.contains(SentenceType.PED))
       SentenceType.PED else if (sentenceCalculation.isReleaseDateConditional)
