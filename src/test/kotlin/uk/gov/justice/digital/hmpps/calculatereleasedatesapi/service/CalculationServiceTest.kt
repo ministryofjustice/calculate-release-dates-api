@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
-import java.util.*
+import java.util.UUID
 
 class CalculationServiceTest {
   private val jsonTransformation = JsonTransformation()
@@ -52,7 +52,9 @@ class CalculationServiceTest {
   fun `Test PSI Example`(exampleNumber: String) {
     log.info("Testing PSI example $exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
-    SecurityContextHolder.setContext(SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())))
+    SecurityContextHolder.setContext(
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+    )
     val booking = jsonTransformation.loadBooking("psi-examples/$exampleNumber")
     val bookingCalculation = calculationService.calculate(booking, PRELIMINARY)
     assertEquals(
