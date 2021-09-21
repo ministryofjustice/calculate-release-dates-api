@@ -17,7 +17,7 @@ class CalculationIntTest : IntegrationTestBase() {
   lateinit var calculationRequestRepository: CalculationRequestRepository
 
   @Test
-  fun `Run calculation for a prisoner (based on example 13 from the unit tests) - check release date and input data is persisted correctly in JSON column`() {
+  fun `Run calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
     val result = webTestClient.get()
       .uri("/calculation/by-prisoner-id/A1234AA")
       .accept(MediaType.APPLICATION_JSON)
