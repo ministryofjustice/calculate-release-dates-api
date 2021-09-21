@@ -66,8 +66,8 @@ class TestDataIntTest : IntegrationTestBase() {
       .returnResult().responseBody
 
     assertEquals(
-      jsonTransformation.loadBookingCalculation("9"),
-      result
+      jsonTransformation.loadBookingCalculation("9").dates,
+      result.dates
     )
   }
 }

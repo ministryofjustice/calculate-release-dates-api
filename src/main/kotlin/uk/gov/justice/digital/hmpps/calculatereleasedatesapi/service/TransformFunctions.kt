@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetai
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
@@ -88,6 +89,7 @@ fun transform(sentenceAdjustments: SentenceAdjustments): MutableMap<AdjustmentTy
 fun transform(booking: Booking, username: String, calculationStatus: CalculationStatus): CalculationRequest {
   val mapper = ObjectMapper()
   mapper.registerModule(JavaTimeModule())
+  mapper.dateFormat = SimpleDateFormat("yyyy-MM-dd")
   return CalculationRequest(
     prisonerId = booking.offender.reference,
     bookingId = booking.bookingId,
