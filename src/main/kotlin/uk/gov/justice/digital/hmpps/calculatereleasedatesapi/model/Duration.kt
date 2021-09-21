@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -17,7 +18,9 @@ import java.time.temporal.ChronoUnit.DAYS
   is 31 days a nearly 10% difference.
  */
 
-data class Duration(internal var durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()) {
+data class Duration(
+  var durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()
+) {
 
   fun append(length: Long, period: ChronoUnit) {
     if (!this.durationElements.containsKey(period)) {
