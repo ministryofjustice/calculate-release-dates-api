@@ -19,6 +19,7 @@ class BookingService(
       offender = offender,
       sentences = sentences.toMutableList(),
       adjustments = adjustments,
+      bookingId = prisonerDetails.bookingId,
     )
   }
 }

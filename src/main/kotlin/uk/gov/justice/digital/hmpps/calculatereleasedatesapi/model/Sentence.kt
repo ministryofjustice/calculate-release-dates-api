@@ -54,11 +54,13 @@ data class Sentence(
       )
   }
 
+  @JsonIgnore
   fun getHalfSentenceDate(): LocalDate {
     val days = (duration.getLengthInDays(this.sentencedAt).toDouble() / 2).roundToLong()
     return this.sentencedAt.plusDays(days)
   }
 
+  @JsonIgnore
   fun getDateRange(): LocalDateRange? {
     return LocalDateRange.of(sentencedAt, duration.getEndDate(sentencedAt))
   }

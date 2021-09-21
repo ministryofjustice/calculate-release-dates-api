@@ -51,8 +51,8 @@ class CalculationService(
         .combineConsecutive(workingBooking)
 
     // apply any rules to calculate the dates
-    val bookingCalculation = bookingCalculationService
-      .extract(workingBooking)
+    val bookingCalculation = bookingCalculationService.extract(workingBooking)
+    bookingCalculation.calculationRequestId = calculationRequest.id
     bookingCalculation.dates.forEach {
       calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
     }

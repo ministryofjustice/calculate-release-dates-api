@@ -4,5 +4,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import java.time.LocalDate
 
 data class BookingCalculation(
-  val dates: MutableMap<SentenceType, LocalDate> = mutableMapOf()
+  val dates: MutableMap<SentenceType, LocalDate> = mutableMapOf(),
+  var calculationRequestId: Long = -1
 )

@@ -17,7 +17,9 @@ import java.time.temporal.ChronoUnit.DAYS
   is 31 days a nearly 10% difference.
  */
 
-data class Duration(internal var durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()) {
+data class Duration(
+  var durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()
+) {
 
   fun append(length: Long, period: ChronoUnit) {
     if (!this.durationElements.containsKey(period)) {

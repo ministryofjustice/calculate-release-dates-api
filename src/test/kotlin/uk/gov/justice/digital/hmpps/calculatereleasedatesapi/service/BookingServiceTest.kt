@@ -75,6 +75,7 @@ class BookingServiceTest {
 
     assertThat(result).isEqualTo(
       Booking(
+        bookingId = 123456,
         offender = Offender(
           name = "Harry Houdini",
           dateOfBirth = DOB,
