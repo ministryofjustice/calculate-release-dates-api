@@ -24,7 +24,8 @@ class TransformFunctionsTest {
         offenderChargeId = 1L, offenceStartDate = FIRST_JAN_2015, offenceCode = "RR1", offenceDescription = "Littering"
       ),
       OffenderOffence(
-        offenderChargeId = 2L, offenceStartDate = SECOND_JAN_2015, offenceCode = "RR2", offenceDescription = "Jaywalking"
+        offenderChargeId = 2L, offenceStartDate = SECOND_JAN_2015,
+        offenceCode = "RR2", offenceDescription = "Jaywalking"
       ),
     )
     val request = SentenceAndOffences(
@@ -66,7 +67,8 @@ class TransformFunctionsTest {
     val consecutiveTo = 99
     val offences = listOf(
       OffenderOffence(
-        offenderChargeId = 1L, offenceStartDate = FIRST_JAN_2015, offenceEndDate = SECOND_JAN_2015, offenceCode = "RR1", offenceDescription = "Littering"
+        offenderChargeId = 1L, offenceStartDate = FIRST_JAN_2015, offenceEndDate = SECOND_JAN_2015,
+        offenceCode = "RR1", offenceDescription = "Littering"
       ),
     )
     val request = SentenceAndOffences(
