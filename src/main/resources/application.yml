@@ -103,7 +103,32 @@ management:
 domain-events-sqs:
   provider: aws
   endpoint.region: eu-west-2
+  aws:
+    access:
+      key:
+        id: access_key_id
+    secret:
+      access:
+        key: secret_access_key
+    topic:
+      arn: topic_arn
+    dlq:
+      access:
+        key:
+          id: dlq_access_key_id
+      secret:
+        access:
+          key: dlq_secret_access_key
 
 domain-events-sns:
   provider: aws
   region: eu-west-2
+  aws:
+    access:
+      key:
+        id: access_key_id
+    secret:
+      access:
+        key: secret_access_key
+    topic:
+      arn: topic_arn

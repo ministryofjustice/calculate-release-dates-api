@@ -14,7 +14,7 @@ internal class SentenceCalculationTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration()
     duration.append(1L, ChronoUnit.DAYS)
-    val offence = Offence(LocalDate.of(2020, 1, 1), Optional.empty())
+    val offence = Offence(LocalDate.of(2020, 1, 1))
     val sentence = Sentence(offence, duration, sentencedAt)
     val date = LocalDate.of(2021, 1, 1)
     val sentenceCalculation = SentenceCalculation(
