@@ -28,14 +28,17 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectBody(BookingCalculation::class.java)
       .returnResult().responseBody
 
-    val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
-      .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
+    if (result != null) {
 
-    assertThat(result).isNotNull
-    assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
-    assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
-    assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
-    assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo("A1234AA")
-    assertThat(calculationRequest.inputData["sentences"][0]["offence"]["startedAt"].asText()).isEqualTo("2015-03-17")
+      val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
+        .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
+
+      assertThat(result).isNotNull
+      assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
+      assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
+      assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
+      assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo("A1234AA")
+      assertThat(calculationRequest.inputData["sentences"][0]["offence"]["startedAt"].asText()).isEqualTo("2015-03-17")
+    }
   }
 }

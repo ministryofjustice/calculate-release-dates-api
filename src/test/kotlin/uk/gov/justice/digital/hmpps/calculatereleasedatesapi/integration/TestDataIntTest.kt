@@ -64,10 +64,11 @@ class TestDataIntTest : IntegrationTestBase() {
       .expectStatus().isOk
       .expectBody(BookingCalculation::class.java)
       .returnResult().responseBody
-
-    assertEquals(
-      jsonTransformation.loadBookingCalculation("9").dates,
-      result.dates
-    )
+    if (result != null) {
+      assertEquals(
+        jsonTransformation.loadBookingCalculation("9").dates,
+        result.dates
+      )
+    }
   }
 }
