@@ -2,8 +2,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
 import org.slf4j.Logger
@@ -13,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.oauth2.jwt.Jwt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -43,9 +46,15 @@ class CalculationServiceTest {
 
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
+  private val domainEventPublisher: DomainEventPublisher = mock()
 
   private val calculationService =
-    CalculationService(bookingCalculationService, calculationRequestRepository, calculationOutcomeRepository)
+    CalculationService(
+      bookingCalculationService,
+      calculationRequestRepository,
+      calculationOutcomeRepository,
+      domainEventPublisher
+    )
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/psi_examples.csv"], numLinesToSkip = 1)
@@ -67,15 +76,35 @@ class CalculationServiceTest {
     )
   }
 
+  @Test
+  fun `Test a PSI Example with CONFIRMED status publishes an event when the calculation is somplete`() {
+    val exampleNumber = "9"
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
+    SecurityContextHolder.setContext(
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+    )
+    val booking = jsonTransformation.loadBooking("psi-examples/$exampleNumber")
+
+    val bookingCalculation = calculationService.calculate(booking, CONFIRMED)
+
+    assertEquals(jsonTransformation.loadBookingCalculation(exampleNumber), bookingCalculation)
+    verify(domainEventPublisher).publishReleaseDateChange(PRISONER_ID, BOOKING_ID)
+  }
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val USERNAME = "user1"
+    private const val PRISONER_ID = "A1234AJ"
+    private const val BOOKING_ID = 12345L
     val FAKE_TOKEN: Jwt = Jwt
       .withTokenValue("123")
       .header("header1", "value1")
       .claim("claim1", "value1")
       .build()
     private val CALCULATION_REFERENCE: UUID = UUID.randomUUID()
-    val CALCULATION_REQUEST = CalculationRequest(calculationReference = CALCULATION_REFERENCE)
+    val CALCULATION_REQUEST = CalculationRequest(
+      calculationReference = CALCULATION_REFERENCE, prisonerId = PRISONER_ID,
+      bookingId = BOOKING_ID
+    )
   }
 }
