@@ -33,7 +33,7 @@ export HMPPS_AUTH_URL=http://localhost:9090/auth
 export SPRING_DATASOURCE_URL='jdbc:postgresql://${DB_SERVER}/${DB_NAME}'
 
 # Run the application with stdout and dev profiles active
-SPRING_PROFILES_ACTIVE=stdout,dev ./gradlew bootRun
+SPRING_PROFILES_ACTIVE=stdout,dev,localstack ./gradlew bootRun
 
 # End
 
