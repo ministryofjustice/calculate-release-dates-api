@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.Optional
 import java.util.UUID
 
 internal class SentenceTest {
@@ -14,7 +13,7 @@ internal class SentenceTest {
     val uuidString = "219db65e-d7b7-4c70-9239-98babff7bcd5"
     val duration = Duration()
     duration.append(1L, ChronoUnit.DAYS)
-    val offence = Offence(LocalDate.of(2020, 1, 1), Optional.empty())
+    val offence = Offence(LocalDate.of(2020, 1, 1))
     val sentence = Sentence(offence, duration, sentencedAt, UUID.fromString(uuidString))
 
     assertEquals(duration, sentence.duration)
@@ -22,7 +21,7 @@ internal class SentenceTest {
     assertEquals(uuidString, sentence.identifier.toString())
 
     assertEquals(
-      "Sentence(offence=Offence(startedAt=2020-01-01, endedAt=Optional.empty, isScheduleFifteen=false), " +
+      "Sentence(offence=Offence(committedAt=2020-01-01, isScheduleFifteen=false), " +
         "duration=1 days, sentencedAt=2020-01-01, " +
         "identifier=219db65e-d7b7-4c70-9239-98babff7bcd5, consecutiveSentenceUUIDs=[])",
       sentence.toString()
@@ -34,7 +33,7 @@ internal class SentenceTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration()
     duration.append(1L, ChronoUnit.DAYS)
-    val offence = Offence(LocalDate.of(2020, 1, 1), Optional.empty())
+    val offence = Offence(LocalDate.of(2020, 1, 1))
     val sentence = Sentence(
       offence, duration, sentencedAt, UUID.randomUUID(),
       mutableListOf(UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5"))

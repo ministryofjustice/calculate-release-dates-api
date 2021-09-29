@@ -12,7 +12,7 @@ class SentenceIdentificationService {
   fun identify(sentence: Sentence, offender: Offender) {
     if (
       sentence.sentencedAt.isBefore(ImportantDates.LASPO_DATE) &&
-      sentence.offence.startedAt.isBefore(ImportantDates.CJA_DATE)
+      sentence.offence.committedAt.isBefore(ImportantDates.CJA_DATE)
     ) {
       beforeCJAAndLASPO(sentence)
     } else {
@@ -26,7 +26,7 @@ class SentenceIdentificationService {
 
     if (!sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
 
-      if (sentence.offence.startedAt.isAfter(ImportantDates.ORA_DATE)) {
+      if (sentence.offence.committedAt.isAfter(ImportantDates.ORA_DATE)) {
         isTopUpSentenceExpiryDateRequired(sentence, offender)
       } else {
         sentence.sentenceTypes = listOf(
@@ -42,7 +42,7 @@ class SentenceIdentificationService {
         )
       } else {
 
-        if (sentence.offence.startedAt.isBefore(ImportantDates.ORA_DATE)) {
+        if (sentence.offence.committedAt.isBefore(ImportantDates.ORA_DATE)) {
           sentence.sentenceTypes = listOf(
             SentenceType.SLED,
             SentenceType.CRD

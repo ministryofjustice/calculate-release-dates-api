@@ -36,6 +36,6 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
     assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
     assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo("A1234AA")
-    assertThat(calculationRequest.inputData["sentences"][0]["offence"]["startedAt"].asText()).isEqualTo("2015-03-17")
+    assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText()).isEqualTo("2015-03-17")
   }
 }

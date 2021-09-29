@@ -72,7 +72,7 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
   }
 
   fun earliestOffence(firstSentence: Sentence, secondSentence: Sentence): Offence {
-    val offence = if (firstSentence.offence.startedAt.isBefore(secondSentence.offence.startedAt)) {
+    val offence = if (firstSentence.offence.committedAt.isBefore(secondSentence.offence.committedAt)) {
       firstSentence.offence
     } else {
       secondSentence.offence
