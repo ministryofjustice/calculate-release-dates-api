@@ -39,7 +39,7 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText()).isEqualTo("2015-03-17")
   }
 
- @Test
+  @Test
   fun `Confirm a calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
     val result = webTestClient.post()
       .uri("/calculation/A1234AA/confirm")

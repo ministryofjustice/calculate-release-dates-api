@@ -78,7 +78,7 @@ class CalculationControllerTest {
     whenever(bookingService.getBooking(prisonerId)).thenReturn(booking)
     whenever(calculationService.calculate(booking, CONFIRMED)).thenReturn(bookingCalculation)
 
-    val result = mvc.perform(post("/calculation/${prisonerId}/confirm").accept(APPLICATION_JSON))
+    val result = mvc.perform(post("/calculation/$prisonerId/confirm").accept(APPLICATION_JSON))
       .andExpect(status().isOk)
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
