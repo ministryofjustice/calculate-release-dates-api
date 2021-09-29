@@ -99,3 +99,11 @@ management:
     info:
       cache:
         time-to-live: 2000ms
+
+domain-events-sqs:
+  provider: aws
+  endpoint.region: eu-west-2
+
+domain-events-sns:
+  provider: aws
+  region: eu-west-2
