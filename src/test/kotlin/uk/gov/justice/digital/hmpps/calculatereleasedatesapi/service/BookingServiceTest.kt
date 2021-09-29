@@ -41,7 +41,7 @@ class BookingServiceTest {
     val consecutiveTo = 99
     val offences = listOf(
       OffenderOffence(
-        offenderChargeId = 1L, offenceDate = FIRST_JAN_2015, offenceCode = "RR1", offenceDescription = "Littering"
+        offenderChargeId = 1L, offenceStartDate = FIRST_JAN_2015, offenceCode = "RR1", offenceDescription = "Littering"
       ),
     )
     val sentenceAndOffences = SentenceAndOffences(
@@ -85,7 +85,7 @@ class BookingServiceTest {
           Sentence(
             sentencedAt = FIRST_JAN_2015,
             duration = FIVE_YEAR_DURATION,
-            offence = Offence(startedAt = FIRST_JAN_2015),
+            offence = Offence(committedAt = FIRST_JAN_2015),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
             consecutiveSentenceUUIDs = mutableListOf(
               UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())

@@ -33,6 +33,27 @@ jobs:
       - store_artifacts:
           path: build/reports/tests
 
+  integration-test:
+    executor:
+      name: hmpps/java
+      tag: "16.0"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle.kts" }}
+            - gradle-
+      - run:
+          command: ./gradlew -Dorg.gradle.jvmargs="--illegal-access=permit" -Dkotlin.daemon.jvm.options="--illegal-access=permit" integrationTest
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle.kts" }}
+      - store_test_results:
+          path: build/test-results
+      - store_artifacts:
+          path: build/reports/tests
+
 workflows:
   version: 2
   build-test-and-deploy:
@@ -41,6 +62,10 @@ workflows:
           filters:
             tags:
               ignore: /.*/
+      - integration-test:
+        filters:
+          tags:
+            ignore: /.*/
       - hmpps/helm_lint:
           name: helm_lint
       - hmpps/build_docker:
@@ -59,6 +84,7 @@ workflows:
                 - main
           requires:
             - validate
+            - integration-test
             - build_docker
             - helm_lint
 #      - request-preprod-approval:

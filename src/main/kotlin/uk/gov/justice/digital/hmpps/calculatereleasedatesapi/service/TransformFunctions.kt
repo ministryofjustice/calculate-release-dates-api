@@ -45,7 +45,9 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
   // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
   // treated as a separate sentence
   return sentence.offences.map { offendersOffence ->
-    val offence = Offence(startedAt = offendersOffence.offenceDate)
+    val offence = Offence(
+      committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate
+    )
     val duration = Duration()
     duration.append(sentence.days.toLong(), DAYS)
     duration.append(sentence.months.toLong(), MONTHS)

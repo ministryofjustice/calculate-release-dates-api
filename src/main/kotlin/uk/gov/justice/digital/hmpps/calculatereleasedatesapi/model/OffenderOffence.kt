@@ -4,7 +4,8 @@ import java.time.LocalDate
 
 data class OffenderOffence(
   val offenderChargeId: Long,
-  val offenceDate: LocalDate,
+  val offenceStartDate: LocalDate,
+  val offenceEndDate: LocalDate? = null,
   val offenceCode: String,
   val offenceDescription: String,
 )
