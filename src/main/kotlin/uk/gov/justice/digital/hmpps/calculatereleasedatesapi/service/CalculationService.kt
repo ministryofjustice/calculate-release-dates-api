@@ -2,9 +2,9 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
@@ -15,13 +15,13 @@ class CalculationService(
   private val bookingCalculationService: BookingCalculationService,
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
-  private val domainEventPublisher: DomainEventPublisher,
 ) {
 
   fun getCurrentAuthentication(): AuthAwareAuthenticationToken =
     SecurityContextHolder.getContext().authentication as AuthAwareAuthenticationToken?
       ?: throw IllegalStateException("User is not authenticated")
 
+  @Transactional
   fun calculate(booking: Booking, calculationStatus: CalculationStatus): BookingCalculation {
     val calculationRequest =
       calculationRequestRepository.save(transform(booking, getCurrentAuthentication().principal, calculationStatus))
@@ -59,9 +59,6 @@ class CalculationService(
       calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
     }
 
-    if (calculationStatus == CONFIRMED) {
-      domainEventPublisher.publishReleaseDateChange(calculationRequest.prisonerId, calculationRequest.bookingId)
-    }
     return bookingCalculation
   }
 }
