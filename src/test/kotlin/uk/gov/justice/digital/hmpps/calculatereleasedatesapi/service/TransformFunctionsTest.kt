@@ -2,6 +2,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderOffence
@@ -97,9 +101,47 @@ class TransformFunctionsTest {
     )
   }
 
+  @Test
+  fun `Transform a CalculationRequest to a BookingCalculation`() {
+    val releaseDatesBySentenceType = mutableMapOf(
+      SentenceType.CRD to FIRST_JAN_2015,
+      SentenceType.SED to SECOND_JAN_2015,
+    )
+
+    assertThat(transform(CALCULATION_REQUEST)).isEqualTo(
+      BookingCalculation(
+        releaseDatesBySentenceType,
+        CALCULATION_REQUEST_ID
+      )
+    )
+  }
+
   private companion object {
     val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, MONTHS to 0L, YEARS to 5L))
     val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     val SECOND_JAN_2015: LocalDate = LocalDate.of(2015, 1, 2)
+    private const val PRISONER_ID = "A1234AJ"
+    private const val BOOKING_ID = 12345L
+    private val CALCULATION_REFERENCE: UUID = UUID.randomUUID()
+    private const val CALCULATION_REQUEST_ID = 100011L
+
+    val CALCULATION_REQUEST = CalculationRequest(
+      id = CALCULATION_REQUEST_ID,
+      calculationReference = CALCULATION_REFERENCE,
+      prisonerId = PRISONER_ID,
+      bookingId = BOOKING_ID,
+      calculationOutcomes = listOf(
+        CalculationOutcome(
+          calculationRequestId = CALCULATION_REQUEST_ID,
+          outcomeDate = FIRST_JAN_2015,
+          calculationDateType = "CRD"
+        ),
+        CalculationOutcome(
+          calculationRequestId = CALCULATION_REQUEST_ID,
+          outcomeDate = SECOND_JAN_2015,
+          calculationDateType = "SED"
+        ),
+      )
+    )
   }
 }

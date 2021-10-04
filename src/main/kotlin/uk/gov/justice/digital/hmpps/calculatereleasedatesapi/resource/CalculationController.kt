@@ -29,7 +29,6 @@ class CalculationController(
   private val calculationService: CalculationService,
   private val domainEventPublisher: DomainEventPublisher,
 ) {
-
   @GetMapping(value = ["/by-prisoner-id/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRD_ADMIN', 'PRISON')")
   @ResponseBody
@@ -85,6 +84,37 @@ class CalculationController(
     val calculation = calculationService.calculate(booking, CONFIRMED)
     domainEventPublisher.publishReleaseDateChange(prisonerId, booking.bookingId)
     return calculation
+  }
+
+  @GetMapping(value = ["/results/{prisonerId}/{bookingId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRD_ADMIN', 'PRISON')")
+  @ResponseBody
+  @Operation(
+    summary = "Get confirmed release dates for a prisoner's specific booking",
+    description = "This endpoint will return the confirmed release dates based on a prisoners booking",
+    security = [
+      SecurityRequirement(name = "SYSTEM_USER"),
+      SecurityRequirement(name = "CRD_ADMIN"),
+      SecurityRequirement(name = "PRISON")
+    ],
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No confirmed calculation exists for this prisoner and booking")
+    ]
+  )
+  fun getConfirmedCalculationResults(
+    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
+    @PathVariable("prisonerId")
+    prisonerId: String,
+    @Parameter(required = true, example = "100001", description = "The booking ID associated with the calculation")
+    @PathVariable("bookingId")
+    bookingId: Long,
+  ): BookingCalculation {
+    log.info("Request received return calculation results for prisoner {} and bookingId ", prisonerId, bookingId)
+    return calculationService.findConfirmedCalculationResults(prisonerId, bookingId)
   }
 
   companion object {
