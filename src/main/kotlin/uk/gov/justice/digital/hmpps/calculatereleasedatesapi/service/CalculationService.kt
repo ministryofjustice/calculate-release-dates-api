@@ -5,10 +5,12 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import javax.persistence.EntityNotFoundException
 
 @Service
 class CalculationService(
@@ -60,5 +62,18 @@ class CalculationService(
     }
 
     return bookingCalculation
+  }
+
+  @Transactional(readOnly = true)
+  fun findConfirmedCalculationResults(prisonerId: String, bookingId: Long): BookingCalculation {
+    val calculationRequest = calculationRequestRepository.findFirstByPrisonerIdAndBookingIdAndCalculationStatusOrderByCalculatedAtAsc(
+      prisonerId,
+      bookingId,
+      CONFIRMED.name
+    ).orElseThrow {
+      EntityNotFoundException("No confirmed calculation exists for prisoner $prisonerId and bookingId $bookingId")
+    }
+
+    return transform(calculationRequest)
   }
 }
