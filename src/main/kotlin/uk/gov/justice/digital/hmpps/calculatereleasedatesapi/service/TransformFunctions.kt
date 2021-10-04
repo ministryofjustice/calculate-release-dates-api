@@ -113,7 +113,7 @@ fun transform(calculationRequest: CalculationRequest, sentenceType: SentenceType
 fun transform(calculationRequest: CalculationRequest): BookingCalculation {
   return BookingCalculation(
     dates = calculationRequest.calculationOutcomes.associateBy(
-      { SentenceType.valueOf(it.calculationDateType)}, {it.outcomeDate}
+      { SentenceType.valueOf(it.calculationDateType) }, { it.outcomeDate }
     ).toMutableMap(),
     calculationRequestId = calculationRequest.id
   )

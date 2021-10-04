@@ -66,13 +66,14 @@ class CalculationService(
 
   @Transactional(readOnly = true)
   fun findConfirmedCalculationResults(prisonerId: String, bookingId: Long): BookingCalculation {
-    val calculationRequest = calculationRequestRepository.findFirstByPrisonerIdAndBookingIdAndCalculationStatusOrderByCalculatedAtAsc(
-      prisonerId,
-      bookingId,
-      CONFIRMED.name
-    ).orElseThrow {
-      EntityNotFoundException("No confirmed calculation exists for prisoner $prisonerId and bookingId $bookingId")
-    }
+    val calculationRequest =
+      calculationRequestRepository.findFirstByPrisonerIdAndBookingIdAndCalculationStatusOrderByCalculatedAtAsc(
+        prisonerId,
+        bookingId,
+        CONFIRMED.name
+      ).orElseThrow {
+        EntityNotFoundException("No confirmed calculation exists for prisoner $prisonerId and bookingId $bookingId")
+      }
 
     return transform(calculationRequest)
   }

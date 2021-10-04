@@ -102,7 +102,6 @@ class CalculationIntTest : IntegrationTestBase() {
           "prisoner A1234AA and bookingId 92929988\"," +
           "\"moreInfo\":null}"
       )
-
   }
 
   companion object {
