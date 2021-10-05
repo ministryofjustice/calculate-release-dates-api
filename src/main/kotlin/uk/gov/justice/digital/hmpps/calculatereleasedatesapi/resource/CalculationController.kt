@@ -29,12 +29,13 @@ class CalculationController(
   private val calculationService: CalculationService,
   private val domainEventPublisher: DomainEventPublisher,
 ) {
-  @GetMapping(value = ["/by-prisoner-id/{prisonerId}"])
+  @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRD_ADMIN', 'PRISON')")
   @ResponseBody
   @Operation(
-    summary = "Calculate release dates for a prisoner",
-    description = "This endpoint will calculate release dates based on a prisoners latest booking ",
+    summary = "Calculate release dates for a prisoner - preliminary calculation, this does not publish to NOMIS",
+    description = "This endpoint will calculate release dates based on a prisoners latest booking - this is a " +
+      "PRELIMINARY calculation that will not be published to NOMIS",
     security = [
       SecurityRequirement(name = "SYSTEM_USER"),
       SecurityRequirement(name = "CRD_ADMIN"),
