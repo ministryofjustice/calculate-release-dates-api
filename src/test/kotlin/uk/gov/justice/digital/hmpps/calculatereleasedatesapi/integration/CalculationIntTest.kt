@@ -18,8 +18,8 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
-    val result = webTestClient.get()
-      .uri("/calculation/by-prisoner-id/$PRISONER_ID")
+    val result = webTestClient.post()
+      .uri("/calculation/$PRISONER_ID")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_CRD_ADMIN")))
       .exchange()
