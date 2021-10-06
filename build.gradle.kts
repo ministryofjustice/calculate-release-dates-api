@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.8"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.9"
   kotlin("plugin.spring") version "1.5.30"
   kotlin("plugin.jpa") version "1.5.30"
   id("io.gitlab.arturbosch.detekt").version("1.18.0-RC2")
@@ -62,6 +62,12 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-ui:1.4.6")
   implementation("org.springdoc:springdoc-openapi-data-rest:1.4.6")
   implementation("org.springdoc:springdoc-openapi-kotlin:1.4.6")
+
+  implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8")
+  implementation("com.amazonaws:aws-java-sdk-sns:1.12.62")
+  implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
+  implementation("org.springframework:spring-jms")
+  implementation("com.google.code.gson:gson:2.8.8")
 
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")

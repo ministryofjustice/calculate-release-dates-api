@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -45,7 +46,9 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
   // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
   // treated as a separate sentence
   return sentence.offences.map { offendersOffence ->
-    val offence = Offence(startedAt = offendersOffence.offenceDate)
+    val offence = Offence(
+      committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate
+    )
     val duration = Duration()
     duration.append(sentence.days.toLong(), DAYS)
     duration.append(sentence.months.toLong(), MONTHS)
@@ -101,8 +104,17 @@ fun transform(booking: Booking, username: String, calculationStatus: Calculation
 
 fun transform(calculationRequest: CalculationRequest, sentenceType: SentenceType, date: LocalDate): CalculationOutcome {
   return CalculationOutcome(
-    calculationRequest = calculationRequest,
+    calculationRequestId = calculationRequest.id,
     outcomeDate = date,
     calculationDateType = sentenceType.name,
+  )
+}
+
+fun transform(calculationRequest: CalculationRequest): BookingCalculation {
+  return BookingCalculation(
+    dates = calculationRequest.calculationOutcomes.associateBy(
+      { SentenceType.valueOf(it.calculationDateType) }, { it.outcomeDate }
+    ).toMutableMap(),
+    calculationRequestId = calculationRequest.id
   )
 }

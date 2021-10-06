@@ -6,7 +6,7 @@
   },
   "sentences": [{
     "offence": {
-      "startedAt": "2014-02-01"
+      "committedAt": "2014-02-01"
     },
     "duration": {
       "durationElements": {
@@ -17,7 +17,7 @@
   },
     {
       "offence": {
-        "startedAt": "2015-10-05"
+        "committedAt": "2015-10-05"
       },
       "duration": {
         "durationElements": {

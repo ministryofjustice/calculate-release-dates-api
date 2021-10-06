@@ -46,7 +46,11 @@ class CalculationServiceTest {
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
 
   private val calculationService =
-    CalculationService(bookingCalculationService, calculationRequestRepository, calculationOutcomeRepository)
+    CalculationService(
+      bookingCalculationService,
+      calculationRequestRepository,
+      calculationOutcomeRepository
+    )
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/psi_examples.csv"], numLinesToSkip = 1)
@@ -76,12 +80,17 @@ class CalculationServiceTest {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val USERNAME = "user1"
+    private const val PRISONER_ID = "A1234AJ"
+    private const val BOOKING_ID = 12345L
     val FAKE_TOKEN: Jwt = Jwt
       .withTokenValue("123")
       .header("header1", "value1")
       .claim("claim1", "value1")
       .build()
     private val CALCULATION_REFERENCE: UUID = UUID.randomUUID()
-    val CALCULATION_REQUEST = CalculationRequest(calculationReference = CALCULATION_REFERENCE)
+    val CALCULATION_REQUEST = CalculationRequest(
+      calculationReference = CALCULATION_REFERENCE, prisonerId = PRISONER_ID,
+      bookingId = BOOKING_ID
+    )
   }
 }
