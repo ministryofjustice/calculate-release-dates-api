@@ -18,7 +18,7 @@ class TestDataIntTest : IntegrationTestBase() {
     val result = webTestClient.get()
       .uri("/test/data")
       .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_CRD_ADMIN")))
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +59,7 @@ class TestDataIntTest : IntegrationTestBase() {
     val result = webTestClient.post()
       .uri("/test/calculation-by-booking")
       .bodyValue(jsonTransformation.getJsonTest("psi-examples/9.json", "overall_calculation"))
-      .headers(setAuthorisation(roles = listOf("ROLE_CRD_ADMIN")))
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
       .expectBody(BookingCalculation::class.java)
