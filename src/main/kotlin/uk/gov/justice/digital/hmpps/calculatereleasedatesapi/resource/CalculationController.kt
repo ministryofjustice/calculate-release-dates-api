@@ -30,7 +30,7 @@ class CalculationController(
   private val domainEventPublisher: DomainEventPublisher,
 ) {
   @PostMapping(value = ["/{prisonerId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRD_ADMIN', 'PRISON')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
   @Operation(
     summary = "Calculate release dates for a prisoner - preliminary calculation, this does not publish to NOMIS",
@@ -38,8 +38,7 @@ class CalculationController(
       "PRELIMINARY calculation that will not be published to NOMIS",
     security = [
       SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "CRD_ADMIN"),
-      SecurityRequirement(name = "PRISON")
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
     ],
   )
   @ApiResponses(
@@ -58,15 +57,14 @@ class CalculationController(
   }
 
   @PostMapping(value = ["/{prisonerId}/confirm"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRD_ADMIN', 'PRISON')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
   @Operation(
     summary = "Calculate release dates and persist the results for a prisoners latest booking",
     description = "This endpoint will calculate release dates based on a prisoners latest booking ",
     security = [
       SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "CRD_ADMIN"),
-      SecurityRequirement(name = "PRISON")
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
     ],
   )
   @ApiResponses(
@@ -88,15 +86,14 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/results/{prisonerId}/{bookingId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRD_ADMIN', 'PRISON')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
   @Operation(
     summary = "Get confirmed release dates for a prisoner's specific booking",
     description = "This endpoint will return the confirmed release dates based on a prisoners booking",
     security = [
       SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "CRD_ADMIN"),
-      SecurityRequirement(name = "PRISON")
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
     ],
   )
   @ApiResponses(

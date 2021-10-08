@@ -21,7 +21,7 @@ class CalculationIntTest : IntegrationTestBase() {
     val result = webTestClient.post()
       .uri("/calculation/$PRISONER_ID")
       .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_CRD_ADMIN")))
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -62,7 +62,7 @@ class CalculationIntTest : IntegrationTestBase() {
     val result = webTestClient.get()
       .uri("/calculation/results/$PRISONER_ID/$BOOKING_ID")
       .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_CRD_ADMIN")))
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +79,7 @@ class CalculationIntTest : IntegrationTestBase() {
     return webTestClient.post()
       .uri("/calculation/$PRISONER_ID/confirm")
       .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_CRD_ADMIN")))
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -92,7 +92,7 @@ class CalculationIntTest : IntegrationTestBase() {
     webTestClient.get()
       .uri("/calculation/results/$PRISONER_ID/$BOOKING_ID_DOESNT_EXIST")
       .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_CRD_ADMIN")))
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().is4xxClientError
       .expectBody()

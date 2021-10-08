@@ -29,15 +29,14 @@ class TestController(
 ) {
 
   @GetMapping(value = ["/data"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRD_ADMIN', 'PRISON')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
   @Operation(
     summary = "Get a list of test data",
     description = "Just a test API to verify that the full stack of components are working together",
     security = [
       SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "CRD_ADMIN"),
-      SecurityRequirement(name = "PRISON")
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
     ],
   )
   @ApiResponses(
@@ -51,7 +50,7 @@ class TestController(
   }
 
   @PostMapping(value = ["/calculation-by-booking"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRD_ADMIN', 'PRISON')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
   @Operation(
     summary = "Calculate release dates based on a prisoners booking data",
@@ -59,8 +58,7 @@ class TestController(
       "(e.g. sentences and adjustments)",
     security = [
       SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "CRD_ADMIN"),
-      SecurityRequirement(name = "PRISON")
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
     ],
   )
   @ApiResponses(
