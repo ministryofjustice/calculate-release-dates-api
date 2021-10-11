@@ -13,7 +13,6 @@ generic-service:
     enabled: true
     host: app-hostname.local    # override per environment
     tlsSecretName: hmpps-template-kotlin-cert
-    path: /
 
   # Environment variables to load into the deployment
   env:
