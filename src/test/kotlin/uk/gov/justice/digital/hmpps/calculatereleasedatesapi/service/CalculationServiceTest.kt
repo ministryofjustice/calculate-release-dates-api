@@ -52,17 +52,17 @@ class CalculationServiceTest {
     )
 
   @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/psi_examples.csv"], numLinesToSkip = 1)
-  fun `Test PSI Example`(exampleNumber: String) {
-    log.info("Testing PSI example $exampleNumber")
+  @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
+  fun `Test PSI Example`(exampleType: String, exampleNumber: String) {
+    log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
     SecurityContextHolder.setContext(
       SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
     )
-    val booking = jsonTransformation.loadBooking("psi-examples/$exampleNumber")
+    val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val bookingCalculation = calculationService.calculate(booking, PRELIMINARY)
     assertEquals(
-      jsonTransformation.loadBookingCalculation(exampleNumber),
+      jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber"),
       bookingCalculation
     )
     log.info(
