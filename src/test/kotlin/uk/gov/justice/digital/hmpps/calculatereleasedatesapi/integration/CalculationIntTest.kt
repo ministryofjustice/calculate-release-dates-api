@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import java.time.LocalDate
 import javax.persistence.EntityNotFoundException
 
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class CalculationIntTest : IntegrationTestBase() {
   @Autowired
   lateinit var calculationRequestRepository: CalculationRequestRepository
@@ -29,8 +30,6 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody
 
     if (result != null) {
-
-<<<<<<< HEAD
       val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
         .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
 
@@ -38,16 +37,10 @@ class CalculationIntTest : IntegrationTestBase() {
       assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
       assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
       assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
-      assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo("A1234AA")
-      assertThat(calculationRequest.inputData["sentences"][0]["offence"]["startedAt"].asText()).isEqualTo("2015-03-17")
+      assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID)
+      assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText())
+        .isEqualTo("2015-03-17")
     }
-=======
-    assertThat(result).isNotNull
-    assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
-    assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
-    assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
-    assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo("$PRISONER_ID")
-    assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText()).isEqualTo("2015-03-17")
   }
 
   @Test
@@ -62,7 +55,7 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
     assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
     assertThat(calculationRequest.calculationStatus).isEqualTo("CONFIRMED")
-    assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo("$PRISONER_ID")
+    assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID)
     assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText()).isEqualTo("2015-03-17")
   }
 
@@ -119,6 +112,5 @@ class CalculationIntTest : IntegrationTestBase() {
     const val BOOKING_ID = 9292L
     const val BOOKING_ID_DOESNT_EXIST = 92929988L
     const val PRISONER_ID = "A1234AA"
->>>>>>> main
   }
 }
