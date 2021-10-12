@@ -43,7 +43,7 @@ class JsonTransformation {
   }
 
   fun loadBookingCalculation(testData: String): BookingCalculation {
-    val json = getJsonTest("$testData.json", "overall_calculation_response/psi-examples")
+    val json = getJsonTest("$testData.json", "overall_calculation_response")
     return jsonToBookingCalculation(json)!!
   }
 
