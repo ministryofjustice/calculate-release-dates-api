@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
+import kotlin.math.max
 
 @Service
 class SentenceCalculationService {
@@ -47,8 +48,12 @@ class SentenceCalculationService {
       // Hence, there is no requirement for a TUSED
     } else {
       if (sentence.sentenceTypes.contains(SentenceType.TUSED)) {
-        sentenceCalculation.topUpSupervisionDate = sentenceCalculation.adjustedReleaseDate
-          .plus(TWELVE, ChronoUnit.MONTHS)
+        sentenceCalculation.topUpSupervisionDate = sentenceCalculation.unadjustedReleaseDate
+          .plus(TWELVE, ChronoUnit.MONTHS).minusDays(
+            sentenceCalculation.calculatedTotalDeductedDays.toLong()
+          ).plusDays(
+            sentenceCalculation.calculatedTotalAddedDays.toLong()
+          )
       }
     }
 
@@ -119,10 +124,18 @@ class SentenceCalculationService {
         calculatedTotalAddedDays.toLong()
       )
 
+    //TODO should calculatedTotalAwardedDays be added to SentenceCalculation?
+    val calculatedTotalAwardedDays = max(
+      0,
+      booking.getOrZero(AdjustmentType.ADDITIONAL_DAYS_AWARDED) - booking.getOrZero(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED)
+    )
+
     val adjustedReleaseDate = unadjustedReleaseDate.minusDays(
       calculatedTotalDeductedDays.toLong()
     ).plusDays(
       calculatedTotalAddedDays.toLong()
+    ).plusDays(
+      calculatedTotalAwardedDays.toLong()
     )
 
     // create new SentenceCalculation and associate it with a sentence

@@ -57,8 +57,31 @@ class SentencesExtractionService {
         dates.add(dateToInsert)
       }
     }
-    return if (dates.isEmpty()) { null } else { dates.maxOf { it!! } }
+    return if (dates.isEmpty()) {
+      null
+    } else {
+      dates.maxOf { it!! }
+    }
   }
+
+  fun earliestDate(
+    sentences: MutableList<Sentence>,
+    property: KProperty1<Sentence, LocalDate?>
+  ): LocalDate? {
+    val dates = mutableListOf<LocalDate?>()
+    for (sentence in sentences) {
+      val dateToInsert = property.get(sentence)
+      if (dateToInsert != null) {
+        dates.add(dateToInsert)
+      }
+    }
+    return if (dates.isEmpty()) {
+      null
+    } else {
+      dates.minOf { it!! }
+    }
+  }
+
 
   fun hasNoConsecutiveSentences(sentenceStream: Stream<Sentence>): Boolean {
     return sentenceStream.allMatch { sentence -> sentence.consecutiveSentences.isEmpty() }

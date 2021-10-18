@@ -8,8 +8,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CantExtr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
+import java.time.Duration
 import java.time.LocalDate
+import java.time.Period
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalUnit
 
 @Service
 class BookingCalculationService(
@@ -125,21 +132,42 @@ class BookingCalculationService(
         booking.sentences, SentenceCalculation::licenceExpiryDate
       )
 
+      val latestUnadjustedExpiryDate: LocalDate? = extractionService.mostRecent(
+        booking.sentences, SentenceCalculation::unadjustedExpiryDate
+      )
+
       val latestNonParoleDate: LocalDate? = extractionService.mostRecent(
         booking.sentences, SentenceCalculation::nonParoleDate
       )
 
-      val latestTopUpSupervisionDate: LocalDate? = extractionService.mostRecent(
-        booking.sentences, SentenceCalculation::topUpSupervisionDate
+      val earliestSentenceDate: LocalDate? = extractionService.earliestDate(
+        booking.sentences, Sentence::sentencedAt
       )
 
-      if (!(
-        (latestLicenseExpiryDate != null) &&
-          (
-            latestLicenseExpiryDate.isEqual(latestReleaseDate) ||
-              latestLicenseExpiryDate.isEqual(latestExpiryDate)
+      val latestTopUpSupervisionDate: LocalDate? =
+        if (latestUnadjustedExpiryDate != null && earliestSentenceDate != null) {
+          if (latestUnadjustedExpiryDate.isBefore(earliestSentenceDate.plusYears(TWO.toLong())) && latestUnadjustedExpiryDate.isAfterOrEqualTo(
+              earliestSentenceDate.plusDays(TWO.toLong())
             )
-        )
+          ) {
+            extractionService.mostRecent(
+              booking.sentences, SentenceCalculation::topUpSupervisionDate
+            )
+          } else {
+            null
+          }
+        } else {
+          null
+        }
+
+
+      if (!(
+          (latestLicenseExpiryDate != null) &&
+            (
+              latestLicenseExpiryDate.isEqual(latestReleaseDate) ||
+                latestLicenseExpiryDate.isEqual(latestExpiryDate)
+              )
+          )
       ) {
         // PSI Example 16 Release is therefore on license which means the release date is a CRD
         isReleaseDateConditional = true
@@ -177,5 +205,6 @@ class BookingCalculationService(
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
+    const val TWO: Int = 2
   }
 }

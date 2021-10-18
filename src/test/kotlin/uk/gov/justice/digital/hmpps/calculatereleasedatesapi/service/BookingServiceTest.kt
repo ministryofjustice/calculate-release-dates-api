@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
@@ -92,7 +94,13 @@ class BookingServiceTest {
             )
           )
         ),
-        adjustments = mutableMapOf(REMAND to 0, TAGGED_BAIL to 0, UNLAWFULLY_AT_LARGE to 0)
+        adjustments = mutableMapOf(
+          REMAND to 0,
+          TAGGED_BAIL to 0,
+          UNLAWFULLY_AT_LARGE to 0,
+          ADDITIONAL_DAYS_AWARDED to 0,
+          RESTORATION_OF_ADDITIONAL_DAYS_AWARDED to 0
+        )
       )
     )
   }
