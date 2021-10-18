@@ -1,13 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CannotMergeSentencesException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RecursionDepthExceededException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
-import java.util.*
-import kotlin.math.log
 
 @Service
 class ConsecutiveSentenceCombinationService(val sentenceCombinationService: SentenceCombinationService) {
@@ -18,7 +15,9 @@ class ConsecutiveSentenceCombinationService(val sentenceCombinationService: Sent
 
   fun combineConsecutiveSentencesRecursion(booking: Booking, depth: Int = 0): Booking {
     if (depth >= MAX_DEPTH) {
-      throw RecursionDepthExceededException("Maximum depth reached in recursion trying to combine consecutive sentences")
+      throw RecursionDepthExceededException(
+        "Maximum depth reached in recursion trying to combine consecutive sentences"
+      )
     }
 
     val workingBooking: Booking = booking.copy()
@@ -29,9 +28,9 @@ class ConsecutiveSentenceCombinationService(val sentenceCombinationService: Sent
     }
     val moreConsecutiveSentences = workingBooking.sentences.any { it.consecutiveSentences.isNotEmpty() }
     if (moreConsecutiveSentences) {
-      //Merged consecutive sentences still have consecutive sentences.
-      //i.e. there is a chain of consecutive sentences longer than 2.
-      //Recursively call this function again.
+      // Merged consecutive sentences still have consecutive sentences.
+      // i.e. there is a chain of consecutive sentences longer than 2.
+      // Recursively call this function again.
       return combineConsecutiveSentencesRecursion(workingBooking, depth + 1)
     }
     return workingBooking
@@ -58,7 +57,7 @@ class ConsecutiveSentenceCombinationService(val sentenceCombinationService: Sent
     if (!firstSentence.canMergeConsecutivelyWith(secondSentence)) {
       throw CannotMergeSentencesException("Incompatible sentence types")
     }
-    
+
     return Sentence(
       sentenceCombinationService.earliestOffence(firstSentence, secondSentence),
       sentenceCombinationService.combinedDuration(firstSentence, secondSentence),
@@ -67,7 +66,6 @@ class ConsecutiveSentenceCombinationService(val sentenceCombinationService: Sent
   }
 
   companion object {
-    private val log = LoggerFactory.getLogger(this::class.java)
     private const val MAX_DEPTH = 30
   }
 }

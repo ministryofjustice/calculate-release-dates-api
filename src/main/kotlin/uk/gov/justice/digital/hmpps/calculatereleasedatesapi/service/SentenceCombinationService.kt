@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.UUID
 
 @Service
 class SentenceCombinationService(val sentenceIdentificationService: SentenceIdentificationService) {
@@ -18,7 +18,6 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
     workingBooking: Booking,
     sentenceMergeFunction: (Sentence, Sentence) -> Sentence
   ) {
-
     // I take 2 sentences, combine them into a single conjoined sentence
     val combinedSentence: Sentence = sentenceMergeFunction(firstSentence, secondSentence)
 
@@ -26,7 +25,7 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
 
     combineConsecutiveSentences(firstSentence, secondSentence, combinedSentence)
 
-    //TODO removing this because merged sentence could already have consecutive sentences.
+    // TODO removing this because merged sentence could already have consecutive sentences.
 //    combinedSentence.associateSentences(mutableListOf())
 
     addSentenceToBooking(combinedSentence, workingBooking)
@@ -38,13 +37,13 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
     deleteSentenceFromBooking(firstSentence, workingBooking)
     deleteSentenceFromBooking(secondSentence, workingBooking)
 
-    //TODO I think this is unnecessary.
+    // TODO I think this is unnecessary.
 //    removeSelfFromConsecutiveSentences(combinedSentence)
   }
 
-  /*
-    Adds any sentences to the combinedSentence that were consecutive to the firstSentence and secondSentence
-   */
+    /*
+      Adds any sentences to the combinedSentence that were consecutive to the firstSentence and secondSentence
+     */
   private fun combineConsecutiveSentences(
     firstSentence: Sentence,
     secondSentence: Sentence,
@@ -79,10 +78,10 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
     combinedSentence.consecutiveSentences = consecutiveSentencesToMergedSentence
   }
 
-  /*
-    If our orignal sentences were consecutive to another sentence on the booking. Updated the references so that
-    the combined booking is consecutive to the other sentence.
-   */
+    /*
+      If our orignal sentences were consecutive to another sentence on the booking. Updated the references so that
+      the combined booking is consecutive to the other sentence.
+     */
   private fun associateExistingLinksToNewSentence(
     originalSentence: Sentence,
     replacementSentence: Sentence,
@@ -90,8 +89,8 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
   ) {
 
     booking.sentences.forEach { sentence ->
-      if (sentence.consecutiveSentences.contains(originalSentence)
-        && sentence.consecutiveSentenceUUIDs.contains(originalSentence.identifier)
+      if (sentence.consecutiveSentences.contains(originalSentence) &&
+        sentence.consecutiveSentenceUUIDs.contains(originalSentence.identifier)
       ) {
         sentence.consecutiveSentences.remove(originalSentence)
         sentence.consecutiveSentences.add(replacementSentence)

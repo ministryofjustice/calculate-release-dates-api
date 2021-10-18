@@ -82,7 +82,6 @@ class SentencesExtractionService {
     }
   }
 
-
   fun hasNoConsecutiveSentences(sentenceStream: Stream<Sentence>): Boolean {
     return sentenceStream.allMatch { sentence -> sentence.consecutiveSentences.isEmpty() }
   }
