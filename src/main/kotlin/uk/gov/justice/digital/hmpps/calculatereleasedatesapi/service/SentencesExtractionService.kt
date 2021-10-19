@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoMatchi
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import java.time.LocalDate
+import java.util.Objects
 import java.util.stream.Stream
 import kotlin.reflect.KProperty1
 
@@ -49,37 +50,20 @@ class SentencesExtractionService {
     sentences: MutableList<Sentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>
   ): LocalDate? {
-
-    val dates = mutableListOf<LocalDate?>()
-    for (sentence in sentences) {
-      val dateToInsert = property.get(sentence.sentenceCalculation)
-      if (dateToInsert != null) {
-        dates.add(dateToInsert)
-      }
-    }
-    return if (dates.isEmpty()) {
-      null
-    } else {
-      dates.maxOf { it!! }
-    }
+    return sentences
+      .map { property.get(it.sentenceCalculation) }
+      .filter(Objects::nonNull)
+      .maxOfOrNull { it!! }
   }
 
   fun earliestDate(
     sentences: MutableList<Sentence>,
     property: KProperty1<Sentence, LocalDate?>
   ): LocalDate? {
-    val dates = mutableListOf<LocalDate?>()
-    for (sentence in sentences) {
-      val dateToInsert = property.get(sentence)
-      if (dateToInsert != null) {
-        dates.add(dateToInsert)
-      }
-    }
-    return if (dates.isEmpty()) {
-      null
-    } else {
-      dates.minOf { it!! }
-    }
+    return sentences
+      .map { property.get(it) }
+      .filter(Objects::nonNull)
+      .minOfOrNull { it!! }
   }
 
   fun hasNoConsecutiveSentences(sentenceStream: Stream<Sentence>): Boolean {

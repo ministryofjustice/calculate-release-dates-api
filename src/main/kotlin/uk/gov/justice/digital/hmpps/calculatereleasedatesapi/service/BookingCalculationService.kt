@@ -177,24 +177,20 @@ class BookingCalculationService(
 
   private fun extractManyTopUpSupervisionDate(booking: Booking): LocalDate? {
 
-    val earliestSentenceDate: LocalDate? = extractionService.earliestDate(
+    val earliestSentenceDate: LocalDate = extractionService.earliestDate(
       booking.sentences, Sentence::sentencedAt
-    )
+    )!!
 
-    val latestUnadjustedExpiryDate: LocalDate? = extractionService.mostRecent(
+    val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(
       booking.sentences, SentenceCalculation::unadjustedExpiryDate
-    )
+    )!!
 
-    return if (latestUnadjustedExpiryDate != null && earliestSentenceDate != null) {
-      if (latestUnadjustedExpiryDate.isBefore(earliestSentenceDate.plusYears(TWO.toLong())) &&
-        latestUnadjustedExpiryDate.isAfterOrEqualTo(earliestSentenceDate.plusDays(TWO.toLong()))
-      ) {
-        extractionService.mostRecent(
-          booking.sentences, SentenceCalculation::topUpSupervisionDate
-        )
-      } else {
-        null
-      }
+    return if (latestUnadjustedExpiryDate.isBefore(earliestSentenceDate.plusYears(TWO)) &&
+      latestUnadjustedExpiryDate.isAfterOrEqualTo(earliestSentenceDate.plusDays(TWO))
+    ) {
+      extractionService.mostRecent(
+        booking.sentences, SentenceCalculation::topUpSupervisionDate
+      )
     } else {
       null
     }
@@ -202,6 +198,6 @@ class BookingCalculationService(
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
-    const val TWO: Int = 2
+    const val TWO: Long = 2
   }
 }
