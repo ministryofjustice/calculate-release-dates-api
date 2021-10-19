@@ -25,9 +25,6 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
 
     combineConsecutiveSentences(firstSentence, secondSentence, combinedSentence)
 
-    // TODO removing this because merged sentence could already have consecutive sentences.
-//    combinedSentence.associateSentences(mutableListOf())
-
     addSentenceToBooking(combinedSentence, workingBooking)
 
     associateExistingLinksToNewSentence(firstSentence, combinedSentence, workingBooking)
@@ -36,9 +33,6 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
     // delete the 2 existing sentences
     deleteSentenceFromBooking(firstSentence, workingBooking)
     deleteSentenceFromBooking(secondSentence, workingBooking)
-
-    // TODO I think this is unnecessary.
-//    removeSelfFromConsecutiveSentences(combinedSentence)
   }
 
     /*

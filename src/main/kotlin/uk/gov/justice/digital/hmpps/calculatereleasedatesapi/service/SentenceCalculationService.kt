@@ -124,7 +124,6 @@ class SentenceCalculationService {
         calculatedTotalAddedDays.toLong()
       )
 
-    // TODO should calculatedTotalAwardedDays be added to SentenceCalculation?
     val calculatedTotalAwardedDays = max(
       0,
       booking.getOrZero(AdjustmentType.ADDITIONAL_DAYS_AWARDED) -
@@ -148,6 +147,7 @@ class SentenceCalculationService {
       unadjustedReleaseDate,
       calculatedTotalDeductedDays,
       calculatedTotalAddedDays,
+      calculatedTotalAwardedDays,
       adjustedExpiryDate,
       adjustedReleaseDate,
       numberOfDaysToAddToLicenceExpiryDate
