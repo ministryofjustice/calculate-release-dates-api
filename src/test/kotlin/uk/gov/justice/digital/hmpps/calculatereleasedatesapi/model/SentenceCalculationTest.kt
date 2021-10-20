@@ -25,6 +25,7 @@ internal class SentenceCalculationTest {
       date,
       1,
       0,
+      0,
       date,
       date,
       0

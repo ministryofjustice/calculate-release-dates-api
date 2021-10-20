@@ -10,6 +10,7 @@ data class SentenceCalculation(
   val unadjustedReleaseDate: LocalDate,
   val calculatedTotalDeductedDays: Int,
   val calculatedTotalAddedDays: Int,
+  val calculatedTotalAwardedDays: Int,
   val adjustedExpiryDate: LocalDate,
   val adjustedReleaseDate: LocalDate,
   val numberOfDaysToAddToLicenceExpiryDate: Int

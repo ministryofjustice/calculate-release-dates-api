@@ -8,7 +8,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CantExtr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 
 @Service
@@ -129,9 +131,7 @@ class BookingCalculationService(
         booking.sentences, SentenceCalculation::nonParoleDate
       )
 
-      val latestTopUpSupervisionDate: LocalDate? = extractionService.mostRecent(
-        booking.sentences, SentenceCalculation::topUpSupervisionDate
-      )
+      val latestTopUpSupervisionDate: LocalDate? = extractManyTopUpSupervisionDate(booking)
 
       if (!(
         (latestLicenseExpiryDate != null) &&
@@ -175,7 +175,29 @@ class BookingCalculationService(
     }
   }
 
+  private fun extractManyTopUpSupervisionDate(booking: Booking): LocalDate? {
+
+    val earliestSentenceDate: LocalDate = extractionService.earliestDate(
+      booking.sentences, Sentence::sentencedAt
+    )!!
+
+    val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(
+      booking.sentences, SentenceCalculation::unadjustedExpiryDate
+    )!!
+
+    return if (latestUnadjustedExpiryDate.isBefore(earliestSentenceDate.plusYears(TWO)) &&
+      latestUnadjustedExpiryDate.isAfterOrEqualTo(earliestSentenceDate.plusDays(TWO))
+    ) {
+      extractionService.mostRecent(
+        booking.sentences, SentenceCalculation::topUpSupervisionDate
+      )
+    } else {
+      null
+    }
+  }
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
+    const val TWO: Long = 2
   }
 }

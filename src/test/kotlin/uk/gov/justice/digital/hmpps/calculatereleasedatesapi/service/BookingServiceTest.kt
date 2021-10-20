@@ -6,7 +6,9 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -34,6 +36,7 @@ class BookingServiceTest {
   }
 
   @Test
+  @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId`() {
     val prisonerId = "A123456A"
     val sequence = 153
@@ -41,7 +44,10 @@ class BookingServiceTest {
     val consecutiveTo = 99
     val offences = listOf(
       OffenderOffence(
-        offenderChargeId = 1L, offenceStartDate = FIRST_JAN_2015, offenceCode = "RR1", offenceDescription = "Littering"
+        offenderChargeId = 1L,
+        offenceStartDate = FIRST_JAN_2015,
+        offenceCode = "RR1",
+        offenceDescription = "Littering"
       ),
     )
     val sentenceAndOffences = SentenceAndOffences(
@@ -92,7 +98,13 @@ class BookingServiceTest {
             )
           )
         ),
-        adjustments = mutableMapOf(REMAND to 0, TAGGED_BAIL to 0, UNLAWFULLY_AT_LARGE to 0)
+        adjustments = mutableMapOf(
+          REMAND to 0,
+          TAGGED_BAIL to 0,
+          UNLAWFULLY_AT_LARGE to 0,
+          ADDITIONAL_DAYS_AWARDED to 0,
+          RESTORATION_OF_ADDITIONAL_DAYS_AWARDED to 0
+        )
       )
     )
   }
