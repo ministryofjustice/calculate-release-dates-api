@@ -6,7 +6,9 @@ import com.vladmihalcea.hibernate.type.json.internal.JacksonUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -86,6 +88,8 @@ fun transform(sentenceAdjustments: SentenceAdjustments): MutableMap<AdjustmentTy
   adjustments[REMAND] = sentenceAdjustments.remand
   adjustments[TAGGED_BAIL] = sentenceAdjustments.taggedBail
   adjustments[UNLAWFULLY_AT_LARGE] = sentenceAdjustments.unlawfullyAtLarge
+  adjustments[ADDITIONAL_DAYS_AWARDED] = sentenceAdjustments.additionalDaysAwarded
+  adjustments[RESTORATION_OF_ADDITIONAL_DAYS_AWARDED] = sentenceAdjustments.restoredAdditionalDaysAwarded
   return adjustments
 }
 
