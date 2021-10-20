@@ -3,7 +3,8 @@
   "releaseDate": "2014-05-01",
   "isReleaseDateConditional": true,
   "dates": {
-    "SLED":"2015-10-30",
-    "CRD":"2014-05-01"
+    "SLED": "2015-10-30",
+    "CRD": "2014-05-01",
+    "HDCED": "2013-12-18"
   }
 }
