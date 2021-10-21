@@ -117,6 +117,5 @@ class CalculationServiceTest {
       dates = mutableMapOf(SentenceType.CRD to CALCULATION_OUTCOME.outcomeDate),
       calculationRequestId = CALCULATION_REQUEST.id
     )
-
   }
 }
