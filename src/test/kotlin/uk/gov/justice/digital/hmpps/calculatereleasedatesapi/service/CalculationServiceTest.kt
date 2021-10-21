@@ -79,7 +79,11 @@ class CalculationServiceTest {
 
   @Test
   fun `Test fetching calculation results by requestId`() {
-    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(CALCULATION_REQUEST))
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
+      Optional.of(
+        CALCULATION_REQUEST_WITH_OUTCOMES
+      )
+    )
 
     val bookingCalculation = calculationService.findCalculationResults(CALCULATION_REQUEST_ID)
 
@@ -107,7 +111,12 @@ class CalculationServiceTest {
       calculationRequestId = CALCULATION_REQUEST_ID
     )
     val CALCULATION_REQUEST = CalculationRequest(
-      id = 999919,
+      calculationReference = CALCULATION_REFERENCE, prisonerId = PRISONER_ID,
+      bookingId = BOOKING_ID
+    )
+
+    val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
+      id = CALCULATION_REQUEST_ID,
       calculationReference = CALCULATION_REFERENCE, prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID,
       calculationOutcomes = listOf(CALCULATION_OUTCOME)
@@ -115,7 +124,7 @@ class CalculationServiceTest {
 
     val BOOKING_CALCULATION = BookingCalculation(
       dates = mutableMapOf(SentenceType.CRD to CALCULATION_OUTCOME.outcomeDate),
-      calculationRequestId = CALCULATION_REQUEST.id
+      calculationRequestId = CALCULATION_REQUEST_ID
     )
   }
 }
