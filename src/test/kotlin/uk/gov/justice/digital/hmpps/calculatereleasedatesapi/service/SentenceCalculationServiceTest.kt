@@ -24,7 +24,8 @@ class SentenceCalculationServiceTest {
     val calculation = sentenceCalculationService.calculate(sentence, booking)
     assertEquals(calculation.expiryDate, LocalDate.of(2015, 9, 20))
     assertEquals(calculation.releaseDate, LocalDate.of(2014, 9, 20))
-    assertEquals("[SLED, CRD]", calculation.sentence.sentenceTypes.toString())
+    assertEquals(LocalDate.of(2014, 5, 9), calculation.homeDetentionCurfewExpiryDateDate)
+    assertEquals("[SLED, CRD, HDCED]", calculation.sentence.sentenceTypes.toString())
   }
 
   @Test
@@ -38,37 +39,55 @@ class SentenceCalculationServiceTest {
 
     val booking = Booking(offender, mutableListOf(sentence), adjustments)
     val calculation = sentenceCalculationService.calculate(sentence, booking)
-    assertEquals(calculation.expiryDate, LocalDate.of(2015, 10, 30))
-    assertEquals(calculation.releaseDate, LocalDate.of(2014, 5, 1))
-    assertEquals("[SLED, CRD]", calculation.sentence.sentenceTypes.toString())
+    assertEquals(LocalDate.of(2015, 10, 30), calculation.expiryDate)
+    assertEquals(LocalDate.of(2014, 5, 1), calculation.releaseDate)
+    assertEquals(LocalDate.of(2013, 12, 18), calculation.homeDetentionCurfewExpiryDateDate)
+    assertEquals("[SLED, CRD, HDCED]", calculation.sentence.sentenceTypes.toString())
   }
 
   @Test
   fun `Example 11`() {
-    val sentence = jsonTransformation.loadSentence("8_year_dec_2012")
+    val sentence = jsonTransformation.loadSentence("8_month_dec_2012")
     sentenceIdentificationService.identify(sentence, offender)
     val adjustments = mutableMapOf<AdjustmentType, Int>()
     adjustments[AdjustmentType.REMAND] = 10
     val offender = Offender("A1234BC", "John Doe", LocalDate.of(1980, 1, 1))
     val booking = Booking(offender, mutableListOf(sentence), adjustments)
     val calculation = sentenceCalculationService.calculate(sentence, booking)
-    assertEquals(calculation.expiryDate, LocalDate.of(2013, 8, 6))
-    assertEquals(calculation.releaseDate, LocalDate.of(2013, 4, 7))
-    assertEquals("[ARD, SED]", calculation.sentence.sentenceTypes.toString())
+    assertEquals(LocalDate.of(2013, 8, 6), calculation.expiryDate)
+    assertEquals(LocalDate.of(2013, 4, 7), calculation.releaseDate)
+    assertEquals(LocalDate.of(2013, 2, 6), calculation.homeDetentionCurfewExpiryDateDate)
+    assertEquals("[ARD, SED, HDCED]", calculation.sentence.sentenceTypes.toString())
   }
 
   @Test
   fun `Example 12`() {
-    val sentence = jsonTransformation.loadSentence("8_year_feb_2015")
+    val sentence = jsonTransformation.loadSentence("8_month_feb_2015")
     sentenceIdentificationService.identify(sentence, offender)
     val adjustments = mutableMapOf<AdjustmentType, Int>()
     adjustments[AdjustmentType.REMAND] = 21
     val offender = Offender("A1234BC", "John Doe", LocalDate.of(1980, 1, 1))
     val booking = Booking(offender, mutableListOf(sentence), adjustments)
     val calculation = sentenceCalculationService.calculate(sentence, booking)
-    assertEquals(calculation.expiryDate, LocalDate.of(2015, 9, 24))
-    assertEquals(calculation.releaseDate, LocalDate.of(2015, 5, 26))
-    assertEquals(calculation.topUpSupervisionDate, LocalDate.of(2016, 5, 26))
-    assertEquals("[SLED, CRD, TUSED]", calculation.sentence.sentenceTypes.toString())
+    assertEquals(LocalDate.of(2015, 9, 24), calculation.expiryDate)
+    assertEquals(LocalDate.of(2015, 5, 26), calculation.releaseDate)
+    assertEquals(LocalDate.of(2016, 5, 26), calculation.topUpSupervisionDate)
+    assertEquals(LocalDate.of(2015, 3, 28), calculation.homeDetentionCurfewExpiryDateDate)
+    assertEquals("[SLED, CRD, TUSED, HDCED]", calculation.sentence.sentenceTypes.toString())
+  }
+
+  // TODO are these example numbers named after anything? I've just created a random new example.
+  @Test
+  fun `Example 13`() {
+    val sentence = jsonTransformation.loadSentence("5_year_march_2017")
+    sentenceIdentificationService.identify(sentence, offender)
+    val adjustments = mutableMapOf<AdjustmentType, Int>()
+    adjustments[AdjustmentType.REMAND] = 21
+    val offender = Offender("A1234BC", "John Doe", LocalDate.of(1980, 1, 1))
+    val booking = Booking(offender, mutableListOf(sentence), adjustments)
+    val calculation = sentenceCalculationService.calculate(sentence, booking)
+    assertEquals(LocalDate.of(2022, 2, 22), calculation.expiryDate)
+    assertEquals(LocalDate.of(2019, 8, 24), calculation.releaseDate)
+    assertEquals("[SLED, CRD]", calculation.sentence.sentenceTypes.toString())
   }
 }

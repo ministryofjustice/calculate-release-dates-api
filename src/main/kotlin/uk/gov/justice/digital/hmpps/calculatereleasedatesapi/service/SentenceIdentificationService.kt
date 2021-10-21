@@ -9,108 +9,108 @@ import java.time.temporal.ChronoUnit
 
 @Service
 class SentenceIdentificationService {
-    fun identify(sentence: Sentence, offender: Offender) {
-        if (
-            sentence.sentencedAt.isBefore(ImportantDates.LASPO_DATE) &&
-            sentence.offence.committedAt.isBefore(ImportantDates.CJA_DATE)
-        ) {
-            beforeCJAAndLASPO(sentence)
+  fun identify(sentence: Sentence, offender: Offender) {
+    if (
+      sentence.sentencedAt.isBefore(ImportantDates.LASPO_DATE) &&
+      sentence.offence.committedAt.isBefore(ImportantDates.CJA_DATE)
+    ) {
+      beforeCJAAndLASPO(sentence)
+    } else {
+      afterCJAAndLASPO(sentence, offender)
+    }
+    if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.WEEKS) &&
+      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS)
+    ) {
+      sentence.sentenceTypes += SentenceType.HDCED
+    }
+  }
+
+  private fun afterCJAAndLASPO(sentence: Sentence, offender: Offender) {
+
+    sentence.identificationTrack = SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
+
+    if (!sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
+
+      if (sentence.offence.committedAt.isAfter(ImportantDates.ORA_DATE)) {
+        isTopUpSentenceExpiryDateRequired(sentence, offender)
+      } else {
+        sentence.sentenceTypes = listOf(
+          SentenceType.ARD,
+          SentenceType.SED
+        )
+      }
+    } else {
+      if (sentence.durationIsGreaterThan(TWO, ChronoUnit.YEARS)) {
+        sentence.sentenceTypes = listOf(
+          SentenceType.SLED,
+          SentenceType.CRD
+        )
+      } else {
+
+        if (sentence.offence.committedAt.isBefore(ImportantDates.ORA_DATE)) {
+          sentence.sentenceTypes = listOf(
+            SentenceType.SLED,
+            SentenceType.CRD
+          )
         } else {
-            afterCJAAndLASPO(sentence, offender)
+          isTopUpSentenceExpiryDateRequired(sentence, offender)
         }
-        if (sentence.durationIsGreaterThanOrEqualTo(12, ChronoUnit.WEEKS) &&
-            sentence.durationIsLessThan(4, ChronoUnit.YEARS)
-        ) {
-            sentence.sentenceTypes += SentenceType.HDCED
-        }
+      }
     }
+  }
 
-    private fun afterCJAAndLASPO(sentence: Sentence, offender: Offender) {
+  private fun beforeCJAAndLASPO(sentence: Sentence) {
 
-        sentence.identificationTrack = SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
+    sentence.identificationTrack = SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 
-        if (!sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
-
-            if (sentence.offence.committedAt.isAfter(ImportantDates.ORA_DATE)) {
-                isTopUpSentenceExpiryDateRequired(sentence, offender)
-            } else {
-                sentence.sentenceTypes = listOf(
-                    SentenceType.ARD,
-                    SentenceType.SED
-                )
-            }
-        } else {
-            if (sentence.durationIsGreaterThan(TWO, ChronoUnit.YEARS)) {
-                sentence.sentenceTypes = listOf(
-                    SentenceType.SLED,
-                    SentenceType.CRD
-                )
-            } else {
-
-                if (sentence.offence.committedAt.isBefore(ImportantDates.ORA_DATE)) {
-                    sentence.sentenceTypes = listOf(
-                        SentenceType.SLED,
-                        SentenceType.CRD
-                    )
-                } else {
-                    isTopUpSentenceExpiryDateRequired(sentence, offender)
-                }
-            }
-        }
+    if (sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
+      if (sentence.offence.isScheduleFifteen) {
+        sentence.sentenceTypes = listOf(
+          SentenceType.PED,
+          SentenceType.NPD,
+          SentenceType.LED,
+          SentenceType.SED
+        )
+      } else {
+        sentence.sentenceTypes = listOf(
+          SentenceType.CRD,
+          SentenceType.SLED
+        )
+      }
+    } else if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
+      sentence.sentenceTypes = listOf(
+        SentenceType.LED,
+        SentenceType.CRD,
+        SentenceType.SED
+      )
+    } else {
+      sentence.sentenceTypes = listOf(
+        SentenceType.ARD,
+        SentenceType.SED
+      )
     }
+  }
 
-    private fun beforeCJAAndLASPO(sentence: Sentence) {
-
-        sentence.identificationTrack = SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
-
-        if (sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
-            if (sentence.offence.isScheduleFifteen) {
-                sentence.sentenceTypes = listOf(
-                    SentenceType.PED,
-                    SentenceType.NPD,
-                    SentenceType.LED,
-                    SentenceType.SED
-                )
-            } else {
-                sentence.sentenceTypes = listOf(
-                    SentenceType.CRD,
-                    SentenceType.SLED
-                )
-            }
-        } else if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
-            sentence.sentenceTypes = listOf(
-                SentenceType.LED,
-                SentenceType.CRD,
-                SentenceType.SED
-            )
-        } else {
-            sentence.sentenceTypes = listOf(
-                SentenceType.ARD,
-                SentenceType.SED
-            )
-        }
+  private fun isTopUpSentenceExpiryDateRequired(sentence: Sentence, offender: Offender) {
+    if (
+      sentence.duration.getLengthInDays(sentence.sentencedAt) <= INT_ONE ||
+      offender.getAgeOnDate(sentence.getHalfSentenceDate()) <= INT_EIGHTEEN
+    ) {
+      sentence.sentenceTypes = listOf(SentenceType.SLED, SentenceType.CRD)
+    } else {
+      sentence.sentenceTypes = listOf(
+        SentenceType.SLED,
+        SentenceType.CRD,
+        SentenceType.TUSED
+      )
     }
+  }
 
-    private fun isTopUpSentenceExpiryDateRequired(sentence: Sentence, offender: Offender) {
-        if (
-            sentence.duration.getLengthInDays(sentence.sentencedAt) <= INT_ONE ||
-            offender.getAgeOnDate(sentence.getHalfSentenceDate()) <= INT_EIGHTEEN
-        ) {
-            sentence.sentenceTypes = listOf(SentenceType.SLED, SentenceType.CRD)
-        } else {
-            sentence.sentenceTypes = listOf(
-                SentenceType.SLED,
-                SentenceType.CRD,
-                SentenceType.TUSED
-            )
-        }
-    }
-
-    companion object {
-        private const val INT_EIGHTEEN = 18
-        private const val INT_ONE = 1
-        private const val TWO = 2L
-        private const val FOUR = 4L
-        private const val TWELVE = 12L
-    }
+  companion object {
+    private const val INT_EIGHTEEN = 18
+    private const val INT_ONE = 1
+    private const val TWO = 2L
+    private const val FOUR = 4L
+    private const val TWELVE = 12L
+  }
 }
