@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 import kotlin.math.max
@@ -99,7 +100,13 @@ class SentenceCalculationService {
                     sentenceCalculation.numberOfDaysToHomeDetentionCurfewExpiryDate
                 ).minusDays(ONE)
             }
+          //If adjustments make the CRD before sentence date (i.e. a large REMAND days)
+          // then we don't need a HDCED date.
+          if (sentence.sentencedAt.isAfterOrEqualTo(sentenceCalculation.adjustedReleaseDate)) {
+            sentenceCalculation.homeDetentionCurfewExpiryDateDate = null
+          }
         }
+
 
         // create association between the sentence and it's calculation
         sentence.sentenceCalculation = sentenceCalculation

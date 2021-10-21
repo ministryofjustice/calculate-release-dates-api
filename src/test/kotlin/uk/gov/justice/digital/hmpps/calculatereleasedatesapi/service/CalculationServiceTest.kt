@@ -67,18 +67,10 @@ class CalculationServiceTest {
             "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
             bookingCalculation
         )
-        val expected = jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber")
-//        if (expected.dates.containsKey(SentenceType.HDCED)) {
         assertEquals(
-            expected,
+          jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber"),
             bookingCalculation
         )
-//        }
-    }
-
-    @Test
-    fun `Test Example custom`() {
-        `Test Example`("ux-examples", "3")
     }
 
 
