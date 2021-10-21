@@ -111,8 +111,35 @@ class CalculationController(
     @PathVariable("bookingId")
     bookingId: Long,
   ): BookingCalculation {
-    log.info("Request received return calculation results for prisoner {} and bookingId ", prisonerId, bookingId)
+    log.info("Request received return calculation results for prisoner {} and bookingId {}", prisonerId, bookingId)
     return calculationService.findConfirmedCalculationResults(prisonerId, bookingId)
+  }
+
+  @GetMapping(value = ["/results/{calculationRequestId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Get release dates for a calculationRequestId",
+    description = "This endpoint will return the  release dates based on a calculationRequestId",
+    security = [
+      SecurityRequirement(name = "SYSTEM_USER"),
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
+    ],
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
+    ]
+  )
+  fun getCalculationResults(
+    @Parameter(required = true, example = "123456", description = "The calculationRequestId of the results")
+    @PathVariable("calculationRequestId")
+    calculationRequestId: Long,
+  ): BookingCalculation {
+    log.info("Request received return calculation results for calculationRequestId {}", calculationRequestId)
+    return calculationService.findCalculationResults(calculationRequestId)
   }
 
   companion object {
