@@ -77,4 +77,14 @@ class CalculationService(
 
     return transform(calculationRequest)
   }
+
+  @Transactional(readOnly = true)
+  fun findCalculationResults(calculationRequestId: Long): BookingCalculation {
+    val calculationRequest =
+      calculationRequestRepository.findById(calculationRequestId).orElseThrow {
+        EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId ")
+      }
+
+    return transform(calculationRequest)
+  }
 }
