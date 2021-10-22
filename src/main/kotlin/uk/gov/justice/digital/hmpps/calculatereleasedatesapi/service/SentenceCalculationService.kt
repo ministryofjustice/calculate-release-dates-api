@@ -159,8 +159,6 @@ class SentenceCalculationService {
     )
   }
 
-
-
   private fun calculateHDCED(sentence: Sentence, sentenceCalculation: SentenceCalculation) {
     if (sentence.durationIsLessThan(EIGHTEEN, ChronoUnit.MONTHS)) {
       sentenceCalculation.numberOfDaysToHomeDetentionCurfewExpiryDate =
@@ -185,8 +183,10 @@ class SentenceCalculationService {
     // then we don't need a HDCED date.
     if (sentence.sentencedAt.isAfterOrEqualTo(sentenceCalculation.adjustedReleaseDate)) {
       sentenceCalculation.homeDetentionCurfewExpiryDateDate = null
-    } else if (sentence.sentencedAt.plusDays(14).isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewExpiryDateDate!!)) {
-      sentenceCalculation.homeDetentionCurfewExpiryDateDate = sentence.sentencedAt.plusDays(14)
+    } else if (sentence.sentencedAt.plusDays(FOURTEEN)
+      .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewExpiryDateDate!!)
+    ) {
+      sentenceCalculation.homeDetentionCurfewExpiryDateDate = sentence.sentencedAt.plusDays(FOURTEEN)
     }
   }
 
@@ -196,6 +196,7 @@ class SentenceCalculationService {
     private const val THREE = 3L
     private const val FOUR = 4L
     private const val TWELVE = 12L
+    private const val FOURTEEN = 14L
     private const val EIGHTEEN = 18L
     private const val TWENTY_EIGHT = 28L
     private const val YEAR_IN_DAYS = 365

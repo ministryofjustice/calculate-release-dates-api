@@ -46,7 +46,7 @@ class SentencesExtractionService {
     return true
   }
 
-  fun mostRecent(
+  fun mostRecentOrNull(
     sentences: MutableList<Sentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>
   ): LocalDate? {
@@ -56,13 +56,23 @@ class SentencesExtractionService {
       .maxOfOrNull { it!! }
   }
 
+  fun mostRecent(
+    sentences: MutableList<Sentence>,
+    property: KProperty1<SentenceCalculation, LocalDate?>
+  ): LocalDate {
+    return sentences
+      .map { property.get(it.sentenceCalculation) }
+      .filter(Objects::nonNull)
+      .maxOf { it!! }
+  }
+
   fun mostRecentSentence(
     sentences: MutableList<Sentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>
   ): Sentence {
     return sentences
-      .filter{property.get(it.sentenceCalculation) != null}
-      .maxByOrNull{ property.get(it.sentenceCalculation)!! }!!
+      .filter { property.get(it.sentenceCalculation) != null }
+      .maxByOrNull { property.get(it.sentenceCalculation)!! }!!
   }
 
   fun hasNoConsecutiveSentences(sentenceStream: Stream<Sentence>): Boolean {

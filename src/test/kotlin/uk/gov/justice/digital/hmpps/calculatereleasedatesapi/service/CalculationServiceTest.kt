@@ -4,7 +4,6 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
 import org.slf4j.Logger
@@ -41,7 +40,8 @@ class CalculationServiceTest {
     concurrentSentenceCombinationService
   )
   private val bookingExtractionService = BookingExtractionService(
-    sentencesExtractionService)
+    sentencesExtractionService
+  )
 
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
