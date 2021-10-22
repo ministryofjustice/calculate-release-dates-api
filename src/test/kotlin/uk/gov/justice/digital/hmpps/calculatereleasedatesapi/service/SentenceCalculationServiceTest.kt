@@ -76,9 +76,8 @@ class SentenceCalculationServiceTest {
     assertEquals("[SLED, CRD, TUSED, HDCED]", calculation.sentence.sentenceTypes.toString())
   }
 
-  // TODO are these example numbers named after anything? I've just created a random new example.
   @Test
-  fun `Example 13`() {
+  fun `5 year sentence no HDCED`() {
     val sentence = jsonTransformation.loadSentence("5_year_march_2017")
     sentenceIdentificationService.identify(sentence, offender)
     val adjustments = mutableMapOf<AdjustmentType, Int>()

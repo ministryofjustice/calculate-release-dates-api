@@ -169,12 +169,10 @@ class BookingExtractionService(
     }
   }
 
-  private fun extractManyIsReleaseConditional(
-    booking: Booking,
-    latestReleaseDate: LocalDate?,
-    latestExpiryDate: LocalDate?,
-    latestLicenseExpiryDate: LocalDate?
-  ): Boolean {
+  private fun extractManyIsReleaseConditional(booking: Booking,
+                                              latestReleaseDate: LocalDate?,
+                                              latestExpiryDate: LocalDate?,
+                                              latestLicenseExpiryDate: LocalDate?): Boolean {
     var isReleaseDateConditional = extractionService.getAssociatedReleaseType(
       booking.sentences, latestReleaseDate
     )

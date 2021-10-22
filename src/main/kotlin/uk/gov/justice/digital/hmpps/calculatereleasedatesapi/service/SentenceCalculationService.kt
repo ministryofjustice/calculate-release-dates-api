@@ -159,6 +159,8 @@ class SentenceCalculationService {
     )
   }
 
+
+
   private fun calculateHDCED(sentence: Sentence, sentenceCalculation: SentenceCalculation) {
     if (sentence.durationIsLessThan(EIGHTEEN, ChronoUnit.MONTHS)) {
       sentenceCalculation.numberOfDaysToHomeDetentionCurfewExpiryDate =
@@ -166,7 +168,6 @@ class SentenceCalculationService {
           .plus(sentenceCalculation.calculatedTotalAddedDays)
           .minus(sentenceCalculation.calculatedTotalDeductedDays)
           .plus(sentenceCalculation.calculatedTotalAwardedDays)
-      // TODO the provided steps do not include taking a day off for the day served on the day of sentencing.
       sentenceCalculation.homeDetentionCurfewExpiryDateDate = sentence.sentencedAt.plusDays(
         sentenceCalculation.numberOfDaysToHomeDetentionCurfewExpiryDate
       )
