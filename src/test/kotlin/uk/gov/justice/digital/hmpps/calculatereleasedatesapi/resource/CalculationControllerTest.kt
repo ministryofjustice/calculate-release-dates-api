@@ -19,6 +19,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -107,5 +108,21 @@ class CalculationControllerTest {
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(bookingCalculation))
     verify(calculationService, times(1)).calculate(booking, CONFIRMED)
     verify(domainEventPublisher, times(1)).publishReleaseDateChange(prisonerId, bookingId)
+  }
+
+  @Test
+  fun `Test GET of calculation results by calculationRequestId`() {
+    val calculationRequestId = 9995L
+    val bookingCalculation = BookingCalculation(calculationRequestId = calculationRequestId)
+
+    whenever(calculationService.findCalculationResults(calculationRequestId)).thenReturn(bookingCalculation)
+
+    val result = mvc.perform(get("/calculation/results/$calculationRequestId").accept(APPLICATION_JSON))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(bookingCalculation))
+    verify(calculationService, times(1)).findCalculationResults(calculationRequestId)
   }
 }

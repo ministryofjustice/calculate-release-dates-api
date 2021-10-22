@@ -13,11 +13,16 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.oauth2.jwt.Jwt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
+import java.time.LocalDate
+import java.util.Optional
 import java.util.UUID
 
 class CalculationServiceTest {
@@ -53,28 +58,44 @@ class CalculationServiceTest {
     )
 
   @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/psi_examples.csv"], numLinesToSkip = 1)
-  fun `Test PSI Example`(exampleNumber: String) {
-    log.info("Testing PSI example $exampleNumber")
+  @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
+  fun `Test Example`(exampleType: String, exampleNumber: String) {
+    log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
     SecurityContextHolder.setContext(
       SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
     )
-    val booking = jsonTransformation.loadBooking("psi-examples/$exampleNumber")
+    val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val bookingCalculation = calculationService.calculate(booking, PRELIMINARY)
-    assertEquals(
-      jsonTransformation.loadBookingCalculation(exampleNumber),
+    log.info(
+      "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
       bookingCalculation
     )
-    log.info(
-      "Example $exampleNumber outcome BookingCalculation: {}",
+    assertEquals(
+      jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber"),
       bookingCalculation
     )
   }
 
   @Test
   fun `Test Example 37`() {
-    `Test PSI Example`("37")
+    `Test Example`("psi-examples", "37")
+  }
+
+  @Test
+  fun `Test fetching calculation results by requestId`() {
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
+      Optional.of(
+        CALCULATION_REQUEST_WITH_OUTCOMES
+      )
+    )
+
+    val bookingCalculation = calculationService.findCalculationResults(CALCULATION_REQUEST_ID)
+
+    assertEquals(
+      bookingCalculation,
+      BOOKING_CALCULATION
+    )
   }
 
   companion object {
@@ -82,15 +103,33 @@ class CalculationServiceTest {
     const val USERNAME = "user1"
     private const val PRISONER_ID = "A1234AJ"
     private const val BOOKING_ID = 12345L
+    private const val CALCULATION_REQUEST_ID = 123456L
     val FAKE_TOKEN: Jwt = Jwt
       .withTokenValue("123")
       .header("header1", "value1")
       .claim("claim1", "value1")
       .build()
     private val CALCULATION_REFERENCE: UUID = UUID.randomUUID()
+    private val CALCULATION_OUTCOME = CalculationOutcome(
+      calculationDateType = SentenceType.CRD.name,
+      outcomeDate = LocalDate.of(2021, 2, 3),
+      calculationRequestId = CALCULATION_REQUEST_ID
+    )
     val CALCULATION_REQUEST = CalculationRequest(
       calculationReference = CALCULATION_REFERENCE, prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID
+    )
+
+    val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
+      id = CALCULATION_REQUEST_ID,
+      calculationReference = CALCULATION_REFERENCE, prisonerId = PRISONER_ID,
+      bookingId = BOOKING_ID,
+      calculationOutcomes = listOf(CALCULATION_OUTCOME)
+    )
+
+    val BOOKING_CALCULATION = BookingCalculation(
+      dates = mutableMapOf(SentenceType.CRD to CALCULATION_OUTCOME.outcomeDate),
+      calculationRequestId = CALCULATION_REQUEST_ID
     )
   }
 }

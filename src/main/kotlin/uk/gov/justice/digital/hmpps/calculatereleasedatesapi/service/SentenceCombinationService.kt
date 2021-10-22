@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import java.util.UUID
 
 @Service
 class SentenceCombinationService(val sentenceIdentificationService: SentenceIdentificationService) {
@@ -17,38 +18,64 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
     workingBooking: Booking,
     sentenceMergeFunction: (Sentence, Sentence) -> Sentence
   ) {
-
     // I take 2 sentences, combine them into a single conjoined sentence
     val combinedSentence: Sentence = sentenceMergeFunction(firstSentence, secondSentence)
 
     sentenceIdentificationService.identify(combinedSentence, workingBooking.offender)
-    combinedSentence.associateSentences(mutableListOf())
 
-    addSentenceToProfile(combinedSentence, workingBooking)
+    combineConsecutiveSentences(firstSentence, secondSentence, combinedSentence)
+
+    addSentenceToBooking(combinedSentence, workingBooking)
 
     associateExistingLinksToNewSentence(firstSentence, combinedSentence, workingBooking)
     associateExistingLinksToNewSentence(secondSentence, combinedSentence, workingBooking)
 
     // delete the 2 existing sentences
-    deleteSentenceFromProfile(firstSentence, workingBooking)
-    deleteSentenceFromProfile(secondSentence, workingBooking)
-
-    removeSelfFromConsecutiveSentences(combinedSentence)
+    deleteSentenceFromBooking(firstSentence, workingBooking)
+    deleteSentenceFromBooking(secondSentence, workingBooking)
   }
 
-  private fun removeSelfFromConsecutiveSentences(sentence: Sentence) {
-    for (UUID in sentence.consecutiveSentenceUUIDs) {
-      if (UUID == sentence.identifier) {
-        sentence.consecutiveSentenceUUIDs.remove(UUID)
+    /*
+      Adds any sentences to the combinedSentence that were consecutive to the firstSentence and secondSentence
+     */
+  private fun combineConsecutiveSentences(
+    firstSentence: Sentence,
+    secondSentence: Sentence,
+    combinedSentence: Sentence
+  ) {
+
+    val consecutiveSentenceUUIDSToMergedSentence: MutableList<UUID> = mutableListOf()
+    val consecutiveSentencesToMergedSentence: MutableList<Sentence> = mutableListOf()
+
+    firstSentence.consecutiveSentenceUUIDs.forEach {
+      if (secondSentence.identifier != it) {
+        consecutiveSentenceUUIDSToMergedSentence.add(it)
       }
     }
-    for (sentenceObject in sentence.consecutiveSentences) {
-      if (sentenceObject == sentence) {
-        sentence.consecutiveSentences.remove(sentenceObject)
+    secondSentence.consecutiveSentenceUUIDs.forEach {
+      if (firstSentence.identifier != it) {
+        consecutiveSentenceUUIDSToMergedSentence.add(it)
       }
     }
+    firstSentence.consecutiveSentences.forEach {
+      if (consecutiveSentenceUUIDSToMergedSentence.contains(it.identifier)) {
+        consecutiveSentencesToMergedSentence.add(it)
+      }
+    }
+    secondSentence.consecutiveSentences.forEach {
+      if (consecutiveSentenceUUIDSToMergedSentence.contains(it.identifier)) {
+        consecutiveSentencesToMergedSentence.add(it)
+      }
+    }
+
+    combinedSentence.consecutiveSentenceUUIDs = consecutiveSentenceUUIDSToMergedSentence
+    combinedSentence.consecutiveSentences = consecutiveSentencesToMergedSentence
   }
 
+    /*
+      If our orignal sentences were consecutive to another sentence on the booking. Updated the references so that
+      the combined booking is consecutive to the other sentence.
+     */
   private fun associateExistingLinksToNewSentence(
     originalSentence: Sentence,
     replacementSentence: Sentence,
@@ -56,18 +83,22 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
   ) {
 
     booking.sentences.forEach { sentence ->
-      sentence.consecutiveSentences.remove(originalSentence)
-      sentence.consecutiveSentences.add(replacementSentence)
-      sentence.consecutiveSentenceUUIDs.remove(originalSentence.identifier)
-      sentence.consecutiveSentenceUUIDs.add(replacementSentence.identifier)
+      if (sentence.consecutiveSentences.contains(originalSentence) &&
+        sentence.consecutiveSentenceUUIDs.contains(originalSentence.identifier)
+      ) {
+        sentence.consecutiveSentences.remove(originalSentence)
+        sentence.consecutiveSentences.add(replacementSentence)
+        sentence.consecutiveSentenceUUIDs.remove(originalSentence.identifier)
+        sentence.consecutiveSentenceUUIDs.add(replacementSentence.identifier)
+      }
     }
   }
 
-  private fun addSentenceToProfile(sentence: Sentence, booking: Booking) {
+  private fun addSentenceToBooking(sentence: Sentence, booking: Booking) {
     booking.sentences.add(sentence)
   }
 
-  private fun deleteSentenceFromProfile(sentence: Sentence, booking: Booking) {
+  private fun deleteSentenceFromBooking(sentence: Sentence, booking: Booking) {
     booking.sentences.remove(sentence)
   }
 

@@ -30,7 +30,7 @@ class CalculationController(
   private val domainEventPublisher: DomainEventPublisher,
 ) {
   @PostMapping(value = ["/{prisonerId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRD_ADMIN', 'PRISON')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
   @Operation(
     summary = "Calculate release dates for a prisoner - preliminary calculation, this does not publish to NOMIS",
@@ -38,8 +38,7 @@ class CalculationController(
       "PRELIMINARY calculation that will not be published to NOMIS",
     security = [
       SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "CRD_ADMIN"),
-      SecurityRequirement(name = "PRISON")
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
     ],
   )
   @ApiResponses(
@@ -58,15 +57,14 @@ class CalculationController(
   }
 
   @PostMapping(value = ["/{prisonerId}/confirm"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRD_ADMIN', 'PRISON')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
   @Operation(
     summary = "Calculate release dates and persist the results for a prisoners latest booking",
     description = "This endpoint will calculate release dates based on a prisoners latest booking ",
     security = [
       SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "CRD_ADMIN"),
-      SecurityRequirement(name = "PRISON")
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
     ],
   )
   @ApiResponses(
@@ -88,15 +86,14 @@ class CalculationController(
   }
 
   @GetMapping(value = ["/results/{prisonerId}/{bookingId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRD_ADMIN', 'PRISON')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
   @Operation(
     summary = "Get confirmed release dates for a prisoner's specific booking",
     description = "This endpoint will return the confirmed release dates based on a prisoners booking",
     security = [
       SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "CRD_ADMIN"),
-      SecurityRequirement(name = "PRISON")
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
     ],
   )
   @ApiResponses(
@@ -114,8 +111,35 @@ class CalculationController(
     @PathVariable("bookingId")
     bookingId: Long,
   ): BookingCalculation {
-    log.info("Request received return calculation results for prisoner {} and bookingId ", prisonerId, bookingId)
+    log.info("Request received return calculation results for prisoner {} and bookingId {}", prisonerId, bookingId)
     return calculationService.findConfirmedCalculationResults(prisonerId, bookingId)
+  }
+
+  @GetMapping(value = ["/results/{calculationRequestId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Get release dates for a calculationRequestId",
+    description = "This endpoint will return the  release dates based on a calculationRequestId",
+    security = [
+      SecurityRequirement(name = "SYSTEM_USER"),
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
+    ],
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
+    ]
+  )
+  fun getCalculationResults(
+    @Parameter(required = true, example = "123456", description = "The calculationRequestId of the results")
+    @PathVariable("calculationRequestId")
+    calculationRequestId: Long,
+  ): BookingCalculation {
+    log.info("Request received return calculation results for calculationRequestId {}", calculationRequestId)
+    return calculationService.findCalculationResults(calculationRequestId)
   }
 
   companion object {
