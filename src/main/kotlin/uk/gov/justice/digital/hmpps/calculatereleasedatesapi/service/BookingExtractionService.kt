@@ -70,9 +70,10 @@ class BookingExtractionService(
       extractionService.allOverlap(booking.sentences)
     ) {
 
-      val latestReleaseDate: LocalDate? = extractionService.mostRecent(
+      val mostRecentByReleaseDateSentence = extractionService.mostRecentSentence(
         booking.sentences, SentenceCalculation::releaseDate
       )
+      val latestReleaseDate: LocalDate? = mostRecentByReleaseDateSentence.sentenceCalculation.releaseDate
 
       val latestExpiryDate: LocalDate? = extractionService.mostRecent(
         booking.sentences, SentenceCalculation::expiryDate
@@ -86,9 +87,17 @@ class BookingExtractionService(
         booking.sentences, SentenceCalculation::nonParoleDate
       )
 
-      val latestHomeDetentionCurfewExpiryDateDate: LocalDate? = extractManyHomeDetentionCurfewExpiryDate(booking)
+      val latestHomeDetentionCurfewExpiryDateDate: LocalDate? = mostRecentByReleaseDateSentence.sentenceCalculation.homeDetentionCurfewExpiryDateDate
 
-      val latestTopUpSupervisionDate: LocalDate? = extractManyTopUpSupervisionDate(booking)
+      val latestTopUpSupervisionDate: LocalDate? = extractionService.mostRecent(
+        booking.sentences, SentenceCalculation::topUpSupervisionDate
+      )
+
+      val effectiveTopUpSupervisionDate = if (latestTopUpSupervisionDate != null && latestTopUpSupervisionDate.isAfter(latestLicenseExpiryDate!!)) {
+        latestTopUpSupervisionDate
+      } else {
+        null
+      }
 
       val isReleaseDateConditional = extractManyIsReleaseConditional(
         booking, latestReleaseDate, latestExpiryDate, latestLicenseExpiryDate
@@ -115,8 +124,8 @@ class BookingExtractionService(
         bookingCalculation.dates[SentenceType.NPD] = latestNonParoleDate
       }
 
-      if (latestTopUpSupervisionDate != null) {
-        bookingCalculation.dates[SentenceType.TUSED] = latestTopUpSupervisionDate
+      if (effectiveTopUpSupervisionDate != null) {
+        bookingCalculation.dates[SentenceType.TUSED] = effectiveTopUpSupervisionDate
       }
 
       if (latestHomeDetentionCurfewExpiryDateDate != null) {
@@ -125,47 +134,6 @@ class BookingExtractionService(
       return bookingCalculation
     } else {
       throw CantExtractMultipleSentencesException("Can't extract a single date from multiple sentences")
-    }
-  }
-
-  private fun extractManyHomeDetentionCurfewExpiryDate(booking: Booking): LocalDate? {
-    val earliestSentenceDate: LocalDate = extractionService.earliestDate(
-      booking.sentences, Sentence::sentencedAt
-    )!!
-
-    val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(
-      booking.sentences, SentenceCalculation::unadjustedExpiryDate
-    )!!
-
-    return if (latestUnadjustedExpiryDate.isBefore(earliestSentenceDate.plusYears(FOUR)) &&
-      latestUnadjustedExpiryDate.isAfterOrEqualTo(earliestSentenceDate.plusWeeks(TWELVE))
-    ) {
-      extractionService.mostRecent(
-        booking.sentences, SentenceCalculation::homeDetentionCurfewExpiryDateDate
-      )
-    } else {
-      null
-    }
-  }
-
-  private fun extractManyTopUpSupervisionDate(booking: Booking): LocalDate? {
-
-    val earliestSentenceDate: LocalDate = extractionService.earliestDate(
-      booking.sentences, Sentence::sentencedAt
-    )!!
-
-    val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(
-      booking.sentences, SentenceCalculation::unadjustedExpiryDate
-    )!!
-
-    return if (latestUnadjustedExpiryDate.isBefore(earliestSentenceDate.plusYears(TWO)) &&
-      latestUnadjustedExpiryDate.isAfterOrEqualTo(earliestSentenceDate.plusDays(TWO))
-    ) {
-      extractionService.mostRecent(
-        booking.sentences, SentenceCalculation::topUpSupervisionDate
-      )
-    } else {
-      null
     }
   }
 
