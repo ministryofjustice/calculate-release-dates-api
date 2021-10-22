@@ -185,6 +185,8 @@ class SentenceCalculationService {
     // then we don't need a HDCED date.
     if (sentence.sentencedAt.isAfterOrEqualTo(sentenceCalculation.adjustedReleaseDate)) {
       sentenceCalculation.homeDetentionCurfewExpiryDateDate = null
+    } else if (sentence.sentencedAt.plusDays(14).isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewExpiryDateDate!!)) {
+      sentenceCalculation.homeDetentionCurfewExpiryDateDate = sentence.sentencedAt.plusDays(14)
     }
   }
 
