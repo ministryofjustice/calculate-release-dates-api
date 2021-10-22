@@ -68,10 +68,10 @@ class BookingExtractionService(
       extractionService.allOverlap(booking.sentences)
     ) {
 
-      val mostRecentByReleaseDateSentence = extractionService.mostRecentSentence(
+      val mostRecentSentenceByReleaseDate = extractionService.mostRecentSentence(
         booking.sentences, SentenceCalculation::releaseDate
       )
-      val latestReleaseDate: LocalDate = mostRecentByReleaseDateSentence.sentenceCalculation.releaseDate!!
+      val latestReleaseDate: LocalDate = mostRecentSentenceByReleaseDate.sentenceCalculation.releaseDate!!
 
       val latestExpiryDate: LocalDate = extractionService.mostRecent(
         booking.sentences, SentenceCalculation::expiryDate
@@ -86,7 +86,7 @@ class BookingExtractionService(
       )
 
       val latestHomeDetentionCurfewExpiryDateDate: LocalDate? =
-        mostRecentByReleaseDateSentence.sentenceCalculation.homeDetentionCurfewExpiryDateDate
+        mostRecentSentenceByReleaseDate.sentenceCalculation.homeDetentionCurfewExpiryDateDate
 
       val effectiveTopUpSupervisionDate = extractManyTopUpSuperVisionDate(booking, latestLicenseExpiryDate)
 
