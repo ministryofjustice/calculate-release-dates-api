@@ -8,5 +8,6 @@ enum class SentenceType {
   ARD,
   TUSED,
   PED,
-  SLED
+  SLED,
+  HDCED
 }

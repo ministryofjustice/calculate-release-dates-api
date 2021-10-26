@@ -18,6 +18,11 @@ class SentenceIdentificationService {
     } else {
       afterCJAAndLASPO(sentence, offender)
     }
+    if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.WEEKS) &&
+      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS)
+    ) {
+      sentence.sentenceTypes += SentenceType.HDCED
+    }
   }
 
   private fun afterCJAAndLASPO(sentence: Sentence, offender: Offender) {
@@ -100,6 +105,7 @@ class SentenceIdentificationService {
       )
     }
   }
+
   companion object {
     private const val INT_EIGHTEEN = 18
     private const val INT_ONE = 1

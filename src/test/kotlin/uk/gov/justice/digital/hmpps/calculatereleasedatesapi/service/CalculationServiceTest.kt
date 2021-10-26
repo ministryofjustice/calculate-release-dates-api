@@ -42,9 +42,11 @@ class CalculationServiceTest {
   private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
     sentenceIdentificationService,
-    sentencesExtractionService,
     consecutiveSentenceCombinationService,
     concurrentSentenceCombinationService
+  )
+  private val bookingExtractionService = BookingExtractionService(
+    sentencesExtractionService
   )
 
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
@@ -53,6 +55,7 @@ class CalculationServiceTest {
   private val calculationService =
     CalculationService(
       bookingCalculationService,
+      bookingExtractionService,
       calculationRequestRepository,
       calculationOutcomeRepository
     )

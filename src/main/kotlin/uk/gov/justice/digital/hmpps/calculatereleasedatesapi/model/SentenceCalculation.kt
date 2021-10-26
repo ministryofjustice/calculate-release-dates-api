@@ -24,6 +24,10 @@ data class SentenceCalculation(
   var numberOfDaysToLicenceExpiryDate: Long = 0
   var licenceExpiryDate: LocalDate? = null
 
+  //  Home Detention Curfew Expiry Date(HDCED)
+  var numberOfDaysToHomeDetentionCurfewExpiryDate: Long = 0
+  var homeDetentionCurfewExpiryDateDate: LocalDate? = null
+
   var expiryDate: LocalDate? = null
   var releaseDate: LocalDate? = null
   var topUpSupervisionDate: LocalDate? = null
