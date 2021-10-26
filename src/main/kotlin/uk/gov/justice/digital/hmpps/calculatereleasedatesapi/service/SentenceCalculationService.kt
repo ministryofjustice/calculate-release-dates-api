@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 import kotlin.math.max
@@ -76,6 +77,10 @@ class SentenceCalculationService {
       sentenceCalculation.licenceExpiryDate = sentence.sentencedAt.plusDays(
         sentenceCalculation.numberOfDaysToLicenceExpiryDate
       ).minusDays(ONE)
+    }
+
+    if (sentence.sentenceTypes.contains(SentenceType.HDCED)) {
+      calculateHDCED(sentence, sentenceCalculation)
     }
 
     // create association between the sentence and it's calculation
@@ -154,12 +159,47 @@ class SentenceCalculationService {
     )
   }
 
+  private fun calculateHDCED(sentence: Sentence, sentenceCalculation: SentenceCalculation) {
+    if (sentence.durationIsLessThan(EIGHTEEN, ChronoUnit.MONTHS)) {
+      sentenceCalculation.numberOfDaysToHomeDetentionCurfewExpiryDate =
+        max(TWENTY_EIGHT, ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().div(FOUR)).toLong())
+          .plus(sentenceCalculation.calculatedTotalAddedDays)
+          .minus(sentenceCalculation.calculatedTotalDeductedDays)
+          .plus(sentenceCalculation.calculatedTotalAwardedDays)
+      sentenceCalculation.homeDetentionCurfewExpiryDateDate = sentence.sentencedAt.plusDays(
+        sentenceCalculation.numberOfDaysToHomeDetentionCurfewExpiryDate
+      )
+    } else {
+      sentenceCalculation.numberOfDaysToHomeDetentionCurfewExpiryDate =
+        sentenceCalculation.numberOfDaysToReleaseDate.minus(ONE_HUNDRED_AND_THIRTY_FOUR).toLong()
+          .plus(sentenceCalculation.calculatedTotalAddedDays)
+          .minus(sentenceCalculation.calculatedTotalDeductedDays)
+          .plus(sentenceCalculation.calculatedTotalAwardedDays)
+      sentenceCalculation.homeDetentionCurfewExpiryDateDate = sentence.sentencedAt.plusDays(
+        sentenceCalculation.numberOfDaysToHomeDetentionCurfewExpiryDate
+      ).minusDays(ONE)
+    }
+    // If adjustments make the CRD before sentence date (i.e. a large REMAND days)
+    // then we don't need a HDCED date.
+    if (sentence.sentencedAt.isAfterOrEqualTo(sentenceCalculation.adjustedReleaseDate)) {
+      sentenceCalculation.homeDetentionCurfewExpiryDateDate = null
+    } else if (sentence.sentencedAt.plusDays(FOURTEEN)
+      .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewExpiryDateDate!!)
+    ) {
+      sentenceCalculation.homeDetentionCurfewExpiryDateDate = sentence.sentencedAt.plusDays(FOURTEEN)
+    }
+  }
+
   companion object {
     private const val ONE = 1L
     private const val TWO = 2L
     private const val THREE = 3L
     private const val FOUR = 4L
     private const val TWELVE = 12L
+    private const val FOURTEEN = 14L
+    private const val EIGHTEEN = 18L
+    private const val TWENTY_EIGHT = 28L
     private const val YEAR_IN_DAYS = 365
+    private const val ONE_HUNDRED_AND_THIRTY_FOUR = 134
   }
 }
