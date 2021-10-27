@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -27,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -34,6 +36,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingServ
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DomainEventPublisher
 import java.time.LocalDate
+import javax.persistence.EntityNotFoundException
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
@@ -92,6 +95,7 @@ class CalculationControllerTest {
   @Test
   fun `Test POST to confirm a calculation and that event is published`() {
     val prisonerId = "A1234AB"
+    val calculationRequestId = 12345
     val bookingId = 9995L
     val offender = Offender(prisonerId, "John Doe", LocalDate.of(1980, 1, 1))
     val booking = Booking(offender, mutableListOf(), mutableMapOf(), bookingId)
@@ -100,7 +104,7 @@ class CalculationControllerTest {
     whenever(bookingService.getBooking(prisonerId)).thenReturn(booking)
     whenever(calculationService.calculate(booking, CONFIRMED)).thenReturn(bookingCalculation)
 
-    val result = mvc.perform(post("/calculation/$prisonerId/confirm").accept(APPLICATION_JSON))
+    val result = mvc.perform(post("/calculation/$prisonerId/confirm/$calculationRequestId").accept(APPLICATION_JSON))
       .andExpect(status().isOk)
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
@@ -108,6 +112,32 @@ class CalculationControllerTest {
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(bookingCalculation))
     verify(calculationService, times(1)).calculate(booking, CONFIRMED)
     verify(domainEventPublisher, times(1)).publishReleaseDateChange(prisonerId, bookingId)
+  }
+
+  @Test
+  fun `Test POST to confirm a calculation when the data has changed since the PRELIM calc - results in exception`() {
+    val prisonerId = "A1234AB"
+    val calculationRequestId = 12345L
+    val bookingId = 9995L
+    val offender = Offender(prisonerId, "John Doe", LocalDate.of(1980, 1, 1))
+    val booking = Booking(offender, mutableListOf(), mutableMapOf(), bookingId)
+
+    val bookingCalculation = BookingCalculation(calculationRequestId = 9991L)
+    whenever(bookingService.getBooking(prisonerId)).thenReturn(booking)
+    whenever(calculationService.calculate(booking, CONFIRMED)).thenReturn(bookingCalculation)
+    whenever(calculationService.validateConfirmationRequest(any(), any())).then {
+      throw PreconditionFailedException(
+        "The booking data used for the preliminary calculation has changed"
+      )
+    }
+
+
+    val result = mvc.perform(post("/calculation/$prisonerId/confirm/$calculationRequestId").accept(APPLICATION_JSON))
+      .andExpect(status().isPreconditionFailed)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(result.response.contentAsString).contains("The booking data used for the preliminary calculation has changed")
   }
 
   @Test
