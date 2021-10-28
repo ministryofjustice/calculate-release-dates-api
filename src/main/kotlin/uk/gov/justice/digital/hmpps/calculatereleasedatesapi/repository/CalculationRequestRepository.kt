@@ -12,4 +12,6 @@ interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long>
     bookingId: Long,
     calculationStatus: String
   ): Optional<CalculationRequest>
+
+  fun findByIdAndCalculationStatus(calculationRequestId: Long, calculationStatus: String): Optional<CalculationRequest>
 }
