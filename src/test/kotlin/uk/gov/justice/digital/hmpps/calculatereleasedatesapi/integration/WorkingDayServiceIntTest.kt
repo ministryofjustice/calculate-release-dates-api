@@ -1,10 +1,12 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.CacheManager
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CacheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.WorkingDayService
 import java.time.LocalDate
 import java.util.concurrent.ConcurrentHashMap
@@ -64,5 +66,7 @@ class WorkingDayServiceIntTest : IntegrationTestBase() {
       cacheManager.getCache(CacheConfiguration.BANK_HOLIDAYS_CACHE_NAME)!!.nativeCache as ConcurrentHashMap<Any, Any>
 
     assertEquals(1, nativeCache.size)
+    val holidays: BankHolidays = nativeCache.values.first() as BankHolidays
+    assertTrue(holidays.englandAndWales.events.isNotEmpty())
   }
 }

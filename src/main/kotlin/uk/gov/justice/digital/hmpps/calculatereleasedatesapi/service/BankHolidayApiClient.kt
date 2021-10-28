@@ -15,6 +15,7 @@ class BankHolidayApiClient(@Qualifier("bankHolidayApiWebClient") private val web
   @Cacheable(CacheConfiguration.BANK_HOLIDAYS_CACHE_NAME)
   fun getBankHolidays(): BankHolidays {
     return webClient.get()
+      .uri("/bank-holidays.json")
       .retrieve()
       .bodyToMono(typeReference<BankHolidays>())
       .block()!!

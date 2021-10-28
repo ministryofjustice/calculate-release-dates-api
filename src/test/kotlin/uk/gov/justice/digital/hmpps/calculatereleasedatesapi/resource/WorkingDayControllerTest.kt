@@ -5,18 +5,13 @@ import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito.reset
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
@@ -28,18 +23,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.WorkingDayS
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-@ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
 @WebMvcTest(controllers = [WorkingDayController::class])
-@AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = [WorkingDayController::class])
-@WebAppConfiguration
 class WorkingDayControllerTest {
 
   @MockBean
   private lateinit var workingDayService: WorkingDayService
 
-  @Autowired
   private lateinit var mvc: MockMvc
 
   @Autowired

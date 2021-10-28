@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient
 class WebClientConfiguration(
   @Value("\${prison.api.url}") private val prisonApiUri: String,
   @Value("\${hmpps.auth.url}") private val oauthApiUrl: String,
+  @Value("\${bank-holiday.api.url:https://www.gov.uk}") private val bankHolidayApiUrl: String,
   private val webClientBuilder: WebClient.Builder,
 ) {
 
@@ -40,7 +41,7 @@ class WebClientConfiguration(
 
   @Bean
   fun bankHolidayApiWebClient(): WebClient {
-    return webClientBuilder.baseUrl(BANK_HOLIDAY_API_URL).build()
+    return webClientBuilder.baseUrl(bankHolidayApiUrl).build()
   }
 
   @Bean
@@ -54,9 +55,5 @@ class WebClientConfiguration(
     )
     authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider)
     return authorizedClientManager
-  }
-
-  companion object {
-    private const val BANK_HOLIDAY_API_URL = "https://www.gov.uk/bank-holidays.json"
   }
 }
