@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.vladmihalcea.hibernate.type.json.internal.JacksonUtil
@@ -94,16 +95,20 @@ fun transform(sentenceAdjustments: SentenceAdjustments): MutableMap<AdjustmentTy
 }
 
 fun transform(booking: Booking, username: String, calculationStatus: CalculationStatus): CalculationRequest {
-  val mapper = ObjectMapper()
-  mapper.registerModule(JavaTimeModule())
-  mapper.dateFormat = SimpleDateFormat("yyyy-MM-dd")
   return CalculationRequest(
     prisonerId = booking.offender.reference,
     bookingId = booking.bookingId,
     calculationStatus = calculationStatus.name,
     calculatedByUsername = username,
-    inputData = JacksonUtil.toJsonNode(mapper.writeValueAsString(booking))
+    inputData = bookingToJson(booking)
   )
+}
+
+fun bookingToJson(booking: Booking): JsonNode {
+  val mapper = ObjectMapper()
+  mapper.registerModule(JavaTimeModule())
+  mapper.dateFormat = SimpleDateFormat("yyyy-MM-dd")
+  return JacksonUtil.toJsonNode(mapper.writeValueAsString(booking))
 }
 
 fun transform(calculationRequest: CalculationRequest, sentenceType: SentenceType, date: LocalDate): CalculationOutcome {

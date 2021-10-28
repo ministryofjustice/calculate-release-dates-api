@@ -18,15 +18,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
-    val result = webTestClient.post()
-      .uri("/calculation/$PRISONER_ID")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(BookingCalculation::class.java)
-      .returnResult().responseBody
+    val result = createPreliminaryCalculation()
 
     val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
@@ -41,7 +33,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Confirm a calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
-    val result = createConfirmCalculationForPrisoner()
+    val result = createConfirmCalculationForPrisoner(createPreliminaryCalculation().calculationRequestId)
 
     val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
@@ -57,7 +49,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Get the results for a confirmed calculation`() {
-    createConfirmCalculationForPrisoner()
+    createConfirmCalculationForPrisoner(createPreliminaryCalculation().calculationRequestId)
 
     val result = webTestClient.get()
       .uri("/calculation/results/$PRISONER_ID/$BOOKING_ID")
@@ -75,9 +67,19 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
   }
 
-  private fun createConfirmCalculationForPrisoner(): BookingCalculation {
+  private fun createPreliminaryCalculation() = webTestClient.post()
+    .uri("/calculation/$PRISONER_ID")
+    .accept(MediaType.APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(BookingCalculation::class.java)
+    .returnResult().responseBody
+
+  private fun createConfirmCalculationForPrisoner(calculationRequestId: Long): BookingCalculation {
     return webTestClient.post()
-      .uri("/calculation/$PRISONER_ID/confirm")
+      .uri("/calculation/$PRISONER_ID/confirm/$calculationRequestId")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()

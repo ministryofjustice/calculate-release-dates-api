@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config
 
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.PRECONDITION_FAILED
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.AuthorizationServiceException
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import javax.persistence.EntityNotFoundException
 import javax.validation.ValidationException
 
@@ -97,6 +99,20 @@ class ControllerAdvice {
         ErrorResponse(
           status = HttpStatus.BAD_REQUEST.value(),
           userMessage = "Validation failure: ${e.message}",
+          developerMessage = e.message
+        )
+      )
+  }
+
+  @ExceptionHandler(PreconditionFailedException::class)
+  fun handleEntityExistsException(e: Exception): ResponseEntity<ErrorResponse> {
+    log.info("Booking data changed : {}", e.message)
+    return ResponseEntity
+      .status(PRECONDITION_FAILED)
+      .body(
+        ErrorResponse(
+          status = PRECONDITION_FAILED,
+          userMessage = "Pre condition failed: ${e.message}",
           developerMessage = e.message
         )
       )

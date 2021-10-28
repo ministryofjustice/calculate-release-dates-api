@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
@@ -87,5 +89,20 @@ class CalculationService(
       }
 
     return transform(calculationRequest)
+  }
+
+  @Transactional(readOnly = true)
+  fun validateConfirmationRequest(calculationRequestId: Long, booking: Booking) {
+    val calculationRequest =
+      calculationRequestRepository.findByIdAndCalculationStatus(
+        calculationRequestId,
+        PRELIMINARY.name
+      ).orElseThrow {
+        EntityNotFoundException("No preliminary calculation exists for calculationRequestId $calculationRequestId")
+      }
+
+    if (calculationRequest.inputData.hashCode() != bookingToJson(booking).hashCode()) {
+      throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
+    }
   }
 }
