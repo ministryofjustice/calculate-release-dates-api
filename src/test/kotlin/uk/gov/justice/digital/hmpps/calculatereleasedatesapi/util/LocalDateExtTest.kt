@@ -30,4 +30,17 @@ class LocalDateExtTest {
     assertTrue(testDate.isAfterOrEqualTo(equalDate))
     assertFalse(testDate.isAfterOrEqualTo(futureDate))
   }
+
+  @Test
+  fun `isWeekend test`() {
+    val friday = LocalDate.of(2021, 10, 29)
+    val saturday = LocalDate.of(2021, 10, 30)
+    val sunday = LocalDate.of(2021, 10, 31)
+    val monday = LocalDate.of(2021, 11, 1)
+
+    assertFalse(friday.isWeekend())
+    assertTrue(saturday.isWeekend())
+    assertTrue(sunday.isWeekend())
+    assertFalse(monday.isWeekend())
+  }
 }

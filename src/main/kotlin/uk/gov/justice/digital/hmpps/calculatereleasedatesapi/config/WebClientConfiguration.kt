@@ -39,6 +39,11 @@ class WebClientConfiguration(
   }
 
   @Bean
+  fun bankHolidayApiWebClient(): WebClient {
+    return webClientBuilder.baseUrl(BANK_HOLIDAY_API_URL).build()
+  }
+
+  @Bean
   fun authorizedClientManager(
     clientRegistrationRepository: ClientRegistrationRepository?,
     oAuth2AuthorizedClientService: OAuth2AuthorizedClientService?,
@@ -49,5 +54,9 @@ class WebClientConfiguration(
     )
     authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider)
     return authorizedClientManager
+  }
+
+  companion object {
+    private const val BANK_HOLIDAY_API_URL = "https://www.gov.uk/bank-holidays.json"
   }
 }
