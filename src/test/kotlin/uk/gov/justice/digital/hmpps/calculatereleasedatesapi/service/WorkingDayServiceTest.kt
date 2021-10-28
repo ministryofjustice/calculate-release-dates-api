@@ -3,7 +3,9 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.whenever
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BankHoliday
@@ -40,9 +42,9 @@ class WorkingDayServiceTest {
 
     val nextWorkingDay = workingDayService.nextWorkingDay(saturday)
 
-    Assertions.assertEquals(monday, nextWorkingDay.date)
-    Assertions.assertTrue(nextWorkingDay.adjustedForWeekend)
-    Assertions.assertFalse(nextWorkingDay.adjustedForBankHoliday)
+    assertEquals(monday, nextWorkingDay.date)
+    assertTrue(nextWorkingDay.adjustedForWeekend)
+    assertFalse(nextWorkingDay.adjustedForBankHoliday)
   }
 
   @Test
@@ -52,9 +54,9 @@ class WorkingDayServiceTest {
 
     val nextWorkingDay = workingDayService.nextWorkingDay(christmasBankHoliday)
 
-    Assertions.assertEquals(afterBoxingDayHoliday, nextWorkingDay.date)
-    Assertions.assertFalse(nextWorkingDay.adjustedForWeekend)
-    Assertions.assertTrue(nextWorkingDay.adjustedForBankHoliday)
+    assertEquals(afterBoxingDayHoliday, nextWorkingDay.date)
+    assertFalse(nextWorkingDay.adjustedForWeekend)
+    assertTrue(nextWorkingDay.adjustedForBankHoliday)
   }
 
   @Test
@@ -64,9 +66,9 @@ class WorkingDayServiceTest {
 
     val nextWorkingDay = workingDayService.previousWorkingDay(saturday)
 
-    Assertions.assertEquals(friday, nextWorkingDay.date)
-    Assertions.assertTrue(nextWorkingDay.adjustedForWeekend)
-    Assertions.assertFalse(nextWorkingDay.adjustedForBankHoliday)
+    assertEquals(friday, nextWorkingDay.date)
+    assertTrue(nextWorkingDay.adjustedForWeekend)
+    assertFalse(nextWorkingDay.adjustedForBankHoliday)
   }
 
   @Test
@@ -76,8 +78,8 @@ class WorkingDayServiceTest {
 
     val nextWorkingDay = workingDayService.previousWorkingDay(christmasBankHoliday)
 
-    Assertions.assertEquals(christmasEve, nextWorkingDay.date)
-    Assertions.assertTrue(nextWorkingDay.adjustedForWeekend)
-    Assertions.assertTrue(nextWorkingDay.adjustedForBankHoliday)
+    assertEquals(christmasEve, nextWorkingDay.date)
+    assertTrue(nextWorkingDay.adjustedForWeekend)
+    assertTrue(nextWorkingDay.adjustedForBankHoliday)
   }
 }
