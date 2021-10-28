@@ -86,7 +86,6 @@ class CalculationController(
     return calculation
   }
 
-
   @PostMapping(value = ["/{prisonerId}/confirm/{calculationRequestId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody

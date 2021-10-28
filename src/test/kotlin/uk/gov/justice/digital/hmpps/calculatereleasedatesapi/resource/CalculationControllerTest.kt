@@ -36,7 +36,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingServ
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DomainEventPublisher
 import java.time.LocalDate
-import javax.persistence.EntityNotFoundException
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
@@ -130,7 +129,6 @@ class CalculationControllerTest {
         "The booking data used for the preliminary calculation has changed"
       )
     }
-
 
     val result = mvc.perform(post("/calculation/$prisonerId/confirm/$calculationRequestId").accept(APPLICATION_JSON))
       .andExpect(status().isPreconditionFailed)
