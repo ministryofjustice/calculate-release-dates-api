@@ -182,7 +182,8 @@ class CalculationServiceTest {
     )
 
     val INPUT_DATA: JsonNode =
-      JacksonUtil.toJsonNode("{ \"offender\":{ \"reference\":\"A1234AJ\", \"name\":\"John Doe\", \"dateOfBirth\":\"1980-01-01\" }, \"sentences\":[], \"adjustments\":{}, \"bookingId\":12345 }")
+      JacksonUtil.toJsonNode("{ \"offender\":{ \"reference\":\"A1234AJ\", \"name\":\"John Doe\", \"dateOfBirth\"" +
+        ":\"1980-01-01\" }, \"sentences\":[], \"adjustments\":{}, \"bookingId\":12345 }")
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
       id = CALCULATION_REQUEST_ID,
