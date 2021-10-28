@@ -30,7 +30,7 @@ class WorkingDayController(
   @ResponseBody
   @Operation(
     summary = "Find the next working day from a given date",
-    description = "TODO",
+    description = "Finds the next working day, adjusting for weekends and bank holidays",
     security = [
       SecurityRequirement(name = "SYSTEM_USER"),
       SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
@@ -57,7 +57,7 @@ class WorkingDayController(
   @ResponseBody
   @Operation(
     summary = "Find the previous working day from a given date",
-    description = "TODO",
+    description = "Finds the previous working day, adjusting for weekends and bank holidays",
     security = [
       SecurityRequirement(name = "SYSTEM_USER"),
       SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
