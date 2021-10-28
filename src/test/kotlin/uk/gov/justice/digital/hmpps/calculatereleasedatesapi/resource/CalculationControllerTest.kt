@@ -135,8 +135,10 @@ class CalculationControllerTest {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
 
-    assertThat(result.response.contentAsString).contains("The booking data used for the preliminary calculation has " +
-      "changed")
+    assertThat(result.response.contentAsString).contains(
+      "The booking data used for the preliminary calculation has " +
+        "changed"
+    )
   }
 
   @Test
