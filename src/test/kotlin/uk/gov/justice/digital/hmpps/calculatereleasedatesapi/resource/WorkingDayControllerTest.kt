@@ -53,28 +53,30 @@ class WorkingDayControllerTest {
   fun `Test GET of a next working day`() {
     val saturday = LocalDate.of(2021, 10, 30)
     val monday = LocalDate.of(2021, 11, 1)
-    whenever(workingDayService.nextWorkingDay(saturday)).thenReturn(monday)
+    val workingDay = WorkingDay(monday, adjustedForWeekend = true)
+    whenever(workingDayService.nextWorkingDay(saturday)).thenReturn(workingDay)
 
     val result = mvc.perform(get("/working-day/next/${dateFormat(saturday)}").accept(APPLICATION_JSON))
       .andExpect(status().isOk)
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
 
-    assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(WorkingDay(monday)))
+    assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(workingDay))
   }
 
   @Test
   fun `Test GET of a previous working day`() {
     val saturday = LocalDate.of(2021, 10, 30)
     val friday = LocalDate.of(2021, 10, 29)
-    whenever(workingDayService.previousWorkingDay(saturday)).thenReturn(friday)
+    val workingDay = WorkingDay(friday, adjustedForWeekend = true)
+    whenever(workingDayService.previousWorkingDay(saturday)).thenReturn(workingDay)
 
     val result = mvc.perform(get("/working-day/previous/${dateFormat(saturday)}").accept(APPLICATION_JSON))
       .andExpect(status().isOk)
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
 
-    assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(WorkingDay(friday)))
+    assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(workingDay))
   }
 
   private fun dateFormat(date: LocalDate): String {

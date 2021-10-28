@@ -49,7 +49,7 @@ class WorkingDayController(
     date: LocalDate,
   ): WorkingDay {
     log.info("Request received to find next working day from $date")
-    return WorkingDay(workingDayService.nextWorkingDay(date))
+    return workingDayService.nextWorkingDay(date)
   }
 
   @GetMapping(value = ["/previous/{date}"])
@@ -76,7 +76,7 @@ class WorkingDayController(
     date: LocalDate,
   ): WorkingDay {
     log.info("Request received to find previous working day from $date")
-    return WorkingDay(workingDayService.previousWorkingDay(date))
+    return workingDayService.previousWorkingDay(date)
   }
 
   companion object {

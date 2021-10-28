@@ -40,7 +40,9 @@ class WorkingDayServiceTest {
 
     val nextWorkingDay = workingDayService.nextWorkingDay(saturday)
 
-    Assertions.assertEquals(monday, nextWorkingDay)
+    Assertions.assertEquals(monday, nextWorkingDay.date)
+    Assertions.assertTrue(nextWorkingDay.adjustedForWeekend)
+    Assertions.assertFalse(nextWorkingDay.adjustedForBankHoliday)
   }
 
   @Test
@@ -50,7 +52,9 @@ class WorkingDayServiceTest {
 
     val nextWorkingDay = workingDayService.nextWorkingDay(christmasBankHoliday)
 
-    Assertions.assertEquals(afterBoxingDayHoliday, nextWorkingDay)
+    Assertions.assertEquals(afterBoxingDayHoliday, nextWorkingDay.date)
+    Assertions.assertFalse(nextWorkingDay.adjustedForWeekend)
+    Assertions.assertTrue(nextWorkingDay.adjustedForBankHoliday)
   }
 
   @Test
@@ -60,7 +64,9 @@ class WorkingDayServiceTest {
 
     val nextWorkingDay = workingDayService.previousWorkingDay(saturday)
 
-    Assertions.assertEquals(friday, nextWorkingDay)
+    Assertions.assertEquals(friday, nextWorkingDay.date)
+    Assertions.assertTrue(nextWorkingDay.adjustedForWeekend)
+    Assertions.assertFalse(nextWorkingDay.adjustedForBankHoliday)
   }
 
   @Test
@@ -70,6 +76,8 @@ class WorkingDayServiceTest {
 
     val nextWorkingDay = workingDayService.previousWorkingDay(christmasBankHoliday)
 
-    Assertions.assertEquals(christmasEve, nextWorkingDay)
+    Assertions.assertEquals(christmasEve, nextWorkingDay.date)
+    Assertions.assertTrue(nextWorkingDay.adjustedForWeekend)
+    Assertions.assertTrue(nextWorkingDay.adjustedForBankHoliday)
   }
 }

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration
 
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -25,7 +26,9 @@ class WorkingDayServiceIntTest : IntegrationTestBase() {
 
     val nextWorkingDay = workingDayService.nextWorkingDay(saturday)
 
-    assertEquals(monday, nextWorkingDay)
+    Assertions.assertEquals(monday, nextWorkingDay.date)
+    Assertions.assertTrue(nextWorkingDay.adjustedForWeekend)
+    Assertions.assertFalse(nextWorkingDay.adjustedForBankHoliday)
   }
 
   @Test
@@ -35,7 +38,9 @@ class WorkingDayServiceIntTest : IntegrationTestBase() {
 
     val nextWorkingDay = workingDayService.nextWorkingDay(christmasBankHoliday)
 
-    assertEquals(afterBoxingDayHoliday, nextWorkingDay)
+    Assertions.assertEquals(afterBoxingDayHoliday, nextWorkingDay.date)
+    Assertions.assertFalse(nextWorkingDay.adjustedForWeekend)
+    Assertions.assertTrue(nextWorkingDay.adjustedForBankHoliday)
   }
 
   @Test
@@ -45,7 +50,9 @@ class WorkingDayServiceIntTest : IntegrationTestBase() {
 
     val nextWorkingDay = workingDayService.previousWorkingDay(saturday)
 
-    assertEquals(friday, nextWorkingDay)
+    Assertions.assertEquals(friday, nextWorkingDay.date)
+    Assertions.assertTrue(nextWorkingDay.adjustedForWeekend)
+    Assertions.assertFalse(nextWorkingDay.adjustedForBankHoliday)
   }
 
   @Test
@@ -55,7 +62,9 @@ class WorkingDayServiceIntTest : IntegrationTestBase() {
 
     val nextWorkingDay = workingDayService.previousWorkingDay(christmasBankHoliday)
 
-    assertEquals(christmasEve, nextWorkingDay)
+    Assertions.assertEquals(christmasEve, nextWorkingDay.date)
+    Assertions.assertTrue(nextWorkingDay.adjustedForWeekend)
+    Assertions.assertTrue(nextWorkingDay.adjustedForBankHoliday)
   }
 
   @Test
