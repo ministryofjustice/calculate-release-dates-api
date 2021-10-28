@@ -55,5 +55,9 @@ prison:
   api:
     url: http://localhost:8332
 
+bank-holiday:
+  api:
+    url: http://localhost:8333
+
 domain-events-sns:
   provider: localstack
