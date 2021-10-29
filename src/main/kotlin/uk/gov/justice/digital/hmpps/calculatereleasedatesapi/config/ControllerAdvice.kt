@@ -105,8 +105,8 @@ class ControllerAdvice {
   }
 
   @ExceptionHandler(PreconditionFailedException::class)
-  fun handleEntityExistsException(e: Exception): ResponseEntity<ErrorResponse> {
-    log.info("Booking data changed : {}", e.message)
+  fun handlePreconditionFailedException(e: Exception): ResponseEntity<ErrorResponse> {
+    log.error("Pre condition failed exception: {}", e.message)
     return ResponseEntity
       .status(PRECONDITION_FAILED)
       .body(
