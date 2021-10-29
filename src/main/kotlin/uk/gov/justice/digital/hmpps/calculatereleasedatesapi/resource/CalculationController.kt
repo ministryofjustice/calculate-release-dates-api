@@ -56,36 +56,6 @@ class CalculationController(
     return calculationService.calculate(bookingService.getBooking(prisonerId), PRELIMINARY)
   }
 
-  @PostMapping(value = ["/{prisonerId}/confirm"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
-  @ResponseBody
-  @Operation(
-    summary = "Calculate release dates and persist the results for a prisoners latest booking",
-    description = "This endpoint will calculate release dates based on a prisoners latest booking ",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
-  )
-  @ApiResponses(
-    value = [
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
-    ]
-  )
-  @Deprecated("Replaced with endpoint that requires prisonerId and calculationRequestId")
-  fun confirmCalculation(
-    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
-    @PathVariable("prisonerId")
-    prisonerId: String,
-  ): BookingCalculation {
-    log.info("Request received to confirm release dates calculation for $prisonerId")
-    val booking = bookingService.getBooking(prisonerId)
-    val calculation = calculationService.calculate(booking, CONFIRMED)
-    domainEventPublisher.publishReleaseDateChange(prisonerId, booking.bookingId)
-    return calculation
-  }
-
   @PostMapping(value = ["/{prisonerId}/confirm/{calculationRequestId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
