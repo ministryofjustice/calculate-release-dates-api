@@ -1,3 +1,1 @@
--- Add any insert statements here to set up data for the int tests
-insert into calculation_request(calculation_reference, prisoner_id, booking_id, calculation_status, calculated_at, calculated_by_username, input_data) values
-('AABBCCDD', 'A1234AB', 12345, 'preliminary', now(), 'int_test_user', '{}');
+insert into calculation_request(calculation_reference, prisoner_id, booking_id, calculation_status, calculated_at, calculated_by_username, input_data) values ('AABBCCDD', 'A1234AB', 12345, 'preliminary', now(), 'int_test_user', '{}');
