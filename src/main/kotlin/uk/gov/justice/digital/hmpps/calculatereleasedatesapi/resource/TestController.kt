@@ -8,7 +8,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.TestData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TestService
 import javax.validation.constraints.NotEmpty
@@ -28,27 +26,8 @@ class TestController(
   private val calculationService: CalculationService,
 ) {
 
-  @GetMapping(value = ["/data"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
-  @ResponseBody
-  @Operation(
-    summary = "Get a list of test data",
-    description = "Just a test API to verify that the full stack of components are working together",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
-  )
-  @ApiResponses(
-    value = [
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
-    ]
-  )
-  fun getTestData(): List<TestData> {
-    return testService.getTestData()
-  }
-
+  //  TODO this is a temporary endpoint to aid diagnosis of calculation errors whilst in private beta - this whole
+  //   controller will eventually be removed
   @PostMapping(value = ["/calculation-by-booking"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody

@@ -33,8 +33,6 @@ AUTH_TOKEN="Bearer $TOKEN"
 echo "---------------------------------------------------------------"
 echo $AUTH_TOKEN
 echo "---------------------------------------------------------------"
-# Call the test data end point
-curl -X GET --location "$API_HOST/test/data" -H "Authorization: $AUTH_TOKEN" -H "Accept: application/json" -H "Content-type: application/json" | jq .
 
 # Calculate the release dates for a test user (requires prisonApi running locally)
 # curl -X GET --location "$API_HOST/calculation/by-prisoner-id/A1234AA" -H "Authorization: $AUTH_TOKEN" -H "Accept: application/json" -H "Content-type: application/json" | jq .

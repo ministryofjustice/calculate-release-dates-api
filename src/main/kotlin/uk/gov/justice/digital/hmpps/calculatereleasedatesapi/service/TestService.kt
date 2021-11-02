@@ -9,32 +9,21 @@ import com.squareup.moshi.ToJson
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.TestData
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TestRepository
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Optional
 import java.util.UUID
 
+//  TODO this is a temporary service to aid diagnosis of calculation errors whilst in private beta - this whole
+//   service will eventually be removed
 @Service
-class TestService(
-  private val testRepository: TestRepository,
-  private val prisonApiClient: PrisonApiClient,
-) {
-
+class TestService {
   var moshi: Moshi = Moshi.Builder()
     .addLast(KotlinJsonAdapterFactory())
     .add(LocalDate::class.java, LocalDateAdapter().nullSafe())
     .add(OptionalLocalDateAdapter())
     .add(UUID::class.java, UUIDAdapter().nullSafe())
     .build()
-
-  fun getTestData(): List<TestData> {
-    val prisoner = prisonApiClient.getOffenderDetail("A1234AA")
-    val testData = testRepository.findAll().map { transform(it) }.toMutableList()
-    testData.add(TestData(prisoner.offenderNo, prisoner.bookingId.toString()))
-    return testData
-  }
 
   fun jsonToBooking(json: String): Booking {
     val jsonAdapter = moshi.adapter(Booking::class.java)
