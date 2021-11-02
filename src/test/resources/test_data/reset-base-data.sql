@@ -1,1 +1,2 @@
-DELETE FROM test_data;
+DELETE FROM calculation_outcome;
+DELETE FROM calculation_request;

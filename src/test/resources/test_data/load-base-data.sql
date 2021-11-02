@@ -1,3 +1,3 @@
-INSERT INTO test_data (key, value) values ('A', 'AAAAAA');
-INSERT INTO test_data (key, value) values ('B', 'BBBBBB');
-INSERT INTO test_data (key, value) values ('C', 'CCCCCC');
+-- Add any insert statements here to set up data for the int tests
+insert into calculation_request(calculation_reference, prisoner_id, booking_id, calculation_status, calculated_at, calculated_by_username, input_data) values
+('AABBCCDD', 'A1234AB', 12345, 'preliminary', now(), 'int_test_user', '{}');
