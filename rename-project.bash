@@ -54,6 +54,16 @@ mv "helm_deploy/hmpps-template-kotlin" "helm_deploy/$PROJECT_NAME"
 mv "src/main/$BASE/$PACKAGE_NAME/HmppsTemplateKotlin.kt" "src/main/$BASE/$PACKAGE_NAME/$CLASS_NAME.kt"
 mv "src/main/$BASE/$PACKAGE_NAME/config/HmppsTemplateKotlinExceptionHandler.kt" "src/main/$BASE/$PACKAGE_NAME/config/${CLASS_NAME}ExceptionHandler.kt"
 
+# change cron job to be random time otherwise we hit rate limiting with veracode
+RANDOM_HOUR=$((RANDOM % (9 - 3 + 1) + 3))
+RANDOM_MINUTE=$(($RANDOM%60))
+RANDOM_MINUTE2=$(($RANDOM%60))
+sed -i -z -E \
+  -e "s/security:\n    triggers:\n      - schedule:\n          cron: \"11 5/security:\n    triggers:\n      - schedule:\n          cron: \"$RANDOM_MINUTE $RANDOM_HOUR/" \
+  -e "s/security-weekly:\n    triggers:\n      - schedule:\n          cron: \"0 5/security-weekly:\n    triggers:\n      - schedule:\n          cron: \"$RANDOM_MINUTE2 $RANDOM_HOUR/" \
+  .circleci/config.yml
+
+
 # lastly remove ourselves
 rm rename-project.bash
 
