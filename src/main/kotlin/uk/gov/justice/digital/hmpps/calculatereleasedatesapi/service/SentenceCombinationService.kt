@@ -27,12 +27,12 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
 
     addSentenceToBooking(combinedSentence, workingBooking)
 
-    associateExistingLinksToNewSentence(firstSentence, combinedSentence, workingBooking)
-    associateExistingLinksToNewSentence(secondSentence, combinedSentence, workingBooking)
-
     // delete the 2 existing sentences
     deleteSentenceFromBooking(firstSentence, workingBooking)
     deleteSentenceFromBooking(secondSentence, workingBooking)
+
+    associateExistingLinksToNewSentence(firstSentence, combinedSentence, workingBooking)
+    associateExistingLinksToNewSentence(secondSentence, combinedSentence, workingBooking)
   }
 
     /*
