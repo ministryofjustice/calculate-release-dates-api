@@ -22,7 +22,7 @@ class CalculationService(
   private val bookingExtractionService: BookingExtractionService,
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
-  private val objectMapper: ObjectMapper // TODO  Is this the right way to do it??
+  private val objectMapper: ObjectMapper
 ) {
 
   fun getCurrentAuthentication(): AuthAwareAuthenticationToken =
