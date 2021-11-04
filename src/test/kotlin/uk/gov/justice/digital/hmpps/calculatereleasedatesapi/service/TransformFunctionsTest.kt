@@ -51,14 +51,16 @@ class TransformFunctionsTest {
           duration = FIVE_YEAR_DURATION,
           offence = Offence(committedAt = FIRST_JAN_2015),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
-          consecutiveSentenceUUIDs = mutableListOf()
+          consecutiveSentenceUUIDs = mutableListOf(),
+          sequence = sequence
         ),
         Sentence(
           sentencedAt = FIRST_JAN_2015,
           duration = FIVE_YEAR_DURATION,
           offence = Offence(committedAt = SECOND_JAN_2015),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
-          consecutiveSentenceUUIDs = mutableListOf()
+          consecutiveSentenceUUIDs = mutableListOf(),
+          sequence = sequence
         ),
       )
     )

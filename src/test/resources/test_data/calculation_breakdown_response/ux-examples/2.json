@@ -1,0 +1,59 @@
+{
+  "concurrentSentences":[
+    {
+      "sentencedAt":"2020-05-17",
+      "sentenceLength":"2 years",
+      "sentenceLengthDays":730,
+      "dates":{
+        "SLED":{
+          "unadjusted":"2022-05-16",
+          "adjusted":"2022-04-26",
+          "daysBetween":20
+        },
+        "CRD":{
+          "unadjusted":"2021-05-16",
+          "adjusted":"2021-04-26",
+          "daysBetween":20
+        }
+      },
+      "sequence":"1"
+    },
+    {
+      "sentencedAt":"2021-03-27",
+      "sentenceLength":"18 months",
+      "sentenceLengthDays":549,
+      "dates":{
+        "SLED":{
+          "unadjusted":"2022-09-26",
+          "adjusted":"2022-09-06",
+          "daysBetween":20
+        },
+        "CRD":{
+          "unadjusted":"2021-12-26",
+          "adjusted":"2021-12-06",
+          "daysBetween":20
+        }
+      },
+      "sequence":"2"
+    },
+    {
+      "sentencedAt":"2021-08-05",
+      "sentenceLength":"2 years",
+      "sentenceLengthDays":730,
+      "dates":{
+        "SLED":{
+          "unadjusted":"2023-08-04",
+          "adjusted":"2023-07-15",
+          "daysBetween":20
+        },
+        "CRD":{
+          "unadjusted":"2022-08-04",
+          "adjusted":"2022-07-15",
+          "daysBetween":20
+        }
+      },
+      "sequence":"3"
+    }
+  ],
+  "consecutiveSentence":null
+}

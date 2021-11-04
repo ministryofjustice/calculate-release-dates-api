@@ -14,16 +14,19 @@ internal class SentenceTest {
     val duration = Duration()
     duration.append(1L, ChronoUnit.DAYS)
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = Sentence(offence, duration, sentencedAt, UUID.fromString(uuidString))
+    val sentence = Sentence(
+      offence, duration, sentencedAt, UUID.fromString(uuidString),
+      sequence = 1, sentenceParts = listOf()
+    )
 
     assertEquals(duration, sentence.duration)
     assertEquals(sentencedAt, sentence.sentencedAt)
     assertEquals(uuidString, sentence.identifier.toString())
 
     assertEquals(
-      "Sentence(offence=Offence(committedAt=2020-01-01, isScheduleFifteen=false), " +
-        "duration=1 days, sentencedAt=2020-01-01, " +
-        "identifier=219db65e-d7b7-4c70-9239-98babff7bcd5, consecutiveSentenceUUIDs=[])",
+      "Sentence(offence=Offence(committedAt=2020-01-01, isScheduleFifteen=false), duration=1 days," +
+        " sentencedAt=2020-01-01, identifier=219db65e-d7b7-4c70-9239-98babff7bcd5," +
+        " consecutiveSentenceUUIDs=[], sequence=1, sentenceParts=[])",
       sentence.toString()
     )
   }
