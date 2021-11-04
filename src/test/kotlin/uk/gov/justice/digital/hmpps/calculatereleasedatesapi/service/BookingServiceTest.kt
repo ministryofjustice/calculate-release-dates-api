@@ -95,7 +95,8 @@ class BookingServiceTest {
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
             consecutiveSentenceUUIDs = mutableListOf(
               UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
-            )
+            ),
+            sequence = sequence
           )
         ),
         adjustments = mutableMapOf(

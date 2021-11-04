@@ -97,7 +97,8 @@ class TransformFunctionsTest {
           duration = FIVE_YEAR_DURATION,
           offence = Offence(committedAt = SECOND_JAN_2015),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
-          consecutiveSentenceUUIDs = mutableListOf(UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray()))
+          consecutiveSentenceUUIDs = mutableListOf(UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())),
+          sequence = sequence
         ),
       )
     )
