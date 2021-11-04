@@ -11,6 +11,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import java.time.LocalDate
@@ -47,6 +48,11 @@ class JsonTransformation {
     return jsonToBookingCalculation(json)!!
   }
 
+  fun loadCalculationBreakdown(testData: String): CalculationBreakdown {
+    val json = getJsonTest("$testData.json", "calculation_breakdown_response")
+    return jsonToCalculationBreakdown(json)!!
+  }
+
   private fun jsonToSentence(json: String): Sentence? {
     val jsonAdapter = moshi.adapter(Sentence::class.java)
     return jsonAdapter.fromJson(json)
@@ -64,6 +70,11 @@ class JsonTransformation {
 
   private fun jsonToBookingCalculation(json: String): BookingCalculation? {
     val jsonAdapter = moshi.adapter(BookingCalculation::class.java)
+    return jsonAdapter.fromJson(json)
+  }
+
+  private fun jsonToCalculationBreakdown(json: String): CalculationBreakdown? {
+    val jsonAdapter = moshi.adapter(CalculationBreakdown::class.java)
     return jsonAdapter.fromJson(json)
   }
 

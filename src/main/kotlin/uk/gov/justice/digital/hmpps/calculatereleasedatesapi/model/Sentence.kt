@@ -12,7 +12,9 @@ data class Sentence(
   override val duration: Duration,
   override val sentencedAt: LocalDate,
   var identifier: UUID = UUID.randomUUID(),
-  var consecutiveSentenceUUIDs: MutableList<UUID> = mutableListOf()
+  var consecutiveSentenceUUIDs: MutableList<UUID> = mutableListOf(),
+  val sequence: Int? = null,
+  var sentenceParts: List<Sentence> = listOf()
 ) : SentenceTimeline {
   @JsonIgnore
   lateinit var consecutiveSentences: MutableList<Sentence>

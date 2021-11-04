@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.oauth2.jwt.Jwt
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -66,7 +67,8 @@ class CalculationServiceTest {
       bookingCalculationService,
       bookingExtractionService,
       calculationRequestRepository,
-      calculationOutcomeRepository
+      calculationOutcomeRepository,
+      TestUtil.objectMapper()
     )
 
   @ParameterizedTest
@@ -86,6 +88,27 @@ class CalculationServiceTest {
     assertEquals(
       jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber"),
       bookingCalculation
+    )
+  }
+
+  @ParameterizedTest
+  @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
+  fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String) {
+    log.info("Testing example $exampleType/$exampleNumber")
+    SecurityContextHolder.setContext(
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+    )
+    val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
+    val calculationBreakdown = calculationService.calculateWithBreakdown(booking)
+
+    log.info(
+      "Example $exampleType/$exampleNumber outcome CalculationBreakdown: {}",
+      TestUtil.objectMapper().writeValueAsString(calculationBreakdown)
+    )
+
+    assertEquals(
+      jsonTransformation.loadCalculationBreakdown("$exampleType/$exampleNumber"),
+      calculationBreakdown
     )
   }
 
@@ -159,6 +182,23 @@ class CalculationServiceTest {
     assertDoesNotThrow { calculationService.validateConfirmationRequest(CALCULATION_REQUEST_ID, BOOKING) }
   }
 
+  @Test
+  fun `Test can find booking from a calculation request id`() {
+    whenever(
+      calculationRequestRepository.findById(
+        CALCULATION_REQUEST_ID
+      )
+    ).thenReturn(
+      Optional.of(
+        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)
+      )
+    )
+
+    val booking = calculationService.getBooking(CALCULATION_REQUEST_ID)
+
+    assertThat(booking).isNotNull
+  }
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val USERNAME = "user1"
@@ -192,7 +232,12 @@ class CalculationServiceTest {
       calculationReference = CALCULATION_REFERENCE, prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID,
       calculationOutcomes = listOf(CALCULATION_OUTCOME),
-      inputData = JacksonUtil.toJsonNode("{ \"name\": \"Joe\" }"),
+      inputData = JacksonUtil.toJsonNode(
+        "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +
+          "\"name\":\"AN.Other\"," + "\"dateOfBirth\":\"1970-03-03\"" + "}," + "\"sentences\":[" +
+          "{" + "\"offence\":{" + "\"committedAt\":\"2013-09-19\"" + "}," + "\"duration\":{" +
+          "\"durationElements\":{" + "\"YEARS\":2" + "}" + "}," + "\"sentencedAt\":\"2013-09-21\"" + "}" + "]" + "}"
+      ),
     )
 
     val BOOKING_CALCULATION = BookingCalculation(

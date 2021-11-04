@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -10,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import javax.persistence.EntityNotFoundException
@@ -20,6 +22,7 @@ class CalculationService(
   private val bookingExtractionService: BookingExtractionService,
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
+  private val objectMapper: ObjectMapper // TODO  Is this the right way to do it??
 ) {
 
   fun getCurrentAuthentication(): AuthAwareAuthenticationToken =
@@ -29,7 +32,23 @@ class CalculationService(
   @Transactional
   fun calculate(booking: Booking, calculationStatus: CalculationStatus): BookingCalculation {
     val calculationRequest =
-      calculationRequestRepository.save(transform(booking, getCurrentAuthentication().principal, calculationStatus))
+      calculationRequestRepository.save(
+        transform(booking, getCurrentAuthentication().principal, calculationStatus, objectMapper)
+      )
+
+    val workingBooking = calculate(booking)
+
+    // apply any rules to calculate the dates
+    val bookingCalculation = bookingExtractionService.extract(workingBooking)
+    bookingCalculation.calculationRequestId = calculationRequest.id
+    bookingCalculation.dates.forEach {
+      calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
+    }
+
+    return bookingCalculation
+  }
+
+  private fun calculate(booking: Booking): Booking {
     var workingBooking: Booking = booking.copy()
 
     // identify the types of the sentences
@@ -57,14 +76,13 @@ class CalculationService(
       bookingCalculationService
         .combineConsecutive(workingBooking)
 
-    // apply any rules to calculate the dates
-    val bookingCalculation = bookingExtractionService.extract(workingBooking)
-    bookingCalculation.calculationRequestId = calculationRequest.id
-    bookingCalculation.dates.forEach {
-      calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
-    }
+    return workingBooking
+  }
 
-    return bookingCalculation
+  @Transactional(readOnly = true)
+  fun calculateWithBreakdown(booking: Booking): CalculationBreakdown {
+    val workingBooking = calculate(booking)
+    return transform(workingBooking)
   }
 
   @Transactional(readOnly = true)
@@ -92,6 +110,16 @@ class CalculationService(
   }
 
   @Transactional(readOnly = true)
+  fun getBooking(calculationRequestId: Long): Booking {
+    val calculationRequest =
+      calculationRequestRepository.findById(calculationRequestId).orElseThrow {
+        EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId ")
+      }
+
+    return objectMapper.treeToValue(calculationRequest.inputData, Booking::class.java)
+  }
+
+  @Transactional(readOnly = true)
   fun validateConfirmationRequest(calculationRequestId: Long, booking: Booking) {
     val calculationRequest =
       calculationRequestRepository.findByIdAndCalculationStatus(
@@ -101,7 +129,7 @@ class CalculationService(
         EntityNotFoundException("No preliminary calculation exists for calculationRequestId $calculationRequestId")
       }
 
-    if (calculationRequest.inputData.hashCode() != bookingToJson(booking).hashCode()) {
+    if (calculationRequest.inputData.hashCode() != bookingToJson(booking, objectMapper).hashCode()) {
       throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
     }
   }
