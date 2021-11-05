@@ -50,9 +50,19 @@ data class Duration(
   override fun toString(): String {
     var durations = ""
     for ((key, value) in this.durationElements) {
-      durations += "$value ${key.toString().lowercase()} "
+      if (value != 0L) {
+        durations += "$value ${nameForUnit(key, value)} "
+      }
     }
     return durations.trim()
+  }
+
+  private fun nameForUnit(unit: ChronoUnit, size: Long): String {
+    return if (size == 1L) {
+      unit.toString().lowercase().dropLast(1) // Remove 's'
+    } else {
+      unit.toString().lowercase()
+    }
   }
 
   fun toPeriodString(sentencedAt: LocalDate): String {

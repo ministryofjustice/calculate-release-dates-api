@@ -24,7 +24,7 @@ internal class SentenceTest {
     assertEquals(uuidString, sentence.identifier.toString())
 
     assertEquals(
-      "Sentence(offence=Offence(committedAt=2020-01-01, isScheduleFifteen=false), duration=1 days," +
+      "Sentence(offence=Offence(committedAt=2020-01-01, isScheduleFifteen=false), duration=1 day," +
         " sentencedAt=2020-01-01, identifier=219db65e-d7b7-4c70-9239-98babff7bcd5," +
         " consecutiveSentenceUUIDs=[], sequence=1, sentenceParts=[])",
       sentence.toString()
