@@ -113,11 +113,6 @@ class CalculationServiceTest {
   }
 
   @Test
-  fun `Test Example 37`() {
-    `Test Example`("psi-examples", "37")
-  }
-
-  @Test
   fun `Test fetching calculation results by requestId`() {
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
       Optional.of(
