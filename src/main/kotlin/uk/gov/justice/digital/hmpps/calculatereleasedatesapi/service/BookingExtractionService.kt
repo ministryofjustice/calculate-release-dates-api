@@ -81,9 +81,7 @@ class BookingExtractionService(
         booking.sentences, SentenceCalculation::licenceExpiryDate
       )
 
-      val latestNonParoleDate: LocalDate? = extractionService.mostRecentOrNull(
-        booking.sentences, SentenceCalculation::nonParoleDate
-      )
+      val latestNonParoleDate: LocalDate? = extractManyNonParoleDate(booking, latestReleaseDate)
 
       val latestHomeDetentionCurfewExpiryDateDate: LocalDate? =
         mostRecentSentenceByReleaseDate.sentenceCalculation.homeDetentionCurfewExpiryDateDate
@@ -122,6 +120,20 @@ class BookingExtractionService(
       return bookingCalculation
     } else {
       throw CantExtractMultipleSentencesException("Can't extract a single date from multiple sentences")
+    }
+  }
+
+  private fun extractManyNonParoleDate(booking: Booking, latestReleaseDate: LocalDate): LocalDate? {
+
+    val mostRecentNonParoleDate = extractionService.mostRecentOrNull(
+      booking.sentences, SentenceCalculation::nonParoleDate
+    )
+    return if (mostRecentNonParoleDate != null &&
+      mostRecentNonParoleDate.isAfter(latestReleaseDate)
+    ) {
+      return latestReleaseDate
+    } else {
+      null
     }
   }
 
