@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 import javax.persistence.EntityNotFoundException
@@ -19,15 +20,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
-    val result = webTestClient.post()
-      .uri("/calculation/$PRISONER_ID")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(BookingCalculation::class.java)
-      .returnResult().responseBody
+    val result = createPreliminaryCalculation()
 
     if (result != null) {
       val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
@@ -45,7 +38,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Confirm a calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
-    val result = createConfirmCalculationForPrisoner()
+    val result = createConfirmCalculationForPrisoner(createPreliminaryCalculation().calculationRequestId)
 
     val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
@@ -61,7 +54,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Get the results for a confirmed calculation`() {
-    createConfirmCalculationForPrisoner()
+    createConfirmCalculationForPrisoner(createPreliminaryCalculation().calculationRequestId)
 
     val result = webTestClient.get()
       .uri("/calculation/results/$PRISONER_ID/$BOOKING_ID")
@@ -86,9 +79,19 @@ class CalculationIntTest : IntegrationTestBase() {
     }
   }
 
-  private fun createConfirmCalculationForPrisoner(): BookingCalculation {
+  private fun createPreliminaryCalculation() = webTestClient.post()
+    .uri("/calculation/$PRISONER_ID")
+    .accept(MediaType.APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(BookingCalculation::class.java)
+    .returnResult().responseBody
+
+  private fun createConfirmCalculationForPrisoner(calculationRequestId: Long): BookingCalculation {
     return webTestClient.post()
-      .uri("/calculation/$PRISONER_ID/confirm")
+      .uri("/calculation/$PRISONER_ID/confirm/$calculationRequestId")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
@@ -113,6 +116,28 @@ class CalculationIntTest : IntegrationTestBase() {
           "prisoner A1234AA and bookingId 92929988\"," +
           "\"moreInfo\":null}"
       )
+  }
+
+  @Test
+  fun `Get the calculation breakdown for a calculation`() {
+    val calc = createConfirmCalculationForPrisoner(createPreliminaryCalculation().calculationRequestId)
+
+    val result = webTestClient.get()
+      .uri("/calculation/breakdown/${calc.calculationRequestId}")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculationBreakdown::class.java)
+      .returnResult().responseBody
+
+    assertThat(result).isNotNull
+    assertThat(result.consecutiveSentence).isNull()
+    assertThat(result.concurrentSentences).hasSize(1)
+    assertThat(result.concurrentSentences.get(0).dates[SLED]!!.unadjusted).isEqualTo(LocalDate.of(2016, 11, 16))
+    assertThat(result.concurrentSentences.get(0).dates[SLED]!!.adjusted).isEqualTo(LocalDate.of(2016, 11, 6))
+    assertThat(result.concurrentSentences.get(0).dates[SLED]!!.daysBetween).isEqualTo(10)
   }
 
   companion object {

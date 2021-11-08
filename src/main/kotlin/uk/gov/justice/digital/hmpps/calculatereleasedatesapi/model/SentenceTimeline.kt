@@ -1,0 +1,43 @@
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
+
+import com.fasterxml.jackson.annotation.JsonIgnore
+import org.threeten.extra.LocalDateRange
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import kotlin.math.roundToLong
+
+interface SentenceTimeline {
+  val duration: Duration
+  val sentencedAt: LocalDate
+
+  fun durationIsLessThan(length: Long, period: ChronoUnit): Boolean {
+    return (
+      duration.getLengthInDays(this.sentencedAt) <
+        ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
+      )
+  }
+
+  fun durationIsGreaterThan(length: Long, period: ChronoUnit): Boolean {
+    return (
+      duration.getLengthInDays(this.sentencedAt) >
+        ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
+      )
+  }
+
+  fun durationIsGreaterThanOrEqualTo(length: Long, period: ChronoUnit): Boolean {
+    return (
+      duration.getLengthInDays(this.sentencedAt) >=
+        ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
+      )
+  }
+  @JsonIgnore
+  fun getHalfSentenceDate(): LocalDate {
+    val days = (duration.getLengthInDays(this.sentencedAt).toDouble() / 2).roundToLong()
+    return this.sentencedAt.plusDays(days)
+  }
+
+  @JsonIgnore
+  fun getDateRange(): LocalDateRange? {
+    return LocalDateRange.of(sentencedAt, duration.getEndDate(sentencedAt))
+  }
+}

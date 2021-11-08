@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.vladmihalcea.hibernate.type.json.internal.JacksonUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -15,6 +15,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentencePart
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DateBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -22,26 +27,16 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetai
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.YEARS
 import java.util.UUID
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.TestData as EntityTestData
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.TestData as ModelTestData
 
 /*
 ** Functions which transform entities objects into their model equivalents.
 ** Sometimes a pass-thru but very useful when objects need to be altered or enriched
 */
-
-fun transform(testData: EntityTestData): ModelTestData {
-  return ModelTestData(
-    key = testData.key,
-    value = testData.value
-  )
-}
 
 fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
   // There shouldn't be multiple offences associated to a single sentence; however there are at the moment (NOMIS doesnt
@@ -67,7 +62,8 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
       duration = duration,
       offence = offence,
       identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-      consecutiveSentenceUUIDs = consecutiveSentenceUUIDs
+      consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+      sequence = sentence.sentenceSequence
     )
   }.toMutableList()
 }
@@ -93,17 +89,23 @@ fun transform(sentenceAdjustments: SentenceAdjustments): MutableMap<AdjustmentTy
   return adjustments
 }
 
-fun transform(booking: Booking, username: String, calculationStatus: CalculationStatus): CalculationRequest {
-  val mapper = ObjectMapper()
-  mapper.registerModule(JavaTimeModule())
-  mapper.dateFormat = SimpleDateFormat("yyyy-MM-dd")
+fun transform(
+  booking: Booking,
+  username: String,
+  calculationStatus: CalculationStatus,
+  objectMapper: ObjectMapper
+): CalculationRequest {
   return CalculationRequest(
     prisonerId = booking.offender.reference,
     bookingId = booking.bookingId,
     calculationStatus = calculationStatus.name,
     calculatedByUsername = username,
-    inputData = JacksonUtil.toJsonNode(mapper.writeValueAsString(booking))
+    inputData = bookingToJson(booking, objectMapper)
   )
+}
+
+fun bookingToJson(booking: Booking, objectMapper: ObjectMapper): JsonNode {
+  return JacksonUtil.toJsonNode(objectMapper.writeValueAsString(booking))
 }
 
 fun transform(calculationRequest: CalculationRequest, sentenceType: SentenceType, date: LocalDate): CalculationOutcome {
@@ -121,4 +123,58 @@ fun transform(calculationRequest: CalculationRequest): BookingCalculation {
     ).toMutableMap(),
     calculationRequestId = calculationRequest.id
   )
+}
+
+fun transform(booking: Booking): CalculationBreakdown {
+  val consecutiveSentence = booking.sentences.firstOrNull { it.sentenceParts.isNotEmpty() }
+  return CalculationBreakdown(
+    booking.sentences.filter { it.sentenceParts.isEmpty() }.map { sentence ->
+      ConcurrentSentenceBreakdown(
+        sentence.sentencedAt,
+        sentence.duration.toString(),
+        sentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
+        extractDates(sentence),
+        sentence.sequence.toString()
+      )
+    }.sortedBy { it.sequence.toInt() },
+    if (consecutiveSentence == null) null else
+      ConsecutiveSentenceBreakdown(
+        consecutiveSentence.sentencedAt,
+        consecutiveSentence.duration.toString(),
+        consecutiveSentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
+        extractDates(consecutiveSentence),
+        consecutiveSentence.sentenceParts.map {
+          ConsecutiveSentencePart(
+            it.sequence.toString(),
+            it.duration.toString(),
+            it.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
+            consecutiveSentence.sentenceParts
+              .find { sentence -> sentence.consecutiveSentenceUUIDs.contains(it.identifier) }?.sequence?.toString()
+          )
+        }.sortedBy { it.sequence.toInt() }
+      )
+  )
+}
+
+private fun extractDates(sentence: Sentence): Map<SentenceType, DateBreakdown> {
+  val dates: MutableMap<SentenceType, DateBreakdown> = mutableMapOf()
+  val sentenceCalculation = sentence.sentenceCalculation
+
+  if (sentence.sentenceTypes.contains(SentenceType.SLED)) {
+    dates[SentenceType.SLED] = DateBreakdown(
+      sentenceCalculation.unadjustedExpiryDate!!,
+      sentenceCalculation.adjustedExpiryDate!!
+    )
+  } else {
+    dates[SentenceType.SED] = DateBreakdown(
+      sentenceCalculation.unadjustedExpiryDate!!,
+      sentenceCalculation.adjustedExpiryDate!!
+    )
+  }
+  dates[sentence.getReleaseDateType()] = DateBreakdown(
+    sentenceCalculation.unadjustedReleaseDate!!,
+    sentenceCalculation.adjustedReleaseDate!!
+  )
+
+  return dates
 }

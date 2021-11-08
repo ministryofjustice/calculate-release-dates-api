@@ -61,7 +61,9 @@ class ConsecutiveSentenceCombinationService(val sentenceCombinationService: Sent
     return Sentence(
       sentenceCombinationService.earliestOffence(firstSentence, secondSentence),
       sentenceCombinationService.combinedDuration(firstSentence, secondSentence),
-      sentenceCombinationService.earliestSentencedAt(firstSentence, secondSentence)
+      sentenceCombinationService.earliestSentencedAt(firstSentence, secondSentence),
+      sentenceParts = firstSentence.sentenceParts.ifEmpty { listOf(firstSentence) } +
+        secondSentence.sentenceParts.ifEmpty { listOf(secondSentence) }
     )
   }
 

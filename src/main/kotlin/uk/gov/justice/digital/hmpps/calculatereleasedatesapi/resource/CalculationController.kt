@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DomainEventPublisher
@@ -56,7 +57,7 @@ class CalculationController(
     return calculationService.calculate(bookingService.getBooking(prisonerId), PRELIMINARY)
   }
 
-  @PostMapping(value = ["/{prisonerId}/confirm"])
+  @PostMapping(value = ["/{prisonerId}/confirm/{calculationRequestId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
   @Operation(
@@ -70,16 +71,32 @@ class CalculationController(
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(
+        responseCode = "404",
+        description = "No preliminary calculation exists for the passed calculationRequestId"
+      ),
+      ApiResponse(
+        responseCode = "412",
+        description = "The booking data that was used for the preliminary calculation has changed"
+      ),
     ]
   )
   fun confirmCalculation(
     @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
     @PathVariable("prisonerId")
     prisonerId: String,
+    @Parameter(
+      required = true,
+      example = "1234567",
+      description = "The calculation request ID of the calculation to be confirmed"
+    )
+    @PathVariable("calculationRequestId")
+    calculationRequestId: Long,
   ): BookingCalculation {
     log.info("Request received to confirm release dates calculation for $prisonerId")
     val booking = bookingService.getBooking(prisonerId)
+    calculationService.validateConfirmationRequest(calculationRequestId, booking)
     val calculation = calculationService.calculate(booking, CONFIRMED)
     domainEventPublisher.publishReleaseDateChange(prisonerId, booking.bookingId)
     return calculation
@@ -120,7 +137,7 @@ class CalculationController(
   @ResponseBody
   @Operation(
     summary = "Get release dates for a calculationRequestId",
-    description = "This endpoint will return the  release dates based on a calculationRequestId",
+    description = "This endpoint will return the release dates based on a calculationRequestId",
     security = [
       SecurityRequirement(name = "SYSTEM_USER"),
       SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
@@ -140,6 +157,34 @@ class CalculationController(
   ): BookingCalculation {
     log.info("Request received return calculation results for calculationRequestId {}", calculationRequestId)
     return calculationService.findCalculationResults(calculationRequestId)
+  }
+
+  @GetMapping(value = ["/breakdown/{calculationRequestId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Get breakdown for a calculationRequestId",
+    description = "This endpoint will return the breakdown based on a calculationRequestId",
+    security = [
+      SecurityRequirement(name = "SYSTEM_USER"),
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
+    ],
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
+    ]
+  )
+  fun getCalculationBreakdown(
+    @Parameter(required = true, example = "123456", description = "The calculationRequestId of the breakdown")
+    @PathVariable("calculationRequestId")
+    calculationRequestId: Long,
+  ): CalculationBreakdown {
+    log.info("Request received return calculation breakdown for calculationRequestId {}", calculationRequestId)
+    val booking = calculationService.getBooking(calculationRequestId)
+    return calculationService.calculateWithBreakdown(booking)
   }
 
   companion object {
