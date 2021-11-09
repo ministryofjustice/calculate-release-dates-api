@@ -148,7 +148,7 @@ fun transform(booking: Booking, originalBooking: Booking): CalculationBreakdown 
           val consecutiveToUUID =
             if (originalSentence.consecutiveSentenceUUIDs.isNotEmpty()) originalSentence.consecutiveSentenceUUIDs[0]
             else null
-          val consecutiveToSentence  =
+          val consecutiveToSentence =
             if (consecutiveToUUID != null) originalBooking.sentences.find { it.identifier == consecutiveToUUID }!!
             else null
           ConsecutiveSentencePart(
