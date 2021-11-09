@@ -22,21 +22,21 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
     val combinedSentence: Sentence = sentenceMergeFunction(firstSentence, secondSentence)
 
     sentenceIdentificationService.identify(combinedSentence, workingBooking.offender)
+    // delete the 2 existing sentences
+    deleteSentenceFromBooking(firstSentence, workingBooking)
+    deleteSentenceFromBooking(secondSentence, workingBooking)
 
     combineConsecutiveSentences(firstSentence, secondSentence, combinedSentence)
 
     addSentenceToBooking(combinedSentence, workingBooking)
-
-    // delete the 2 existing sentences
-    deleteSentenceFromBooking(firstSentence, workingBooking)
-    deleteSentenceFromBooking(secondSentence, workingBooking)
 
     associateExistingLinksToNewSentence(firstSentence, combinedSentence, workingBooking)
     associateExistingLinksToNewSentence(secondSentence, combinedSentence, workingBooking)
   }
 
     /*
-      Adds any sentences to the combinedSentence that were consecutive to the firstSentence and secondSentence
+      if either part of the combined sentence is consecutive to another sentence make sure that the combine sentence
+      is also consecutive to that sentence.
      */
   private fun combineConsecutiveSentences(
     firstSentence: Sentence,
@@ -73,8 +73,7 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
   }
 
     /*
-      If our orignal sentences were consecutive to another sentence on the booking. Updated the references so that
-      the combined booking is consecutive to the other sentence.
+      If any sentences are consecutive to the original sentence, link to the new combined sentence instead
      */
   private fun associateExistingLinksToNewSentence(
     originalSentence: Sentence,
