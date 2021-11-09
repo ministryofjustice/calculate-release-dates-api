@@ -15,9 +15,7 @@
         }
       },
       "sentencedAt": "2012-10-17",
-      "consecutiveSentenceUUIDs": [
-        "232c4722-189f-4eb2-8eb9-c8e87d3dc22f"
-      ]
+      "identifier": "232c4722-189f-4eb2-8eb9-c8e87d3dc22f"
     },
     {
       "offence": {
@@ -29,7 +27,9 @@
         }
       },
       "sentencedAt": "2012-12-18",
-      "identifier": "232c4722-189f-4eb2-8eb9-c8e87d3dc22f"
+      "consecutiveSentenceUUIDs": [
+        "232c4722-189f-4eb2-8eb9-c8e87d3dc22f"
+      ]
     }
   ]
 }

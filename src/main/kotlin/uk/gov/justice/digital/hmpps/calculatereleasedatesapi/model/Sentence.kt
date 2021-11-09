@@ -12,6 +12,7 @@ data class Sentence(
   override val duration: Duration,
   override val sentencedAt: LocalDate,
   var identifier: UUID = UUID.randomUUID(),
+  // Sentence UUIDS that this sentence is consecutive to.
   var consecutiveSentenceUUIDs: MutableList<UUID> = mutableListOf(),
   val sequence: Int? = null,
   var sentenceParts: List<Sentence> = listOf()
@@ -99,5 +100,9 @@ data class Sentence(
         sentence.sentenceTypes.containsAll(listOf(SentenceType.SLED, SentenceType.CRD)) &&
         this.sentenceTypes.containsAll(listOf(SentenceType.SED, SentenceType.ARD))
       )
+  }
+
+  fun deepCopy(): Sentence {
+    return this.copy(consecutiveSentenceUUIDs = this.consecutiveSentenceUUIDs.toMutableList())
   }
 }

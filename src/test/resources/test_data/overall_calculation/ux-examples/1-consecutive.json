@@ -16,7 +16,9 @@
         }
       },
       "sentencedAt": "2021-09-21",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      "consecutiveSentenceUUIDs": [
+        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      ]
     },
     {
       "sequence": 2,
@@ -29,9 +31,7 @@
         }
       },
       "sentencedAt": "2021-09-21",
-      "consecutiveSentenceUUIDs": [
-        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
-      ]
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
     },
     {
       "sequence": 3,
