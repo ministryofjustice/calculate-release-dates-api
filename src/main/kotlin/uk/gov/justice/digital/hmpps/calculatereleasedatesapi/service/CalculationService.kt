@@ -81,8 +81,9 @@ class CalculationService(
 
   @Transactional(readOnly = true)
   fun calculateWithBreakdown(booking: Booking): CalculationBreakdown {
+    val originalBooking = booking.deepCopy()
     val workingBooking = calculate(booking)
-    return transform(workingBooking)
+    return transform(workingBooking, originalBooking)
   }
 
   @Transactional(readOnly = true)

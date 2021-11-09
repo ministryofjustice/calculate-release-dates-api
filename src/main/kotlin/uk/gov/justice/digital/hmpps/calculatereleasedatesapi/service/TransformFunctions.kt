@@ -125,7 +125,7 @@ fun transform(calculationRequest: CalculationRequest): BookingCalculation {
   )
 }
 
-fun transform(booking: Booking): CalculationBreakdown {
+fun transform(booking: Booking, originalBooking: Booking): CalculationBreakdown {
   val consecutiveSentence = booking.sentences.firstOrNull { it.sentenceParts.isNotEmpty() }
   return CalculationBreakdown(
     booking.sentences.filter { it.sentenceParts.isEmpty() }.map { sentence ->
@@ -143,13 +143,19 @@ fun transform(booking: Booking): CalculationBreakdown {
         consecutiveSentence.duration.toString(),
         consecutiveSentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
         extractDates(consecutiveSentence),
-        consecutiveSentence.sentenceParts.map {
+        consecutiveSentence.sentenceParts.map { sentencePart ->
+          val originalSentence = originalBooking.sentences.find { it.identifier == sentencePart.identifier }!!
+          val consecutiveToUUID =
+            if (originalSentence.consecutiveSentenceUUIDs.isNotEmpty()) originalSentence.consecutiveSentenceUUIDs[0]
+            else null
+          val consecutiveToSentence  =
+            if (consecutiveToUUID != null) originalBooking.sentences.find { it.identifier == consecutiveToUUID }!!
+            else null
           ConsecutiveSentencePart(
-            it.sequence.toString(),
-            it.duration.toString(),
-            it.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
-            consecutiveSentence.sentenceParts
-              .find { sentence -> sentence.consecutiveSentenceUUIDs.contains(it.identifier) }?.sequence?.toString()
+            sentencePart.sequence.toString(),
+            sentencePart.duration.toString(),
+            sentencePart.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
+            consecutiveToSentence?.sequence?.toString()
           )
         }.sortedBy { it.sequence.toInt() }
       )

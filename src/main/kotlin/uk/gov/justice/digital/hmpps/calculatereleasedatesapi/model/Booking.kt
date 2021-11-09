@@ -15,4 +15,10 @@ data class Booking(
       0
     }
   }
+
+  fun deepCopy(): Booking {
+    return this.copy(
+      sentences = this.sentences.map(Sentence::deepCopy).toMutableList()
+    )
+  }
 }

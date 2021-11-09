@@ -16,9 +16,7 @@
         }
       },
       "sentencedAt": "2020-03-20",
-      "consecutiveSentenceUUIDs": [
-        "da781b7c-bf37-43aa-8d03-282e30f71382"
-      ]
+      "identifier": "af19b612-8118-4350-8e0c-bfa97bd96651"
     },
     {
       "sequence": 2,
@@ -71,7 +69,9 @@
         }
       },
       "sentencedAt": "2020-12-18",
-      "identifier": "af19b612-8118-4350-8e0c-bfa97bd96651"
+      "consecutiveSentenceUUIDs": [
+        "da781b7c-bf37-43aa-8d03-282e30f71382"
+      ]
     }
   ],
   "adjustments": {
