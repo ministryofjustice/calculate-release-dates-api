@@ -88,7 +88,7 @@ data class Sentence(
   }
   fun canMergeConsecutivelyWith(secondSentence: Sentence): Boolean {
     return (
-      this.sentenceTypes.containsAll(secondSentence.sentenceTypes) ||
+      sameSentenceTypesWithout(secondSentence, SentenceType.HDCED, SentenceType.TUSED) ||
         this.containsSledOrSedAndCrdOrArd(secondSentence)
       )
   }
@@ -100,6 +100,17 @@ data class Sentence(
         sentence.sentenceTypes.containsAll(listOf(SentenceType.SLED, SentenceType.CRD)) &&
         this.sentenceTypes.containsAll(listOf(SentenceType.SED, SentenceType.ARD))
       )
+  }
+
+  private fun sameSentenceTypesWithout(secondSentence: Sentence, vararg sentenceTypes: SentenceType): Boolean {
+    return this.sentenceTypesWithout(*sentenceTypes)
+      .containsAll(secondSentence.sentenceTypesWithout(*sentenceTypes)) &&
+      secondSentence.sentenceTypesWithout(*sentenceTypes)
+        .containsAll(this.sentenceTypesWithout(*sentenceTypes))
+  }
+
+  private fun sentenceTypesWithout(vararg sentenceTypes: SentenceType): List<SentenceType> {
+    return this.sentenceTypes.filter { !sentenceTypes.contains(it) }
   }
 
   fun deepCopy(): Sentence {
