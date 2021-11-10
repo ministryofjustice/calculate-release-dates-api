@@ -28,9 +28,13 @@ psi-examples,33_S15
 psi-examples,34
 psi-examples,35
 psi-examples,36
+psi-examples,37
+psi-examples,38
 ux-examples,1-concurrent,
 ux-examples,1-consecutive
 ux-examples,2
 ux-examples,3
 custom-examples,14-day-hdced-rule-1
 custom-examples,14-day-hdced-rule-2
+custom-examples,week-calculation-1
+custom-examples,week-calculation-2

@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
+import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
 import java.util.UUID
 
@@ -37,6 +38,9 @@ class TransformFunctionsTest {
       sentenceSequence = sequence,
       sentenceDate = FIRST_JAN_2015,
       years = 5,
+      months = 4,
+      weeks = 3,
+      days = 2,
       sentenceStatus = "IMP",
       sentenceCategory = "CAT",
       sentenceCalculationType = "SDS",
@@ -48,7 +52,7 @@ class TransformFunctionsTest {
       listOf(
         Sentence(
           sentencedAt = FIRST_JAN_2015,
-          duration = FIVE_YEAR_DURATION,
+          duration = FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION,
           offence = Offence(committedAt = FIRST_JAN_2015),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(),
@@ -56,7 +60,7 @@ class TransformFunctionsTest {
         ),
         Sentence(
           sentencedAt = FIRST_JAN_2015,
-          duration = FIVE_YEAR_DURATION,
+          duration = FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION,
           offence = Offence(committedAt = SECOND_JAN_2015),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(),
@@ -120,7 +124,9 @@ class TransformFunctionsTest {
   }
 
   private companion object {
-    val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, MONTHS to 0L, YEARS to 5L))
+    val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
+    val FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION =
+      Duration(mutableMapOf(DAYS to 2L, WEEKS to 3L, MONTHS to 4L, YEARS to 5L))
     val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     val SECOND_JAN_2015: LocalDate = LocalDate.of(2015, 1, 2)
     private const val PRISONER_ID = "A1234AJ"

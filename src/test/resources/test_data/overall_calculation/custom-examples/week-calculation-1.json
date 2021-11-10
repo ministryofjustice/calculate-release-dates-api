@@ -1,0 +1,20 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "name": "AN. Other",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2021-11-08"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 26
+        }
+      },
+      "sentencedAt": "2021-11-08"
+    }
+  ]
+}
