@@ -30,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
+import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
 import java.util.UUID
 
@@ -48,6 +49,7 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
     )
     val duration = Duration()
     duration.append(sentence.days.toLong(), DAYS)
+    duration.append(sentence.weeks.toLong(), WEEKS)
     duration.append(sentence.months.toLong(), MONTHS)
     duration.append(sentence.years.toLong(), YEARS)
     val consecutiveSentenceUUIDs = if (sentence.consecutiveToSequence != null)
