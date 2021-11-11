@@ -3,6 +3,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import com.fasterxml.jackson.annotation.JsonIgnore
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.ARD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.PED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.SLED
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -46,15 +50,15 @@ data class Sentence(
 
   @JsonIgnore
   fun getReleaseDateType(): SentenceType {
-    return if (sentenceTypes.contains(SentenceType.PED))
-      SentenceType.PED else if (sentenceCalculation.isReleaseDateConditional)
-      SentenceType.CRD else
-      SentenceType.ARD
+    return if (sentenceTypes.contains(PED))
+      PED else if (sentenceCalculation.isReleaseDateConditional)
+      CRD else
+      ARD
   }
 
   fun buildString(): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    val expiryDateType = if (sentenceTypes.contains(SentenceType.SLED)) "SLED" else "SED"
+    val expiryDateType = if (sentenceTypes.contains(SLED)) "SLED" else "SED"
     val releaseDateType = getReleaseDateType().toString()
 
     return "Sentence\t:\t\n" +
@@ -85,34 +89,6 @@ data class Sentence(
       "Effective $releaseDateType\t:\t${sentenceCalculation.releaseDate?.format(formatter)}\n" +
       "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +
       "${sentenceCalculation.topUpSupervisionDate?.format(formatter)}\n"
-  }
-  fun canMergeConsecutivelyWith(secondSentence: Sentence): Boolean {
-    println(this.sentenceTypes)
-    println(secondSentence.sentenceTypes)
-    return (
-      sameSentenceTypesWithout(secondSentence, SentenceType.HDCED, SentenceType.TUSED) ||
-        this.containsSledOrSedAndCrdOrArd(secondSentence)
-      )
-  }
-
-  private fun containsSledOrSedAndCrdOrArd(sentence: Sentence): Boolean {
-    return (
-      this.sentenceTypes.containsAll(listOf(SentenceType.SLED, SentenceType.CRD)) &&
-        sentence.sentenceTypes.containsAll(listOf(SentenceType.SED, SentenceType.ARD)) ||
-        sentence.sentenceTypes.containsAll(listOf(SentenceType.SLED, SentenceType.CRD)) &&
-        this.sentenceTypes.containsAll(listOf(SentenceType.SED, SentenceType.ARD))
-      )
-  }
-
-  private fun sameSentenceTypesWithout(secondSentence: Sentence, vararg sentenceTypes: SentenceType): Boolean {
-    return this.sentenceTypesWithout(*sentenceTypes)
-      .containsAll(secondSentence.sentenceTypesWithout(*sentenceTypes)) &&
-      secondSentence.sentenceTypesWithout(*sentenceTypes)
-        .containsAll(this.sentenceTypesWithout(*sentenceTypes))
-  }
-
-  private fun sentenceTypesWithout(vararg sentenceTypes: SentenceType): List<SentenceType> {
-    return this.sentenceTypes.filter { !sentenceTypes.contains(it) }
   }
 
   fun deepCopy(): Sentence {
