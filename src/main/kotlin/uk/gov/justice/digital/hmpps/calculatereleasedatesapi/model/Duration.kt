@@ -34,11 +34,11 @@ data class Duration(
   }
 
   fun getEndDate(startDate: LocalDate): LocalDate {
-    var calculatedDate = startDate
+    var calculatedDate = startDate.minusDays(1L)
     for (duration in this.durationElements) {
       calculatedDate = calculatedDate.plus(duration.value, duration.key)
     }
-    return calculatedDate.minusDays(1L)
+    return calculatedDate
   }
 
   fun copy(durationToCopy: Duration): Duration {
