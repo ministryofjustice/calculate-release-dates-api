@@ -87,6 +87,8 @@ data class Sentence(
       "${sentenceCalculation.topUpSupervisionDate?.format(formatter)}\n"
   }
   fun canMergeConsecutivelyWith(secondSentence: Sentence): Boolean {
+    println(this.sentenceTypes)
+    println(secondSentence.sentenceTypes)
     return (
       sameSentenceTypesWithout(secondSentence, SentenceType.HDCED, SentenceType.TUSED) ||
         this.containsSledOrSedAndCrdOrArd(secondSentence)

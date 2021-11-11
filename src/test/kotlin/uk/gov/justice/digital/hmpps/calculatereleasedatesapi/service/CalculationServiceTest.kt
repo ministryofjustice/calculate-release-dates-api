@@ -91,6 +91,27 @@ class CalculationServiceTest {
     )
   }
 
+  @Test
+  fun `Test Example 39`() {
+    val exampleType = "psi-examples"
+    val exampleNumber = 39
+    log.info("Testing example $exampleType/$exampleNumber")
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
+    SecurityContextHolder.setContext(
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+    )
+    val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
+    val bookingCalculation = calculationService.calculate(booking, PRELIMINARY)
+    log.info(
+      "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
+      bookingCalculation
+    )
+    assertEquals(
+      jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber"),
+      bookingCalculation
+    )
+  }
+
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
   fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String) {
