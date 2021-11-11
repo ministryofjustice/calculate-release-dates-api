@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CannotMergeSentencesException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RecursionDepthExceededException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
@@ -9,9 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 @Service
 class ConsecutiveSentenceCombinationService(val sentenceCombinationService: SentenceCombinationService) {
 
-  fun combineConsecutiveSentences(booking: Booking): Booking {
-    return combineConsecutiveSentencesRecursion(booking)
-  }
+  fun combineConsecutiveSentences(booking: Booking): Booking = combineConsecutiveSentencesRecursion(booking)
 
   fun combineConsecutiveSentencesRecursion(booking: Booking, depth: Int = 0): Booking {
     if (depth >= MAX_DEPTH) {
@@ -53,19 +50,14 @@ class ConsecutiveSentenceCombinationService(val sentenceCombinationService: Sent
     }
   }
 
-  fun mergeConsecutiveSentences(firstSentence: Sentence, secondSentence: Sentence): Sentence {
-    if (!firstSentence.canMergeConsecutivelyWith(secondSentence)) {
-      throw CannotMergeSentencesException("Incompatible sentence types")
-    }
-
-    return Sentence(
+  fun mergeConsecutiveSentences(firstSentence: Sentence, secondSentence: Sentence): Sentence =
+    Sentence(
       sentenceCombinationService.earliestOffence(firstSentence, secondSentence),
       sentenceCombinationService.combinedDuration(firstSentence, secondSentence),
       sentenceCombinationService.earliestSentencedAt(firstSentence, secondSentence),
       sentenceParts = firstSentence.sentenceParts.ifEmpty { listOf(firstSentence) } +
         secondSentence.sentenceParts.ifEmpty { listOf(secondSentence) }
     )
-  }
 
   companion object {
     private const val MAX_DEPTH = 30

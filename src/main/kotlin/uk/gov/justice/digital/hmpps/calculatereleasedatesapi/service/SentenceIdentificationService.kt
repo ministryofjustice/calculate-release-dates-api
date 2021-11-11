@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
 import java.time.temporal.ChronoUnit
 
 @Service
@@ -78,11 +79,18 @@ class SentenceIdentificationService {
         )
       }
     } else if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
-      sentence.sentenceTypes = listOf(
-        SentenceType.LED,
-        SentenceType.CRD,
-        SentenceType.SED
-      )
+      if (sentence.sentenceParts.filter { it.sentencedAt >= LASPO_DATE }.isEmpty()) {
+        sentence.sentenceTypes = listOf(
+          SentenceType.LED,
+          SentenceType.CRD,
+          SentenceType.SED
+        )
+      } else {
+        sentence.sentenceTypes = listOf(
+          SentenceType.SLED,
+          SentenceType.CRD
+        )
+      }
     } else {
       sentence.sentenceTypes = listOf(
         SentenceType.ARD,
