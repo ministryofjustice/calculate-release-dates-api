@@ -28,7 +28,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DomainEvent
 class CalculationController(
   private val bookingService: BookingService,
   private val calculationService: CalculationService,
-  private val domainEventPublisher: DomainEventPublisher,
 ) {
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -74,7 +73,7 @@ class CalculationController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(
         responseCode = "404",
-        description = "No preliminary calculation exists for the passed calculationRequestId"
+        description = "No calculation exists for the passed calculationRequestId or the write to NOMIS has failed"
       ),
       ApiResponse(
         responseCode = "412",
@@ -98,7 +97,7 @@ class CalculationController(
     val booking = bookingService.getBooking(prisonerId)
     calculationService.validateConfirmationRequest(calculationRequestId, booking)
     val calculation = calculationService.calculate(booking, CONFIRMED)
-    domainEventPublisher.publishReleaseDateChange(prisonerId, booking.bookingId)
+    calculationService.writeToNomisAndPublishEvent(prisonerId, booking.bookingId, calculation)
     return calculation
   }
 

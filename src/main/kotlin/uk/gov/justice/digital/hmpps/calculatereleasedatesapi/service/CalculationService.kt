@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -8,10 +10,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAut
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.LED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import javax.persistence.EntityNotFoundException
@@ -22,7 +29,9 @@ class CalculationService(
   private val bookingExtractionService: BookingExtractionService,
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
-  private val objectMapper: ObjectMapper // TODO  Is this the right way to do it??
+  private val objectMapper: ObjectMapper,
+  private val domainEventPublisher: DomainEventPublisher,
+  private val prisonApiClient: PrisonApiClient,
 ) {
 
   fun getCurrentAuthentication(): AuthAwareAuthenticationToken =
@@ -133,5 +142,28 @@ class CalculationService(
     if (calculationRequest.inputData.hashCode() != bookingToJson(booking, objectMapper).hashCode()) {
       throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
     }
+  }
+
+  @Transactional(readOnly = true)
+  fun writeToNomisAndPublishEvent(prisonerId: String, bookingId: Long, calculation: BookingCalculation) {
+    val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
+      .orElseThrow { EntityNotFoundException("No calculation request exists for id ${calculation.calculationRequestId}") }
+    val updateOffenderDates = UpdateOffenderDates(
+      calculationUuid = calculationRequest.calculationReference,
+      submissionUser = "YMUSTAFA_GEN",
+      keyDates = OffenderKeyDates(calculation.dates[CRD], calculation.dates[LED], calculation.dates[SED])
+    )
+    try {
+      prisonApiClient.postReleaseDates(bookingId, updateOffenderDates)
+    } catch (ex: Exception) {
+      log.error("NOMIS WRITE FAILED: ${ex.message}")
+    }
+
+    domainEventPublisher.publishReleaseDateChange(prisonerId, bookingId)
+
+  }
+
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 
 @Service
 class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: WebClient) {
@@ -39,5 +40,18 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .retrieve()
       .bodyToMono(typeReference<List<SentenceAndOffences>>())
       .block()!!
+  }
+
+  fun postReleaseDates(bookingId: Long, updateOffenderDates: UpdateOffenderDates) {
+    log.info("Writing release dates to NOMIS for bookingId $bookingId")
+    webClient.post()
+      .uri("/api/offender-dates/$bookingId")
+      .bodyValue(updateOffenderDates)
+      .retrieve()
+      .bodyToMono(typeReference<String>())
+      .block()!!
+
+    log.info("Writing release dates to NOMIS finished")
+
   }
 }
