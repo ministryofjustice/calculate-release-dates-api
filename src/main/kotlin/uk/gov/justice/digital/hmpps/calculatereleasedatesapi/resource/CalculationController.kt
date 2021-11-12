@@ -98,7 +98,7 @@ class CalculationController(
     val booking = bookingService.getBooking(prisonerId)
     calculationService.validateConfirmationRequest(calculationRequestId, booking)
     val calculation = calculationService.calculate(booking, CONFIRMED)
-    calculationService.writeToNomis(prisonerId, booking.bookingId, calculation)
+    calculationService.writeToNomis(booking.bookingId, calculation)
     domainEventPublisher.publishReleaseDateChange(prisonerId, booking.bookingId)
     return calculation
   }

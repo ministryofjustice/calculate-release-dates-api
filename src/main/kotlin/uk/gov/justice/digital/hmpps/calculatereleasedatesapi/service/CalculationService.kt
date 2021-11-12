@@ -144,7 +144,8 @@ class CalculationService(
   }
 
   @Transactional(readOnly = true)
-  fun writeToNomis(prisonerId: String, bookingId: Long, calculation: BookingCalculation) {
+  @Suppress("TooGenericExceptionCaught")
+  fun writeToNomis(bookingId: Long, calculation: BookingCalculation) {
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
     val updateOffenderDates = UpdateOffenderDates(
