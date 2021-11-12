@@ -74,7 +74,7 @@ class CalculationController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(
         responseCode = "404",
-        description = "No preliminary calculation exists for the passed calculationRequestId"
+        description = "No calculation exists for the passed calculationRequestId or the write to NOMIS has failed"
       ),
       ApiResponse(
         responseCode = "412",
@@ -98,6 +98,7 @@ class CalculationController(
     val booking = bookingService.getBooking(prisonerId)
     calculationService.validateConfirmationRequest(calculationRequestId, booking)
     val calculation = calculationService.calculate(booking, CONFIRMED)
+    calculationService.writeToNomis(booking.bookingId, calculation)
     domainEventPublisher.publishReleaseDateChange(prisonerId, booking.bookingId)
     return calculation
   }
