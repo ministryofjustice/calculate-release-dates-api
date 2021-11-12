@@ -30,7 +30,6 @@ class CalculationService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
   private val objectMapper: ObjectMapper,
-  private val domainEventPublisher: DomainEventPublisher,
   private val prisonApiClient: PrisonApiClient,
 ) {
 
@@ -145,9 +144,9 @@ class CalculationService(
   }
 
   @Transactional(readOnly = true)
-  fun writeToNomisAndPublishEvent(prisonerId: String, bookingId: Long, calculation: BookingCalculation) {
+  fun writeToNomis(prisonerId: String, bookingId: Long, calculation: BookingCalculation) {
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
-      .orElseThrow { EntityNotFoundException("No calculation request exists for id ${calculation.calculationRequestId}") }
+      .orElseThrow { EntityNotFoundException("No calculation request exists") }
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = "YMUSTAFA_GEN",
@@ -158,9 +157,6 @@ class CalculationService(
     } catch (ex: Exception) {
       log.error("NOMIS WRITE FAILED: ${ex.message}")
     }
-
-    domainEventPublisher.publishReleaseDateChange(prisonerId, bookingId)
-
   }
 
   companion object {
