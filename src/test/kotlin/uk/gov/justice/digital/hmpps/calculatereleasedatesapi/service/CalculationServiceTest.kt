@@ -61,6 +61,7 @@ class CalculationServiceTest {
 
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
+  private val prisonApiClient = mock<PrisonApiClient>()
 
   private val calculationService =
     CalculationService(
@@ -68,7 +69,8 @@ class CalculationServiceTest {
       bookingExtractionService,
       calculationRequestRepository,
       calculationOutcomeRepository,
-      TestUtil.objectMapper()
+      TestUtil.objectMapper(),
+      prisonApiClient
     )
 
   @ParameterizedTest
