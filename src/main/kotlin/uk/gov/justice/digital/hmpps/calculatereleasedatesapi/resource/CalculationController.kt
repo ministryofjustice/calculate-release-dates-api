@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DomainEventPublisher
 
 @RestController
 @RequestMapping("/calculation", produces = [MediaType.APPLICATION_JSON_VALUE])
