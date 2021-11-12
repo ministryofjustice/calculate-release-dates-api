@@ -47,6 +47,9 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
     webClient.post()
       .uri("/api/offender-dates/$bookingId")
       .bodyValue(updateOffenderDates)
+      .retrieve()
+      .toBodilessEntity()
+      .block()
 
     log.info("Writing release dates to NOMIS finished")
   }
