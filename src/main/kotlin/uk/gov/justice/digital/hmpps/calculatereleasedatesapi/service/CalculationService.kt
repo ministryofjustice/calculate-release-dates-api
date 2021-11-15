@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import javax.persistence.EntityNotFoundException
 
 @Service
+@Suppress("LongParameterList")
 class CalculationService(
   private val bookingCalculationService: BookingCalculationService,
   private val bookingExtractionService: BookingExtractionService,
