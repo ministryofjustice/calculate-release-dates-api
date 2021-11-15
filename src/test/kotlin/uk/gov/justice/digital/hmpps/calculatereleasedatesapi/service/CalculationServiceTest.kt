@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.vladmihalcea.hibernate.type.json.internal.JacksonUtil
 import org.assertj.core.api.Assertions.assertThat
@@ -22,11 +23,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAut
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.LED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
@@ -62,6 +67,7 @@ class CalculationServiceTest {
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val prisonApiClient = mock<PrisonApiClient>()
+  private val domainEventPublisher = mock<DomainEventPublisher>()
 
   private val calculationService =
     CalculationService(
@@ -70,7 +76,8 @@ class CalculationServiceTest {
       calculationRequestRepository,
       calculationOutcomeRepository,
       TestUtil.objectMapper(),
-      prisonApiClient
+      prisonApiClient,
+      domainEventPublisher,
     )
 
   @ParameterizedTest
@@ -201,6 +208,60 @@ class CalculationServiceTest {
     assertThat(booking).isNotNull
   }
 
+  @Test
+  fun `Test that write to NOMIS and publishing event succeeds`() {
+    SecurityContextHolder.setContext(
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+    )
+    whenever(
+      calculationRequestRepository.findById(
+        CALCULATION_REQUEST_ID
+      )
+    ).thenReturn(
+      Optional.of(
+        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)
+      )
+    )
+
+    calculationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING_ID, BOOKING_CALCULATION)
+
+    verify(prisonApiClient).postReleaseDates(BOOKING_ID, UPDATE_OFFENDER_DATES)
+    verify(domainEventPublisher).publishReleaseDateChange(PRISONER_ID, BOOKING_ID)
+  }
+
+  @Test
+  fun `Test that exception with correct message is thrown if write to NOMIS fails `() {
+    SecurityContextHolder.setContext(
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+    )
+    whenever(
+      calculationRequestRepository.findById(
+        CALCULATION_REQUEST_ID
+      )
+    ).thenReturn(
+      Optional.of(
+        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)
+      )
+    )
+    whenever(
+      prisonApiClient.postReleaseDates(
+        BOOKING_ID,
+        UPDATE_OFFENDER_DATES
+      )
+    ).thenThrow(EntityNotFoundException("test ex"))
+
+    val exception = assertThrows<EntityNotFoundException> {
+      calculationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING_ID, BOOKING_CALCULATION)
+    }
+
+    assertThat(exception)
+      .isInstanceOf(EntityNotFoundException::class.java)
+      .withFailMessage(
+        "Writing release dates to NOMIS failed for prisonerId $PRISONER_ID " +
+          "and bookingId $BOOKING_ID"
+      )
+  }
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val USERNAME = "user1"
@@ -214,7 +275,7 @@ class CalculationServiceTest {
       .build()
     private val CALCULATION_REFERENCE: UUID = UUID.randomUUID()
     private val CALCULATION_OUTCOME = CalculationOutcome(
-      calculationDateType = SentenceType.CRD.name,
+      calculationDateType = CRD.name,
       outcomeDate = LocalDate.of(2021, 2, 3),
       calculationRequestId = CALCULATION_REQUEST_ID
     )
@@ -243,8 +304,18 @@ class CalculationServiceTest {
     )
 
     val BOOKING_CALCULATION = BookingCalculation(
-      dates = mutableMapOf(SentenceType.CRD to CALCULATION_OUTCOME.outcomeDate),
+      dates = mutableMapOf(CRD to CALCULATION_OUTCOME.outcomeDate),
       calculationRequestId = CALCULATION_REQUEST_ID
+    )
+
+    val UPDATE_OFFENDER_DATES = UpdateOffenderDates(
+      calculationUuid = CALCULATION_REQUEST_WITH_OUTCOMES.calculationReference,
+      submissionUser = USERNAME,
+      keyDates = OffenderKeyDates(
+        BOOKING_CALCULATION.dates[CRD],
+        BOOKING_CALCULATION.dates[LED],
+        BOOKING_CALCULATION.dates[SED]
+      )
     )
 
     private val OFFENDER = Offender(PRISONER_ID, "John Doe", LocalDate.of(1980, 1, 1))

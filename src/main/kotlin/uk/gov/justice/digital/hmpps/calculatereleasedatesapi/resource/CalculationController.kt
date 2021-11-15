@@ -21,14 +21,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DomainEventPublisher
 
 @RestController
 @RequestMapping("/calculation", produces = [MediaType.APPLICATION_JSON_VALUE])
 class CalculationController(
   private val bookingService: BookingService,
   private val calculationService: CalculationService,
-  private val domainEventPublisher: DomainEventPublisher,
 ) {
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -98,8 +96,7 @@ class CalculationController(
     val booking = bookingService.getBooking(prisonerId)
     calculationService.validateConfirmationRequest(calculationRequestId, booking)
     val calculation = calculationService.calculate(booking, CONFIRMED)
-    calculationService.writeToNomis(booking.bookingId, calculation)
-    domainEventPublisher.publishReleaseDateChange(prisonerId, booking.bookingId)
+    calculationService.writeToNomisAndPublishEvent(prisonerId, booking.bookingId, calculation)
     return calculation
   }
 

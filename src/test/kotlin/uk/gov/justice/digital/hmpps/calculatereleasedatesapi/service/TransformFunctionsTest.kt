@@ -4,7 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
@@ -111,8 +112,8 @@ class TransformFunctionsTest {
   @Test
   fun `Transform a CalculationRequest to a BookingCalculation`() {
     val releaseDatesBySentenceType = mutableMapOf(
-      SentenceType.CRD to FIRST_JAN_2015,
-      SentenceType.SED to SECOND_JAN_2015,
+      CRD to FIRST_JAN_2015,
+      SED to SECOND_JAN_2015,
     )
 
     assertThat(transform(CALCULATION_REQUEST)).isEqualTo(
