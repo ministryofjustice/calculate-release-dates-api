@@ -13,6 +13,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.SED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -168,13 +170,13 @@ private fun extractDates(sentence: Sentence): Map<SentenceType, DateBreakdown> {
   val dates: MutableMap<SentenceType, DateBreakdown> = mutableMapOf()
   val sentenceCalculation = sentence.sentenceCalculation
 
-  if (sentence.sentenceTypes.contains(SentenceType.SLED)) {
-    dates[SentenceType.SLED] = DateBreakdown(
+  if (sentence.sentenceTypes.contains(SLED)) {
+    dates[SLED] = DateBreakdown(
       sentenceCalculation.unadjustedExpiryDate!!,
       sentenceCalculation.adjustedExpiryDate!!
     )
   } else {
-    dates[SentenceType.SED] = DateBreakdown(
+    dates[SED] = DateBreakdown(
       sentenceCalculation.unadjustedExpiryDate!!,
       sentenceCalculation.adjustedExpiryDate!!
     )
