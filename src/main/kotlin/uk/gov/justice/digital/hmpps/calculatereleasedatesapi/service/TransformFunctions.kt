@@ -13,8 +13,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.CRD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -31,7 +29,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetai
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
@@ -168,14 +165,6 @@ fun transform(booking: Booking, originalBooking: Booking): CalculationBreakdown 
       )
   )
 }
-
-@Suppress("TooManyFunctions")
-fun transform(calculation: BookingCalculation) =
-  OffenderKeyDates(
-    calculation.dates[CRD],
-    calculation.dates[SLED] ?: calculation.dates[LED],
-    calculation.dates[SLED] ?: calculation.dates[SED]
-  )
 
 private fun extractDates(sentence: Sentence): Map<SentenceType, DateBreakdown> {
   val dates: MutableMap<SentenceType, DateBreakdown> = mutableMapOf()
