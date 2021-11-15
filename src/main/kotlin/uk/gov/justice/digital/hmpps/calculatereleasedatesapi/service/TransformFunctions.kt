@@ -43,7 +43,7 @@ import java.util.UUID
 ** Functions which transform entities objects into their model equivalents.
 ** Sometimes a pass-thru but very useful when objects need to be altered or enriched
 */
-@Suppress("TooManyFunctions")
+
 fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
   // There shouldn't be multiple offences associated to a single sentence; however there are at the moment (NOMIS doesnt
   // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
@@ -169,6 +169,7 @@ fun transform(booking: Booking, originalBooking: Booking): CalculationBreakdown 
   )
 }
 
+@Suppress("TooManyFunctions")
 fun transform(calculation: BookingCalculation) =
   OffenderKeyDates(
     calculation.dates[CRD],
