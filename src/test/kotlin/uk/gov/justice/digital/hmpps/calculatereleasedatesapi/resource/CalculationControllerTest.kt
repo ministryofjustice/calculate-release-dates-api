@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
- import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
