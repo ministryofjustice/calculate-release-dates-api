@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremo
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
@@ -22,6 +23,7 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
     prisonApi.stubGetPrisonerDetails(PRISONER_ID)
     prisonApi.stubGetSentencesAndOffences(BOOKING_ID)
     prisonApi.stubGetSentenceAdjustments(BOOKING_ID)
+    prisonApi.stubPostOffenderDates(BOOKING_ID)
   }
 
   override fun beforeEach(context: ExtensionContext) {
@@ -116,6 +118,16 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
               }
               """.trimIndent()
             )
+            .withStatus(200)
+        )
+    )
+
+  fun stubPostOffenderDates(bookingId: Long): StubMapping =
+    stubFor(
+      post("/api/offender-dates/$bookingId")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
             .withStatus(200)
         )
     )
