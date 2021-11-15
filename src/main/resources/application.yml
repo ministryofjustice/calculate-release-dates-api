@@ -28,7 +28,7 @@ spring:
             client-id: ${system.client.id}
             client-secret: ${system.client.secret}
             authorization-grant-type: client_credentials
-            scope: read
+            scope: read,write
         provider:
           hmpps-auth:
             token-uri: ${hmpps.auth.url}/oauth/token

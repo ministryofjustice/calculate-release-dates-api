@@ -52,9 +52,6 @@ class CalculationControllerTest {
   @MockBean
   private lateinit var calculationService: CalculationService
 
-  @MockBean
-  private lateinit var domainEventPublisher: DomainEventPublisher
-
   @Autowired
   private lateinit var mvc: MockMvc
 
@@ -67,7 +64,7 @@ class CalculationControllerTest {
     reset(calculationService)
 
     mvc = MockMvcBuilders
-      .standaloneSetup(CalculationController(bookingService, calculationService, domainEventPublisher))
+      .standaloneSetup(CalculationController(bookingService, calculationService))
       .setControllerAdvice(ControllerAdvice())
       .build()
   }
@@ -111,7 +108,7 @@ class CalculationControllerTest {
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(bookingCalculation))
     verify(calculationService, times(1)).calculate(booking, CONFIRMED)
-    verify(domainEventPublisher, times(1)).publishReleaseDateChange(prisonerId, bookingId)
+    verify(calculationService, times(1)).writeToNomisAndPublishEvent(prisonerId, bookingId, bookingCalculation)
   }
 
   @Test

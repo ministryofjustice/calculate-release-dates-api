@@ -31,6 +31,7 @@ class CalculationService(
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
   private val objectMapper: ObjectMapper,
   private val prisonApiClient: PrisonApiClient,
+  private val domainEventPublisher: DomainEventPublisher,
 ) {
 
   fun getCurrentAuthentication(): AuthAwareAuthenticationToken =
@@ -145,19 +146,24 @@ class CalculationService(
 
   @Transactional(readOnly = true)
   @Suppress("TooGenericExceptionCaught")
-  fun writeToNomis(bookingId: Long, calculation: BookingCalculation) {
+  fun writeToNomisAndPublishEvent(prisonerId: String, bookingId: Long, calculation: BookingCalculation) {
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
-      submissionUser = "YMUSTAFA_GEN",
+      submissionUser = getCurrentAuthentication().principal,
       keyDates = OffenderKeyDates(calculation.dates[CRD], calculation.dates[LED], calculation.dates[SED])
     )
     try {
       prisonApiClient.postReleaseDates(bookingId, updateOffenderDates)
     } catch (ex: Exception) {
-      log.error("NOMIS WRITE FAILED: ${ex.message}")
+      log.error("Nomis write failed: ${ex.message}")
+      throw EntityNotFoundException(
+        "Writing release dates to NOMIS failed for prisonerId $prisonerId " +
+          "and bookingId $bookingId"
+      )
     }
+    domainEventPublisher.publishReleaseDateChange(prisonerId, bookingId)
   }
 
   companion object {
