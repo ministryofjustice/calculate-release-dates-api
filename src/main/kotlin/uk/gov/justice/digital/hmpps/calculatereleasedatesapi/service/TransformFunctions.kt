@@ -112,7 +112,11 @@ fun bookingToJson(booking: Booking, objectMapper: ObjectMapper): JsonNode {
   return JacksonUtil.toJsonNode(objectMapper.writeValueAsString(booking))
 }
 
-fun transform(calculationRequest: CalculationRequest, releaseDateType: ReleaseDateType, date: LocalDate): CalculationOutcome {
+fun transform(
+  calculationRequest: CalculationRequest,
+  releaseDateType: ReleaseDateType,
+  date: LocalDate
+): CalculationOutcome {
   return CalculationOutcome(
     calculationRequestId = calculationRequest.id,
     outcomeDate = date,
@@ -172,18 +176,18 @@ private fun extractDates(sentence: Sentence): Map<ReleaseDateType, DateBreakdown
 
   if (sentence.releaseDateTypes.contains(SLED)) {
     dates[SLED] = DateBreakdown(
-      sentenceCalculation.unadjustedExpiryDate!!,
-      sentenceCalculation.adjustedExpiryDate!!
+      sentenceCalculation.unadjustedExpiryDate,
+      sentenceCalculation.adjustedExpiryDate
     )
   } else {
     dates[SED] = DateBreakdown(
-      sentenceCalculation.unadjustedExpiryDate!!,
-      sentenceCalculation.adjustedExpiryDate!!
+      sentenceCalculation.unadjustedExpiryDate,
+      sentenceCalculation.adjustedExpiryDate
     )
   }
   dates[sentence.getReleaseDateType()] = DateBreakdown(
-    sentenceCalculation.unadjustedReleaseDate!!,
-    sentenceCalculation.adjustedReleaseDate!!
+    sentenceCalculation.unadjustedReleaseDate,
+    sentenceCalculation.adjustedReleaseDate
   )
 
   return dates
