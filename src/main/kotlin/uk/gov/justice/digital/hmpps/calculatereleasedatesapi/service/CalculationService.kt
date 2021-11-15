@@ -154,7 +154,7 @@ class CalculationService(
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = getCurrentAuthentication().principal,
-      keyDates =  OffenderKeyDates(
+      keyDates = OffenderKeyDates(
         calculation.dates[CRD],
         calculation.dates[SLED] ?: calculation.dates[LED],
         calculation.dates[SLED] ?: calculation.dates[SED]
