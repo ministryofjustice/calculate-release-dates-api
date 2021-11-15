@@ -2,7 +2,14 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import java.time.LocalDate
 
 internal class BookingCalculationTest {
@@ -11,23 +18,23 @@ internal class BookingCalculationTest {
   fun testConstructor() {
     val date = LocalDate.of(2021, 1, 1)
     val bookingCalculationTest = BookingCalculation()
-    bookingCalculationTest.dates[SentenceType.ARD] = date
-    bookingCalculationTest.dates[SentenceType.CRD] = date
-    bookingCalculationTest.dates[SentenceType.NPD] = date
-    bookingCalculationTest.dates[SentenceType.PED] = date
-    bookingCalculationTest.dates[SentenceType.TUSED] = date
-    bookingCalculationTest.dates[SentenceType.SED] = date
-    bookingCalculationTest.dates[SentenceType.SLED] = date
-    bookingCalculationTest.dates[SentenceType.LED] = date
+    bookingCalculationTest.dates[ARD] = date
+    bookingCalculationTest.dates[CRD] = date
+    bookingCalculationTest.dates[NPD] = date
+    bookingCalculationTest.dates[PED] = date
+    bookingCalculationTest.dates[TUSED] = date
+    bookingCalculationTest.dates[SED] = date
+    bookingCalculationTest.dates[SLED] = date
+    bookingCalculationTest.dates[LED] = date
 
-    assertEquals(date, bookingCalculationTest.dates[SentenceType.ARD])
-    assertEquals(date, bookingCalculationTest.dates[SentenceType.CRD])
-    assertEquals(date, bookingCalculationTest.dates[SentenceType.NPD])
-    assertEquals(date, bookingCalculationTest.dates[SentenceType.PED])
-    assertEquals(date, bookingCalculationTest.dates[SentenceType.TUSED])
-    assertEquals(date, bookingCalculationTest.dates[SentenceType.SED])
-    assertEquals(date, bookingCalculationTest.dates[SentenceType.SLED])
-    assertEquals(date, bookingCalculationTest.dates[SentenceType.LED])
+    assertEquals(date, bookingCalculationTest.dates[ARD])
+    assertEquals(date, bookingCalculationTest.dates[CRD])
+    assertEquals(date, bookingCalculationTest.dates[NPD])
+    assertEquals(date, bookingCalculationTest.dates[PED])
+    assertEquals(date, bookingCalculationTest.dates[TUSED])
+    assertEquals(date, bookingCalculationTest.dates[SED])
+    assertEquals(date, bookingCalculationTest.dates[SLED])
+    assertEquals(date, bookingCalculationTest.dates[LED])
   }
 
   @Test
@@ -35,31 +42,31 @@ internal class BookingCalculationTest {
     val date = LocalDate.of(2021, 1, 1)
     val date2 = LocalDate.of(2021, 1, 2)
     val bookingCalculationTest = BookingCalculation()
-    bookingCalculationTest.dates[SentenceType.ARD] = date
-    bookingCalculationTest.dates[SentenceType.CRD] = date
-    bookingCalculationTest.dates[SentenceType.NPD] = date
-    bookingCalculationTest.dates[SentenceType.PED] = date
-    bookingCalculationTest.dates[SentenceType.TUSED] = date
-    bookingCalculationTest.dates[SentenceType.SED] = date
-    bookingCalculationTest.dates[SentenceType.SLED] = date
-    bookingCalculationTest.dates[SentenceType.LED] = date
+    bookingCalculationTest.dates[ARD] = date
+    bookingCalculationTest.dates[CRD] = date
+    bookingCalculationTest.dates[NPD] = date
+    bookingCalculationTest.dates[PED] = date
+    bookingCalculationTest.dates[TUSED] = date
+    bookingCalculationTest.dates[SED] = date
+    bookingCalculationTest.dates[SLED] = date
+    bookingCalculationTest.dates[LED] = date
 
-    bookingCalculationTest.dates[SentenceType.ARD] = date2
-    bookingCalculationTest.dates[SentenceType.CRD] = date2
-    bookingCalculationTest.dates[SentenceType.NPD] = date2
-    bookingCalculationTest.dates[SentenceType.PED] = date2
-    bookingCalculationTest.dates[SentenceType.TUSED] = date2
-    bookingCalculationTest.dates[SentenceType.SED] = date2
-    bookingCalculationTest.dates[SentenceType.SLED] = date2
-    bookingCalculationTest.dates[SentenceType.LED] = date2
+    bookingCalculationTest.dates[ARD] = date2
+    bookingCalculationTest.dates[CRD] = date2
+    bookingCalculationTest.dates[NPD] = date2
+    bookingCalculationTest.dates[PED] = date2
+    bookingCalculationTest.dates[TUSED] = date2
+    bookingCalculationTest.dates[SED] = date2
+    bookingCalculationTest.dates[SLED] = date2
+    bookingCalculationTest.dates[LED] = date2
 
-    assertEquals(date2, bookingCalculationTest.dates[SentenceType.ARD])
-    assertEquals(date2, bookingCalculationTest.dates[SentenceType.CRD])
-    assertEquals(date2, bookingCalculationTest.dates[SentenceType.NPD])
-    assertEquals(date2, bookingCalculationTest.dates[SentenceType.PED])
-    assertEquals(date2, bookingCalculationTest.dates[SentenceType.TUSED])
-    assertEquals(date2, bookingCalculationTest.dates[SentenceType.SED])
-    assertEquals(date2, bookingCalculationTest.dates[SentenceType.SLED])
-    assertEquals(date2, bookingCalculationTest.dates[SentenceType.LED])
+    assertEquals(date2, bookingCalculationTest.dates[ARD])
+    assertEquals(date2, bookingCalculationTest.dates[CRD])
+    assertEquals(date2, bookingCalculationTest.dates[NPD])
+    assertEquals(date2, bookingCalculationTest.dates[PED])
+    assertEquals(date2, bookingCalculationTest.dates[TUSED])
+    assertEquals(date2, bookingCalculationTest.dates[SED])
+    assertEquals(date2, bookingCalculationTest.dates[SLED])
+    assertEquals(date2, bookingCalculationTest.dates[LED])
   }
 }
