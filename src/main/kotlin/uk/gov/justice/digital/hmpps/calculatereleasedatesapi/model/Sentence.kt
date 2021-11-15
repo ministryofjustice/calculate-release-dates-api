@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.ARD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.CRD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.PED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.SLED
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -31,7 +31,7 @@ data class Sentence(
   lateinit var identificationTrack: SentenceIdentificationTrack
 
   @JsonIgnore
-  lateinit var sentenceTypes: List<SentenceType>
+  lateinit var releaseDateTypes: List<ReleaseDateType>
 
   fun isSentenceCalculated(): Boolean {
     return this::sentenceCalculation.isInitialized
@@ -49,8 +49,8 @@ data class Sentence(
   }
 
   @JsonIgnore
-  fun getReleaseDateType(): SentenceType {
-    return if (sentenceTypes.contains(PED))
+  fun getReleaseDateType(): ReleaseDateType {
+    return if (releaseDateTypes.contains(PED))
       PED else if (sentenceCalculation.isReleaseDateConditional)
       CRD else
       ARD
@@ -58,13 +58,13 @@ data class Sentence(
 
   fun buildString(): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    val expiryDateType = if (sentenceTypes.contains(SLED)) "SLED" else "SED"
+    val expiryDateType = if (releaseDateTypes.contains(SLED)) "SLED" else "SED"
     val releaseDateType = getReleaseDateType().toString()
 
     return "Sentence\t:\t\n" +
       "Duration\t:\t$duration\n" +
       "${duration.toPeriodString(sentencedAt)}\n" +
-      "Sentence Types\t:\t$sentenceTypes\n" +
+      "Sentence Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${duration.getLengthInDays(sentencedAt)}\n" +
       "Date of $expiryDateType\t:\t${sentenceCalculation.unadjustedExpiryDate.format(formatter)}\n" +
       "Number of days to $releaseDateType\t:\t${sentenceCalculation.numberOfDaysToReleaseDate}\n" +

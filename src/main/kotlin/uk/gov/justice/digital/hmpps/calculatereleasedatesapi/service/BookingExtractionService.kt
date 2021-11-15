@@ -3,7 +3,14 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CantExtractMultipleSentencesException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -33,10 +40,10 @@ class BookingExtractionService(
     val sentence = booking.sentences[0]
     val sentenceCalculation = sentence.sentenceCalculation
 
-    if (sentence.sentenceTypes.contains(SentenceType.SLED)) {
-      bookingCalculation.dates[SentenceType.SLED] = sentenceCalculation.expiryDate!!
+    if (sentence.releaseDateTypes.contains(SLED)) {
+      bookingCalculation.dates[SLED] = sentenceCalculation.expiryDate!!
     } else {
-      bookingCalculation.dates[SentenceType.SED] = sentenceCalculation.expiryDate!!
+      bookingCalculation.dates[SED] = sentenceCalculation.expiryDate!!
     }
 
     bookingCalculation.dates[sentence.getReleaseDateType()] = sentenceCalculation.releaseDate!!
@@ -44,19 +51,19 @@ class BookingExtractionService(
     if (sentenceCalculation.licenceExpiryDate != null &&
       sentenceCalculation.licenceExpiryDate != sentenceCalculation.expiryDate
     ) {
-      bookingCalculation.dates[SentenceType.LED] = sentenceCalculation.licenceExpiryDate!!
+      bookingCalculation.dates[LED] = sentenceCalculation.licenceExpiryDate!!
     }
 
     if (sentenceCalculation.nonParoleDate != null) {
-      bookingCalculation.dates[SentenceType.NPD] = sentenceCalculation.nonParoleDate!!
+      bookingCalculation.dates[NPD] = sentenceCalculation.nonParoleDate!!
     }
 
     if (sentenceCalculation.topUpSupervisionDate != null) {
-      bookingCalculation.dates[SentenceType.TUSED] = sentenceCalculation.topUpSupervisionDate!!
+      bookingCalculation.dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
     }
 
     if (sentenceCalculation.homeDetentionCurfewExpiryDateDate != null) {
-      bookingCalculation.dates[SentenceType.HDCED] = sentenceCalculation.homeDetentionCurfewExpiryDateDate!!
+      bookingCalculation.dates[HDCED] = sentenceCalculation.homeDetentionCurfewExpiryDateDate!!
     }
 
     return bookingCalculation
@@ -94,28 +101,28 @@ class BookingExtractionService(
 
       val bookingCalculation = BookingCalculation()
       if (latestExpiryDate == latestLicenseExpiryDate) {
-        bookingCalculation.dates[SentenceType.SLED] = latestExpiryDate
+        bookingCalculation.dates[SLED] = latestExpiryDate
       } else {
-        bookingCalculation.dates[SentenceType.SED] = latestExpiryDate
-        bookingCalculation.dates[SentenceType.LED] = latestLicenseExpiryDate
+        bookingCalculation.dates[SED] = latestExpiryDate
+        bookingCalculation.dates[LED] = latestLicenseExpiryDate
       }
 
       if (isReleaseDateConditional) {
-        bookingCalculation.dates[SentenceType.CRD] = latestReleaseDate
+        bookingCalculation.dates[CRD] = latestReleaseDate
       } else {
-        bookingCalculation.dates[SentenceType.ARD] = latestReleaseDate
+        bookingCalculation.dates[ARD] = latestReleaseDate
       }
 
       if (latestNonParoleDate != null) {
-        bookingCalculation.dates[SentenceType.NPD] = latestNonParoleDate
+        bookingCalculation.dates[NPD] = latestNonParoleDate
       }
 
       if (effectiveTopUpSupervisionDate != null) {
-        bookingCalculation.dates[SentenceType.TUSED] = effectiveTopUpSupervisionDate
+        bookingCalculation.dates[TUSED] = effectiveTopUpSupervisionDate
       }
 
       if (latestHomeDetentionCurfewExpiryDateDate != null) {
-        bookingCalculation.dates[SentenceType.HDCED] = latestHomeDetentionCurfewExpiryDateDate
+        bookingCalculation.dates[HDCED] = latestHomeDetentionCurfewExpiryDateDate
       }
       return bookingCalculation
     } else {

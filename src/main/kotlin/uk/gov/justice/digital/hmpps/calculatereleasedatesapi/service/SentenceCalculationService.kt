@@ -2,7 +2,15 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -19,24 +27,24 @@ class SentenceCalculationService {
     val sentenceCalculation = getInitialCalculation(sentence, booking)
     // Other adjustments need to be included in the sentence calculation here
 
-    if (sentence.sentenceTypes.contains(SentenceType.SLED) || sentence.sentenceTypes.contains(SentenceType.SED)) {
+    if (sentence.releaseDateTypes.contains(SLED) || sentence.releaseDateTypes.contains(SED)) {
       sentenceCalculation.expiryDate = sentenceCalculation.adjustedExpiryDate
     }
 
-    if (sentence.sentenceTypes.contains(SentenceType.SLED)) {
+    if (sentence.releaseDateTypes.contains(SLED)) {
       sentenceCalculation.licenceExpiryDate = sentenceCalculation.adjustedExpiryDate
     }
 
-    if (sentence.sentenceTypes.contains(SentenceType.ARD)) {
+    if (sentence.releaseDateTypes.contains(ARD)) {
       sentenceCalculation.isReleaseDateConditional = false
-    } else if (sentence.sentenceTypes.contains(SentenceType.CRD)) {
+    } else if (sentence.releaseDateTypes.contains(CRD)) {
       sentenceCalculation.isReleaseDateConditional = true
     }
 
     if (
-      sentence.sentenceTypes.contains(SentenceType.CRD) ||
-      sentence.sentenceTypes.contains(SentenceType.ARD) ||
-      sentence.sentenceTypes.contains(SentenceType.PED)
+      sentence.releaseDateTypes.contains(CRD) ||
+      sentence.releaseDateTypes.contains(ARD) ||
+      sentence.releaseDateTypes.contains(PED)
     ) {
       sentenceCalculation.releaseDate = sentenceCalculation.adjustedReleaseDate
     }
@@ -48,7 +56,7 @@ class SentenceCalculationService {
       // PSI 03/2015: P53: The license period is one of at least 12 month.
       // Hence, there is no requirement for a TUSED
     } else {
-      if (sentence.sentenceTypes.contains(SentenceType.TUSED)) {
+      if (sentence.releaseDateTypes.contains(TUSED)) {
         sentenceCalculation.topUpSupervisionDate = sentenceCalculation.unadjustedReleaseDate
           .plus(TWELVE, ChronoUnit.MONTHS).minusDays(
             sentenceCalculation.calculatedTotalDeductedDays.toLong()
@@ -58,7 +66,7 @@ class SentenceCalculationService {
       }
     }
 
-    if (sentence.sentenceTypes.contains(SentenceType.NPD)) {
+    if (sentence.releaseDateTypes.contains(NPD)) {
       sentenceCalculation.numberOfDaysToNonParoleDate =
         ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(TWO).div(THREE)).toLong()
           .plus(sentenceCalculation.calculatedTotalAddedDays)
@@ -68,7 +76,7 @@ class SentenceCalculationService {
       ).minusDays(ONE)
     }
 
-    if (sentence.sentenceTypes.contains(SentenceType.LED)) {
+    if (sentence.releaseDateTypes.contains(LED)) {
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
         ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(THREE).div(FOUR)).toLong()
           .plus(sentenceCalculation.numberOfDaysToAddToLicenceExpiryDate)
@@ -79,7 +87,7 @@ class SentenceCalculationService {
       ).minusDays(ONE)
     }
 
-    if (sentence.sentenceTypes.contains(SentenceType.HDCED)) {
+    if (sentence.releaseDateTypes.contains(HDCED)) {
       calculateHDCED(sentence, sentenceCalculation)
     }
 
