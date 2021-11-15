@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoMatchingReleaseDateFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -79,8 +79,8 @@ class SentencesExtractionService {
     return sentenceStream.allMatch { sentence -> sentence.consecutiveSentences.isEmpty() }
   }
 
-  fun allSentencesContainType(sentences: MutableList<Sentence>, sentenceType: SentenceType): Boolean {
-    return sentences.all { it.sentenceTypes.contains(sentenceType) }
+  fun allSentencesContainType(sentences: MutableList<Sentence>, releaseDateType: ReleaseDateType): Boolean {
+    return sentences.all { it.releaseDateTypes.contains(releaseDateType) }
   }
 
   fun getAssociatedReleaseType(sentences: MutableList<Sentence>, latestReleaseDate: LocalDate?): Boolean {

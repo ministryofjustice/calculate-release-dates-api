@@ -12,9 +12,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.SED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.SLED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -112,18 +112,18 @@ fun bookingToJson(booking: Booking, objectMapper: ObjectMapper): JsonNode {
   return JacksonUtil.toJsonNode(objectMapper.writeValueAsString(booking))
 }
 
-fun transform(calculationRequest: CalculationRequest, sentenceType: SentenceType, date: LocalDate): CalculationOutcome {
+fun transform(calculationRequest: CalculationRequest, releaseDateType: ReleaseDateType, date: LocalDate): CalculationOutcome {
   return CalculationOutcome(
     calculationRequestId = calculationRequest.id,
     outcomeDate = date,
-    calculationDateType = sentenceType.name,
+    calculationDateType = releaseDateType.name,
   )
 }
 
 fun transform(calculationRequest: CalculationRequest): BookingCalculation {
   return BookingCalculation(
     dates = calculationRequest.calculationOutcomes.associateBy(
-      { SentenceType.valueOf(it.calculationDateType) }, { it.outcomeDate }
+      { ReleaseDateType.valueOf(it.calculationDateType) }, { it.outcomeDate }
     ).toMutableMap(),
     calculationRequestId = calculationRequest.id
   )
@@ -166,11 +166,11 @@ fun transform(booking: Booking, originalBooking: Booking): CalculationBreakdown 
   )
 }
 
-private fun extractDates(sentence: Sentence): Map<SentenceType, DateBreakdown> {
-  val dates: MutableMap<SentenceType, DateBreakdown> = mutableMapOf()
+private fun extractDates(sentence: Sentence): Map<ReleaseDateType, DateBreakdown> {
+  val dates: MutableMap<ReleaseDateType, DateBreakdown> = mutableMapOf()
   val sentenceCalculation = sentence.sentenceCalculation
 
-  if (sentence.sentenceTypes.contains(SLED)) {
+  if (sentence.releaseDateTypes.contains(SLED)) {
     dates[SLED] = DateBreakdown(
       sentenceCalculation.unadjustedExpiryDate!!,
       sentenceCalculation.adjustedExpiryDate!!

@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations
 
-enum class SentenceType {
+enum class ReleaseDateType {
   CRD,
   LED,
   SED,

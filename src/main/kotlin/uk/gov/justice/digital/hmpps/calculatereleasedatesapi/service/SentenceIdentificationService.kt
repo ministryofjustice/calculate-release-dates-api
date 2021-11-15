@@ -1,10 +1,20 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
 import java.time.temporal.ChronoUnit
 
@@ -12,8 +22,8 @@ import java.time.temporal.ChronoUnit
 class SentenceIdentificationService {
   fun identify(sentence: Sentence, offender: Offender) {
     if (
-      sentence.sentencedAt.isBefore(ImportantDates.LASPO_DATE) &&
-      sentence.offence.committedAt.isBefore(ImportantDates.CJA_DATE)
+      sentence.sentencedAt.isBefore(LASPO_DATE) &&
+      sentence.offence.committedAt.isBefore(CJA_DATE)
     ) {
       beforeCJAAndLASPO(sentence)
     } else {
@@ -22,7 +32,7 @@ class SentenceIdentificationService {
     if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.WEEKS) &&
       sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS)
     ) {
-      sentence.sentenceTypes += SentenceType.HDCED
+      sentence.releaseDateTypes += HDCED
     }
   }
 
@@ -35,23 +45,23 @@ class SentenceIdentificationService {
       if (sentence.offence.committedAt.isAfter(ImportantDates.ORA_DATE)) {
         isTopUpSentenceExpiryDateRequired(sentence, offender)
       } else {
-        sentence.sentenceTypes = listOf(
-          SentenceType.ARD,
-          SentenceType.SED
+        sentence.releaseDateTypes = listOf(
+          ARD,
+          SED
         )
       }
     } else {
       if (sentence.durationIsGreaterThan(TWO, ChronoUnit.YEARS)) {
-        sentence.sentenceTypes = listOf(
-          SentenceType.SLED,
-          SentenceType.CRD
+        sentence.releaseDateTypes = listOf(
+          SLED,
+          CRD
         )
       } else {
 
         if (sentence.offence.committedAt.isBefore(ImportantDates.ORA_DATE)) {
-          sentence.sentenceTypes = listOf(
-            SentenceType.SLED,
-            SentenceType.CRD
+          sentence.releaseDateTypes = listOf(
+            SLED,
+            CRD
           )
         } else {
           isTopUpSentenceExpiryDateRequired(sentence, offender)
@@ -62,39 +72,39 @@ class SentenceIdentificationService {
 
   private fun beforeCJAAndLASPO(sentence: Sentence) {
 
-    sentence.identificationTrack = SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
+    sentence.identificationTrack = SDS_BEFORE_CJA_LASPO
 
     if (sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
       if (sentence.offence.isScheduleFifteen) {
-        sentence.sentenceTypes = listOf(
-          SentenceType.PED,
-          SentenceType.NPD,
-          SentenceType.LED,
-          SentenceType.SED
+        sentence.releaseDateTypes = listOf(
+          PED,
+          NPD,
+          LED,
+          SED
         )
       } else {
-        sentence.sentenceTypes = listOf(
-          SentenceType.CRD,
-          SentenceType.SLED
+        sentence.releaseDateTypes = listOf(
+          CRD,
+          SLED
         )
       }
     } else if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
       if (sentence.sentenceParts.filter { it.sentencedAt >= LASPO_DATE }.isEmpty()) {
-        sentence.sentenceTypes = listOf(
-          SentenceType.LED,
-          SentenceType.CRD,
-          SentenceType.SED
+        sentence.releaseDateTypes = listOf(
+          LED,
+          CRD,
+          SED
         )
       } else {
-        sentence.sentenceTypes = listOf(
-          SentenceType.SLED,
-          SentenceType.CRD
+        sentence.releaseDateTypes = listOf(
+          SLED,
+          CRD
         )
       }
     } else {
-      sentence.sentenceTypes = listOf(
-        SentenceType.ARD,
-        SentenceType.SED
+      sentence.releaseDateTypes = listOf(
+        ARD,
+        SED
       )
     }
   }
@@ -104,12 +114,12 @@ class SentenceIdentificationService {
       sentence.duration.getLengthInDays(sentence.sentencedAt) <= INT_ONE ||
       offender.getAgeOnDate(sentence.getHalfSentenceDate()) <= INT_EIGHTEEN
     ) {
-      sentence.sentenceTypes = listOf(SentenceType.SLED, SentenceType.CRD)
+      sentence.releaseDateTypes = listOf(SLED, CRD)
     } else {
-      sentence.sentenceTypes = listOf(
-        SentenceType.SLED,
-        SentenceType.CRD,
-        SentenceType.TUSED
+      sentence.releaseDateTypes = listOf(
+        SLED,
+        CRD,
+        TUSED
       )
     }
   }
