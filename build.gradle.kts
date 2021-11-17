@@ -29,6 +29,14 @@ tasks.named<Test>("test") {
   }
 }
 
+tasks.named("check") {
+  setDependsOn(
+    dependsOn.filterNot {
+      it is TaskProvider<*> && it.name == "detekt"
+    }
+  )
+}
+
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
