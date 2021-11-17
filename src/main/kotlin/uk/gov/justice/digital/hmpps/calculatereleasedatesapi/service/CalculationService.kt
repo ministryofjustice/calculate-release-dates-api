@@ -25,7 +25,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import javax.persistence.EntityNotFoundException
 
 @Service
-@Suppress("LongParameterList")
 class CalculationService(
   private val bookingCalculationService: BookingCalculationService,
   private val bookingExtractionService: BookingExtractionService,
@@ -147,7 +146,6 @@ class CalculationService(
   }
 
   @Transactional(readOnly = true)
-  @Suppress("TooGenericExceptionCaught")
   fun writeToNomisAndPublishEvent(prisonerId: String, bookingId: Long, calculation: BookingCalculation) {
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
