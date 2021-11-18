@@ -223,7 +223,7 @@ class CalculationServiceTest {
       )
     )
 
-    calculationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING_ID, BOOKING_CALCULATION)
+    calculationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION)
 
     verify(prisonApiClient).postReleaseDates(BOOKING_ID, UPDATE_OFFENDER_DATES)
     verify(domainEventPublisher).publishReleaseDateChange(PRISONER_ID, BOOKING_ID)
@@ -251,7 +251,7 @@ class CalculationServiceTest {
     ).thenThrow(EntityNotFoundException("test ex"))
 
     val exception = assertThrows<EntityNotFoundException> {
-      calculationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING_ID, BOOKING_CALCULATION)
+      calculationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION)
     }
 
     assertThat(exception)
@@ -312,9 +312,11 @@ class CalculationServiceTest {
       calculationUuid = CALCULATION_REQUEST_WITH_OUTCOMES.calculationReference,
       submissionUser = USERNAME,
       keyDates = OffenderKeyDates(
-        BOOKING_CALCULATION.dates[CRD],
-        BOOKING_CALCULATION.dates[LED],
-        BOOKING_CALCULATION.dates[SED]
+        conditionalReleaseDate = BOOKING_CALCULATION.dates[CRD],
+        licenceExpiryDate = BOOKING_CALCULATION.dates[LED],
+        sentenceExpiryDate = BOOKING_CALCULATION.dates[SED],
+        effectiveSentenceEndDate = BOOKING_CALCULATION.dates[SED]!!,
+        sentenceLength = "11/0/0"
       )
     )
 

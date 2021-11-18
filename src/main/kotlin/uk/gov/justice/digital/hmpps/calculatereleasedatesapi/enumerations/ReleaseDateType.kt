@@ -9,5 +9,10 @@ enum class ReleaseDateType {
   TUSED,
   PED,
   SLED,
-  HDCED
+  HDCED,
+  ETD,
+  MTD,
+  LTD,
+  DPRRD,
+  PRRD,
 }

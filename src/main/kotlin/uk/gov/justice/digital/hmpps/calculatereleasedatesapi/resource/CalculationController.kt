@@ -96,7 +96,7 @@ class CalculationController(
     val booking = bookingService.getBooking(prisonerId)
     calculationService.validateConfirmationRequest(calculationRequestId, booking)
     val calculation = calculationService.calculate(booking, CONFIRMED)
-    calculationService.writeToNomisAndPublishEvent(prisonerId, booking.bookingId, calculation)
+    calculationService.writeToNomisAndPublishEvent(prisonerId, booking, calculation)
     return calculation
   }
 
