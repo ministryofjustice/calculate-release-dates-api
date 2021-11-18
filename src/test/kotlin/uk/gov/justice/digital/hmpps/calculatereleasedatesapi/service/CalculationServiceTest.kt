@@ -281,7 +281,7 @@ class CalculationServiceTest {
     private const val PRISONER_ID = "A1234AJ"
     private const val BOOKING_ID = 12345L
     private const val CALCULATION_REQUEST_ID = 123456L
-    val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
+    private val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
     val FAKE_TOKEN: Jwt = Jwt
       .withTokenValue("123")
       .header("header1", "value1")
@@ -307,7 +307,11 @@ class CalculationServiceTest {
     val INPUT_DATA: JsonNode =
       JacksonUtil.toJsonNode(
         "{ \"offender\":{ \"reference\":\"A1234AJ\", \"name\":\"John Doe\", \"dateOfBirth\"" +
-          ":\"1980-01-01\" }, \"sentences\":[{\"offence\":{\"committedAt\":\"2021-02-03\",\"isScheduleFifteen\":false},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}},\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\",\"consecutiveSentenceUUIDs\":[],\"sequence\":null,\"sentenceParts\":[]}], \"adjustments\":{}, \"bookingId\":12345 }"
+          ":\"1980-01-01\" }, \"sentences\":[{\"offence\":{\"committedAt\":\"2021-02-03\",\"" +
+          "isScheduleFifteen\":false},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"" +
+          "MONTHS\":0,\"YEARS\":5}},\"sentencedAt\":\"2021-02-03\"," +
+          "\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\",\"consecutiveSentenceUUIDs\":[]," +
+          "\"sequence\":null,\"sentenceParts\":[]}], \"adjustments\":{}, \"bookingId\":12345 }"
       )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
