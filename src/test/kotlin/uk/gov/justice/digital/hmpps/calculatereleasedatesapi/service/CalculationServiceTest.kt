@@ -122,6 +122,25 @@ class CalculationServiceTest {
   }
 
   @Test
+  fun `Test CRS`() {
+    log.info("Testing example CRS")
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
+    SecurityContextHolder.setContext(
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+    )
+    val booking = jsonTransformation.loadBooking("custom-examples/crs-467-example-2")
+    val bookingCalculation = calculationService.calculate(booking, PRELIMINARY)
+    log.info(
+      "Example custom-examples/crs-467-example-1 outcome BookingCalculation: {}",
+      bookingCalculation
+    )
+    assertEquals(
+      jsonTransformation.loadBookingCalculation("custom-examples/crs-467-example-2"),
+      bookingCalculation
+    )
+  }
+
+  @Test
   fun `Test fetching calculation results by requestId`() {
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
       Optional.of(
