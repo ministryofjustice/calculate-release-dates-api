@@ -24,18 +24,24 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit.DAYS
+import java.time.temporal.ChronoUnit.MONTHS
+import java.time.temporal.ChronoUnit.WEEKS
+import java.time.temporal.ChronoUnit.YEARS
 import java.util.Optional
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
@@ -225,7 +231,17 @@ class CalculationServiceTest {
 
     calculationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION)
 
-    verify(prisonApiClient).postReleaseDates(BOOKING_ID, UPDATE_OFFENDER_DATES)
+    verify(prisonApiClient).postReleaseDates(
+      BOOKING_ID,
+      UPDATE_OFFENDER_DATES.copy(
+        keyDates = OffenderKeyDates(
+          conditionalReleaseDate = THIRD_FEB_2021,
+          sentenceExpiryDate = THIRD_FEB_2021,
+          effectiveSentenceEndDate = THIRD_FEB_2021,
+          sentenceLength = "0/0/0"
+        )
+      )
+    )
     verify(domainEventPublisher).publishReleaseDateChange(PRISONER_ID, BOOKING_ID)
   }
 
@@ -244,10 +260,7 @@ class CalculationServiceTest {
       )
     )
     whenever(
-      prisonApiClient.postReleaseDates(
-        BOOKING_ID,
-        UPDATE_OFFENDER_DATES
-      )
+      prisonApiClient.postReleaseDates(any(), any())
     ).thenThrow(EntityNotFoundException("test ex"))
 
     val exception = assertThrows<EntityNotFoundException> {
@@ -268,15 +281,22 @@ class CalculationServiceTest {
     private const val PRISONER_ID = "A1234AJ"
     private const val BOOKING_ID = 12345L
     private const val CALCULATION_REQUEST_ID = 123456L
+    val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
     val FAKE_TOKEN: Jwt = Jwt
       .withTokenValue("123")
       .header("header1", "value1")
       .claim("claim1", "value1")
       .build()
-    private val CALCULATION_REFERENCE: UUID = UUID.randomUUID()
-    private val CALCULATION_OUTCOME = CalculationOutcome(
+    private val CALCULATION_REFERENCE: UUID = UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5")
+    private val THIRD_FEB_2021 = LocalDate.of(2021, 2, 3)
+    private val CALCULATION_OUTCOME_CRD = CalculationOutcome(
       calculationDateType = CRD.name,
-      outcomeDate = LocalDate.of(2021, 2, 3),
+      outcomeDate = THIRD_FEB_2021,
+      calculationRequestId = CALCULATION_REQUEST_ID
+    )
+    private val CALCULATION_OUTCOME_SED = CalculationOutcome(
+      calculationDateType = SED.name,
+      outcomeDate = THIRD_FEB_2021,
       calculationRequestId = CALCULATION_REQUEST_ID
     )
     val CALCULATION_REQUEST = CalculationRequest(
@@ -287,14 +307,14 @@ class CalculationServiceTest {
     val INPUT_DATA: JsonNode =
       JacksonUtil.toJsonNode(
         "{ \"offender\":{ \"reference\":\"A1234AJ\", \"name\":\"John Doe\", \"dateOfBirth\"" +
-          ":\"1980-01-01\" }, \"sentences\":[], \"adjustments\":{}, \"bookingId\":12345 }"
+          ":\"1980-01-01\" }, \"sentences\":[{\"offence\":{\"committedAt\":\"2021-02-03\",\"isScheduleFifteen\":false},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}},\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\",\"consecutiveSentenceUUIDs\":[],\"sequence\":null,\"sentenceParts\":[]}], \"adjustments\":{}, \"bookingId\":12345 }"
       )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
       id = CALCULATION_REQUEST_ID,
       calculationReference = CALCULATION_REFERENCE, prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID,
-      calculationOutcomes = listOf(CALCULATION_OUTCOME),
+      calculationOutcomes = listOf(CALCULATION_OUTCOME_CRD, CALCULATION_OUTCOME_SED),
       inputData = JacksonUtil.toJsonNode(
         "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +
           "\"name\":\"AN.Other\"," + "\"dateOfBirth\":\"1970-03-03\"" + "}," + "\"sentences\":[" +
@@ -304,7 +324,7 @@ class CalculationServiceTest {
     )
 
     val BOOKING_CALCULATION = BookingCalculation(
-      dates = mutableMapOf(CRD to CALCULATION_OUTCOME.outcomeDate),
+      dates = mutableMapOf(CRD to CALCULATION_OUTCOME_CRD.outcomeDate, SED to THIRD_FEB_2021),
       calculationRequestId = CALCULATION_REQUEST_ID
     )
 
@@ -312,16 +332,23 @@ class CalculationServiceTest {
       calculationUuid = CALCULATION_REQUEST_WITH_OUTCOMES.calculationReference,
       submissionUser = USERNAME,
       keyDates = OffenderKeyDates(
-        conditionalReleaseDate = BOOKING_CALCULATION.dates[CRD],
-        licenceExpiryDate = BOOKING_CALCULATION.dates[LED],
-        sentenceExpiryDate = BOOKING_CALCULATION.dates[SED],
-        effectiveSentenceEndDate = BOOKING_CALCULATION.dates[SED]!!,
+        conditionalReleaseDate = THIRD_FEB_2021,
+        licenceExpiryDate = THIRD_FEB_2021,
+        sentenceExpiryDate = THIRD_FEB_2021,
+        effectiveSentenceEndDate = THIRD_FEB_2021,
         sentenceLength = "11/0/0"
       )
     )
 
     private val OFFENDER = Offender(PRISONER_ID, "John Doe", LocalDate.of(1980, 1, 1))
 
-    val BOOKING = Booking(OFFENDER, mutableListOf(), mutableMapOf(), BOOKING_ID)
+    private val SENTENCE = Sentence(
+      sentencedAt = THIRD_FEB_2021,
+      duration = FIVE_YEAR_DURATION,
+      offence = Offence(committedAt = THIRD_FEB_2021),
+      identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa")
+    )
+
+    val BOOKING = Booking(OFFENDER, mutableListOf(SENTENCE), mutableMapOf(), BOOKING_ID)
   }
 }
