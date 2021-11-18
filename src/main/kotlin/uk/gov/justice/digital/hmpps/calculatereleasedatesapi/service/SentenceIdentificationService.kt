@@ -5,12 +5,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
@@ -20,6 +21,7 @@ import java.time.temporal.ChronoUnit
 
 @Service
 class SentenceIdentificationService {
+
   fun identify(sentence: Sentence, offender: Offender) {
     if (
       sentence.sentencedAt.isBefore(LASPO_DATE) &&
@@ -38,7 +40,7 @@ class SentenceIdentificationService {
 
   private fun afterCJAAndLASPO(sentence: Sentence, offender: Offender) {
 
-    sentence.identificationTrack = SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
+    sentence.identificationTrack = SDS_AFTER_CJA_LASPO
 
     if (!sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
 
@@ -76,12 +78,21 @@ class SentenceIdentificationService {
 
     if (sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
       if (sentence.offence.isScheduleFifteen) {
-        sentence.releaseDateTypes = listOf(
-          PED,
-          NPD,
-          LED,
-          SED
-        )
+        if (sentence.sentenceParts.none { it.identificationTrack == SDS_AFTER_CJA_LASPO }) {
+          sentence.releaseDateTypes = listOf(
+            PED,
+            NPD,
+            LED,
+            SED
+          )
+        } else {
+          sentence.releaseDateTypes = listOf(
+            NCRD,
+            PED,
+            NPD,
+            SLED
+          )
+        }
       } else {
         sentence.releaseDateTypes = listOf(
           CRD,
@@ -89,7 +100,7 @@ class SentenceIdentificationService {
         )
       }
     } else if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
-      if (sentence.sentenceParts.filter { it.sentencedAt >= LASPO_DATE }.isEmpty()) {
+      if (sentence.sentenceParts.none { it.identificationTrack == SDS_AFTER_CJA_LASPO }) {
         sentence.releaseDateTypes = listOf(
           LED,
           CRD,

@@ -6,11 +6,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -67,13 +69,17 @@ class SentenceCalculationService {
     }
 
     if (sentence.releaseDateTypes.contains(NPD)) {
-      sentenceCalculation.numberOfDaysToNonParoleDate =
-        ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(TWO).div(THREE)).toLong()
-          .plus(sentenceCalculation.calculatedTotalAddedDays)
-          .minus(sentenceCalculation.calculatedTotalDeductedDays)
-      sentenceCalculation.nonParoleDate = sentence.sentencedAt.plusDays(
-        sentenceCalculation.numberOfDaysToNonParoleDate
-      ).minusDays(ONE)
+      if (sentence.releaseDateTypes.contains(NCRD)) {
+        calculateNPDFromNotionalCRD(sentence, sentenceCalculation)
+      } else {
+        sentenceCalculation.numberOfDaysToNonParoleDate =
+          ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(TWO).div(THREE)).toLong()
+            .plus(sentenceCalculation.calculatedTotalAddedDays)
+            .minus(sentenceCalculation.calculatedTotalDeductedDays)
+        sentenceCalculation.nonParoleDate = sentence.sentencedAt.plusDays(
+          sentenceCalculation.numberOfDaysToNonParoleDate
+        ).minusDays(ONE)
+      }
     }
 
     if (sentence.releaseDateTypes.contains(LED)) {
@@ -94,6 +100,44 @@ class SentenceCalculationService {
     // create association between the sentence and it's calculation
     sentence.sentenceCalculation = sentenceCalculation
     return sentenceCalculation
+  }
+
+  // If a sentence needs to calculate an NPD but it is an aggregated sentence made up of "old" and "new" type sentences
+  // The NPD calc becomes much more complicated, see PSI example 40.
+  private fun calculateNPDFromNotionalCRD(sentence: Sentence, sentenceCalculation: SentenceCalculation) {
+    val daysOfNewStyleSentences = sentence.sentenceParts
+      .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
+      .map { it.duration }
+      .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
+      .getLengthInDays(sentence.sentencedAt)
+
+    val daysOfOldStyleSentences = sentence.sentenceParts
+      .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO }
+      .map { it.duration }
+      .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
+      .getLengthInDays(sentence.sentencedAt)
+
+    sentenceCalculation.numberOfDaysToNotionalConditionalReleaseDate =
+      ceil(daysOfNewStyleSentences.toDouble().div(TWO)).toLong()
+
+    val unAdjustedNotionalConditionalReleaseDate = sentence.sentencedAt
+      .plusDays(sentenceCalculation.numberOfDaysToNotionalConditionalReleaseDate)
+      .minusDays(ONE)
+
+    sentenceCalculation.notionalConditionalReleaseDate = unAdjustedNotionalConditionalReleaseDate.minusDays(
+      sentenceCalculation.calculatedTotalDeductedDays.toLong()
+    ).plusDays(
+      sentenceCalculation.calculatedTotalAddedDays.toLong()
+    ).plusDays(
+      sentenceCalculation.calculatedTotalAwardedDays.toLong()
+    )
+
+    val dayAfterNotionalConditionalReleaseDate = sentenceCalculation.notionalConditionalReleaseDate!!.plusDays(ONE)
+    sentenceCalculation.numberOfDaysToNonParoleDate =
+      ceil(daysOfOldStyleSentences.toDouble().times(TWO).div(THREE)).toLong()
+    sentenceCalculation.nonParoleDate = dayAfterNotionalConditionalReleaseDate
+      .plusDays(sentenceCalculation.numberOfDaysToNonParoleDate)
+      .minusDays(ONE)
   }
 
   private fun getInitialCalculation(sentence: Sentence, booking: Booking): SentenceCalculation {

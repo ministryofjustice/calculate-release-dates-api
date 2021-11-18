@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
@@ -66,6 +67,10 @@ class BookingExtractionService(
       bookingCalculation.dates[HDCED] = sentenceCalculation.homeDetentionCurfewExpiryDateDate!!
     }
 
+    if (sentenceCalculation.notionalConditionalReleaseDate != null) {
+      bookingCalculation.dates[NCRD] = sentenceCalculation.notionalConditionalReleaseDate!!
+    }
+
     return bookingCalculation
   }
 
@@ -99,6 +104,10 @@ class BookingExtractionService(
         booking, latestReleaseDate, latestExpiryDate, latestLicenseExpiryDate
       )
 
+      val latestNotionalConditionalReleaseDate: LocalDate? = extractionService.mostRecentOrNull(
+        booking.sentences, SentenceCalculation::notionalConditionalReleaseDate
+      )
+
       val bookingCalculation = BookingCalculation()
       if (latestExpiryDate == latestLicenseExpiryDate) {
         bookingCalculation.dates[SLED] = latestExpiryDate
@@ -124,6 +133,11 @@ class BookingExtractionService(
       if (latestHomeDetentionCurfewExpiryDateDate != null) {
         bookingCalculation.dates[HDCED] = latestHomeDetentionCurfewExpiryDateDate
       }
+
+      if (latestNotionalConditionalReleaseDate != null) {
+        bookingCalculation.dates[NCRD] = latestNotionalConditionalReleaseDate
+      }
+
       return bookingCalculation
     } else {
       throw CantExtractMultipleSentencesException("Can't extract a single date from multiple sentences")
