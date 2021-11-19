@@ -10,15 +10,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAut
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -146,28 +141,25 @@ class CalculationService(
   }
 
   @Transactional(readOnly = true)
-  fun writeToNomisAndPublishEvent(prisonerId: String, bookingId: Long, calculation: BookingCalculation) {
+  fun writeToNomisAndPublishEvent(prisonerId: String, booking: Booking, calculation: BookingCalculation) {
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
+
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = getCurrentAuthentication().principal,
-      keyDates = OffenderKeyDates(
-        calculation.dates[CRD],
-        calculation.dates[SLED] ?: calculation.dates[LED],
-        calculation.dates[SLED] ?: calculation.dates[SED]
-      )
+      keyDates = transform(calculation, booking)
     )
     try {
-      prisonApiClient.postReleaseDates(bookingId, updateOffenderDates)
+      prisonApiClient.postReleaseDates(booking.bookingId, updateOffenderDates)
     } catch (ex: Exception) {
       log.error("Nomis write failed: ${ex.message}")
       throw EntityNotFoundException(
         "Writing release dates to NOMIS failed for prisonerId $prisonerId " +
-          "and bookingId $bookingId"
+          "and bookingId $booking.bookingId"
       )
     }
-    domainEventPublisher.publishReleaseDateChange(prisonerId, bookingId)
+    domainEventPublisher.publishReleaseDateChange(prisonerId, booking.bookingId)
   }
 
   companion object {
