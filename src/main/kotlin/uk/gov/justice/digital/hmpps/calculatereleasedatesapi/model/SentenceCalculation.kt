@@ -28,6 +28,10 @@ data class SentenceCalculation(
   var numberOfDaysToHomeDetentionCurfewExpiryDate: Long = 0
   var homeDetentionCurfewExpiryDateDate: LocalDate? = null
 
+  // Notional Conditional Release Date (NCRD)
+  var numberOfDaysToNotionalConditionalReleaseDate: Long = 0
+  var notionalConditionalReleaseDate: LocalDate? = null
+
   var expiryDate: LocalDate? = null
   var releaseDate: LocalDate? = null
   var topUpSupervisionDate: LocalDate? = null

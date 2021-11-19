@@ -107,7 +107,7 @@ class CalculationControllerTest {
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(bookingCalculation))
     verify(calculationService, times(1)).calculate(booking, CONFIRMED)
-    verify(calculationService, times(1)).writeToNomisAndPublishEvent(prisonerId, bookingId, bookingCalculation)
+    verify(calculationService, times(1)).writeToNomisAndPublishEvent(prisonerId, booking, bookingCalculation)
   }
 
   @Test
