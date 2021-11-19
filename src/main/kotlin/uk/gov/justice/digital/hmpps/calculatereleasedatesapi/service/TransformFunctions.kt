@@ -13,8 +13,20 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.DPRRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ETD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LTD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.MTD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -29,7 +41,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetai
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import java.time.LocalDate
+import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
@@ -168,6 +182,31 @@ fun transform(booking: Booking, originalBooking: Booking): CalculationBreakdown 
         }.sortedBy { it.sequence.toInt() }
       )
   )
+}
+
+fun transform(calculation: BookingCalculation, booking: Booking) =
+  OffenderKeyDates(
+    conditionalReleaseDate = calculation.dates[CRD],
+    licenceExpiryDate = calculation.dates[SLED] ?: calculation.dates[LED],
+    sentenceExpiryDate = calculation.dates[SLED] ?: calculation.dates[SED],
+    automaticReleaseDate = calculation.dates[ARD],
+    dtoPostRecallReleaseDate = calculation.dates[DPRRD],
+    earlyTermDate = calculation.dates[ETD],
+    homeDetentionCurfewEligibilityDate = calculation.dates[HDCED],
+    lateTermDate = calculation.dates[LTD],
+    midTermDate = calculation.dates[MTD],
+    nonParoleDate = calculation.dates[NPD],
+    paroleEligibilityDate = calculation.dates[PED],
+    postRecallReleaseDate = calculation.dates[PRRD],
+    topupSupervisionExpiryDate = calculation.dates[TUSED],
+    effectiveSentenceEndDate = (calculation.dates[SLED] ?: calculation.dates[SED])!!,
+    sentenceLength = getSentenceLength((calculation.dates[SLED] ?: calculation.dates[SED])!!, booking)
+  )
+
+private fun getSentenceLength(sentenceExpiryDate: LocalDate, booking: Booking): String {
+  val sentenceDate = booking.sentences.map { it.sentencedAt }.minOrNull()
+  val period = Period.between(sentenceDate, sentenceExpiryDate)
+  return "${period.years}/${period.months}/${period.days}"
 }
 
 private fun extractDates(sentence: Sentence): Map<ReleaseDateType, DateBreakdown> {

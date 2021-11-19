@@ -33,6 +33,7 @@ data class Sentence(
   @JsonIgnore
   lateinit var releaseDateTypes: List<ReleaseDateType>
 
+  @JsonIgnore
   fun isSentenceCalculated(): Boolean {
     return this::sentenceCalculation.isInitialized
   }
