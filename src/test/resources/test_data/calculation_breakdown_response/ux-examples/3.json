@@ -8,15 +8,18 @@
         "SLED":{
           "unadjusted":"2021-07-16",
           "adjusted":"2021-07-01",
-          "daysBetween":15
+          "daysFromSentenceStart":365,
+          "adjustedByDays":15
         },
         "CRD":{
           "unadjusted":"2021-01-15",
           "adjusted":"2021-01-06",
-          "daysBetween":9
+          "daysFromSentenceStart":183,
+          "adjustedByDays":9
         }
       },
-      "sequence":"2"
+      "lineSequence":2,
+      "caseSequence":2
     },
     {
       "sentencedAt":"2020-12-13",
@@ -26,15 +29,18 @@
         "SLED":{
           "unadjusted":"2021-02-12",
           "adjusted":"2021-01-28",
-          "daysBetween":15
+          "daysFromSentenceStart":62,
+          "adjustedByDays":15
         },
         "CRD":{
           "unadjusted":"2021-01-12",
           "adjusted":"2021-01-03",
-          "daysBetween":9
+          "daysFromSentenceStart":31,
+          "adjustedByDays":9
         }
       },
-      "sequence":"4"
+      "lineSequence":4,
+      "caseSequence":4
     }
   ],
   "consecutiveSentence":{
@@ -45,32 +51,40 @@
       "SLED":{
         "unadjusted":"2025-11-19",
         "adjusted":"2025-11-04",
-        "daysBetween":15
+        "daysFromSentenceStart":2071,
+        "adjustedByDays":15
       },
       "CRD":{
         "unadjusted":"2023-01-19",
         "adjusted":"2023-01-10",
-        "daysBetween":9
+        "daysFromSentenceStart":1036,
+        "adjustedByDays":9
       }
     },
     "sentenceParts":[
       {
-        "sequence":"1",
+        "lineSequence":1,
+        "caseSequence":1,
         "sentenceLength":"2 years",
         "sentenceLengthDays":730,
-        "consecutiveTo": null
+        "consecutiveToLineSequence":null,
+        "consecutiveToCaseSequence":null
       },
       {
-        "sequence":"3",
+        "lineSequence":3,
+        "caseSequence":3,
         "sentenceLength":"8 months",
         "sentenceLengthDays":242,
-        "consecutiveTo": "1"
+        "consecutiveToLineSequence":1,
+        "consecutiveToCaseSequence":1
       },
       {
-        "sequence":"5",
+        "lineSequence":5,
+        "caseSequence":5,
         "sentenceLength":"3 years",
         "sentenceLengthDays":1095,
-        "consecutiveTo": "3"
+        "consecutiveToLineSequence":3,
+        "consecutiveToCaseSequence":3
       }
     ]
   }

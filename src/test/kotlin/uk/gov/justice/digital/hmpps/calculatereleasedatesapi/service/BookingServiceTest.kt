@@ -41,6 +41,8 @@ class BookingServiceTest {
   fun `A booking object is generated correctly when requesting a booking for a prisonerId`() {
     val prisonerId = "A123456A"
     val sequence = 153
+    val lineSequence = 154
+    val caseSequence = 155
     val bookingId = 123456L
     val consecutiveTo = 99
     val offences = listOf(
@@ -54,6 +56,8 @@ class BookingServiceTest {
     val sentenceAndOffences = SentenceAndOffences(
       bookingId = bookingId,
       sentenceSequence = sequence,
+      lineSequence = lineSequence,
+      caseSequence = caseSequence,
       consecutiveToSequence = consecutiveTo,
       sentenceDate = FIRST_JAN_2015,
       years = 5,
@@ -97,7 +101,8 @@ class BookingServiceTest {
             consecutiveSentenceUUIDs = mutableListOf(
               UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
             ),
-            sequence = sequence
+            lineSequence = lineSequence,
+            caseSequence = caseSequence
           )
         ),
         adjustments = mutableMapOf(
