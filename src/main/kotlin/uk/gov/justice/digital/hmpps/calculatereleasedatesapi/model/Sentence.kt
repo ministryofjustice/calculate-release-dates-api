@@ -18,7 +18,8 @@ data class Sentence(
   var identifier: UUID = UUID.randomUUID(),
   // Sentence UUIDS that this sentence is consecutive to.
   var consecutiveSentenceUUIDs: MutableList<UUID> = mutableListOf(),
-  val sequence: Int? = null,
+  val caseSequence: Int? = null,
+  val lineSequence: Int? = null,
   var sentenceParts: List<Sentence> = listOf()
 ) : SentenceTimeline {
   @JsonIgnore

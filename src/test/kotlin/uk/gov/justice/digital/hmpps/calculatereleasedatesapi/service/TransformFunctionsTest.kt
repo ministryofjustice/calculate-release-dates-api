@@ -30,6 +30,8 @@ class TransformFunctionsTest {
   fun `Transform an offenders Sentence and offences into a Sentence correctly where there are multiple offences`() {
     val bookingId = 1110022L
     val sequence = 153
+    val lineSequence = 154
+    val caseSequence = 155
     val offences = listOf(
       OffenderOffence(
         offenderChargeId = 1L, offenceStartDate = FIRST_JAN_2015, offenceCode = "RR1", offenceDescription = "Littering"
@@ -52,6 +54,8 @@ class TransformFunctionsTest {
       sentenceCalculationType = "SDS",
       sentenceTypeDescription = "Standard Determinate",
       offences = offences,
+      lineSequence = lineSequence,
+      caseSequence = caseSequence
     )
 
     assertThat(transform(request)).isEqualTo(
@@ -62,7 +66,8 @@ class TransformFunctionsTest {
           offence = Offence(committedAt = FIRST_JAN_2015),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(),
-          sequence = sequence
+          lineSequence = lineSequence,
+          caseSequence = caseSequence
         ),
         Sentence(
           sentencedAt = FIRST_JAN_2015,
@@ -70,7 +75,8 @@ class TransformFunctionsTest {
           offence = Offence(committedAt = SECOND_JAN_2015),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(),
-          sequence = sequence
+          lineSequence = lineSequence,
+          caseSequence = caseSequence
         ),
       )
     )
@@ -80,6 +86,8 @@ class TransformFunctionsTest {
   fun `Transform an offenders Sentence and offences into a Sentence correctly where there are consecutive sentences`() {
     val bookingId = 1110022L
     val sequence = 153
+    val lineSequence = 154
+    val caseSequence = 155
     val consecutiveTo = 99
     val offences = listOf(
       OffenderOffence(
@@ -98,6 +106,8 @@ class TransformFunctionsTest {
       sentenceCalculationType = "SDS",
       sentenceTypeDescription = "Standard Determinate",
       offences = offences,
+      lineSequence = lineSequence,
+      caseSequence = caseSequence
     )
 
     assertThat(transform(request)).isEqualTo(
@@ -108,7 +118,8 @@ class TransformFunctionsTest {
           offence = Offence(committedAt = SECOND_JAN_2015),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())),
-          sequence = sequence
+          lineSequence = lineSequence,
+          caseSequence = caseSequence
         ),
       )
     )
@@ -208,7 +219,8 @@ class TransformFunctionsTest {
       duration = FIVE_YEAR_DURATION,
       offence = Offence(committedAt = SECOND_JAN_2015),
       identifier = UUID.randomUUID(),
-      sequence = 1
+      caseSequence = 1,
+      lineSequence = 2
     )
 
     val BOOKING = Booking(OFFENDER, mutableListOf(SENTENCE), mutableMapOf(), BOOKING_ID)

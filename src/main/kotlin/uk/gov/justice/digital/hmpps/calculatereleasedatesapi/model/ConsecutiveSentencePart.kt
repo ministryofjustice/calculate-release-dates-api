@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 data class ConsecutiveSentencePart(
-  val sequence: String,
+  val lineSequence: Int,
+  val caseSequence: Int,
   override val sentenceLength: String,
   override val sentenceLengthDays: Int,
-  val consecutiveTo: String? = null
+  val consecutiveToLineSequence: Int?,
+  val consecutiveToCaseSequence: Int?,
 ) : SentenceLengthBreakdown

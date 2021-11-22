@@ -307,11 +307,11 @@ class CalculationServiceTest {
     val INPUT_DATA: JsonNode =
       JacksonUtil.toJsonNode(
         "{ \"offender\":{ \"reference\":\"A1234AJ\", \"name\":\"John Doe\", \"dateOfBirth\"" +
-          ":\"1980-01-01\" }, \"sentences\":[{\"offence\":{\"committedAt\":\"2021-02-03\",\"" +
+          ":\"1980-01-01\" }, \"sentences\":[{\"caseSequence\":1,\"lineSequence\":2,\"offence\":{\"committedAt\":\"2021-02-03\",\"" +
           "isScheduleFifteen\":false},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"" +
           "MONTHS\":0,\"YEARS\":5}},\"sentencedAt\":\"2021-02-03\"," +
           "\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\",\"consecutiveSentenceUUIDs\":[]," +
-          "\"sequence\":null,\"sentenceParts\":[]}], \"adjustments\":{}, \"bookingId\":12345 }"
+          "\"sentenceParts\":[]}], \"adjustments\":{}, \"bookingId\":12345 }"
       )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
@@ -322,7 +322,8 @@ class CalculationServiceTest {
       inputData = JacksonUtil.toJsonNode(
         "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +
           "\"name\":\"AN.Other\"," + "\"dateOfBirth\":\"1970-03-03\"" + "}," + "\"sentences\":[" +
-          "{" + "\"offence\":{" + "\"committedAt\":\"2013-09-19\"" + "}," + "\"duration\":{" +
+          "{" + "\"caseSequence\":1," + "\"lineSequence\":2," +
+          "\"offence\":{" + "\"committedAt\":\"2013-09-19\"" + "}," + "\"duration\":{" +
           "\"durationElements\":{" + "\"YEARS\":2" + "}" + "}," + "\"sentencedAt\":\"2013-09-21\"" + "}" + "]" + "}"
       ),
     )
@@ -350,7 +351,9 @@ class CalculationServiceTest {
       sentencedAt = THIRD_FEB_2021,
       duration = FIVE_YEAR_DURATION,
       offence = Offence(committedAt = THIRD_FEB_2021),
-      identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa")
+      identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa"),
+      caseSequence = 1,
+      lineSequence = 2
     )
 
     val BOOKING = Booking(OFFENDER, mutableListOf(SENTENCE), mutableMapOf(), BOOKING_ID)
