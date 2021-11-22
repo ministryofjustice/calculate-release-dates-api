@@ -8,15 +8,18 @@
         "SLED":{
           "unadjusted":"2023-03-20",
           "adjusted":"2023-02-25",
-          "daysBetween":23
+          "daysFromSentenceStart":546,
+          "adjustedByDays":23
         },
         "CRD":{
           "unadjusted":"2022-06-20",
           "adjusted":"2022-06-02",
-          "daysBetween":18
+          "daysFromSentenceStart":273,
+          "adjustedByDays":18
         }
       },
-      "sequence":"1"
+      "lineSequence":1,
+      "caseSequence":1
     },
     {
       "sentencedAt":"2021-09-21",
@@ -26,15 +29,18 @@
         "SLED":{
           "unadjusted":"2023-03-20",
           "adjusted":"2023-02-25",
-          "daysBetween":23
+          "daysFromSentenceStart":546,
+          "adjustedByDays":23
         },
         "CRD":{
           "unadjusted":"2022-06-20",
           "adjusted":"2022-06-02",
-          "daysBetween":18
+          "daysFromSentenceStart":273,
+          "adjustedByDays":18
         }
       },
-      "sequence":"2"
+      "lineSequence":2,
+      "caseSequence":1
     },
     {
       "sentencedAt":"2021-09-21",
@@ -44,15 +50,18 @@
         "SLED":{
           "unadjusted":"2021-12-20",
           "adjusted":"2021-11-27",
-          "daysBetween":23
+          "daysFromSentenceStart":91,
+          "adjustedByDays":23
         },
         "CRD":{
           "unadjusted":"2021-11-05",
           "adjusted":"2021-10-18",
-          "daysBetween":18
+          "daysFromSentenceStart":46,
+          "adjustedByDays":18
         }
       },
-      "sequence":"3"
+      "lineSequence":3,
+      "caseSequence":1
     },
     {
       "sentencedAt":"2021-09-21",
@@ -62,15 +71,18 @@
         "SLED":{
           "unadjusted":"2022-09-20",
           "adjusted":"2022-08-28",
-          "daysBetween":23
+          "daysFromSentenceStart":365,
+          "adjustedByDays":23
         },
         "CRD":{
           "unadjusted":"2022-03-22",
           "adjusted":"2022-03-04",
-          "daysBetween":18
+          "daysFromSentenceStart":183,
+          "adjustedByDays":18
         }
       },
-      "sequence":"4"
+      "lineSequence":4,
+      "caseSequence":1
     },
     {
       "sentencedAt":"2021-09-21",
@@ -80,15 +92,18 @@
         "SLED":{
           "unadjusted":"2023-03-20",
           "adjusted":"2023-02-25",
-          "daysBetween":23
+          "daysFromSentenceStart":546,
+          "adjustedByDays":23
         },
         "CRD":{
           "unadjusted":"2022-06-20",
           "adjusted":"2022-06-02",
-          "daysBetween":18
+          "daysFromSentenceStart":273,
+          "adjustedByDays":18
         }
       },
-      "sequence":"5"
+      "lineSequence":5,
+      "caseSequence":1
     },
     {
       "sentencedAt":"2021-09-21",
@@ -98,15 +113,18 @@
         "SLED":{
           "unadjusted":"2022-03-20",
           "adjusted":"2022-02-25",
-          "daysBetween":23
+          "daysFromSentenceStart":181,
+          "adjustedByDays":23
         },
         "CRD":{
           "unadjusted":"2021-12-20",
           "adjusted":"2021-12-02",
-          "daysBetween":18
+          "daysFromSentenceStart":91,
+          "adjustedByDays":18
         }
       },
-      "sequence":"6"
+      "lineSequence":6,
+      "caseSequence":1
     }
   ],
   "consecutiveSentence":null

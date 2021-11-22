@@ -6,11 +6,14 @@ import java.time.temporal.ChronoUnit
 data class DateBreakdown(
   val unadjusted: LocalDate,
   val adjusted: LocalDate,
-  val daysBetween: Long
+  val daysFromSentenceStart: Long,
+  val adjustedByDays: Long
+
 ) {
   constructor(
     unadjusted: LocalDate,
-    adjusted: LocalDate
+    adjusted: LocalDate,
+    daysFromSentenceStart: Long
   ) :
-    this(unadjusted, adjusted, ChronoUnit.DAYS.between(adjusted, unadjusted))
+    this(unadjusted, adjusted, daysFromSentenceStart, ChronoUnit.DAYS.between(adjusted, unadjusted))
 }
