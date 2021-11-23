@@ -65,10 +65,8 @@ class BookingCalculationService(
         continue
       }
       if (sentence.sentencedAt.isAfter(previousReleaseDateMinusDaysAwarded)) {
-        // TODO This may or may not need changing - depending on chat with Helen Scott. See YM's comment in CRS-467
-        //  If it does change we will simply add 1 to this additionalDaysAlreadyServed
         val additionalDaysAlreadyServed =
-          ChronoUnit.DAYS.between(previousReleaseDateMinusDaysAwarded, sentence.sentencedAt)
+          ChronoUnit.DAYS.between(previousReleaseDateMinusDaysAwarded, sentence.sentencedAt) - 1
         sentence.sentenceCalculation.releaseDate =
           sentence.sentenceCalculation.releaseDate!!.minusDays(additionalDaysAlreadyServed)
       }
