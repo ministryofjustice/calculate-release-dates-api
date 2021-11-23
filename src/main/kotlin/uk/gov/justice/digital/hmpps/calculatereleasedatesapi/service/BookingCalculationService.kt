@@ -5,6 +5,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 @Service
 class BookingCalculationService(
@@ -42,6 +45,39 @@ class BookingCalculationService(
 
   fun combineConcurrent(booking: Booking): Booking {
     return applyMultiple(booking, concurrentSentenceCombinationService::combineConcurrentSentences)
+  }
+
+  //  TODO This doesnt sit well with the wider pattern of performing a calculation after each major step. So some tech
+  //   debt here but will be refactored once we consider ADA's more and decide whether we pull back adjustments at a
+  //   more granular level
+  fun adjustForAdditionalDaysAlreadyServed(booking: Booking): Booking {
+    // TODO Check with analysis on this. if we dont exclude schedule 15's example 37 fails.
+    //  Schedule 15's are out of scope at the moment - so one for the future
+    if (booking.sentences.any { it.offence.isScheduleFifteen }) return booking
+
+    val workingBooking: Booking = booking.copy()
+    var previousReleaseDateMinusDaysAwarded: LocalDate? = null
+
+    for (sentence: Sentence in workingBooking.sentences.sortedBy { it.sentencedAt }) {
+      if (previousReleaseDateMinusDaysAwarded == null) {
+        previousReleaseDateMinusDaysAwarded =
+          sentence.sentenceCalculation.unadjustedReleaseDate.minusDays(sentence.sentenceCalculation.calculatedTotalDeductedDays.toLong())
+        continue
+      }
+      if (sentence.sentencedAt.isAfter(previousReleaseDateMinusDaysAwarded)) {
+        // TODO This may or may not need changing - depending on chat with Helen Scott. See YM's comment in CRS-467
+        //  If it does change we will simply add 1 to this additionalDaysAlreadyServed
+        val additionalDaysAlreadyServed =
+          ChronoUnit.DAYS.between(previousReleaseDateMinusDaysAwarded, sentence.sentencedAt)
+        sentence.sentenceCalculation.releaseDate =
+          sentence.sentenceCalculation.releaseDate!!.minusDays(additionalDaysAlreadyServed)
+      }
+
+      previousReleaseDateMinusDaysAwarded =
+        sentence.sentenceCalculation.unadjustedReleaseDate.minusDays(sentence.sentenceCalculation.calculatedTotalDeductedDays.toLong())
+    }
+
+    return workingBooking
   }
 
   private fun applyMultiple(booking: Booking, function: (Booking) -> Booking): Booking {
