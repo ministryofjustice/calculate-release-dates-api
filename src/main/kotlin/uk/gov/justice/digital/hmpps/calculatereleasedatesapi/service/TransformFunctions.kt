@@ -81,7 +81,8 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
       offence = offence,
       identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
       consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-      sequence = sentence.sentenceSequence
+      caseSequence = sentence.caseSequence,
+      lineSequence = sentence.lineSequence
     )
   }.toMutableList()
 }
@@ -156,9 +157,10 @@ fun transform(booking: Booking, originalBooking: Booking): CalculationBreakdown 
         sentence.duration.toString(),
         sentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
         extractDates(sentence),
-        sentence.sequence.toString()
+        sentence.lineSequence!!,
+        sentence.caseSequence!!,
       )
-    }.sortedBy { it.sequence.toInt() },
+    }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence })),
     if (consecutiveSentence == null) null else
       ConsecutiveSentenceBreakdown(
         consecutiveSentence.sentencedAt,
@@ -174,12 +176,14 @@ fun transform(booking: Booking, originalBooking: Booking): CalculationBreakdown 
             if (consecutiveToUUID != null) originalBooking.sentences.find { it.identifier == consecutiveToUUID }!!
             else null
           ConsecutiveSentencePart(
-            sentencePart.sequence.toString(),
+            sentencePart.lineSequence!!,
+            sentencePart.caseSequence!!,
             sentencePart.duration.toString(),
             sentencePart.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
-            consecutiveToSentence?.sequence?.toString()
+            consecutiveToSentence?.lineSequence,
+            consecutiveToSentence?.caseSequence,
           )
-        }.sortedBy { it.sequence.toInt() }
+        }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence }))
       )
   )
 }
@@ -216,17 +220,20 @@ private fun extractDates(sentence: Sentence): Map<ReleaseDateType, DateBreakdown
   if (sentence.releaseDateTypes.contains(SLED)) {
     dates[SLED] = DateBreakdown(
       sentenceCalculation.unadjustedExpiryDate,
-      sentenceCalculation.adjustedExpiryDate
+      sentenceCalculation.adjustedExpiryDate,
+      sentenceCalculation.numberOfDaysToSentenceExpiryDate.toLong()
     )
   } else {
     dates[SED] = DateBreakdown(
       sentenceCalculation.unadjustedExpiryDate,
-      sentenceCalculation.adjustedExpiryDate
+      sentenceCalculation.adjustedExpiryDate,
+      sentenceCalculation.numberOfDaysToSentenceExpiryDate.toLong()
     )
   }
   dates[sentence.getReleaseDateType()] = DateBreakdown(
     sentenceCalculation.unadjustedReleaseDate,
-    sentenceCalculation.adjustedReleaseDate
+    sentenceCalculation.adjustedReleaseDate,
+    sentenceCalculation.numberOfDaysToReleaseDate.toLong()
   )
 
   return dates

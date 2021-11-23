@@ -5,6 +5,8 @@ import java.time.LocalDate
 data class SentenceAndOffences(
   val bookingId: Long,
   val sentenceSequence: Int,
+  val lineSequence: Int,
+  val caseSequence: Int,
   val consecutiveToSequence: Int? = null,
   val sentenceStatus: String,
   val sentenceCategory: String,

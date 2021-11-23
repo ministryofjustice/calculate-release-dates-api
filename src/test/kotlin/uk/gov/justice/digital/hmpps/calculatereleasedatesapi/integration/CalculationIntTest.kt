@@ -137,7 +137,7 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(result.concurrentSentences).hasSize(1)
     assertThat(result.concurrentSentences.get(0).dates[SLED]!!.unadjusted).isEqualTo(LocalDate.of(2016, 11, 16))
     assertThat(result.concurrentSentences.get(0).dates[SLED]!!.adjusted).isEqualTo(LocalDate.of(2016, 11, 6))
-    assertThat(result.concurrentSentences.get(0).dates[SLED]!!.daysBetween).isEqualTo(10)
+    assertThat(result.concurrentSentences.get(0).dates[SLED]!!.adjustedByDays).isEqualTo(10)
   }
 
   companion object {

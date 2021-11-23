@@ -6,7 +6,8 @@
   },
   "sentences": [
     {
-      "sequence": 1,
+      "caseSequence":1,
+      "lineSequence":1,
       "offence": {
         "committedAt": "2020-11-15"
       },
@@ -18,7 +19,8 @@
       "sentencedAt": "2021-09-21"
     },
     {
-      "sequence": 2,
+      "caseSequence":1,
+      "lineSequence":2,
       "offence": {
         "committedAt": "2020-11-15"
       },
@@ -30,7 +32,8 @@
       "sentencedAt": "2021-09-21"
     },
     {
-      "sequence": 3,
+      "caseSequence":1,
+      "lineSequence":3,
       "offence": {
         "committedAt": "2020-11-15"
       },
@@ -42,7 +45,8 @@
       "sentencedAt": "2021-09-21"
     },
     {
-      "sequence": 4,
+      "caseSequence":1,
+      "lineSequence":4,
       "offence": {
         "committedAt": "2015-11-15"
       },
@@ -54,7 +58,8 @@
       "sentencedAt": "2021-09-21"
     },
     {
-      "sequence": 5,
+      "caseSequence":1,
+      "lineSequence":5,
       "offence": {
         "committedAt": "2015-11-15"
       },
@@ -66,7 +71,8 @@
       "sentencedAt": "2021-09-21"
     },
     {
-      "sequence": 6,
+      "caseSequence":1,
+      "lineSequence":6,
       "offence": {
         "committedAt": "2015-11-15"
       },
