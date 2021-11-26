@@ -28,7 +28,7 @@ class WebClientConfiguration(
   private fun addAuthHeaderFilterFunction(): ExchangeFilterFunction {
     return ExchangeFilterFunction { request: ClientRequest, next: ExchangeFunction ->
       val filtered = ClientRequest.from(request)
-        .header(HttpHeaders.AUTHORIZATION, UserContextFilter.token)
+        .header(HttpHeaders.AUTHORIZATION, UserContext.getAuthToken())
         .build()
       next.exchange(filtered)
     }

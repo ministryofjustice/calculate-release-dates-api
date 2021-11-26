@@ -19,14 +19,10 @@ class UserContextFilter : Filter {
   override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
     val httpServletRequest = servletRequest as HttpServletRequest
     val authToken = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)
-    token = authToken
+    UserContext.setAuthToken(authToken)
     filterChain.doFilter(httpServletRequest, servletResponse)
   }
 
   override fun init(filterConfig: FilterConfig) {}
   override fun destroy() {}
-
-  companion object {
-    var token: String? = null
-  }
 }
