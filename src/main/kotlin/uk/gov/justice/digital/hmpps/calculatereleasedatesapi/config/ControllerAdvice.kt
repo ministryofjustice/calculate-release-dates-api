@@ -129,7 +129,9 @@ class ControllerAdvice {
           status = HttpStatus.BAD_REQUEST,
           userMessage = """
             One or more of the sentence types in this calculation is not currently supported in this service:
-            ${e.sentenceAndOffences.map { it.sentenceTypeDescription }.joinToString(separator = "\n")}
+            
+            ${e.sentenceAndOffences.map { it.sentenceTypeDescription }.distinct().joinToString(separator = "\n")}
+            
             If these sentences are correct, you will need to complete this calculation manually in NOMIS.
           """.trimIndent(),
           developerMessage = e.message
