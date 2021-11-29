@@ -81,7 +81,7 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
                 "sentenceSequence": 1,
                 "sentenceStatus": "A",
                 "sentenceCategory": "2003",
-                "sentenceCalculationType": "SDS",
+                "sentenceCalculationType": "ADIMP",
                 "sentenceTypeDescription": "Standard Determinate",
                 "sentenceDate": "2015-03-17",
                 "years": 0,
