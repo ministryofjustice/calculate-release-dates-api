@@ -13,11 +13,6 @@
 # Server port - avoid clash with prison-api
 export SERVER_PORT=8089
 
-# Client id/secret to access local container-hosted services
-# Matches with the seeded client details in hmpps-auth for its dev profile
-export SYSTEM_CLIENT_ID=calculate-release-dates-admin
-export SYSTEM_CLIENT_SECRET=client_secret
-
 # Provide the DB connection details to local container-hosted Postgresql DB
 # Match with the credentials set in docker-compose.yml
 export DB_SERVER=localhost
@@ -36,4 +31,3 @@ export SPRING_DATASOURCE_URL='jdbc:postgresql://${DB_SERVER}/${DB_NAME}'
 SPRING_PROFILES_ACTIVE=stdout,dev,localstack ./gradlew bootRun
 
 # End
-
