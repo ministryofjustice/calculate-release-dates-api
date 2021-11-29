@@ -5,6 +5,8 @@ import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedSentenceException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType.ADIMP
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType.YOI_ORA
 import java.time.LocalDate
 
 class SentenceValidationServiceTest {
@@ -35,11 +37,11 @@ class SentenceValidationServiceTest {
   @Test
   fun `A list of sentences will not cause an exception`() {
     val firstSentenceAndOffences = createMinimalSentenceAndOffence(
-      sentenceCalculationType = "ADIMP",
+      sentenceCalculationType = ADIMP.name,
       sentenceTypeDescription = "A sentence",
     )
     val secondSentenceAndOffences = createMinimalSentenceAndOffence(
-      sentenceCalculationType = "YOI_ORA",
+      sentenceCalculationType = YOI_ORA.name,
       sentenceTypeDescription = "A sentence",
     )
 
@@ -53,7 +55,7 @@ class SentenceValidationServiceTest {
       lineSequence = 1,
       caseSequence = 1,
       consecutiveToSequence = 1,
-      sentenceDate = SentenceValidationServiceTest.FIRST_JAN_2015,
+      sentenceDate = FIRST_JAN_2015,
       years = 5,
       sentenceStatus = "IMP",
       sentenceCategory = "CAT",

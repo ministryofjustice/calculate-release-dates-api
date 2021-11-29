@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetai
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType.YOI_ORA
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
@@ -65,7 +66,7 @@ class BookingServiceTest {
       years = 5,
       sentenceStatus = "IMP",
       sentenceCategory = "CAT",
-      sentenceCalculationType = "SDS",
+      sentenceCalculationType = YOI_ORA.name,
       sentenceTypeDescription = "Standard Determinate",
       offences = offences,
     )
