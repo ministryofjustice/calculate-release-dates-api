@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -20,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetai
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType.YOI_ORA
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
@@ -29,7 +31,8 @@ import java.util.UUID
 
 class BookingServiceTest {
   private val prisonApiClient = mock<PrisonApiClient>()
-  private val bookingService = BookingService(prisonApiClient)
+  private val sentenceValidationService = mock<SentenceValidationService>()
+  private val bookingService = BookingService(prisonApiClient, sentenceValidationService)
 
   @BeforeEach
   fun reset() {
@@ -63,7 +66,7 @@ class BookingServiceTest {
       years = 5,
       sentenceStatus = "IMP",
       sentenceCategory = "CAT",
-      sentenceCalculationType = "SDS",
+      sentenceCalculationType = YOI_ORA.name,
       sentenceTypeDescription = "Standard Determinate",
       offences = offences,
     )
@@ -114,6 +117,8 @@ class BookingServiceTest {
         )
       )
     )
+
+    verify(sentenceValidationService).validateSupportedSentences(listOf(sentenceAndOffences))
   }
 
   private companion object {

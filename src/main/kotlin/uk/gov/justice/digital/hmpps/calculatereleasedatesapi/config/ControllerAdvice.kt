@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedSentenceException
 import javax.persistence.EntityNotFoundException
 import javax.validation.ValidationException
 
@@ -113,6 +114,24 @@ class ControllerAdvice {
         ErrorResponse(
           status = PRECONDITION_FAILED,
           userMessage = "Pre condition failed: ${e.message}",
+          developerMessage = e.message
+        )
+      )
+  }
+
+  @ExceptionHandler(UnsupportedSentenceException::class)
+  fun handleUnsupportedSentenceException(e: UnsupportedSentenceException): ResponseEntity<ErrorResponse?>? {
+    log.error("Unsupported sentence exception: {}", e.message)
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(
+        ErrorResponse(
+          status = HttpStatus.BAD_REQUEST,
+          userMessage = """
+            One or more of the sentence types in this calculation is not currently supported in this service:
+            ${e.sentenceAndOffences.map { it.sentenceTypeDescription }.joinToString(separator = "\n")}
+            If these sentences are correct, you will need to complete this calculation manually in NOMIS.
+          """.trimIndent(),
           developerMessage = e.message
         )
       )
