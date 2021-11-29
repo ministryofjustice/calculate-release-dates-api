@@ -14,16 +14,24 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
   companion object {
     @JvmField
     val prisonApi = PrisonApiMockServer()
-    const val BOOKING_ID = 9292L
-    const val PRISONER_ID = "A1234AA"
+    const val VALID_BOOKING_ID = 9292L
+    const val VALID_PRISONER_ID = "A1234AA"
+
+    const val UNSUPPORTED_SENTENCE_BOOKING_ID = 123L
+    const val UNSUPPORTED_SENTENCE_VALID_PRISONER_ID = "Z4321AB"
   }
 
   override fun beforeAll(context: ExtensionContext) {
     prisonApi.start()
-    prisonApi.stubGetPrisonerDetails(PRISONER_ID)
-    prisonApi.stubGetSentencesAndOffences(BOOKING_ID)
-    prisonApi.stubGetSentenceAdjustments(BOOKING_ID)
-    prisonApi.stubPostOffenderDates(BOOKING_ID)
+    prisonApi.stubGetPrisonerDetails(VALID_PRISONER_ID, VALID_BOOKING_ID)
+    prisonApi.stubGetSentencesAndOffences(VALID_BOOKING_ID)
+    prisonApi.stubGetSentenceAdjustments(VALID_BOOKING_ID)
+    prisonApi.stubPostOffenderDates(VALID_BOOKING_ID)
+
+    prisonApi.stubGetPrisonerDetails(UNSUPPORTED_SENTENCE_VALID_PRISONER_ID, UNSUPPORTED_SENTENCE_BOOKING_ID)
+    prisonApi.stubGetSentencesAndOffencesUnsupportedSentences(UNSUPPORTED_SENTENCE_BOOKING_ID)
+    prisonApi.stubGetSentenceAdjustments(UNSUPPORTED_SENTENCE_BOOKING_ID)
+    prisonApi.stubPostOffenderDates(UNSUPPORTED_SENTENCE_BOOKING_ID)
   }
 
   override fun beforeEach(context: ExtensionContext) {
@@ -40,7 +48,7 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 8332
   }
 
-  fun stubGetPrisonerDetails(prisonerId: String): StubMapping =
+  fun stubGetPrisonerDetails(prisonerId: String, bookingId: Long): StubMapping =
     stubFor(
       get("/api/offenders/$prisonerId")
         .willReturn(
@@ -49,7 +57,7 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
             .withBody(
               """
             {
-              "bookingId": "${PrisonApiExtension.BOOKING_ID}",
+              "bookingId": "$bookingId",
               "offenderNo": "$prisonerId",
               "dateOfBirth": "1990-02-01"
             }
@@ -73,8 +81,66 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
                 "sentenceSequence": 1,
                 "sentenceStatus": "A",
                 "sentenceCategory": "2003",
-                "sentenceCalculationType": "SDS",
+                "sentenceCalculationType": "ADIMP",
                 "sentenceTypeDescription": "Standard Determinate",
+                "sentenceDate": "2015-03-17",
+                "years": 0,
+                "months": 20,
+                "weeks": 0,
+                "days": 0,
+                "offences": [
+                  {
+                    "offenderChargeId": 9991,
+                    "offenceStartDate": "2015-03-17",
+                    "offenceCode": "GBH",
+                    "offenceDescription": "Grievous bodily harm"
+                  }
+                ]
+              }
+            ]
+              """.trimIndent()
+            )
+            .withStatus(200)
+        )
+    )
+
+  fun stubGetSentencesAndOffencesUnsupportedSentences(bookingId: Long): StubMapping =
+    stubFor(
+      get("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(
+              """
+            [
+              {
+                "bookingId": $bookingId,
+                "sentenceSequence": 1,
+                "sentenceStatus": "A",
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": "UNSUPPORTED",
+                "sentenceTypeDescription": "This sentence is unsupported",
+                "sentenceDate": "2015-03-17",
+                "years": 0,
+                "months": 20,
+                "weeks": 0,
+                "days": 0,
+                "offences": [
+                  {
+                    "offenderChargeId": 9991,
+                    "offenceStartDate": "2015-03-17",
+                    "offenceCode": "GBH",
+                    "offenceDescription": "Grievous bodily harm"
+                  }
+                ]
+              },
+              {
+                "bookingId": $bookingId,
+                "sentenceSequence": 2,
+                "sentenceStatus": "A",
+                "sentenceCategory": "2003",
+                "sentenceCalculationType": "UNSUPPORTED_ORA",
+                "sentenceTypeDescription": "This sentence is also unsupported",
                 "sentenceDate": "2015-03-17",
                 "years": 0,
                 "months": 20,

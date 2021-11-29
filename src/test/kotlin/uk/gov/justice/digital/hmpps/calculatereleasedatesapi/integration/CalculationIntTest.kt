@@ -4,9 +4,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.PrisonApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -138,6 +140,22 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(result.concurrentSentences.get(0).dates[SLED]!!.unadjusted).isEqualTo(LocalDate.of(2016, 11, 16))
     assertThat(result.concurrentSentences.get(0).dates[SLED]!!.adjusted).isEqualTo(LocalDate.of(2016, 11, 6))
     assertThat(result.concurrentSentences.get(0).dates[SLED]!!.adjustedByDays).isEqualTo(10)
+  }
+
+  @Test
+  fun `Calculate release dates for unsupported sentence types`() {
+    val response: ErrorResponse = webTestClient.post()
+      .uri("/calculation/${PrisonApiExtension.UNSUPPORTED_SENTENCE_VALID_PRISONER_ID}")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isBadRequest
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ErrorResponse::class.java)
+      .returnResult().responseBody
+
+    assertThat(response.userMessage).contains("This sentence is unsupported")
+    assertThat(response.userMessage).contains("This sentence is also unsupported")
   }
 
   companion object {
