@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -29,7 +30,8 @@ import java.util.UUID
 
 class BookingServiceTest {
   private val prisonApiClient = mock<PrisonApiClient>()
-  private val bookingService = BookingService(prisonApiClient)
+  private val sentenceValidationService = mock<SentenceValidationService>()
+  private val bookingService = BookingService(prisonApiClient, sentenceValidationService)
 
   @BeforeEach
   fun reset() {
@@ -114,6 +116,8 @@ class BookingServiceTest {
         )
       )
     )
+
+    verify(sentenceValidationService).validateSupportedSentences(listOf(sentenceAndOffences))
   }
 
   private companion object {
