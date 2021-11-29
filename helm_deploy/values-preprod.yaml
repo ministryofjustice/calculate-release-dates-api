@@ -6,9 +6,7 @@ generic-service:
 
   ingress:
     host: calculate-release-dates-api-preprod.hmpps.service.justice.gov.uk
-    annotations:
-      external-dns.alpha.kubernetes.io/set-identifier: calculate-release-dates-api-calculate-release-dates-api-preprod-green
-      external-dns.alpha.kubernetes.io/aws-weight: 100
+    contextColour: green
 
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
