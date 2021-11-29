@@ -5,10 +5,6 @@ import org.springframework.stereotype.Component
 @Component
 object UserContext {
   private val authToken = ThreadLocal<String>()
-  fun setAuthToken(aToken: String) {
-    authToken.set(aToken)
-  }
-  fun getAuthToken(): String {
-    return authToken.get()
-  }
+  fun setAuthToken(token: String?) = authToken.set(token)
+  fun getAuthToken(): String = authToken.get()
 }
