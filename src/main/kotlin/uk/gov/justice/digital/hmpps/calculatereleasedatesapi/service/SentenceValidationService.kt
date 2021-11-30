@@ -23,7 +23,10 @@ class SentenceValidationService {
     val unsupportedSentences = sentenceAndOffences.filter { !canSentenceBeCalculated(it) }
     if (unsupportedSentences.isNotEmpty()) {
       throw UnsupportedSentenceException(
-        "Calculation engine cannot calculate these sentences ${unsupportedSentences.map(SentenceAndOffences::sentenceCalculationType).joinToString()}",
+        "Calculation engine cannot calculate these sentences ${unsupportedSentences
+          .map(SentenceAndOffences::sentenceCalculationType)
+          .distinct()
+          .joinToString()}",
         unsupportedSentences
       )
     }
