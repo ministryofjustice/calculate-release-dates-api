@@ -162,7 +162,7 @@ class CalculationService(
       log.error("Nomis write failed: ${ex.message}")
       throw EntityNotFoundException(
         "Writing release dates to NOMIS failed for prisonerId $prisonerId " +
-          "and bookingId $booking"
+          "and bookingId ${booking.bookingId}"
       )
     }
     try {
@@ -172,7 +172,7 @@ class CalculationService(
       // Eventually the event will be used to write back to NOMIS and then this will need refactoring
       log.info(
         "Publishing the release date change to the domain event topic failed for prisonerId $prisonerId " +
-          "and bookingId $booking"
+          "and bookingId ${booking.bookingId}"
       )
     }
   }
