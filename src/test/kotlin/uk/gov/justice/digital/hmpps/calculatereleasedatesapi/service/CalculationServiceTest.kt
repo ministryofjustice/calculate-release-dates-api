@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import com.vladmihalcea.hibernate.type.json.internal.JacksonUtil
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -273,6 +274,31 @@ class CalculationServiceTest {
         "Writing release dates to NOMIS failed for prisonerId $PRISONER_ID " +
           "and bookingId $BOOKING_ID"
       )
+  }
+
+  @Test
+  fun `Test that if the publishing of an event fails the exception is handled and not propagated`() {
+    SecurityContextHolder.setContext(
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+    )
+    whenever(
+      calculationRequestRepository.findById(
+        CALCULATION_REQUEST_ID
+      )
+    ).thenReturn(
+      Optional.of(
+        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)
+      )
+    )
+    whenever(
+      domainEventPublisher.publishReleaseDateChange(PRISONER_ID, BOOKING_ID)
+    ).thenThrow(EntityNotFoundException("test ex"))
+
+    try {
+      calculationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION)
+    } catch (ex: Exception) {
+      fail("Exception was thrown!")
+    }
   }
 
   companion object {
