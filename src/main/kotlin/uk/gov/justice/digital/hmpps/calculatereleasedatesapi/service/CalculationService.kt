@@ -162,10 +162,19 @@ class CalculationService(
       log.error("Nomis write failed: ${ex.message}")
       throw EntityNotFoundException(
         "Writing release dates to NOMIS failed for prisonerId $prisonerId " +
-          "and bookingId $booking.bookingId"
+          "and bookingId ${booking.bookingId}"
       )
     }
-    domainEventPublisher.publishReleaseDateChange(prisonerId, booking.bookingId)
+    try {
+      domainEventPublisher.publishReleaseDateChange(prisonerId, booking.bookingId)
+    } catch (ex: Exception) {
+      // This doesn't constitute a failure at the moment because we are writing back to NOMIS using a POST endpoint.
+      // Eventually the event will be used to write back to NOMIS and then this will need refactoring
+      log.info(
+        "Publishing the release date change to the domain event topic failed for prisonerId $prisonerId " +
+          "and bookingId ${booking.bookingId}"
+      )
+    }
   }
 
   companion object {
