@@ -5,12 +5,12 @@ generic-service:
   replicaCount: 2
 
   ingress:
-    host: calculate-release-dates-api-preprod.hmpps.service.justice.gov.uk
+    host: calculate-release-dates-api.hmpps.service.justice.gov.uk
 
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
-    HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
-    PRISON_API_URL: https://api-preprod.prison.service.justice.gov.uk
+    HMPPS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
+    PRISON_API_URL: https://api.prison.service.justice.gov.uk
 
 # CloudPlatform AlertManager receiver to route promethues alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
