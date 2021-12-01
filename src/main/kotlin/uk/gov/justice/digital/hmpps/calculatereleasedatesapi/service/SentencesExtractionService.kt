@@ -47,7 +47,7 @@ class SentencesExtractionService {
   }
 
   fun mostRecentOrNull(
-    sentences: MutableList<Sentence>,
+    sentences: List<Sentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>
   ): LocalDate? {
     return sentences
@@ -57,7 +57,7 @@ class SentencesExtractionService {
   }
 
   fun mostRecent(
-    sentences: MutableList<Sentence>,
+    sentences: List<Sentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>
   ): LocalDate {
     return sentences
@@ -67,7 +67,7 @@ class SentencesExtractionService {
   }
 
   fun mostRecentSentence(
-    sentences: MutableList<Sentence>,
+    sentences: List<Sentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>
   ): Sentence {
     return sentences
@@ -75,15 +75,7 @@ class SentencesExtractionService {
       .maxByOrNull { property.get(it.sentenceCalculation)!! }!!
   }
 
-  fun hasNoConsecutiveSentences(sentenceStream: Stream<Sentence>): Boolean {
-    return sentenceStream.allMatch { sentence -> sentence.consecutiveSentences.isEmpty() }
-  }
-
-  fun allSentencesContainType(sentences: MutableList<Sentence>, releaseDateType: ReleaseDateType): Boolean {
-    return sentences.all { it.releaseDateTypes.contains(releaseDateType) }
-  }
-
-  fun getAssociatedReleaseType(sentences: MutableList<Sentence>, latestReleaseDate: LocalDate?): Boolean {
+  fun getAssociatedReleaseType(sentences: List<Sentence>, latestReleaseDate: LocalDate?): Boolean {
     val matchingReleaseTypes = sentences
       .filter { it.sentenceCalculation.releaseDate?.equals(latestReleaseDate) == true }
       .map { it.sentenceCalculation.isReleaseDateConditional }

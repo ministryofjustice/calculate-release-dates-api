@@ -24,27 +24,12 @@ class BookingCalculationService(
     return booking
   }
 
-  fun associateConsecutive(booking: Booking): Booking {
-    for (sentence in booking.sentences) {
-      sentence.associateSentences(booking.sentences)
-    }
-    return booking
-  }
-
   fun calculate(booking: Booking): Booking {
     for (sentence in booking.sentences) {
       sentenceCalculationService.calculate(sentence, booking)
       log.info(sentence.buildString())
     }
     return booking
-  }
-
-  fun combineConsecutive(booking: Booking): Booking {
-    return applyMultiple(booking, consecutiveSentenceCombinationService::combineConsecutiveSentences)
-  }
-
-  fun combineConcurrent(booking: Booking): Booking {
-    return applyMultiple(booking, concurrentSentenceCombinationService::combineConcurrentSentences)
   }
 
   //  TODO This doesnt sit well with the wider pattern of performing a calculation after each major step. So some tech
@@ -87,6 +72,10 @@ class BookingCalculationService(
         return calculate(workingBooking)
       }
     }
+  }
+
+  fun createCombinedSentences(booking: Booking): Booking {
+
   }
 
   companion object {

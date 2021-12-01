@@ -61,25 +61,15 @@ class CalculationService(
       bookingCalculationService
         .identify(workingBooking)
 
-    // associateConsecutive the types of the sentences
-    workingBooking =
-      bookingCalculationService
-        .associateConsecutive(workingBooking)
-
     // calculate the dates within the sentences (Generate initial sentence calculations)
     workingBooking =
       bookingCalculationService
         .calculate(workingBooking)
 
-    // aggregate appropriate concurrent sentences
+    // combine sentences
     workingBooking =
       bookingCalculationService
-        .combineConcurrent(workingBooking)
-
-    // aggregation the consecutive sentences
-    workingBooking =
-      bookingCalculationService
-        .combineConsecutive(workingBooking)
+        .createCombinedSentences(workingBooking)
 
     // This is to cater for the situation where a sentence is imposed whilst additional days are being served on the
     // previous sentence e.g. when the sentenceDate is during the ADA's period of the previous sentence

@@ -15,16 +15,12 @@ data class Sentence(
   val offence: Offence,
   override val duration: Duration,
   override val sentencedAt: LocalDate,
-  var identifier: UUID = UUID.randomUUID(),
+  val identifier: UUID = UUID.randomUUID(),
   // Sentence UUIDS that this sentence is consecutive to.
-  var consecutiveSentenceUUIDs: MutableList<UUID> = mutableListOf(),
+  val consecutiveSentenceUUIDs: List<UUID> = listOf(),
   val caseSequence: Int? = null,
-  val lineSequence: Int? = null,
-  var sentenceParts: List<Sentence> = listOf()
+  val lineSequence: Int? = null
 ) : SentenceTimeline {
-  @JsonIgnore
-  lateinit var consecutiveSentences: MutableList<Sentence>
-
   @JsonIgnore
   lateinit var sentenceCalculation: SentenceCalculation
 
@@ -37,17 +33,6 @@ data class Sentence(
   @JsonIgnore
   fun isSentenceCalculated(): Boolean {
     return this::sentenceCalculation.isInitialized
-  }
-
-  fun associateSentences(sentences: List<Sentence>) {
-    consecutiveSentences = mutableListOf()
-    sentences.forEach { sentence ->
-      this.consecutiveSentenceUUIDs.forEach {
-        if (sentence.identifier == it) {
-          consecutiveSentences.add(sentence)
-        }
-      }
-    }
   }
 
   @JsonIgnore
@@ -91,9 +76,5 @@ data class Sentence(
       "Effective $releaseDateType\t:\t${sentenceCalculation.releaseDate?.format(formatter)}\n" +
       "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +
       "${sentenceCalculation.topUpSupervisionDate?.format(formatter)}\n"
-  }
-
-  fun deepCopy(): Sentence {
-    return this.copy(consecutiveSentenceUUIDs = this.consecutiveSentenceUUIDs.toMutableList())
   }
 }
