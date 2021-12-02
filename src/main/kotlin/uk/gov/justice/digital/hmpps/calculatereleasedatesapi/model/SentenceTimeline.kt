@@ -29,6 +29,7 @@ interface SentenceTimeline {
         ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
       )
   }
+
   @JsonIgnore
   fun getHalfSentenceDate(): LocalDate {
     val days = (getLengthInDays().toDouble() / 2).roundToLong()
@@ -40,5 +41,6 @@ interface SentenceTimeline {
     return LocalDateRange.of(sentencedAt, sentencedAt.plusDays(getLengthInDays().toLong()))
   }
 
+  @JsonIgnore
   fun getLengthInDays(): Int
 }

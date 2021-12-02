@@ -75,11 +75,6 @@ class CalculationServiceTest {
       domainEventPublisher,
     )
 
-  @Test
-  fun blah() {
-    `Test Example`("psi-examples", "24")
-  }
-
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
   fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String) {
@@ -304,8 +299,8 @@ class CalculationServiceTest {
           ":\"1980-01-01\" }, \"sentences\":[{\"caseSequence\":1,\"lineSequence\":2,\"offence\":{\"committedAt\":\"2021-02-03\",\"" +
           "isScheduleFifteen\":false},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"" +
           "MONTHS\":0,\"YEARS\":5}},\"sentencedAt\":\"2021-02-03\"," +
-          "\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\",\"consecutiveSentenceUUIDs\":[]," +
-          "\"sentenceParts\":[]}], \"adjustments\":{}, \"bookingId\":12345 }"
+          "\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\",\"consecutiveSentenceUUIDs\":[]" +
+          "}], \"adjustments\":{}, \"bookingId\":12345 }"
       )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
