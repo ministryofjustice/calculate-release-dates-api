@@ -54,7 +54,7 @@ class CalculationService(
   }
 
   private fun calculate(booking: Booking): Booking {
-    var workingBooking: Booking = booking.copy()
+    var workingBooking: Booking = booking
 
     // identify the types of the sentences
     workingBooking =
