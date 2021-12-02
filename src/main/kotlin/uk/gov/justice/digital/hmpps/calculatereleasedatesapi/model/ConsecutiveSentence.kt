@@ -11,14 +11,17 @@ class ConsecutiveSentence(
   override val offence: Offence,
   val orderedSentences: List<Sentence>
 ) : IdentifiableSentence, CalculableSentence, ExtractableSentence {
+
   constructor(orderedSentences: List<Sentence>) :
     this(
       orderedSentences.minOf(Sentence::sentencedAt),
       orderedSentences.map(Sentence::offence).minByOrNull(Offence::committedAt)!!,
       orderedSentences
     )
+
   @JsonIgnore
   override lateinit var sentenceCalculation: SentenceCalculation
+
   @JsonIgnore
   override lateinit var identificationTrack: SentenceIdentificationTrack
 
