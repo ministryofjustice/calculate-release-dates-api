@@ -54,32 +54,25 @@ class CalculationService(
   }
 
   private fun calculate(booking: Booking): Booking {
-    var workingBooking: Booking = booking.copy()
+    var workingBooking: Booking = booking
 
     // identify the types of the sentences
     workingBooking =
       bookingCalculationService
         .identify(workingBooking)
 
-    // associateConsecutive the types of the sentences
-    workingBooking =
-      bookingCalculationService
-        .associateConsecutive(workingBooking)
-
     // calculate the dates within the sentences (Generate initial sentence calculations)
     workingBooking =
       bookingCalculationService
         .calculate(workingBooking)
 
-    // aggregate appropriate concurrent sentences
     workingBooking =
       bookingCalculationService
-        .combineConcurrent(workingBooking)
+        .createConsecutiveSentences(workingBooking)
 
-    // aggregation the consecutive sentences
     workingBooking =
       bookingCalculationService
-        .combineConsecutive(workingBooking)
+        .createSingleTermSentences(workingBooking)
 
     // This is to cater for the situation where a sentence is imposed whilst additional days are being served on the
     // previous sentence e.g. when the sentenceDate is during the ADA's period of the previous sentence
@@ -92,9 +85,8 @@ class CalculationService(
 
   @Transactional(readOnly = true)
   fun calculateWithBreakdown(booking: Booking): CalculationBreakdown {
-    val originalBooking = booking.deepCopy()
     val workingBooking = calculate(booking)
-    return transform(workingBooking, originalBooking)
+    return transform(workingBooking)
   }
 
   @Transactional(readOnly = true)

@@ -3,13 +3,11 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoMatchingReleaseDateFoundException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import java.time.LocalDate
 import java.util.Objects
-import java.util.stream.Stream
 import kotlin.reflect.KProperty1
 
 @Service
@@ -18,7 +16,7 @@ class SentencesExtractionService {
   // show that every sentence in the schedule are overlapping
   // this is n^2 complexity and could be more efficient
   // optimise if performance required
-  fun allOverlap(sentences: List<Sentence>): Boolean {
+  fun allOverlap(sentences: List<ExtractableSentence>): Boolean {
     for (sentence in sentences) {
       for (innerSentence in sentences) {
         if (!doSentencesOverlap(sentence, innerSentence)) {
@@ -30,8 +28,8 @@ class SentencesExtractionService {
   }
 
   fun doSentencesOverlap(
-    sentenceOne: Sentence,
-    sentenceTwo: Sentence
+    sentenceOne: ExtractableSentence,
+    sentenceTwo: ExtractableSentence
   ): Boolean {
     if (sentenceOne.hashCode() != sentenceTwo.hashCode()) {
       log.info(
@@ -47,7 +45,7 @@ class SentencesExtractionService {
   }
 
   fun mostRecentOrNull(
-    sentences: MutableList<Sentence>,
+    sentences: List<ExtractableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>
   ): LocalDate? {
     return sentences
@@ -57,7 +55,7 @@ class SentencesExtractionService {
   }
 
   fun mostRecent(
-    sentences: MutableList<Sentence>,
+    sentences: List<ExtractableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>
   ): LocalDate {
     return sentences
@@ -67,23 +65,15 @@ class SentencesExtractionService {
   }
 
   fun mostRecentSentence(
-    sentences: MutableList<Sentence>,
+    sentences: List<ExtractableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>
-  ): Sentence {
+  ): ExtractableSentence {
     return sentences
       .filter { property.get(it.sentenceCalculation) != null }
       .maxByOrNull { property.get(it.sentenceCalculation)!! }!!
   }
 
-  fun hasNoConsecutiveSentences(sentenceStream: Stream<Sentence>): Boolean {
-    return sentenceStream.allMatch { sentence -> sentence.consecutiveSentences.isEmpty() }
-  }
-
-  fun allSentencesContainType(sentences: MutableList<Sentence>, releaseDateType: ReleaseDateType): Boolean {
-    return sentences.all { it.releaseDateTypes.contains(releaseDateType) }
-  }
-
-  fun getAssociatedReleaseType(sentences: MutableList<Sentence>, latestReleaseDate: LocalDate?): Boolean {
+  fun getAssociatedReleaseType(sentences: List<ExtractableSentence>, latestReleaseDate: LocalDate?): Boolean {
     val matchingReleaseTypes = sentences
       .filter { it.sentenceCalculation.releaseDate?.equals(latestReleaseDate) == true }
       .map { it.sentenceCalculation.isReleaseDateConditional }

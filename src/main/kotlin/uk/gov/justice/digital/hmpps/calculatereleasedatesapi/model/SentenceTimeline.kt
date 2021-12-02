@@ -7,37 +7,40 @@ import java.time.temporal.ChronoUnit
 import kotlin.math.roundToLong
 
 interface SentenceTimeline {
-  val duration: Duration
   val sentencedAt: LocalDate
 
   fun durationIsLessThan(length: Long, period: ChronoUnit): Boolean {
     return (
-      duration.getLengthInDays(this.sentencedAt) <
+      getLengthInDays() <
         ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
       )
   }
 
   fun durationIsGreaterThan(length: Long, period: ChronoUnit): Boolean {
     return (
-      duration.getLengthInDays(this.sentencedAt) >
+      getLengthInDays() >
         ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
       )
   }
 
   fun durationIsGreaterThanOrEqualTo(length: Long, period: ChronoUnit): Boolean {
     return (
-      duration.getLengthInDays(this.sentencedAt) >=
+      getLengthInDays() >=
         ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
       )
   }
+
   @JsonIgnore
   fun getHalfSentenceDate(): LocalDate {
-    val days = (duration.getLengthInDays(this.sentencedAt).toDouble() / 2).roundToLong()
+    val days = (getLengthInDays().toDouble() / 2).roundToLong()
     return this.sentencedAt.plusDays(days)
   }
 
   @JsonIgnore
   fun getDateRange(): LocalDateRange? {
-    return LocalDateRange.of(sentencedAt, duration.getEndDate(sentencedAt))
+    return LocalDateRange.of(sentencedAt, sentencedAt.plusDays(getLengthInDays().toLong()))
   }
+
+  @JsonIgnore
+  fun getLengthInDays(): Int
 }
