@@ -27,14 +27,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentencePart
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DateBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetails
@@ -148,10 +151,10 @@ fun transform(calculationRequest: CalculationRequest): BookingCalculation {
   )
 }
 
-fun transform(booking: Booking, originalBooking: Booking): CalculationBreakdown {
-  val consecutiveSentence = booking.sentences.firstOrNull { it.sentenceParts.isNotEmpty() }
+fun transform(booking: Booking): CalculationBreakdown {
+  val concurrentSentences = booking.sentences.filter { booking.consecutiveSentences.none() { consecutiveSentence -> consecutiveSentence.orderedSentences.contains(it) } }
   return CalculationBreakdown(
-    booking.sentences.filter { it.sentenceParts.isEmpty() }.map { sentence ->
+    concurrentSentences.map { sentence ->
       ConcurrentSentenceBreakdown(
         sentence.sentencedAt,
         sentence.duration.toString(),
@@ -161,31 +164,48 @@ fun transform(booking: Booking, originalBooking: Booking): CalculationBreakdown 
         sentence.caseSequence!!,
       )
     }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence })),
-    if (consecutiveSentence == null) null else
-      ConsecutiveSentenceBreakdown(
-        consecutiveSentence.sentencedAt,
-        consecutiveSentence.duration.toString(),
-        consecutiveSentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
-        extractDates(consecutiveSentence),
-        consecutiveSentence.sentenceParts.map { sentencePart ->
-          val originalSentence = originalBooking.sentences.find { it.identifier == sentencePart.identifier }!!
-          val consecutiveToUUID =
-            if (originalSentence.consecutiveSentenceUUIDs.isNotEmpty()) originalSentence.consecutiveSentenceUUIDs[0]
-            else null
-          val consecutiveToSentence =
-            if (consecutiveToUUID != null) originalBooking.sentences.find { it.identifier == consecutiveToUUID }!!
-            else null
-          ConsecutiveSentencePart(
-            sentencePart.lineSequence!!,
-            sentencePart.caseSequence!!,
-            sentencePart.duration.toString(),
-            sentencePart.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
-            consecutiveToSentence?.lineSequence,
-            consecutiveToSentence?.caseSequence,
-          )
-        }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence }))
-      )
+    if (booking.consecutiveSentences.isNotEmpty()) {
+      if (booking.consecutiveSentences.size == 1) {
+        val consecutiveSentence = booking.consecutiveSentences[0]
+        ConsecutiveSentenceBreakdown(
+          consecutiveSentence.sentencedAt,
+          combineDuration(consecutiveSentence).toString(),
+          consecutiveSentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
+          extractDates(consecutiveSentence),
+          consecutiveSentence.orderedSentences.map { sentencePart ->
+            val originalSentence = booking.sentences.find { it.identifier == sentencePart.identifier }!!
+            val consecutiveToUUID =
+              if (originalSentence.consecutiveSentenceUUIDs.isNotEmpty()) originalSentence.consecutiveSentenceUUIDs[0]
+              else null
+            val consecutiveToSentence =
+              if (consecutiveToUUID != null) booking.sentences.find { it.identifier == consecutiveToUUID }!!
+              else null
+            ConsecutiveSentencePart(
+              sentencePart.lineSequence!!,
+              sentencePart.caseSequence!!,
+              sentencePart.duration.toString(),
+              sentencePart.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
+              consecutiveToSentence?.lineSequence,
+              consecutiveToSentence?.caseSequence,
+            )
+          }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence }))
+        )
+      } else {
+        // Multiple chains of consecutive sentences. This is currently unsupported in calc breakdown.
+        throw UnsupportedCalculationBreakdown("Multiple chains of consecutive sentences are not supported by calculation breakdown")
+      }
+    } else {
+      null
+    }
   )
+}
+
+private fun combineDuration(consecutiveSentence: ConsecutiveSentence): Duration {
+  val duration = Duration()
+  consecutiveSentence.orderedSentences.forEach {
+    duration.appendAll(it.duration.durationElements)
+  }
+  return duration
 }
 
 fun transform(calculation: BookingCalculation, booking: Booking) =
@@ -213,7 +233,7 @@ private fun getSentenceLength(sentenceExpiryDate: LocalDate, booking: Booking): 
   return "${period.years}/${period.months}/${period.days}"
 }
 
-private fun extractDates(sentence: Sentence): Map<ReleaseDateType, DateBreakdown> {
+private fun extractDates(sentence: ExtractableSentence): Map<ReleaseDateType, DateBreakdown> {
   val dates: MutableMap<ReleaseDateType, DateBreakdown> = mutableMapOf()
   val sentenceCalculation = sentence.sentenceCalculation
 

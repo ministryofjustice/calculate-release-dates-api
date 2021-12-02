@@ -13,8 +13,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IdentifiableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
 import java.time.temporal.ChronoUnit
@@ -22,7 +23,41 @@ import java.time.temporal.ChronoUnit
 @Service
 class SentenceIdentificationService {
 
-  fun identify(sentence: Sentence, offender: Offender) {
+  fun identify(sentence: IdentifiableSentence, offender: Offender) {
+    if (sentence is ConsecutiveSentence) {
+      val hasAfterCJA = sentence.orderedSentences.any() { it.identificationTrack === SDS_AFTER_CJA_LASPO }
+      val hasBeforeCJA = sentence.orderedSentences.any() { it.identificationTrack === SDS_BEFORE_CJA_LASPO }
+      if (hasAfterCJA && hasBeforeCJA) {
+        // This consecutive sentence is made up of pre and post laspo date sentences. (Old and new style)
+        val hasScheduleFifteen = sentence.orderedSentences.any() { it.offence.isScheduleFifteen }
+        if (hasScheduleFifteen) {
+          sentence.releaseDateTypes = listOf(
+            NCRD,
+            PED,
+            NPD,
+            SLED
+          )
+        } else {
+          sentence.releaseDateTypes = listOf(
+            SLED,
+            CRD
+          )
+        }
+      } else {
+        identifyConcurrentSentence(sentence, offender)
+      }
+    } else {
+      identifyConcurrentSentence(sentence, offender)
+    }
+
+    if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.WEEKS) &&
+      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS)
+    ) {
+      sentence.releaseDateTypes += HDCED
+    }
+  }
+
+  fun identifyConcurrentSentence(sentence: IdentifiableSentence, offender: Offender) {
     if (
       sentence.sentencedAt.isBefore(LASPO_DATE) &&
       sentence.offence.committedAt.isBefore(CJA_DATE)
@@ -31,14 +66,9 @@ class SentenceIdentificationService {
     } else {
       afterCJAAndLASPO(sentence, offender)
     }
-    if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.WEEKS) &&
-      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS)
-    ) {
-      sentence.releaseDateTypes += HDCED
-    }
   }
 
-  private fun afterCJAAndLASPO(sentence: Sentence, offender: Offender) {
+  private fun afterCJAAndLASPO(sentence: IdentifiableSentence, offender: Offender) {
 
     sentence.identificationTrack = SDS_AFTER_CJA_LASPO
 
@@ -72,27 +102,18 @@ class SentenceIdentificationService {
     }
   }
 
-  private fun beforeCJAAndLASPO(sentence: Sentence) {
+  private fun beforeCJAAndLASPO(sentence: IdentifiableSentence) {
 
     sentence.identificationTrack = SDS_BEFORE_CJA_LASPO
 
     if (sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
       if (sentence.offence.isScheduleFifteen) {
-        if (sentence.sentenceParts.none { it.identificationTrack == SDS_AFTER_CJA_LASPO }) {
-          sentence.releaseDateTypes = listOf(
-            PED,
-            NPD,
-            LED,
-            SED
-          )
-        } else {
-          sentence.releaseDateTypes = listOf(
-            NCRD,
-            PED,
-            NPD,
-            SLED
-          )
-        }
+        sentence.releaseDateTypes = listOf(
+          PED,
+          NPD,
+          LED,
+          SED
+        )
       } else {
         sentence.releaseDateTypes = listOf(
           CRD,
@@ -100,18 +121,11 @@ class SentenceIdentificationService {
         )
       }
     } else if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
-      if (sentence.sentenceParts.none { it.identificationTrack == SDS_AFTER_CJA_LASPO }) {
-        sentence.releaseDateTypes = listOf(
-          LED,
-          CRD,
-          SED
-        )
-      } else {
-        sentence.releaseDateTypes = listOf(
-          SLED,
-          CRD
-        )
-      }
+      sentence.releaseDateTypes = listOf(
+        LED,
+        CRD,
+        SED
+      )
     } else {
       sentence.releaseDateTypes = listOf(
         ARD,
@@ -120,9 +134,9 @@ class SentenceIdentificationService {
     }
   }
 
-  private fun isTopUpSentenceExpiryDateRequired(sentence: Sentence, offender: Offender) {
+  private fun isTopUpSentenceExpiryDateRequired(sentence: IdentifiableSentence, offender: Offender) {
     if (
-      sentence.duration.getLengthInDays(sentence.sentencedAt) <= INT_ONE ||
+      sentence.getLengthInDays() <= INT_ONE ||
       offender.getAgeOnDate(sentence.getHalfSentenceDate()) <= INT_EIGHTEEN
     ) {
       sentence.releaseDateTypes = listOf(SLED, CRD)

@@ -52,20 +52,9 @@ class CalculationServiceTest {
   private val sentenceCalculationService = SentenceCalculationService()
   private val sentencesExtractionService = SentencesExtractionService()
   private val sentenceIdentificationService = SentenceIdentificationService()
-  private val sentenceCombinationService = SentenceCombinationService(
-    sentenceIdentificationService
-  )
-  private val concurrentSentenceCombinationService = ConcurrentSentenceCombinationService(
-    sentenceCombinationService
-  )
-  private val consecutiveSentenceCombinationService = ConsecutiveSentenceCombinationService(
-    sentenceCombinationService
-  )
   private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
-    sentenceIdentificationService,
-    consecutiveSentenceCombinationService,
-    concurrentSentenceCombinationService
+    sentenceIdentificationService
   )
   private val bookingExtractionService = BookingExtractionService(
     sentencesExtractionService
@@ -88,26 +77,6 @@ class CalculationServiceTest {
     )
 
   @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
-  fun `Test Example`(exampleType: String, exampleNumber: String) {
-    log.info("Testing example $exampleType/$exampleNumber")
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
-    SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
-    )
-    val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val bookingCalculation = calculationService.calculate(booking, PRELIMINARY)
-    log.info(
-      "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
-      bookingCalculation
-    )
-    assertEquals(
-      jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber"),
-      bookingCalculation
-    )
-  }
-
-  @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
   fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String) {
     log.info("Testing example $exampleType/$exampleNumber")
@@ -125,6 +94,26 @@ class CalculationServiceTest {
     assertEquals(
       jsonTransformation.loadCalculationBreakdown("$exampleType/$exampleNumber"),
       calculationBreakdown
+    )
+  }
+
+  @ParameterizedTest
+  @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
+  fun `Test Example`(exampleType: String, exampleNumber: String) {
+    log.info("Testing example $exampleType/$exampleNumber")
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
+    SecurityContextHolder.setContext(
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+    )
+    val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
+    val bookingCalculation = calculationService.calculate(booking, PRELIMINARY)
+    log.info(
+      "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
+      bookingCalculation
+    )
+    assertEquals(
+      jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber"),
+      bookingCalculation
     )
   }
 
@@ -336,8 +325,8 @@ class CalculationServiceTest {
           ":\"1980-01-01\" }, \"sentences\":[{\"caseSequence\":1,\"lineSequence\":2,\"offence\":{\"committedAt\":\"2021-02-03\",\"" +
           "isScheduleFifteen\":false},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"" +
           "MONTHS\":0,\"YEARS\":5}},\"sentencedAt\":\"2021-02-03\"," +
-          "\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\",\"consecutiveSentenceUUIDs\":[]," +
-          "\"sentenceParts\":[]}], \"adjustments\":{}, \"bookingId\":12345 }"
+          "\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\",\"consecutiveSentenceUUIDs\":[]" +
+          "}], \"adjustments\":{}, \"bookingId\":12345 }"
       )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
