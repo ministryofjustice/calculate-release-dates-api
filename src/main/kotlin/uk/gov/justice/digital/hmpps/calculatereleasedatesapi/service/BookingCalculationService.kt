@@ -3,10 +3,12 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -72,7 +74,18 @@ class BookingCalculationService(
     }
   }
 
-  fun createCombinedSentences(booking: Booking): Booking {
+  fun createSingleTermSentences(booking: Booking): Booking {
+    if (booking.sentences.size > 1 &&
+      booking.sentences.all { it.identificationTrack == SDS_BEFORE_CJA_LASPO && it.consecutiveSentenceUUIDs.isEmpty() }) {
+      booking.singleTermSentence = SingleTermSentence(booking.sentences)
+      sentenceIdentificationService.identify(booking.singleTermSentence!!, booking.offender)
+      sentenceCalculationService.calculate(booking.singleTermSentence!!, booking)
+      log.info(booking.singleTermSentence!!.buildString())
+    }
+    return booking
+  }
+
+  fun createConsecutiveSentences(booking: Booking): Booking {
     val sentencesConsecutiveTo = booking.sentences.filter { it.consecutiveSentenceUUIDs.isNotEmpty() }
 
     val sentenceChains: MutableList<MutableList<Sentence>> = mutableListOf()

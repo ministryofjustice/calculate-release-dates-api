@@ -16,7 +16,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.temporal.ChronoUnit

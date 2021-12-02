@@ -66,10 +66,13 @@ class CalculationService(
       bookingCalculationService
         .calculate(workingBooking)
 
-    // combine sentences
     workingBooking =
       bookingCalculationService
-        .createCombinedSentences(workingBooking)
+        .createConsecutiveSentences(workingBooking)
+
+    workingBooking =
+      bookingCalculationService
+        .createSingleTermSentences(workingBooking)
 
     // This is to cater for the situation where a sentence is imposed whilst additional days are being served on the
     // previous sentence e.g. when the sentenceDate is during the ADA's period of the previous sentence
