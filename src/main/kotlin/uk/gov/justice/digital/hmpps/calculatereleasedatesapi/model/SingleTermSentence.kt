@@ -1,13 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-
 
 class SingleTermSentence(
   override val sentencedAt: LocalDate,
@@ -15,9 +12,11 @@ class SingleTermSentence(
   val sentences: List<Sentence>
 ) : IdentifiableSentence, CalculableSentence, ExtractableSentence {
   constructor(sentences: List<Sentence>) :
-    this(sentences.minOf(Sentence::sentencedAt),
+    this(
+      sentences.minOf(Sentence::sentencedAt),
       sentences.map(Sentence::offence).minByOrNull(Offence::committedAt)!!,
-      sentences)
+      sentences
+    )
   @JsonIgnore
   override lateinit var sentenceCalculation: SentenceCalculation
   @JsonIgnore

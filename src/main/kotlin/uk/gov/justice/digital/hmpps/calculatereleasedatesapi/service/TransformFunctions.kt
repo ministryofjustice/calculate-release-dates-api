@@ -30,9 +30,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentencePart
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DateBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
@@ -149,9 +146,9 @@ fun transform(calculationRequest: CalculationRequest): BookingCalculation {
 }
 
 fun transform(booking: Booking): CalculationBreakdown {
-  return CalculationBreakdown(listOf(), null);
+  return CalculationBreakdown(listOf(), null)
 }
-//fun transform(booking: Booking): CalculationBreakdown {
+// fun transform(booking: Booking): CalculationBreakdown {
 //  val consecutiveSentence = booking.sentences.firstOrNull { it.sentenceParts.isNotEmpty() }
 //  return CalculationBreakdown(
 //    booking.sentences.filter { it.sentenceParts.isEmpty() }.map { sentence ->
@@ -189,7 +186,7 @@ fun transform(booking: Booking): CalculationBreakdown {
 //        }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence }))
 //      )
 //  )
-//}
+// }
 
 fun transform(calculation: BookingCalculation, booking: Booking) =
   OffenderKeyDates(

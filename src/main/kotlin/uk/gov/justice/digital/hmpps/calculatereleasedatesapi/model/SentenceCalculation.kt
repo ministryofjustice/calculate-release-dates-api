@@ -68,5 +68,4 @@ data class SentenceCalculation(
       "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +
       "${topUpSupervisionDate?.format(formatter)}\n"
   }
-
 }

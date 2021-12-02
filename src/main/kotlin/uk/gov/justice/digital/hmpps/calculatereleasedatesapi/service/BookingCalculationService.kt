@@ -76,7 +76,8 @@ class BookingCalculationService(
 
   fun createSingleTermSentences(booking: Booking): Booking {
     if (booking.sentences.size > 1 &&
-      booking.sentences.all { it.identificationTrack == SDS_BEFORE_CJA_LASPO && it.consecutiveSentenceUUIDs.isEmpty() }) {
+      booking.sentences.all { it.identificationTrack == SDS_BEFORE_CJA_LASPO && it.consecutiveSentenceUUIDs.isEmpty() }
+    ) {
       booking.singleTermSentence = SingleTermSentence(booking.sentences)
       sentenceIdentificationService.identify(booking.singleTermSentence!!, booking.offender)
       sentenceCalculationService.calculate(booking.singleTermSentence!!, booking)
@@ -90,7 +91,7 @@ class BookingCalculationService(
 
     val sentenceChains: MutableList<MutableList<Sentence>> = mutableListOf()
 
-    sentencesConsecutiveTo.forEach{consecutive ->
+    sentencesConsecutiveTo.forEach { consecutive ->
       val first = booking.sentences.find { it.identifier == consecutive.consecutiveSentenceUUIDs[0] }!!
 
       val existingChain: MutableList<Sentence>? = sentenceChains.find { it.contains(first) }

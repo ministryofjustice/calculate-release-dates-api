@@ -28,7 +28,7 @@ class SentenceIdentificationService {
       val hasAfterCJA = sentence.orderedSentences.any() { it.identificationTrack === SDS_AFTER_CJA_LASPO }
       val hasBeforeCJA = sentence.orderedSentences.any() { it.identificationTrack === SDS_BEFORE_CJA_LASPO }
       if (hasAfterCJA && hasBeforeCJA) {
-        //This consecutive sentence is made up of pre and post laspo date sentences. (Old and new style)
+        // This consecutive sentence is made up of pre and post laspo date sentences. (Old and new style)
         val hasScheduleFifteen = sentence.orderedSentences.any() { it.offence.isScheduleFifteen }
         if (hasScheduleFifteen) {
           sentence.releaseDateTypes = listOf(

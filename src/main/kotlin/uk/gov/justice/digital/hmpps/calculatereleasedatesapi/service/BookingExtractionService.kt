@@ -16,8 +16,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CantExtr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import java.time.LocalDate
 
@@ -100,7 +98,7 @@ class BookingExtractionService(
         mostRecentSentenceByReleaseDate.sentenceCalculation.homeDetentionCurfewExpiryDateDate
 
       val effectiveTopUpSupervisionDate = if (latestLicenseExpiryDate != null) {
-         extractManyTopUpSuperVisionDate(booking, latestLicenseExpiryDate)
+        extractManyTopUpSuperVisionDate(booking, latestLicenseExpiryDate)
       } else {
         null
       }
@@ -190,10 +188,10 @@ class BookingExtractionService(
     )
     if (
       (latestLicenseExpiryDate != null) &&
-        !(
-          latestLicenseExpiryDate.isEqual(latestReleaseDate) ||
-            latestLicenseExpiryDate.isEqual(latestExpiryDate)
-          )
+      !(
+        latestLicenseExpiryDate.isEqual(latestReleaseDate) ||
+          latestLicenseExpiryDate.isEqual(latestExpiryDate)
+        )
 
     ) {
       // PSI Example 16 Release is therefore on license which means the release date is a CRD

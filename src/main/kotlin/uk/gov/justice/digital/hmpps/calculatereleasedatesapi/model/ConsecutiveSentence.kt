@@ -1,13 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-
 
 class ConsecutiveSentence(
   override val sentencedAt: LocalDate,
@@ -15,9 +12,11 @@ class ConsecutiveSentence(
   val orderedSentences: List<Sentence>
 ) : IdentifiableSentence, CalculableSentence, ExtractableSentence {
   constructor(orderedSentences: List<Sentence>) :
-    this(orderedSentences.minOf(Sentence::sentencedAt),
+    this(
+      orderedSentences.minOf(Sentence::sentencedAt),
       orderedSentences.map(Sentence::offence).minByOrNull(Offence::committedAt)!!,
-      orderedSentences)
+      orderedSentences
+    )
   @JsonIgnore
   override lateinit var sentenceCalculation: SentenceCalculation
   @JsonIgnore
@@ -40,6 +39,5 @@ class ConsecutiveSentence(
       date = date.plusDays(it.duration.getLengthInDays(date).toLong())
     }
     return (ChronoUnit.DAYS.between(sentencedAt, date)).toInt()
-
   }
 }
