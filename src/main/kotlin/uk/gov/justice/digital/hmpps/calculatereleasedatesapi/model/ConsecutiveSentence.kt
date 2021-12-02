@@ -27,13 +27,11 @@ class ConsecutiveSentence(
   override lateinit var releaseDateTypes: List<ReleaseDateType>
 
   fun buildString(): String {
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    return """
-      Consecutive sentence made up of: ${orderedSentences.size} sentences
-      Earliest sentence date of: ${sentencedAt.format(formatter)}
-      Earliest offence date of: ${offence.committedAt.format(formatter)}
-      Days: ${getLengthInDays()}
-    """.trimIndent()
+    return "ConsecutiveSentence\t:\t\n" +
+      "Number of sentences\t:\t${orderedSentences.size}\n" +
+      "Sentence Types\t:\t$releaseDateTypes\n" +
+      "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
+      sentenceCalculation.buildString(releaseDateTypes)
   }
 
   override fun getLengthInDays(): Int {

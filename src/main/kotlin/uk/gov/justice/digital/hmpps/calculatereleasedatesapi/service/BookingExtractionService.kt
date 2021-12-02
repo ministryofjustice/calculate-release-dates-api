@@ -90,7 +90,7 @@ class BookingExtractionService(
         booking.getAllExtractableSentences(), SentenceCalculation::expiryDate
       )
 
-      val latestLicenseExpiryDate: LocalDate = extractionService.mostRecent(
+      val latestLicenseExpiryDate: LocalDate? = extractionService.mostRecentOrNull(
         booking.getAllExtractableSentences(), SentenceCalculation::licenceExpiryDate
       )
 
@@ -99,7 +99,11 @@ class BookingExtractionService(
       val latestHomeDetentionCurfewExpiryDateDate: LocalDate? =
         mostRecentSentenceByReleaseDate.sentenceCalculation.homeDetentionCurfewExpiryDateDate
 
-      val effectiveTopUpSupervisionDate = extractManyTopUpSuperVisionDate(booking, latestLicenseExpiryDate)
+      val effectiveTopUpSupervisionDate = if (latestLicenseExpiryDate != null) {
+         extractManyTopUpSuperVisionDate(booking, latestLicenseExpiryDate)
+      } else {
+        null
+      }
 
       val isReleaseDateConditional = extractManyIsReleaseConditional(
         booking, latestReleaseDate, latestExpiryDate, latestLicenseExpiryDate
@@ -114,7 +118,9 @@ class BookingExtractionService(
         bookingCalculation.dates[SLED] = latestExpiryDate
       } else {
         bookingCalculation.dates[SED] = latestExpiryDate
-        bookingCalculation.dates[LED] = latestLicenseExpiryDate
+        if (latestLicenseExpiryDate != null) {
+          bookingCalculation.dates[LED] = latestLicenseExpiryDate
+        }
       }
 
       if (isReleaseDateConditional) {
@@ -182,13 +188,13 @@ class BookingExtractionService(
     var isReleaseDateConditional = extractionService.getAssociatedReleaseType(
       booking.getAllExtractableSentences(), latestReleaseDate
     )
-    if (!(
+    if (
       (latestLicenseExpiryDate != null) &&
-        (
+        !(
           latestLicenseExpiryDate.isEqual(latestReleaseDate) ||
             latestLicenseExpiryDate.isEqual(latestExpiryDate)
           )
-      )
+
     ) {
       // PSI Example 16 Release is therefore on license which means the release date is a CRD
       isReleaseDateConditional = true

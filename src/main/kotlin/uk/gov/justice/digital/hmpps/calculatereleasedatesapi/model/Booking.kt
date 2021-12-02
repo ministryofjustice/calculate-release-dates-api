@@ -23,8 +23,12 @@ data class Booking(
 
   @JsonIgnore
   fun getAllExtractableSentences(): List<ExtractableSentence> {
-    val extractableSentences: MutableList<ExtractableSentence> = sentences.toMutableList()
-    extractableSentences.addAll(consecutiveSentences)
+    val extractableSentences: MutableList<ExtractableSentence> = consecutiveSentences.toMutableList()
+    sentences.forEach {
+      if (consecutiveSentences.none { consecutive -> consecutive.orderedSentences.contains(it) }) {
+        extractableSentences.add(it)
+      }
+    }
     return extractableSentences.toList()
   }
 }
