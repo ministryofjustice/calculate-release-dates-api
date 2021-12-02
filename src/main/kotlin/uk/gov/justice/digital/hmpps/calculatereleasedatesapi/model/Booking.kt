@@ -5,8 +5,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 
 data class Booking(
   var offender: Offender,
-  var sentences: List<Sentence>,
-  var adjustments: Map<AdjustmentType, Int> = mapOf(),
+  val sentences: List<Sentence>,
+  val adjustments: Map<AdjustmentType, Int> = mapOf(),
   val bookingId: Long = -1L,
 ) {
   @JsonIgnore

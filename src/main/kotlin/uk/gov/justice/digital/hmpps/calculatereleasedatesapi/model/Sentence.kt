@@ -28,11 +28,6 @@ data class Sentence(
   @Transient
   override lateinit var releaseDateTypes: List<ReleaseDateType>
 
-  @JsonIgnore
-  fun isSentenceCalculated(): Boolean {
-    return this::sentenceCalculation.isInitialized
-  }
-
   fun buildString(): String {
     return "Sentence\t:\t\n" +
       "Duration\t:\t$duration\n" +
