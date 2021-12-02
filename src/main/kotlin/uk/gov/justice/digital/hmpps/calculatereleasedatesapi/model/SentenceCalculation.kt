@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import java.time.LocalDate
 
 data class SentenceCalculation(
-  var sentence: Sentence, // values here are used to store working values
+  var sentence: CalculableSentence, // values here are used to store working values
   var numberOfDaysToSentenceExpiryDate: Int,
   val numberOfDaysToReleaseDate: Int,
   val unadjustedExpiryDate: LocalDate,

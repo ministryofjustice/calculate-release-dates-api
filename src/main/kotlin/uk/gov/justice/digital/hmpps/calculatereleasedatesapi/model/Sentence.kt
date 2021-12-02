@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
@@ -9,38 +10,35 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.UUID
+import kotlin.math.roundToLong
 
 data class Sentence(
-  val offence: Offence,
-  override val duration: Duration,
+  override val offence: Offence,
+  val duration: Duration,
   override val sentencedAt: LocalDate,
   val identifier: UUID = UUID.randomUUID(),
   // Sentence UUIDS that this sentence is consecutive to.
   val consecutiveSentenceUUIDs: List<UUID> = listOf(),
   val caseSequence: Int? = null,
   val lineSequence: Int? = null
-) : SentenceTimeline {
+) : IdentifiableSentence, CalculableSentence, ExtractableSentence {
   @JsonIgnore
-  lateinit var sentenceCalculation: SentenceCalculation
+  @Transient
+  override lateinit var sentenceCalculation: SentenceCalculation
 
   @JsonIgnore
-  lateinit var identificationTrack: SentenceIdentificationTrack
+  @Transient
+  override lateinit var identificationTrack: SentenceIdentificationTrack
 
   @JsonIgnore
-  lateinit var releaseDateTypes: List<ReleaseDateType>
+  @Transient
+  override lateinit var releaseDateTypes: List<ReleaseDateType>
 
   @JsonIgnore
   fun isSentenceCalculated(): Boolean {
     return this::sentenceCalculation.isInitialized
-  }
-
-  @JsonIgnore
-  fun getReleaseDateType(): ReleaseDateType {
-    return if (releaseDateTypes.contains(PED))
-      PED else if (sentenceCalculation.isReleaseDateConditional)
-      CRD else
-      ARD
   }
 
   fun buildString(): String {
@@ -76,5 +74,9 @@ data class Sentence(
       "Effective $releaseDateType\t:\t${sentenceCalculation.releaseDate?.format(formatter)}\n" +
       "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +
       "${sentenceCalculation.topUpSupervisionDate?.format(formatter)}\n"
+  }
+
+  override fun getLengthInDays(): Int {
+    return duration.getLengthInDays(this.sentencedAt)
   }
 }

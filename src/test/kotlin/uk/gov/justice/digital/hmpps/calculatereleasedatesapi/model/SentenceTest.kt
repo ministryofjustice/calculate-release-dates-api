@@ -18,7 +18,6 @@ internal class SentenceTest {
       offence, duration, sentencedAt, UUID.fromString(uuidString),
       caseSequence = 1,
       lineSequence = 2,
-      sentenceParts = listOf()
     )
 
     assertEquals(duration, sentence.duration)
@@ -31,24 +30,5 @@ internal class SentenceTest {
         " caseSequence=1, lineSequence=2, sentenceParts=[])",
       sentence.toString()
     )
-  }
-
-  @Test
-  fun testSentenceConsecutiveSentences() {
-    val sentencedAt = LocalDate.of(2020, 1, 1)
-    val duration = Duration()
-    duration.append(1L, ChronoUnit.DAYS)
-    val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = Sentence(
-      offence, duration, sentencedAt, UUID.randomUUID(),
-      mutableListOf(UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5"))
-    )
-    val secondSentence = Sentence(
-      offence, duration, sentencedAt,
-      UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5")
-    )
-
-    sentence.associateSentences(mutableListOf(sentence, secondSentence))
-    assertEquals(sentence.consecutiveSentences[0], secondSentence)
   }
 }

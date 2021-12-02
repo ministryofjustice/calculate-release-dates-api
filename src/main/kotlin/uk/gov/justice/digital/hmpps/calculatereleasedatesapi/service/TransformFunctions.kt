@@ -148,45 +148,48 @@ fun transform(calculationRequest: CalculationRequest): BookingCalculation {
   )
 }
 
-fun transform(booking: Booking, originalBooking: Booking): CalculationBreakdown {
-  val consecutiveSentence = booking.sentences.firstOrNull { it.sentenceParts.isNotEmpty() }
-  return CalculationBreakdown(
-    booking.sentences.filter { it.sentenceParts.isEmpty() }.map { sentence ->
-      ConcurrentSentenceBreakdown(
-        sentence.sentencedAt,
-        sentence.duration.toString(),
-        sentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
-        extractDates(sentence),
-        sentence.lineSequence!!,
-        sentence.caseSequence!!,
-      )
-    }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence })),
-    if (consecutiveSentence == null) null else
-      ConsecutiveSentenceBreakdown(
-        consecutiveSentence.sentencedAt,
-        consecutiveSentence.duration.toString(),
-        consecutiveSentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
-        extractDates(consecutiveSentence),
-        consecutiveSentence.sentenceParts.map { sentencePart ->
-          val originalSentence = originalBooking.sentences.find { it.identifier == sentencePart.identifier }!!
-          val consecutiveToUUID =
-            if (originalSentence.consecutiveSentenceUUIDs.isNotEmpty()) originalSentence.consecutiveSentenceUUIDs[0]
-            else null
-          val consecutiveToSentence =
-            if (consecutiveToUUID != null) originalBooking.sentences.find { it.identifier == consecutiveToUUID }!!
-            else null
-          ConsecutiveSentencePart(
-            sentencePart.lineSequence!!,
-            sentencePart.caseSequence!!,
-            sentencePart.duration.toString(),
-            sentencePart.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
-            consecutiveToSentence?.lineSequence,
-            consecutiveToSentence?.caseSequence,
-          )
-        }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence }))
-      )
-  )
+fun transform(booking: Booking): CalculationBreakdown {
+  return CalculationBreakdown(listOf(), null);
 }
+//fun transform(booking: Booking): CalculationBreakdown {
+//  val consecutiveSentence = booking.sentences.firstOrNull { it.sentenceParts.isNotEmpty() }
+//  return CalculationBreakdown(
+//    booking.sentences.filter { it.sentenceParts.isEmpty() }.map { sentence ->
+//      ConcurrentSentenceBreakdown(
+//        sentence.sentencedAt,
+//        sentence.duration.toString(),
+//        sentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
+//        extractDates(sentence),
+//        sentence.lineSequence!!,
+//        sentence.caseSequence!!,
+//      )
+//    }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence })),
+//    if (consecutiveSentence == null) null else
+//      ConsecutiveSentenceBreakdown(
+//        consecutiveSentence.sentencedAt,
+//        consecutiveSentence.duration.toString(),
+//        consecutiveSentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
+//        extractDates(consecutiveSentence),
+//        consecutiveSentence.sentenceParts.map { sentencePart ->
+//          val originalSentence = originalBooking.sentences.find { it.identifier == sentencePart.identifier }!!
+//          val consecutiveToUUID =
+//            if (originalSentence.consecutiveSentenceUUIDs.isNotEmpty()) originalSentence.consecutiveSentenceUUIDs[0]
+//            else null
+//          val consecutiveToSentence =
+//            if (consecutiveToUUID != null) originalBooking.sentences.find { it.identifier == consecutiveToUUID }!!
+//            else null
+//          ConsecutiveSentencePart(
+//            sentencePart.lineSequence!!,
+//            sentencePart.caseSequence!!,
+//            sentencePart.duration.toString(),
+//            sentencePart.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
+//            consecutiveToSentence?.lineSequence,
+//            consecutiveToSentence?.caseSequence,
+//          )
+//        }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence }))
+//      )
+//  )
+//}
 
 fun transform(calculation: BookingCalculation, booking: Booking) =
   OffenderKeyDates(

@@ -111,6 +111,13 @@ class SentenceCombinationService(val sentenceIdentificationService: SentenceIden
     return offence
   }
 
+  fun earliestSentencedAt(firstSentence: Sentence, secondSentence: Sentence): LocalDate {
+    return if (firstSentence.sentencedAt.isBefore(secondSentence.sentencedAt)) {
+      firstSentence.sentencedAt
+    } else {
+      secondSentence.sentencedAt
+    }
+  }
   fun combinedDuration(firstSentence: Sentence, secondSentence: Sentence): Duration {
     return Duration()
       .appendAll(firstSentence.duration.durationElements)

@@ -20,7 +20,7 @@ class ConcurrentSentenceCombinationService(
       it.identificationTrack == SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
     }.filter {
       it.consecutiveSentences.isEmpty()
-    }
+    }S
 
     if (
       concurrentSentences.isNotEmpty() &&

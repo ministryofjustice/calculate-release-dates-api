@@ -16,6 +16,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CantExtr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import java.time.LocalDate
 
@@ -27,7 +29,7 @@ class BookingExtractionService(
   fun extract(
     booking: Booking
   ): BookingCalculation {
-    return when (booking.sentences.size) {
+    return when (booking.getAllExtractableSentences().size) {
       0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
       1 -> extractSingle(booking)
       else -> {
@@ -38,7 +40,7 @@ class BookingExtractionService(
 
   private fun extractSingle(booking: Booking): BookingCalculation {
     val bookingCalculation = BookingCalculation()
-    val sentence = booking.sentences[0]
+    val sentence = booking.getAllExtractableSentences()[0]
     val sentenceCalculation = sentence.sentenceCalculation
 
     if (sentence.releaseDateTypes.contains(SLED)) {
@@ -76,20 +78,20 @@ class BookingExtractionService(
 
   private fun extractMultiple(booking: Booking): BookingCalculation {
     if (
-      extractionService.allOverlap(booking.sentences)
+      extractionService.allOverlap(booking.getAllExtractableSentences())
     ) {
 
       val mostRecentSentenceByReleaseDate = extractionService.mostRecentSentence(
-        booking.sentences, SentenceCalculation::releaseDate
+        booking.getAllExtractableSentences(), SentenceCalculation::releaseDate
       )
       val latestReleaseDate: LocalDate = mostRecentSentenceByReleaseDate.sentenceCalculation.releaseDate!!
 
       val latestExpiryDate: LocalDate = extractionService.mostRecent(
-        booking.sentences, SentenceCalculation::expiryDate
+        booking.getAllExtractableSentences(), SentenceCalculation::expiryDate
       )
 
       val latestLicenseExpiryDate: LocalDate = extractionService.mostRecent(
-        booking.sentences, SentenceCalculation::licenceExpiryDate
+        booking.getAllExtractableSentences(), SentenceCalculation::licenceExpiryDate
       )
 
       val latestNonParoleDate: LocalDate? = extractManyNonParoleDate(booking, latestReleaseDate)
@@ -104,7 +106,7 @@ class BookingExtractionService(
       )
 
       val latestNotionalConditionalReleaseDate: LocalDate? = extractionService.mostRecentOrNull(
-        booking.sentences, SentenceCalculation::notionalConditionalReleaseDate
+        booking.getAllExtractableSentences(), SentenceCalculation::notionalConditionalReleaseDate
       )
 
       val bookingCalculation = BookingCalculation()
@@ -146,7 +148,7 @@ class BookingExtractionService(
   private fun extractManyNonParoleDate(booking: Booking, latestReleaseDate: LocalDate): LocalDate? {
 
     val mostRecentNonParoleDate = extractionService.mostRecentOrNull(
-      booking.sentences, SentenceCalculation::nonParoleDate
+      booking.getAllExtractableSentences(), SentenceCalculation::nonParoleDate
     )
     return if (mostRecentNonParoleDate != null &&
       mostRecentNonParoleDate.isAfter(latestReleaseDate)
@@ -159,7 +161,7 @@ class BookingExtractionService(
 
   private fun extractManyTopUpSuperVisionDate(booking: Booking, latestLicenseExpiryDate: LocalDate): LocalDate? {
     val latestTopUpSupervisionDate: LocalDate? = extractionService.mostRecentOrNull(
-      booking.sentences, SentenceCalculation::topUpSupervisionDate
+      booking.getAllExtractableSentences(), SentenceCalculation::topUpSupervisionDate
     )
 
     return if (latestTopUpSupervisionDate != null &&
@@ -178,7 +180,7 @@ class BookingExtractionService(
     latestLicenseExpiryDate: LocalDate?
   ): Boolean {
     var isReleaseDateConditional = extractionService.getAssociatedReleaseType(
-      booking.sentences, latestReleaseDate
+      booking.getAllExtractableSentences(), latestReleaseDate
     )
     if (!(
       (latestLicenseExpiryDate != null) &&

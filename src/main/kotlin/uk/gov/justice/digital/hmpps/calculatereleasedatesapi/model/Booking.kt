@@ -10,6 +10,7 @@ data class Booking(
   val bookingId: Long = -1L,
 ) {
   @JsonIgnore
+  @Transient
   lateinit var consecutiveSentences: List<ConsecutiveSentence>
 
   fun getOrZero(adjustmentType: AdjustmentType): Int {
@@ -18,5 +19,12 @@ data class Booking(
     } else {
       0
     }
+  }
+
+  @JsonIgnore
+  fun getAllExtractableSentences(): List<ExtractableSentence> {
+    val extractableSentences: MutableList<ExtractableSentence> = sentences.toMutableList()
+    extractableSentences.addAll(consecutiveSentences)
+    return extractableSentences.toList()
   }
 }

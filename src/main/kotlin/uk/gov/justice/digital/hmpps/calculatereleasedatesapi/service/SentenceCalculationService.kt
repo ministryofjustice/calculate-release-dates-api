@@ -14,6 +14,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
@@ -24,7 +26,7 @@ import kotlin.math.max
 @Service
 class SentenceCalculationService {
 
-  fun calculate(sentence: Sentence, booking: Booking): SentenceCalculation {
+  fun calculate(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
 
     val sentenceCalculation = getInitialCalculation(sentence, booking)
     // Other adjustments need to be included in the sentence calculation here
@@ -104,46 +106,48 @@ class SentenceCalculationService {
 
   // If a sentence needs to calculate an NPD but it is an aggregated sentence made up of "old" and "new" type sentences
   // The NPD calc becomes much more complicated, see PSI example 40.
-  private fun calculateNPDFromNotionalCRD(sentence: Sentence, sentenceCalculation: SentenceCalculation) {
-    val daysOfNewStyleSentences = sentence.sentenceParts
-      .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
-      .map { it.duration }
-      .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
-      .getLengthInDays(sentence.sentencedAt)
+  private fun calculateNPDFromNotionalCRD(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
+    if (sentence is ConsecutiveSentence) {
+      val daysOfNewStyleSentences = sentence.orderedSentences
+        .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
+        .map { it.duration }
+        .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
+        .getLengthInDays(sentence.sentencedAt)
 
-    val daysOfOldStyleSentences = sentence.sentenceParts
-      .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO }
-      .map { it.duration }
-      .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
-      .getLengthInDays(sentence.sentencedAt)
+      val daysOfOldStyleSentences = sentence.orderedSentences
+        .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO }
+        .map { it.duration }
+        .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
+        .getLengthInDays(sentence.sentencedAt)
 
-    sentenceCalculation.numberOfDaysToNotionalConditionalReleaseDate =
-      ceil(daysOfNewStyleSentences.toDouble().div(TWO)).toLong()
+      sentenceCalculation.numberOfDaysToNotionalConditionalReleaseDate =
+        ceil(daysOfNewStyleSentences.toDouble().div(TWO)).toLong()
 
-    val unAdjustedNotionalConditionalReleaseDate = sentence.sentencedAt
-      .plusDays(sentenceCalculation.numberOfDaysToNotionalConditionalReleaseDate)
-      .minusDays(ONE)
+      val unAdjustedNotionalConditionalReleaseDate = sentence.sentencedAt
+        .plusDays(sentenceCalculation.numberOfDaysToNotionalConditionalReleaseDate)
+        .minusDays(ONE)
 
-    sentenceCalculation.notionalConditionalReleaseDate = unAdjustedNotionalConditionalReleaseDate.minusDays(
-      sentenceCalculation.calculatedTotalDeductedDays.toLong()
-    ).plusDays(
-      sentenceCalculation.calculatedTotalAddedDays.toLong()
-    ).plusDays(
-      sentenceCalculation.calculatedTotalAwardedDays.toLong()
-    )
+      sentenceCalculation.notionalConditionalReleaseDate = unAdjustedNotionalConditionalReleaseDate.minusDays(
+        sentenceCalculation.calculatedTotalDeductedDays.toLong()
+      ).plusDays(
+        sentenceCalculation.calculatedTotalAddedDays.toLong()
+      ).plusDays(
+        sentenceCalculation.calculatedTotalAwardedDays.toLong()
+      )
 
-    val dayAfterNotionalConditionalReleaseDate = sentenceCalculation.notionalConditionalReleaseDate!!.plusDays(ONE)
-    sentenceCalculation.numberOfDaysToNonParoleDate =
-      ceil(daysOfOldStyleSentences.toDouble().times(TWO).div(THREE)).toLong()
-    sentenceCalculation.nonParoleDate = dayAfterNotionalConditionalReleaseDate
-      .plusDays(sentenceCalculation.numberOfDaysToNonParoleDate)
-      .minusDays(ONE)
+      val dayAfterNotionalConditionalReleaseDate = sentenceCalculation.notionalConditionalReleaseDate!!.plusDays(ONE)
+      sentenceCalculation.numberOfDaysToNonParoleDate =
+        ceil(daysOfOldStyleSentences.toDouble().times(TWO).div(THREE)).toLong()
+      sentenceCalculation.nonParoleDate = dayAfterNotionalConditionalReleaseDate
+        .plusDays(sentenceCalculation.numberOfDaysToNonParoleDate)
+        .minusDays(ONE)
+    }
   }
 
-  private fun getInitialCalculation(sentence: Sentence, booking: Booking): SentenceCalculation {
+  private fun getInitialCalculation(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
 
     // create the intermediate values
-    val numberOfDaysToSentenceExpiryDate = sentence.duration.getLengthInDays(sentence.sentencedAt)
+    val numberOfDaysToSentenceExpiryDate = sentence.getLengthInDays()
 
     val numberOfDaysToReleaseDate =
       ceil(numberOfDaysToSentenceExpiryDate.toDouble().div(TWO)).toInt()
@@ -211,7 +215,7 @@ class SentenceCalculationService {
     )
   }
 
-  private fun calculateHDCED(sentence: Sentence, sentenceCalculation: SentenceCalculation) {
+  private fun calculateHDCED(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
     if (sentence.durationIsLessThan(EIGHTEEN, ChronoUnit.MONTHS)) {
       sentenceCalculation.numberOfDaysToHomeDetentionCurfewExpiryDate =
         max(TWENTY_EIGHT, ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().div(FOUR)).toLong())
