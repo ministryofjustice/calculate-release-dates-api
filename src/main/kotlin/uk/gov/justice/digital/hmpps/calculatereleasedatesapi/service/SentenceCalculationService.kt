@@ -16,10 +16,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.max
 
 @Service
@@ -84,14 +86,29 @@ class SentenceCalculationService {
     }
 
     if (sentence.releaseDateTypes.contains(LED)) {
-      sentenceCalculation.numberOfDaysToLicenceExpiryDate =
-        ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(THREE).div(FOUR)).toLong()
-          .plus(sentenceCalculation.numberOfDaysToAddToLicenceExpiryDate)
-          .plus(sentenceCalculation.calculatedTotalAddedDays)
-          .minus(sentenceCalculation.calculatedTotalDeductedDays)
-      sentenceCalculation.licenceExpiryDate = sentence.sentencedAt.plusDays(
-        sentenceCalculation.numberOfDaysToLicenceExpiryDate
-      ).minusDays(ONE)
+      // PSI example 25
+      if (sentence is ConsecutiveSentence &&
+        sentence.isMadeUpOfOnlyAfterCjaLaspoSentences() &&
+        sentence.hasOraSentences() &&
+        sentence.hasNonOraSentences()
+      ) {
+        val lengthOfOraSentences = sentence.orderedSentences.filter(Sentence::isOraSentence)
+          .map { it.duration.copy() }
+          .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
+          .getLengthInDays(sentence.sentencedAt)
+
+        sentenceCalculation.licenceExpiryDate = sentenceCalculation.releaseDate!!.plusDays(floor(lengthOfOraSentences.toDouble().div(TWO)).toLong())
+        sentenceCalculation.numberOfDaysToLicenceExpiryDate = ChronoUnit.DAYS.between(sentence.sentencedAt, sentenceCalculation.licenceExpiryDate)
+      } else {
+        sentenceCalculation.numberOfDaysToLicenceExpiryDate =
+          ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(THREE).div(FOUR)).toLong()
+            .plus(sentenceCalculation.numberOfDaysToAddToLicenceExpiryDate)
+            .plus(sentenceCalculation.calculatedTotalAddedDays)
+            .minus(sentenceCalculation.calculatedTotalDeductedDays)
+        sentenceCalculation.licenceExpiryDate = sentence.sentencedAt.plusDays(
+          sentenceCalculation.numberOfDaysToLicenceExpiryDate
+        ).minusDays(ONE)
+      }
     }
 
     if (sentence.releaseDateTypes.contains(HDCED)) {
@@ -109,13 +126,13 @@ class SentenceCalculationService {
     if (sentence is ConsecutiveSentence) {
       val daysOfNewStyleSentences = sentence.orderedSentences
         .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
-        .map { it.duration }
+        .map { it.duration.copy() }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         .getLengthInDays(sentence.sentencedAt)
 
       val daysOfOldStyleSentences = sentence.orderedSentences
         .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO }
-        .map { it.duration }
+        .map { it.duration.copy() }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         .getLengthInDays(sentence.sentencedAt)
 

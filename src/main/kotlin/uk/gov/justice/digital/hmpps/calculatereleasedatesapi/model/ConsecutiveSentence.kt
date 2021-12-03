@@ -43,4 +43,32 @@ class ConsecutiveSentence(
     }
     return (ChronoUnit.DAYS.between(sentencedAt, date)).toInt()
   }
+
+  private fun hasAfterCjaLaspo(): Boolean {
+    return orderedSentences.any() { it.identificationTrack === SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
+  }
+
+  private fun hasBeforeCjaLaspo(): Boolean {
+    return orderedSentences.any() { it.identificationTrack === SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO }
+  }
+
+  fun hasOraSentences(): Boolean {
+    return orderedSentences.any(Sentence::isOraSentence)
+  }
+
+  fun hasNonOraSentences(): Boolean {
+    return orderedSentences.any { !it.isOraSentence() }
+  }
+
+  fun isMadeUpOfBeforeAndAfterCjaLaspoSentences(): Boolean {
+    return hasBeforeCjaLaspo() && hasAfterCjaLaspo()
+  }
+
+  fun isMadeUpOfOnlyBeforeCjaLaspoSentences(): Boolean {
+    return hasBeforeCjaLaspo() && !hasAfterCjaLaspo()
+  }
+
+  fun isMadeUpOfOnlyAfterCjaLaspoSentences(): Boolean {
+    return hasAfterCjaLaspo() && !hasBeforeCjaLaspo()
+  }
 }
