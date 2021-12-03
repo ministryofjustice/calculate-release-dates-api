@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import com.fasterxml.jackson.annotation.JsonIgnore
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.util.UUID
 
@@ -39,5 +41,10 @@ data class Sentence(
 
   override fun getLengthInDays(): Int {
     return duration.getLengthInDays(this.sentencedAt)
+  }
+
+  @JsonIgnore
+  fun isOraSentence(): Boolean {
+    return offence.committedAt.isAfterOrEqualTo(ImportantDates.ORA_DATE)
   }
 }
