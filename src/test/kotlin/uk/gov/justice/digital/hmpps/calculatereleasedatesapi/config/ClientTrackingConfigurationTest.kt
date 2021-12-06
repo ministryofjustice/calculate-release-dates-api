@@ -51,7 +51,7 @@ class ClientTrackingConfigurationTest {
     req.addHeader(HttpHeaders.AUTHORIZATION, "Bearer $token")
     clientTrackingInterceptor.preHandle(req, res, "null")
     val insightTelemetry = ThreadContext.getRequestTelemetryContext().httpRequestTelemetry.properties
-    assertThat(insightTelemetry).contains(entry("username", "AUTH_ADM"), entry("clientId", "hmpps-manage-users"))
+    assertThat(insightTelemetry).contains(entry("username", "AUTH_ADM"), entry("clientId", "calculate-release-dates-admin"))
   }
 
   @Test
@@ -60,6 +60,6 @@ class ClientTrackingConfigurationTest {
     req.addHeader(HttpHeaders.AUTHORIZATION, "Bearer $token")
     clientTrackingInterceptor.preHandle(req, res, "null")
     val insightTelemetry = ThreadContext.getRequestTelemetryContext().httpRequestTelemetry.properties
-    assertThat(insightTelemetry).contains(entry("username", "Fred"), entry("clientId", "hmpps-manage-users"))
+    assertThat(insightTelemetry).contains(entry("username", "Fred"), entry("clientId", "calculate-release-dates-admin"))
   }
 }
