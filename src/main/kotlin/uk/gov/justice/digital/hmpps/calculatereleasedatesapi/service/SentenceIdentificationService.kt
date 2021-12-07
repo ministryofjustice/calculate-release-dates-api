@@ -16,9 +16,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IdentifiableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.temporal.ChronoUnit
 
 @Service
@@ -46,20 +46,31 @@ class SentenceIdentificationService {
           )
         }
       } else if (sentence.isMadeUpOfOnlyAfterCjaLaspoSentences()) {
-        // PSI example 25
-        if (sentence.hasOraSentences() && sentence.hasNonOraSentences() && sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS)) {
-          sentence.releaseDateTypes = listOf(
-            LED,
-            SED,
-            CRD,
-            TUSED
-          )
+        if (sentence.hasOraSentences() && sentence.hasNonOraSentences()) {
+          // PSI example 25
+          if (sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS)) {
+            sentence.releaseDateTypes = listOf(
+              LED,
+              SED,
+              CRD,
+            )
+          } else {
+            // PSI example 21
+            sentence.releaseDateTypes = listOf(
+              SLED,
+              CRD
+            )
+          }
         }
       }
     }
 
     if (sentence.releaseDateTypes.isEmpty()) {
       identifyConcurrentSentence(sentence, offender)
+    }
+
+    if (doesTopUpSentenceExpiryDateApply(sentence, offender)) {
+      sentence.releaseDateTypes += TUSED
     }
 
     if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.WEEKS) &&
@@ -76,40 +87,26 @@ class SentenceIdentificationService {
     ) {
       beforeCJAAndLASPO(sentence)
     } else {
-      afterCJAAndLASPO(sentence, offender)
+      afterCJAAndLASPO(sentence)
     }
   }
 
-  private fun afterCJAAndLASPO(sentence: IdentifiableSentence, offender: Offender) {
+  private fun afterCJAAndLASPO(sentence: IdentifiableSentence) {
 
     sentence.identificationTrack = SDS_AFTER_CJA_LASPO
 
-    if (!sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
-
-      if (sentence.offence.committedAt.isAfterOrEqualTo(ImportantDates.ORA_DATE)) {
-        isTopUpSentenceExpiryDateRequired(sentence, offender)
-      } else {
-        sentence.releaseDateTypes = listOf(
-          ARD,
-          SED
-        )
-      }
+    if (sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) &&
+      sentence.offence.committedAt.isBefore(ImportantDates.ORA_DATE)
+    ) {
+      sentence.releaseDateTypes = listOf(
+        ARD,
+        SED
+      )
     } else {
-      if (sentence.durationIsGreaterThan(TWO, ChronoUnit.YEARS)) {
-        sentence.releaseDateTypes = listOf(
-          SLED,
-          CRD
-        )
-      } else {
-        if (sentence.offence.committedAt.isBefore(ImportantDates.ORA_DATE)) {
-          sentence.releaseDateTypes = listOf(
-            SLED,
-            CRD
-          )
-        } else {
-          isTopUpSentenceExpiryDateRequired(sentence, offender)
-        }
-      }
+      sentence.releaseDateTypes = listOf(
+        SLED,
+        CRD
+      )
     }
   }
 
@@ -145,19 +142,35 @@ class SentenceIdentificationService {
     }
   }
 
-  private fun isTopUpSentenceExpiryDateRequired(sentence: IdentifiableSentence, offender: Offender) {
-    if (
-      sentence.getLengthInDays() <= INT_ONE ||
-      offender.getAgeOnDate(sentence.getHalfSentenceDate()) <= INT_EIGHTEEN
-    ) {
-      sentence.releaseDateTypes = listOf(SLED, CRD)
-    } else {
-      sentence.releaseDateTypes = listOf(
-        SLED,
-        CRD,
-        TUSED
-      )
+  private fun doesTopUpSentenceExpiryDateApply(sentence: IdentifiableSentence, offender: Offender): Boolean {
+    val oraCondition = when (sentence) {
+      is Sentence -> {
+        sentence.isOraSentence()
+      }
+      is ConsecutiveSentence -> {
+        sentence.hasOraSentences()
+      }
+      else -> {
+        false
+      }
     }
+
+    val lapsoCondition = when (sentence) {
+      is Sentence -> {
+        sentence.identificationTrack == SDS_AFTER_CJA_LASPO
+      }
+      is ConsecutiveSentence -> {
+        sentence.isMadeUpOfOnlyAfterCjaLaspoSentences()
+      }
+      else -> {
+        false
+      }
+    }
+
+    return oraCondition && lapsoCondition &&
+      sentence.durationIsLessThanEqualTo(TWO, ChronoUnit.YEARS) &&
+      sentence.getLengthInDays() > INT_ONE &&
+      offender.getAgeOnDate(sentence.getHalfSentenceDate()) > INT_EIGHTEEN
   }
 
   companion object {

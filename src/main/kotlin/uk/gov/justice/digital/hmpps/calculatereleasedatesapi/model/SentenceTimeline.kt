@@ -16,6 +16,13 @@ interface SentenceTimeline {
       )
   }
 
+  fun durationIsLessThanEqualTo(length: Long, period: ChronoUnit): Boolean {
+    return (
+      getLengthInDays() <=
+        ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(length, period))
+      )
+  }
+
   fun durationIsGreaterThan(length: Long, period: ChronoUnit): Boolean {
     return (
       getLengthInDays() >
