@@ -19,7 +19,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.temporal.ChronoUnit
 
 @Service
@@ -96,18 +95,13 @@ class SentenceIdentificationService {
 
     sentence.identificationTrack = SDS_AFTER_CJA_LASPO
 
-    if (sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS)) {
-      if (sentence.offence.committedAt.isAfterOrEqualTo(ImportantDates.ORA_DATE)) {
-        sentence.releaseDateTypes = listOf(
-          SLED,
-          CRD
-        )
-      } else {
-        sentence.releaseDateTypes = listOf(
-          ARD,
-          SED
-        )
-      }
+    if (sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) &&
+      sentence.offence.committedAt.isBefore(ImportantDates.ORA_DATE)
+    ) {
+      sentence.releaseDateTypes = listOf(
+        ARD,
+        SED
+      )
     } else {
       sentence.releaseDateTypes = listOf(
         SLED,
