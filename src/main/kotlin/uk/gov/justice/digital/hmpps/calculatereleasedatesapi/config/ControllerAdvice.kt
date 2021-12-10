@@ -127,9 +127,11 @@ class ControllerAdvice {
       .body(
         ErrorResponse(
           status = HttpStatus.BAD_REQUEST,
-          errorCode = 1,
-          userMessage = "One or more of the sentence types in this calculation is not currently supported in this service",
-          arguments = e.sentenceAndOffences.map { it.sentenceTypeDescription }.distinct(),
+          userMessage = """
+            One or more of the sentence types in this calculation is not currently supported in this service:
+            ${e.sentenceAndOffences.map { it.sentenceTypeDescription }.joinToString(separator = "\n")}
+            If these sentences are correct, you will need to complete this calculation manually in NOMIS.
+          """.trimIndent(),
           developerMessage = e.message
         )
       )
@@ -156,15 +158,13 @@ data class ErrorResponse(
   val userMessage: String? = null,
   val developerMessage: String? = null,
   val moreInfo: String? = null,
-  val arguments: List<String> = listOf()
 ) {
   constructor(
     status: HttpStatus,
     errorCode: Int? = null,
     userMessage: String? = null,
     developerMessage: String? = null,
-    moreInfo: String? = null,
-    arguments: List<String> = listOf()
+    moreInfo: String? = null
   ) :
-    this(status.value(), errorCode, userMessage, developerMessage, moreInfo, arguments)
+    this(status.value(), errorCode, userMessage, developerMessage, moreInfo)
 }

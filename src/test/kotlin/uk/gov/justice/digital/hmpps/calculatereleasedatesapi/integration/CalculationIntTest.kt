@@ -154,8 +154,8 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectBody(ErrorResponse::class.java)
       .returnResult().responseBody
 
-    assertThat(response.arguments).contains("This sentence is unsupported")
-    assertThat(response.arguments).contains("This sentence is also unsupported")
+    assertThat(response.userMessage).contains("This sentence is unsupported")
+    assertThat(response.userMessage).contains("This sentence is also unsupported")
   }
 
   companion object {
