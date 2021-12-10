@@ -97,7 +97,8 @@ class CalculationIntTest : IntegrationTestBase() {
 
     val req = calculationRequestRepository
       .findFirstByPrisonerIdAndBookingIdAndCalculationStatusOrderByCalculatedAtAsc(
-        PRISONER_ERROR_ID, BOOKING_ERROR_ID, CalculationStatus.ERROR.name)
+        PRISONER_ERROR_ID, BOOKING_ERROR_ID, CalculationStatus.ERROR.name
+      )
 
     assertThat(req).isNotNull
   }

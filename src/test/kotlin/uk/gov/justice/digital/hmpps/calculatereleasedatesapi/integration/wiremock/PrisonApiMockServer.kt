@@ -211,7 +211,6 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
         )
     )
 
-
   fun stubGetSentenceAdjustments(bookingId: Long): StubMapping =
     stubFor(
       get("/api/bookings/$bookingId/sentenceAdjustments")
