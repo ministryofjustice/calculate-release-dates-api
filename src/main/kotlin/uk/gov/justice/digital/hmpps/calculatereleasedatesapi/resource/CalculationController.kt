@@ -52,7 +52,13 @@ class CalculationController(
     prisonerId: String,
   ): BookingCalculation {
     log.info("Request received to calculate release dates for $prisonerId")
-    return calculationService.calculate(bookingService.getBooking(prisonerId), PRELIMINARY)
+    val booking = bookingService.getBooking(prisonerId)
+    try {
+      return calculationService.calculate(booking, PRELIMINARY)
+    } catch (error: Exception) {
+      calculationService.recordError(booking, error)
+      throw error
+    }
   }
 
   @PostMapping(value = ["/{prisonerId}/confirm/{calculationRequestId}"])
@@ -95,9 +101,14 @@ class CalculationController(
     log.info("Request received to confirm release dates calculation for $prisonerId")
     val booking = bookingService.getBooking(prisonerId)
     calculationService.validateConfirmationRequest(calculationRequestId, booking)
-    val calculation = calculationService.calculate(booking, CONFIRMED)
-    calculationService.writeToNomisAndPublishEvent(prisonerId, booking, calculation)
-    return calculation
+    try {
+      val calculation = calculationService.calculate(booking, CONFIRMED)
+      calculationService.writeToNomisAndPublishEvent(prisonerId, booking, calculation)
+      return calculation
+    } catch (error: Exception) {
+      calculationService.recordError(booking, error)
+      throw error
+    }
   }
 
   @GetMapping(value = ["/results/{prisonerId}/{bookingId}"])
