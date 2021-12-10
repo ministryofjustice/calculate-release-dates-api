@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedSentenceException
 import javax.persistence.EntityNotFoundException
 import javax.validation.ValidationException
 
@@ -119,22 +118,6 @@ class ControllerAdvice {
       )
   }
 
-  @ExceptionHandler(UnsupportedSentenceException::class)
-  fun handleUnsupportedSentenceException(e: UnsupportedSentenceException): ResponseEntity<ErrorResponse?>? {
-    log.error("Unsupported sentence exception: {}", e.message)
-    return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(
-        ErrorResponse(
-          status = HttpStatus.BAD_REQUEST,
-          errorCode = 1,
-          userMessage = "One or more of the sentence types in this calculation is not currently supported in this service",
-          arguments = e.sentenceAndOffences.map { it.sentenceTypeDescription }.distinct(),
-          developerMessage = e.message
-        )
-      )
-  }
-
   @ExceptionHandler(java.lang.Exception::class)
   fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse?>? {
     log.error("Unexpected exception: {}", e.message)
@@ -156,15 +139,13 @@ data class ErrorResponse(
   val userMessage: String? = null,
   val developerMessage: String? = null,
   val moreInfo: String? = null,
-  val arguments: List<String> = listOf()
 ) {
   constructor(
     status: HttpStatus,
     errorCode: Int? = null,
     userMessage: String? = null,
     developerMessage: String? = null,
-    moreInfo: String? = null,
-    arguments: List<String> = listOf()
+    moreInfo: String? = null
   ) :
-    this(status.value(), errorCode, userMessage, developerMessage, moreInfo, arguments)
+    this(status.value(), errorCode, userMessage, developerMessage, moreInfo)
 }
