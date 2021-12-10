@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
@@ -79,6 +81,27 @@ class CalculationIntTest : IntegrationTestBase() {
     }
   }
 
+  @Test
+  fun `Get the results for a calc that causes an error `() {
+    val result = webTestClient.post()
+      .uri("/calculation/$PRISONER_ERROR_ID")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().is5xxServerError
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ErrorResponse::class.java)
+      .returnResult().responseBody
+
+    assertThat(result).isNotNull
+
+    val req = calculationRequestRepository
+      .findFirstByPrisonerIdAndBookingIdAndCalculationStatusOrderByCalculatedAtAsc(
+        PRISONER_ERROR_ID, BOOKING_ERROR_ID, CalculationStatus.ERROR.name)
+
+    assertThat(req).isNotNull
+  }
+
   private fun createPreliminaryCalculation() = webTestClient.post()
     .uri("/calculation/$PRISONER_ID")
     .accept(MediaType.APPLICATION_JSON)
@@ -144,5 +167,7 @@ class CalculationIntTest : IntegrationTestBase() {
     const val BOOKING_ID = 9292L
     const val BOOKING_ID_DOESNT_EXIST = 92929988L
     const val PRISONER_ID = "A1234AA"
+    const val PRISONER_ERROR_ID = "123CBA"
+    const val BOOKING_ERROR_ID = 123L
   }
 }
