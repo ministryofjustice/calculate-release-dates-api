@@ -2,6 +2,10 @@
   "dates" : {
     "SED": "2010-03-31",
     "CRD": "2009-09-13",
-    "LED": "2009-12-30"
+    "LED": "2009-12-30",
+    "ESED": "2010-09-30"
+  },
+  "effectiveSentenceLength": {
+    "YEARS": 1
   }
 }
