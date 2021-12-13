@@ -16,5 +16,5 @@ enum class ReleaseDateType {
   LTD,
   DPRRD,
   PRRD,
-  ESED, //Effective sentence end date
+  ESED, // Effective sentence end date
 }
