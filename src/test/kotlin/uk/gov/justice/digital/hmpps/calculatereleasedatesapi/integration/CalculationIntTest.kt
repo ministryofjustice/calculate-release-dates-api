@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
@@ -40,23 +41,38 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Confirm a calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
-    val result = createConfirmCalculationForPrisoner(createPreliminaryCalculation().calculationRequestId)
 
-    val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
-      .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
+    val resultCalculation = createPreliminaryCalculation()
+    var result: BookingCalculation? = null
+    var calculationRequest: CalculationRequest? = null
+    if (resultCalculation != null) {
+      result = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId)
+      calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
+        .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
+    }
 
     assertThat(result).isNotNull
-    assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
-    assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
-    assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
-    assertThat(calculationRequest.calculationStatus).isEqualTo("CONFIRMED")
-    assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID)
-    assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText()).isEqualTo("2015-03-17")
+    if (result != null) {
+      assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
+      assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
+      assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
+    }
+
+    assertThat(calculationRequest).isNotNull
+    if (calculationRequest != null) {
+      assertThat(calculationRequest.calculationStatus).isEqualTo("CONFIRMED")
+      assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID)
+      assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText()).isEqualTo("2015-03-17")
+    }
   }
 
   @Test
   fun `Get the results for a confirmed calculation`() {
-    createConfirmCalculationForPrisoner(createPreliminaryCalculation().calculationRequestId)
+
+    val resultCalculation = createPreliminaryCalculation()
+    if (resultCalculation != null) {
+      createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId)
+    }
 
     val result = webTestClient.get()
       .uri("/calculation/results/$PRISONER_ID/$BOOKING_ID")
@@ -144,24 +160,35 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Get the calculation breakdown for a calculation`() {
-    val calc = createConfirmCalculationForPrisoner(createPreliminaryCalculation().calculationRequestId)
 
-    val result = webTestClient.get()
-      .uri("/calculation/breakdown/${calc.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculationBreakdown::class.java)
-      .returnResult().responseBody
+    val resultCalculation = createPreliminaryCalculation()
+    var calc: BookingCalculation? = null
+    if (resultCalculation != null) {
+      calc = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId)
+    }
 
-    assertThat(result).isNotNull
-    assertThat(result.consecutiveSentence).isNull()
-    assertThat(result.concurrentSentences).hasSize(1)
-    assertThat(result.concurrentSentences.get(0).dates[SLED]!!.unadjusted).isEqualTo(LocalDate.of(2016, 11, 16))
-    assertThat(result.concurrentSentences.get(0).dates[SLED]!!.adjusted).isEqualTo(LocalDate.of(2016, 11, 6))
-    assertThat(result.concurrentSentences.get(0).dates[SLED]!!.adjustedByDays).isEqualTo(10)
+    assertThat(calc).isNotNull
+
+    if (calc != null) {
+      val result = webTestClient.get()
+        .uri("/calculation/breakdown/${calc.calculationRequestId}")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+        .exchange()
+        .expectStatus().isOk
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+        .expectBody(CalculationBreakdown::class.java)
+        .returnResult().responseBody
+
+      assertThat(result).isNotNull
+      if (result != null) {
+        assertThat(result.consecutiveSentence).isNull()
+        assertThat(result.concurrentSentences).hasSize(1)
+        assertThat(result.concurrentSentences[0].dates[SLED]!!.unadjusted).isEqualTo(LocalDate.of(2016, 11, 16))
+        assertThat(result.concurrentSentences[0].dates[SLED]!!.adjusted).isEqualTo(LocalDate.of(2016, 11, 6))
+        assertThat(result.concurrentSentences[0].dates[SLED]!!.adjustedByDays).isEqualTo(10)
+      }
+    }
   }
 
   companion object {

@@ -30,7 +30,7 @@ class WorkingDayIntTest : IntegrationTestBase() {
   @Test
   fun `previousWorkingDay test weekend adjustment and check that the cache is populated`() {
     val result = makeApiCall("/working-day/previous/$SATURDAY")
-    val nativeCache: ConcurrentHashMap<Any, Any> =
+    @Suppress("UNCHECKED_CAST") val nativeCache: ConcurrentHashMap<Any, Any> =
       cacheManager.getCache(BANK_HOLIDAYS_CACHE_NAME)!!.nativeCache as ConcurrentHashMap<Any, Any>
     val holidays: BankHolidays = nativeCache.values.first() as BankHolidays
 
