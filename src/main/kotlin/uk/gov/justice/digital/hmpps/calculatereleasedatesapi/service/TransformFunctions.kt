@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.DPRRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ETD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
@@ -46,7 +47,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import java.time.LocalDate
-import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
@@ -152,7 +152,11 @@ fun transform(calculationRequest: CalculationRequest): BookingCalculation {
 }
 
 fun transform(booking: Booking): CalculationBreakdown {
-  val concurrentSentences = booking.sentences.filter { booking.consecutiveSentences.none() { consecutiveSentence -> consecutiveSentence.orderedSentences.contains(it) } }
+  val concurrentSentences = booking.sentences.filter {
+    booking.consecutiveSentences.none { consecutiveSentence ->
+      consecutiveSentence.orderedSentences.contains(it)
+    }
+  }
   return CalculationBreakdown(
     concurrentSentences.map { sentence ->
       ConcurrentSentenceBreakdown(
@@ -208,7 +212,7 @@ private fun combineDuration(consecutiveSentence: ConsecutiveSentence): Duration 
   return duration
 }
 
-fun transform(calculation: BookingCalculation, booking: Booking) =
+fun transform(calculation: BookingCalculation) =
   OffenderKeyDates(
     conditionalReleaseDate = calculation.dates[CRD],
     licenceExpiryDate = calculation.dates[SLED] ?: calculation.dates[LED],
@@ -223,15 +227,14 @@ fun transform(calculation: BookingCalculation, booking: Booking) =
     paroleEligibilityDate = calculation.dates[PED],
     postRecallReleaseDate = calculation.dates[PRRD],
     topupSupervisionExpiryDate = calculation.dates[TUSED],
-    effectiveSentenceEndDate = (calculation.dates[SLED] ?: calculation.dates[SED])!!,
-    sentenceLength = getSentenceLength((calculation.dates[SLED] ?: calculation.dates[SED])!!, booking)
+    effectiveSentenceEndDate = calculation.dates[ESED],
+    sentenceLength = String.format(
+      "%02d/%02d/%02d",
+      calculation.effectiveSentenceLength.years,
+      calculation.effectiveSentenceLength.months,
+      calculation.effectiveSentenceLength.days
+    )
   )
-
-private fun getSentenceLength(sentenceExpiryDate: LocalDate, booking: Booking): String {
-  val sentenceDate = booking.sentences.map { it.sentencedAt }.minOrNull()
-  val period = Period.between(sentenceDate, sentenceExpiryDate)
-  return "${period.years}/${period.months}/${period.days}"
-}
 
 private fun extractDates(sentence: ExtractableSentence): Map<ReleaseDateType, DateBreakdown> {
   val dates: MutableMap<ReleaseDateType, DateBreakdown> = mutableMapOf()

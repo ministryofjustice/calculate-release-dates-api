@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -39,6 +40,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import java.time.LocalDate
+import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
@@ -229,7 +231,18 @@ class CalculationServiceTest {
       )
     )
 
-    calculationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION)
+    calculationService.writeToNomisAndPublishEvent(
+      PRISONER_ID,
+      BOOKING.copy(sentences = listOf(SENTENCE.copy(duration = ZERO_DURATION))),
+      BOOKING_CALCULATION.copy(
+        dates = mutableMapOf(
+          CRD to CALCULATION_OUTCOME_CRD.outcomeDate,
+          SED to THIRD_FEB_2021,
+          ESED to ESED_DATE
+        ),
+        effectiveSentenceLength = Period.of(6, 2, 3)
+      )
+    )
 
     verify(prisonApiClient).postReleaseDates(
       BOOKING_ID,
@@ -237,8 +250,8 @@ class CalculationServiceTest {
         keyDates = OffenderKeyDates(
           conditionalReleaseDate = THIRD_FEB_2021,
           sentenceExpiryDate = THIRD_FEB_2021,
-          effectiveSentenceEndDate = THIRD_FEB_2021,
-          sentenceLength = "0/0/0"
+          effectiveSentenceEndDate = ESED_DATE,
+          sentenceLength = "06/02/03"
         )
       )
     )
@@ -306,7 +319,9 @@ class CalculationServiceTest {
     private const val PRISONER_ID = "A1234AJ"
     private const val BOOKING_ID = 12345L
     private const val CALCULATION_REQUEST_ID = 123456L
+    private val ZERO_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 0L))
     private val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
+    val ESED_DATE: LocalDate = LocalDate.of(2021, 5, 5)
     val FAKE_TOKEN: Jwt = Jwt
       .withTokenValue("123")
       .header("header1", "value1")
@@ -366,7 +381,7 @@ class CalculationServiceTest {
         licenceExpiryDate = THIRD_FEB_2021,
         sentenceExpiryDate = THIRD_FEB_2021,
         effectiveSentenceEndDate = THIRD_FEB_2021,
-        sentenceLength = "11/0/0"
+        sentenceLength = "11/00/00"
       )
     )
 
@@ -381,6 +396,6 @@ class CalculationServiceTest {
       lineSequence = 2
     )
 
-    val BOOKING = Booking(OFFENDER, mutableListOf(SENTENCE), mutableMapOf(), BOOKING_ID)
+    val BOOKING = Booking(OFFENDER, listOf(SENTENCE), mutableMapOf(), BOOKING_ID)
   }
 }

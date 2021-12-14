@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
@@ -19,6 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import java.time.LocalDate
+import java.time.Period
 import java.time.temporal.ChronoUnit
 
 @Service
@@ -73,6 +75,10 @@ class BookingExtractionService(
       bookingCalculation.dates[NCRD] = sentenceCalculation.notionalConditionalReleaseDate!!
     }
 
+    bookingCalculation.dates[ESED] = sentenceCalculation.unadjustedExpiryDate
+    bookingCalculation.effectiveSentenceLength =
+      getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedExpiryDate)
+
     return bookingCalculation
   }
 
@@ -86,6 +92,10 @@ class BookingExtractionService(
 
     val latestExpiryDate: LocalDate = extractionService.mostRecent(
       booking.getAllExtractableSentences(), SentenceCalculation::expiryDate
+    )
+
+    val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(
+      booking.getAllExtractableSentences(), SentenceCalculation::unadjustedExpiryDate
     )
 
     val latestLicenseExpiryDate: LocalDate? = extractionService.mostRecentOrNull(
@@ -142,6 +152,12 @@ class BookingExtractionService(
       bookingCalculation.dates[NCRD] = latestNotionalConditionalReleaseDate
     }
 
+    bookingCalculation.dates[ESED] = latestUnadjustedExpiryDate
+    bookingCalculation.effectiveSentenceLength = getEffectiveSentenceLength(
+      booking.getAllExtractableSentences().minOf { it.sentencedAt },
+      latestUnadjustedExpiryDate
+    )
+
     return bookingCalculation
   }
 
@@ -188,6 +204,9 @@ class BookingExtractionService(
 
     return bookingCalculation
   }
+
+  private fun getEffectiveSentenceLength(start: LocalDate, end: LocalDate): Period =
+    Period.between(start, end.plusDays(1))
 
   private fun extractManyNonParoleDate(booking: Booking, latestReleaseDate: LocalDate): LocalDate? {
 
