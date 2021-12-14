@@ -5,5 +5,9 @@
     "TUSED":"2022-09-16",
     "HDCED":"2021-08-09",
     "ESED":"2021-12-02"
+  },
+  "effectiveSentenceLength": {
+    "MONTHS": 7,
+    "DAYS": 2
   }
 }
