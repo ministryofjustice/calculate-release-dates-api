@@ -119,7 +119,7 @@ class CalculationServiceTest {
         throw e
       }
     }
-    log.info("Example $exampleType/$exampleNumber outcome BookingCalculation: {}",bookingCalculation)
+    log.info("Example $exampleType/$exampleNumber outcome BookingCalculation: {}", bookingCalculation)
     val bookingData = jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber")
     assertEquals(bookingData.dates, bookingCalculation.dates)
     assertEquals(bookingData.effectiveSentenceLength, bookingCalculation.effectiveSentenceLength)
