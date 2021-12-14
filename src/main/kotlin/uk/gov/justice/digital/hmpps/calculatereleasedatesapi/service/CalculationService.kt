@@ -78,7 +78,7 @@ class CalculationService(
     // previous sentence e.g. when the sentenceDate is during the ADA's period of the previous sentence
     workingBooking =
       bookingCalculationService
-        .adjustForAdditionalDaysAlreadyServed(workingBooking)
+        .walkTimelineOfSentence(workingBooking)
 
     return workingBooking
   }

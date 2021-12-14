@@ -44,7 +44,7 @@ interface SentenceTimeline {
   }
 
   @JsonIgnore
-  fun getDateRange(): LocalDateRange? {
+  fun getDateRange(): LocalDateRange {
     return LocalDateRange.of(sentencedAt, sentencedAt.plusDays(getLengthInDays().toLong()))
   }
 

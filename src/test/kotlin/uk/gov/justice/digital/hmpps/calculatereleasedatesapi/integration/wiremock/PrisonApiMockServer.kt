@@ -67,29 +67,7 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
             .withHeader("Content-Type", "application/json")
             .withBody(
               """
-            [
-              {
-                "bookingId": $bookingId,
-                "sentenceSequence": 1,
-                "sentenceStatus": "A",
-                "sentenceCategory": "2003",
-                "sentenceCalculationType": "SDS",
-                "sentenceTypeDescription": "Standard Determinate",
-                "sentenceDate": "2015-03-17",
-                "years": 0,
-                "months": 20,
-                "weeks": 0,
-                "days": 0,
-                "offences": [
-                  {
-                    "offenderChargeId": 9991,
-                    "offenceStartDate": "2015-03-17",
-                    "offenceCode": "GBH",
-                    "offenceDescription": "Grievous bodily harm"
-                  }
-                ]
-              }
-            ]
+             [{"bookingId":1201724,"sentenceSequence":1,"lineSequence":1,"caseSequence":1,"sentenceStatus":"A","sentenceCategory":"2020","sentenceCalculationType":"ADIMP_ORA","sentenceTypeDescription":"ORA Sentencing Code Standard Determinate Sentence","sentenceDate":"2021-05-01","years":0,"months":3,"weeks":0,"days":0,"offences":[{"offenderChargeId":3932600,"offenceStartDate":"2020-06-02","offenceCode":"DD91011","offenceDescription":"Abandoning fighting dog"}]},{"bookingId":1201724,"sentenceSequence":2,"consecutiveToSequence":1,"lineSequence":2,"caseSequence":1,"sentenceStatus":"A","sentenceCategory":"2003","sentenceCalculationType":"ADIMP_ORA","sentenceTypeDescription":"ORA CJA03 Standard Determinate Sentence","sentenceDate":"2021-05-01","years":0,"months":2,"weeks":2,"days":2,"offences":[{"offenderChargeId":3932601,"offenceStartDate":"2020-08-02","offenceCode":"WE13095","offenceDescription":"AATF operator/approved exporter fail to include reg 66(8) details in providing report"}]},{"bookingId":1201724,"sentenceSequence":9,"lineSequence":3,"caseSequence":2,"sentenceStatus":"A","sentenceCategory":"2020","sentenceCalculationType":"ADIMP_ORA","sentenceTypeDescription":"ORA Sentencing Code Standard Determinate Sentence","sentenceDate":"2021-06-01","years":0,"months":1,"weeks":1,"days":1,"offences":[{"offenderChargeId":3932602,"offenceStartDate":"2020-12-02","offenceCode":"HP20006","offenceDescription":"Abscond / attempt to abscond from detention under regulation 4 or 5 or 8 - Coronavirus"}]},{"bookingId":1201724,"sentenceSequence":16,"lineSequence":4,"caseSequence":2,"sentenceStatus":"A","sentenceCategory":"2020","sentenceCalculationType":"YOI_ORA","sentenceTypeDescription":"ORA Young Offender Institution","sentenceDate":"2021-06-01","years":0,"months":1,"weeks":0,"days":0,"offences":[{"offenderChargeId":3932603,"offenceStartDate":"2019-01-01","offenceCode":"IA06005","offenceDescription":"Abscond from detention under s.40(7)(c)"}]},{"bookingId":1201724,"sentenceSequence":23,"lineSequence":5,"caseSequence":3,"sentenceStatus":"A","sentenceCategory":"2020","sentenceCalculationType":"ADIMP_ORA","sentenceTypeDescription":"ORA Sentencing Code Standard Determinate Sentence","sentenceDate":"2021-08-01","years":0,"months":5,"weeks":0,"days":2,"offences":[{"offenderChargeId":3932604,"offenceStartDate":"2021-01-01","offenceCode":"BA12035","offenceDescription":"Abandon vehicle on Bristol Airport"}]}]
               """.trimIndent()
             )
             .withStatus(200)

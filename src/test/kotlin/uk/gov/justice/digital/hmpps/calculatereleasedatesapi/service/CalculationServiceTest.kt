@@ -99,21 +99,31 @@ class CalculationServiceTest {
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
-  fun `Test Example`(exampleType: String, exampleNumber: String) {
+  fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
     SecurityContextHolder.setContext(
       SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
     )
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val bookingCalculation = calculationService.calculate(booking, PRELIMINARY)
+    val bookingCalculation: BookingCalculation
+    try {
+      bookingCalculation = calculationService.calculate(booking, PRELIMINARY)
+    } catch (e: Exception) {
+      if (!error.isNullOrEmpty()) {
+        assertEquals(e.javaClass.simpleName, error)
+        return
+      } else {
+        throw e
+      }
+    }
     log.info(
       "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
       bookingCalculation
     )
     assertEquals(
-      jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber"),
-      bookingCalculation
+      jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber").dates,
+      bookingCalculation.dates
     )
   }
 
