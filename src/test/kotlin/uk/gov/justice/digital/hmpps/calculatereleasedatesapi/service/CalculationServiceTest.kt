@@ -127,6 +127,10 @@ class CalculationServiceTest {
       jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber").dates,
       bookingCalculation.dates
     )
+    assertEquals(
+      jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber").effectiveSentenceLength,
+      bookingCalculation.effectiveSentenceLength
+    )
   }
 
   @Test
