@@ -10,8 +10,11 @@ data class SentenceCalculation(
   val numberOfDaysToReleaseDate: Int,
   val unadjustedExpiryDate: LocalDate,
   val unadjustedReleaseDate: LocalDate,
+  // Remand and Tagged bail
   val calculatedTotalDeductedDays: Int,
+  // UAL
   val calculatedTotalAddedDays: Int,
+  // ADA - RADA
   val calculatedTotalAwardedDays: Int,
   val adjustedExpiryDate: LocalDate,
   val adjustedReleaseDate: LocalDate,
