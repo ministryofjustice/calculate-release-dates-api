@@ -13,37 +13,6 @@ import kotlin.reflect.KProperty1
 @Service
 class SentencesExtractionService {
 
-  // show that every sentence in the schedule are overlapping
-  // this is n^2 complexity and could be more efficient
-  // optimise if performance required
-  fun allOverlap(sentences: List<ExtractableSentence>): Boolean {
-    for (sentence in sentences) {
-      for (innerSentence in sentences) {
-        if (!doSentencesOverlap(sentence, innerSentence)) {
-          return false
-        }
-      }
-    }
-    return true
-  }
-
-  fun doSentencesOverlap(
-    sentenceOne: ExtractableSentence,
-    sentenceTwo: ExtractableSentence
-  ): Boolean {
-    if (sentenceOne.hashCode() != sentenceTwo.hashCode()) {
-      log.info(
-        "Is the date range {} from {} overlapping or abutting this date range {} from {} ? {} ",
-        sentenceOne, sentenceOne.hashCode(), sentenceTwo.getDateRange(), sentenceTwo.hashCode(),
-        sentenceOne.getDateRange()!!.isConnected(sentenceTwo.getDateRange())
-      )
-      if (!sentenceOne.getDateRange()!!.isConnected(sentenceTwo.getDateRange())) {
-        return false
-      }
-    }
-    return true
-  }
-
   fun mostRecentOrNull(
     sentences: List<ExtractableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>
