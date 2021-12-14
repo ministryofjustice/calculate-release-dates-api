@@ -31,46 +31,6 @@ class BookingCalculationService(
     return booking
   }
 
-  fun walkTimelineOfSentence(booking: Booking): Booking {
-    // TODO Check with analysis on this. if we dont exclude schedule 15's example 37 fails.
-    //  Schedule 15's are out of scope at the moment - so one for the future
-//    if (booking.sentences.any { it.offence.isScheduleFifteen }) return booking
-
-//
-//
-//    var previousReleaseDateMinusDaysAwarded: LocalDate? = null
-//    for (sentence: ExtractableSentence in booking.getAllExtractableSentences().sortedWith(compareBy<ExtractableSentence> {it.sentencedAt }.thenByDescending { it.getLengthInDays() })) {
-//      if (previousReleaseDateMinusDaysAwarded == null) {
-//        previousReleaseDateMinusDaysAwarded =
-//          sentence.sentenceCalculation.unadjustedReleaseDate.minusDays(sentence.sentenceCalculation.calculatedTotalDeductedDays.toLong())
-//        continue
-//      }
-//      if (sentence.sentencedAt.isAfter(previousReleaseDateMinusDaysAwarded)) {
-//        val additionalDaysAlreadyServed =
-//          ChronoUnit.DAYS.between(previousReleaseDateMinusDaysAwarded, sentence.sentencedAt) - 1
-//        log.info("Adjusting release date for days already served. Adjusting by $additionalDaysAlreadyServed")
-//        sentence.sentenceCalculation.releaseDate =
-//          sentence.sentenceCalculation.releaseDate!!.minusDays(additionalDaysAlreadyServed)
-//      }
-//
-//      previousReleaseDateMinusDaysAwarded =
-//        sentence.sentenceCalculation.unadjustedReleaseDate.minusDays(sentence.sentenceCalculation.calculatedTotalDeductedDays.toLong())
-//    }
-
-    return booking
-  }
-
-  private fun applyMultiple(booking: Booking, function: (Booking) -> Booking): Booking {
-    return when (booking.sentences.size) {
-      0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
-      1 -> booking
-      else -> {
-        val workingBooking = function(booking)
-        return calculate(workingBooking)
-      }
-    }
-  }
-
   fun createSingleTermSentences(booking: Booking): Booking {
     if (booking.sentences.size > 1 &&
       booking.sentences.all { it.identificationTrack == SDS_BEFORE_CJA_LASPO && it.consecutiveSentenceUUIDs.isEmpty() }
