@@ -1,6 +1,10 @@
 {
   "dates" : {
     "SLED": "2014-10-15",
-    "CRD": "2012-10-15"
+    "CRD": "2012-10-15",
+    "ESED": "2014-10-15"
+  },
+  "effectiveSentenceLength": {
+    "YEARS": 4
   }
 }

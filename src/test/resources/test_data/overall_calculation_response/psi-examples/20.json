@@ -3,6 +3,10 @@
     "SLED":"2015-12-22",
     "CRD":"2015-07-24",
     "TUSED":"2016-07-24",
-    "HDCED": "2015-05-10"
+    "HDCED": "2015-05-10",
+    "ESED": "2015-12-22"
+  },
+  "effectiveSentenceLength": {
+    "MONTHS": 10
   }
 }

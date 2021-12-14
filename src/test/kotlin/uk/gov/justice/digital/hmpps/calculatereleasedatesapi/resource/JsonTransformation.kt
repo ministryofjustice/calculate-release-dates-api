@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import java.time.LocalDate
+import java.time.Period
 import java.time.format.DateTimeFormatter
 import java.util.Optional
 import java.util.UUID
@@ -26,6 +27,7 @@ class JsonTransformation {
     .add(LocalDate::class.java, LocalDateAdapter().nullSafe())
     .add(OptionalLocalDateAdapter())
     .add(UUID::class.java, UUIDAdapter().nullSafe())
+    .add(Period::class.java, PeriodAdapter().nullSafe())
     .build()
 
   fun loadOffender(testData: String): Offender {
@@ -105,6 +107,7 @@ class JsonTransformation {
         null
       }
     }
+
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE
     private fun fromNonNullString(nextString: String): LocalDate = LocalDate.parse(nextString, formatter)
   }
@@ -140,8 +143,25 @@ class JsonTransformation {
         Optional.empty<LocalDate>()
       }
     }
+
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE
     private fun fromNonNullString(nextString: String): Optional<LocalDate> =
       Optional.of(LocalDate.parse(nextString, formatter))
+  }
+
+  class PeriodAdapter : JsonAdapter<Period>() {
+    @ToJson
+    override fun toJson(writer: JsonWriter, value: Period?) {
+      value?.let { writer.value(it.toString()) }
+    }
+
+    @FromJson
+    override fun fromJson(jsonReader: JsonReader): Period? {
+      val jsonMap = jsonReader.readJsonValue() as Map<String, Double>
+      val years = if (jsonMap.containsKey("YEARS")) jsonMap["YEARS"] else 0
+      val months = if (jsonMap.containsKey("MONTHS")) jsonMap["MONTHS"] else 0
+      val days = if (jsonMap.containsKey("DAYS")) jsonMap["DAYS"] else 0
+      return Period.of(years!!.toInt(), months!!.toInt(), days!!.toInt())
+    }
   }
 }

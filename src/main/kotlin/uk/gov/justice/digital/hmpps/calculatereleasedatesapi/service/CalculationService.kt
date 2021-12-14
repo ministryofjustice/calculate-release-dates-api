@@ -147,7 +147,7 @@ class CalculationService(
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = getCurrentAuthentication().principal,
-      keyDates = transform(calculation, booking)
+      keyDates = transform(calculation)
     )
     try {
       prisonApiClient.postReleaseDates(booking.bookingId, updateOffenderDates)

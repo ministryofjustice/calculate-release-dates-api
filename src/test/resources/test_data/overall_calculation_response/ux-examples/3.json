@@ -1,6 +1,11 @@
 {
   "dates": {
     "SLED": "2025-11-04",
-    "CRD": "2023-01-10"
+    "CRD": "2023-01-10",
+    "ESED": "2025-11-19"
+  },
+  "effectiveSentenceLength": {
+    "YEARS": 5,
+    "MONTHS": 8
   }
 }

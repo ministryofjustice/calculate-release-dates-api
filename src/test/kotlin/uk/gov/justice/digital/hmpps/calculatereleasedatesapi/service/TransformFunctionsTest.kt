@@ -5,19 +5,18 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import java.time.LocalDate
+import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
@@ -141,35 +140,21 @@ class TransformFunctionsTest {
   }
 
   @Test
-  fun `Transform into an offender dates object with a CRD date and SLED`() {
+  fun `Transform into an offender dates object with a CRD date, SLED, ESED and ESL`() {
     assertThat(
       transform(
-        BOOKING_CALCULATION.copy(dates = mutableMapOf(CRD to CRD_DATE, SLED to SLED_DATE)),
-        BOOKING
+        BOOKING_CALCULATION.copy(
+          dates = mutableMapOf(CRD to CRD_DATE, SLED to SLED_DATE, ESED to ESED_DATE),
+          effectiveSentenceLength = Period.of(6, 2, 3)
+        )
       )
     ).isEqualTo(
       OffenderKeyDates(
         conditionalReleaseDate = CRD_DATE,
         sentenceExpiryDate = SLED_DATE,
         licenceExpiryDate = SLED_DATE,
-        effectiveSentenceEndDate = SLED_DATE,
-        sentenceLength = "6/2/3"
-      )
-    )
-  }
-
-  @Test
-  fun `Transform into an offender dates object with LED and SED (no SLED)`() {
-    assertThat(
-      transform(
-        BOOKING_CALCULATION.copy(dates = mutableMapOf(CRD to CRD_DATE, LED to LED_DATE, SED to SED_DATE)),
-        BOOKING
-      )
-    ).isEqualTo(
-      OffenderKeyDates(
-        conditionalReleaseDate = CRD_DATE, sentenceExpiryDate = SED_DATE, licenceExpiryDate = LED_DATE,
-        effectiveSentenceEndDate = SED_DATE,
-        sentenceLength = "6/4/5"
+        effectiveSentenceEndDate = ESED_DATE,
+        sentenceLength = "06/02/03"
       )
     )
   }
@@ -206,23 +191,11 @@ class TransformFunctionsTest {
 
     val CRD_DATE: LocalDate = LocalDate.of(2021, 2, 3)
     val SLED_DATE: LocalDate = LocalDate.of(2021, 3, 4)
-    val LED_DATE: LocalDate = LocalDate.of(2021, 4, 5)
-    val SED_DATE: LocalDate = LocalDate.of(2021, 5, 6)
+    val ESED_DATE: LocalDate = LocalDate.of(2021, 5, 5)
 
     val BOOKING_CALCULATION = BookingCalculation(
       dates = mutableMapOf(CRD to CRD_DATE),
       calculationRequestId = CALCULATION_REQUEST_ID
     )
-    private val OFFENDER = Offender(PRISONER_ID, "John Doe", LocalDate.of(1980, 1, 1))
-    private val SENTENCE = Sentence(
-      sentencedAt = FIRST_JAN_2015,
-      duration = FIVE_YEAR_DURATION,
-      offence = Offence(committedAt = SECOND_JAN_2015),
-      identifier = UUID.randomUUID(),
-      caseSequence = 1,
-      lineSequence = 2
-    )
-
-    val BOOKING = Booking(OFFENDER, mutableListOf(SENTENCE), mutableMapOf(), BOOKING_ID)
   }
 }

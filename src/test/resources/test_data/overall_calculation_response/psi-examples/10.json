@@ -5,6 +5,10 @@
   "dates": {
     "SLED": "2015-10-30",
     "CRD": "2014-05-01",
-    "HDCED": "2013-12-18"
+    "HDCED": "2013-12-18",
+    "ESED": "2015-12-14"
+  },
+  "effectiveSentenceLength": {
+    "YEARS": 3
   }
 }

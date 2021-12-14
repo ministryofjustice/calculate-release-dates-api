@@ -3,6 +3,11 @@
     "SLED": "2023-02-25",
     "CRD": "2022-06-02",
     "TUSED": "2023-05-28",
-    "HDCED": "2022-01-19"
+    "HDCED": "2022-01-19",
+    "ESED": "2023-03-20"
+  },
+  "effectiveSentenceLength": {
+    "YEARS": 1,
+    "MONTHS": 6
   }
 }
