@@ -68,8 +68,8 @@ class BookingExtractionService(
       bookingCalculation.dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
     }
 
-    if (sentenceCalculation.homeDetentionCurfewEligibilityDateDate != null) {
-      bookingCalculation.dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDateDate!!
+    if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null) {
+      bookingCalculation.dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
     }
 
     if (sentenceCalculation.notionalConditionalReleaseDate != null) {
@@ -167,9 +167,9 @@ class BookingExtractionService(
   }
 
   private fun extractManyHomeDetentionCurfewEligibilityDate(earliestSentenceDate: LocalDate, latestUnadjustedExpiryDate: LocalDate, mostRecentSentenceByReleaseDate: ExtractableSentence): LocalDate? {
-    val fourYearSentence = earliestSentenceDate.plusYears(4)
+    val fourYearSentence = earliestSentenceDate.plusYears(FOUR)
     if (latestUnadjustedExpiryDate.isBefore(fourYearSentence)) {
-      return mostRecentSentenceByReleaseDate.sentenceCalculation.homeDetentionCurfewEligibilityDateDate
+      return mostRecentSentenceByReleaseDate.sentenceCalculation.homeDetentionCurfewEligibilityDate
     }
     return null
   }
@@ -274,5 +274,6 @@ class BookingExtractionService(
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
+    const val FOUR: Int = 4
   }
 }

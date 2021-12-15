@@ -31,7 +31,7 @@ data class SentenceCalculation(
 
   //  Home Detention Curfew Eligibility Date(HDCED)
   var numberOfDaysToHomeDetentionCurfewEligibilityDate: Long = 0
-  var homeDetentionCurfewEligibilityDateDate: LocalDate? = null
+  var homeDetentionCurfewEligibilityDate: LocalDate? = null
 
   // Notional Conditional Release Date (NCRD)
   var numberOfDaysToNotionalConditionalReleaseDate: Long = 0
@@ -64,7 +64,7 @@ data class SentenceCalculation(
       "Number of days to Home Detention Curfew Eligibility Date (HDCED)\t:\t" +
       "${numberOfDaysToHomeDetentionCurfewEligibilityDate}\n" +
       "Home Detention Curfew Eligibility Date (HDCED)\t:\t" +
-      "${homeDetentionCurfewEligibilityDateDate?.format(formatter)}\n" +
+      "${homeDetentionCurfewEligibilityDate?.format(formatter)}\n" +
 
       "Effective $expiryDateType\t:\t${expiryDate?.format(formatter)}\n" +
       "Effective $releaseDateType\t:\t${releaseDate?.format(formatter)}\n" +

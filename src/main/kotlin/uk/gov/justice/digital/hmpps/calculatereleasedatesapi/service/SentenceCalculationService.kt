@@ -238,7 +238,7 @@ class SentenceCalculationService {
           .plus(sentenceCalculation.calculatedTotalAddedDays)
           .minus(sentenceCalculation.calculatedTotalDeductedDays)
           .plus(sentenceCalculation.calculatedTotalAwardedDays)
-      sentenceCalculation.homeDetentionCurfewEligibilityDateDate = sentence.sentencedAt.plusDays(
+      sentenceCalculation.homeDetentionCurfewEligibilityDate = sentence.sentencedAt.plusDays(
         sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate
       )
     } else {
@@ -247,18 +247,18 @@ class SentenceCalculationService {
           .plus(sentenceCalculation.calculatedTotalAddedDays)
           .minus(sentenceCalculation.calculatedTotalDeductedDays)
           .plus(sentenceCalculation.calculatedTotalAwardedDays)
-      sentenceCalculation.homeDetentionCurfewEligibilityDateDate = sentence.sentencedAt.plusDays(
+      sentenceCalculation.homeDetentionCurfewEligibilityDate = sentence.sentencedAt.plusDays(
         sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate
       ).minusDays(ONE)
     }
     // If adjustments make the CRD before sentence date (i.e. a large REMAND days)
     // then we don't need a HDCED date.
     if (sentence.sentencedAt.isAfterOrEqualTo(sentenceCalculation.adjustedReleaseDate)) {
-      sentenceCalculation.homeDetentionCurfewEligibilityDateDate = null
+      sentenceCalculation.homeDetentionCurfewEligibilityDate = null
     } else if (sentence.sentencedAt.plusDays(FOURTEEN)
-      .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewEligibilityDateDate!!)
+      .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewEligibilityDate!!)
     ) {
-      sentenceCalculation.homeDetentionCurfewEligibilityDateDate = sentence.sentencedAt.plusDays(FOURTEEN)
+      sentenceCalculation.homeDetentionCurfewEligibilityDate = sentence.sentencedAt.plusDays(FOURTEEN)
     }
   }
 
