@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util
 
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -50,5 +51,13 @@ class LocalDateExtTest {
     val secondDayOfMonth = LocalDate.of(2021, 5, 2)
     assertTrue(firstDayOfMonth.isFirstDayOfMonth())
     assertFalse(secondDayOfMonth.isFirstDayOfMonth())
+  }
+
+  @Test
+  fun `plusDaysToEndOfMonth() test`() {
+    val firstDayOfMonth = LocalDate.of(2021, 5, 1)
+    val secondDayOfMonth = LocalDate.of(2021, 5, 2)
+    assertEquals(LocalDate.of(2021, 5, 31), firstDayOfMonth.plusDaysToEndOfMonth())
+    assertEquals(LocalDate.of(2021, 5, 31), secondDayOfMonth.plusDaysToEndOfMonth())
   }
 }
