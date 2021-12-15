@@ -41,6 +41,16 @@ internal class DurationTest {
     assertEquals(1, length)
   }
 
+  // This example is from PSI 5.5.3
+  @Test
+  fun `For example 3 months starting on 1 January (in a non leap year) runs to 31 March = 90 days`() {
+    val duration = Duration()
+    duration.append(3L, ChronoUnit.MONTHS)
+    val sentenceAt = LocalDate.of(NOT_LEAP_YEAR, 1, 1)
+    assertEquals(LocalDate.of(NOT_LEAP_YEAR, 3, 31), duration.getEndDate(sentenceAt))
+    assertEquals(90, duration.getLengthInDays(sentenceAt))
+  }
+
   // These examples are from PSI 5.5.4
   @Test
   fun `getEndDate() - 3 months starting 30 November runs to 28 February = 91 days`() {

@@ -43,4 +43,12 @@ class LocalDateExtTest {
     assertTrue(sunday.isWeekend())
     assertFalse(monday.isWeekend())
   }
+
+  @Test
+  fun `isFirstDayOfMonth() test`() {
+    val firstDayOfMonth = LocalDate.of(2021, 5, 1)
+    val secondDayOfMonth = LocalDate.of(2021, 5, 2)
+    assertTrue(firstDayOfMonth.isFirstDayOfMonth())
+    assertFalse(secondDayOfMonth.isFirstDayOfMonth())
+  }
 }

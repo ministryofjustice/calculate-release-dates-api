@@ -49,3 +49,6 @@ custom-examples,crs-637-example-with-gap,BookingTimelineGapException
 custom-examples,crs-637-example-with-no-gap,
 custom-examples,crs-645-first-day-of-month,
 custom-examples,crs-645-last-day-of-month,
+custom-examples,crs-645-row-259,
+custom-examples,crs-645-row-341,
+custom-examples,crs-645-row-342,

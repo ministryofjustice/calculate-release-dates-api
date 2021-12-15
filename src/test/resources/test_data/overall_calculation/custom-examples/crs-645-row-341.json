@@ -7,14 +7,18 @@
   "sentences":[
     {
       "offence":{
-        "committedAt":"2020-04-02"
+        "committedAt":"2020-05-16"
       },
       "duration":{
         "durationElements":{
-          "MONTHS": 3
+          "YEARS":6,
+          "MONTHS":6
         }
       },
-      "sentencedAt":"2021-01-01"
+      "sentencedAt":"2020-12-01"
     }
-  ]
+  ],
+  "adjustments":{
+    "REMAND":197
+  }
 }

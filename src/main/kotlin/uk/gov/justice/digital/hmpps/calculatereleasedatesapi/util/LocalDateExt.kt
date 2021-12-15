@@ -16,7 +16,7 @@ fun LocalDate.isWeekend(): Boolean {
 }
 
 fun LocalDate.isFirstDayOfMonth(): Boolean {
-  return this.dayOfMonth == 0
+  return this.dayOfMonth == 1
 }
 
 fun LocalDate.plusDaysToEndOfMonth(): LocalDate {
