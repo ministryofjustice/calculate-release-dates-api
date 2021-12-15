@@ -233,32 +233,32 @@ class SentenceCalculationService {
 
   private fun calculateHDCED(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
     if (sentence.durationIsLessThan(EIGHTEEN, ChronoUnit.MONTHS)) {
-      sentenceCalculation.numberOfDaysToHomeDetentionCurfewExpiryDate =
+      sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate =
         max(TWENTY_EIGHT, ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().div(FOUR)).toLong())
           .plus(sentenceCalculation.calculatedTotalAddedDays)
           .minus(sentenceCalculation.calculatedTotalDeductedDays)
           .plus(sentenceCalculation.calculatedTotalAwardedDays)
-      sentenceCalculation.homeDetentionCurfewExpiryDateDate = sentence.sentencedAt.plusDays(
-        sentenceCalculation.numberOfDaysToHomeDetentionCurfewExpiryDate
+      sentenceCalculation.homeDetentionCurfewEligibilityDateDate = sentence.sentencedAt.plusDays(
+        sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate
       )
     } else {
-      sentenceCalculation.numberOfDaysToHomeDetentionCurfewExpiryDate =
+      sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate =
         sentenceCalculation.numberOfDaysToReleaseDate.minus(ONE_HUNDRED_AND_THIRTY_FOUR).toLong()
           .plus(sentenceCalculation.calculatedTotalAddedDays)
           .minus(sentenceCalculation.calculatedTotalDeductedDays)
           .plus(sentenceCalculation.calculatedTotalAwardedDays)
-      sentenceCalculation.homeDetentionCurfewExpiryDateDate = sentence.sentencedAt.plusDays(
-        sentenceCalculation.numberOfDaysToHomeDetentionCurfewExpiryDate
+      sentenceCalculation.homeDetentionCurfewEligibilityDateDate = sentence.sentencedAt.plusDays(
+        sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate
       ).minusDays(ONE)
     }
     // If adjustments make the CRD before sentence date (i.e. a large REMAND days)
     // then we don't need a HDCED date.
     if (sentence.sentencedAt.isAfterOrEqualTo(sentenceCalculation.adjustedReleaseDate)) {
-      sentenceCalculation.homeDetentionCurfewExpiryDateDate = null
+      sentenceCalculation.homeDetentionCurfewEligibilityDateDate = null
     } else if (sentence.sentencedAt.plusDays(FOURTEEN)
-      .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewExpiryDateDate!!)
+      .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewEligibilityDateDate!!)
     ) {
-      sentenceCalculation.homeDetentionCurfewExpiryDateDate = sentence.sentencedAt.plusDays(FOURTEEN)
+      sentenceCalculation.homeDetentionCurfewEligibilityDateDate = sentence.sentencedAt.plusDays(FOURTEEN)
     }
   }
 

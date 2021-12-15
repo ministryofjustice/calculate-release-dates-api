@@ -24,7 +24,7 @@ class SentenceCalculationServiceTest {
     val calculation = sentenceCalculationService.calculate(sentence, booking)
     assertEquals(calculation.expiryDate, LocalDate.of(2015, 9, 20))
     assertEquals(calculation.releaseDate, LocalDate.of(2014, 9, 20))
-    assertEquals(LocalDate.of(2014, 5, 9), calculation.homeDetentionCurfewExpiryDateDate)
+    assertEquals(LocalDate.of(2014, 5, 9), calculation.homeDetentionCurfewEligibilityDateDate)
     assertEquals("[SLED, CRD, HDCED]", calculation.sentence.releaseDateTypes.toString())
   }
 
@@ -41,7 +41,7 @@ class SentenceCalculationServiceTest {
     val calculation = sentenceCalculationService.calculate(sentence, booking)
     assertEquals(LocalDate.of(2015, 10, 30), calculation.expiryDate)
     assertEquals(LocalDate.of(2014, 5, 1), calculation.releaseDate)
-    assertEquals(LocalDate.of(2013, 12, 18), calculation.homeDetentionCurfewExpiryDateDate)
+    assertEquals(LocalDate.of(2013, 12, 18), calculation.homeDetentionCurfewEligibilityDateDate)
     assertEquals("[SLED, CRD, HDCED]", calculation.sentence.releaseDateTypes.toString())
   }
 
@@ -56,7 +56,7 @@ class SentenceCalculationServiceTest {
     val calculation = sentenceCalculationService.calculate(sentence, booking)
     assertEquals(LocalDate.of(2013, 8, 6), calculation.expiryDate)
     assertEquals(LocalDate.of(2013, 4, 7), calculation.releaseDate)
-    assertEquals(LocalDate.of(2013, 2, 6), calculation.homeDetentionCurfewExpiryDateDate)
+    assertEquals(LocalDate.of(2013, 2, 6), calculation.homeDetentionCurfewEligibilityDateDate)
     assertEquals("[ARD, SED, HDCED]", calculation.sentence.releaseDateTypes.toString())
   }
 
@@ -72,7 +72,7 @@ class SentenceCalculationServiceTest {
     assertEquals(LocalDate.of(2015, 9, 24), calculation.expiryDate)
     assertEquals(LocalDate.of(2015, 5, 26), calculation.releaseDate)
     assertEquals(LocalDate.of(2016, 5, 26), calculation.topUpSupervisionDate)
-    assertEquals(LocalDate.of(2015, 3, 28), calculation.homeDetentionCurfewExpiryDateDate)
+    assertEquals(LocalDate.of(2015, 3, 28), calculation.homeDetentionCurfewEligibilityDateDate)
     assertEquals("[SLED, CRD, TUSED, HDCED]", calculation.sentence.releaseDateTypes.toString())
   }
 
