@@ -35,7 +35,7 @@ data class Sentence(
       "Duration\t:\t$duration\n" +
       "${duration.toPeriodString(sentencedAt)}\n" +
       "Sentence Types\t:\t$releaseDateTypes\n" +
-      "Number of Days in Sentence\t:\t${duration.getLengthInDays(sentencedAt)}\n" +
+      "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
       sentenceCalculation.buildString(releaseDateTypes)
   }
 

@@ -14,3 +14,14 @@ fun LocalDate.isAfterOrEqualTo(date: LocalDate): Boolean {
 fun LocalDate.isWeekend(): Boolean {
   return this.dayOfWeek == DayOfWeek.SATURDAY || this.dayOfWeek == DayOfWeek.SUNDAY
 }
+
+fun LocalDate.isFirstDayOfMonth(): Boolean {
+  return this.dayOfMonth == 1
+}
+
+/*
+  Adds days to the date until it reaches the last day of the month.
+ */
+fun LocalDate.plusDaysUntilEndOfMonth(): LocalDate {
+  return this.plusDays((this.month.length(this.isLeapYear) - this.dayOfMonth).toLong())
+}
