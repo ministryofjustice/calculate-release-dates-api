@@ -19,6 +19,9 @@ fun LocalDate.isFirstDayOfMonth(): Boolean {
   return this.dayOfMonth == 1
 }
 
-fun LocalDate.plusDaysToEndOfMonth(): LocalDate {
+/*
+  Adds days to the date until it reaches the last day of the month.
+ */
+fun LocalDate.plusDaysUntilEndOfMonth(): LocalDate {
   return this.plusDays((this.month.length(this.isLeapYear) - this.dayOfMonth).toLong())
 }

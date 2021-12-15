@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isFirstDayOfMonth
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.plusDaysToEndOfMonth
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.plusDaysUntilEndOfMonth
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -39,7 +39,6 @@ data class Duration(
   }
 
   fun getEndDate(startDate: LocalDate): LocalDate {
-    var calculatedDate = startDate
     val years = durationElements.getOrDefault(YEARS, 0L)
     val months = durationElements.getOrDefault(MONTHS, 0L)
     val weeks = durationElements.getOrDefault(WEEKS, 0L)
@@ -47,6 +46,7 @@ data class Duration(
 
     val isDateAdjustedForFirstDayOfMonth = startDate.isFirstDayOfMonth() && months != 0L
 
+    var calculatedDate = startDate
     if (!isDateAdjustedForFirstDayOfMonth) {
       calculatedDate = calculatedDate.minusDays(1)
     }
@@ -54,10 +54,11 @@ data class Duration(
     calculatedDate = calculatedDate.plusYears(years)
 
     calculatedDate = if (isDateAdjustedForFirstDayOfMonth) {
-      calculatedDate.plusMonths(months - 1).plusDaysToEndOfMonth()
+      calculatedDate.plusMonths(months - 1).plusDaysUntilEndOfMonth()
     } else {
       calculatedDate.plusMonths(months)
     }
+
     calculatedDate = calculatedDate.plusWeeks(weeks)
     calculatedDate = calculatedDate.plusDays(days)
     return calculatedDate

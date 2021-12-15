@@ -54,10 +54,10 @@ class LocalDateExtTest {
   }
 
   @Test
-  fun `plusDaysToEndOfMonth() test`() {
+  fun `plusDaysUntilEndOfMonth() test`() {
     val firstDayOfMonth = LocalDate.of(2021, 5, 1)
     val secondDayOfMonth = LocalDate.of(2021, 5, 2)
-    assertEquals(LocalDate.of(2021, 5, 31), firstDayOfMonth.plusDaysToEndOfMonth())
-    assertEquals(LocalDate.of(2021, 5, 31), secondDayOfMonth.plusDaysToEndOfMonth())
+    assertEquals(LocalDate.of(2021, 5, 31), firstDayOfMonth.plusDaysUntilEndOfMonth())
+    assertEquals(LocalDate.of(2021, 5, 31), secondDayOfMonth.plusDaysUntilEndOfMonth())
   }
 }
