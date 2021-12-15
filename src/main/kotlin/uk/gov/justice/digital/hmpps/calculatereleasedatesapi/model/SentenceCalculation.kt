@@ -29,9 +29,9 @@ data class SentenceCalculation(
   var numberOfDaysToLicenceExpiryDate: Long = 0
   var licenceExpiryDate: LocalDate? = null
 
-  //  Home Detention Curfew Expiry Date(HDCED)
-  var numberOfDaysToHomeDetentionCurfewExpiryDate: Long = 0
-  var homeDetentionCurfewExpiryDateDate: LocalDate? = null
+  //  Home Detention Curfew Eligibility Date(HDCED)
+  var numberOfDaysToHomeDetentionCurfewEligibilityDate: Long = 0
+  var homeDetentionCurfewEligibilityDate: LocalDate? = null
 
   // Notional Conditional Release Date (NCRD)
   var numberOfDaysToNotionalConditionalReleaseDate: Long = 0
@@ -61,10 +61,10 @@ data class SentenceCalculation(
       "Number of days to Non Parole Date (NPD)\t:\t${numberOfDaysToNonParoleDate}\n" +
       "Non Parole Date (NPD)\t:\t${nonParoleDate?.format(formatter)}\n" +
 
-      "Number of days to Home Detention Curfew Expiry Date (HDCED)\t:\t" +
-      "${numberOfDaysToHomeDetentionCurfewExpiryDate}\n" +
-      "Home Detention Curfew Expiry Date (HDCED)\t:\t" +
-      "${homeDetentionCurfewExpiryDateDate?.format(formatter)}\n" +
+      "Number of days to Home Detention Curfew Eligibility Date (HDCED)\t:\t" +
+      "${numberOfDaysToHomeDetentionCurfewEligibilityDate}\n" +
+      "Home Detention Curfew Eligibility Date (HDCED)\t:\t" +
+      "${homeDetentionCurfewEligibilityDate?.format(formatter)}\n" +
 
       "Effective $expiryDateType\t:\t${expiryDate?.format(formatter)}\n" +
       "Effective $releaseDateType\t:\t${releaseDate?.format(formatter)}\n" +
