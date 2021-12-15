@@ -47,3 +47,5 @@ custom-examples,crs-467-example-2,
 custom-examples,crs-614-pre-prod-bug-example,
 custom-examples,crs-637-example-with-gap,BookingTimelineGapException
 custom-examples,crs-637-example-with-no-gap,
+custom-examples,crs-645-first-day-of-month,
+custom-examples,crs-645-last-day-of-month,
