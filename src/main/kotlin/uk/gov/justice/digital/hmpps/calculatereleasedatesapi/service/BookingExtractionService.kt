@@ -274,6 +274,6 @@ class BookingExtractionService(
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
-    const val FOUR: Int = 4
+    private const val FOUR = 4L
   }
 }
