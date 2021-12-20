@@ -29,7 +29,8 @@ class SentenceCalculationService {
 
   fun calculate(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
 
-    val sentenceCalculation = getInitialCalculation(sentence, booking)
+    val sentenceCalculation = getInitialCalculation(sentence, booking, determineReleaseDateMultiplier(sentence))
+
     // Other adjustments need to be included in the sentence calculation here
 
     if (sentence.releaseDateTypes.contains(SLED) || sentence.releaseDateTypes.contains(SED)) {
@@ -120,7 +121,7 @@ class SentenceCalculationService {
     return sentenceCalculation
   }
 
-  // If a sentence needs to calculate an NPD but it is an aggregated sentence made up of "old" and "new" type sentences
+  // If a sentence needs to calculate an NPD, but it is an aggregated sentence made up of "old" and "new" type sentences
   // The NPD calc becomes much more complicated, see PSI example 40.
   private fun calculateNPDFromNotionalCRD(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
     if (sentence is ConsecutiveSentence) {
@@ -160,13 +161,15 @@ class SentenceCalculationService {
     }
   }
 
-  private fun getInitialCalculation(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
+  private fun getInitialCalculation(sentence: CalculableSentence, booking: Booking, releaseDateMultiplier: Double): SentenceCalculation {
 
     // create the intermediate values
     val numberOfDaysToSentenceExpiryDate = sentence.getLengthInDays()
 
     val numberOfDaysToReleaseDate =
-      ceil(numberOfDaysToSentenceExpiryDate.toDouble().div(TWO)).toInt()
+      ceil(
+        numberOfDaysToSentenceExpiryDate.toDouble().times(releaseDateMultiplier)
+      ).toInt()
 
     val unadjustedExpiryDate =
       sentence.sentencedAt
@@ -259,6 +262,17 @@ class SentenceCalculationService {
       .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewEligibilityDate!!)
     ) {
       sentenceCalculation.homeDetentionCurfewEligibilityDate = sentence.sentencedAt.plusDays(FOURTEEN)
+    }
+  }
+
+  private fun determineReleaseDateMultiplier(sentence: CalculableSentence): Double {
+    return if (
+      (sentence is Sentence) &&
+      sentence.identificationTrack == SentenceIdentificationTrack.SDS_PLUS
+    ) {
+      2 / 3.toDouble()
+    } else {
+      1 / 2.toDouble()
     }
   }
 
