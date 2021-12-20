@@ -157,6 +157,7 @@ class JsonTransformation {
 
     @FromJson
     override fun fromJson(jsonReader: JsonReader): Period? {
+      @Suppress("UNCHECKED_CAST")
       val jsonMap = jsonReader.readJsonValue() as Map<String, Double>
       val years = if (jsonMap.containsKey("YEARS")) jsonMap["YEARS"] else 0
       val months = if (jsonMap.containsKey("MONTHS")) jsonMap["MONTHS"] else 0
