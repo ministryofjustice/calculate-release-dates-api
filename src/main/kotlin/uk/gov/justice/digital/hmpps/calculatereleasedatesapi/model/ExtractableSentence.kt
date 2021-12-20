@@ -27,13 +27,14 @@ interface ExtractableSentence : SentenceTimeline {
     log.info(
       "getDateRangeFromStartToReleaseWithoutDaysAwarded: Comparing sentenced at {} with release date {}",
       sentencedAt,
-      sentenceCalculation.unadjustedReleaseDate.minusDays(sentenceCalculation.calculatedTotalDeductedDays.toLong()))
+      sentenceCalculation.unadjustedReleaseDate.minusDays(sentenceCalculation.calculatedTotalDeductedDays.toLong())
+    )
 
     /* TODO: The following has been added to handle a scenario caused by
         using the aggregated rather than the sentence level adjustment.
         This should be removed when that feature is implemented */
 
-    return if (sentencedAt.isAfter( sentenceCalculation.unadjustedReleaseDate.minusDays(sentenceCalculation.calculatedTotalDeductedDays.toLong()))) {
+    return if (sentencedAt.isAfter(sentenceCalculation.unadjustedReleaseDate.minusDays(sentenceCalculation.calculatedTotalDeductedDays.toLong()))) {
       /*
       if the adjustments applied the sentence mean that the sentence would be negative
       (because of long adjustments on another sentence) then return
@@ -49,8 +50,6 @@ interface ExtractableSentence : SentenceTimeline {
         sentenceCalculation.unadjustedReleaseDate.minusDays(sentenceCalculation.calculatedTotalDeductedDays.toLong())
       )
     }
-
-
   }
 
   companion object {
