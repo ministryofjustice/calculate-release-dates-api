@@ -47,7 +47,13 @@ data class SentenceCalculation(
     val expiryDateType = if (releaseDateTypes.contains(ReleaseDateType.SLED)) "SLED" else "SED"
     val releaseDateType = releaseDateTypes.toString()
 
-    return "Date of $expiryDateType\t:\t${unadjustedExpiryDate.format(formatter)}\n" +
+    var append = ""
+    if (sentence is Sentence) {
+      append += "Identification Track\t:\t${(sentence as Sentence).identificationTrack}\n"
+    }
+
+    return append +
+      "Date of $expiryDateType\t:\t${unadjustedExpiryDate.format(formatter)}\n" +
       "Number of days to $releaseDateType\t:\t${numberOfDaysToReleaseDate}\n" +
       "Date of $releaseDateType\t:\t${unadjustedReleaseDate.format(formatter)}\n" +
       "Total number of days of deducted (remand / tagged bail)\t:" +

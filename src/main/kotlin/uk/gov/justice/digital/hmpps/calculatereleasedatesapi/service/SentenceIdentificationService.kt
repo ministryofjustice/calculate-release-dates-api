@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
@@ -19,6 +20,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 @Service
@@ -87,11 +90,11 @@ class SentenceIdentificationService {
     ) {
       beforeCJAAndLASPO(sentence)
     } else {
-      afterCJAAndLASPO(sentence)
+      afterCJAAndLASPOorSDSPlus(sentence, offender)
     }
   }
 
-  private fun afterCJAAndLASPO(sentence: IdentifiableSentence) {
+  private fun afterCJAAndLASPOorSDSPlus(sentence: IdentifiableSentence, offender: Offender) {
 
     sentence.identificationTrack = SDS_AFTER_CJA_LASPO
 
@@ -103,6 +106,22 @@ class SentenceIdentificationService {
         SED
       )
     } else {
+
+      /*
+        Given a single SDS sentence of 7 years or more in length
+        And the sentence was passed on or after 1st April 2020
+        And the sentence was for a schedule 15 offence
+        And the offender was aged 18 or over at the time the sentence
+      */
+      if (
+        sentence.durationIsGreaterThanOrEqualTo(SEVEN, ChronoUnit.YEARS) &&
+        sentence.sentencedAt.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE) &&
+        sentence.offence.isScheduleFifteen &&
+        offender.getAgeOnDate(sentence.sentencedAt) >= 18
+      ) {
+        sentence.identificationTrack = SentenceIdentificationTrack.SDS_PLUS
+      }
+
       sentence.releaseDateTypes = listOf(
         SLED,
         CRD
@@ -178,6 +197,8 @@ class SentenceIdentificationService {
     private const val INT_ONE = 1
     private const val TWO = 2L
     private const val FOUR = 4L
+    private const val SEVEN = 7L
     private const val TWELVE = 12L
+    private val SDS_PLUS_COMMENCEMENT_DATE = LocalDate.of(2020, 4, 1)
   }
 }
