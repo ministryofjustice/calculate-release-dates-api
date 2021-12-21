@@ -5,6 +5,7 @@ plugins {
   id("io.gitlab.arturbosch.detekt").version("1.18.0-RC2")
   id("jacoco")
 }
+project.extensions.extraProperties["log4j2.version"] = "2.17.0"
 
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
@@ -58,7 +59,6 @@ dependencies {
   implementation("org.threeten:threeten-extra:1.7.0")
 
   // Database dependencies
-  runtimeOnly("com.h2database:h2")
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.3.1")
 
@@ -87,6 +87,7 @@ dependencies {
   testImplementation("org.mockito:mockito-inline:4.1.0")
   testImplementation("io.projectreactor:reactor-test")
   testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+  testImplementation("com.h2database:h2")
 }
 repositories {
   mavenCentral()
