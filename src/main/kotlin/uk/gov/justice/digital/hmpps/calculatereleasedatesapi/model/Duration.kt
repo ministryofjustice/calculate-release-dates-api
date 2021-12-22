@@ -46,7 +46,11 @@ data class Duration(
     val weeks = durationElements.getOrDefault(WEEKS, 0L)
     val days = durationElements.getOrDefault(DAYS, 0L)
 
-    val isDateAdjustedForFirstDayOfMonth = startDate.isFirstDayOfMonth() && months != 0L
+    /*
+    Policy confirmed that the years work exactly the same one year = 12 calendar months
+    So 1 year will always be 365 days or 366 if it involves a leap year */
+
+    val isDateAdjustedForFirstDayOfMonth = startDate.isFirstDayOfMonth() && (months != 0L || years != 0L)
 
     var calculatedDate = startDate
     if (!isDateAdjustedForFirstDayOfMonth) {

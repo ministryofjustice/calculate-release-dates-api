@@ -309,11 +309,6 @@ class CalculationServiceTest {
     }
   }
 
-  @Test
-  fun `Test CRS 377`() {
-    `Test Example`("custom-examples", "crs-377-sds-plus-row-15", null)
-  }
-
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val USERNAME = "user1"
