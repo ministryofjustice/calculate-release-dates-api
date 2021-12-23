@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity
 import com.fasterxml.jackson.databind.JsonNode
 import com.vladmihalcea.hibernate.type.json.JsonType
 import com.vladmihalcea.hibernate.type.json.internal.JacksonUtil
+import org.hibernate.Hibernate
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import org.hibernate.annotations.Type
@@ -20,6 +21,7 @@ import javax.persistence.OneToMany
 import javax.persistence.Table
 import javax.validation.constraints.NotNull
 
+@Suppress("DEPRECATION")
 @Entity
 @Table
 @TypeDefs(
@@ -57,4 +59,22 @@ data class CalculationRequest(
   @OneToMany
   @Fetch(FetchMode.JOIN)
   val calculationOutcomes: List<CalculationOutcome> = ArrayList(),
-)
+) {
+
+  @Override
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+    other as CalculationRequest
+
+    return id == other.id
+  }
+
+  @Override
+  override fun hashCode(): Int = javaClass.hashCode()
+
+  @Override
+  override fun toString(): String {
+    return this::class.simpleName + "(calculationReference = $calculationReference )"
+  }
+}

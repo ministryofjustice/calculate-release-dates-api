@@ -10,21 +10,27 @@ class InfoTest : IntegrationTestBase() {
 
   @Test
   fun `Info page is accessible`() {
-    webTestClient.get()
+    webTestClient
+      .get()
       .uri("/info")
       .exchange()
       .expectStatus()
       .isOk
       .expectBody()
-      .jsonPath("app.name").isEqualTo("Calculate Release Dates Api")
+      .jsonPath("build.name")
+      .isEqualTo("calculate-release-dates-api")
   }
 
   @Test
   fun `Info page reports version`() {
-    webTestClient.get().uri("/info")
+    webTestClient
+      .get()
+      .uri("/info")
       .exchange()
       .expectStatus().isOk
-      .expectBody().jsonPath("build.version").value<String> {
+      .expectBody()
+      .consumeWith(System.out::println)
+      .jsonPath("build.version").value<String> {
         assertThat(it).startsWith(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE))
       }
   }

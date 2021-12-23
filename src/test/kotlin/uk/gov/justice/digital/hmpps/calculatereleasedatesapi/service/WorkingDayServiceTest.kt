@@ -1,13 +1,13 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.reset
-import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BankHoliday
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RegionBankHolidays
