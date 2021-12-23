@@ -76,6 +76,8 @@ dependencies {
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
   implementation("org.springframework:spring-jms")
   implementation("com.google.code.gson:gson:2.8.9")
+  implementation("ch.qos.logback:logback-core:1.2.9")
+  implementation("ch.qos.logback:logback-classic:1.2.9")
 
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
