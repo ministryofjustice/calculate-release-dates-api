@@ -5,7 +5,7 @@ plugins {
   id("io.gitlab.arturbosch.detekt").version("1.18.0-RC2")
   id("jacoco")
 }
-project.extensions.extraProperties["log4j2.version"] = "2.17.0"
+project.extensions.extraProperties["log4j2.version"] = "2.17.1"
 
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
