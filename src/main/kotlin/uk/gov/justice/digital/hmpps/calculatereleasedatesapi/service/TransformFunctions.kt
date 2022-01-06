@@ -41,6 +41,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
@@ -64,7 +65,8 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
   // treated as a separate sentence
   return sentence.offences.map { offendersOffence ->
     val offence = Offence(
-      committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate
+      committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate,
+      isScheduleFifteen = offendersOffence.indicators.any { it == OffenderOffence.SCHEDULE_15_INDICATOR }
     )
     val duration = Duration()
     duration.append(sentence.days.toLong(), DAYS)
@@ -72,11 +74,11 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
     duration.append(sentence.months.toLong(), MONTHS)
     duration.append(sentence.years.toLong(), YEARS)
     val consecutiveSentenceUUIDs = if (sentence.consecutiveToSequence != null)
-      mutableListOf(
+      listOf(
         generateUUIDForSentence(sentence.bookingId, sentence.consecutiveToSequence)
       )
     else
-      mutableListOf()
+      listOf()
 
     Sentence(
       sentencedAt = sentence.sentenceDate,

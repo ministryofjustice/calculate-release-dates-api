@@ -33,11 +33,14 @@ class TransformFunctionsTest {
     val caseSequence = 155
     val offences = listOf(
       OffenderOffence(
-        offenderChargeId = 1L, offenceStartDate = FIRST_JAN_2015, offenceCode = "RR1", offenceDescription = "Littering"
+        offenderChargeId = 1L, offenceStartDate = FIRST_JAN_2015,
+        offenceCode = "RR1", offenceDescription = "Littering",
+        indicators = listOf("An indicator")
       ),
       OffenderOffence(
         offenderChargeId = 2L, offenceStartDate = SECOND_JAN_2015,
-        offenceCode = "RR2", offenceDescription = "Jaywalking"
+        offenceCode = "RR2", offenceDescription = "Jaywalking",
+        indicators = listOf(OffenderOffence.SCHEDULE_15_INDICATOR)
       ),
     )
     val request = SentenceAndOffences(
@@ -62,7 +65,7 @@ class TransformFunctionsTest {
         Sentence(
           sentencedAt = FIRST_JAN_2015,
           duration = FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION,
-          offence = Offence(committedAt = FIRST_JAN_2015),
+          offence = Offence(committedAt = FIRST_JAN_2015, isScheduleFifteen = false),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(),
           lineSequence = lineSequence,
@@ -71,7 +74,7 @@ class TransformFunctionsTest {
         Sentence(
           sentencedAt = FIRST_JAN_2015,
           duration = FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION,
-          offence = Offence(committedAt = SECOND_JAN_2015),
+          offence = Offence(committedAt = SECOND_JAN_2015, isScheduleFifteen = true),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(),
           lineSequence = lineSequence,
@@ -91,7 +94,7 @@ class TransformFunctionsTest {
     val offences = listOf(
       OffenderOffence(
         offenderChargeId = 1L, offenceStartDate = FIRST_JAN_2015, offenceEndDate = SECOND_JAN_2015,
-        offenceCode = "RR1", offenceDescription = "Littering"
+        offenceCode = "RR1", offenceDescription = "Littering", indicators = listOf()
       ),
     )
     val request = SentenceAndOffences(
