@@ -1,11 +1,10 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.0.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.0.1-beta"
   kotlin("plugin.spring") version "1.6.10"
   kotlin("plugin.jpa") version "1.6.10"
   id("io.gitlab.arturbosch.detekt").version("1.18.0-RC2")
   id("jacoco")
 }
-project.extensions.extraProperties["log4j2.version"] = "2.17.1"
 
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
@@ -76,8 +75,6 @@ dependencies {
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
   implementation("org.springframework:spring-jms")
   implementation("com.google.code.gson:gson:2.8.9")
-  implementation("ch.qos.logback:logback-core:1.2.10")
-  implementation("ch.qos.logback:logback-classic:1.2.10")
 
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
