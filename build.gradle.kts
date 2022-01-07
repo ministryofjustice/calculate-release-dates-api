@@ -67,17 +67,17 @@ dependencies {
   implementation("com.vladmihalcea:hibernate-types-52:2.14.0")
 
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.2")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.2")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.2")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.3")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.3")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.3")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8")
   implementation("com.amazonaws:aws-java-sdk-sns:1.12.131")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
   implementation("org.springframework:spring-jms")
   implementation("com.google.code.gson:gson:2.8.9")
-  implementation("ch.qos.logback:logback-core:1.2.9")
-  implementation("ch.qos.logback:logback-classic:1.2.9")
+  implementation("ch.qos.logback:logback-core:1.2.10")
+  implementation("ch.qos.logback:logback-classic:1.2.10")
 
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
