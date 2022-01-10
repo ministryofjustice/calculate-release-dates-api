@@ -8,4 +8,9 @@ data class OffenderOffence(
   val offenceEndDate: LocalDate? = null,
   val offenceCode: String,
   val offenceDescription: String,
-)
+  var indicators: List<String> = listOf()
+) {
+  companion object {
+    const val SCHEDULE_15_INDICATOR = "S15/CJIB"
+  }
+}
