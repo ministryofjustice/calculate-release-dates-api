@@ -2,11 +2,13 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
+import java.time.LocalDate
 
 data class Booking(
   var offender: Offender,
   val sentences: List<Sentence>,
-  val adjustments: Map<AdjustmentType, Int> = mapOf(),
+  val adjustments: Map<AdjustmentType, List<Adjustment>> = mapOf(),
   val bookingId: Long = -1L,
 ) {
   @JsonIgnore
@@ -17,9 +19,12 @@ data class Booking(
   @Transient
   var singleTermSentence: SingleTermSentence? = null
 
-  fun getOrZero(adjustmentType: AdjustmentType): Int {
+  fun getOrZero(adjustmentType: AdjustmentType, sentenceAt: LocalDate): Int {
     return if (adjustments.containsKey(adjustmentType) && adjustments[adjustmentType] != null) {
-      adjustments[adjustmentType]!!
+      val adjustments = adjustments[adjustmentType]!!
+      adjustments.filter { it.fromDate.isBeforeOrEqualTo(sentenceAt) }
+        .map { it.numberOfDays }
+        .reduce { acc, numberOfDates -> acc + numberOfDates }
     } else {
       0
     }

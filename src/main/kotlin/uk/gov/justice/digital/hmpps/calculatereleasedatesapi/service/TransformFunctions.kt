@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -41,12 +42,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
@@ -103,14 +106,44 @@ fun transform(prisonerDetails: PrisonerDetails): Offender {
   )
 }
 
-fun transform(sentenceAdjustments: SentenceAdjustments): MutableMap<AdjustmentType, Int> {
-  val adjustments = mutableMapOf<AdjustmentType, Int>()
-  adjustments[REMAND] = sentenceAdjustments.remand
-  adjustments[TAGGED_BAIL] = sentenceAdjustments.taggedBail
-  adjustments[UNLAWFULLY_AT_LARGE] = sentenceAdjustments.unlawfullyAtLarge
-  adjustments[ADDITIONAL_DAYS_AWARDED] = sentenceAdjustments.additionalDaysAwarded
-  adjustments[RESTORATION_OF_ADDITIONAL_DAYS_AWARDED] = sentenceAdjustments.restoredAdditionalDaysAwarded
+fun transform(bookingAndSentenceAdjustments: BookingAndSentenceAdjustments, sentencesAndOffences: List<SentenceAndOffences>): Map<AdjustmentType, List<Adjustment>> {
+  val adjustments: MutableMap<AdjustmentType, MutableList<Adjustment>> = mutableMapOf()
+  bookingAndSentenceAdjustments.bookingAdjustments.forEach {
+    val adjustmentType = transform(it.type)
+    if (!adjustments.containsKey(adjustmentType)) {
+      adjustments[adjustmentType] = mutableListOf()
+    }
+    adjustments[adjustmentType]!!.add(Adjustment(fromDate = it.fromDate, toDate = it.toDate, numberOfDays = it.numberOfDays))
+  }
+  bookingAndSentenceAdjustments.sentenceAdjustments.forEach {
+    val adjustmentType = transform(it.type)
+    if (!adjustments.containsKey(adjustmentType)) {
+      adjustments[adjustmentType] = mutableListOf()
+    }
+    val fromDate = it.fromDate ?: sentencesAndOffences.minOf { sentenceAndOffences -> sentenceAndOffences.sentenceDate }
+    adjustments[adjustmentType]!!.add(Adjustment(fromDate = fromDate, toDate = it.toDate, numberOfDays = it.numberOfDays))
+  }
   return adjustments
+}
+
+fun transform(sentenceAdjustmentType: SentenceAdjustmentType): AdjustmentType {
+  return when (sentenceAdjustmentType) {
+    SentenceAdjustmentType.RECALL_SENTENCE_REMAND -> TODO()
+    SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL -> TODO()
+    SentenceAdjustmentType.REMAND -> REMAND
+    SentenceAdjustmentType.TAGGED_BAIL -> TAGGED_BAIL
+    SentenceAdjustmentType.UNUSED_REMAND -> TODO()
+  }
+}
+
+fun transform(bookingAdjustmentType: BookingAdjustmentType): AdjustmentType {
+  return when (bookingAdjustmentType) {
+    BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED -> ADDITIONAL_DAYS_AWARDED
+    BookingAdjustmentType.LAWFULLY_AT_LARGE -> TODO()
+    BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED -> RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
+    BookingAdjustmentType.SPECIAL_REMISSION -> TODO()
+    BookingAdjustmentType.UNLAWFULLY_AT_LARGE -> UNLAWFULLY_AT_LARGE
+  }
 }
 
 fun transform(

@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.CacheManager
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CacheConfiguration.Companion.BANK_HOLIDAYS_CACHE_NAME
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.WorkingDay
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
 import java.time.LocalDate
 import java.util.concurrent.ConcurrentHashMap
 
