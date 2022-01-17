@@ -213,23 +213,37 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubGetSentenceAdjustments(bookingId: Long): StubMapping =
     stubFor(
-      get("/api/bookings/$bookingId/sentenceAdjustments")
+      get("/api/adjustments/$bookingId/sentence-and-booking")
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
             .withBody(
               """
               {
-                "additionalDaysAwarded": 0,
-                "lawfullyAtLarge": 0,
-                "recallSentenceRemand": 0,
-                "recallSentenceTaggedBail": 0,
-                "remand": 28,
-                "restoredAdditionalDaysAwarded": 0,
-                "specialRemission": 0,
-                "taggedBail": 11,
-                "unlawfullyAtLarge": 29,
-                "unusedRemand": 0
+                "bookingAdjustments": [
+                  {
+                    "active": true,
+                    "type": "UNLAWFULLY_AT_LARGE",
+                    "fromDate": "2000-04-02",
+                    "numberOfDays": 29
+                  }
+                ],
+                "sentenceAdjustments": [
+                  {
+                    "sentenceSequence": 1,
+                    "active": true,
+                    "type": "REMAND",
+                    "fromDate": "2000-04-02",
+                    "numberOfDays": 28
+                  },
+                  {
+                    "sentenceSequence": 1,
+                    "active": true,
+                    "type": "TAGGED_BAIL",
+                    "fromDate": "2000-04-02",
+                    "numberOfDays": 11
+                  }
+                ]
               }
               """.trimIndent()
             )

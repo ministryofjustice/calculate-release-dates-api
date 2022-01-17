@@ -11,10 +11,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS

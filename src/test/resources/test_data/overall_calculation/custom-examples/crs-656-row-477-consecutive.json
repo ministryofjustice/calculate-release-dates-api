@@ -4,27 +4,27 @@
     "reference": "A123BCD",
     "dateOfBirth": "1991-01-01"
   },
-  "bookingId": 2655666,
-  "sentences": [{
-    "offence": {
-      "committedAt": "2018-10-01",
-      "isScheduleFifteen": false
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2018-10-01",
+        "isScheduleFifteen": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 1,
+          "MONTHS": 0
+        }
+      },
+      "identifier": "1a009aca-e295-310f-8508-8e918792064a",
+      "sentencedAt": "2021-03-01",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "sentenceParts": [],
+      "consecutiveSentenceUUIDs": []
     },
-    "duration": {
-      "durationElements": {
-        "DAYS": 0,
-        "WEEKS": 0,
-        "YEARS": 1,
-        "MONTHS": 0
-      }
-    },
-    "identifier": "1a009aca-e295-310f-8508-8e918792064a",
-    "sentencedAt": "2021-03-01",
-    "caseSequence": 1,
-    "lineSequence": 1,
-    "sentenceParts": [],
-    "consecutiveSentenceUUIDs": []
-  },
     {
       "offence": {
         "committedAt": "2018-10-01",
@@ -43,13 +43,41 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "sentenceParts": [],
-      "consecutiveSentenceUUIDs": ["1a009aca-e295-310f-8508-8e918792064a"]
-    }],
+      "consecutiveSentenceUUIDs": [
+        "1a009aca-e295-310f-8508-8e918792064a"
+      ]
+    }
+  ],
   "adjustments": {
-    "REMAND": 174,
-    "TAGGED_BAIL": 0,
-    "UNLAWFULLY_AT_LARGE": 0,
-    "ADDITIONAL_DAYS_AWARDED": 0,
-    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": 0
+    "REMAND": [
+      {
+        "numberOfDays": 174,
+        "fromDate": "2021-03-01"
+      }
+    ],
+    "TAGGED_BAIL": [
+      {
+        "numberOfDays": 0,
+        "fromDate": "2021-03-01"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "numberOfDays": 0,
+        "fromDate": "2021-03-01"
+      }
+    ],
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "numberOfDays": 0,
+        "fromDate": "2021-03-01"
+      }
+    ],
+    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      {
+        "numberOfDays": 0,
+        "fromDate": "2021-03-01"
+      }
+    ]
   }
 }

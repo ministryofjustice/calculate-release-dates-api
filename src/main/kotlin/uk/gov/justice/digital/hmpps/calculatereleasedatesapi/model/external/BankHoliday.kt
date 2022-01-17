@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
 import java.time.LocalDate
 

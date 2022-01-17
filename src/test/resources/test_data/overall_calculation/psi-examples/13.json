@@ -18,8 +18,23 @@
     }
   ],
   "adjustments": {
-    "REMAND": 28,
-    "TAGGED_BAIL": 11,
-    "UNLAWFULLY_AT_LARGE": 29
+    "REMAND": [
+      {
+        "numberOfDays": 28,
+        "fromDate": "2015-03-17"
+      }
+    ],
+    "TAGGED_BAIL": [
+      {
+        "numberOfDays": 11,
+        "fromDate": "2015-03-17"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "numberOfDays": 29,
+        "fromDate": "2015-03-17"
+      }
+    ]
   }
 }

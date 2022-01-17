@@ -18,6 +18,11 @@
     }
   ],
   "adjustments": {
-    "REMAND": 10
+    "REMAND": [
+      {
+        "numberOfDays": 10,
+        "fromDate": "2012-12-17"
+      }
+    ]
   }
 }

@@ -20,6 +20,11 @@
     }
   ],
   "adjustments": {
-    "REMAND": 125
+    "REMAND": [
+      {
+        "numberOfDays": 125,
+        "fromDate": "2020-04-22"
+      }
+    ]
   }
 }

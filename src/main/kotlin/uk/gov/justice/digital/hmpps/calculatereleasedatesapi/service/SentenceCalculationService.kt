@@ -182,10 +182,10 @@ class SentenceCalculationService {
         .minusDays(ONE)
 
     val calculatedTotalDeductedDays =
-      booking.getOrZero(AdjustmentType.REMAND) + booking.getOrZero(AdjustmentType.TAGGED_BAIL)
+      booking.getOrZero(AdjustmentType.REMAND, sentence.sentencedAt) + booking.getOrZero(AdjustmentType.TAGGED_BAIL, sentence.sentencedAt)
 
     val calculatedTotalAddedDays =
-      booking.getOrZero(AdjustmentType.UNLAWFULLY_AT_LARGE)
+      booking.getOrZero(AdjustmentType.UNLAWFULLY_AT_LARGE, sentence.sentencedAt)
 
     var numberOfDaysToAddToLicenceExpiryDate = 0
 
@@ -206,8 +206,8 @@ class SentenceCalculationService {
 
     val calculatedTotalAwardedDays = max(
       0,
-      booking.getOrZero(AdjustmentType.ADDITIONAL_DAYS_AWARDED) -
-        booking.getOrZero(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED)
+      booking.getOrZero(AdjustmentType.ADDITIONAL_DAYS_AWARDED, sentence.sentencedAt) -
+        booking.getOrZero(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, sentence.sentencedAt)
     )
 
     val adjustedReleaseDate = unadjustedReleaseDate.minusDays(

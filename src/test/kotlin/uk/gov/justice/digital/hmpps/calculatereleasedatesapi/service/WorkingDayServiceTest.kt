@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.whenever
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BankHoliday
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BankHolidays
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RegionBankHolidays
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
 import java.time.LocalDate
 
 class WorkingDayServiceTest {

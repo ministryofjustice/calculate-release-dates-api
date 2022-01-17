@@ -5,9 +5,10 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 
 @Service
@@ -30,6 +31,15 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .uri("/api/bookings/$bookingId/sentenceAdjustments")
       .retrieve()
       .bodyToMono(typeReference<SentenceAdjustments>())
+      .block()!!
+  }
+
+  fun getSentenceAndBookingAdjustments(bookingId: Long): BookingAndSentenceAdjustments {
+    log.info("Requesting sentence and booking adjustment details for bookingId $bookingId")
+    return webClient.get()
+      .uri("/api/adjustments/$bookingId/sentence-and-booking")
+      .retrieve()
+      .bodyToMono(typeReference<BookingAndSentenceAdjustments>())
       .block()!!
   }
 

@@ -6,7 +6,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CacheConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BankHolidays
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
 
 @Service
 class BankHolidayApiClient(@Qualifier("bankHolidayApiWebClient") private val webClient: WebClient) {
