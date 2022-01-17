@@ -18,7 +18,17 @@
     }
   ],
   "adjustments": {
-    "REMAND": 20,
-    "TAGGED_BAIL" : 10
+    "REMAND": [
+      {
+        "numberOfDays": 20,
+        "fromDate": "2009-10-09"
+      }
+    ],
+    "TAGGED_BAIL": [
+      {
+        "numberOfDays": 10,
+        "fromDate": "2009-10-09"
+      }
+    ]
   }
 }

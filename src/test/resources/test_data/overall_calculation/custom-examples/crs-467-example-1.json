@@ -20,7 +20,17 @@
     }
   ],
   "adjustments": {
-    "REMAND": 85,
-    "ADDITIONAL_DAYS_AWARDED": 75
+    "REMAND": [
+      {
+        "numberOfDays": 85,
+        "fromDate": "2017-02-17"
+      }
+    ],
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "numberOfDays": 75,
+        "fromDate": "2017-02-17"
+      }
+    ]
   }
 }

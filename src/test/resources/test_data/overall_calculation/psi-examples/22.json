@@ -27,10 +27,17 @@
         }
       },
       "sentencedAt": "2013-09-20",
-      "consecutiveSentenceUUIDs": ["5dfde034-b7d7-4c54-a86c-67d42a1fd669"]
+      "consecutiveSentenceUUIDs": [
+        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      ]
     }
   ],
   "adjustments": {
-    "REMAND": 30
+    "REMAND": [
+      {
+        "numberOfDays": 30,
+        "fromDate": "2013-09-20"
+      }
+    ]
   }
 }

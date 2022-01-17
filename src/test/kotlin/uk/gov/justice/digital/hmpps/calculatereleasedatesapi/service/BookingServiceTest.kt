@@ -6,20 +6,22 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.whenever
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
@@ -67,7 +69,24 @@ class BookingServiceTest {
       sentenceTypeDescription = "Standard Determinate",
       offences = offences,
     )
-    val sentenceAdjustments = SentenceAdjustments(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    val bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(
+      bookingAdjustments = listOf(
+        BookingAdjustments(
+          active = true,
+          fromDate = FIRST_JAN_2015,
+          numberOfDays = 5,
+          type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE
+        )
+      ),
+      sentenceAdjustments = listOf(
+        SentenceAdjustments(
+          active = true,
+          sentenceSequence = sequence,
+          numberOfDays = 6,
+          type = SentenceAdjustmentType.REMAND
+        )
+      )
+    )
 
     whenever(prisonApiClient.getOffenderDetail(prisonerId))
       .thenReturn(
@@ -80,7 +99,7 @@ class BookingServiceTest {
         )
       )
     whenever(prisonApiClient.getSentencesAndOffences(123456L)).thenReturn(listOf(sentenceAndOffences))
-    whenever(prisonApiClient.getSentenceAdjustments(123456L)).thenReturn(sentenceAdjustments)
+    whenever(prisonApiClient.getSentenceAndBookingAdjustments(123456L)).thenReturn(bookingAndSentenceAdjustments)
 
     val result = bookingService.getBooking(prisonerId)
 
@@ -105,12 +124,9 @@ class BookingServiceTest {
             caseSequence = caseSequence
           )
         ),
-        adjustments = mutableMapOf(
-          REMAND to 0,
-          TAGGED_BAIL to 0,
-          UNLAWFULLY_AT_LARGE to 0,
-          ADDITIONAL_DAYS_AWARDED to 0,
-          RESTORATION_OF_ADDITIONAL_DAYS_AWARDED to 0
+        adjustments = mapOf(
+          UNLAWFULLY_AT_LARGE to listOf(Adjustment(fromDate = FIRST_JAN_2015, numberOfDays = 5)),
+          REMAND to listOf(Adjustment(fromDate = FIRST_JAN_2015, numberOfDays = 6))
         )
       )
     )

@@ -6,8 +6,8 @@
   },
   "sentences": [
     {
-      "caseSequence":1,
-      "lineSequence":1,
+      "caseSequence": 1,
+      "lineSequence": 1,
       "offence": {
         "committedAt": "2020-11-15"
       },
@@ -19,8 +19,8 @@
       "sentencedAt": "2021-09-21"
     },
     {
-      "caseSequence":1,
-      "lineSequence":2,
+      "caseSequence": 1,
+      "lineSequence": 2,
       "offence": {
         "committedAt": "2020-11-15"
       },
@@ -32,8 +32,8 @@
       "sentencedAt": "2021-09-21"
     },
     {
-      "caseSequence":1,
-      "lineSequence":3,
+      "caseSequence": 1,
+      "lineSequence": 3,
       "offence": {
         "committedAt": "2020-11-15"
       },
@@ -45,8 +45,8 @@
       "sentencedAt": "2021-09-21"
     },
     {
-      "caseSequence":1,
-      "lineSequence":4,
+      "caseSequence": 1,
+      "lineSequence": 4,
       "offence": {
         "committedAt": "2015-11-15"
       },
@@ -58,8 +58,8 @@
       "sentencedAt": "2021-09-21"
     },
     {
-      "caseSequence":1,
-      "lineSequence":5,
+      "caseSequence": 1,
+      "lineSequence": 5,
       "offence": {
         "committedAt": "2015-11-15"
       },
@@ -71,8 +71,8 @@
       "sentencedAt": "2021-09-21"
     },
     {
-      "caseSequence":1,
-      "lineSequence":6,
+      "caseSequence": 1,
+      "lineSequence": 6,
       "offence": {
         "committedAt": "2015-11-15"
       },
@@ -85,10 +85,35 @@
     }
   ],
   "adjustments": {
-    "REMAND": 15,
-    "TAGGED_BAIL": 10,
-    "ADDITIONAL_DAYS_AWARDED": 7,
-    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": 2,
-    "UNLAWFULLY_AT_LARGE": 2
+    "REMAND": [
+      {
+        "numberOfDays": 15,
+        "fromDate": "2021-09-21"
+      }
+    ],
+    "TAGGED_BAIL": [
+      {
+        "numberOfDays": 10,
+        "fromDate": "2021-09-21"
+      }
+    ],
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "numberOfDays": 7,
+        "fromDate": "2021-09-21"
+      }
+    ],
+    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      {
+        "numberOfDays": 2,
+        "fromDate": "2021-09-21"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "numberOfDays": 2,
+        "fromDate": "2021-09-21"
+      }
+    ]
   }
 }

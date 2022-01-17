@@ -38,10 +38,17 @@
         }
       },
       "sentencedAt": "2021-08-23",
-      "consecutiveSentenceUUIDs": ["cb304745-d781-47d3-b931-4baa31551fc5"]
+      "consecutiveSentenceUUIDs": [
+        "cb304745-d781-47d3-b931-4baa31551fc5"
+      ]
     }
   ],
   "adjustments": {
-    "REMAND": 137
+    "REMAND": [
+      {
+        "numberOfDays": 137,
+        "fromDate": "2020-02-28"
+      }
+    ]
   }
 }

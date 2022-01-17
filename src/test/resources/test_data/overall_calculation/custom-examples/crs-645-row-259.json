@@ -1,23 +1,28 @@
 {
-  "offender":{
-    "reference":"ABC123D",
-    "name":"AN. Other",
-    "dateOfBirth":"1970-03-03"
+  "offender": {
+    "reference": "ABC123D",
+    "name": "AN. Other",
+    "dateOfBirth": "1970-03-03"
   },
-  "sentences":[
+  "sentences": [
     {
-      "offence":{
-        "committedAt":"2020-01-31"
+      "offence": {
+        "committedAt": "2020-01-31"
       },
-      "duration":{
-        "durationElements":{
-          "MONTHS":54
+      "duration": {
+        "durationElements": {
+          "MONTHS": 54
         }
       },
-      "sentencedAt":"2020-10-01"
+      "sentencedAt": "2020-10-01"
     }
   ],
-  "adjustments":{
-    "REMAND":36
+  "adjustments": {
+    "REMAND": [
+      {
+        "numberOfDays": 36,
+        "fromDate": "2020-10-01"
+      }
+    ]
   }
 }

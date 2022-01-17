@@ -4,17 +4,18 @@
     "name": "AN. Other",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences": [{
-    "offence": {
-      "committedAt": "2012-12-21"
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2012-12-21"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 18
+        }
+      },
+      "sentencedAt": "2012-12-21"
     },
-    "duration": {
-      "durationElements": {
-        "MONTHS": 18
-      }
-    },
-    "sentencedAt": "2012-12-21"
-  },
     {
       "offence": {
         "committedAt": "2013-08-05"
@@ -28,6 +29,11 @@
     }
   ],
   "adjustments": {
-    "REMAND": 25
+    "REMAND": [
+      {
+        "numberOfDays": 25,
+        "fromDate": "2012-12-21"
+      }
+    ]
   }
 }

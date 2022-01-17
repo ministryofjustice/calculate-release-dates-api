@@ -6,8 +6,8 @@
   },
   "sentences": [
     {
-      "caseSequence":1,
-      "lineSequence":1,
+      "caseSequence": 1,
+      "lineSequence": 1,
       "offence": {
         "committedAt": "2019-11-15"
       },
@@ -20,8 +20,8 @@
       "identifier": "af19b612-8118-4350-8e0c-bfa97bd96651"
     },
     {
-      "caseSequence":2,
-      "lineSequence":2,
+      "caseSequence": 2,
+      "lineSequence": 2,
       "offence": {
         "committedAt": "2020-01-01"
       },
@@ -33,8 +33,8 @@
       "sentencedAt": "2020-07-17"
     },
     {
-      "caseSequence":3,
-      "lineSequence":3,
+      "caseSequence": 3,
+      "lineSequence": 3,
       "offence": {
         "committedAt": "2019-11-01"
       },
@@ -50,8 +50,8 @@
       ]
     },
     {
-      "caseSequence":4,
-      "lineSequence":4,
+      "caseSequence": 4,
+      "lineSequence": 4,
       "offence": {
         "committedAt": "2019-11-01"
       },
@@ -63,8 +63,8 @@
       "sentencedAt": "2020-12-13"
     },
     {
-      "caseSequence":5,
-      "lineSequence":5,
+      "caseSequence": 5,
+      "lineSequence": 5,
       "offence": {
         "committedAt": "2019-11-01"
       },
@@ -80,8 +80,23 @@
     }
   ],
   "adjustments": {
-    "REMAND": 15,
-    "ADDITIONAL_DAYS_AWARDED": 12,
-    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": 6
+    "REMAND": [
+      {
+        "numberOfDays": 15,
+        "fromDate": "2020-03-20"
+      }
+    ],
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "numberOfDays": 12,
+        "fromDate": "2020-03-20"
+      }
+    ],
+    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      {
+        "numberOfDays": 6,
+        "fromDate": "2020-03-20"
+      }
+    ]
   }
 }

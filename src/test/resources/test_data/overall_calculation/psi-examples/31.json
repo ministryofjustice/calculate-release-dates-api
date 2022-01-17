@@ -18,6 +18,11 @@
     }
   ],
   "adjustments": {
-    "REMAND": 200
+    "REMAND": [
+      {
+        "numberOfDays": 200,
+        "fromDate": "2009-10-01"
+      }
+    ]
   }
 }

@@ -12,8 +12,9 @@ class BookingService(
     val prisonerDetails = prisonApiClient.getOffenderDetail(prisonerId)
     val offender = transform(prisonerDetails)
     val sentences = mutableListOf<Sentence>()
-    prisonApiClient.getSentencesAndOffences(prisonerDetails.bookingId).forEach { sentences.addAll(transform(it)) }
-    val adjustments = transform(prisonApiClient.getSentenceAdjustments(prisonerDetails.bookingId))
+    val sentenceAndOffences = prisonApiClient.getSentencesAndOffences(prisonerDetails.bookingId)
+    val adjustments = transform(prisonApiClient.getSentenceAndBookingAdjustments(prisonerDetails.bookingId), sentenceAndOffences)
+    sentenceAndOffences.forEach { sentences.addAll(transform(it)) }
 
     return Booking(
       offender = offender,

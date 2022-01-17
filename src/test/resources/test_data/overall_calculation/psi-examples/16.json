@@ -29,6 +29,11 @@
     }
   ],
   "adjustments": {
-    "REMAND": 14
+    "REMAND": [
+      {
+        "numberOfDays": 14,
+        "fromDate": "2015-02-12"
+      }
+    ]
   }
 }

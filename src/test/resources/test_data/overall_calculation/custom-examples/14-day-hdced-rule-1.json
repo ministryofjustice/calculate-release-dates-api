@@ -18,6 +18,11 @@
     }
   ],
   "adjustments": {
-    "REMAND": 118
+    "REMAND": [
+      {
+        "numberOfDays": 118,
+        "fromDate": "2021-09-21"
+      }
+    ]
   }
 }
