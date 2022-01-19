@@ -32,7 +32,8 @@ data class Sentence(
 
   fun buildString(): String {
     return "Sentence\t:\t\n" +
-      "Duration\t:\t$duration\n" +
+    "Identification Track\t:\t${identificationTrack}\n" +
+    "Duration\t:\t$duration\n" +
       "${duration.toPeriodString(sentencedAt)}\n" +
       "Sentence Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +

@@ -125,8 +125,8 @@ class BookingServiceTest {
           )
         ),
         adjustments = mapOf(
-          UNLAWFULLY_AT_LARGE to listOf(Adjustment(fromDate = FIRST_JAN_2015, numberOfDays = 5)),
-          REMAND to listOf(Adjustment(fromDate = FIRST_JAN_2015, numberOfDays = 6))
+          UNLAWFULLY_AT_LARGE to listOf(Adjustment(appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 5)),
+          REMAND to listOf(Adjustment(appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 6))
         )
       )
     )

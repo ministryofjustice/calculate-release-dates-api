@@ -47,13 +47,18 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 8332
   }
 
-  fun stubGetPrisonerDetails(prisonerId: String, bookingId: Long): StubMapping =
+  fun stubGetPrisonerDetails(prisonerId: String, json: String): StubMapping =
     stubFor(
       get("/api/offenders/$prisonerId")
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
-            .withBody(
+            .withBody(json)
+            .withStatus(200)
+        )
+    )
+
+  fun stubGetPrisonerDetails(prisonerId: String, bookingId: Long): StubMapping = stubGetPrisonerDetails(prisonerId,
               """
             {
               "bookingId": "$bookingId",
@@ -62,17 +67,20 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
             }
               """.trimIndent()
             )
-            .withStatus(200)
-        )
-    )
 
-  fun stubGetSentencesAndOffences(bookingId: Long): StubMapping =
+
+  fun stubGetSentencesAndOffences(bookingId: Long, json: String): StubMapping =
     stubFor(
       get("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
-            .withBody(
+            .withBody(json)
+            .withStatus(200)
+        )
+    )
+
+  fun stubGetSentencesAndOffences(bookingId: Long): StubMapping = stubGetSentencesAndOffences(bookingId,
               """
             [
               {
@@ -99,18 +107,12 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
             ]
               """.trimIndent()
             )
-            .withStatus(200)
-        )
-    )
+
 
   fun stubGetErrorSentencesAndOffences(bookingId: Long): StubMapping =
-    stubFor(
-      get("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(
-              """
+    stubGetSentencesAndOffences(
+      bookingId,
+      """
             [
    {
       "bookingId":$bookingId,
@@ -206,19 +208,22 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
    }
 ]
               """.trimIndent()
-            )
-            .withStatus(200)
-        )
     )
 
-  fun stubGetSentenceAdjustments(bookingId: Long): StubMapping =
+  fun stubGetSentenceAdjustments(bookingId: Long, json: String): StubMapping =
     stubFor(
       get("/api/adjustments/$bookingId/sentence-and-booking")
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
-            .withBody(
-              """
+            .withBody(json)
+            .withStatus(200)
+        )
+    )
+
+  fun stubGetSentenceAdjustments(bookingId: Long): StubMapping = stubGetSentenceAdjustments(
+    bookingId,
+    """
               {
                 "bookingAdjustments": [
                   {
@@ -246,10 +251,8 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
                 ]
               }
               """.trimIndent()
-            )
-            .withStatus(200)
-        )
-    )
+  )
+
 
   fun stubPostOffenderDates(bookingId: Long): StubMapping =
     stubFor(

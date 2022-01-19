@@ -113,15 +113,15 @@ fun transform(bookingAndSentenceAdjustments: BookingAndSentenceAdjustments, sent
     if (!adjustments.containsKey(adjustmentType)) {
       adjustments[adjustmentType] = mutableListOf()
     }
-    adjustments[adjustmentType]!!.add(Adjustment(fromDate = it.fromDate, toDate = it.toDate, numberOfDays = it.numberOfDays))
+    adjustments[adjustmentType]!!.add(Adjustment(appliesToSentencesFrom = it.fromDate, numberOfDays = it.numberOfDays, fromDate = it.fromDate, toDate = it.toDate))
   }
   bookingAndSentenceAdjustments.sentenceAdjustments.forEach {
     val adjustmentType = transform(it.type)
     if (!adjustments.containsKey(adjustmentType)) {
       adjustments[adjustmentType] = mutableListOf()
     }
-    val fromDate = it.fromDate ?: sentencesAndOffences.minOf { sentenceAndOffences -> sentenceAndOffences.sentenceDate }
-    adjustments[adjustmentType]!!.add(Adjustment(fromDate = fromDate, toDate = it.toDate, numberOfDays = it.numberOfDays))
+    val sentence: SentenceAndOffences = sentencesAndOffences.find { sentenceAndOffences -> it.sentenceSequence == sentenceAndOffences.sentenceSequence }!!
+    adjustments[adjustmentType]!!.add(Adjustment(appliesToSentencesFrom = sentence.sentenceDate, fromDate = it.fromDate, toDate = it.toDate, numberOfDays = it.numberOfDays))
   }
   return adjustments
 }

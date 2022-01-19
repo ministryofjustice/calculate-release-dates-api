@@ -4,6 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
@@ -20,9 +21,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
+import kotlin.math.min
 
 @Service
 class BookingExtractionService(
@@ -184,38 +187,67 @@ class BookingExtractionService(
     */
   private fun walkTimelineOfBooking(booking: Booking): BookingCalculation {
     val bookingCalculation = BookingCalculation()
-    var daysAwardedServed = 0L
-    // TODO Check with analysis on this. if we dont exclude schedule 15's example 37 fails.
-    //  Schedule 15's are out of scope at the moment - so one for the future
-    // TODO LH: I think the schedule 15 is because we use PED as the release date.
-    //  But that is only an eligible to be released date, not the date they're actually released on
-    if (booking.sentences.any { it.offence.isScheduleFifteen }) return bookingCalculation
     val sortedSentences = booking.getAllExtractableSentences().sortedBy { it.sentencedAt }
-    var workingRange = sortedSentences[0].getDateRangeFromStartToReleaseWithoutDaysAwarded()
-    val totalAda = booking.getAllExtractableSentences()[0].sentenceCalculation.calculatedTotalAwardedDays.toLong()
-    var previousSentence = sortedSentences[0]
+    val firstSentence = sortedSentences[0]
+    var workingRange = firstSentence.getRangeOfSentenceBeforeAwardedDays()
+    val totalAda = firstSentence.sentenceCalculation.calculatedTotalAwardedDays
+    var previousSentence = firstSentence
+
+
+    var daysAwardedServed = 0
+    var daysRemandNoLongerApplicable = 0
+
+
+
     sortedSentences.forEach {
-      val sentenceRange = it.getDateRangeFromStartToReleaseWithoutDaysAwarded()
-      if (workingRange.isConnected(sentenceRange)) {
-        if (sentenceRange.end.isAfter(workingRange.end)) {
-          workingRange = LocalDateRange.of(workingRange.start, sentenceRange.end)
+      val itRange = it.getRangeOfSentenceBeforeAwardedDays()
+      if (workingRange.isConnected(itRange)) {
+        if (itRange.end.isAfter(workingRange.end)) {
+          workingRange = LocalDateRange.of(workingRange.start, itRange.end)
         }
       } else {
-        daysAwardedServed += ChronoUnit.DAYS.between(workingRange.end, it.sentencedAt) - 1
-        workingRange = LocalDateRange.of(workingRange.start, sentenceRange.end)
-        if (totalAda < daysAwardedServed) {
-          throw BookingTimelineGapException("There is a gap between sentences $previousSentence AND $it")
+        //TODO tagged bail, UAL?
+        //There is gap.
+
+        // 1. Check if there have been any ADAs served
+        var daysBetween = ChronoUnit.DAYS.between(workingRange.end, it.sentencedAt)
+        val daysAdaServed = min(daysBetween - 1, totalAda.toLong())
+        daysAwardedServed += daysAdaServed.toInt()
+        workingRange = LocalDateRange.of(workingRange.start, previousSentence.sentenceCalculation.adjustedReleaseDate)
+
+        daysBetween = ChronoUnit.DAYS.between(workingRange.end, it.sentencedAt)
+
+        if (daysBetween > 0) {
+          //There is still a gap
+
+          //2. A release date has occurred but there are more sentences on the booking, therefore previous adjustments
+          // should be wiped. TODO only remand?
+          daysRemandNoLongerApplicable += booking.getOrZero(
+            AdjustmentType.REMAND,
+            previousSentence.sentenceCalculation.adjustedReleaseDate
+          )
+
+          //3. A release date has occurred but there are more sentences on the booking, therefore that gap should
+          // be filled by remand.
+          val daysRemand = booking.getOrZero(AdjustmentType.REMAND, it.sentencedAt) - daysRemandNoLongerApplicable
+          if (workingRange.end.plusDays(daysRemand.toLong()).isBeforeOrEqualTo(it.sentencedAt.minusDays(1))) {
+            throw BookingTimelineGapException("There is a gap between sentences $previousSentence AND $it")
+          } else {
+            workingRange = LocalDateRange.of(workingRange.start, itRange.end)
+          }
         }
       }
       previousSentence = it
+      readjustDates(it, daysAwardedServed, daysRemandNoLongerApplicable)
     }
 
-    if (daysAwardedServed != 0L) {
-      BookingCalculationService.log.info("Adjusting release date for days already served. Adjusting by $daysAwardedServed")
-      bookingCalculation.daysAwardedServed = daysAwardedServed
-    }
 
     return bookingCalculation
+  }
+
+  private fun readjustDates(it: ExtractableSentence, daysAwardedServed: Int, daysRemandNoLongerApplicable: Int) {
+    it.sentenceCalculation.calculatedTotalAwardedDays = it.sentenceCalculation.calculatedTotalAwardedDays - daysAwardedServed
+    it.sentenceCalculation.calculatedTotalDeductedDays = it.sentenceCalculation.calculatedTotalDeductedDays - daysRemandNoLongerApplicable
   }
 
   private fun getEffectiveSentenceLength(start: LocalDate, end: LocalDate): Period =

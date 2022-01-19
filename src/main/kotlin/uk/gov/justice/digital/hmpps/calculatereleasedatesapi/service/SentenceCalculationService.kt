@@ -32,27 +32,10 @@ class SentenceCalculationService {
     val sentenceCalculation = getInitialCalculation(sentence, booking, determineReleaseDateMultiplier(sentence))
 
     // Other adjustments need to be included in the sentence calculation here
-
-    if (sentence.releaseDateTypes.contains(SLED) || sentence.releaseDateTypes.contains(SED)) {
-      sentenceCalculation.expiryDate = sentenceCalculation.adjustedExpiryDate
-    }
-
-    if (sentence.releaseDateTypes.contains(SLED)) {
-      sentenceCalculation.licenceExpiryDate = sentenceCalculation.adjustedExpiryDate
-    }
-
     if (sentence.releaseDateTypes.contains(ARD)) {
       sentenceCalculation.isReleaseDateConditional = false
     } else if (sentence.releaseDateTypes.contains(CRD)) {
       sentenceCalculation.isReleaseDateConditional = true
-    }
-
-    if (
-      sentence.releaseDateTypes.contains(CRD) ||
-      sentence.releaseDateTypes.contains(ARD) ||
-      sentence.releaseDateTypes.contains(PED)
-    ) {
-      sentenceCalculation.releaseDate = sentenceCalculation.adjustedReleaseDate
     }
 
     if (
@@ -187,35 +170,10 @@ class SentenceCalculationService {
     val calculatedTotalAddedDays =
       booking.getOrZero(AdjustmentType.UNLAWFULLY_AT_LARGE, sentence.sentencedAt)
 
-    var numberOfDaysToAddToLicenceExpiryDate = 0
-
-    val calculatedExpiryTotalDeductedDays =
-      if (calculatedTotalDeductedDays >= numberOfDaysToReleaseDate) {
-        numberOfDaysToAddToLicenceExpiryDate = calculatedTotalDeductedDays - numberOfDaysToReleaseDate
-        numberOfDaysToReleaseDate.toLong()
-      } else {
-        calculatedTotalDeductedDays.toLong()
-      }
-
-    val adjustedExpiryDate = unadjustedExpiryDate
-      .minusDays(
-        calculatedExpiryTotalDeductedDays
-      ).plusDays(
-        calculatedTotalAddedDays.toLong()
-      )
-
     val calculatedTotalAwardedDays = max(
       0,
       booking.getOrZero(AdjustmentType.ADDITIONAL_DAYS_AWARDED, sentence.sentencedAt) -
         booking.getOrZero(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, sentence.sentencedAt)
-    )
-
-    val adjustedReleaseDate = unadjustedReleaseDate.minusDays(
-      calculatedTotalDeductedDays.toLong()
-    ).plusDays(
-      calculatedTotalAddedDays.toLong()
-    ).plusDays(
-      calculatedTotalAwardedDays.toLong()
     )
 
     // create new SentenceCalculation and associate it with a sentence
@@ -228,9 +186,6 @@ class SentenceCalculationService {
       calculatedTotalDeductedDays,
       calculatedTotalAddedDays,
       calculatedTotalAwardedDays,
-      adjustedExpiryDate,
-      adjustedReleaseDate,
-      numberOfDaysToAddToLicenceExpiryDate
     )
   }
 

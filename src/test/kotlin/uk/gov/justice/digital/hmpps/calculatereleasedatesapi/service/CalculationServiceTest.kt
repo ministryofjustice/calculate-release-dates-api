@@ -99,6 +99,12 @@ class CalculationServiceTest {
     )
   }
 
+  @Test
+  fun blah() {
+    `Test Example`("custom-examples", "crs-680-pre-prod-1", null)
+//    `Test Example`("custom-examples", "crs-680-unadjusted", null)
+  }
+
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
   fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {

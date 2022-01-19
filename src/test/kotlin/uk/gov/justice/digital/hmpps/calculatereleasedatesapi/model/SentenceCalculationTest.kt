@@ -26,9 +26,6 @@ internal class SentenceCalculationTest {
       1,
       0,
       0,
-      date,
-      date,
-      0
     )
 
     assertEquals(sentenceCalculation.sentence, sentence)

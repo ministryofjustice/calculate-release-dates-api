@@ -21,13 +21,13 @@
     "REMAND": [
       {
         "numberOfDays": 20,
-        "fromDate": "2009-10-09"
+        "appliesToSentencesFrom": "2009-10-09"
       }
     ],
     "TAGGED_BAIL": [
       {
         "numberOfDays": 10,
-        "fromDate": "2009-10-09"
+        "appliesToSentencesFrom": "2009-10-09"
       }
     ]
   }

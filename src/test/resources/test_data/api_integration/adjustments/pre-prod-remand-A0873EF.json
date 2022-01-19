@@ -1,0 +1,29 @@
+{
+   "sentenceAdjustments": [
+     {
+       "sentenceSequence": 4,
+       "type": "REMAND",
+       "numberOfDays": 150,
+       "appliesToSentencesFrom": "2020-04-04",
+       "toDate": "2020-10-01",
+       "active": true
+     },
+     {
+       "sentenceSequence": 1,
+       "type": "REMAND",
+       "numberOfDays": 50,
+       "appliesToSentencesFrom": "2020-10-01",
+       "toDate": "2020-11-20",
+       "active": true
+     },
+     {
+       "sentenceSequence": 4,
+       "type": "REMAND",
+       "numberOfDays": 179,
+       "fromDate": "2020-11-25",
+       "toDate": "2021-05-24",
+       "active": true
+     }
+   ],
+   "bookingAdjustments": []
+ }

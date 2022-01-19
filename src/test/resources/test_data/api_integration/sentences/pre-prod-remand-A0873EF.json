@@ -1,0 +1,42 @@
+[
+  {
+    "sentenceSequence":1,
+    "caseSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "YOI",
+    "sentenceTypeDescription": "Young Offender Institution",
+    "sentenceDate": "2020-11-20",
+    "years":0,
+    "months":0,
+    "weeks":4,
+    "days":0,
+    "offences":[
+      {
+        "offenceStartDate":"2019-11-12",
+        "offenceCode":"COML022",
+        "offenceDescription":"Manslaughter"
+      }
+    ]
+  },
+  {
+    "sentenceSequence":1,
+    "caseSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "YOI",
+    "sentenceTypeDescription": "Young Offender Institution",
+    "sentenceDate": "2021-03-01",
+    "years":0,
+    "months":52,
+    "weeks":0,
+    "days":0,
+    "offences":[
+      {
+        "offenceStartDate":"2019-11-12",
+        "offenceCode":"COML022",
+        "offenceDescription":"Manslaughter"
+      }
+    ]
+  }
+]

@@ -22,24 +22,20 @@ interface ExtractableSentence : SentenceTimeline {
   }
 
   @JsonIgnore
-  fun getDateRangeFromStartToReleaseWithoutDaysAwarded(): LocalDateRange {
+  fun getRangeOfSentenceBeforeAwardedDays(): LocalDateRange {
+    /*
+    When we're walking the timeline of the sentence, we want to use the NPD date rather than PED, otherwise we
+    could falsely state that there is a gap in the booking timeline if the prisoner wasn't released at the PED.
+    */
+    val releaseDate = if (getReleaseDateType() === PED) {
+      sentenceCalculation.nonParoleDate!!
+    } else {
+      sentenceCalculation.releaseDate!!
+    }
+    val releaseDateBeforeAda = releaseDate.minusDays(sentenceCalculation.calculatedTotalAwardedDays.toLong())
 
-    log.info(
-      "getDateRangeFromStartToReleaseWithoutDaysAwarded: Comparing sentenced at {} with release date {}",
-      sentencedAt,
-      sentenceCalculation.unadjustedReleaseDate.minusDays(sentenceCalculation.calculatedTotalDeductedDays.toLong())
-    )
-
-    /* TODO: The following has been added to handle a scenario caused by
-        using the aggregated rather than the sentence level adjustment.
-        This should be removed when that feature is implemented */
-
-    return if (sentencedAt.isAfter(sentenceCalculation.unadjustedReleaseDate.minusDays(sentenceCalculation.calculatedTotalDeductedDays.toLong()))) {
-      /*
-      if the adjustments applied the sentence mean that the sentence would be negative
-      (because of long adjustments on another sentence) then return
-      a date range with the sentence date as the start and end date.
-      */
+    return if (sentencedAt.isAfter(releaseDateBeforeAda)) {
+      // The deducted days make this an immediate release sentence.
       LocalDateRange.of(
         sentencedAt,
         sentencedAt
@@ -47,7 +43,7 @@ interface ExtractableSentence : SentenceTimeline {
     } else {
       LocalDateRange.of(
         sentencedAt,
-        sentenceCalculation.unadjustedReleaseDate.minusDays(sentenceCalculation.calculatedTotalDeductedDays.toLong())
+        releaseDateBeforeAda
       )
     }
   }

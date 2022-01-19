@@ -7,24 +7,15 @@
   "sentences": [
     {
       "offence": {
-        "committedAt": "2019-12-17",
+        "committedAt": "2019-01-01",
         "isScheduleFifteen": true
       },
       "duration": {
         "durationElements": {
-          "YEARS": 10,
-          "MONTHS": 6
+          "YEARS": 7
         }
       },
-      "sentencedAt": "2020-04-22"
+      "sentencedAt": "2021-05-24"
     }
-  ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "numberOfDays": 125,
-        "appliesToSentencesFrom": "2020-04-22"
-      }
-    ]
-  }
+  ]
 }

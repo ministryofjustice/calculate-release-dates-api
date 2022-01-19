@@ -11,15 +11,47 @@ data class SentenceCalculation(
   val unadjustedExpiryDate: LocalDate,
   val unadjustedReleaseDate: LocalDate,
   // Remand and Tagged bail
-  val calculatedTotalDeductedDays: Int,
+  var calculatedTotalDeductedDays: Int,
   // UAL
-  val calculatedTotalAddedDays: Int,
+  var calculatedTotalAddedDays: Int,
   // ADA - RADA
-  val calculatedTotalAwardedDays: Int,
-  val adjustedExpiryDate: LocalDate,
-  val adjustedReleaseDate: LocalDate,
-  val numberOfDaysToAddToLicenceExpiryDate: Int
+  var calculatedTotalAwardedDays: Int,
 ) {
+
+  val numberOfDaysToAddToLicenceExpiryDate: Int get() {
+    if (calculatedTotalDeductedDays >= numberOfDaysToReleaseDate) {
+      return calculatedTotalDeductedDays - numberOfDaysToReleaseDate
+    }
+    return 0
+  }
+
+  val adjustedExpiryDate: LocalDate get() {
+    val calculatedExpiryTotalDeductedDays =
+      if (calculatedTotalDeductedDays >= numberOfDaysToReleaseDate) {
+        numberOfDaysToReleaseDate.toLong()
+      } else {
+        calculatedTotalDeductedDays.toLong()
+      }
+
+    return unadjustedExpiryDate
+      .minusDays(
+        calculatedExpiryTotalDeductedDays
+      ).plusDays(
+        calculatedTotalAddedDays.toLong()
+      )
+  }
+
+  val adjustedReleaseDate: LocalDate get() {
+    return unadjustedReleaseDate.minusDays(
+      calculatedTotalDeductedDays.toLong()
+    ).plusDays(
+      calculatedTotalAddedDays.toLong()
+    ).plusDays(
+      calculatedTotalAwardedDays.toLong()
+    )
+  }
+
+
 
   // Non Parole Date (NPD)
   var numberOfDaysToNonParoleDate: Long = 0
@@ -27,7 +59,18 @@ data class SentenceCalculation(
 
   // Licence Expiry Date (LED)
   var numberOfDaysToLicenceExpiryDate: Long = 0
-  var licenceExpiryDate: LocalDate? = null
+  private var _licenceExpiryDate: LocalDate? = null
+  var licenceExpiryDate: LocalDate?
+    get() {
+      return if (sentence.releaseDateTypes.contains(ReleaseDateType.SLED)) {
+        expiryDate
+      } else {
+        _licenceExpiryDate
+      }
+    }
+    set (value) {
+      _licenceExpiryDate = value
+    }
 
   //  Home Detention Curfew Eligibility Date(HDCED)
   var numberOfDaysToHomeDetentionCurfewEligibilityDate: Long = 0
@@ -37,23 +80,35 @@ data class SentenceCalculation(
   var numberOfDaysToNotionalConditionalReleaseDate: Long = 0
   var notionalConditionalReleaseDate: LocalDate? = null
 
-  var expiryDate: LocalDate? = null
-  var releaseDate: LocalDate? = null
+
+  val releaseDate: LocalDate? get() {
+    if (
+      sentence.releaseDateTypes.contains(ReleaseDateType.CRD) ||
+      sentence.releaseDateTypes.contains(ReleaseDateType.ARD) ||
+      sentence.releaseDateTypes.contains(ReleaseDateType.PED)
+    ) {
+      return adjustedReleaseDate
+    }
+    return null
+  }
+
+  val expiryDate: LocalDate? get() {
+    if (sentence.releaseDateTypes.contains(ReleaseDateType.SLED) || sentence.releaseDateTypes.contains(ReleaseDateType.SED)) {
+      return adjustedExpiryDate
+    }
+    return null
+  }
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
 
   fun buildString(releaseDateTypes: List<ReleaseDateType>): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val expiryDateType = if (releaseDateTypes.contains(ReleaseDateType.SLED)) "SLED" else "SED"
-    val releaseDateType = releaseDateTypes.toString()
+    val releaseDateType = if (releaseDateTypes.contains(ReleaseDateType.ARD)) "ARD"
+                          else if (releaseDateTypes.contains(ReleaseDateType.CRD)) "CRD"
+                          else "PED"
 
-    var identificationTrackText = ""
-    if (sentence is Sentence) {
-      identificationTrackText += "Identification Track\t:\t${(sentence as Sentence).identificationTrack}\n"
-    }
-
-    return identificationTrackText +
-      "Date of $expiryDateType\t:\t${unadjustedExpiryDate.format(formatter)}\n" +
+    return "Date of $expiryDateType\t:\t${unadjustedExpiryDate.format(formatter)}\n" +
       "Number of days to $releaseDateType\t:\t${numberOfDaysToReleaseDate}\n" +
       "Date of $releaseDateType\t:\t${unadjustedReleaseDate.format(formatter)}\n" +
       "Total number of days of deducted (remand / tagged bail)\t:" +

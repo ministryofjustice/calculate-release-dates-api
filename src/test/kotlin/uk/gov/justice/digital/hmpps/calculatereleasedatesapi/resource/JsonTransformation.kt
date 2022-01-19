@@ -6,6 +6,8 @@ import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.ToJson
+import com.squareup.moshi.Types
+import com.squareup.moshi.adapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -14,6 +16,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
@@ -55,6 +60,19 @@ class JsonTransformation {
     return jsonToCalculationBreakdown(json)!!
   }
 
+  fun loadPrisonerDetails(testData: String): PrisonerDetails {
+    val json = getJsonTest("$testData.json", "api_integration/prisoners")
+    return jsonToPrisonerDetails(json)!!
+  }
+
+  fun getSentenceAndOffencesJson(testData: String): String {
+    return getJsonTest("$testData.json", "api_integration/sentences")
+  }
+
+  fun getAdjustmentsJson(testData: String): String {
+    return getJsonTest("$testData.json", "api_integration/adjustments")
+  }
+
   private fun jsonToSentence(json: String): Sentence? {
     val jsonAdapter = moshi.adapter(Sentence::class.java)
     return jsonAdapter.fromJson(json)
@@ -77,6 +95,11 @@ class JsonTransformation {
 
   private fun jsonToCalculationBreakdown(json: String): CalculationBreakdown? {
     val jsonAdapter = moshi.adapter(CalculationBreakdown::class.java)
+    return jsonAdapter.fromJson(json)
+  }
+
+  private fun jsonToPrisonerDetails(json: String): PrisonerDetails? {
+    val jsonAdapter = moshi.adapter(PrisonerDetails::class.java)
     return jsonAdapter.fromJson(json)
   }
 
