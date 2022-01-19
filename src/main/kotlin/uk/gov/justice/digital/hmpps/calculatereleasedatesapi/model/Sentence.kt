@@ -30,7 +30,7 @@ data class Sentence(
   @Transient
   override lateinit var releaseDateTypes: List<ReleaseDateType>
 
-  fun buildString(): String {
+  override fun buildString(): String {
     return "Sentence\t:\t\n" +
     "Identification Track\t:\t${identificationTrack}\n" +
     "Duration\t:\t$duration\n" +

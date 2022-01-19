@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -28,9 +29,68 @@ import kotlin.math.max
 class SentenceCalculationService {
 
   fun calculate(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
+    var firstSentenceCalc = getInitialCalculation(sentence, booking, sentence.sentencedAt)
+    var adjustedSentenceCalc = getInitialCalculation(sentence, booking, firstSentenceCalc.adjustedReleaseDate)
+    while (firstSentenceCalc.adjustedReleaseDate != adjustedSentenceCalc.adjustedReleaseDate) {
+      firstSentenceCalc = adjustedSentenceCalc
+      adjustedSentenceCalc = getInitialCalculation(sentence, booking, firstSentenceCalc.adjustedReleaseDate)
+    }
+    // create association between the sentence and it's calculation
+    sentence.sentenceCalculation = adjustedSentenceCalc
+    return calculateDatesFromAdjustments(sentence)
+  }
 
-    val sentenceCalculation = getInitialCalculation(sentence, booking, determineReleaseDateMultiplier(sentence))
+  private fun getInitialCalculation(sentence: CalculableSentence, booking: Booking, adjustmentsFrom: LocalDate): SentenceCalculation {
+    val releaseDateMultiplier = determineReleaseDateMultiplier(sentence)
+    // create the intermediate values
+    val numberOfDaysToSentenceExpiryDate = sentence.getLengthInDays()
 
+    val numberOfDaysToReleaseDate =
+      ceil(
+        numberOfDaysToSentenceExpiryDate.toDouble().times(releaseDateMultiplier)
+      ).toInt()
+
+    val unadjustedExpiryDate =
+      sentence.sentencedAt
+        .plusDays(numberOfDaysToSentenceExpiryDate.toLong())
+        .minusDays(ONE)
+
+    val unadjustedReleaseDate =
+      sentence.sentencedAt
+        .plusDays(numberOfDaysToReleaseDate.toLong())
+        .minusDays(ONE)
+
+    val calculatedTotalDeductedDays =
+      booking.getOrZero(AdjustmentType.REMAND, adjustmentsFrom) + booking.getOrZero(AdjustmentType.TAGGED_BAIL, adjustmentsFrom)
+
+    val calculatedTotalAddedDays =
+      booking.getOrZero(AdjustmentType.UNLAWFULLY_AT_LARGE, adjustmentsFrom)
+
+    val calculatedTotalAwardedDays = max(
+      0,
+      booking.getOrZero(AdjustmentType.ADDITIONAL_DAYS_AWARDED, adjustmentsFrom) -
+        booking.getOrZero(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, adjustmentsFrom)
+    )
+
+    // create new SentenceCalculation and associate it with a sentence
+    return SentenceCalculation(
+      sentence,
+      numberOfDaysToSentenceExpiryDate,
+      numberOfDaysToReleaseDate,
+      unadjustedExpiryDate,
+      unadjustedReleaseDate,
+      calculatedTotalDeductedDays,
+      calculatedTotalAddedDays,
+      calculatedTotalAwardedDays,
+    )
+  }
+
+  /*
+    This function calculates dates after adjustments have been decided.
+    It can be run many times to recalculate dates. It needs to be run if there is a change to adjustments.
+   */
+  fun calculateDatesFromAdjustments(sentence: CalculableSentence): SentenceCalculation {
+    val sentenceCalculation: SentenceCalculation = sentence.sentenceCalculation
     // Other adjustments need to be included in the sentence calculation here
     if (sentence.releaseDateTypes.contains(ARD)) {
       sentenceCalculation.isReleaseDateConditional = false
@@ -99,8 +159,8 @@ class SentenceCalculationService {
       calculateHDCED(sentence, sentenceCalculation)
     }
 
-    // create association between the sentence and it's calculation
-    sentence.sentenceCalculation = sentenceCalculation
+
+    BookingCalculationService.log.info(sentence.buildString())
     return sentenceCalculation
   }
 
@@ -142,51 +202,6 @@ class SentenceCalculationService {
         .plusDays(sentenceCalculation.numberOfDaysToNonParoleDate)
         .minusDays(ONE)
     }
-  }
-
-  private fun getInitialCalculation(sentence: CalculableSentence, booking: Booking, releaseDateMultiplier: Double): SentenceCalculation {
-
-    // create the intermediate values
-    val numberOfDaysToSentenceExpiryDate = sentence.getLengthInDays()
-
-    val numberOfDaysToReleaseDate =
-      ceil(
-        numberOfDaysToSentenceExpiryDate.toDouble().times(releaseDateMultiplier)
-      ).toInt()
-
-    val unadjustedExpiryDate =
-      sentence.sentencedAt
-        .plusDays(numberOfDaysToSentenceExpiryDate.toLong())
-        .minusDays(ONE)
-
-    val unadjustedReleaseDate =
-      sentence.sentencedAt
-        .plusDays(numberOfDaysToReleaseDate.toLong())
-        .minusDays(ONE)
-
-    val calculatedTotalDeductedDays =
-      booking.getOrZero(AdjustmentType.REMAND, sentence.sentencedAt) + booking.getOrZero(AdjustmentType.TAGGED_BAIL, sentence.sentencedAt)
-
-    val calculatedTotalAddedDays =
-      booking.getOrZero(AdjustmentType.UNLAWFULLY_AT_LARGE, sentence.sentencedAt)
-
-    val calculatedTotalAwardedDays = max(
-      0,
-      booking.getOrZero(AdjustmentType.ADDITIONAL_DAYS_AWARDED, sentence.sentencedAt) -
-        booking.getOrZero(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, sentence.sentencedAt)
-    )
-
-    // create new SentenceCalculation and associate it with a sentence
-    return SentenceCalculation(
-      sentence,
-      numberOfDaysToSentenceExpiryDate,
-      numberOfDaysToReleaseDate,
-      unadjustedExpiryDate,
-      unadjustedReleaseDate,
-      calculatedTotalDeductedDays,
-      calculatedTotalAddedDays,
-      calculatedTotalAwardedDays,
-    )
   }
 
   private fun calculateHDCED(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {

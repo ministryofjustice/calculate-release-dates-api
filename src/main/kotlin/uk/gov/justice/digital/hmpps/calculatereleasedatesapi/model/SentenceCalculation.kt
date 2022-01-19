@@ -42,16 +42,19 @@ data class SentenceCalculation(
   }
 
   val adjustedReleaseDate: LocalDate get() {
-    return unadjustedReleaseDate.minusDays(
+    val date = unadjustedReleaseDate.minusDays(
       calculatedTotalDeductedDays.toLong()
     ).plusDays(
       calculatedTotalAddedDays.toLong()
     ).plusDays(
       calculatedTotalAwardedDays.toLong()
     )
+    return if (date.isAfter(sentence.sentencedAt)) {
+      date
+    } else {
+      sentence.sentencedAt
+    }
   }
-
-
 
   // Non Parole Date (NPD)
   var numberOfDaysToNonParoleDate: Long = 0

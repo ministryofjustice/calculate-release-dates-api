@@ -61,6 +61,9 @@ class CalculationServiceTest {
   private val bookingExtractionService = BookingExtractionService(
     sentencesExtractionService
   )
+  private val bookingTimelineService = BookingTimelineService(
+    sentenceCalculationService
+  )
 
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
@@ -76,6 +79,7 @@ class CalculationServiceTest {
       TestUtil.objectMapper(),
       prisonApiClient,
       domainEventPublisher,
+      bookingTimelineService
     )
 
   @ParameterizedTest
@@ -97,12 +101,6 @@ class CalculationServiceTest {
       jsonTransformation.loadCalculationBreakdown("$exampleType/$exampleNumber"),
       calculationBreakdown
     )
-  }
-
-  @Test
-  fun blah() {
-    `Test Example`("custom-examples", "crs-680-pre-prod-1", null)
-//    `Test Example`("custom-examples", "crs-680-unadjusted", null)
   }
 
   @ParameterizedTest
