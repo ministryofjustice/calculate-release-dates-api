@@ -10,6 +10,7 @@ class SentenceIdentificationServiceTest {
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
   private val offenderU18 = jsonTransformation.loadOffender("john_doe_under18")
+  private val sexOffender = jsonTransformation.loadOffender("john_doe_sex_offender")
 
   // sentenced before: 03/12/2012
   //   offence before: 04/04/2005
@@ -31,6 +32,18 @@ class SentenceIdentificationServiceTest {
     val sentence = jsonTransformation.loadSentence("two_years_2003_mar")
     sentenceIdentificationService.identify(sentence, offender)
     assertEquals("[LED, CRD, SED, HDCED]", sentence.releaseDateTypes.toString())
+  }
+
+  // sentenced before: 03/12/2012
+  //   offence before: 04/04/2005
+  //  sentence length: > 12 months  < 4 years
+  // sex offender
+
+  @Test
+  fun `Identify before 2005 12-48M but is a sex offender`() {
+    val sentence = jsonTransformation.loadSentence("two_years_2003_mar")
+    sentenceIdentificationService.identify(sentence, sexOffender)
+    assertEquals("[LED, CRD, SED]", sentence.releaseDateTypes.toString())
   }
 
   // sentenced before: 03/12/2012

@@ -18,6 +18,8 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
     const val PRISONER_ID = "A1234AA"
     const val PRISONER_ID_ERROR = "123CBA"
     const val BOOKING_ID_ERROR = 123L
+    const val PRISONER_ID_SEX_OFFENDER = "S3333XX"
+    const val BOOKING_ID_SEX_OFFENDER = 3333L
   }
 
   override fun beforeAll(context: ExtensionContext) {
@@ -31,6 +33,11 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
     prisonApi.stubGetErrorSentencesAndOffences(BOOKING_ID_ERROR)
     prisonApi.stubGetSentenceAdjustments(BOOKING_ID_ERROR)
     prisonApi.stubPostOffenderDates(BOOKING_ID_ERROR)
+
+    prisonApi.stubGetPrisonerDetailsSexOffender(PRISONER_ID_SEX_OFFENDER, BOOKING_ID_SEX_OFFENDER)
+    prisonApi.stubGetSentencesAndOffences(BOOKING_ID_SEX_OFFENDER)
+    prisonApi.stubGetSentenceAdjustments(BOOKING_ID_SEX_OFFENDER)
+    prisonApi.stubPostOffenderDates(BOOKING_ID_SEX_OFFENDER)
   }
 
   override fun beforeEach(context: ExtensionContext) {
@@ -58,16 +65,35 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
         )
     )
 
-  fun stubGetPrisonerDetails(prisonerId: String, bookingId: Long): StubMapping = stubGetPrisonerDetails(prisonerId,
-              """
+  fun stubGetPrisonerDetails(prisonerId: String, bookingId: Long): StubMapping = stubGetPrisonerDetails(
+    prisonerId,
+    """
             {
               "bookingId": "$bookingId",
               "offenderNo": "$prisonerId",
               "dateOfBirth": "1990-02-01"
             }
-              """.trimIndent()
-            )
+    """.trimIndent()
+  )
 
+  fun stubGetPrisonerDetailsSexOffender(prisonerId: String, bookingId: Long): StubMapping = stubGetPrisonerDetails(
+    prisonerId,
+    """
+            {
+              "bookingId": "$bookingId",
+              "offenderNo": "$prisonerId",
+              "dateOfBirth": "1990-02-01",
+              "alerts": [
+                {
+                  "alertCode": "SOR",
+                  "alertType": "S",
+                  "dateCreated": "2019-08-20"
+                }
+              ]
+            }
+    """.trimIndent()
+
+  )
 
   fun stubGetSentencesAndOffences(bookingId: Long, json: String): StubMapping =
     stubFor(
@@ -80,8 +106,9 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
         )
     )
 
-  fun stubGetSentencesAndOffences(bookingId: Long): StubMapping = stubGetSentencesAndOffences(bookingId,
-              """
+  fun stubGetSentencesAndOffences(bookingId: Long): StubMapping = stubGetSentencesAndOffences(
+    bookingId,
+    """
             [
               {
                 "bookingId": $bookingId,
@@ -105,9 +132,8 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
                 ]
               }
             ]
-              """.trimIndent()
-            )
-
+    """.trimIndent()
+  )
 
   fun stubGetErrorSentencesAndOffences(bookingId: Long): StubMapping =
     stubGetSentencesAndOffences(
@@ -207,7 +233,7 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
       ]
    }
 ]
-              """.trimIndent()
+      """.trimIndent()
     )
 
   fun stubGetSentenceAdjustments(bookingId: Long, json: String): StubMapping =
@@ -250,9 +276,8 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
                   }
                 ]
               }
-              """.trimIndent()
+    """.trimIndent()
   )
-
 
   fun stubPostOffenderDates(bookingId: Long): StubMapping =
     stubFor(
