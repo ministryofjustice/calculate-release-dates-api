@@ -1,0 +1,12 @@
+{
+  "dates": {
+    "SLED": "2027-06-29",
+    "CRD": "2025-02-27",
+    "ESED": "2028-05-23"
+  },
+  "effectiveSentenceLength": {
+    "YEARS": 7,
+    "MONTHS": 6,
+    "DAYS": 4
+  }
+}

@@ -29,6 +29,7 @@ class CalculationService(
   private val objectMapper: ObjectMapper,
   private val prisonApiClient: PrisonApiClient,
   private val domainEventPublisher: DomainEventPublisher,
+  private val bookingTimelineService: BookingTimelineService
 ) {
 
   fun getCurrentAuthentication(): AuthAwareAuthenticationToken =
@@ -74,6 +75,9 @@ class CalculationService(
     workingBooking =
       bookingCalculationService
         .createSingleTermSentences(workingBooking)
+
+    workingBooking = bookingTimelineService
+      .walkTimelineOfBooking(workingBooking)
 
     return workingBooking
   }

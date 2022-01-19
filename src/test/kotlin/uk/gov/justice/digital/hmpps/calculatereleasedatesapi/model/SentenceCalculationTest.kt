@@ -26,9 +26,6 @@ internal class SentenceCalculationTest {
       1,
       0,
       0,
-      date,
-      date,
-      0
     )
 
     assertEquals(sentenceCalculation.sentence, sentence)
@@ -38,7 +35,7 @@ internal class SentenceCalculationTest {
     assertEquals(0, sentenceCalculation.calculatedTotalAddedDays)
     assertEquals(date, sentenceCalculation.unadjustedExpiryDate)
     assertEquals(date, sentenceCalculation.unadjustedReleaseDate)
-    assertEquals(date, sentenceCalculation.adjustedExpiryDate)
-    assertEquals(date, sentenceCalculation.adjustedReleaseDate)
+    assertEquals(LocalDate.of(2020, 12, 31), sentenceCalculation.adjustedExpiryDate)
+    assertEquals(LocalDate.of(2020, 12, 31), sentenceCalculation.adjustedReleaseDate)
   }
 }

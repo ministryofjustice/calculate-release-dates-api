@@ -92,31 +92,31 @@
     "REMAND": [
       {
         "numberOfDays": 15,
-        "fromDate": "2021-09-21"
+        "appliesToSentencesFrom": "2021-09-21"
       }
     ],
     "TAGGED_BAIL": [
       {
         "numberOfDays": 10,
-        "fromDate": "2021-09-21"
+        "appliesToSentencesFrom": "2021-09-21"
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [
       {
         "numberOfDays": 7,
-        "fromDate": "2021-09-21"
+        "appliesToSentencesFrom": "2021-09-21"
       }
     ],
     "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
       {
         "numberOfDays": 2,
-        "fromDate": "2021-09-21"
+        "appliesToSentencesFrom": "2021-09-21"
       }
     ],
     "UNLAWFULLY_AT_LARGE": [
       {
         "numberOfDays": 2,
-        "fromDate": "2021-09-21"
+        "appliesToSentencesFrom": "2021-09-21"
       }
     ]
   }

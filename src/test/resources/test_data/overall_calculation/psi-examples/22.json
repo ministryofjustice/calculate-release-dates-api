@@ -36,7 +36,7 @@
     "REMAND": [
       {
         "numberOfDays": 30,
-        "fromDate": "2013-09-20"
+        "appliesToSentencesFrom": "2013-09-20"
       }
     ]
   }

@@ -125,9 +125,10 @@ fun transform(
     }
     adjustments[adjustmentType]!!.add(
       Adjustment(
+        appliesToSentencesFrom = it.fromDate,
+        numberOfDays = it.numberOfDays,
         fromDate = it.fromDate,
-        toDate = it.toDate,
-        numberOfDays = it.numberOfDays
+        toDate = it.toDate
       )
     )
   }
@@ -136,10 +137,11 @@ fun transform(
     if (!adjustments.containsKey(adjustmentType)) {
       adjustments[adjustmentType] = mutableListOf()
     }
-    val fromDate = it.fromDate ?: sentencesAndOffences.minOf { sentenceAndOffences -> sentenceAndOffences.sentenceDate }
+    val sentence: SentenceAndOffences = sentencesAndOffences.find { sentenceAndOffences -> it.sentenceSequence == sentenceAndOffences.sentenceSequence }!!
     adjustments[adjustmentType]!!.add(
       Adjustment(
-        fromDate = fromDate,
+        appliesToSentencesFrom = sentence.sentenceDate,
+        fromDate = it.fromDate,
         toDate = it.toDate,
         numberOfDays = it.numberOfDays
       )

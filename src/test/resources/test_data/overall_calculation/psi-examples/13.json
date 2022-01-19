@@ -21,19 +21,19 @@
     "REMAND": [
       {
         "numberOfDays": 28,
-        "fromDate": "2015-03-17"
+        "appliesToSentencesFrom": "2015-03-17"
       }
     ],
     "TAGGED_BAIL": [
       {
         "numberOfDays": 11,
-        "fromDate": "2015-03-17"
+        "appliesToSentencesFrom": "2015-03-17"
       }
     ],
     "UNLAWFULLY_AT_LARGE": [
       {
         "numberOfDays": 29,
-        "fromDate": "2015-03-17"
+        "appliesToSentencesFrom": "2015-03-17"
       }
     ]
   }

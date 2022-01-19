@@ -28,7 +28,7 @@ class ConsecutiveSentence(
   @JsonIgnore
   override lateinit var releaseDateTypes: List<ReleaseDateType>
 
-  fun buildString(): String {
+  override fun buildString(): String {
     return "ConsecutiveSentence\t:\t\n" +
       "Number of sentences\t:\t${orderedSentences.size}\n" +
       "Sentence Types\t:\t$releaseDateTypes\n" +

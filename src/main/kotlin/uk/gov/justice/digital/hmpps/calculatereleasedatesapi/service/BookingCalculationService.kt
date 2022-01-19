@@ -25,7 +25,6 @@ class BookingCalculationService(
   fun calculate(booking: Booking): Booking {
     for (sentence in booking.sentences) {
       sentenceCalculationService.calculate(sentence, booking)
-      log.info(sentence.buildString())
     }
     return booking
   }

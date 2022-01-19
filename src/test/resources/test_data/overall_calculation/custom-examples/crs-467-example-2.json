@@ -11,9 +11,7 @@
       },
       "duration": {
         "durationElements": {
-          "MONTHS": 56,
-          "WEEKS": 0,
-          "DAYS": 0
+          "MONTHS": 56
         }
       },
       "sentencedAt": "2017-02-17"
@@ -24,9 +22,7 @@
       },
       "duration": {
         "durationElements": {
-          "MONTHS": 52,
-          "WEEKS": 0,
-          "DAYS": 0
+          "MONTHS": 52
         }
       },
       "sentencedAt": "2019-05-23"
@@ -36,13 +32,13 @@
     "REMAND": [
       {
         "numberOfDays": 85,
-        "fromDate": "2017-02-17"
+        "appliesToSentencesFrom": "2017-02-17"
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [
       {
         "numberOfDays": 131,
-        "fromDate": "2017-02-17"
+        "appliesToSentencesFrom": "2017-02-17"
       }
     ]
   }
