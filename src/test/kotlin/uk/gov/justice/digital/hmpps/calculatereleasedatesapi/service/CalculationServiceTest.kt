@@ -61,6 +61,9 @@ class CalculationServiceTest {
   private val bookingExtractionService = BookingExtractionService(
     sentencesExtractionService
   )
+  private val bookingTimelineService = BookingTimelineService(
+    sentenceCalculationService
+  )
 
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
@@ -76,6 +79,7 @@ class CalculationServiceTest {
       TestUtil.objectMapper(),
       prisonApiClient,
       domainEventPublisher,
+      bookingTimelineService
     )
 
   @ParameterizedTest

@@ -44,7 +44,7 @@
     "REMAND": [
       {
         "numberOfDays": 181,
-        "fromDate": "2019-12-19"
+        "appliesToSentencesFrom": "2019-12-19"
       }
     ]
   }

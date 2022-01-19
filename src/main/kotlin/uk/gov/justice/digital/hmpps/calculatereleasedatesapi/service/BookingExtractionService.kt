@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
@@ -14,7 +13,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BookingTimelineGapException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
@@ -22,7 +20,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import java.time.LocalDate
 import java.time.Period
-import java.time.temporal.ChronoUnit
 
 @Service
 class BookingExtractionService(
@@ -84,7 +81,7 @@ class BookingExtractionService(
   }
 
   private fun extractMultiple(booking: Booking): BookingCalculation {
-    val bookingCalculation = walkTimelineOfBooking(booking)
+    val bookingCalculation = BookingCalculation()
     val earliestSentenceDate = booking.getAllExtractableSentences().minOf { it.sentencedAt }
 
     val mostRecentSentenceByReleaseDate = extractionService.mostRecentSentence(
@@ -172,50 +169,6 @@ class BookingExtractionService(
       return mostRecentSentenceByReleaseDate.sentenceCalculation.homeDetentionCurfewEligibilityDate
     }
     return null
-  }
-
-  /*
-     This method walks through the timeline of all the booking, checking for gaps between the release date and the
-     next sentence date of all the extractable sentences.
-     If there is a gap, it must be filled by any of:
-     1. Served ADAs,
-     2. Remand, i.e. A prisoner is kept on remand for an upcoming court date (TODO)
-     3. A license recall (TODO)
-    */
-  private fun walkTimelineOfBooking(booking: Booking): BookingCalculation {
-    val bookingCalculation = BookingCalculation()
-    var daysAwardedServed = 0L
-    // TODO Check with analysis on this. if we dont exclude schedule 15's example 37 fails.
-    //  Schedule 15's are out of scope at the moment - so one for the future
-    // TODO LH: I think the schedule 15 is because we use PED as the release date.
-    //  But that is only an eligible to be released date, not the date they're actually released on
-    if (booking.sentences.any { it.offence.isScheduleFifteen }) return bookingCalculation
-    val sortedSentences = booking.getAllExtractableSentences().sortedBy { it.sentencedAt }
-    var workingRange = sortedSentences[0].getDateRangeFromStartToReleaseWithoutDaysAwarded()
-    val totalAda = booking.getAllExtractableSentences()[0].sentenceCalculation.calculatedTotalAwardedDays.toLong()
-    var previousSentence = sortedSentences[0]
-    sortedSentences.forEach {
-      val sentenceRange = it.getDateRangeFromStartToReleaseWithoutDaysAwarded()
-      if (workingRange.isConnected(sentenceRange)) {
-        if (sentenceRange.end.isAfter(workingRange.end)) {
-          workingRange = LocalDateRange.of(workingRange.start, sentenceRange.end)
-        }
-      } else {
-        daysAwardedServed += ChronoUnit.DAYS.between(workingRange.end, it.sentencedAt) - 1
-        workingRange = LocalDateRange.of(workingRange.start, sentenceRange.end)
-        if (totalAda < daysAwardedServed) {
-          throw BookingTimelineGapException("There is a gap between sentences $previousSentence AND $it")
-        }
-      }
-      previousSentence = it
-    }
-
-    if (daysAwardedServed != 0L) {
-      BookingCalculationService.log.info("Adjusting release date for days already served. Adjusting by $daysAwardedServed")
-      bookingCalculation.daysAwardedServed = daysAwardedServed
-    }
-
-    return bookingCalculation
   }
 
   private fun getEffectiveSentenceLength(start: LocalDate, end: LocalDate): Period =

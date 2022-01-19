@@ -48,31 +48,31 @@
     "REMAND": [
       {
         "numberOfDays": 236,
-        "fromDate": "2016-04-21"
+        "appliesToSentencesFrom": "2016-04-21"
       }
     ],
     "TAGGED_BAIL": [
       {
         "numberOfDays": 0,
-        "fromDate": "2016-04-21"
+        "appliesToSentencesFrom": "2016-04-21"
       }
     ],
     "UNLAWFULLY_AT_LARGE": [
       {
         "numberOfDays": 0,
-        "fromDate": "2016-04-21"
+        "appliesToSentencesFrom": "2016-04-21"
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [
       {
         "numberOfDays": 42,
-        "fromDate": "2016-04-21"
+        "appliesToSentencesFrom": "2016-04-21"
       }
     ],
     "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
       {
         "numberOfDays": 7,
-        "fromDate": "2016-04-21"
+        "appliesToSentencesFrom": "2016-04-21"
       }
     ]
   }

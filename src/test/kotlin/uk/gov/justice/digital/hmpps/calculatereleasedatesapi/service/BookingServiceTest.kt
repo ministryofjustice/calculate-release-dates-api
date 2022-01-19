@@ -73,9 +73,10 @@ class BookingServiceTest {
       bookingAdjustments = listOf(
         BookingAdjustments(
           active = true,
-          fromDate = FIRST_JAN_2015,
           numberOfDays = 5,
-          type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE
+          type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE,
+          fromDate = FIRST_JAN_2015.minusDays(6),
+          toDate = FIRST_JAN_2015.minusDays(1)
         )
       ),
       sentenceAdjustments = listOf(
@@ -83,7 +84,10 @@ class BookingServiceTest {
           active = true,
           sentenceSequence = sequence,
           numberOfDays = 6,
-          type = SentenceAdjustmentType.REMAND
+          type = SentenceAdjustmentType.REMAND,
+          fromDate = FIRST_JAN_2015.minusDays(7),
+          toDate = FIRST_JAN_2015.minusDays(1)
+
         )
       )
     )
@@ -125,8 +129,20 @@ class BookingServiceTest {
           )
         ),
         adjustments = mapOf(
-          UNLAWFULLY_AT_LARGE to listOf(Adjustment(fromDate = FIRST_JAN_2015, numberOfDays = 5)),
-          REMAND to listOf(Adjustment(fromDate = FIRST_JAN_2015, numberOfDays = 6))
+          UNLAWFULLY_AT_LARGE to listOf(
+            Adjustment(
+              appliesToSentencesFrom = FIRST_JAN_2015.minusDays(6),
+              numberOfDays = 5, fromDate = FIRST_JAN_2015.minusDays(6),
+              toDate = FIRST_JAN_2015.minusDays(1)
+            )
+          ),
+          REMAND to listOf(
+            Adjustment(
+              appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 6,
+              fromDate = FIRST_JAN_2015.minusDays(7),
+              toDate = FIRST_JAN_2015.minusDays(1)
+            )
+          )
         )
       )
     )

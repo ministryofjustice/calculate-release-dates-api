@@ -25,7 +25,7 @@ class SingleTermSentence(
   @JsonIgnore
   override lateinit var releaseDateTypes: List<ReleaseDateType>
 
-  fun buildString(): String {
+  override fun buildString(): String {
     return "SingleTermSentence\t:\t\n" +
       "Number of sentences\t:\t${sentences.size}\n" +
       "Sentence Types\t:\t$releaseDateTypes\n" +
