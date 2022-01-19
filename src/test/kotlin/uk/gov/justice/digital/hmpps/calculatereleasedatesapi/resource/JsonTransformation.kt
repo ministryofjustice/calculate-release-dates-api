@@ -57,19 +57,6 @@ class JsonTransformation {
     return jsonToCalculationBreakdown(json)!!
   }
 
-  fun loadPrisonerDetails(testData: String): PrisonerDetails {
-    val json = getJsonTest("$testData.json", "api_integration/prisoners")
-    return jsonToPrisonerDetails(json)!!
-  }
-
-  fun getSentenceAndOffencesJson(testData: String): String {
-    return getJsonTest("$testData.json", "api_integration/sentences")
-  }
-
-  fun getAdjustmentsJson(testData: String): String {
-    return getJsonTest("$testData.json", "api_integration/adjustments")
-  }
-
   private fun jsonToSentence(json: String): Sentence? {
     val jsonAdapter = moshi.adapter(Sentence::class.java)
     return jsonAdapter.fromJson(json)
@@ -92,11 +79,6 @@ class JsonTransformation {
 
   private fun jsonToCalculationBreakdown(json: String): CalculationBreakdown? {
     val jsonAdapter = moshi.adapter(CalculationBreakdown::class.java)
-    return jsonAdapter.fromJson(json)
-  }
-
-  private fun jsonToPrisonerDetails(json: String): PrisonerDetails? {
-    val jsonAdapter = moshi.adapter(PrisonerDetails::class.java)
     return jsonAdapter.fromJson(json)
   }
 
