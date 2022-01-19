@@ -50,6 +50,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Offe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
@@ -103,17 +104,32 @@ fun transform(prisonerDetails: PrisonerDetails): Offender {
     name = prisonerDetails.firstName + ' ' + prisonerDetails.lastName,
     dateOfBirth = prisonerDetails.dateOfBirth,
     reference = prisonerDetails.offenderNo,
+    isActiveSexOffender = prisonerDetails.alerts.any { pd ->
+      pd.alertType == "S" &&
+        pd.alertCode == "SOR" && // Sex offence register
+        pd.dateCreated.isBeforeOrEqualTo(LocalDate.now()) &&
+        (pd.dateExpires == null || pd.dateExpires.isAfter(LocalDate.now()))
+    }
   )
 }
 
-fun transform(bookingAndSentenceAdjustments: BookingAndSentenceAdjustments, sentencesAndOffences: List<SentenceAndOffences>): Map<AdjustmentType, List<Adjustment>> {
+fun transform(
+  bookingAndSentenceAdjustments: BookingAndSentenceAdjustments,
+  sentencesAndOffences: List<SentenceAndOffences>
+): Map<AdjustmentType, List<Adjustment>> {
   val adjustments: MutableMap<AdjustmentType, MutableList<Adjustment>> = mutableMapOf()
   bookingAndSentenceAdjustments.bookingAdjustments.forEach {
     val adjustmentType = transform(it.type)
     if (!adjustments.containsKey(adjustmentType)) {
       adjustments[adjustmentType] = mutableListOf()
     }
-    adjustments[adjustmentType]!!.add(Adjustment(fromDate = it.fromDate, toDate = it.toDate, numberOfDays = it.numberOfDays))
+    adjustments[adjustmentType]!!.add(
+      Adjustment(
+        fromDate = it.fromDate,
+        toDate = it.toDate,
+        numberOfDays = it.numberOfDays
+      )
+    )
   }
   bookingAndSentenceAdjustments.sentenceAdjustments.forEach {
     val adjustmentType = transform(it.type)
@@ -121,7 +137,13 @@ fun transform(bookingAndSentenceAdjustments: BookingAndSentenceAdjustments, sent
       adjustments[adjustmentType] = mutableListOf()
     }
     val fromDate = it.fromDate ?: sentencesAndOffences.minOf { sentenceAndOffences -> sentenceAndOffences.sentenceDate }
-    adjustments[adjustmentType]!!.add(Adjustment(fromDate = fromDate, toDate = it.toDate, numberOfDays = it.numberOfDays))
+    adjustments[adjustmentType]!!.add(
+      Adjustment(
+        fromDate = fromDate,
+        toDate = it.toDate,
+        numberOfDays = it.numberOfDays
+      )
+    )
   }
   return adjustments
 }

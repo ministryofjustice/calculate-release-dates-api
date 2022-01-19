@@ -7,6 +7,7 @@ data class Offender(
   val reference: String,
   val name: String,
   val dateOfBirth: LocalDate,
+  val isActiveSexOffender: Boolean = false,
 ) {
   fun getAgeOnDate(date: LocalDate): Double {
     val betweenDates = Period.between(this.dateOfBirth, date)

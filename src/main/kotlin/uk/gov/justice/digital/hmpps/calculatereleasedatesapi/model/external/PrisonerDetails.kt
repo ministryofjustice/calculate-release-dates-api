@@ -8,4 +8,5 @@ data class PrisonerDetails(
   val firstName: String = "",
   val lastName: String = "",
   val dateOfBirth: LocalDate,
+  val alerts: List<Alert> = emptyList(),
 )

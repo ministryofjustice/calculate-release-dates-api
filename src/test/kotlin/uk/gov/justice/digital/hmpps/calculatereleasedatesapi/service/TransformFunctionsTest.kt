@@ -11,9 +11,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Alert
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import java.time.LocalDate
 import java.time.Period
@@ -162,12 +165,61 @@ class TransformFunctionsTest {
     )
   }
 
+  @Test
+  fun `Transform prisoner details - check active sex offender is set`() {
+    assertThat(
+      transform(
+        PRISONER_DETAILS.copy(alerts = listOf(SEX_OFFENDER_ALERT, RANDOM_ALERT))
+      )
+    ).isEqualTo(
+      Offender(
+        reference = PRISONER_ID,
+        dateOfBirth = DOB,
+        name = "Harry Houdini",
+        isActiveSexOffender = true,
+      )
+    )
+  }
+
+  @Test
+  fun `Transform prisoner details - check active sex offender is not set with another type of alert`() {
+    assertThat(
+      transform(
+        PRISONER_DETAILS.copy(alerts = listOf(RANDOM_ALERT))
+      )
+    ).isEqualTo(
+      Offender(
+        reference = PRISONER_ID,
+        dateOfBirth = DOB,
+        name = "Harry Houdini",
+        isActiveSexOffender = false,
+      )
+    )
+  }
+
+  @Test
+  fun `Transform prisoner details - check active sex offender is not set with no alerts`() {
+    assertThat(
+      transform(
+        PRISONER_DETAILS.copy(alerts = listOf(RANDOM_ALERT))
+      )
+    ).isEqualTo(
+      Offender(
+        reference = PRISONER_ID,
+        dateOfBirth = DOB,
+        name = "Harry Houdini",
+        isActiveSexOffender = false,
+      )
+    )
+  }
+
   private companion object {
     val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
     val FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION =
       Duration(mutableMapOf(DAYS to 2L, WEEKS to 3L, MONTHS to 4L, YEARS to 5L))
     val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     val SECOND_JAN_2015: LocalDate = LocalDate.of(2015, 1, 2)
+    val DOB: LocalDate = LocalDate.of(1955, 11, 5)
     private const val PRISONER_ID = "A1234AJ"
     private const val BOOKING_ID = 12345L
     private val CALCULATION_REFERENCE: UUID = UUID.randomUUID()
@@ -199,6 +251,26 @@ class TransformFunctionsTest {
     val BOOKING_CALCULATION = BookingCalculation(
       dates = mutableMapOf(CRD to CRD_DATE),
       calculationRequestId = CALCULATION_REQUEST_ID
+    )
+
+    val SEX_OFFENDER_ALERT = Alert(
+      dateCreated = LocalDate.of(2010, 1, 1),
+      alertType = "S",
+      alertCode = "SOR"
+    )
+
+    val RANDOM_ALERT = Alert(
+      dateCreated = LocalDate.of(2010, 1, 1),
+      alertType = "X",
+      alertCode = "XXY"
+    )
+
+    val PRISONER_DETAILS = PrisonerDetails(
+      bookingId = BOOKING_ID,
+      offenderNo = PRISONER_ID,
+      dateOfBirth = DOB,
+      firstName = "Harry",
+      lastName = "Houdini"
     )
   }
 }

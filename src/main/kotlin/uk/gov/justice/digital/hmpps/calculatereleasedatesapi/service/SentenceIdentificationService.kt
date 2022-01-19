@@ -77,7 +77,7 @@ class SentenceIdentificationService {
     }
 
     if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.WEEKS) &&
-      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS)
+      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS) && !offender.isActiveSexOffender
     ) {
       sentence.releaseDateTypes += HDCED
     }
