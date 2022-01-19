@@ -8,6 +8,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorRespons
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
@@ -23,7 +25,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
-    val result = createPreliminaryCalculation()
+    val result = createPreliminaryCalculation(PRISONER_ID)
 
     if (result != null) {
       val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
@@ -33,6 +35,8 @@ class CalculationIntTest : IntegrationTestBase() {
       assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
       assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
       assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
+      assertThat(result.dates[HDCED]).isEqualTo(LocalDate.of(2015, 8, 25))
+      assertThat(result.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
       assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID)
       assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText())
         .isEqualTo("2015-03-17")
@@ -42,7 +46,7 @@ class CalculationIntTest : IntegrationTestBase() {
   @Test
   fun `Confirm a calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
 
-    val resultCalculation = createPreliminaryCalculation()
+    val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
     var result: BookingCalculation? = null
     var calculationRequest: CalculationRequest? = null
     if (resultCalculation != null) {
@@ -69,7 +73,7 @@ class CalculationIntTest : IntegrationTestBase() {
   @Test
   fun `Get the results for a confirmed calculation`() {
 
-    val resultCalculation = createPreliminaryCalculation()
+    val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
     if (resultCalculation != null) {
       createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId)
     }
@@ -119,8 +123,8 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(req).isNotNull
   }
 
-  private fun createPreliminaryCalculation() = webTestClient.post()
-    .uri("/calculation/$PRISONER_ID")
+  private fun createPreliminaryCalculation(prisonerid: String) = webTestClient.post()
+    .uri("/calculation/$prisonerid")
     .accept(MediaType.APPLICATION_JSON)
     .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
     .exchange()
@@ -161,7 +165,7 @@ class CalculationIntTest : IntegrationTestBase() {
   @Test
   fun `Get the calculation breakdown for a calculation`() {
 
-    val resultCalculation = createPreliminaryCalculation()
+    val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
     var calc: BookingCalculation? = null
     if (resultCalculation != null) {
       calc = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId)
@@ -191,11 +195,31 @@ class CalculationIntTest : IntegrationTestBase() {
     }
   }
 
+  @Test
+  fun `Run calculation for a sex offender (check HDCED not set - based on example 13 from the unit tests)`() {
+    val result = createPreliminaryCalculation(PRISONER_ID_SEX_OFFENDER)
+
+    if (result != null) {
+      val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
+        .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
+
+      assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
+      assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
+      assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
+      assertThat(result.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
+      assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID_SEX_OFFENDER)
+      assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText())
+        .isEqualTo("2015-03-17")
+      assert(!result.dates.containsKey(HDCED))
+    }
+  }
+
   companion object {
     const val BOOKING_ID = 9292L
     const val BOOKING_ID_DOESNT_EXIST = 92929988L
     const val PRISONER_ID = "A1234AA"
     const val PRISONER_ERROR_ID = "123CBA"
     const val BOOKING_ERROR_ID = 123L
+    const val PRISONER_ID_SEX_OFFENDER = "S3333XX"
   }
 }
