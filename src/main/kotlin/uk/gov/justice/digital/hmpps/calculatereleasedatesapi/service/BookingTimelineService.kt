@@ -5,25 +5,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BookingTimelineGapException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
-import java.time.LocalDate
-import java.time.Period
 import java.time.temporal.ChronoUnit
 import kotlin.math.min
 
@@ -56,8 +40,8 @@ class BookingTimelineService(
           workingRange = LocalDateRange.of(workingRange.start, itRange.end)
         }
       } else {
-        //TODO tagged bail, UAL?
-        //There is gap.
+        // TODO tagged bail, UAL?
+        // There is gap.
 
         // 1. Check if there have been any ADAs served
         var daysBetween = ChronoUnit.DAYS.between(workingRange.end, it.sentencedAt)
@@ -68,16 +52,16 @@ class BookingTimelineService(
         daysBetween = ChronoUnit.DAYS.between(workingRange.end, it.sentencedAt)
 
         if (daysBetween > 0) {
-          //There is still a gap
+          // There is still a gap
 
-          //2. A release date has occurred but there are more sentences on the booking, therefore previous adjustments
+          // 2. A release date has occurred but there are more sentences on the booking, therefore previous adjustments
           // should be wiped. TODO only remand?
           daysRemandNoLongerApplicable += booking.getOrZero(
             AdjustmentType.REMAND,
             previousSentence.sentenceCalculation.adjustedReleaseDate
           )
 
-          //3. A release date has occurred but there are more sentences on the booking, therefore that gap should
+          // 3. A release date has occurred but there are more sentences on the booking, therefore that gap should
           // be filled by remand.
           val daysRemand = booking.getOrZero(AdjustmentType.REMAND, it.sentencedAt) - daysRemandNoLongerApplicable
           if (workingRange.end.plusDays(daysRemand.toLong()).isBefore(it.sentencedAt.minusDays(1))) {

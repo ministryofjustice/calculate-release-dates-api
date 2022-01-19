@@ -71,7 +71,7 @@ data class SentenceCalculation(
         _licenceExpiryDate
       }
     }
-    set (value) {
+    set(value) {
       _licenceExpiryDate = value
     }
 
@@ -82,7 +82,6 @@ data class SentenceCalculation(
   // Notional Conditional Release Date (NCRD)
   var numberOfDaysToNotionalConditionalReleaseDate: Long = 0
   var notionalConditionalReleaseDate: LocalDate? = null
-
 
   val releaseDate: LocalDate? get() {
     if (
@@ -108,8 +107,8 @@ data class SentenceCalculation(
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val expiryDateType = if (releaseDateTypes.contains(ReleaseDateType.SLED)) "SLED" else "SED"
     val releaseDateType = if (releaseDateTypes.contains(ReleaseDateType.ARD)) "ARD"
-                          else if (releaseDateTypes.contains(ReleaseDateType.CRD)) "CRD"
-                          else "PED"
+    else if (releaseDateTypes.contains(ReleaseDateType.CRD)) "CRD"
+    else "PED"
 
     return "Date of $expiryDateType\t:\t${unadjustedExpiryDate.format(formatter)}\n" +
       "Number of days to $releaseDateType\t:\t${numberOfDaysToReleaseDate}\n" +

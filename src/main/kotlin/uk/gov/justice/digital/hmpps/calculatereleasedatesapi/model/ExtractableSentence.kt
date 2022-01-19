@@ -4,9 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.threeten.extra.LocalDateRange
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 
 interface ExtractableSentence : CalculableSentence {
