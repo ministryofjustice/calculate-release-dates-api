@@ -20,8 +20,9 @@ class BookingTimelineService(
      next sentence date of all the extractable sentences.
      If there is a gap, it must be filled by any of:
      1. Served ADAs,
-     2. Remand, i.e. A prisoner is kept on remand for an upcoming court date (TODO)
-     3. A license recall (TODO)
+     2. Remand, i.e. A prisoner is kept on remand for an upcoming court date
+     3. Other adjustments? Tagged bail UAL?
+     4. A license recall (TODO)
     */
   fun walkTimelineOfBooking(booking: Booking): Booking {
     val sortedSentences = booking.getAllExtractableSentences().sortedBy { it.sentencedAt }
@@ -40,17 +41,16 @@ class BookingTimelineService(
           workingRange = LocalDateRange.of(workingRange.start, itRange.end)
         }
       } else {
-        // TODO tagged bail, UAL?
-        // There is gap.
+        // There is gap here.
 
         // 1. Check if there have been any ADAs served
         var daysBetween = ChronoUnit.DAYS.between(workingRange.end, it.sentencedAt)
         val daysAdaServed = min(daysBetween - 1, totalAda.toLong())
         daysAwardedServed += daysAdaServed.toInt()
+        //Update range to include ada's served.
         workingRange = LocalDateRange.of(workingRange.start, previousSentence.sentenceCalculation.adjustedReleaseDate)
 
         daysBetween = ChronoUnit.DAYS.between(workingRange.end, it.sentencedAt)
-
         if (daysBetween > 0) {
           // There is still a gap
 
@@ -78,9 +78,13 @@ class BookingTimelineService(
   }
 
   private fun readjustDates(it: ExtractableSentence, daysAwardedServed: Int, daysRemandNoLongerApplicable: Int) {
-    it.sentenceCalculation.calculatedTotalAwardedDays = it.sentenceCalculation.calculatedTotalAwardedDays - daysAwardedServed
-    it.sentenceCalculation.calculatedTotalDeductedDays = it.sentenceCalculation.calculatedTotalDeductedDays - daysRemandNoLongerApplicable
-    sentenceCalculationService.calculateDatesFromAdjustments(it)
+    if (daysAwardedServed + daysRemandNoLongerApplicable != 0) {
+      it.sentenceCalculation.calculatedTotalAwardedDays =
+        it.sentenceCalculation.calculatedTotalAwardedDays - daysAwardedServed
+      it.sentenceCalculation.calculatedTotalDeductedDays =
+        it.sentenceCalculation.calculatedTotalDeductedDays - daysRemandNoLongerApplicable
+      sentenceCalculationService.calculateDatesFromAdjustments(it)
+    }
   }
 
   companion object {
