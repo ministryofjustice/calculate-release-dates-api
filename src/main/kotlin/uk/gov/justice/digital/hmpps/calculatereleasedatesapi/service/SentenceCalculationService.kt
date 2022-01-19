@@ -29,8 +29,8 @@ class SentenceCalculationService {
     var firstSentenceCalc = getInitialCalculation(sentence, booking, sentence.sentencedAt)
     var adjustedSentenceCalc = getInitialCalculation(sentence, booking, firstSentenceCalc.adjustedReleaseDate)
 
-    //Keep working out the adjusted release date and checking if there are anymore adjustments applicable within
-    //The adjusted prison term.
+    // Keep working out the adjusted release date and checking if there are anymore adjustments applicable within
+    // The adjusted prison term.
     while (firstSentenceCalc.adjustedReleaseDate != adjustedSentenceCalc.adjustedReleaseDate) {
       firstSentenceCalc = adjustedSentenceCalc
       adjustedSentenceCalc = getInitialCalculation(sentence, booking, firstSentenceCalc.adjustedReleaseDate)

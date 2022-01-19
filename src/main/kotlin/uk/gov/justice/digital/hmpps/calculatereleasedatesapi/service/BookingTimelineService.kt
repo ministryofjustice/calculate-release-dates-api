@@ -21,7 +21,7 @@ class BookingTimelineService(
      If there is a gap, it must be filled by any of:
      1. Served ADAs,
      2. Remand, i.e. A prisoner is kept on remand for an upcoming court date
-     3. Other adjustments? Tagged bail UAL?
+     3. Other adjustments? Tagged bail UAL? (TODO)
      4. A license recall (TODO)
     */
   fun walkTimelineOfBooking(booking: Booking): Booking {
@@ -47,7 +47,7 @@ class BookingTimelineService(
         var daysBetween = ChronoUnit.DAYS.between(workingRange.end, it.sentencedAt)
         val daysAdaServed = min(daysBetween - 1, totalAda.toLong())
         daysAwardedServed += daysAdaServed.toInt()
-        //Update range to include ada's served.
+        // Update range to include ada's served.
         workingRange = LocalDateRange.of(workingRange.start, previousSentence.sentenceCalculation.adjustedReleaseDate)
 
         daysBetween = ChronoUnit.DAYS.between(workingRange.end, it.sentencedAt)

@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
