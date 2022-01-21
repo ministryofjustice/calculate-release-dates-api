@@ -23,7 +23,9 @@
     "REMAND": [
       {
         "numberOfDays": 85,
-        "appliesToSentencesFrom": "2017-02-17"
+        "appliesToSentencesFrom": "2017-02-17",
+        "toDate": "2017-02-16",
+        "fromDate": "2016-11-23"
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [

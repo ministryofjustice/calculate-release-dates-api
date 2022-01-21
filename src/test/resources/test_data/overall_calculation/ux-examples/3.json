@@ -83,7 +83,9 @@
     "REMAND": [
       {
         "numberOfDays": 15,
-        "appliesToSentencesFrom": "2020-03-20"
+        "appliesToSentencesFrom": "2020-03-20",
+        "toDate": "2020-03-19",
+        "fromDate": "2020-03-04"
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [

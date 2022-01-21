@@ -15,32 +15,21 @@
         }
       },
       "sentencedAt": "2020-12-15"
-    },
-    {
-      "offence": {
-        "committedAt": "2020-11-13"
-      },
-      "duration": {
-        "durationElements": {
-          "YEARS": 3
-        }
-      },
-      "sentencedAt": "2021-07-13"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 22,
+        "numberOfDays": 10,
+        "appliesToSentencesFrom": "2020-12-15",
+        "fromDate": "2020-11-12",
+        "toDate": "2020-11-22"
+      },
+      {
+        "numberOfDays": 23,
         "appliesToSentencesFrom": "2020-12-15",
         "fromDate": "2020-11-22",
         "toDate": "2020-12-14"
-      },
-      {
-        "numberOfDays": 204,
-        "appliesToSentencesFrom": "2021-07-13",
-        "fromDate": "2020-12-21",
-        "toDate": "2021-07-12"
       }
     ]
   }

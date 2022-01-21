@@ -19,16 +19,20 @@ data class Booking(
   @Transient
   var singleTermSentence: SingleTermSentence? = null
 
-  fun getOrZero(adjustmentType: AdjustmentType, sentenceAt: LocalDate): Int {
+  fun getOrZero(adjustmentType: AdjustmentType, adjustmentsFrom: LocalDate): Int {
     if (adjustments.containsKey(adjustmentType) && adjustments[adjustmentType] != null) {
       val adjustments = adjustments[adjustmentType]!!
-      val adjustmentDays = adjustments.filter { it.appliesToSentencesFrom.isBeforeOrEqualTo(sentenceAt) }
+      val adjustmentDays = adjustments.filter { it.appliesToSentencesFrom.isBeforeOrEqualTo(adjustmentsFrom) }
         .map { it.numberOfDays }
       if (adjustmentDays.isNotEmpty()) {
-        return adjustmentDays.reduce { acc, numberOfDates -> acc + numberOfDates }
+        return adjustmentDays.reduce { acc, it -> acc + it }
       }
     }
     return 0
+  }
+
+  fun get(adjustmentType: AdjustmentType): List<Adjustment> {
+    return adjustments.getOrDefault(adjustmentType, listOf())
   }
 
   @JsonIgnore

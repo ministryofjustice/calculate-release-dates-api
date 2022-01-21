@@ -64,3 +64,6 @@ custom-examples,crs-680-pre-prod-1,
 custom-examples,crs-680-pre-prod-2,
 custom-examples,crs-680-concurrent-sentences-same-date,
 custom-examples,crs-680-concurrent-sentences-different-date,
+custom-examples,crs-644-remand-overlapping-remand,RemandPeriodOverlapsWithRemandException
+custom-examples,crs-644-remand-overlapping-sentence,RemandPeriodOverlapsWithSentenceException
+
