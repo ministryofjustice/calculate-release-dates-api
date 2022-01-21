@@ -110,7 +110,7 @@ class BookingTimelineService(
             throw RemandPeriodOverlapsWithSentenceException("${if (previousRangeIsRemand!!) "Remand" else "Sentence"} of range ${previousRange!!} overlaps with ${if (isRemand) "remand" else "sentence"} of range $it")
           }
         } else if (it.end.isAfter(totalRange!!.end)) {
-            totalRange = LocalDateRange.of(totalRange!!.start, it.end)
+          totalRange = LocalDateRange.of(totalRange!!.start, it.end)
         }
         previousRangeIsRemand = isRemand
         previousRange = it
