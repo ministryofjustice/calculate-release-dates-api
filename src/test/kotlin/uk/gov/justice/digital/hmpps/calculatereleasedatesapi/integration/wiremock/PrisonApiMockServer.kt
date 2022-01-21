@@ -28,7 +28,6 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
     val prisonApi = PrisonApiMockServer()
     const val DEFAULT = "default"
     val log: Logger = LoggerFactory.getLogger(this::class.java)
-
   }
   private val jsonTransformation = JsonTransformation()
   private val objectMapper = TestUtil.objectMapper()
@@ -49,11 +48,11 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
     allPrisoners.forEach {
       val prisoner = if (prisoners.containsKey(it)) {
         log.info("Stubbing prisoner details prisonerId $it, bookingId ${it.hashCode().toLong()} from file $it")
-        //There is a matching json for the prisoner
+        // There is a matching json for the prisoner
         prisoners[it]!!.copy(bookingId = it.hashCode().toLong(), offenderNo = it)
       } else {
         log.info("Stubbing prisoner details prisonerId $it, bookingId ${it.hashCode().toLong()} from file $DEFAULT")
-        //There is no matching json for the prisoner for this adjustment/offence. Use the generic prisoner
+        // There is no matching json for the prisoner for this adjustment/offence. Use the generic prisoner
         defaultPrisoner.copy(bookingId = it.hashCode().toLong(), offenderNo = it)
       }
       prisonApi.stubGetPrisonerDetails(it, objectMapper.writeValueAsString(prisoner))

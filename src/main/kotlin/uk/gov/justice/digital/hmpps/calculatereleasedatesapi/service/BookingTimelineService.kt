@@ -67,9 +67,11 @@ class BookingTimelineService(
           // be filled by remand.
           val daysRemand = booking.getOrZero(AdjustmentType.REMAND, it.sentencedAt) - daysRemandNoLongerApplicable
           if (sentenceRange.end.plusDays(daysRemand.toLong()).isBefore(it.sentencedAt.minusDays(1))) {
-            throw BookingTimelineGapException("There is a gap between sentence sentence at ${previousSentence.sentencedAt}" +
-              " release of ${previousSentence.sentenceCalculation.adjustedReleaseDate}" +
-              " AND sentence at ${it.sentencedAt} release of ${it.sentenceCalculation.adjustedReleaseDate}")
+            throw BookingTimelineGapException(
+              "There is a gap between sentence sentence at ${previousSentence.sentencedAt}" +
+                " release of ${previousSentence.sentenceCalculation.adjustedReleaseDate}" +
+                " AND sentence at ${it.sentencedAt} release of ${it.sentenceCalculation.adjustedReleaseDate}"
+            )
           } else {
             sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
           }
@@ -92,7 +94,7 @@ class BookingTimelineService(
       val allRanges = (remandRanges + sentenceRanges).sortedBy { it.start }
       var totalRange: LocalDateRange? = null
       var previousRangeIsRemand: Boolean? = null
-      var previousRange : LocalDateRange? = null
+      var previousRange: LocalDateRange? = null
 
       allRanges.forEach {
         val isRemand = remandRanges.any() { sentenceRange -> sentenceRange === it }
