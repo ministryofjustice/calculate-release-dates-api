@@ -1,3 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions
 
-class RecursionDepthExceededException(message: String) : Exception(message)
+import org.springframework.http.HttpStatus
+
+class RecursionDepthExceededException(message: String) : CrdWebException(message, HttpStatus.INTERNAL_SERVER_ERROR)

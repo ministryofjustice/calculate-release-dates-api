@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions
 
+import org.springframework.http.HttpStatus
+
 /*
 This exception occurs when there is a gap in the booking timeline. This can happen in two ways
 
@@ -10,4 +12,4 @@ The CRD and the next sentence, which cannot be filled by adjustments or license 
 The SLED and the next sentence, this should be a separate booking and therefore the data has been set up incorrectly.
 
  */
-class BookingTimelineGapException(message: String) : Exception(message)
+class BookingTimelineGapException(message: String) : CrdWebException(message, HttpStatus.UNPROCESSABLE_ENTITY)

@@ -1,0 +1,21 @@
+{
+  "bookingAdjustments": [],
+  "sentenceAdjustments": [
+    {
+      "sentenceSequence": 1,
+      "active": true,
+      "type": "REMAND",
+      "fromDate": "2000-04-28",
+      "toDate": "2000-04-30",
+      "numberOfDays": 2
+    },
+    {
+      "sentenceSequence": 1,
+      "active": true,
+      "type": "REMAND",
+      "fromDate": "2000-04-01",
+      "toDate": "2000-04-30",
+      "numberOfDays": 29
+    }
+  ]
+}

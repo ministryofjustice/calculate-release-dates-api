@@ -22,7 +22,9 @@
     "REMAND": [
       {
         "numberOfDays": 575,
-        "appliesToSentencesFrom": "2015-03-14"
+        "appliesToSentencesFrom": "2015-03-14",
+        "toDate": "2015-03-13",
+        "fromDate": "2013-08-15"
       }
     ]
   }

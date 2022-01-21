@@ -1,3 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions
 
-class PreconditionFailedException(message: String) : Exception(message)
+import org.springframework.http.HttpStatus
+
+class PreconditionFailedException(message: String) : CrdWebException(message, HttpStatus.PRECONDITION_FAILED)

@@ -52,7 +52,9 @@
     "REMAND": [
       {
         "numberOfDays": 174,
-        "appliesToSentencesFrom": "2021-03-01"
+        "appliesToSentencesFrom": "2021-03-01",
+        "toDate": "2021-02-28",
+        "fromDate": "2020-09-07"
       }
     ],
     "TAGGED_BAIL": [

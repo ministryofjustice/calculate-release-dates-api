@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -156,8 +157,8 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectBody()
       .json(
         "{\"status\":404,\"errorCode\":null,\"userMessage\":\"Not found: No confirmed calculation exists " +
-          "for prisoner A1234AA and bookingId 92929988\",\"developerMessage\":\"No confirmed calculation exists for " +
-          "prisoner A1234AA and bookingId 92929988\"," +
+          "for prisoner default and bookingId 92929988\",\"developerMessage\":\"No confirmed calculation exists for " +
+          "prisoner default and bookingId 92929988\"," +
           "\"moreInfo\":null}"
       )
   }
@@ -214,12 +215,62 @@ class CalculationIntTest : IntegrationTestBase() {
     }
   }
 
+  @Test
+  fun `Run calculation where remand periods overlap with other remand periods`() {
+    val error = webTestClient.post()
+      .uri("/calculation/$REMAND_OVERLAPS_WITH_REMAND_PRISONER_ID")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ErrorResponse::class.java)
+      .returnResult().responseBody
+
+    assertThat(error.userMessage).isEqualTo("Remand of range 2000-04-01/2000-04-30 overlaps with remand of range 2000-04-28/2000-04-30")
+    assertThat(error.errorCode).isEqualTo("REMAND_OVERLAPS_WITH_REMAND")
+  }
+
+  @Test
+  fun `Run calculation where remand periods overlap with a sentence periods`() {
+    val error = webTestClient.post()
+      .uri("/calculation/$REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ErrorResponse::class.java)
+      .returnResult().responseBody
+
+    assertThat(error.userMessage).isEqualTo("Remand of range 2000-04-28/2000-04-30 overlaps with sentence of range 2000-04-29/2001-02-25")
+    assertThat(error.errorCode).isEqualTo("REMAND_OVERLAPS_WITH_SENTENCE")
+  }
+
+  @Test
+  fun `Run calculation where there is an unfilled gap between sentences`() {
+    val error = webTestClient.post()
+      .uri("/calculation/$GAP_IN_SENTENCE_TIMELINE_PRISONER_ID")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ErrorResponse::class.java)
+      .returnResult().responseBody
+
+    assertThat(error.userMessage).isEqualTo("There is a gap between sentence sentence at 2001-04-29 release of 2001-04-29 AND sentence at 2022-01-01 release of 2022-01-01")
+  }
+
   companion object {
-    const val BOOKING_ID = 9292L
-    const val BOOKING_ID_DOESNT_EXIST = 92929988L
-    const val PRISONER_ID = "A1234AA"
+    const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"
-    const val BOOKING_ERROR_ID = 123L
     const val PRISONER_ID_SEX_OFFENDER = "S3333XX"
+    val BOOKING_ID = PRISONER_ID.hashCode().toLong()
+    val BOOKING_ERROR_ID = PRISONER_ERROR_ID.hashCode().toLong()
+    const val BOOKING_ID_DOESNT_EXIST = 92929988L
+    const val REMAND_OVERLAPS_WITH_REMAND_PRISONER_ID = "REM-REM"
+    const val REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID = "REM-SEN"
+    const val GAP_IN_SENTENCE_TIMELINE_PRISONER_ID = "GAP"
   }
 }

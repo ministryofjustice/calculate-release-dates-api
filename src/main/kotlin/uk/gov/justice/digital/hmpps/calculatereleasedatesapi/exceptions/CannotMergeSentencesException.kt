@@ -1,3 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions
 
-class CannotMergeSentencesException(message: String) : Exception(message)
+import org.springframework.http.HttpStatus
+
+class CannotMergeSentencesException(message: String) : CrdWebException(message, HttpStatus.UNPROCESSABLE_ENTITY)
