@@ -25,7 +25,7 @@ data class Booking(
       val adjustmentDays = adjustments.filter { it.appliesToSentencesFrom.isBeforeOrEqualTo(adjustmentsFrom) }
         .map { it.numberOfDays }
       if (adjustmentDays.isNotEmpty()) {
-        return adjustmentDays.reduce { acc, numberOfDates -> acc + numberOfDates }
+        return adjustmentDays.reduce { acc, it -> acc + it }
       }
     }
     return 0

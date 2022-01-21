@@ -97,28 +97,23 @@ class BookingTimelineService(
       var previousRange: LocalDateRange? = null
 
       allRanges.forEach {
-        val isRemand = remandRanges.any() { sentenceRange -> sentenceRange === it }
+        val isRemand = remandRanges.any { sentenceRange -> sentenceRange === it }
         if (totalRange == null && previousRangeIsRemand == null) {
           totalRange = it
-          previousRangeIsRemand = isRemand
-          previousRange = it
-        } else {
-          if (it.isConnected(totalRange) &&
-            (previousRangeIsRemand!! || isRemand)
-          ) {
-            // Remand overlaps
-            if (previousRangeIsRemand!! && isRemand) {
-              throw RemandPeriodOverlapsWithRemandException("Remand of range ${previousRange!!} overlaps with remand of range $it")
-            } else {
-              throw RemandPeriodOverlapsWithSentenceException("${if (previousRangeIsRemand!!) "Remand" else "Sentence"} of range ${previousRange!!} overlaps with ${if (isRemand) "remand" else "sentence"} of range $it")
-            }
+        } else if (it.isConnected(totalRange) &&
+          (previousRangeIsRemand!! || isRemand)
+        ) {
+          // Remand overlaps
+          if (previousRangeIsRemand!! && isRemand) {
+            throw RemandPeriodOverlapsWithRemandException("Remand of range ${previousRange!!} overlaps with remand of range $it")
+          } else {
+            throw RemandPeriodOverlapsWithSentenceException("${if (previousRangeIsRemand!!) "Remand" else "Sentence"} of range ${previousRange!!} overlaps with ${if (isRemand) "remand" else "sentence"} of range $it")
           }
-          if (it.end.isAfter(totalRange!!.end)) {
+        } else if (it.end.isAfter(totalRange!!.end)) {
             totalRange = LocalDateRange.of(totalRange!!.start, it.end)
-          }
-          previousRangeIsRemand = isRemand
-          previousRange = it
         }
+        previousRangeIsRemand = isRemand
+        previousRange = it
       }
     }
   }
