@@ -28,7 +28,9 @@
       },
       "sentencedAt": "2020-11-20",
       "identifier": "d64d8f8c-5d18-40ec-b34e-ed4a409983c1",
-      "consecutiveSentenceUUIDs": ["6eb5959e-e130-4b37-b18c-c5040dadecf8"]
+      "consecutiveSentenceUUIDs": [
+        "6eb5959e-e130-4b37-b18c-c5040dadecf8"
+      ]
     },
     {
       "offence": {
@@ -40,7 +42,9 @@
         }
       },
       "sentencedAt": "2020-11-20",
-      "consecutiveSentenceUUIDs": ["d64d8f8c-5d18-40ec-b34e-ed4a409983c1"]
+      "consecutiveSentenceUUIDs": [
+        "d64d8f8c-5d18-40ec-b34e-ed4a409983c1"
+      ]
     },
     {
       "offence": {

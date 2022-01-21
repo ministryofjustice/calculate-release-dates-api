@@ -103,6 +103,11 @@ class CalculationServiceTest {
     )
   }
 
+  @Test
+  fun blah() {
+    `Test Example`("custom-examples", "crs-680-concurrent-sentences-same-date", null)
+  }
+
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
   fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {

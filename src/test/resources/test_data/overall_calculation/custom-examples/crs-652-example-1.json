@@ -48,7 +48,9 @@
     "REMAND": [
       {
         "numberOfDays": 236,
-        "appliesToSentencesFrom": "2016-04-21"
+        "appliesToSentencesFrom": "2016-04-21",
+        "toDate": "2016-04-20",
+        "fromDate": "2015-08-28"
       }
     ],
     "TAGGED_BAIL": [

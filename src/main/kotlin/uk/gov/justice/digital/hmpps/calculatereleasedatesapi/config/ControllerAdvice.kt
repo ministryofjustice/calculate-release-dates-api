@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.PRECONDITION_FAILED
+import org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.AuthorizationServiceException
@@ -10,7 +11,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
 import javax.persistence.EntityNotFoundException
 import javax.validation.ValidationException
 
@@ -50,7 +54,7 @@ class ControllerAdvice {
 
   @ExceptionHandler(RestClientResponseException::class)
   fun handleRestClientException(e: RestClientResponseException): ResponseEntity<ErrorResponse> {
-    log.error("RestClientResponseException: {}", e.message)
+    log.error("RestClientResponseException: ${e.message}", e)
     return ResponseEntity
       .status(e.rawStatusCode)
       .body(
@@ -64,7 +68,7 @@ class ControllerAdvice {
 
   @ExceptionHandler(RestClientException::class)
   fun handleRestClientException(e: RestClientException): ResponseEntity<ErrorResponse> {
-    log.error("RestClientException: {}", e.message)
+    log.error("RestClientException: ${e.message}", e)
     return ResponseEntity
       .status(HttpStatus.INTERNAL_SERVER_ERROR)
       .body(
@@ -78,7 +82,7 @@ class ControllerAdvice {
 
   @ExceptionHandler(EntityNotFoundException::class)
   fun handleEntityNotFoundException(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {
-    log.info("Entity not found exception: {}", e.message)
+    log.info("Entity not found exception: ${e.message}", e)
     return ResponseEntity
       .status(HttpStatus.NOT_FOUND)
       .body(
@@ -92,7 +96,7 @@ class ControllerAdvice {
 
   @ExceptionHandler(ValidationException::class)
   fun handleValidationException(e: ValidationException): ResponseEntity<ErrorResponse> {
-    log.info("Validation exception: {}", e.message)
+    log.info("Validation exception: ${e.message}", e)
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
       .body(
@@ -104,15 +108,16 @@ class ControllerAdvice {
       )
   }
 
-  @ExceptionHandler(PreconditionFailedException::class)
-  fun handlePreconditionFailedException(e: Exception): ResponseEntity<ErrorResponse> {
-    log.error("Pre condition failed exception: {}", e.message)
+  @ExceptionHandler(CrdWebException::class)
+  fun handleCustomWebException(e: CrdWebException): ResponseEntity<ErrorResponse> {
+    log.error("Exception ${e.javaClass.simpleName} ${e.message}", e)
     return ResponseEntity
-      .status(PRECONDITION_FAILED)
+      .status(e.status)
       .body(
         ErrorResponse(
-          status = PRECONDITION_FAILED,
-          userMessage = "Pre condition failed: ${e.message}",
+          status = e.status,
+          errorCode = e.code,
+          userMessage = e.message,
           developerMessage = e.message
         )
       )
@@ -120,7 +125,7 @@ class ControllerAdvice {
 
   @ExceptionHandler(java.lang.Exception::class)
   fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse?>? {
-    log.error("Unexpected exception: {}", e.message)
+    log.error("Unexpected exception: ${e.message}", e)
     return ResponseEntity
       .status(HttpStatus.INTERNAL_SERVER_ERROR)
       .body(
@@ -135,14 +140,14 @@ class ControllerAdvice {
 
 data class ErrorResponse(
   val status: Int,
-  val errorCode: Int? = null,
+  val errorCode: String? = null,
   val userMessage: String? = null,
   val developerMessage: String? = null,
   val moreInfo: String? = null,
 ) {
   constructor(
     status: HttpStatus,
-    errorCode: Int? = null,
+    errorCode: String? = null,
     userMessage: String? = null,
     developerMessage: String? = null,
     moreInfo: String? = null

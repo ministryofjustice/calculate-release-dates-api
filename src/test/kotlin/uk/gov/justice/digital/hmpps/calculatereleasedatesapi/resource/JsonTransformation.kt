@@ -6,6 +6,7 @@ import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.ToJson
+import com.squareup.moshi.Types
 import com.squareup.moshi.adapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.slf4j.Logger
@@ -15,6 +16,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import java.io.File
+import java.io.FileNotFoundException
 import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
@@ -56,6 +62,23 @@ class JsonTransformation {
     return jsonToCalculationBreakdown(json)!!
   }
 
+  fun getAllPrisonerDetails(): Map<String, PrisonerDetails> {
+    return getAllJsonFromDir("api_integration/prisoners")
+      .mapValues { jsonToPrisonerDetails(it.value)!! }
+  }
+
+  fun getAllPrisonerDetailsJson(): Map<String, String> {
+    return getAllJsonFromDir("api_integration/prisoners")
+  }
+
+  fun getAllSentenceAndOffencesJson(): Map<String, String> {
+    return getAllJsonFromDir("api_integration/sentences")
+  }
+
+  fun getAllAdjustmentsJson(): Map<String, String> {
+    return getAllJsonFromDir("api_integration/adjustments")
+  }
+
   private fun jsonToSentence(json: String): Sentence? {
     val jsonAdapter = moshi.adapter(Sentence::class.java)
     return jsonAdapter.fromJson(json)
@@ -81,8 +104,28 @@ class JsonTransformation {
     return jsonAdapter.fromJson(json)
   }
 
+  private fun jsonToPrisonerDetails(json: String): PrisonerDetails? {
+    val jsonAdapter = moshi.adapter(PrisonerDetails::class.java)
+    return jsonAdapter.fromJson(json)
+  }
+
   fun getJsonTest(fileName: String, calculationType: String): String {
     return getResourceAsText("/test_data/$calculationType/$fileName")
+  }
+
+  fun getAllJsonFromDir(fileName: String): Map<String, String> {
+    val dir = File(object {}.javaClass.getResource("/test_data/$fileName").file)
+    if (dir.isDirectory) {
+      val json = mutableMapOf<String, String>()
+      dir.walk().forEach {
+        if (it.extension == "json") {
+          json[it.nameWithoutExtension] = it.readText()
+        }
+      }
+      return json
+    } else {
+      throw FileNotFoundException("File $fileName was not a directory")
+    }
   }
 
   @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")

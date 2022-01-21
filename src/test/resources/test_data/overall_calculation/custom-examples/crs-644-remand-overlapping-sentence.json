@@ -7,24 +7,23 @@
   "sentences": [
     {
       "offence": {
-        "committedAt": "2020-05-16"
+        "committedAt": "2020-10-13"
       },
       "duration": {
         "durationElements": {
-          "YEARS": 6,
-          "MONTHS": 6
+          "WEEKS": 8
         }
       },
-      "sentencedAt": "2020-12-01"
+      "sentencedAt": "2020-12-15"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 197,
-        "appliesToSentencesFrom": "2020-12-01",
-        "toDate": "2020-11-30",
-        "fromDate": "2020-05-17"
+        "numberOfDays": 23,
+        "appliesToSentencesFrom": "2020-12-15",
+        "fromDate": "2020-11-22",
+        "toDate": "2020-12-15"
       }
     ]
   }

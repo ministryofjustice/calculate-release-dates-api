@@ -92,7 +92,9 @@
     "REMAND": [
       {
         "numberOfDays": 15,
-        "appliesToSentencesFrom": "2021-09-21"
+        "appliesToSentencesFrom": "2021-09-21",
+        "toDate": "2021-09-20",
+        "fromDate": "2021-09-05"
       }
     ],
     "TAGGED_BAIL": [
