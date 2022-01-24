@@ -1,6 +1,12 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import io.swagger.v3.oas.annotations.media.Schema
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+
+@Schema(description = "Calculation breakdown details")
 data class CalculationBreakdown(
   val concurrentSentences: List<ConcurrentSentenceBreakdown>,
-  val consecutiveSentence: ConsecutiveSentenceBreakdown?
+  val consecutiveSentence: ConsecutiveSentenceBreakdown?,
+  @Schema(description = "Breakdown details in a map keyed by release date type. Keys are: HDCED, TUSED")
+  val breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown> = emptyMap(),
 )
