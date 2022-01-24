@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BookingTimelineGapException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandIsMissingToOrFromDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -87,6 +88,10 @@ class BookingTimelineService(
 
   private fun validateRemandPeriodsOverlapping(booking: Booking) {
     val remandPeriods = booking.get(AdjustmentType.REMAND)
+    if (remandPeriods.any { it.fromDate == null || it.toDate == null }) {
+      throw RemandIsMissingToOrFromDateException("Remand is missing either to or from dates")
+    }
+
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
       val sentenceRanges = booking.getAllExtractableSentences().map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.adjustedReleaseDate) }

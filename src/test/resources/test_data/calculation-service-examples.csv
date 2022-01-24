@@ -66,4 +66,4 @@ custom-examples,crs-680-concurrent-sentences-same-date,
 custom-examples,crs-680-concurrent-sentences-different-date,
 custom-examples,crs-644-remand-overlapping-remand,RemandPeriodOverlapsWithRemandException
 custom-examples,crs-644-remand-overlapping-sentence,RemandPeriodOverlapsWithSentenceException
-
+custom-examples,crs-700-no-from-or-to-date-on-remand,RemandIsMissingToOrFromDateException
