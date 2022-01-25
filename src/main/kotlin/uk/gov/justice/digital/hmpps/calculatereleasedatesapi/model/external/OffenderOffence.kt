@@ -11,6 +11,6 @@ data class OffenderOffence(
   var indicators: List<String> = listOf()
 ) {
   companion object {
-    const val SCHEDULE_15_INDICATOR = "SCH15/CJIB/L"
+    const val SCHEDULE_15_LIFE_INDICATOR = "SCH15/CJIB/L"
   }
 }

@@ -8,7 +8,7 @@
     {
       "offence": {
         "committedAt": "2020-01-28",
-        "isScheduleFifteen": true
+        "isScheduleFifteenMaximumLife": true
       },
       "duration": {
         "durationElements": {
@@ -20,7 +20,7 @@
     {
       "offence": {
         "committedAt": "2020-01-28",
-        "isScheduleFifteen": true
+        "isScheduleFifteenMaximumLife": true
       },
       "duration": {
         "durationElements": {
