@@ -49,7 +49,7 @@
     {
       "offence": {
         "committedAt": "2019-01-01",
-        "isScheduleFifteen": true
+        "isScheduleFifteenMaximumLife": true
       },
       "duration": {
         "durationElements": {

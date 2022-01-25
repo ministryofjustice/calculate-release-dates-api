@@ -4,5 +4,6 @@ import java.time.LocalDate
 
 data class Offence(
   val committedAt: LocalDate,
-  var isScheduleFifteen: Boolean = false
+  var isScheduleFifteen: Boolean = false,
+  var isScheduleFifteenMaximumLife: Boolean = false
 )

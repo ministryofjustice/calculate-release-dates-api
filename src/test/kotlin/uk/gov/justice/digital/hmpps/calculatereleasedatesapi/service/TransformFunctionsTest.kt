@@ -43,7 +43,7 @@ class TransformFunctionsTest {
       OffenderOffence(
         offenderChargeId = 2L, offenceStartDate = SECOND_JAN_2015,
         offenceCode = "RR2", offenceDescription = "Jaywalking",
-        indicators = listOf(OffenderOffence.SCHEDULE_15_INDICATOR)
+        indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR)
       ),
     )
     val request = SentenceAndOffences(
@@ -68,7 +68,7 @@ class TransformFunctionsTest {
         Sentence(
           sentencedAt = FIRST_JAN_2015,
           duration = FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION,
-          offence = Offence(committedAt = FIRST_JAN_2015, isScheduleFifteen = false),
+          offence = Offence(committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = false),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(),
           lineSequence = lineSequence,
@@ -77,7 +77,7 @@ class TransformFunctionsTest {
         Sentence(
           sentencedAt = FIRST_JAN_2015,
           duration = FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION,
-          offence = Offence(committedAt = SECOND_JAN_2015, isScheduleFifteen = true),
+          offence = Offence(committedAt = SECOND_JAN_2015, isScheduleFifteenMaximumLife = true),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(),
           lineSequence = lineSequence,
