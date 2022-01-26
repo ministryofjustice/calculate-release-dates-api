@@ -86,15 +86,6 @@ class CalculationService(
   fun calculateWithBreakdown(booking: Booking): CalculationBreakdown {
     val workingBooking = calculate(booking)
     val bookingCalculation = bookingExtractionService.extract(workingBooking)
-    val a = transform(workingBooking, bookingCalculation.breakdownByReleaseDateType)
-    println(">>>>>>>>>>>>>>>>>>>>>>")
-    println(">>>>>>>>>>>>>>>>>>>>>>")
-    println(">>>>>>>>>>>>>>>>>>>>>>")
-    println(a)
-    println(">>>>>>>>>>>>>>>>>>>>>>")
-    println(bookingCalculation.dates)
-    println("@@@@@@@@@@@@@@@@@@@@")
-    println(a.breakdownByReleaseDateType)
     return transform(workingBooking, bookingCalculation.breakdownByReleaseDateType)
   }
 

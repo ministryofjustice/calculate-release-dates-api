@@ -12,5 +12,5 @@ data class BookingCalculation(
   @JsonIgnore
   var daysAwardedServed: Long = 0,
   @JsonIgnore
-  var breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
+  var breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown> = mapOf()
 )
