@@ -14,6 +14,6 @@ data class ReleaseDateCalculationBreakdown(
   val adjustedDays: Int = 0,
   @Schema(description = "Final release date (after adjustments have been applied)")
   val releaseDate: LocalDate = LocalDate.now(),
-  @Schema(description = "Based on the screen design, the unadjusted date isn't a consistent value but is as per the screen design")
+  @Schema(description = "Based on the screen design, the unadjusted date isn't derived in a consistent manner but is set as per the screen design")
   val unadjustedDate: LocalDate = LocalDate.now(),
 )

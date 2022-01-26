@@ -22,8 +22,7 @@ export DB_PASS=calculate-release-dates
 
 # Provide URLs to other local container-based dependent services
 # Match with ports defined in docker-compose.yml
-export HMPPS_AUTH_URL=https://sign-in-dev.hmpps.service.justice.gov.uk/auth
-export PRISON_API_URL=https://api-dev.prison.service.justice.gov.uk
+export HMPPS_AUTH_URL=http://localhost:9090/auth
 
 # Make the connection without specifying the sslmode=verify-full requirement
 export SPRING_DATASOURCE_URL='jdbc:postgresql://${DB_SERVER}/${DB_NAME}'
