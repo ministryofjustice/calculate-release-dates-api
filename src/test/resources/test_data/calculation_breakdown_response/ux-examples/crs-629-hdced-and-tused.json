@@ -1,0 +1,56 @@
+{
+  "concurrentSentences": [
+    {
+      "sentencedAt": "2015-02-16",
+      "sentenceLength": "8 months",
+      "sentenceLengthDays": 242,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2015-10-15",
+          "adjusted": "2015-09-24",
+          "daysFromSentenceStart": 242,
+          "adjustedByDays": 21
+        },
+        "CRD": {
+          "unadjusted": "2015-06-16",
+          "adjusted": "2015-05-26",
+          "daysFromSentenceStart": 121,
+          "adjustedByDays": 21
+        }
+      },
+      "lineSequence": 1,
+      "caseSequence": 1
+    }
+  ],
+  "consecutiveSentence": null,
+  "breakdownByReleaseDateType": {
+    "TUSED": {
+      "rules": [
+        "TUSED_LICENCE_PERIOD_LT_1Y"
+      ],
+      "rulesWithExtraAdjustments": {
+        "TUSED_LICENCE_PERIOD_LT_1Y": {
+          "adjustmentValue":12,
+          "type":"MONTHS"
+        }
+      },
+      "adjustedDays": -21,
+      "releaseDate": "2016-05-26",
+      "unadjustedDate": "2015-06-16"
+    },
+    "HDCED": {
+      "rules": [
+        "HDCED_GE_12W_LT_18M"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_GE_12W_LT_18M": {
+          "adjustmentValue":61,
+          "type":"DAYS"
+        }
+      },
+      "adjustedDays": -21,
+      "releaseDate": "2015-03-28",
+      "unadjustedDate": "2015-02-16"
+    }
+  }
+}

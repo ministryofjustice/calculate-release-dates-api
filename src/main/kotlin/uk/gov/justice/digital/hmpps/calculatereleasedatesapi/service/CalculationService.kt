@@ -85,7 +85,8 @@ class CalculationService(
   @Transactional(readOnly = true)
   fun calculateWithBreakdown(booking: Booking): CalculationBreakdown {
     val workingBooking = calculate(booking)
-    return transform(workingBooking)
+    val bookingCalculation = bookingExtractionService.extract(workingBooking)
+    return transform(workingBooking, bookingCalculation.breakdownByReleaseDateType)
   }
 
   @Transactional(readOnly = true)

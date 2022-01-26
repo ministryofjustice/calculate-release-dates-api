@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_18M_LT_4Y
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.TUSED_LICENCE_PERIOD_LT_1Y
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
@@ -165,35 +167,28 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Get the calculation breakdown for a calculation`() {
-
     val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
-    var calc: BookingCalculation? = null
-    if (resultCalculation != null) {
-      calc = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId)
-    }
+    val calc = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId)
 
-    assertThat(calc).isNotNull
+    val result = webTestClient.get()
+      .uri("/calculation/breakdown/${calc.calculationRequestId}")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculationBreakdown::class.java)
+      .returnResult().responseBody
 
-    if (calc != null) {
-      val result = webTestClient.get()
-        .uri("/calculation/breakdown/${calc.calculationRequestId}")
-        .accept(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-        .exchange()
-        .expectStatus().isOk
-        .expectHeader().contentType(MediaType.APPLICATION_JSON)
-        .expectBody(CalculationBreakdown::class.java)
-        .returnResult().responseBody
-
-      assertThat(result).isNotNull
-      if (result != null) {
-        assertThat(result.consecutiveSentence).isNull()
-        assertThat(result.concurrentSentences).hasSize(1)
-        assertThat(result.concurrentSentences[0].dates[SLED]!!.unadjusted).isEqualTo(LocalDate.of(2016, 11, 16))
-        assertThat(result.concurrentSentences[0].dates[SLED]!!.adjusted).isEqualTo(LocalDate.of(2016, 11, 6))
-        assertThat(result.concurrentSentences[0].dates[SLED]!!.adjustedByDays).isEqualTo(10)
-      }
-    }
+    assertThat(result).isNotNull
+    assertThat(result.consecutiveSentence).isNull()
+    assertThat(result.concurrentSentences).hasSize(1)
+    assertThat(result.concurrentSentences[0].dates[SLED]!!.unadjusted).isEqualTo(LocalDate.of(2016, 11, 16))
+    assertThat(result.concurrentSentences[0].dates[SLED]!!.adjusted).isEqualTo(LocalDate.of(2016, 11, 6))
+    assertThat(result.concurrentSentences[0].dates[SLED]!!.adjustedByDays).isEqualTo(10)
+    assertThat(result.breakdownByReleaseDateType.keys).isEqualTo(setOf(TUSED, HDCED))
+    assertThat(result.breakdownByReleaseDateType[TUSED]!!.rules).isEqualTo(setOf(TUSED_LICENCE_PERIOD_LT_1Y))
+    assertThat(result.breakdownByReleaseDateType[HDCED]!!.rules).isEqualTo(setOf(HDCED_GE_18M_LT_4Y))
   }
 
   @Test

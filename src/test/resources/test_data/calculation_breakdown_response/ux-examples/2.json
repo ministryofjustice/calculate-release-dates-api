@@ -64,5 +64,21 @@
       "caseSequence":3
     }
   ],
-  "consecutiveSentence":null
+  "consecutiveSentence":null,
+  "breakdownByReleaseDateType": {
+    "HDCED": {
+      "rules": [
+        "HDCED_GE_18M_LT_4Y"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_GE_18M_LT_4Y": {
+          "adjustmentValue":-135,
+          "type":"DAYS"
+        }
+      },
+      "adjustedDays": -20,
+      "releaseDate": "2022-03-03",
+      "unadjustedDate": "2022-07-16"
+    }
+  }
 }
