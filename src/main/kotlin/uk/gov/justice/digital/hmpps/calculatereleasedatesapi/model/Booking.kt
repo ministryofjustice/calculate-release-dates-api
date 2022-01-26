@@ -29,7 +29,7 @@ data class Booking(
       } else {
         0
       }
-    }.reduce { acc, it -> acc + it }
+    }.reduceOrNull { acc, it -> acc + it } ?: 0
   }
 
   fun get(adjustmentType: AdjustmentType): List<Adjustment> {
