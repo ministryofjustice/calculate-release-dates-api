@@ -61,15 +61,15 @@ class SentenceCalculationService {
         .minusDays(ONE)
 
     val calculatedTotalDeductedDays =
-      booking.getOrZero(AdjustmentType.REMAND, adjustmentsFrom) + booking.getOrZero(AdjustmentType.TAGGED_BAIL, adjustmentsFrom)
+      booking.getOrZero(AdjustmentType.REMAND, AdjustmentType.TAGGED_BAIL, adjustmentsFrom = adjustmentsFrom)
 
     val calculatedTotalAddedDays =
-      booking.getOrZero(AdjustmentType.UNLAWFULLY_AT_LARGE, adjustmentsFrom)
+      booking.getOrZero(AdjustmentType.UNLAWFULLY_AT_LARGE, adjustmentsFrom = adjustmentsFrom)
 
     val calculatedTotalAwardedDays = max(
       0,
-      booking.getOrZero(AdjustmentType.ADDITIONAL_DAYS_AWARDED, adjustmentsFrom) -
-        booking.getOrZero(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, adjustmentsFrom)
+      booking.getOrZero(AdjustmentType.ADDITIONAL_DAYS_AWARDED, adjustmentsFrom = adjustmentsFrom) -
+        booking.getOrZero(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, adjustmentsFrom = adjustmentsFrom)
     )
 
     // create new SentenceCalculation and associate it with a sentence

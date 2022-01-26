@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BookingTimelineGapException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandMissingDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
@@ -24,8 +23,9 @@ class BookingTimelineService(
      If there is a gap, it must be filled by any of:
      1. Served ADAs,
      2. Remand, i.e. A prisoner is kept on remand for an upcoming court date
-     3. Other adjustments? Tagged bail UAL? (TODO)
+     3. Tagged bail
      4. A license recall (TODO)
+     5. Untagged bail or other forms of bail that don't get recorded in NOMIS (out of scope)
     */
   fun walkTimelineOfBooking(booking: Booking): Booking {
     val sortedSentences = booking.getAllExtractableSentences().sortedBy { it.sentencedAt }
@@ -35,7 +35,7 @@ class BookingTimelineService(
     var previousSentence = firstSentence
 
     var daysAwardedServed = 0
-    var daysRemandNoLongerApplicable = 0
+    var deductionsNoLongerApplicable = 0
 
     sortedSentences.forEach {
       val itRange = it.getRangeOfSentenceBeforeAwardedDays()
@@ -57,29 +57,17 @@ class BookingTimelineService(
         if (daysBetween > 0) {
           // There is still a gap
 
-          // 2. A release date has occurred but there are more sentences on the booking, therefore previous adjustments
-          // should be wiped. TODO only remand?
-          daysRemandNoLongerApplicable += booking.getOrZero(
-            AdjustmentType.REMAND,
-            previousSentence.sentenceCalculation.adjustedReleaseDate
+          // 2. A release date has occurred but there are more sentences on the booking, therefore previous deductions
+          // should be wiped.
+          deductionsNoLongerApplicable += booking.getOrZero(
+            AdjustmentType.REMAND, AdjustmentType.TAGGED_BAIL,
+            adjustmentsFrom = previousSentence.sentenceCalculation.adjustedReleaseDate
           )
-
-          // 3. A release date has occurred but there are more sentences on the booking, therefore that gap should
-          // be filled by remand.
-          val daysRemand = booking.getOrZero(AdjustmentType.REMAND, it.sentencedAt) - daysRemandNoLongerApplicable
-          if (sentenceRange.end.plusDays(daysRemand.toLong()).isBefore(it.sentencedAt.minusDays(1))) {
-            throw BookingTimelineGapException(
-              "There is a gap between sentence sentence at ${previousSentence.sentencedAt}" +
-                " release of ${previousSentence.sentenceCalculation.adjustedReleaseDate}" +
-                " AND sentence at ${it.sentencedAt} release of ${it.sentenceCalculation.adjustedReleaseDate}"
-            )
-          } else {
-            sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
-          }
+          sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
         }
       }
       previousSentence = it
-      readjustDates(it, daysAwardedServed, daysRemandNoLongerApplicable)
+      readjustDates(it, daysAwardedServed, deductionsNoLongerApplicable)
     }
 
     validateRemandPeriodsOverlapping(booking)

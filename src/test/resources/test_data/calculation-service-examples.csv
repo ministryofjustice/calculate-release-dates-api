@@ -45,7 +45,6 @@ custom-examples,week-calculation-2,
 custom-examples,crs-467-example-1,
 custom-examples,crs-467-example-2,
 custom-examples,crs-614-pre-prod-bug-example,
-custom-examples,crs-637-example-with-gap,BookingTimelineGapException
 custom-examples,crs-637-example-with-no-gap,
 custom-examples,crs-640-hdced-concurrent-4-year,
 custom-examples,crs-645-first-day-of-month,
@@ -67,3 +66,10 @@ custom-examples,crs-680-concurrent-sentences-different-date,
 custom-examples,crs-644-remand-overlapping-remand,RemandPeriodOverlapsWithRemandException
 custom-examples,crs-644-remand-overlapping-sentence,RemandPeriodOverlapsWithSentenceException
 custom-examples,crs-700-no-from-or-to-date-on-remand,RemandMissingDates
+custom-examples,crs-685-tagged-bail-single-sentence,
+custom-examples,crs-685-tagged-bail-concurrent-same-date-sentences,
+custom-examples,crs-685-tagged-bail-concurrent-different-date-sentences,
+custom-examples,crs-685-tagged-bail-consecutive,
+custom-examples,crs-685-tagged-bail-concurrent-same-date-sentences-and-consecutive,
+custom-examples,crs-685-tagged-bail-concurrent-different-date-sentences-and-consecutive,
+custom-examples,crs-685-tagged-bail-release-in-between-sentences,
