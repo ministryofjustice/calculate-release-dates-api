@@ -116,7 +116,7 @@ class SentenceIdentificationService {
       if (
         sentence.durationIsGreaterThanOrEqualTo(SEVEN, ChronoUnit.YEARS) &&
         sentence.sentencedAt.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE) &&
-        sentence.offence.isScheduleFifteen &&
+        sentence.offence.isScheduleFifteenMaximumLife &&
         offender.getAgeOnDate(sentence.sentencedAt) >= 18
       ) {
         sentence.identificationTrack = SentenceIdentificationTrack.SDS_PLUS
