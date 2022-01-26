@@ -117,7 +117,7 @@ class CalculationServiceTest {
       bookingCalculation = calculationService.calculate(booking, PRELIMINARY)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
-        assertEquals(e.javaClass.simpleName, error)
+        assertEquals(error, e.javaClass.simpleName)
         return
       } else {
         throw e

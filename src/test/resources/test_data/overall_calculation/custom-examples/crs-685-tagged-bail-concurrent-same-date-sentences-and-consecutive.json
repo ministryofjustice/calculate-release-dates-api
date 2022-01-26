@@ -1,0 +1,56 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "name": "AN. Other",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2021-02-02"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2021-03-08",
+      "identifier": "6555a75c-8c81-40f2-be30-719696d08142"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-02-08"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 3
+        }
+      },
+      "sentencedAt": "2021-03-08",
+      "consecutiveSentenceUUIDs": ["6555a75c-8c81-40f2-be30-719696d08142"]
+    },
+    {
+      "offence": {
+        "committedAt": "2021-02-19"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 5
+        }
+      },
+      "sentencedAt": "2021-03-08"
+    }
+  ],
+  "adjustments": {
+    "TAGGED_BAIL": [
+      {
+        "numberOfDays": 12,
+        "appliesToSentencesFrom": "2021-03-08"
+      },
+      {
+        "numberOfDays": 19,
+        "appliesToSentencesFrom": "2021-03-08"
+      }
+    ]
+  }
+}

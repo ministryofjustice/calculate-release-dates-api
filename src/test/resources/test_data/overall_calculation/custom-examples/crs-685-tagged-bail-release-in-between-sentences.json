@@ -1,0 +1,44 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "name": "AN. Other",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2021-06-06"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 15
+        }
+      },
+      "sentencedAt": "2021-07-13"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-02-01",
+        "isScheduleFifteenMaximumLife": true
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 9
+        }
+      },
+      "sentencedAt": "2022-09-09"
+    }
+  ],
+  "adjustments": {
+    "TAGGED_BAIL": [
+      {
+        "numberOfDays": 5,
+        "appliesToSentencesFrom": "2021-07-13"
+      },
+      {
+        "numberOfDays": 230,
+        "appliesToSentencesFrom": "2022-09-09"
+      }
+    ]
+  }
+}
