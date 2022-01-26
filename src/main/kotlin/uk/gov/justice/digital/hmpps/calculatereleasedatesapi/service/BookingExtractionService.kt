@@ -180,8 +180,7 @@ class BookingExtractionService(
 
     return if (latestUnadjustedExpiryDate.isBefore(fourYearSentence)) {
       mostRecentSentenceByReleaseDate.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
-    } else
-      null
+    } else null
   }
 
   private fun getEffectiveSentenceLength(start: LocalDate, end: LocalDate): Period =
@@ -209,14 +208,9 @@ class BookingExtractionService(
       .filter { it.sentenceCalculation.topUpSupervisionDate != null }
       .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
 
-    return if (latestTUSEDSentence != null && latestTUSEDSentence.sentenceCalculation.topUpSupervisionDate!!.isAfter(
-        latestLicenseExpiryDate
-      )
-    ) {
+    return if (latestTUSEDSentence != null && latestTUSEDSentence.sentenceCalculation.topUpSupervisionDate!!.isAfter(latestLicenseExpiryDate)) {
       latestTUSEDSentence.sentenceCalculation.topUpSupervisionDate!! to latestTUSEDSentence.sentenceCalculation.breakdownByReleaseDateType[TUSED]!!
-    } else {
-      null
-    }
+    } else null
   }
 
   private fun extractManyIsReleaseConditional(

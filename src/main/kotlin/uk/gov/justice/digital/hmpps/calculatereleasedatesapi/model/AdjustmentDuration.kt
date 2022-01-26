@@ -7,6 +7,6 @@ import java.time.temporal.ChronoUnit.DAYS
 data class AdjustmentDuration(
   @Schema(description = "Amount of adjustment")
   val adjustmentValue: Int = 0,
-  @Schema(description = "Final release date (after adjustments have been applied)")
+  @Schema(description = "Unit of adjustment", example = "DAYS")
   val type: ChronoUnit = DAYS,
 )

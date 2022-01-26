@@ -7,6 +7,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 data class CalculationBreakdown(
   val concurrentSentences: List<ConcurrentSentenceBreakdown>,
   val consecutiveSentence: ConsecutiveSentenceBreakdown?,
-  @Schema(description = "Breakdown details in a map keyed by release date type. Keys are: HDCED, TUSED")
+  @Schema(description = "Breakdown details in a map keyed by release date type")
   val breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown> = emptyMap(),
 )
