@@ -20,16 +20,12 @@ data class Booking(
   var singleTermSentence: SingleTermSentence? = null
 
   fun getOrZero(vararg adjustmentTypes: AdjustmentType, adjustmentsFrom: LocalDate): Int {
-    return adjustmentTypes.map { adjustmentType ->
+    return adjustmentTypes.mapNotNull { adjustmentType ->
       if (adjustments.containsKey(adjustmentType) && adjustments[adjustmentType] != null) {
         val adjustments = adjustments[adjustmentType]!!
         val adjustmentDays = adjustments.filter { it.appliesToSentencesFrom.isBeforeOrEqualTo(adjustmentsFrom) }
           .map { it.numberOfDays }
-        if (adjustmentDays.isNotEmpty()) {
-          adjustmentDays.reduce { acc, it -> acc + it }
-        } else {
-          0
-        }
+        adjustmentDays.reduceOrNull { acc, it -> acc + it }
       } else {
         0
       }

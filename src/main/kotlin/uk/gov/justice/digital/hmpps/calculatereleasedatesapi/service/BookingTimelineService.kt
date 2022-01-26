@@ -18,11 +18,11 @@ class BookingTimelineService(
   val sentenceCalculationService: SentenceCalculationService
 ) {
   /*
-     This method walks through the timeline of all the booking, checking for gaps between the release date and the
-     next sentence date of all the extractable sentences.
+     This method walks through the timeline of all the booking, checking for gaps between the release date (before ADAs)
+     and the next sentence date of all the extractable sentences.
      If there is a gap, it must be filled by any of:
-     1. Served ADAs,
-     2. Remand, i.e. A prisoner is kept on remand for an upcoming court date
+     1. Served ADAs
+     2. Remand
      3. Tagged bail
      4. A license recall (TODO)
      5. Untagged bail or other forms of bail that don't get recorded in NOMIS (out of scope)
