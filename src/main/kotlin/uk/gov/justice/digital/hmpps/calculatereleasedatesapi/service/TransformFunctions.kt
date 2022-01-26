@@ -42,6 +42,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -70,7 +71,7 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
   return sentence.offences.map { offendersOffence ->
     val offence = Offence(
       committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate,
-      isScheduleFifteen = offendersOffence.indicators.any { it == OffenderOffence.SCHEDULE_15_INDICATOR }
+      isScheduleFifteenMaximumLife = offendersOffence.indicators.any { it == OffenderOffence.SCHEDULE_15_LIFE_INDICATOR }
     )
     val duration = Duration()
     duration.append(sentence.days.toLong(), DAYS)
@@ -137,7 +138,8 @@ fun transform(
     if (!adjustments.containsKey(adjustmentType)) {
       adjustments[adjustmentType] = mutableListOf()
     }
-    val sentence: SentenceAndOffences = sentencesAndOffences.find { sentenceAndOffences -> it.sentenceSequence == sentenceAndOffences.sentenceSequence }!!
+    val sentence: SentenceAndOffences =
+      sentencesAndOffences.find { sentenceAndOffences -> it.sentenceSequence == sentenceAndOffences.sentenceSequence }!!
     adjustments[adjustmentType]!!.add(
       Adjustment(
         appliesToSentencesFrom = sentence.sentenceDate,
@@ -210,14 +212,14 @@ fun transform(calculationRequest: CalculationRequest): BookingCalculation {
   )
 }
 
-fun transform(booking: Booking): CalculationBreakdown {
+fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>): CalculationBreakdown {
   val concurrentSentences = booking.sentences.filter {
     booking.consecutiveSentences.none { consecutiveSentence ->
       consecutiveSentence.orderedSentences.contains(it)
     }
   }
   return CalculationBreakdown(
-    concurrentSentences.map { sentence ->
+    concurrentSentences = concurrentSentences.map { sentence ->
       ConcurrentSentenceBreakdown(
         sentence.sentencedAt,
         sentence.duration.toString(),
@@ -227,7 +229,7 @@ fun transform(booking: Booking): CalculationBreakdown {
         sentence.caseSequence!!,
       )
     }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence })),
-    if (booking.consecutiveSentences.isNotEmpty()) {
+    consecutiveSentence = if (booking.consecutiveSentences.isNotEmpty()) {
       if (booking.consecutiveSentences.size == 1) {
         val consecutiveSentence = booking.consecutiveSentences[0]
         ConsecutiveSentenceBreakdown(
@@ -259,7 +261,8 @@ fun transform(booking: Booking): CalculationBreakdown {
       }
     } else {
       null
-    }
+    },
+    breakdownByReleaseDateType = breakdownByReleaseDateType
   )
 }
 
