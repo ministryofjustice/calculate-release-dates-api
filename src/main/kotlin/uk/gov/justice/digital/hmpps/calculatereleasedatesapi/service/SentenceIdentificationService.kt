@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_PLUS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IdentifiableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -30,7 +31,14 @@ class SentenceIdentificationService {
   fun identify(sentence: IdentifiableSentence, offender: Offender) {
     sentence.releaseDateTypes = listOf()
     if (sentence is ConsecutiveSentence) {
-      if (sentence.isMadeUpOfBeforeAndAfterCjaLaspoSentences()) {
+      if (sentence.isMadeUpOfOnlySdsPlusSentences()) {
+        sentence.identificationTrack = SDS_PLUS
+        sentence.releaseDateTypes = listOf(
+          SLED,
+          CRD
+        )
+      } else if (sentence.isMadeUpOfBeforeAndAfterCjaLaspoSentences()) {
+        sentence.identificationTrack = SDS_AFTER_CJA_LASPO
         // This consecutive sentence is made up of pre and post laspo date sentences. (Old and new style)
         val hasScheduleFifteen = sentence.orderedSentences.any() { it.offence.isScheduleFifteen }
         if (hasScheduleFifteen) {
@@ -49,6 +57,7 @@ class SentenceIdentificationService {
           )
         }
       } else if (sentence.isMadeUpOfOnlyAfterCjaLaspoSentences()) {
+        sentence.identificationTrack = SDS_AFTER_CJA_LASPO
         if (sentence.hasOraSentences() && sentence.hasNonOraSentences()) {
           // PSI example 25
           if (sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS)) {

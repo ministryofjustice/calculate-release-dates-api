@@ -242,6 +242,22 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(error.errorCode).isEqualTo("REMAND_OVERLAPS_WITH_SENTENCE")
   }
 
+  @Test
+  fun `Run calculation where SDS+ is consecutive to SDS`() {
+    val bookingCalculation: BookingCalculation = webTestClient.post()
+      .uri("/calculation/$SDS_PLUS_CONSECUTIVE_TO_SDS")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(BookingCalculation::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(bookingCalculation.dates[SLED]).isEqualTo(LocalDate.of(2030, 11, 30))
+    assertThat(bookingCalculation.dates[CRD]).isEqualTo(LocalDate.of(2027, 7, 1))
+  }
+
   companion object {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"
@@ -251,5 +267,6 @@ class CalculationIntTest : IntegrationTestBase() {
     const val BOOKING_ID_DOESNT_EXIST = 92929988L
     const val REMAND_OVERLAPS_WITH_REMAND_PRISONER_ID = "REM-REM"
     const val REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID = "REM-SEN"
+    const val SDS_PLUS_CONSECUTIVE_TO_SDS = "SDS-CON"
   }
 }
