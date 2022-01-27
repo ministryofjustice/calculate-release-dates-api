@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDur
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IdentifiableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -56,10 +57,16 @@ class SentenceCalculationService {
     // create the intermediate values
     val numberOfDaysToSentenceExpiryDate = sentence.getLengthInDays()
 
-    val numberOfDaysToReleaseDate =
+    val numberOfDaysToReleaseDateDouble = numberOfDaysToSentenceExpiryDate.toDouble().times(releaseDateMultiplier)
+    val numberOfDaysToReleaseDate = if (sentence is ConsecutiveSentence && sentence.isMadeUpOfSdsPlusAndSdsSentences()) {
       ceil(
-        numberOfDaysToSentenceExpiryDate.toDouble().times(releaseDateMultiplier)
-      ).toInt()
+        sentence.orderedSentences.map { it.sentenceCalculation.numberOfDaysToReleaseDateDouble }
+          .reduce { acc, it -> acc + it }
+      )
+        .toInt()
+    } else {
+      ceil(numberOfDaysToReleaseDateDouble).toInt()
+    }
 
     val unadjustedExpiryDate =
       sentence.sentencedAt
@@ -87,6 +94,7 @@ class SentenceCalculationService {
     return SentenceCalculation(
       sentence,
       numberOfDaysToSentenceExpiryDate,
+      numberOfDaysToReleaseDateDouble,
       numberOfDaysToReleaseDate,
       unadjustedExpiryDate,
       unadjustedReleaseDate,
@@ -323,7 +331,7 @@ class SentenceCalculationService {
 
   private fun determineReleaseDateMultiplier(sentence: CalculableSentence): Double {
     return if (
-      (sentence is Sentence) &&
+      (sentence is IdentifiableSentence) &&
       sentence.identificationTrack == SentenceIdentificationTrack.SDS_PLUS
     ) {
       2 / 3.toDouble()

@@ -71,4 +71,20 @@ class ConsecutiveSentence(
   fun isMadeUpOfOnlyAfterCjaLaspoSentences(): Boolean {
     return hasAfterCjaLaspo() && !hasBeforeCjaLaspo()
   }
+
+  private fun hasSdsPlusSentences(): Boolean {
+    return orderedSentences.any(Sentence::isSdsSentence)
+  }
+
+  private fun hasSdsSentences(): Boolean {
+    return orderedSentences.any { !it.isSdsSentence() }
+  }
+
+  fun isMadeUpOfSdsPlusAndSdsSentences(): Boolean {
+    return hasSdsSentences() && hasSdsPlusSentences()
+  }
+
+  fun isMadeUpOfOnlySdsPlusSentences(): Boolean {
+    return !hasSdsSentences() && hasSdsPlusSentences()
+  }
 }
