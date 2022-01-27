@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter
 data class SentenceCalculation(
   var sentence: CalculableSentence, // values here are used to store working values
   var numberOfDaysToSentenceExpiryDate: Int,
+  val numberOfDaysToReleaseDateDouble: Double,
   val numberOfDaysToReleaseDate: Int,
   val unadjustedExpiryDate: LocalDate,
   val unadjustedReleaseDate: LocalDate,

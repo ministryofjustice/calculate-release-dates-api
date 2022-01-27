@@ -48,4 +48,9 @@ data class Sentence(
   fun isOraSentence(): Boolean {
     return offence.committedAt.isAfterOrEqualTo(ImportantDates.ORA_DATE)
   }
+
+  @JsonIgnore
+  fun isSdsSentence(): Boolean {
+    return identificationTrack == SentenceIdentificationTrack.SDS_PLUS
+  }
 }
