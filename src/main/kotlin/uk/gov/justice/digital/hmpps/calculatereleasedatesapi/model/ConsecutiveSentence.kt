@@ -87,5 +87,4 @@ class ConsecutiveSentence(
   fun isMadeUpOfOnlySdsPlusSentences(): Boolean {
     return !hasSdsSentences() && hasSdsPlusSentences()
   }
-
 }

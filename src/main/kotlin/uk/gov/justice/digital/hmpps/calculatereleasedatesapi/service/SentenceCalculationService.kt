@@ -61,7 +61,8 @@ class SentenceCalculationService {
     val numberOfDaysToReleaseDate = if (sentence is ConsecutiveSentence && sentence.isMadeUpOfSdsPlusAndSdsSentences()) {
       ceil(
         sentence.orderedSentences.map { it.sentenceCalculation.numberOfDaysToReleaseDateDouble }
-          .reduce { acc, it -> acc + it})
+          .reduce { acc, it -> acc + it }
+      )
         .toInt()
     } else {
       ceil(numberOfDaysToReleaseDateDouble).toInt()
