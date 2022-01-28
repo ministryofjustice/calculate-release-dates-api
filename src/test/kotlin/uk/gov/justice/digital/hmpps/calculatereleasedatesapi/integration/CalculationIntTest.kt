@@ -262,7 +262,7 @@ class CalculationIntTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `Validate sentences`() {
+  fun `Run validation on invalid data`() {
     val validationMessages: ValidationMessages = webTestClient.get()
       .uri("/calculation/$VALIDATION_PRISONER_ID/validate")
       .accept(MediaType.APPLICATION_JSON)
@@ -284,7 +284,7 @@ class CalculationIntTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `Unsupported sentences`() {
+  fun `Run validation on unsupported data`() {
     val validationMessages: ValidationMessages = webTestClient.get()
       .uri("/calculation/$UNSUPPORTED_PRISONER_ID/validate")
       .accept(MediaType.APPLICATION_JSON)
@@ -301,7 +301,7 @@ class CalculationIntTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `Validation passes`() {
+  fun `Run validation on valid data`() {
     webTestClient.get()
       .uri("/calculation/$PRISONER_ID/validate")
       .accept(MediaType.APPLICATION_JSON)
