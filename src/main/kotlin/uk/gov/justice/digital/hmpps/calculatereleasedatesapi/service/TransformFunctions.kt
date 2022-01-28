@@ -70,7 +70,7 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
   // treated as a separate sentence
   return sentence.offences.map { offendersOffence ->
     val offence = Offence(
-      committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate,
+      committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
       isScheduleFifteenMaximumLife = offendersOffence.indicators.any { it == OffenderOffence.SCHEDULE_15_LIFE_INDICATOR }
     )
     val duration = Duration()

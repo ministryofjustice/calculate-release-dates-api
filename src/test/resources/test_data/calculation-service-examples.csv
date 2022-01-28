@@ -65,7 +65,6 @@ custom-examples,crs-680-concurrent-sentences-same-date,
 custom-examples,crs-680-concurrent-sentences-different-date,
 custom-examples,crs-644-remand-overlapping-remand,RemandPeriodOverlapsWithRemandException
 custom-examples,crs-644-remand-overlapping-sentence,RemandPeriodOverlapsWithSentenceException
-custom-examples,crs-700-no-from-or-to-date-on-remand,RemandMissingDates
 custom-examples,crs-685-tagged-bail-single-sentence,
 custom-examples,crs-685-tagged-bail-concurrent-same-date-sentences,
 custom-examples,crs-685-tagged-bail-concurrent-different-date-sentences,
