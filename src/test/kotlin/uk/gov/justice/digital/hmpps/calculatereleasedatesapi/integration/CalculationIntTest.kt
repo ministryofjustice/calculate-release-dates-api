@@ -18,6 +18,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessages
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 import java.time.LocalDate
 import javax.persistence.EntityNotFoundException
 
@@ -178,7 +181,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
       .expectBody(CalculationBreakdown::class.java)
-      .returnResult().responseBody
+      .returnResult().responseBody!!
 
     assertThat(result).isNotNull
     assertThat(result.consecutiveSentence).isNull()
@@ -258,6 +261,100 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(bookingCalculation.dates[CRD]).isEqualTo(LocalDate.of(2027, 7, 1))
   }
 
+  @Test
+  fun `Run validation on invalid data`() {
+    val validationMessages: ValidationMessages = webTestClient.get()
+      .uri("/calculation/$VALIDATION_PRISONER_ID/validate")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ValidationMessages::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(validationMessages.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(validationMessages.messages).hasSize(6)
+    assertThat(validationMessages.messages[0]).matches { it.code == ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE && it.sentenceSequence == 4 }
+    assertThat(validationMessages.messages[1]).matches { it.code == ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE && it.sentenceSequence == 3 }
+    assertThat(validationMessages.messages[2]).matches { it.code == ValidationCode.OFFENCE_MISSING_DATE && it.sentenceSequence == 2 }
+    assertThat(validationMessages.messages[3]).matches { it.code == ValidationCode.SENTENCE_HAS_NO_DURATION && it.sentenceSequence == 1 }
+    assertThat(validationMessages.messages[4]).matches { it.code == ValidationCode.REMAND_FROM_TO_DATES_REQUIRED && it.sentenceSequence == null }
+    assertThat(validationMessages.messages[5]).matches { it.code == ValidationCode.REMAND_FROM_TO_DATES_REQUIRED && it.sentenceSequence == null }
+  }
+
+  @Test
+  fun `Run validation on unsupported data`() {
+    val validationMessages: ValidationMessages = webTestClient.get()
+      .uri("/calculation/$UNSUPPORTED_PRISONER_ID/validate")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ValidationMessages::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(validationMessages.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(validationMessages.messages).hasSize(1)
+    assertThat(validationMessages.messages[0]).matches { it.code == ValidationCode.UNSUPPORTED_SENTENCE_TYPE && it.sentenceSequence == 1 }
+  }
+
+  @Test
+  fun `Run validation on valid data`() {
+    webTestClient.get()
+      .uri("/calculation/$PRISONER_ID/validate")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isNoContent
+  }
+
+  @Test
+  fun `Run calculation on invalid data`() {
+    val errorResponse: ErrorResponse = webTestClient.post()
+      .uri("/calculation/$VALIDATION_PRISONER_ID")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ErrorResponse::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(errorResponse.userMessage).isEqualTo(
+      """
+      The data for this prisoner is invalid
+      Sentence 4 is invalid: Offence date shouldn't be after sentence date
+      Sentence 3 is invalid: Offence date range shouldn't be after sentence date
+      Sentence 2 is invalid: The offence must have a date
+      Sentence 1 is invalid: Sentence has no duration
+      Remand missing from and to date
+      Remand missing from and to date
+      """.trimIndent()
+    )
+  }
+
+  @Test
+  fun `Run calculation on unsupported data`() {
+    val errorResponse: ErrorResponse = webTestClient.post()
+      .uri("/calculation/$UNSUPPORTED_PRISONER_ID")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ErrorResponse::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(errorResponse.userMessage).isEqualTo(
+      """
+      The data for this prisoner is unsupported
+      Sentence 1 is invalid: Unsupported sentence type This sentence is unsupported
+      """.trimIndent()
+    )
+  }
+
   companion object {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"
@@ -268,5 +365,7 @@ class CalculationIntTest : IntegrationTestBase() {
     const val REMAND_OVERLAPS_WITH_REMAND_PRISONER_ID = "REM-REM"
     const val REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID = "REM-SEN"
     const val SDS_PLUS_CONSECUTIVE_TO_SDS = "SDS-CON"
+    const val VALIDATION_PRISONER_ID = "VALIDATION"
+    const val UNSUPPORTED_PRISONER_ID = "UNSUPPORTED"
   }
 }
