@@ -22,6 +22,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessages
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
@@ -31,11 +34,12 @@ import java.util.UUID
 
 class BookingServiceTest {
   private val prisonApiClient = mock<PrisonApiClient>()
-  private val bookingService = BookingService(prisonApiClient)
+  private val validationService = mock<ValidationService>()
+  private val bookingService = BookingService(prisonApiClient, validationService)
 
   @BeforeEach
   fun reset() {
-    reset(prisonApiClient)
+    reset(prisonApiClient, validationService)
   }
 
   @Test
@@ -104,6 +108,7 @@ class BookingServiceTest {
       )
     whenever(prisonApiClient.getSentencesAndOffences(123456L)).thenReturn(listOf(sentenceAndOffences))
     whenever(prisonApiClient.getSentenceAndBookingAdjustments(123456L)).thenReturn(bookingAndSentenceAdjustments)
+    whenever(validationService.validate(listOf(sentenceAndOffences), bookingAndSentenceAdjustments)).thenReturn(ValidationMessages(ValidationType.VALID))
 
     val result = bookingService.getBooking(prisonerId)
 

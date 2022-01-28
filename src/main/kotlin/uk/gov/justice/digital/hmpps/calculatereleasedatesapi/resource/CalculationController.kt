@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -21,12 +23,16 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessages
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 
 @RestController
 @RequestMapping("/calculation", produces = [MediaType.APPLICATION_JSON_VALUE])
 class CalculationController(
   private val bookingService: BookingService,
   private val calculationService: CalculationService,
+  private val validationService: ValidationService
 ) {
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -194,6 +200,38 @@ class CalculationController(
     log.info("Request received return calculation breakdown for calculationRequestId {}", calculationRequestId)
     val booking = calculationService.getBooking(calculationRequestId)
     return calculationService.calculateWithBreakdown(booking)
+  }
+
+  @GetMapping(value = ["/{prisonerId}/validate"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Validates that the data for the given prisoner in NOMIS can be used to calculate a release date",
+    description = "This endpoint will validate that the data for the given prisoner in NOMIS can be supported by the " +
+      "calculate release dates engine",
+    security = [
+      SecurityRequirement(name = "SYSTEM_USER"),
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
+    ],
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
+    ]
+  )
+  fun validate(
+    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
+    @PathVariable("prisonerId")
+    prisonerId: String,
+  ): ResponseEntity<ValidationMessages?> {
+    log.info("Request received to validate $prisonerId")
+    val validationMessages = validationService.validate(prisonerId)
+    return if (validationMessages.type == ValidationType.VALID) {
+      ResponseEntity(HttpStatus.NO_CONTENT)
+    } else {
+      ResponseEntity(validationMessages, HttpStatus.OK)
+    }
   }
 
   companion object {

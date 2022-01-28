@@ -1,0 +1,10 @@
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
+
+enum class ValidationCode {
+  UNSUPPORTED_SENTENCE_TYPE,
+  OFFENCE_DATE_AFTER_SENTENCE_START_DATE,
+  OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE,
+  SENTENCE_HAS_NO_DURATION,
+  OFFENCE_MISSING_DATE,
+  REMAND_FROM_TO_DATES_REQUIRED
+}

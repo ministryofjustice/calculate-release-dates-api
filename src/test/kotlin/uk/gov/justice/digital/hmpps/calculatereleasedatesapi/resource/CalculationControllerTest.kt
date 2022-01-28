@@ -35,6 +35,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.LocalDate
 
 @ExtendWith(SpringExtension::class)
@@ -51,6 +52,9 @@ class CalculationControllerTest {
   @MockBean
   private lateinit var calculationService: CalculationService
 
+  @MockBean
+  private lateinit var validationService: ValidationService
+
   @Autowired
   private lateinit var mvc: MockMvc
 
@@ -63,7 +67,7 @@ class CalculationControllerTest {
     reset(calculationService)
 
     mvc = MockMvcBuilders
-      .standaloneSetup(CalculationController(bookingService, calculationService))
+      .standaloneSetup(CalculationController(bookingService, calculationService, validationService))
       .setControllerAdvice(ControllerAdvice())
       .build()
   }

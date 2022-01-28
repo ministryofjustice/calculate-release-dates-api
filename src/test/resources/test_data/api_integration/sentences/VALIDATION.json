@@ -1,0 +1,94 @@
+[
+  {
+    "caseSequence": 1,
+    "lineSequence": 1,
+    "sentenceDate": "2020-02-05",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "bookingId": 1,
+    "sentenceSequence": 4,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceTypeDescription": "Standard Determinate",
+    "years": 0,
+    "months": 0,
+    "weeks": 0,
+    "days": 1,
+    "offences": [
+      {
+        "offenderChargeId": 3932624,
+        "offenceStartDate": "2021-02-03",
+        "offenceCode": "SX03014",
+        "offenceDescription": "Rape of a boy under 13 - SOA 2003"
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 3,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceTypeDescription": "Standard Determinate",
+    "years": 0,
+    "months": 0,
+    "weeks": 0,
+    "caseSequence": 1,
+    "lineSequence": 2,
+    "sentenceDate": "2021-02-05",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "days": 1,
+    "offences": [
+      {
+        "offenderChargeId": 3932624,
+        "offenceStartDate": "2021-02-03",
+        "offenceEndDate": "2021-06-20",
+        "offenceDescription": "Rape of a boy under 13 - SOA 2003",
+        "offenceCode": "GBH"
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 2,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceTypeDescription": "Standard Determinate",
+    "years": 0,
+    "months": 0,
+    "weeks": 0,
+    "caseSequence": 2,
+    "lineSequence": 1,
+    "sentenceDate": "2021-02-05",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "days": 1,
+    "offences": [
+      {
+        "offenderChargeId": 3932624,
+        "offenceDescription": "Rape of a boy under 13 - SOA 2003",
+        "offenceCode": "GBH"
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceTypeDescription": "Standard Determinate",
+    "years": 0,
+    "months": 0,
+    "weeks": 0,
+    "caseSequence": 2,
+    "lineSequence": 1,
+    "sentenceDate": "2021-02-05",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "days": 0,
+    "offences": [
+      {
+        "offenderChargeId": 3932624,
+        "offenceStartDate": "2021-02-03",
+        "offenceDescription": "Rape of a boy under 13 - SOA 2003",
+        "offenceCode": "GBH"
+      }
+    ]
+  }
+]
