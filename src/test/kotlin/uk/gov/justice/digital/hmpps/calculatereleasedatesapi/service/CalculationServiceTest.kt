@@ -103,6 +103,12 @@ class CalculationServiceTest {
     )
   }
 
+  @Test
+  fun blh() {
+    log.info(LocalDate.of(2021,7,5).minusDays(53).plusMonths(4).toString())
+    `Test Example`("custom-examples", "crs-698-hdced-14-days-rule-concurrent-sentences-different-day", null)
+  }
+
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
   fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {

@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_12W_LT_18M
@@ -34,15 +36,8 @@ import kotlin.math.max
 class SentenceCalculationService {
 
   fun calculate(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
-    var firstSentenceCalc = getInitialCalculation(sentence, booking, sentence.sentencedAt)
-    var adjustedSentenceCalc = getInitialCalculation(sentence, booking, firstSentenceCalc.adjustedReleaseDate)
-
-    // Keep working out the adjusted release date and checking if there are anymore adjustments applicable within
-    // The adjusted prison term.
-    while (firstSentenceCalc.adjustedReleaseDate != adjustedSentenceCalc.adjustedReleaseDate) {
-      firstSentenceCalc = adjustedSentenceCalc
-      adjustedSentenceCalc = getInitialCalculation(sentence, booking, firstSentenceCalc.adjustedReleaseDate)
-    }
+    val firstSentenceCalc = getInitialCalculation(sentence, booking, sentence.sentencedAt)
+    val adjustedSentenceCalc = getInitialCalculation(sentence, booking, firstSentenceCalc.adjustedReleaseDate)
     // create association between the sentence and it's calculation
     sentence.sentenceCalculation = adjustedSentenceCalc
     return calculateDatesFromAdjustments(sentence)
@@ -245,9 +240,9 @@ class SentenceCalculationService {
   }
 
   private fun calculateHDCED(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
-    // If adjustments make the CRD before sentence date (i.e. a large REMAND days)
+    // If adjustments make the CRD before sentence date plus 14 days (i.e. a large REMAND days)
     // then we don't need a HDCED date.
-    if (sentence.sentencedAt.isAfterOrEqualTo(sentenceCalculation.adjustedReleaseDate)) {
+    if (sentenceCalculation.adjustedReleaseDate.isBefore(sentence.sentencedAt.plusDays(14))) {
       sentenceCalculation.homeDetentionCurfewEligibilityDate = null
       return
     }
@@ -351,5 +346,6 @@ class SentenceCalculationService {
     private const val TWENTY_EIGHT = 28L
     private const val YEAR_IN_DAYS = 365
     private const val ONE_HUNDRED_AND_THIRTY_FIVE = 135
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }
