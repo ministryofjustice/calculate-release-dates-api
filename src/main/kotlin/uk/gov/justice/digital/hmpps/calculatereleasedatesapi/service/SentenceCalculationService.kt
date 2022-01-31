@@ -34,15 +34,8 @@ import kotlin.math.max
 class SentenceCalculationService {
 
   fun calculate(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
-    var firstSentenceCalc = getInitialCalculation(sentence, booking, sentence.sentencedAt)
-    var adjustedSentenceCalc = getInitialCalculation(sentence, booking, firstSentenceCalc.adjustedReleaseDate)
-
-    // Keep working out the adjusted release date and checking if there are anymore adjustments applicable within
-    // The adjusted prison term.
-    while (firstSentenceCalc.adjustedReleaseDate != adjustedSentenceCalc.adjustedReleaseDate) {
-      firstSentenceCalc = adjustedSentenceCalc
-      adjustedSentenceCalc = getInitialCalculation(sentence, booking, firstSentenceCalc.adjustedReleaseDate)
-    }
+    val firstSentenceCalc = getInitialCalculation(sentence, booking, sentence.sentencedAt)
+    val adjustedSentenceCalc = getInitialCalculation(sentence, booking, firstSentenceCalc.adjustedReleaseDate)
     // create association between the sentence and it's calculation
     sentence.sentenceCalculation = adjustedSentenceCalc
     return calculateDatesFromAdjustments(sentence)
