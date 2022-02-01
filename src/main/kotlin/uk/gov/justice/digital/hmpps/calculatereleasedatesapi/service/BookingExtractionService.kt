@@ -86,46 +86,47 @@ class BookingExtractionService(
   private fun extractMultiple(booking: Booking): BookingCalculation {
     val breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
     val bookingCalculation = BookingCalculation()
-    val earliestSentenceDate = booking.getAllExtractableSentences().minOf { it.sentencedAt }
+    val sentences = booking.getAllExtractableSentences()
+    val earliestSentenceDate = sentences.minOf { it.sentencedAt }
 
-    val mostRecentSentenceByReleaseDate = extractionService.mostRecentSentence(
-      booking.getAllExtractableSentences(), SentenceCalculation::releaseDate
+    val latestReleaseDate: LocalDate = extractionService.mostRecent(
+      sentences, SentenceCalculation::releaseDate
     )
-    val latestReleaseDate: LocalDate = mostRecentSentenceByReleaseDate.sentenceCalculation.releaseDate!!
 
     val latestExpiryDate: LocalDate = extractionService.mostRecent(
-      booking.getAllExtractableSentences(), SentenceCalculation::expiryDate
+      sentences, SentenceCalculation::expiryDate
     )
 
     val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(
-      booking.getAllExtractableSentences(), SentenceCalculation::unadjustedExpiryDate
+      sentences, SentenceCalculation::unadjustedExpiryDate
     )
 
     val latestLicenseExpiryDate: LocalDate? = extractionService.mostRecentOrNull(
-      booking.getAllExtractableSentences(), SentenceCalculation::licenceExpiryDate
+      sentences, SentenceCalculation::licenceExpiryDate
     )
 
-    val latestNonParoleDate: LocalDate? = extractManyNonParoleDate(booking, latestReleaseDate)
+    val latestNonParoleDate: LocalDate? = extractManyNonParoleDate(sentences, latestReleaseDate)
 
     val latestHDCEDAndBreakdown =
       extractManyHomeDetentionCurfewEligibilityDate(
+        sentences,
         earliestSentenceDate,
         latestUnadjustedExpiryDate,
-        mostRecentSentenceByReleaseDate
+        latestReleaseDate
       )
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
-      extractManyTopUpSuperVisionDate(booking, latestLicenseExpiryDate)
+      extractManyTopUpSuperVisionDate(sentences, latestLicenseExpiryDate)
     } else {
       null
     }
 
     val isReleaseDateConditional = extractManyIsReleaseConditional(
-      booking, latestReleaseDate, latestExpiryDate, latestLicenseExpiryDate
+      sentences, latestReleaseDate, latestExpiryDate, latestLicenseExpiryDate
     )
 
     val latestNotionalConditionalReleaseDate: LocalDate? = extractionService.mostRecentOrNull(
-      booking.getAllExtractableSentences(), SentenceCalculation::notionalConditionalReleaseDate
+      sentences, SentenceCalculation::notionalConditionalReleaseDate
     )
 
     if (latestExpiryDate == latestLicenseExpiryDate) {
@@ -172,26 +173,32 @@ class BookingExtractionService(
   }
 
   private fun extractManyHomeDetentionCurfewEligibilityDate(
+    sentences: List<ExtractableSentence>,
     earliestSentenceDate: LocalDate,
     latestUnadjustedExpiryDate: LocalDate,
-    mostRecentSentenceByReleaseDate: ExtractableSentence
+    latestAdjustedReleaseDate: LocalDate
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
     val fourYearSentence = earliestSentenceDate.plusYears(FOUR)
-
-    return if (latestUnadjustedExpiryDate.isBefore(fourYearSentence) &&
-      mostRecentSentenceByReleaseDate.sentenceCalculation.homeDetentionCurfewEligibilityDate != null
-    ) {
-      mostRecentSentenceByReleaseDate.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
+    return if (latestUnadjustedExpiryDate.isBefore(fourYearSentence)) {
+      val hdcedSentence = extractionService.mostRecentSentenceOrNull(
+        sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) }, SentenceCalculation::homeDetentionCurfewEligibilityDate
+      )
+      if (hdcedSentence != null) {
+        hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
+      } else null
     } else null
   }
 
   private fun getEffectiveSentenceLength(start: LocalDate, end: LocalDate): Period =
     Period.between(start, end.plusDays(1))
 
-  private fun extractManyNonParoleDate(booking: Booking, latestReleaseDate: LocalDate): LocalDate? {
+  private fun extractManyNonParoleDate(
+    sentences: List<ExtractableSentence>,
+    latestReleaseDate: LocalDate
+  ): LocalDate? {
 
     val mostRecentNonParoleDate = extractionService.mostRecentOrNull(
-      booking.getAllExtractableSentences(), SentenceCalculation::nonParoleDate
+      sentences, SentenceCalculation::nonParoleDate
     )
     return if (mostRecentNonParoleDate != null &&
       mostRecentNonParoleDate.isAfter(latestReleaseDate)
@@ -203,10 +210,10 @@ class BookingExtractionService(
   }
 
   private fun extractManyTopUpSuperVisionDate(
-    booking: Booking,
+    sentences: List<ExtractableSentence>,
     latestLicenseExpiryDate: LocalDate
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
-    val latestTUSEDSentence = booking.getAllExtractableSentences()
+    val latestTUSEDSentence = sentences
       .filter { it.sentenceCalculation.topUpSupervisionDate != null }
       .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
 
@@ -216,13 +223,13 @@ class BookingExtractionService(
   }
 
   private fun extractManyIsReleaseConditional(
-    booking: Booking,
+    sentences: List<ExtractableSentence>,
     latestReleaseDate: LocalDate?,
     latestExpiryDate: LocalDate?,
     latestLicenseExpiryDate: LocalDate?
   ): Boolean {
     var isReleaseDateConditional = extractionService.getAssociatedReleaseType(
-      booking.getAllExtractableSentences(), latestReleaseDate
+      sentences, latestReleaseDate
     )
     if (
       (latestLicenseExpiryDate != null) &&

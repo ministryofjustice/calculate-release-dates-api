@@ -238,9 +238,9 @@ class SentenceCalculationService {
   }
 
   private fun calculateHDCED(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
-    // If adjustments make the CRD before sentence date (i.e. a large REMAND days)
+    // If adjustments make the CRD before sentence date plus 14 days (i.e. a large REMAND days)
     // then we don't need a HDCED date.
-    if (sentence.sentencedAt.isAfterOrEqualTo(sentenceCalculation.adjustedReleaseDate)) {
+    if (sentenceCalculation.adjustedReleaseDate.isBefore(sentence.sentencedAt.plusDays(14))) {
       sentenceCalculation.homeDetentionCurfewEligibilityDate = null
       return
     }
