@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqua
 import java.time.LocalDate
 
 data class Adjustments
+// @JsonAnyGetter will add properties from this map to this object, ie. {REMAND: [...]} rather than {adjustments:{REMAND: [...]}}
 (@JsonAnyGetter private val adjustments: MutableMap<AdjustmentType, MutableList<Adjustment>> = mutableMapOf()) {
 
   fun getOrZero(vararg adjustmentTypes: AdjustmentType, adjustmentsBefore: LocalDate, adjustmentsAfter: LocalDate?): Int {
