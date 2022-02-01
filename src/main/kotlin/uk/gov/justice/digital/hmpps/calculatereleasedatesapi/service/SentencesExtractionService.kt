@@ -51,7 +51,6 @@ class SentencesExtractionService {
       .maxByOrNull { property.get(it.sentenceCalculation)!! }
   }
 
-
   fun getAssociatedReleaseType(sentences: List<ExtractableSentence>, latestReleaseDate: LocalDate?): Boolean {
     val matchingReleaseTypes = sentences
       .filter { it.sentenceCalculation.releaseDate?.equals(latestReleaseDate) == true }

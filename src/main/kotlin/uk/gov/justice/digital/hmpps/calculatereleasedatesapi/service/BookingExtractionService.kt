@@ -194,7 +194,9 @@ class BookingExtractionService(
     Period.between(start, end.plusDays(1))
 
   private fun extractManyNonParoleDate(
-    sentences: List<ExtractableSentence>, latestReleaseDate: LocalDate): LocalDate? {
+    sentences: List<ExtractableSentence>,
+    latestReleaseDate: LocalDate
+  ): LocalDate? {
 
     val mostRecentNonParoleDate = extractionService.mostRecentOrNull(
       sentences, SentenceCalculation::nonParoleDate

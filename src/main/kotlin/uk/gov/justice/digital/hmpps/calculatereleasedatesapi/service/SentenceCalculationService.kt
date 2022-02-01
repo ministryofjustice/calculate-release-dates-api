@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_12W_LT_18M
@@ -346,6 +344,5 @@ class SentenceCalculationService {
     private const val TWENTY_EIGHT = 28L
     private const val YEAR_IN_DAYS = 365
     private const val ONE_HUNDRED_AND_THIRTY_FIVE = 135
-    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }
