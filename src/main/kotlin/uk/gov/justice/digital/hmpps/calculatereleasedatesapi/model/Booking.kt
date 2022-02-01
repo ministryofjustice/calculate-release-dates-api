@@ -31,6 +31,4 @@ data class Booking(
     }
     return extractableSentences.toList()
   }
-
-  fun putAdjustment() {}
 }

@@ -88,7 +88,6 @@ class BookingTimelineService(
         }
       }
       previousSentence = it
-      readjustDates(it)
     }
     shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
 
@@ -97,7 +96,10 @@ class BookingTimelineService(
   }
 
   private fun shareAdjustmentsThroughSentenceGroup(sentencesInGroup: List<ExtractableSentence>, endOfGroup: LocalDate) {
-    sentencesInGroup.forEach { sentenceInGroup -> sentenceInGroup.sentenceCalculation.adjustmentsBefore = endOfGroup }
+    sentencesInGroup.forEach {
+      it.sentenceCalculation.adjustmentsBefore = endOfGroup
+      readjustDates(it)
+    }
   }
 
   private fun validateRemandPeriodsOverlapping(booking: Booking) {

@@ -104,11 +104,6 @@ class CalculationServiceTest {
     )
   }
 
-  @Test
-  fun bblah() {
-    `Test Example`("custom-examples", "crs-645-first-day-of-month", null)
-  }
-
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
   fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {
