@@ -7,8 +7,10 @@ import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.min
 
@@ -27,54 +29,79 @@ class BookingTimelineService(
      5. Untagged bail or other forms of bail that don't get recorded in NOMIS (out of scope)
     */
   fun walkTimelineOfBooking(booking: Booking): Booking {
+    log.info("Building timeline of sentences")
     val sortedSentences = booking.getAllExtractableSentences().sortedBy { it.sentencedAt }
     val firstSentence = sortedSentences[0]
     var sentenceRange = firstSentence.getRangeOfSentenceBeforeAwardedDays()
     val totalAda = firstSentence.sentenceCalculation.calculatedTotalAwardedDays
     var previousSentence = firstSentence
 
-    var daysAwardedServed = 0
-    var deductionsNoLongerApplicable = 0
+    //Which sentences are in the same "Group". A "Group" of sentences are sentences that are concurrent to each other,
+    //and there sentenceAt dates overlap with the other release date. i.e. there is no release inbetween them
+    //Whenever a release happens a new group is started.
+    val sentencesInGroup: MutableList<ExtractableSentence> = mutableListOf()
+    var lastReleaseDateReached: LocalDate? = null
 
     sortedSentences.forEach {
+      it.sentenceCalculation.adjustmentsBefore = sentenceRange.end
+      it.sentenceCalculation.adjustmentsAfter = lastReleaseDateReached
       val itRange = it.getRangeOfSentenceBeforeAwardedDays()
       if (sentenceRange.isConnected(itRange)) {
         if (itRange.end.isAfter(sentenceRange.end)) {
           sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
         }
+        sentencesInGroup.add(it)
       } else {
         // There is gap here.
-
         // 1. Check if there have been any ADAs served
         var daysBetween = ChronoUnit.DAYS.between(sentenceRange.end, it.sentencedAt)
         val daysAdaServed = min(daysBetween - 1, totalAda.toLong())
-        daysAwardedServed += daysAdaServed.toInt()
-        // Update range to include ada's served.
-        sentenceRange = LocalDateRange.of(sentenceRange.start, previousSentence.sentenceCalculation.adjustedReleaseDate)
+        booking.adjustments.addAdjustment(
+          AdjustmentType.ADDITIONAL_DAYS_SERVED,
+          Adjustment(
+            numberOfDays = daysAdaServed.toInt(),
+            appliesToSentencesFrom = it.sentencedAt
+          )
+        )
 
-        daysBetween = ChronoUnit.DAYS.between(sentenceRange.end, it.sentencedAt)
-        if (daysBetween > 0) {
+        daysBetween = ChronoUnit.DAYS.between(sentenceRange.end.plusDays(daysAdaServed), it.sentencedAt)
+        if (daysBetween <= 1) {
+          // The gap has been filled by served adas.
+          sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
+          sentencesInGroup.add(it)
+        } else {
           // There is still a gap
 
           // 2. A release date has occurred but there are more sentences on the booking, therefore previous deductions
           // should be wiped.
-          deductionsNoLongerApplicable += booking.getOrZero(
-            AdjustmentType.REMAND, AdjustmentType.TAGGED_BAIL,
-            adjustmentsFrom = previousSentence.sentenceCalculation.adjustedReleaseDate
-          )
+          lastReleaseDateReached = previousSentence.sentenceCalculation.adjustedReleaseDate
+          log.info("A release occurred in booking timeline at ${lastReleaseDateReached!!}")
+
+          //This is the ends of the sentence group. Make sure all sentences share the adjustments in this group.
+          shareAdjustmentsThroughSentenceGroup(sentencesInGroup)
+          //Clear the sentence group and start again.
+          sentencesInGroup.clear()
+          sentencesInGroup.add(it)
+          it.sentenceCalculation.adjustmentsBefore = it.sentencedAt
+          it.sentenceCalculation.adjustmentsAfter = lastReleaseDateReached
           sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
         }
       }
       previousSentence = it
-      readjustDates(it, daysAwardedServed, deductionsNoLongerApplicable)
+      readjustDates(it)
     }
+    shareAdjustmentsThroughSentenceGroup(sentencesInGroup)
 
     validateRemandPeriodsOverlapping(booking)
     return booking
   }
 
+  private fun shareAdjustmentsThroughSentenceGroup(sentencesInGroup: List<ExtractableSentence>) {
+    sentencesInGroup.forEach { sentenceInGroup -> sentenceInGroup.sentenceCalculation.adjustmentsBefore = sentenceRange.end }
+  }
+
   private fun validateRemandPeriodsOverlapping(booking: Booking) {
-    val remandPeriods = booking.get(AdjustmentType.REMAND)
+    val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
       val sentenceRanges = booking.getAllExtractableSentences().map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.adjustedReleaseDate) }
@@ -106,14 +133,9 @@ class BookingTimelineService(
     }
   }
 
-  private fun readjustDates(it: ExtractableSentence, daysAwardedServed: Int, daysRemandNoLongerApplicable: Int) {
-    if (daysAwardedServed + daysRemandNoLongerApplicable != 0) {
-      it.sentenceCalculation.calculatedTotalAwardedDays =
-        it.sentenceCalculation.calculatedTotalAwardedDays - daysAwardedServed
-      it.sentenceCalculation.calculatedTotalDeductedDays =
-        it.sentenceCalculation.calculatedTotalDeductedDays - daysRemandNoLongerApplicable
-      sentenceCalculationService.calculateDatesFromAdjustments(it)
-    }
+  private fun readjustDates(it: ExtractableSentence) {
+    sentenceCalculationService.calculateDatesFromAdjustments(it)
+    log.info(it.buildString())
   }
 
   companion object {

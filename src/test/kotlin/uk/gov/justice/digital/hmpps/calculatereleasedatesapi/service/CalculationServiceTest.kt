@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
@@ -101,6 +102,11 @@ class CalculationServiceTest {
       jsonTransformation.loadCalculationBreakdown("$exampleType/$exampleNumber"),
       calculationBreakdown
     )
+  }
+
+  @Test
+  fun bblah() {
+    `Test Example`("custom-examples", "crs-645-first-day-of-month", null)
   }
 
   @ParameterizedTest
@@ -396,6 +402,6 @@ class CalculationServiceTest {
       lineSequence = 2
     )
 
-    val BOOKING = Booking(OFFENDER, listOf(SENTENCE), mutableMapOf(), BOOKING_ID)
+    val BOOKING = Booking(OFFENDER, listOf(SENTENCE), Adjustments(), BOOKING_ID)
   }
 }
