@@ -182,7 +182,7 @@ class BookingExtractionService(
 
     return if (latestUnadjustedExpiryDate.isBefore(fourYearSentence)) {
       val hdcedSentence = extractionService.mostRecentSentenceOrNull(
-        sentences.filter { latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) }, SentenceCalculation::homeDetentionCurfewEligibilityDate
+        sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) }, SentenceCalculation::homeDetentionCurfewEligibilityDate
       )
       if (hdcedSentence != null) {
         hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
