@@ -179,7 +179,6 @@ class BookingExtractionService(
     latestAdjustedReleaseDate: LocalDate
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
     val fourYearSentence = earliestSentenceDate.plusYears(FOUR)
-
     return if (latestUnadjustedExpiryDate.isBefore(fourYearSentence)) {
       val hdcedSentence = extractionService.mostRecentSentenceOrNull(
         sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) }, SentenceCalculation::homeDetentionCurfewEligibilityDate
