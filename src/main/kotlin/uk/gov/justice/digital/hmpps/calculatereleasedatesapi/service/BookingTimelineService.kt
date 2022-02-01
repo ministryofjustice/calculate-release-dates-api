@@ -36,9 +36,9 @@ class BookingTimelineService(
     val totalAda = firstSentence.sentenceCalculation.calculatedTotalAwardedDays
     var previousSentence = firstSentence
 
-    //Which sentences are in the same "Group". A "Group" of sentences are sentences that are concurrent to each other,
-    //and there sentenceAt dates overlap with the other release date. i.e. there is no release inbetween them
-    //Whenever a release happens a new group is started.
+    // Which sentences are in the same "Group". A "Group" of sentences are sentences that are concurrent to each other,
+    // and there sentenceAt dates overlap with the other release date. i.e. there is no release inbetween them
+    // Whenever a release happens a new group is started.
     val sentencesInGroup: MutableList<ExtractableSentence> = mutableListOf()
     var lastReleaseDateReached: LocalDate? = null
 
@@ -77,9 +77,9 @@ class BookingTimelineService(
           lastReleaseDateReached = previousSentence.sentenceCalculation.adjustedReleaseDate
           log.info("A release occurred in booking timeline at ${lastReleaseDateReached!!}")
 
-          //This is the ends of the sentence group. Make sure all sentences share the adjustments in this group.
+          // This is the ends of the sentence group. Make sure all sentences share the adjustments in this group.
           shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
-          //Clear the sentence group and start again.
+          // Clear the sentence group and start again.
           sentencesInGroup.clear()
           sentencesInGroup.add(it)
           it.sentenceCalculation.adjustmentsBefore = it.sentencedAt
