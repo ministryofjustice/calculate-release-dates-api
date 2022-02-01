@@ -78,7 +78,7 @@ class BookingTimelineService(
           log.info("A release occurred in booking timeline at ${lastReleaseDateReached!!}")
 
           //This is the ends of the sentence group. Make sure all sentences share the adjustments in this group.
-          shareAdjustmentsThroughSentenceGroup(sentencesInGroup)
+          shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
           //Clear the sentence group and start again.
           sentencesInGroup.clear()
           sentencesInGroup.add(it)
@@ -90,14 +90,14 @@ class BookingTimelineService(
       previousSentence = it
       readjustDates(it)
     }
-    shareAdjustmentsThroughSentenceGroup(sentencesInGroup)
+    shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
 
     validateRemandPeriodsOverlapping(booking)
     return booking
   }
 
-  private fun shareAdjustmentsThroughSentenceGroup(sentencesInGroup: List<ExtractableSentence>) {
-    sentencesInGroup.forEach { sentenceInGroup -> sentenceInGroup.sentenceCalculation.adjustmentsBefore = sentenceRange.end }
+  private fun shareAdjustmentsThroughSentenceGroup(sentencesInGroup: List<ExtractableSentence>, endOfGroup: LocalDate) {
+    sentencesInGroup.forEach { sentenceInGroup -> sentenceInGroup.sentenceCalculation.adjustmentsBefore = endOfGroup }
   }
 
   private fun validateRemandPeriodsOverlapping(booking: Booking) {
