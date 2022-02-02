@@ -1,12 +1,10 @@
 {
-  "dates" : {
+  "dates": {
     "SED": "2014-10-15",
     "LED": "2013-10-15",
     "PED": "2012-10-15",
     "NPD": "2013-06-15",
     "ESED": "2014-10-15"
   },
-  "effectiveSentenceLength": {
-    "YEARS": 4
-  }
+  "effectiveSentenceLength": "P4Y"
 }

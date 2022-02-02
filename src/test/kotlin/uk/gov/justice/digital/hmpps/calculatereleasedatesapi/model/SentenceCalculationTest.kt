@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -24,9 +25,10 @@ internal class SentenceCalculationTest {
       4,
       date,
       date,
-      1,
-      0,
-      0,
+      Adjustments(
+        mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(numberOfDays = 1, appliesToSentencesFrom = date)))
+      ),
+      date
     )
 
     assertEquals(sentenceCalculation.sentence, sentence)

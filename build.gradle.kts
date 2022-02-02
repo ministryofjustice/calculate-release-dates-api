@@ -61,7 +61,6 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.3.1")
 
-  implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
   implementation("io.arrow-kt:arrow-core:1.0.1")
   implementation("com.vladmihalcea:hibernate-types-52:2.14.0")
 

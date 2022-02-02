@@ -14,15 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TestService
 import javax.validation.constraints.NotEmpty
 
 @RestController
 @RequestMapping("/test", produces = [MediaType.APPLICATION_JSON_VALUE])
 class TestController(
-  private val testService: TestService,
   private val calculationService: CalculationService,
 ) {
 
@@ -46,9 +45,9 @@ class TestController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
     ]
   )
-  fun calculate(@RequestBody @NotEmpty booking: String): BookingCalculation {
+  fun calculate(@RequestBody @NotEmpty booking: Booking): BookingCalculation {
     log.info("Request received to calculate booking for $booking")
-    return calculationService.calculate(testService.jsonToBooking(booking), PRELIMINARY)
+    return calculationService.calculate(booking, PRELIMINARY)
   }
 
   companion object {

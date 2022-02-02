@@ -1,14 +1,9 @@
 {
-  "sentenceExpiryDate": "2015-10-30",
-  "releaseDate": "2014-05-01",
-  "isReleaseDateConditional": true,
   "dates": {
     "SLED": "2015-10-30",
     "CRD": "2014-05-01",
     "HDCED": "2013-12-18",
     "ESED": "2015-12-14"
   },
-  "effectiveSentenceLength": {
-    "YEARS": 3
-  }
+  "effectiveSentenceLength": "P3Y"
 }

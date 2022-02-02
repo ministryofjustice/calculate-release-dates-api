@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_12W_LT_18M
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_18M_LT_4Y
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_MINIMUM_14D
@@ -34,10 +33,9 @@ import kotlin.math.max
 class SentenceCalculationService {
 
   fun calculate(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
-    val firstSentenceCalc = getInitialCalculation(sentence, booking, sentence.sentencedAt)
-    val adjustedSentenceCalc = getInitialCalculation(sentence, booking, firstSentenceCalc.adjustedReleaseDate)
+    val sentenceCalculation = getInitialCalculation(sentence, booking, sentence.sentencedAt)
     // create association between the sentence and it's calculation
-    sentence.sentenceCalculation = adjustedSentenceCalc
+    sentence.sentenceCalculation = sentenceCalculation
     return calculateDatesFromAdjustments(sentence)
   }
 
@@ -71,18 +69,6 @@ class SentenceCalculationService {
         .plusDays(numberOfDaysToReleaseDate.toLong())
         .minusDays(ONE)
 
-    val calculatedTotalDeductedDays =
-      booking.getOrZero(AdjustmentType.REMAND, AdjustmentType.TAGGED_BAIL, adjustmentsFrom = adjustmentsFrom)
-
-    val calculatedTotalAddedDays =
-      booking.getOrZero(AdjustmentType.UNLAWFULLY_AT_LARGE, adjustmentsFrom = adjustmentsFrom)
-
-    val calculatedTotalAwardedDays = max(
-      0,
-      booking.getOrZero(AdjustmentType.ADDITIONAL_DAYS_AWARDED, adjustmentsFrom = adjustmentsFrom) -
-        booking.getOrZero(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, adjustmentsFrom = adjustmentsFrom)
-    )
-
     // create new SentenceCalculation and associate it with a sentence
     return SentenceCalculation(
       sentence,
@@ -91,9 +77,8 @@ class SentenceCalculationService {
       numberOfDaysToReleaseDate,
       unadjustedExpiryDate,
       unadjustedReleaseDate,
-      calculatedTotalDeductedDays,
-      calculatedTotalAddedDays,
-      calculatedTotalAwardedDays,
+      booking.adjustments,
+      sentence.sentencedAt
     )
   }
 

@@ -6,9 +6,5 @@
     "TUSED": "2023-05-26",
     "ESED": "2023-03-22"
   },
-  "effectiveSentenceLength": {
-    "YEARS": 1,
-    "MONTHS": 6,
-    "DAYS": 14
-  }
+  "effectiveSentenceLength": "P1Y6M14D"
 }

@@ -6,7 +6,5 @@
     "TUSED": "2022-06-22",
     "ESED": "2021-12-07"
   },
-  "effectiveSentenceLength": {
-    "MONTHS": 9
-  }
+  "effectiveSentenceLength": "P9M"
 }

@@ -5,7 +5,5 @@
     "HDCED": "2014-11-13",
     "ESED": "2016-11-14"
   },
-  "effectiveSentenceLength": {
-    "YEARS": 3
-  }
+  "effectiveSentenceLength": "P3Y"
 }

@@ -4,9 +4,5 @@
     "CRD": "2025-02-27",
     "ESED": "2028-05-23"
   },
-  "effectiveSentenceLength": {
-    "YEARS": 7,
-    "MONTHS": 6,
-    "DAYS": 4
-  }
+  "effectiveSentenceLength": "P7Y6M4D"
 }

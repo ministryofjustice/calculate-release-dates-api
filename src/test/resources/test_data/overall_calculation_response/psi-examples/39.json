@@ -1,13 +1,9 @@
 {
-  "dates" : {
+  "dates": {
     "SLED": "2015-10-31",
     "CRD": "2014-01-30",
     "HDCED": "2013-09-18",
     "ESED": "2015-11-30"
   },
-  "effectiveSentenceLength": {
-    "YEARS": 3,
-    "MONTHS": 6,
-    "DAYS": 1
-  }
+  "effectiveSentenceLength": "P3Y6M1D"
 }

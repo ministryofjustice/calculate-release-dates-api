@@ -4,7 +4,5 @@
     "CRD": "2026-01-30",
     "ESED": "2029-03-31"
   },
-  "effectiveSentenceLength": {
-    "YEARS": 9
-  }
+  "effectiveSentenceLength": "P9Y"
 }

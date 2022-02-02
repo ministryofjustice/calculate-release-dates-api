@@ -1,11 +1,8 @@
 {
-  "dates" : {
-    "SLED":"2018-02-17",
-    "CRD":"2015-11-19",
+  "dates": {
+    "SLED": "2018-02-17",
+    "CRD": "2015-11-19",
     "ESED": "2018-03-19"
   },
-  "effectiveSentenceLength": {
-    "YEARS": 4,
-    "MONTHS": 6
-  }
+  "effectiveSentenceLength": "P4Y6M"
 }

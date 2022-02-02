@@ -1,12 +1,9 @@
 {
-  "dates" : {
-    "SLED":"2017-06-16",
-    "CRD":"2016-03-17",
+  "dates": {
+    "SLED": "2017-06-16",
+    "CRD": "2016-03-17",
     "HDCED": "2015-11-04",
     "ESED": "2017-08-15"
   },
-  "effectiveSentenceLength": {
-    "YEARS": 2,
-    "MONTHS": 6
-  }
+  "effectiveSentenceLength": "P2Y6M"
 }
