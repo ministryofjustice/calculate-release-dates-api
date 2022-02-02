@@ -93,6 +93,12 @@ class BookingServiceTest {
           fromDate = FIRST_JAN_2015.minusDays(7),
           toDate = FIRST_JAN_2015.minusDays(1)
 
+        ),
+        SentenceAdjustments(
+          active = true,
+          sentenceSequence = sequence,
+          numberOfDays = 22,
+          type = SentenceAdjustmentType.UNUSED_REMAND
         )
       )
     )

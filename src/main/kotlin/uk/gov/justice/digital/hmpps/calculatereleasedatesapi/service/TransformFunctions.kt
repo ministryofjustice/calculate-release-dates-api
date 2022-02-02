@@ -122,50 +122,54 @@ fun transform(
   val adjustments = Adjustments()
   bookingAndSentenceAdjustments.bookingAdjustments.forEach {
     val adjustmentType = transform(it.type)
-    adjustments.addAdjustment(
-      adjustmentType,
-      Adjustment(
-        appliesToSentencesFrom = it.fromDate,
-        numberOfDays = it.numberOfDays,
-        fromDate = it.fromDate,
-        toDate = it.toDate
+    if (adjustmentType != null) {
+      adjustments.addAdjustment(
+        adjustmentType,
+        Adjustment(
+          appliesToSentencesFrom = it.fromDate,
+          numberOfDays = it.numberOfDays,
+          fromDate = it.fromDate,
+          toDate = it.toDate
+        )
       )
-    )
+    }
   }
   bookingAndSentenceAdjustments.sentenceAdjustments.forEach {
     val adjustmentType = transform(it.type)
+    if (adjustmentType != null) {
 
-    val sentence: SentenceAndOffences =
-      sentencesAndOffences.find { sentenceAndOffences -> it.sentenceSequence == sentenceAndOffences.sentenceSequence }!!
-    adjustments.addAdjustment(
-      adjustmentType,
-      Adjustment(
-        appliesToSentencesFrom = sentence.sentenceDate,
-        fromDate = it.fromDate,
-        toDate = it.toDate,
-        numberOfDays = it.numberOfDays
+      val sentence: SentenceAndOffences =
+        sentencesAndOffences.find { sentenceAndOffences -> it.sentenceSequence == sentenceAndOffences.sentenceSequence }!!
+      adjustments.addAdjustment(
+        adjustmentType,
+        Adjustment(
+          appliesToSentencesFrom = sentence.sentenceDate,
+          fromDate = it.fromDate,
+          toDate = it.toDate,
+          numberOfDays = it.numberOfDays
+        )
       )
-    )
+    }
   }
   return adjustments
 }
 
-fun transform(sentenceAdjustmentType: SentenceAdjustmentType): AdjustmentType {
+fun transform(sentenceAdjustmentType: SentenceAdjustmentType): AdjustmentType? {
   return when (sentenceAdjustmentType) {
-    SentenceAdjustmentType.RECALL_SENTENCE_REMAND -> TODO()
-    SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL -> TODO()
+    SentenceAdjustmentType.RECALL_SENTENCE_REMAND -> null
+    SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL -> null
     SentenceAdjustmentType.REMAND -> REMAND
     SentenceAdjustmentType.TAGGED_BAIL -> TAGGED_BAIL
-    SentenceAdjustmentType.UNUSED_REMAND -> TODO()
+    SentenceAdjustmentType.UNUSED_REMAND -> null
   }
 }
 
-fun transform(bookingAdjustmentType: BookingAdjustmentType): AdjustmentType {
+fun transform(bookingAdjustmentType: BookingAdjustmentType): AdjustmentType? {
   return when (bookingAdjustmentType) {
     BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED -> ADDITIONAL_DAYS_AWARDED
-    BookingAdjustmentType.LAWFULLY_AT_LARGE -> TODO()
+    BookingAdjustmentType.LAWFULLY_AT_LARGE -> null
     BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED -> RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
-    BookingAdjustmentType.SPECIAL_REMISSION -> TODO()
+    BookingAdjustmentType.SPECIAL_REMISSION -> null
     BookingAdjustmentType.UNLAWFULLY_AT_LARGE -> UNLAWFULLY_AT_LARGE
   }
 }
