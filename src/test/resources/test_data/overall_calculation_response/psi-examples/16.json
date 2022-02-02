@@ -1,13 +1,11 @@
 {
   "dates": {
-    "SED":"2015-09-27",
-    "CRD":"2015-05-29",
-    "TUSED":"2016-04-29",
+    "SED": "2015-09-27",
+    "CRD": "2015-05-29",
+    "TUSED": "2016-04-29",
     "LED": "2015-07-28",
     "HDCED": "2015-03-31",
     "ESED": "2015-10-11"
   },
-  "effectiveSentenceLength": {
-    "MONTHS": 8
-  }
+  "effectiveSentenceLength": "P8M"
 }

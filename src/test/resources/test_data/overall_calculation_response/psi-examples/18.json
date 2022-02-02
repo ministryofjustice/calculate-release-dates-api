@@ -1,12 +1,9 @@
 {
   "dates": {
-    "SLED":"2014-05-26",
-    "ARD":"2013-10-10",
+    "SLED": "2014-05-26",
+    "ARD": "2013-10-10",
     "HDCED": "2013-08-26",
     "ESED": "2014-06-20"
   },
-  "effectiveSentenceLength": {
-    "YEARS": 1,
-    "MONTHS": 6
-  }
+  "effectiveSentenceLength": "P1Y6M"
 }

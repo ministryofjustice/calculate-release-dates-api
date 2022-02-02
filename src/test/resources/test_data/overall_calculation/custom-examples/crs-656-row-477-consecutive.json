@@ -22,7 +22,6 @@
       "sentencedAt": "2021-03-01",
       "caseSequence": 1,
       "lineSequence": 1,
-      "sentenceParts": [],
       "consecutiveSentenceUUIDs": []
     },
     {
@@ -42,7 +41,6 @@
       "sentencedAt": "2021-03-01",
       "caseSequence": 1,
       "lineSequence": 1,
-      "sentenceParts": [],
       "consecutiveSentenceUUIDs": [
         "1a009aca-e295-310f-8508-8e918792064a"
       ]

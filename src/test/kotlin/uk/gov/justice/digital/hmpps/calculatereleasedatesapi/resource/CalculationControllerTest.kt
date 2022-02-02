@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAd
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -77,7 +78,7 @@ class CalculationControllerTest {
     val prisonerId = "A1234AB"
     val bookingId = 9995L
     val offender = Offender(prisonerId, "John Doe", LocalDate.of(1980, 1, 1))
-    val booking = Booking(offender, mutableListOf(), mutableMapOf(), bookingId)
+    val booking = Booking(offender, mutableListOf(), Adjustments(), bookingId)
 
     val bookingCalculation = BookingCalculation(calculationRequestId = 9991L)
     whenever(bookingService.getBooking(prisonerId)).thenReturn(booking)
@@ -98,7 +99,7 @@ class CalculationControllerTest {
     val calculationRequestId = 12345
     val bookingId = 9995L
     val offender = Offender(prisonerId, "John Doe", LocalDate.of(1980, 1, 1))
-    val booking = Booking(offender, mutableListOf(), mutableMapOf(), bookingId)
+    val booking = Booking(offender, mutableListOf(), Adjustments(), bookingId)
 
     val bookingCalculation = BookingCalculation(calculationRequestId = 9991L)
     whenever(bookingService.getBooking(prisonerId)).thenReturn(booking)
@@ -120,7 +121,7 @@ class CalculationControllerTest {
     val calculationRequestId = 12345L
     val bookingId = 9995L
     val offender = Offender(prisonerId, "John Doe", LocalDate.of(1980, 1, 1))
-    val booking = Booking(offender, mutableListOf(), mutableMapOf(), bookingId)
+    val booking = Booking(offender, mutableListOf(), Adjustments(), bookingId)
 
     val bookingCalculation = BookingCalculation(calculationRequestId = 9991L)
     whenever(bookingService.getBooking(prisonerId)).thenReturn(booking)
@@ -164,7 +165,7 @@ class CalculationControllerTest {
     val calculationRequestId = 9995L
     val bookingId = 9995L
     val offender = Offender(prisonerId, "John Doe", LocalDate.of(1980, 1, 1))
-    val booking = Booking(offender, mutableListOf(), mutableMapOf(), bookingId)
+    val booking = Booking(offender, mutableListOf(), Adjustments(), bookingId)
     val breakdown = CalculationBreakdown(listOf(), null)
 
     whenever(calculationService.getBooking(calculationRequestId)).thenReturn(booking)
