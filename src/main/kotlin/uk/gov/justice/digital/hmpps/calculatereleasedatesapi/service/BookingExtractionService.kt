@@ -89,13 +89,14 @@ class BookingExtractionService(
     val sentences = booking.getAllExtractableSentences()
     val earliestSentenceDate = sentences.minOf { it.sentencedAt }
 
-    val latestReleaseDate: LocalDate = extractionService.mostRecent(
-      sentences, SentenceCalculation::releaseDate
-    )
+    val mostRecentSentenceByReleaseDate =
+      extractionService.mostRecentSentence(sentences, SentenceCalculation::releaseDate)
+    val mostRecentSentenceByExpiryDate =
+      extractionService.mostRecentSentence(sentences, SentenceCalculation::expiryDate)
 
-    val latestExpiryDate: LocalDate = extractionService.mostRecent(
-      sentences, SentenceCalculation::expiryDate
-    )
+    val latestReleaseDate = mostRecentSentenceByReleaseDate.sentenceCalculation.releaseDate!!
+    val latestExpiryDate = mostRecentSentenceByExpiryDate.sentenceCalculation.expiryDate!!
+
 
     val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(
       sentences, SentenceCalculation::unadjustedExpiryDate
@@ -131,17 +132,28 @@ class BookingExtractionService(
 
     if (latestExpiryDate == latestLicenseExpiryDate) {
       bookingCalculation.dates[SLED] = latestExpiryDate
+      breakdownByReleaseDateType[SLED] =
+        mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SLED]!!
     } else {
       bookingCalculation.dates[SED] = latestExpiryDate
+      breakdownByReleaseDateType[SED] =
+        mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
       if (latestLicenseExpiryDate != null) {
         bookingCalculation.dates[LED] = latestLicenseExpiryDate
       }
     }
 
     if (isReleaseDateConditional) {
+      // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
+      // Also, a further adjustment is applied here - at odds with other calculations where dates have already been calculated in the individual sentence calc.
       bookingCalculation.dates[CRD] = latestReleaseDate.minusDays(bookingCalculation.daysAwardedServed)
+      val releaseDateType = if (mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType.containsKey(CRD)) CRD else ARD
+      val breakdownDetails = mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]!!
+      breakdownByReleaseDateType[CRD] = breakdownDetails.copy( adjustedDays = breakdownDetails.adjustedDays.minus(bookingCalculation.daysAwardedServed).toInt())
     } else {
       bookingCalculation.dates[ARD] = latestReleaseDate.minusDays(bookingCalculation.daysAwardedServed)
+      val breakdownDetails = mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
+      breakdownByReleaseDateType[ARD] = breakdownDetails.copy( adjustedDays = breakdownDetails.adjustedDays.minus(bookingCalculation.daysAwardedServed).toInt())
     }
 
     if (latestNonParoleDate != null) {
