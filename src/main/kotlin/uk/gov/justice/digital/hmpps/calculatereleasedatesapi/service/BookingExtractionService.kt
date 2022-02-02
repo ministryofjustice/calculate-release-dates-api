@@ -97,7 +97,6 @@ class BookingExtractionService(
     val latestReleaseDate = mostRecentSentenceByReleaseDate.sentenceCalculation.releaseDate!!
     val latestExpiryDate = mostRecentSentenceByExpiryDate.sentenceCalculation.expiryDate!!
 
-
     val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(
       sentences, SentenceCalculation::unadjustedExpiryDate
     )
@@ -144,16 +143,13 @@ class BookingExtractionService(
     }
 
     if (isReleaseDateConditional) {
+      bookingCalculation.dates[CRD] = latestReleaseDate
       // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
-      // Also, a further adjustment is applied here - at odds with other calculations where dates have already been calculated in the individual sentence calc.
-      bookingCalculation.dates[CRD] = latestReleaseDate.minusDays(bookingCalculation.daysAwardedServed)
       val releaseDateType = if (mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType.containsKey(CRD)) CRD else ARD
-      val breakdownDetails = mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]!!
-      breakdownByReleaseDateType[CRD] = breakdownDetails.copy( adjustedDays = breakdownDetails.adjustedDays.minus(bookingCalculation.daysAwardedServed).toInt())
+      breakdownByReleaseDateType[CRD] = mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]!!
     } else {
-      bookingCalculation.dates[ARD] = latestReleaseDate.minusDays(bookingCalculation.daysAwardedServed)
-      val breakdownDetails = mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
-      breakdownByReleaseDateType[ARD] = breakdownDetails.copy( adjustedDays = breakdownDetails.adjustedDays.minus(bookingCalculation.daysAwardedServed).toInt())
+      bookingCalculation.dates[ARD] = latestReleaseDate
+      breakdownByReleaseDateType[ARD] = mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
     }
 
     if (latestNonParoleDate != null) {
