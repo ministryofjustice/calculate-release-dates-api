@@ -30,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -117,14 +118,12 @@ fun transform(prisonerDetails: PrisonerDetails): Offender {
 fun transform(
   bookingAndSentenceAdjustments: BookingAndSentenceAdjustments,
   sentencesAndOffences: List<SentenceAndOffences>
-): Map<AdjustmentType, List<Adjustment>> {
-  val adjustments: MutableMap<AdjustmentType, MutableList<Adjustment>> = mutableMapOf()
+): Adjustments {
+  val adjustments = Adjustments()
   bookingAndSentenceAdjustments.bookingAdjustments.forEach {
     val adjustmentType = transform(it.type)
-    if (!adjustments.containsKey(adjustmentType)) {
-      adjustments[adjustmentType] = mutableListOf()
-    }
-    adjustments[adjustmentType]!!.add(
+    adjustments.addAdjustment(
+      adjustmentType,
       Adjustment(
         appliesToSentencesFrom = it.fromDate,
         numberOfDays = it.numberOfDays,
@@ -135,12 +134,11 @@ fun transform(
   }
   bookingAndSentenceAdjustments.sentenceAdjustments.forEach {
     val adjustmentType = transform(it.type)
-    if (!adjustments.containsKey(adjustmentType)) {
-      adjustments[adjustmentType] = mutableListOf()
-    }
+
     val sentence: SentenceAndOffences =
       sentencesAndOffences.find { sentenceAndOffences -> it.sentenceSequence == sentenceAndOffences.sentenceSequence }!!
-    adjustments[adjustmentType]!!.add(
+    adjustments.addAdjustment(
+      adjustmentType,
       Adjustment(
         appliesToSentencesFrom = sentence.sentenceDate,
         fromDate = it.fromDate,

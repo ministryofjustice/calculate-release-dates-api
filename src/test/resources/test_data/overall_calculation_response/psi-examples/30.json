@@ -1,10 +1,8 @@
 {
-  "dates" : {
+  "dates": {
     "SLED": "2015-09-16",
     "CRD": "2012-09-16",
     "ESED": "2015-09-16"
   },
-  "effectiveSentenceLength": {
-    "YEARS": 6
-  }
+  "effectiveSentenceLength": "P6Y"
 }

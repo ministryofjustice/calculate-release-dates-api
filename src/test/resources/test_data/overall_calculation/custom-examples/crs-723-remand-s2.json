@@ -1,0 +1,41 @@
+{
+  "offender":{
+    "reference":"PROD-2",
+    "name":"Default Prisoner",
+    "dateOfBirth":"1995-03-08"
+  },
+  "sentences":[
+    {
+      "offence":{
+        "committedAt":"2020-05-19"
+      },
+      "duration":{
+        "durationElements":{
+          "MONTHS":3
+        }
+      },
+      "sentencedAt":"2021-07-01"
+    },
+    {
+      "offence":{
+        "committedAt":"2020-05-19"
+      },
+      "duration":{
+        "durationElements":{
+          "MONTHS":4
+        }
+      },
+      "sentencedAt":"2021-07-05"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "numberOfDays": 53,
+        "appliesToSentencesFrom": "2021-07-05",
+        "fromDate": "2020-05-08",
+        "toDate": "2020-07-04"
+      }
+    ]
+  }
+}

@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.math.max
 
 data class SentenceCalculation(
   var sentence: CalculableSentence, // values here are used to store working values
@@ -11,13 +13,27 @@ data class SentenceCalculation(
   val numberOfDaysToReleaseDate: Int,
   val unadjustedExpiryDate: LocalDate,
   val unadjustedReleaseDate: LocalDate,
-  // Remand and Tagged bail
-  var calculatedTotalDeductedDays: Int,
-  // UAL
-  var calculatedTotalAddedDays: Int,
-  // ADA - RADA
-  var calculatedTotalAwardedDays: Int,
+  val adjustments: Adjustments,
+  var adjustmentsBefore: LocalDate,
+  var adjustmentsAfter: LocalDate? = null
 ) {
+
+  val calculatedTotalDeductedDays: Int get() {
+    return adjustments.getOrZero(AdjustmentType.REMAND, AdjustmentType.TAGGED_BAIL, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+  }
+
+  val calculatedTotalAddedDays: Int get() {
+    return adjustments.getOrZero(AdjustmentType.UNLAWFULLY_AT_LARGE, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+  }
+
+  val calculatedTotalAwardedDays: Int get() {
+    return max(
+      0,
+      adjustments.getOrZero(AdjustmentType.ADDITIONAL_DAYS_AWARDED, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter) -
+        adjustments.getOrZero(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, AdjustmentType.ADDITIONAL_DAYS_SERVED, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+
+    )
+  }
 
   val numberOfDaysToAddToLicenceExpiryDate: Int get() {
     if (calculatedTotalDeductedDays >= numberOfDaysToReleaseDate) {

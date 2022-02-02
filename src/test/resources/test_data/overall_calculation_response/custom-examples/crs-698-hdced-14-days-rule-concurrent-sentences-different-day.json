@@ -1,12 +1,9 @@
 {
   "dates": {
-    "SLED":"2021-09-10",
-    "CRD":"2021-07-11",
-    "TUSED":"2022-07-11",
+    "SLED": "2021-09-10",
+    "CRD": "2021-07-11",
+    "TUSED": "2022-07-11",
     "ESED": "2021-11-02"
   },
-  "effectiveSentenceLength": {
-    "MONTHS": 4,
-    "DAYS": 2
-  }
+  "effectiveSentenceLength": "P4M2D"
 }
