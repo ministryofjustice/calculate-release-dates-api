@@ -4,14 +4,15 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_SERVED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
+import java.time.temporal.ChronoUnit.DAYS
 import kotlin.math.min
 
 @Service
@@ -40,11 +41,11 @@ class BookingTimelineService(
     // and there sentenceAt dates overlap with the other release date. i.e. there is no release inbetween them
     // Whenever a release happens a new group is started.
     val sentencesInGroup: MutableList<ExtractableSentence> = mutableListOf()
-    var lastReleaseDateReached: LocalDate? = null
+    var previousReleaseDateReached: LocalDate? = null
 
     sortedSentences.forEach {
       it.sentenceCalculation.adjustmentsBefore = sentenceRange.end
-      it.sentenceCalculation.adjustmentsAfter = lastReleaseDateReached
+      it.sentenceCalculation.adjustmentsAfter = previousReleaseDateReached
       val itRange = it.getRangeOfSentenceBeforeAwardedDays()
       if (sentenceRange.isConnected(itRange)) {
         if (itRange.end.isAfter(sentenceRange.end)) {
@@ -54,17 +55,17 @@ class BookingTimelineService(
       } else {
         // There is gap here.
         // 1. Check if there have been any ADAs served
-        var daysBetween = ChronoUnit.DAYS.between(sentenceRange.end, it.sentencedAt)
+        var daysBetween = DAYS.between(sentenceRange.end, it.sentencedAt)
         val daysAdaServed = min(daysBetween - 1, totalAda.toLong())
         booking.adjustments.addAdjustment(
-          AdjustmentType.ADDITIONAL_DAYS_SERVED,
+          ADDITIONAL_DAYS_SERVED,
           Adjustment(
             numberOfDays = daysAdaServed.toInt(),
             appliesToSentencesFrom = it.sentencedAt
           )
         )
 
-        daysBetween = ChronoUnit.DAYS.between(sentenceRange.end.plusDays(daysAdaServed), it.sentencedAt)
+        daysBetween = DAYS.between(sentenceRange.end.plusDays(daysAdaServed), it.sentencedAt)
         if (daysBetween <= 1) {
           // The gap has been filled by served adas.
           sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
@@ -74,8 +75,8 @@ class BookingTimelineService(
 
           // 2. A release date has occurred but there are more sentences on the booking, therefore previous deductions
           // should be wiped.
-          lastReleaseDateReached = previousSentence.sentenceCalculation.adjustedReleaseDate
-          log.info("A release occurred in booking timeline at ${lastReleaseDateReached!!}")
+          previousReleaseDateReached = previousSentence.sentenceCalculation.adjustedReleaseDate
+          log.info("A release occurred in booking timeline at ${previousReleaseDateReached!!}")
 
           // This is the ends of the sentence group. Make sure all sentences share the adjustments in this group.
           shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
@@ -83,7 +84,7 @@ class BookingTimelineService(
           sentencesInGroup.clear()
           sentencesInGroup.add(it)
           it.sentenceCalculation.adjustmentsBefore = it.sentencedAt
-          it.sentenceCalculation.adjustmentsAfter = lastReleaseDateReached
+          it.sentenceCalculation.adjustmentsAfter = previousReleaseDateReached
           sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
         }
       }
@@ -103,7 +104,7 @@ class BookingTimelineService(
   }
 
   private fun validateRemandPeriodsOverlapping(booking: Booking) {
-    val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
+    val remandPeriods = booking.adjustments.getOrEmptyList(REMAND)
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
       val sentenceRanges = booking.getAllExtractableSentences().map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.adjustedReleaseDate) }
