@@ -1,11 +1,8 @@
 {
   "dates": {
-    "SLED":"2021-07-23",
+    "SLED": "2021-07-23",
     "CRD": "2019-06-08",
     "ESED": "2021-10-16"
   },
-  "effectiveSentenceLength": {
-    "YEARS": 4,
-    "MONTHS": 8
-  }
+  "effectiveSentenceLength": "P4Y8M"
 }

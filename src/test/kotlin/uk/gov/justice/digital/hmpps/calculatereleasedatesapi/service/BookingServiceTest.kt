@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
@@ -92,6 +93,12 @@ class BookingServiceTest {
           fromDate = FIRST_JAN_2015.minusDays(7),
           toDate = FIRST_JAN_2015.minusDays(1)
 
+        ),
+        SentenceAdjustments(
+          active = true,
+          sentenceSequence = sequence,
+          numberOfDays = 22,
+          type = SentenceAdjustmentType.UNUSED_REMAND
         )
       )
     )
@@ -133,19 +140,21 @@ class BookingServiceTest {
             caseSequence = caseSequence
           )
         ),
-        adjustments = mapOf(
-          UNLAWFULLY_AT_LARGE to listOf(
-            Adjustment(
-              appliesToSentencesFrom = FIRST_JAN_2015.minusDays(6),
-              numberOfDays = 5, fromDate = FIRST_JAN_2015.minusDays(6),
-              toDate = FIRST_JAN_2015.minusDays(1)
-            )
-          ),
-          REMAND to listOf(
-            Adjustment(
-              appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 6,
-              fromDate = FIRST_JAN_2015.minusDays(7),
-              toDate = FIRST_JAN_2015.minusDays(1)
+        adjustments = Adjustments(
+          mutableMapOf(
+            UNLAWFULLY_AT_LARGE to mutableListOf(
+              Adjustment(
+                appliesToSentencesFrom = FIRST_JAN_2015.minusDays(6),
+                numberOfDays = 5, fromDate = FIRST_JAN_2015.minusDays(6),
+                toDate = FIRST_JAN_2015.minusDays(1)
+              )
+            ),
+            REMAND to mutableListOf(
+              Adjustment(
+                appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 6,
+                fromDate = FIRST_JAN_2015.minusDays(7),
+                toDate = FIRST_JAN_2015.minusDays(1)
+              )
             )
           )
         )

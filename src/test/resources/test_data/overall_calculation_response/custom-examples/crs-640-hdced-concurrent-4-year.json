@@ -1,10 +1,8 @@
 {
-  "dates":{
-    "SLED":"2024-06-20",
-    "CRD":"2022-03-07",
-    "ESED":"2024-12-18"
+  "dates": {
+    "SLED": "2024-06-20",
+    "CRD": "2022-03-07",
+    "ESED": "2024-12-18"
   },
-  "effectiveSentenceLength":{
-    "YEARS":5
-  }
+  "effectiveSentenceLength": "P5Y"
 }

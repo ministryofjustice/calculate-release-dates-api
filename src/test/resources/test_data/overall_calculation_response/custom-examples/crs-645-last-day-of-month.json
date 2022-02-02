@@ -1,12 +1,9 @@
 {
-  "dates":{
-    "SLED":"2020-09-30",
-    "CRD":"2020-09-15",
+  "dates": {
+    "SLED": "2020-09-30",
+    "CRD": "2020-09-15",
     "ESED": "2020-09-30",
-    "TUSED":"2021-09-15"
+    "TUSED": "2021-09-15"
   },
-  "effectiveSentenceLength": {
-    "MONTHS": 1,
-    "DAYS": 1
-  }
+  "effectiveSentenceLength": "P1M1D"
 }
