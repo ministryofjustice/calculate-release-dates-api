@@ -101,6 +101,11 @@ class BookingExtractionService(
       sentences, SentenceCalculation::unadjustedExpiryDate
     )
 
+    val effectiveSentenceLength = getEffectiveSentenceLength(
+      earliestSentenceDate,
+      latestUnadjustedExpiryDate
+    )
+
     val latestLicenseExpiryDate: LocalDate? = extractionService.mostRecentOrNull(
       sentences, SentenceCalculation::licenceExpiryDate
     )
@@ -110,9 +115,8 @@ class BookingExtractionService(
     val latestHDCEDAndBreakdown =
       extractManyHomeDetentionCurfewEligibilityDate(
         sentences,
-        earliestSentenceDate,
-        latestUnadjustedExpiryDate,
-        latestReleaseDate
+        effectiveSentenceLength,
+        latestReleaseDate,
       )
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
@@ -171,10 +175,7 @@ class BookingExtractionService(
     }
 
     bookingCalculation.dates[ESED] = latestUnadjustedExpiryDate
-    bookingCalculation.effectiveSentenceLength = getEffectiveSentenceLength(
-      earliestSentenceDate,
-      latestUnadjustedExpiryDate
-    )
+    bookingCalculation.effectiveSentenceLength = effectiveSentenceLength
 
     bookingCalculation.breakdownByReleaseDateType = breakdownByReleaseDateType
     return bookingCalculation
@@ -182,12 +183,10 @@ class BookingExtractionService(
 
   private fun extractManyHomeDetentionCurfewEligibilityDate(
     sentences: List<ExtractableSentence>,
-    earliestSentenceDate: LocalDate,
-    latestUnadjustedExpiryDate: LocalDate,
+    effectiveSentenceLength: Period,
     latestAdjustedReleaseDate: LocalDate
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
-    val fourYearSentence = earliestSentenceDate.plusYears(FOUR)
-    return if (latestUnadjustedExpiryDate.isBefore(fourYearSentence)) {
+    return if (effectiveSentenceLength.years < 4) {
       val hdcedSentence = extractionService.mostRecentSentenceOrNull(
         sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) }, SentenceCalculation::homeDetentionCurfewEligibilityDate
       )
