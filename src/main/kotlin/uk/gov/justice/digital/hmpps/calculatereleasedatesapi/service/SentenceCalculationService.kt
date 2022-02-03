@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_12W_LT_18M
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_18M_LT_4Y
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_MINIMUM_14D
@@ -11,6 +12,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
@@ -89,11 +92,8 @@ class SentenceCalculationService {
   fun calculateDatesFromAdjustments(sentence: CalculableSentence): SentenceCalculation {
     val sentenceCalculation: SentenceCalculation = sentence.sentenceCalculation
     // Other adjustments need to be included in the sentence calculation here
-    if (sentence.releaseDateTypes.contains(ARD)) {
-      sentenceCalculation.isReleaseDateConditional = false
-    } else if (sentence.releaseDateTypes.contains(CRD)) {
-      sentenceCalculation.isReleaseDateConditional = true
-    }
+    setCrdOrArdDetails(sentence, sentenceCalculation)
+    setSedOrSledDetails(sentence, sentenceCalculation)
 
     // PSI 03/2015: P53: The license period is one of at least 12 month.
     // Hence, there is no requirement for a TUSED
@@ -123,6 +123,46 @@ class SentenceCalculationService {
     BookingCalculationService.log.info(sentence.buildString())
     return sentenceCalculation
   }
+
+  private fun setSedOrSledDetails(
+    sentence: CalculableSentence,
+    sentenceCalculation: SentenceCalculation
+  ) {
+    if (sentence.releaseDateTypes.contains(SLED)) {
+      sentenceCalculation.breakdownByReleaseDateType[SLED] = getBreakdownForExpiryDate(sentenceCalculation)
+    } else {
+      sentenceCalculation.breakdownByReleaseDateType[SED] = getBreakdownForExpiryDate(sentenceCalculation)
+    }
+  }
+
+  private fun setCrdOrArdDetails(
+    sentence: CalculableSentence,
+    sentenceCalculation: SentenceCalculation
+  ) {
+    if (sentence.releaseDateTypes.contains(ARD)) {
+      sentenceCalculation.isReleaseDateConditional = false
+      sentenceCalculation.breakdownByReleaseDateType[ARD] = getBreakdownForReleaseDate(sentenceCalculation)
+    } else if (sentence.releaseDateTypes.contains(CRD)) {
+      sentenceCalculation.isReleaseDateConditional = true
+      sentenceCalculation.breakdownByReleaseDateType[CRD] = getBreakdownForReleaseDate(sentenceCalculation)
+    }
+  }
+
+  private fun getBreakdownForExpiryDate(sentenceCalculation: SentenceCalculation) =
+    ReleaseDateCalculationBreakdown(
+      releaseDate = sentenceCalculation.adjustedExpiryDate,
+      unadjustedDate = sentenceCalculation.unadjustedExpiryDate,
+      adjustedDays = DAYS.between(sentenceCalculation.unadjustedExpiryDate, sentenceCalculation.adjustedExpiryDate)
+        .toInt()
+    )
+
+  private fun getBreakdownForReleaseDate(sentenceCalculation: SentenceCalculation) =
+    ReleaseDateCalculationBreakdown(
+      releaseDate = sentenceCalculation.adjustedReleaseDate,
+      unadjustedDate = sentenceCalculation.unadjustedReleaseDate,
+      adjustedDays = DAYS.between(sentenceCalculation.unadjustedReleaseDate, sentenceCalculation.adjustedReleaseDate)
+        .toInt()
+    )
 
   private fun calculateLED(
     sentence: CalculableSentence,
@@ -253,7 +293,7 @@ class SentenceCalculationService {
     sentenceCalculation.homeDetentionCurfewEligibilityDate = sentence.sentencedAt.plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate)
 
     if (sentence.sentencedAt.plusDays(FOURTEEN).isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewEligibilityDate!!)) {
-      calculateHDCEDFourteenDays(sentence, sentenceCalculation)
+      calculateHDCEDFourteenDays(sentence, sentenceCalculation, HDCED_GE_12W_LT_18M)
     } else {
       sentenceCalculation.breakdownByReleaseDateType[HDCED] =
         ReleaseDateCalculationBreakdown(
@@ -278,7 +318,7 @@ class SentenceCalculationService {
       .plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate)
 
     if (sentence.sentencedAt.plusDays(FOURTEEN).isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewEligibilityDate!!)) {
-      calculateHDCEDFourteenDays(sentence, sentenceCalculation)
+      calculateHDCEDFourteenDays(sentence, sentenceCalculation, HDCED_GE_18M_LT_4Y)
     } else {
       sentenceCalculation.breakdownByReleaseDateType[HDCED] =
         ReleaseDateCalculationBreakdown(
@@ -293,13 +333,14 @@ class SentenceCalculationService {
 
   private fun calculateHDCEDFourteenDays(
     sentence: CalculableSentence,
-    sentenceCalculation: SentenceCalculation
+    sentenceCalculation: SentenceCalculation,
+    parentRule: CalculationRule
   ) {
     sentenceCalculation.homeDetentionCurfewEligibilityDate = sentence.sentencedAt.plusDays(FOURTEEN)
 
     sentenceCalculation.breakdownByReleaseDateType[HDCED] =
       ReleaseDateCalculationBreakdown(
-        rules = setOf(HDCED_MINIMUM_14D),
+        rules = setOf(HDCED_MINIMUM_14D, parentRule),
         rulesWithExtraAdjustments = mapOf(HDCED_MINIMUM_14D to AdjustmentDuration(FOURTEEN.toInt())),
         adjustedDays = 0,
         releaseDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
