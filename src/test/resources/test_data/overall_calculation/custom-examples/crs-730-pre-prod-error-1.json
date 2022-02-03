@@ -1,0 +1,42 @@
+{
+  "offender":{
+    "reference":"PROD",
+    "name":"Default Prisoner",
+    "dateOfBirth":"1995-03-08"
+  },
+  "sentences":[
+    {
+      "offence":{
+        "committedAt":"2019-05-10"
+      },
+      "duration":{
+        "durationElements":{
+          "MONTHS":48
+        }
+      },
+      "sentencedAt":"2021-03-26"
+    },
+    {
+      "offence":{
+        "committedAt":"2019-05-10"
+      },
+      "duration":{
+        "durationElements":{
+          "MONTHS":48
+        }
+      },
+      "sentencedAt":"2021-03-26"
+    },
+    {
+      "offence":{
+        "committedAt":"2019-05-10"
+      },
+      "duration":{
+        "durationElements":{
+          "MONTHS":16
+        }
+      },
+      "sentencedAt":"2021-03-26"
+    }
+  ]
+}
