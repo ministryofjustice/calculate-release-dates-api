@@ -59,18 +59,18 @@ dependencies {
 
   // Database dependencies
   runtimeOnly("org.flywaydb:flyway-core")
-  runtimeOnly("org.postgresql:postgresql:42.3.1")
+  runtimeOnly("org.postgresql:postgresql:42.3.2")
 
   implementation("io.arrow-kt:arrow-core:1.0.1")
   implementation("com.vladmihalcea:hibernate-types-52:2.14.0")
 
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.3")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.4")
   implementation("org.springdoc:springdoc-openapi-data-rest:1.6.3")
   implementation("org.springdoc:springdoc-openapi-kotlin:1.6.3")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.0.8")
-  implementation("com.amazonaws:aws-java-sdk-sns:1.12.131")
+  implementation("com.amazonaws:aws-java-sdk-sns:1.12.146")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
   implementation("org.springframework:spring-jms")
   implementation("com.google.code.gson:gson:2.8.9")
