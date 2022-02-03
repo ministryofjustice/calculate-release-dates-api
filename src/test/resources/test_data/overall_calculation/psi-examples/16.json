@@ -6,6 +6,8 @@
   },
   "sentences": [
     {
+      "caseSequence": 1,
+      "lineSequence": 1,
       "offence": {
         "committedAt": "2015-02-12"
       },
@@ -17,6 +19,8 @@
       "sentencedAt": "2015-02-12"
     },
     {
+      "caseSequence": 1,
+      "lineSequence": 2,
       "offence": {
         "committedAt": "2015-01-01"
       },

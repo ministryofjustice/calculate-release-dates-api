@@ -129,6 +129,20 @@
   ],
   "consecutiveSentence": null,
   "breakdownByReleaseDateType": {
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -23,
+      "releaseDate": "2023-02-25",
+      "unadjustedDate": "2023-03-20"
+    },
+    "CRD": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -18,
+      "releaseDate": "2022-06-02",
+      "unadjustedDate": "2022-06-20"
+    },
     "TUSED": {
       "rules": [
         "TUSED_LICENCE_PERIOD_LT_1Y"

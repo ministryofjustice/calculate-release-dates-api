@@ -123,14 +123,28 @@
     ]
   },
   "breakdownByReleaseDateType": {
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -23,
+      "releaseDate": "2024-08-28",
+      "unadjustedDate": "2024-09-20"
+    },
+    "CRD": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -18,
+      "releaseDate": "2023-03-04",
+      "unadjustedDate": "2023-03-22"
+    },
     "HDCED": {
       "rules": [
         "HDCED_GE_18M_LT_4Y"
       ],
       "rulesWithExtraAdjustments": {
         "HDCED_GE_18M_LT_4Y": {
-          "adjustmentValue":-135,
-          "type":"DAYS"
+          "adjustmentValue": -135,
+          "type": "DAYS"
         }
       },
       "adjustedDays": -18,
