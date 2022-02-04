@@ -379,7 +379,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectBody(CalculationBreakdown::class.java)
       .returnResult().responseBody!!
 
-    //Inactive sentences have been filtered
+    // Inactive sentences have been filtered
     assertThat(result.concurrentSentences).hasSize(1)
   }
 

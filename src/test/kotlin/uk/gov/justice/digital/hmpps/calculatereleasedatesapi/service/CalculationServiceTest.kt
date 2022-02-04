@@ -274,7 +274,7 @@ class CalculationServiceTest {
       )
     )
     whenever(
-      prisonService .postReleaseDates(any(), any())
+      prisonService.postReleaseDates(any(), any())
     ).thenThrow(EntityNotFoundException("test ex"))
 
     val exception = assertThrows<EntityNotFoundException> {

@@ -40,7 +40,6 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .retrieve()
       .bodyToMono(typeReference<List<SentenceAndOffences>>())
       .block()!!
-      .filter { it.sentenceStatus == "A" }
   }
 
   fun postReleaseDates(bookingId: Long, updateOffenderDates: UpdateOffenderDates) {

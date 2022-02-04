@@ -5,7 +5,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
 
 @Service
