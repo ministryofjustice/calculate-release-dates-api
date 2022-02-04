@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 
@@ -22,15 +21,6 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .uri("/api/offenders/$prisonerId")
       .retrieve()
       .bodyToMono(typeReference<PrisonerDetails>())
-      .block()!!
-  }
-
-  fun getSentenceAdjustments(bookingId: Long): SentenceAdjustments {
-    log.info("Requesting sentence adjustment details for bookingId $bookingId")
-    return webClient.get()
-      .uri("/api/bookings/$bookingId/sentenceAdjustments")
-      .retrieve()
-      .bodyToMono(typeReference<SentenceAdjustments>())
       .block()!!
   }
 
