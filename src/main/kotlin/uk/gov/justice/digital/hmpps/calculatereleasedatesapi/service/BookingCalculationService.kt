@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 
 @Service
@@ -42,23 +41,13 @@ class BookingCalculationService(
   }
 
   fun createConsecutiveSentences(booking: Booking): Booking {
-    val sentencesConsecutiveTo = booking.sentences.filter { it.consecutiveSentenceUUIDs.isNotEmpty() }
+    val (baseSentences, consecutiveSentences) = booking.sentences.partition { it.consecutiveSentenceUUIDs.isEmpty() }
+    val sentencesByPrevious = consecutiveSentences.associateBy { it.consecutiveSentenceUUIDs.first() }
 
-    val sentenceChains: MutableList<MutableList<Sentence>> = mutableListOf()
-
-    sentencesConsecutiveTo.forEach { consecutive ->
-      val first = booking.sentences.find { it.identifier == consecutive.consecutiveSentenceUUIDs[0] }!!
-
-      val existingChain: MutableList<Sentence>? = sentenceChains.find { it.contains(first) }
-
-      if (existingChain != null) {
-        existingChain.add(existingChain.indexOf(first) + 1, consecutive)
-      } else {
-        sentenceChains.add(mutableListOf(first, consecutive))
-      }
-    }
-
-    booking.consecutiveSentences = sentenceChains.map { ConsecutiveSentence(it) }
+    booking.consecutiveSentences = baseSentences
+      .map { baseSentence -> generateSequence(baseSentence) { sentencesByPrevious[it.identifier] }.toList() }
+      .filter { it.size > 1 }
+      .map { ConsecutiveSentence(it) }
 
     booking.consecutiveSentences.forEach {
       sentenceIdentificationService.identify(it, booking.offender)

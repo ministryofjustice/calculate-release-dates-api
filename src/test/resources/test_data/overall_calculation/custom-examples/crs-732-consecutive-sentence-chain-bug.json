@@ -1,0 +1,164 @@
+{
+  "offender": {
+    "name": "A. Nobody",
+    "reference": "A0000BR",
+    "dateOfBirth": "1987-01-01",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 999999,
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2022-01-26",
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 18,
+          "YEARS": 0,
+          "MONTHS": 0
+        }
+      },
+      "identifier": "c3aae214-294a-3b24-bd3c-6c8ad548d752",
+      "sentencedAt": "2022-01-27",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "consecutiveSentenceUUIDs": [
+        "bc3cc930-f31d-382b-81df-3865df1e01b6"
+      ]
+    },
+    {
+      "offence": {
+        "committedAt": "2021-09-14",
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 2,
+          "YEARS": 0,
+          "MONTHS": 0
+        }
+      },
+      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7",
+      "sentencedAt": "2022-01-27",
+      "caseSequence": 1,
+      "lineSequence": 2,
+      "consecutiveSentenceUUIDs": []
+    },
+    {
+      "offence": {
+        "committedAt": "2021-09-17",
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 2,
+          "YEARS": 0,
+          "MONTHS": 0
+        }
+      },
+      "identifier": "b79a6795-d543-31cb-9d4f-7c8ef71781f5",
+      "sentencedAt": "2022-01-27",
+      "caseSequence": 1,
+      "lineSequence": 3,
+      "consecutiveSentenceUUIDs": [
+        "ee91a161-dde2-3a7b-8611-624d255542a7"
+      ]
+    },
+    {
+      "offence": {
+        "committedAt": "2021-09-23",
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 2,
+          "YEARS": 0,
+          "MONTHS": 0
+        }
+      },
+      "identifier": "f25cab81-e6d9-367f-89d4-589ed75a2896",
+      "sentencedAt": "2022-01-27",
+      "caseSequence": 1,
+      "lineSequence": 4,
+      "consecutiveSentenceUUIDs": [
+        "b79a6795-d543-31cb-9d4f-7c8ef71781f5"
+      ]
+    },
+    {
+      "offence": {
+        "committedAt": "2021-09-25",
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 2,
+          "YEARS": 0,
+          "MONTHS": 0
+        }
+      },
+      "identifier": "ab6340ce-69a7-3901-a1e2-aa8013bd9824",
+      "sentencedAt": "2022-01-27",
+      "caseSequence": 1,
+      "lineSequence": 5,
+      "consecutiveSentenceUUIDs": [
+        "f25cab81-e6d9-367f-89d4-589ed75a2896"
+      ]
+    },
+    {
+      "offence": {
+        "committedAt": "2021-10-01",
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 2,
+          "YEARS": 0,
+          "MONTHS": 0
+        }
+      },
+      "identifier": "377e4f7b-d49c-331d-a21c-4db6f9761959",
+      "sentencedAt": "2022-01-27",
+      "caseSequence": 1,
+      "lineSequence": 6,
+      "consecutiveSentenceUUIDs": [
+        "ab6340ce-69a7-3901-a1e2-aa8013bd9824"
+      ]
+    },
+    {
+      "offence": {
+        "committedAt": "2021-10-03",
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 2,
+          "YEARS": 0,
+          "MONTHS": 0
+        }
+      },
+      "identifier": "bc3cc930-f31d-382b-81df-3865df1e01b6",
+      "sentencedAt": "2022-01-27",
+      "caseSequence": 1,
+      "lineSequence": 7,
+      "consecutiveSentenceUUIDs": [
+        "377e4f7b-d49c-331d-a21c-4db6f9761959"
+      ]
+    }
+  ],
+  "adjustments": {}
+}
