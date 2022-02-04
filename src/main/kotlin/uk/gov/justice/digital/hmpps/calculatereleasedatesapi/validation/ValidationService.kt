@@ -6,10 +6,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonApiClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
 
 @Service
 class ValidationService(
-  private val prisonApiClient: PrisonApiClient
+  private val prisonService: PrisonService
 ) {
 
   private val supportedSentences = listOf(
@@ -24,9 +25,9 @@ class ValidationService(
   )
 
   fun validate(prisonerId: String): ValidationMessages {
-    val prisonerDetails = prisonApiClient.getOffenderDetail(prisonerId)
-    val sentencesAndOffences = prisonApiClient.getSentencesAndOffences(prisonerDetails.bookingId)
-    val adjustments = prisonApiClient.getSentenceAndBookingAdjustments(prisonerDetails.bookingId)
+    val prisonerDetails = prisonService.getOffenderDetail(prisonerId)
+    val sentencesAndOffences = prisonService.getSentencesAndOffences(prisonerDetails.bookingId)
+    val adjustments = prisonService.getSentenceAndBookingAdjustments(prisonerDetails.bookingId)
     return validate(sentencesAndOffences, adjustments)
   }
 

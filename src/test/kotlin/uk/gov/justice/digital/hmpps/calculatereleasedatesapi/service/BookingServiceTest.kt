@@ -34,13 +34,13 @@ import java.time.temporal.ChronoUnit.YEARS
 import java.util.UUID
 
 class BookingServiceTest {
-  private val prisonApiClient = mock<PrisonApiClient>()
+  private val prisonService = mock<PrisonService>()
   private val validationService = mock<ValidationService>()
-  private val bookingService = BookingService(prisonApiClient, validationService)
+  private val bookingService = BookingService(prisonService, validationService)
 
   @BeforeEach
   fun reset() {
-    reset(prisonApiClient, validationService)
+    reset(prisonService, validationService)
   }
 
   @Test
@@ -103,7 +103,7 @@ class BookingServiceTest {
       )
     )
 
-    whenever(prisonApiClient.getOffenderDetail(prisonerId))
+    whenever(prisonService.getOffenderDetail(prisonerId))
       .thenReturn(
         PrisonerDetails(
           bookingId,
@@ -113,8 +113,8 @@ class BookingServiceTest {
           lastName = "Houdini"
         )
       )
-    whenever(prisonApiClient.getSentencesAndOffences(123456L)).thenReturn(listOf(sentenceAndOffences))
-    whenever(prisonApiClient.getSentenceAndBookingAdjustments(123456L)).thenReturn(bookingAndSentenceAdjustments)
+    whenever(prisonService.getSentencesAndOffences(123456L)).thenReturn(listOf(sentenceAndOffences))
+    whenever(prisonService.getSentenceAndBookingAdjustments(123456L)).thenReturn(bookingAndSentenceAdjustments)
     whenever(validationService.validate(listOf(sentenceAndOffences), bookingAndSentenceAdjustments)).thenReturn(ValidationMessages(ValidationType.VALID))
 
     val result = bookingService.getBooking(prisonerId)
