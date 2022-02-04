@@ -1,0 +1,54 @@
+ [
+     {
+       "bookingId": 1201841,
+       "sentenceSequence": 3,
+       "lineSequence": 3,
+       "caseSequence": 1,
+       "sentenceStatus": "I",
+       "sentenceCategory": "2020",
+       "sentenceCalculationType": "ADIMP_ORA",
+       "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
+       "sentenceDate": "2021-05-18",
+       "years": 0,
+       "months": 18,
+       "weeks": 0,
+       "days": 0,
+       "offences": [
+           {
+             "offenderChargeId": 3932689,
+             "offenceStartDate": "2021-05-02",
+             "offenceCode": "ML17006",
+             "offenceDescription": "Act as manager / officer / sole practitioner / beneficial owner without approval",
+             "indicators": [
+                 "99"
+               ]
+           }
+         ]
+     },
+     {
+       "bookingId": 1201841,
+       "sentenceSequence": 4,
+       "lineSequence": 4,
+       "caseSequence": 2,
+       "sentenceStatus": "A",
+       "sentenceCategory": "2020",
+       "sentenceCalculationType": "ADIMP_ORA",
+       "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
+       "sentenceDate": "2021-06-06",
+       "years": 0,
+       "months": 7,
+       "weeks": 0,
+       "days": 0,
+       "offences": [
+           {
+             "offenderChargeId": 3932690,
+             "offenceStartDate": "2021-04-01",
+             "offenceCode": "CE79179",
+             "offenceDescription": "Acquired possession of goods unlawfully removed from warehouse/Queen's warehouse, chargeable with unpaid duty with intent to evade any prohibition /restriction.",
+             "indicators": [
+                 "99"
+               ]
+           }
+         ]
+     }
+   ]

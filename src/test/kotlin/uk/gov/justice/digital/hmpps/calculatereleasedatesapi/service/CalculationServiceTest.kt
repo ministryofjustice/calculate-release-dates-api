@@ -68,7 +68,7 @@ class CalculationServiceTest {
 
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
-  private val prisonApiClient = mock<PrisonApiClient>()
+  private val prisonService = mock<PrisonService>()
   private val domainEventPublisher = mock<DomainEventPublisher>()
 
   private val calculationService =
@@ -78,7 +78,7 @@ class CalculationServiceTest {
       calculationRequestRepository,
       calculationOutcomeRepository,
       TestUtil.objectMapper(),
-      prisonApiClient,
+      prisonService,
       domainEventPublisher,
       bookingTimelineService
     )
@@ -245,7 +245,7 @@ class CalculationServiceTest {
       )
     )
 
-    verify(prisonApiClient).postReleaseDates(
+    verify(prisonService).postReleaseDates(
       BOOKING_ID,
       UPDATE_OFFENDER_DATES.copy(
         keyDates = OffenderKeyDates(
@@ -274,7 +274,7 @@ class CalculationServiceTest {
       )
     )
     whenever(
-      prisonApiClient.postReleaseDates(any(), any())
+      prisonService.postReleaseDates(any(), any())
     ).thenThrow(EntityNotFoundException("test ex"))
 
     val exception = assertThrows<EntityNotFoundException> {

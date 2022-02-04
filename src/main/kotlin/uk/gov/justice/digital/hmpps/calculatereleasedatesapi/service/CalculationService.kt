@@ -27,7 +27,7 @@ class CalculationService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
   private val objectMapper: ObjectMapper,
-  private val prisonApiClient: PrisonApiClient,
+  private val prisonService: PrisonService,
   private val domainEventPublisher: DomainEventPublisher,
   private val bookingTimelineService: BookingTimelineService
 ) {
@@ -149,7 +149,7 @@ class CalculationService(
       keyDates = transform(calculation)
     )
     try {
-      prisonApiClient.postReleaseDates(booking.bookingId, updateOffenderDates)
+      prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)
     } catch (ex: Exception) {
       log.error("Nomis write failed: ${ex.message}")
       throw EntityNotFoundException(

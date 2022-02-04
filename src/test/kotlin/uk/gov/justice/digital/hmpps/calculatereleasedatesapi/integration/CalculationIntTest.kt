@@ -355,6 +355,34 @@ class CalculationIntTest : IntegrationTestBase() {
     )
   }
 
+  @Test
+  fun `Run calculation on inactive data`() {
+    val bookingCalculation: BookingCalculation = webTestClient.post()
+      .uri("/calculation/$INACTIVE_PRISONER_ID")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(BookingCalculation::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(bookingCalculation.dates[CRD]).isEqualTo("2021-07-21")
+
+    val result = webTestClient.get()
+      .uri("/calculation/breakdown/${bookingCalculation.calculationRequestId}")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculationBreakdown::class.java)
+      .returnResult().responseBody!!
+
+    // Inactive sentences have been filtered
+    assertThat(result.concurrentSentences).hasSize(1)
+  }
+
   companion object {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"
@@ -367,5 +395,6 @@ class CalculationIntTest : IntegrationTestBase() {
     const val SDS_PLUS_CONSECUTIVE_TO_SDS = "SDS-CON"
     const val VALIDATION_PRISONER_ID = "VALIDATION"
     const val UNSUPPORTED_PRISONER_ID = "UNSUPPORTED"
+    const val INACTIVE_PRISONER_ID = "INACTIVE"
   }
 }
