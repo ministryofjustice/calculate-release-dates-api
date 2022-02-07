@@ -175,7 +175,6 @@ class TransformFunctionsTest {
       Offender(
         reference = PRISONER_ID,
         dateOfBirth = DOB,
-        name = "Harry Houdini",
         isActiveSexOffender = true,
       )
     )
@@ -191,7 +190,6 @@ class TransformFunctionsTest {
       Offender(
         reference = PRISONER_ID,
         dateOfBirth = DOB,
-        name = "Harry Houdini",
         isActiveSexOffender = false,
       )
     )
@@ -207,7 +205,6 @@ class TransformFunctionsTest {
       Offender(
         reference = PRISONER_ID,
         dateOfBirth = DOB,
-        name = "Harry Houdini",
         isActiveSexOffender = false,
       )
     )

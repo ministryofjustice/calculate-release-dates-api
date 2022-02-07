@@ -5,7 +5,6 @@ import java.time.Period
 
 data class Offender(
   val reference: String,
-  val name: String,
   val dateOfBirth: LocalDate,
   val isActiveSexOffender: Boolean = false,
 ) {

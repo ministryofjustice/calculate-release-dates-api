@@ -347,7 +347,7 @@ class CalculationServiceTest {
 
     val INPUT_DATA: JsonNode =
       JacksonUtil.toJsonNode(
-        "{ \"offender\":{ \"reference\":\"A1234AJ\", \"name\":\"John Doe\", \"dateOfBirth\"" +
+        "{ \"offender\":{ \"reference\":\"A1234AJ\", \"dateOfBirth\"" +
           ":\"1980-01-01\",\"isActiveSexOffender\":false}, \"sentences\":[{\"caseSequence\":1,\"lineSequence\":2,\"offence\":{\"committedAt\":\"2021-02-03\",\"" +
           "isScheduleFifteen\":false, \"isScheduleFifteenMaximumLife\":false},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"" +
           "MONTHS\":0,\"YEARS\":5}},\"sentencedAt\":\"2021-02-03\"," +
@@ -362,7 +362,7 @@ class CalculationServiceTest {
       calculationOutcomes = listOf(CALCULATION_OUTCOME_CRD, CALCULATION_OUTCOME_SED),
       inputData = JacksonUtil.toJsonNode(
         "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +
-          "\"name\":\"AN.Other\"," + "\"dateOfBirth\":\"1970-03-03\"" + "}," + "\"sentences\":[" +
+          "\"dateOfBirth\":\"1970-03-03\"" + "}," + "\"sentences\":[" +
           "{" + "\"caseSequence\":1," + "\"lineSequence\":2," +
           "\"offence\":{" + "\"committedAt\":\"2013-09-19\"" + "}," + "\"duration\":{" +
           "\"durationElements\":{" + "\"YEARS\":2" + "}" + "}," + "\"sentencedAt\":\"2013-09-21\"" + "}" + "]" + "}"
@@ -386,7 +386,7 @@ class CalculationServiceTest {
       )
     )
 
-    private val OFFENDER = Offender(PRISONER_ID, "John Doe", LocalDate.of(1980, 1, 1))
+    private val OFFENDER = Offender(PRISONER_ID, LocalDate.of(1980, 1, 1))
 
     private val SENTENCE = Sentence(
       sentencedAt = THIRD_FEB_2021,
