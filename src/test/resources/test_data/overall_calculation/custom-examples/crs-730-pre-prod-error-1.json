@@ -1,7 +1,6 @@
 {
   "offender":{
     "reference":"PROD",
-    "name":"Default Prisoner",
     "dateOfBirth":"1995-03-08"
   },
   "sentences":[
