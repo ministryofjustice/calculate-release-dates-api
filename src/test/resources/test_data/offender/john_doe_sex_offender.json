@@ -1,6 +1,5 @@
 {
   "reference": "ABC123D",
-  "name": "John Doe",
   "dateOfBirth": "1970-03-03",
   "isActiveSexOffender": true
 }

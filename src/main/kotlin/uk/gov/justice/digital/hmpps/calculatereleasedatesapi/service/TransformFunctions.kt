@@ -103,7 +103,6 @@ private fun generateUUIDForSentence(bookingId: Long, sequence: Int) =
 
 fun transform(prisonerDetails: PrisonerDetails): Offender {
   return Offender(
-    name = prisonerDetails.firstName + ' ' + prisonerDetails.lastName,
     dateOfBirth = prisonerDetails.dateOfBirth,
     reference = prisonerDetails.offenderNo,
     isActiveSexOffender = prisonerDetails.alerts.any { pd ->

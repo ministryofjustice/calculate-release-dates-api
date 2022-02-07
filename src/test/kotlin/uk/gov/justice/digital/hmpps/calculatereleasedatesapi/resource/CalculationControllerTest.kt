@@ -77,7 +77,7 @@ class CalculationControllerTest {
   fun `Test POST of a PRELIMINARY calculation`() {
     val prisonerId = "A1234AB"
     val bookingId = 9995L
-    val offender = Offender(prisonerId, "John Doe", LocalDate.of(1980, 1, 1))
+    val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
     val booking = Booking(offender, mutableListOf(), Adjustments(), bookingId)
 
     val bookingCalculation = BookingCalculation(calculationRequestId = 9991L)
@@ -98,7 +98,7 @@ class CalculationControllerTest {
     val prisonerId = "A1234AB"
     val calculationRequestId = 12345
     val bookingId = 9995L
-    val offender = Offender(prisonerId, "John Doe", LocalDate.of(1980, 1, 1))
+    val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
     val booking = Booking(offender, mutableListOf(), Adjustments(), bookingId)
 
     val bookingCalculation = BookingCalculation(calculationRequestId = 9991L)
@@ -120,7 +120,7 @@ class CalculationControllerTest {
     val prisonerId = "A1234AB"
     val calculationRequestId = 12345L
     val bookingId = 9995L
-    val offender = Offender(prisonerId, "John Doe", LocalDate.of(1980, 1, 1))
+    val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
     val booking = Booking(offender, mutableListOf(), Adjustments(), bookingId)
 
     val bookingCalculation = BookingCalculation(calculationRequestId = 9991L)
@@ -164,7 +164,7 @@ class CalculationControllerTest {
     val prisonerId = "A1234AB"
     val calculationRequestId = 9995L
     val bookingId = 9995L
-    val offender = Offender(prisonerId, "John Doe", LocalDate.of(1980, 1, 1))
+    val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
     val booking = Booking(offender, mutableListOf(), Adjustments(), bookingId)
     val breakdown = CalculationBreakdown(listOf(), null)
 
