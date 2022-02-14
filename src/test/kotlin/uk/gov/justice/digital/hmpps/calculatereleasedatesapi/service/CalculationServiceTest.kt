@@ -31,11 +31,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.Precondi
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -83,16 +87,33 @@ class CalculationServiceTest {
       bookingTimelineService
     )
 
+  private val fakeSourceData = PrisonApiSourceData(
+    emptyList(), PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
+    BookingAndSentenceAdjustments(
+      emptyList(), emptyList()
+    )
+  )
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
-  fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String) {
+  fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String, error: String?) {
     log.info("Testing example $exampleType/$exampleNumber")
     SecurityContextHolder.setContext(
       SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
     )
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val calculationBreakdown = calculationService.calculateWithBreakdown(booking)
+    val calculation = jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber")
 
+    val calculationBreakdown: CalculationBreakdown
+    try {
+      calculationBreakdown = calculationService.calculateWithBreakdown(booking, calculation)
+    } catch (e: Exception) {
+      if (!error.isNullOrEmpty()) {
+        assertEquals(error, e.javaClass.simpleName)
+        return
+      } else {
+        throw e
+      }
+    }
     log.info(
       "Example $exampleType/$exampleNumber outcome CalculationBreakdown: {}",
       TestUtil.objectMapper().writeValueAsString(calculationBreakdown)
@@ -115,7 +136,7 @@ class CalculationServiceTest {
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val bookingCalculation: BookingCalculation
     try {
-      bookingCalculation = calculationService.calculate(booking, PRELIMINARY)
+      bookingCalculation = calculationService.calculate(booking, PRELIMINARY, fakeSourceData)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)

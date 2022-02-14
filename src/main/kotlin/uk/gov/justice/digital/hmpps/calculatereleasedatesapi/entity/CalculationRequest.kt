@@ -55,6 +55,21 @@ data class CalculationRequest(
   @Column(columnDefinition = "jsonb")
   val inputData: JsonNode = JacksonUtil.toJsonNode("{}"),
 
+  @NotNull
+  @Type(type = "json")
+  @Column(columnDefinition = "jsonb")
+  val sentenceAndOffences: JsonNode = JacksonUtil.toJsonNode("[]"),
+
+  @NotNull
+  @Type(type = "json")
+  @Column(columnDefinition = "jsonb")
+  val prisonerDetails: JsonNode = JacksonUtil.toJsonNode("{}"),
+
+  @NotNull
+  @Type(type = "json")
+  @Column(columnDefinition = "jsonb")
+  val adjustments: JsonNode = JacksonUtil.toJsonNode("{}"),
+
   @JoinColumn(name = "calculationRequestId")
   @OneToMany
   @Fetch(FetchMode.JOIN)

@@ -21,8 +21,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessages
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
@@ -31,6 +36,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 @RequestMapping("/calculation", produces = [MediaType.APPLICATION_JSON_VALUE])
 class CalculationController(
   private val bookingService: BookingService,
+  private val prisonService: PrisonService,
   private val calculationService: CalculationService,
   private val validationService: ValidationService
 ) {
@@ -58,11 +64,12 @@ class CalculationController(
     prisonerId: String,
   ): BookingCalculation {
     log.info("Request received to calculate release dates for $prisonerId")
-    val booking = bookingService.getBooking(prisonerId)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
+    val booking = bookingService.getBooking(sourceData)
     try {
-      return calculationService.calculate(booking, PRELIMINARY)
+      return calculationService.calculate(booking, PRELIMINARY, sourceData)
     } catch (error: Exception) {
-      calculationService.recordError(booking, error)
+      calculationService.recordError(booking, sourceData, error)
       throw error
     }
   }
@@ -105,14 +112,15 @@ class CalculationController(
     calculationRequestId: Long,
   ): BookingCalculation {
     log.info("Request received to confirm release dates calculation for $prisonerId")
-    val booking = bookingService.getBooking(prisonerId)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
+    val booking = bookingService.getBooking(sourceData)
     calculationService.validateConfirmationRequest(calculationRequestId, booking)
     try {
-      val calculation = calculationService.calculate(booking, CONFIRMED)
+      val calculation = calculationService.calculate(booking, CONFIRMED, sourceData)
       calculationService.writeToNomisAndPublishEvent(prisonerId, booking, calculation)
       return calculation
     } catch (error: Exception) {
-      calculationService.recordError(booking, error)
+      calculationService.recordError(booking, sourceData, error)
       throw error
     }
   }
@@ -198,8 +206,13 @@ class CalculationController(
     calculationRequestId: Long,
   ): CalculationBreakdown {
     log.info("Request received return calculation breakdown for calculationRequestId {}", calculationRequestId)
-    val booking = calculationService.getBooking(calculationRequestId)
-    return calculationService.calculateWithBreakdown(booking)
+    val sentencesAndOffences = calculationService.findSentenceAndOffencesFromCalculation(calculationRequestId)
+    val prisonerDetails = calculationService.findPrisonerDetailsFromCalculation(calculationRequestId)
+    val adjustments = calculationService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
+    val calculation = calculationService.findCalculationResults(calculationRequestId)
+    val sourceData = PrisonApiSourceData(sentencesAndOffences, prisonerDetails, adjustments)
+
+    return calculationService.calculateWithBreakdown(bookingService.getBooking(sourceData), calculation)
   }
 
   @GetMapping(value = ["/{prisonerId}/validate"])
@@ -232,6 +245,87 @@ class CalculationController(
     } else {
       ResponseEntity(validationMessages, HttpStatus.OK)
     }
+  }
+
+  @GetMapping(value = ["/sentence-and-offences/{calculationRequestId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Get sentences and offences for a calculationRequestId",
+    description = "This endpoint will return the sentences and offences based on a calculationRequestId",
+    security = [
+      SecurityRequirement(name = "SYSTEM_USER"),
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
+    ],
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
+    ]
+  )
+  fun getSentencesAndOffence(
+    @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
+    @PathVariable("calculationRequestId")
+    calculationRequestId: Long
+  ): List<SentenceAndOffences> {
+    log.info("Request received to get sentences and offences from $calculationRequestId calculation")
+    return calculationService.findSentenceAndOffencesFromCalculation(calculationRequestId)
+  }
+
+  @GetMapping(value = ["/prisoner-details/{calculationRequestId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Get prisoner details for a calculationRequestId",
+    description = "This endpoint will return the prisoner details based on a calculationRequestId",
+    security = [
+      SecurityRequirement(name = "SYSTEM_USER"),
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
+    ],
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
+    ]
+  )
+  fun getPrisonerDetails(
+    @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
+    @PathVariable("calculationRequestId")
+    calculationRequestId: Long
+  ): PrisonerDetails {
+    log.info("Request received to get prisoner details from $calculationRequestId calculation")
+    return calculationService.findPrisonerDetailsFromCalculation(calculationRequestId)
+  }
+
+  @GetMapping(value = ["/adjustments/{calculationRequestId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Get adjustments for a calculationRequestId",
+    description = "This endpoint will return the adjustments based on a calculationRequestId",
+    security = [
+      SecurityRequirement(name = "SYSTEM_USER"),
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
+    ],
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
+    ]
+  )
+  fun get(
+    @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
+    @PathVariable("calculationRequestId")
+    calculationRequestId: Long
+  ): BookingAndSentenceAdjustments {
+    log.info("Request received to get booking and sentence adjustments from $calculationRequestId calculation")
+    return calculationService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
   }
 
   companion object {

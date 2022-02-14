@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -7,14 +8,20 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.ERROR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -37,10 +44,10 @@ class CalculationService(
       ?: throw IllegalStateException("User is not authenticated")
 
   @Transactional
-  fun calculate(booking: Booking, calculationStatus: CalculationStatus): BookingCalculation {
+  fun calculate(booking: Booking, calculationStatus: CalculationStatus, sourceData: PrisonApiSourceData): BookingCalculation {
     val calculationRequest =
       calculationRequestRepository.save(
-        transform(booking, getCurrentAuthentication().principal, calculationStatus, objectMapper)
+        transform(booking, getCurrentAuthentication().principal, calculationStatus, sourceData, objectMapper)
       )
 
     val workingBooking = calculate(booking)
@@ -83,10 +90,14 @@ class CalculationService(
   }
 
   @Transactional(readOnly = true)
-  fun calculateWithBreakdown(booking: Booking): CalculationBreakdown {
+  fun calculateWithBreakdown(booking: Booking, previousCalculationResults: BookingCalculation): CalculationBreakdown {
     val workingBooking = calculate(booking)
     val bookingCalculation = bookingExtractionService.extract(workingBooking)
-    return transform(workingBooking, bookingCalculation.breakdownByReleaseDateType)
+    if (bookingCalculation.dates == previousCalculationResults.dates) {
+      return transform(workingBooking, bookingCalculation.breakdownByReleaseDateType)
+    } else {
+      throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")
+    }
   }
 
   @Transactional(readOnly = true)
@@ -105,12 +116,29 @@ class CalculationService(
 
   @Transactional(readOnly = true)
   fun findCalculationResults(calculationRequestId: Long): BookingCalculation {
-    val calculationRequest =
-      calculationRequestRepository.findById(calculationRequestId).orElseThrow {
-        EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId ")
-      }
+    return transform(getCalculationRequest(calculationRequestId))
+  }
 
-    return transform(calculationRequest)
+  @Transactional(readOnly = true)
+  fun findSentenceAndOffencesFromCalculation(calculationRequestId: Long): List<SentenceAndOffences> {
+    val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffences>>() {})
+    return reader.readValue(getCalculationRequest(calculationRequestId).sentenceAndOffences)
+  }
+
+  @Transactional(readOnly = true)
+  fun findPrisonerDetailsFromCalculation(calculationRequestId: Long): PrisonerDetails {
+    return objectMapper.convertValue(getCalculationRequest(calculationRequestId).prisonerDetails, PrisonerDetails::class.java)
+  }
+
+  @Transactional(readOnly = true)
+  fun findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId: Long): BookingAndSentenceAdjustments {
+    return objectMapper.convertValue(getCalculationRequest(calculationRequestId).adjustments, BookingAndSentenceAdjustments::class.java)
+  }
+
+  private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest {
+    return calculationRequestRepository.findById(calculationRequestId).orElseThrow {
+      EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId ")
+    }
   }
 
   @Transactional(readOnly = true)
@@ -133,7 +161,7 @@ class CalculationService(
         EntityNotFoundException("No preliminary calculation exists for calculationRequestId $calculationRequestId")
       }
 
-    if (calculationRequest.inputData.hashCode() != bookingToJson(booking, objectMapper).hashCode()) {
+    if (calculationRequest.inputData.hashCode() != objectToJson(booking, objectMapper).hashCode()) {
       throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
     }
   }
@@ -170,9 +198,9 @@ class CalculationService(
   }
 
   @Transactional
-  fun recordError(booking: Booking, error: Exception) {
+  fun recordError(booking: Booking, sourceData: PrisonApiSourceData, error: Exception) {
     calculationRequestRepository.save(
-      transform(booking, getCurrentAuthentication().principal, ERROR, objectMapper)
+      transform(booking, getCurrentAuthentication().principal, ERROR, sourceData, objectMapper)
     )
   }
 

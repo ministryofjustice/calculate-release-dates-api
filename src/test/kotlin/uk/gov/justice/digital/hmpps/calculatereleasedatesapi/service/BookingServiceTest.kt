@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
@@ -34,13 +35,12 @@ import java.time.temporal.ChronoUnit.YEARS
 import java.util.UUID
 
 class BookingServiceTest {
-  private val prisonService = mock<PrisonService>()
   private val validationService = mock<ValidationService>()
-  private val bookingService = BookingService(prisonService, validationService)
+  private val bookingService = BookingService(validationService)
 
   @BeforeEach
   fun reset() {
-    reset(prisonService, validationService)
+    reset(validationService)
   }
 
   @Test
@@ -102,22 +102,16 @@ class BookingServiceTest {
         )
       )
     )
-
-    whenever(prisonService.getOffenderDetail(prisonerId))
-      .thenReturn(
-        PrisonerDetails(
-          bookingId,
-          prisonerId,
-          dateOfBirth = DOB,
-          firstName = "Harry",
-          lastName = "Houdini"
-        )
-      )
-    whenever(prisonService.getSentencesAndOffences(123456L)).thenReturn(listOf(sentenceAndOffences))
-    whenever(prisonService.getSentenceAndBookingAdjustments(123456L)).thenReturn(bookingAndSentenceAdjustments)
+    val prisonerDetails = PrisonerDetails(
+      bookingId,
+      prisonerId,
+      dateOfBirth = DOB,
+      firstName = "Harry",
+      lastName = "Houdini"
+    )
     whenever(validationService.validate(listOf(sentenceAndOffences), bookingAndSentenceAdjustments)).thenReturn(ValidationMessages(ValidationType.VALID))
 
-    val result = bookingService.getBooking(prisonerId)
+    val result = bookingService.getBooking(PrisonApiSourceData(listOf(sentenceAndOffences), prisonerDetails, bookingAndSentenceAdjustments))
 
     assertThat(result).isEqualTo(
       Booking(

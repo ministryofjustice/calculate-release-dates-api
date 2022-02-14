@@ -49,6 +49,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
@@ -177,6 +178,7 @@ fun transform(
   booking: Booking,
   username: String,
   calculationStatus: CalculationStatus,
+  sourceData: PrisonApiSourceData,
   objectMapper: ObjectMapper
 ): CalculationRequest {
   return CalculationRequest(
@@ -184,12 +186,15 @@ fun transform(
     bookingId = booking.bookingId,
     calculationStatus = calculationStatus.name,
     calculatedByUsername = username,
-    inputData = bookingToJson(booking, objectMapper)
+    inputData = objectToJson(booking, objectMapper),
+    sentenceAndOffences = objectToJson(sourceData.sentenceAndOffences, objectMapper),
+    prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
+    adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments, objectMapper)
   )
 }
 
-fun bookingToJson(booking: Booking, objectMapper: ObjectMapper): JsonNode {
-  return JacksonUtil.toJsonNode(objectMapper.writeValueAsString(booking))
+fun objectToJson(subject: Any, objectMapper: ObjectMapper): JsonNode {
+  return JacksonUtil.toJsonNode(objectMapper.writeValueAsString(subject))
 }
 
 fun transform(
