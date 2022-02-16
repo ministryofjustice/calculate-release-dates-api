@@ -112,7 +112,7 @@ class CalculationController(
     )
     @PathVariable("calculationRequestId")
     calculationRequestId: Long,
-    //TODO this shouldn't be optional once we've done the frontend work.
+    // TODO this shouldn't be optional once we've done the frontend work.
     @RequestBody
     calculationFragments: CalculationFragments?
   ): BookingCalculation {
