@@ -34,6 +34,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
@@ -49,6 +50,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
@@ -177,19 +179,25 @@ fun transform(
   booking: Booking,
   username: String,
   calculationStatus: CalculationStatus,
-  objectMapper: ObjectMapper
+  sourceData: PrisonApiSourceData,
+  objectMapper: ObjectMapper,
+  calculationFragments: CalculationFragments? = null
 ): CalculationRequest {
   return CalculationRequest(
     prisonerId = booking.offender.reference,
     bookingId = booking.bookingId,
     calculationStatus = calculationStatus.name,
     calculatedByUsername = username,
-    inputData = bookingToJson(booking, objectMapper)
+    inputData = objectToJson(booking, objectMapper),
+    sentenceAndOffences = objectToJson(sourceData.sentenceAndOffences, objectMapper),
+    prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
+    adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments, objectMapper),
+    breakdownHtml = calculationFragments?.breakdownHtml
   )
 }
 
-fun bookingToJson(booking: Booking, objectMapper: ObjectMapper): JsonNode {
-  return JacksonUtil.toJsonNode(objectMapper.writeValueAsString(booking))
+fun objectToJson(subject: Any, objectMapper: ObjectMapper): JsonNode {
+  return JacksonUtil.toJsonNode(objectMapper.writeValueAsString(subject))
 }
 
 fun transform(
@@ -209,7 +217,8 @@ fun transform(calculationRequest: CalculationRequest): BookingCalculation {
     dates = calculationRequest.calculationOutcomes.associateBy(
       { ReleaseDateType.valueOf(it.calculationDateType) }, { it.outcomeDate }
     ).toMutableMap(),
-    calculationRequestId = calculationRequest.id
+    calculationRequestId = calculationRequest.id,
+    calculationFragments = if (calculationRequest.breakdownHtml != null) CalculationFragments(calculationRequest.breakdownHtml) else null
   )
 }
 

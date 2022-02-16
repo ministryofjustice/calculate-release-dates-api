@@ -26,7 +26,7 @@ class ValidationService(
   fun validate(prisonerId: String): ValidationMessages {
     val prisonerDetails = prisonService.getOffenderDetail(prisonerId)
     val sentencesAndOffences = prisonService.getSentencesAndOffences(prisonerDetails.bookingId)
-    val adjustments = prisonService.getSentenceAndBookingAdjustments(prisonerDetails.bookingId)
+    val adjustments = prisonService.getBookingAndSentenceAdjustmentss(prisonerDetails.bookingId)
     return validate(sentencesAndOffences, adjustments)
   }
 

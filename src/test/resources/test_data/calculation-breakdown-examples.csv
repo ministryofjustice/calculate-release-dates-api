@@ -1,7 +1,8 @@
-exampleType,exampleNumber
-ux-examples,1-consecutive
-ux-examples,1-concurrent
-ux-examples,2
-ux-examples,3
-ux-examples,crs-629-hdced-and-tused
-psi-examples,16
+exampleType,exampleNumber,error
+ux-examples,1-consecutive,
+ux-examples,1-concurrent,
+ux-examples,2,
+ux-examples,3,
+custom-examples,crs-629-hdced-and-tused,
+custom-examples,different-calclulation-from-stored,BreakdownChangedSinceLastCalculation
+psi-examples,16,

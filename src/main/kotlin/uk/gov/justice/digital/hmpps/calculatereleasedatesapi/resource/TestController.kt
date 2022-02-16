@@ -16,7 +16,11 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
+import java.time.LocalDate
 import javax.validation.constraints.NotEmpty
 
 @RestController
@@ -47,7 +51,13 @@ class TestController(
   )
   fun calculate(@RequestBody @NotEmpty booking: Booking): BookingCalculation {
     log.info("Request received to calculate booking for $booking")
-    return calculationService.calculate(booking, PRELIMINARY)
+    val fakeSourceData = PrisonApiSourceData(
+      emptyList(), PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
+      BookingAndSentenceAdjustments(
+        emptyList(), emptyList()
+      )
+    )
+    return calculationService.calculate(booking, PRELIMINARY, fakeSourceData)
   }
 
   companion object {

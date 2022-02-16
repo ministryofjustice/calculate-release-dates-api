@@ -10,5 +10,6 @@ data class BookingCalculation(
   var calculationRequestId: Long = -1,
   var effectiveSentenceLength: Period = Period.ZERO,
   @JsonIgnore
-  var breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown> = mapOf()
+  var breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown> = mapOf(),
+  var calculationFragments: CalculationFragments? = null
 )
