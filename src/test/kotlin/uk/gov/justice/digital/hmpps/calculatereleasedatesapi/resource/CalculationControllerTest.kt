@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
@@ -74,6 +75,7 @@ class CalculationControllerTest {
   private val prisonerDetails = PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
   private val adjustments = BookingAndSentenceAdjustments(emptyList(), emptyList())
   private val sourceData = PrisonApiSourceData(sentences, prisonerDetails, adjustments)
+  private val calculationFragments = CalculationFragments("<p>breakdown</p>")
 
   @BeforeEach
   fun reset() {
@@ -119,15 +121,20 @@ class CalculationControllerTest {
     val bookingCalculation = BookingCalculation(calculationRequestId = 9991L)
     whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(sourceData)
     whenever(bookingService.getBooking(sourceData)).thenReturn(booking)
-    whenever(calculationService.calculate(booking, CONFIRMED, sourceData)).thenReturn(bookingCalculation)
+    whenever(calculationService.calculate(booking, CONFIRMED, sourceData, calculationFragments)).thenReturn(bookingCalculation)
 
-    val result = mvc.perform(post("/calculation/$prisonerId/confirm/$calculationRequestId").accept(APPLICATION_JSON))
+    val result = mvc.perform(
+      post("/calculation/$prisonerId/confirm/$calculationRequestId")
+        .accept(APPLICATION_JSON)
+        .content(mapper.writeValueAsString(calculationFragments))
+        .contentType(APPLICATION_JSON)
+    )
       .andExpect(status().isOk)
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(bookingCalculation))
-    verify(calculationService, times(1)).calculate(booking, CONFIRMED, sourceData)
+    verify(calculationService, times(1)).calculate(booking, CONFIRMED, sourceData, calculationFragments)
     verify(calculationService, times(1)).writeToNomisAndPublishEvent(prisonerId, booking, bookingCalculation)
   }
 
@@ -149,7 +156,12 @@ class CalculationControllerTest {
       )
     }
 
-    val result = mvc.perform(post("/calculation/$prisonerId/confirm/$calculationRequestId").accept(APPLICATION_JSON))
+    val result = mvc.perform(
+      post("/calculation/$prisonerId/confirm/$calculationRequestId")
+        .accept(APPLICATION_JSON)
+        .content(mapper.writeValueAsString(calculationFragments))
+        .contentType(APPLICATION_JSON)
+    )
       .andExpect(status().isPreconditionFailed)
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()

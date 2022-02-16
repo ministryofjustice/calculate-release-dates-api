@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
@@ -21,6 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -110,13 +112,15 @@ class CalculationController(
     )
     @PathVariable("calculationRequestId")
     calculationRequestId: Long,
+    @RequestBody
+    calculationFragments: CalculationFragments
   ): BookingCalculation {
     log.info("Request received to confirm release dates calculation for $prisonerId")
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
     val booking = bookingService.getBooking(sourceData)
     calculationService.validateConfirmationRequest(calculationRequestId, booking)
     try {
-      val calculation = calculationService.calculate(booking, CONFIRMED, sourceData)
+      val calculation = calculationService.calculate(booking, CONFIRMED, sourceData, calculationFragments)
       calculationService.writeToNomisAndPublishEvent(prisonerId, booking, calculation)
       return calculation
     } catch (error: Exception) {

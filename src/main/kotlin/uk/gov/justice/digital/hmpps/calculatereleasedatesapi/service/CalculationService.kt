@@ -15,9 +15,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PrisonApiDataNotFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -44,10 +46,10 @@ class CalculationService(
       ?: throw IllegalStateException("User is not authenticated")
 
   @Transactional
-  fun calculate(booking: Booking, calculationStatus: CalculationStatus, sourceData: PrisonApiSourceData): BookingCalculation {
+  fun calculate(booking: Booking, calculationStatus: CalculationStatus, sourceData: PrisonApiSourceData, calculationFragments: CalculationFragments? = null): BookingCalculation {
     val calculationRequest =
       calculationRequestRepository.save(
-        transform(booking, getCurrentAuthentication().principal, calculationStatus, sourceData, objectMapper)
+        transform(booking, getCurrentAuthentication().principal, calculationStatus, sourceData, objectMapper, calculationFragments)
       )
 
     val workingBooking = calculate(booking)
@@ -58,6 +60,7 @@ class CalculationService(
     bookingCalculation.dates.forEach {
       calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
     }
+    bookingCalculation.calculationFragments = calculationFragments
 
     return bookingCalculation
   }
@@ -121,18 +124,30 @@ class CalculationService(
 
   @Transactional(readOnly = true)
   fun findSentenceAndOffencesFromCalculation(calculationRequestId: Long): List<SentenceAndOffences> {
+    val calculationRequest = getCalculationRequest(calculationRequestId)
+    if (calculationRequest.sentenceAndOffences == null) {
+      throw PrisonApiDataNotFoundException("Sentences and offence data not found for calculation $calculationRequestId")
+    }
     val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffences>>() {})
-    return reader.readValue(getCalculationRequest(calculationRequestId).sentenceAndOffences)
+    return reader.readValue(calculationRequest.sentenceAndOffences)
   }
 
   @Transactional(readOnly = true)
   fun findPrisonerDetailsFromCalculation(calculationRequestId: Long): PrisonerDetails {
-    return objectMapper.convertValue(getCalculationRequest(calculationRequestId).prisonerDetails, PrisonerDetails::class.java)
+    val calculationRequest = getCalculationRequest(calculationRequestId)
+    if (calculationRequest.prisonerDetails == null) {
+      throw PrisonApiDataNotFoundException("Prisoner details data not found for calculation $calculationRequestId")
+    }
+    return objectMapper.convertValue(calculationRequest.prisonerDetails, PrisonerDetails::class.java)
   }
 
   @Transactional(readOnly = true)
   fun findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId: Long): BookingAndSentenceAdjustments {
-    return objectMapper.convertValue(getCalculationRequest(calculationRequestId).adjustments, BookingAndSentenceAdjustments::class.java)
+    val calculationRequest = getCalculationRequest(calculationRequestId)
+    if (calculationRequest.adjustments == null) {
+      throw PrisonApiDataNotFoundException("Adjustments data not found for calculation $calculationRequestId")
+    }
+    return objectMapper.convertValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
   }
 
   private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest {

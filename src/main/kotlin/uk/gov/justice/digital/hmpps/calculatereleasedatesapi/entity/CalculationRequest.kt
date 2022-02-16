@@ -58,17 +58,22 @@ data class CalculationRequest(
   @NotNull
   @Type(type = "json")
   @Column(columnDefinition = "jsonb")
-  val sentenceAndOffences: JsonNode = JacksonUtil.toJsonNode("[]"),
+  val sentenceAndOffences: JsonNode? = null,
+  val sentenceAndOffencesVersion: Int? = 0,
 
   @NotNull
   @Type(type = "json")
   @Column(columnDefinition = "jsonb")
-  val prisonerDetails: JsonNode = JacksonUtil.toJsonNode("{}"),
+  val prisonerDetails: JsonNode? = null,
+  val prisonerDetailsVersion: Int? = 0,
 
   @NotNull
   @Type(type = "json")
   @Column(columnDefinition = "jsonb")
-  val adjustments: JsonNode = JacksonUtil.toJsonNode("{}"),
+  val adjustments: JsonNode? = null,
+  val adjustmentsVersion: Int? = 0,
+
+  val breakdownHtml: String? = null,
 
   @JoinColumn(name = "calculationRequestId")
   @OneToMany

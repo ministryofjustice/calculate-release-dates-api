@@ -34,6 +34,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
@@ -179,7 +180,8 @@ fun transform(
   username: String,
   calculationStatus: CalculationStatus,
   sourceData: PrisonApiSourceData,
-  objectMapper: ObjectMapper
+  objectMapper: ObjectMapper,
+  calculationFragments: CalculationFragments? = null
 ): CalculationRequest {
   return CalculationRequest(
     prisonerId = booking.offender.reference,
@@ -189,7 +191,8 @@ fun transform(
     inputData = objectToJson(booking, objectMapper),
     sentenceAndOffences = objectToJson(sourceData.sentenceAndOffences, objectMapper),
     prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
-    adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments, objectMapper)
+    adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments, objectMapper),
+    breakdownHtml = calculationFragments?.breakdownHtml
   )
 }
 
@@ -214,7 +217,8 @@ fun transform(calculationRequest: CalculationRequest): BookingCalculation {
     dates = calculationRequest.calculationOutcomes.associateBy(
       { ReleaseDateType.valueOf(it.calculationDateType) }, { it.outcomeDate }
     ).toMutableMap(),
-    calculationRequestId = calculationRequest.id
+    calculationRequestId = calculationRequest.id,
+    calculationFragments = if (calculationRequest.breakdownHtml != null) CalculationFragments(calculationRequest.breakdownHtml) else null
   )
 }
 
