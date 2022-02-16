@@ -112,8 +112,9 @@ class CalculationController(
     )
     @PathVariable("calculationRequestId")
     calculationRequestId: Long,
+    //TODO this shouldn't be optional once we've done the frontend work.
     @RequestBody
-    calculationFragments: CalculationFragments
+    calculationFragments: CalculationFragments?
   ): BookingCalculation {
     log.info("Request received to confirm release dates calculation for $prisonerId")
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
