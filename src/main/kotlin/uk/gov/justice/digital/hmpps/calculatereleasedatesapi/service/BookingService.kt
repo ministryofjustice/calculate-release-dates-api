@@ -4,32 +4,33 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.ValidationException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 
 @Service
 class BookingService(
-  private val prisonService: PrisonService,
-  private val validationService: ValidationService,
+  private val validationService: ValidationService
 ) {
-  fun getBooking(prisonerId: String): Booking {
-    val prisonerDetails = prisonService.getOffenderDetail(prisonerId)
-    val sentenceAndOffences = prisonService.getSentencesAndOffences(prisonerDetails.bookingId)
-    val sentenceAndBookingAdjustments = prisonService.getSentenceAndBookingAdjustments(prisonerDetails.bookingId)
-    val validation = validationService.validate(sentenceAndOffences, sentenceAndBookingAdjustments)
+
+  fun getBooking(prisonApiSourceData: PrisonApiSourceData): Booking {
+    val prisonerDetails = prisonApiSourceData.prisonerDetails
+    val sentenceAndOffences = prisonApiSourceData.sentenceAndOffences
+    val bookingAndSentenceAdjustments = prisonApiSourceData.bookingAndSentenceAdjustments
+    val validation = validationService.validate(sentenceAndOffences, bookingAndSentenceAdjustments)
     if (validation.type != ValidationType.VALID) {
       throw ValidationException(validation.toErrorString())
     }
     val offender = transform(prisonerDetails)
     val sentences = mutableListOf<Sentence>()
-    val adjustments = transform(sentenceAndBookingAdjustments, sentenceAndOffences)
+    val adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences)
     sentenceAndOffences.forEach { sentences.addAll(transform(it)) }
 
     return Booking(
       offender = offender,
       sentences = sentences.toMutableList(),
       adjustments = adjustments,
-      bookingId = prisonerDetails.bookingId,
+      bookingId = prisonerDetails.bookingId
     )
   }
 }
