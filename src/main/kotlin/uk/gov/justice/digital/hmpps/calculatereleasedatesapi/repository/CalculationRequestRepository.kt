@@ -7,7 +7,7 @@ import java.util.Optional
 
 @Repository
 interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long> {
-  fun findFirstByPrisonerIdAndBookingIdAndCalculationStatusOrderByCalculatedAtAsc(
+  fun findFirstByPrisonerIdAndBookingIdAndCalculationStatusOrderByCalculatedAtDesc(
     prisonerId: String,
     bookingId: Long,
     calculationStatus: String

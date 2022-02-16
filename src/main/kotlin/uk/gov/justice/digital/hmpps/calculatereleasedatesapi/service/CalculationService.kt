@@ -106,7 +106,7 @@ class CalculationService(
   @Transactional(readOnly = true)
   fun findConfirmedCalculationResults(prisonerId: String, bookingId: Long): BookingCalculation {
     val calculationRequest =
-      calculationRequestRepository.findFirstByPrisonerIdAndBookingIdAndCalculationStatusOrderByCalculatedAtAsc(
+      calculationRequestRepository.findFirstByPrisonerIdAndBookingIdAndCalculationStatusOrderByCalculatedAtDesc(
         prisonerId,
         bookingId,
         CONFIRMED.name
