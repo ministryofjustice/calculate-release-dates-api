@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.11
+  hmpps: ministryofjustice/hmpps@3.12
 
 parameters:
   alerts-slack-channel:
@@ -15,7 +15,7 @@ jobs:
   validate:
     executor:
       name: hmpps/java
-      tag: "16.0"
+      tag: "17.0"
     steps:
       - checkout
       - restore_cache:
@@ -36,7 +36,7 @@ jobs:
   integration-test:
     executor:
       name: hmpps/java
-      tag: "16.0"
+      tag: "17.0"
     steps:
       - checkout
       - restore_cache:
