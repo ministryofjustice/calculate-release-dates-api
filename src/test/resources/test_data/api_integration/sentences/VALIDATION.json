@@ -9,6 +9,12 @@
     "sentenceStatus": "A",
     "sentenceCategory": "2003",
     "sentenceTypeDescription": "Standard Determinate",
+    "terms": [{
+      "years": 0,
+      "months": 0,
+      "weeks": 0,
+      "days": 1
+    }],
     "years": 0,
     "months": 0,
     "weeks": 0,
@@ -28,14 +34,20 @@
     "sentenceStatus": "A",
     "sentenceCategory": "2003",
     "sentenceTypeDescription": "Standard Determinate",
+    "terms": [{
+      "years": 0,
+      "months": 0,
+      "weeks": 0,
+      "days": 1
+    }],
     "years": 0,
     "months": 0,
     "weeks": 0,
+    "days": 1,
     "caseSequence": 1,
     "lineSequence": 2,
     "sentenceDate": "2021-02-05",
     "sentenceCalculationType": "ADIMP_ORA",
-    "days": 1,
     "offences": [
       {
         "offenderChargeId": 3932624,
@@ -52,14 +64,20 @@
     "sentenceStatus": "A",
     "sentenceCategory": "2003",
     "sentenceTypeDescription": "Standard Determinate",
+    "terms": [{
+      "years": 0,
+      "months": 0,
+      "weeks": 0,
+      "days": 1
+    }],
     "years": 0,
     "months": 0,
     "weeks": 0,
+    "days": 1,
     "caseSequence": 2,
     "lineSequence": 1,
     "sentenceDate": "2021-02-05",
     "sentenceCalculationType": "ADIMP_ORA",
-    "days": 1,
     "offences": [
       {
         "offenderChargeId": 3932624,
@@ -74,14 +92,54 @@
     "sentenceStatus": "A",
     "sentenceCategory": "2003",
     "sentenceTypeDescription": "Standard Determinate",
+    "terms": [{
+      "years": 0,
+      "months": 0,
+      "weeks": 0,
+      "days": 0
+    }],
     "years": 0,
     "months": 0,
     "weeks": 0,
+    "days": 0,
     "caseSequence": 2,
     "lineSequence": 1,
     "sentenceDate": "2021-02-05",
     "sentenceCalculationType": "ADIMP_ORA",
+    "offences": [
+      {
+        "offenderChargeId": 3932624,
+        "offenceStartDate": "2021-02-03",
+        "offenceDescription": "Rape of a boy under 13 - SOA 2003",
+        "offenceCode": "GBH"
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 5,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceTypeDescription": "Standard Determinate",
+    "terms": [{
+      "years": 1,
+      "months": 0,
+      "weeks": 0,
+      "days": 0
+    }, {
+      "years": 1,
+      "months": 0,
+      "weeks": 0,
+      "days": 0
+    }],
+    "years": 2,
+    "months": 0,
+    "weeks": 0,
     "days": 0,
+    "caseSequence": 2,
+    "lineSequence": 2,
+    "sentenceDate": "2021-02-05",
+    "sentenceCalculationType": "ADIMP_ORA",
     "offences": [
       {
         "offenderChargeId": 3932624,
