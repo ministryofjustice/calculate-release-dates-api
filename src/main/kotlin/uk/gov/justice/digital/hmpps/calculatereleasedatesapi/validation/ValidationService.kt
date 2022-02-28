@@ -1,6 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
+import org.threeten.extra.LocalDateRange
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
@@ -48,7 +52,27 @@ class ValidationService(
   }
 
   private fun validateAdjustments(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
-    return adjustments.sentenceAdjustments.mapNotNull { validateAdjustment(it) }
+    val validationMessages = adjustments.sentenceAdjustments.mapNotNull { validateAdjustment(it) }.toMutableList()
+    validationMessages += validateRemandOverlapping(adjustments)
+    return validationMessages
+  }
+
+  private fun validateRemandOverlapping(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
+    val remandPeriods = adjustments.sentenceAdjustments.filter { it.type == SentenceAdjustmentType.REMAND && it.fromDate != null && it.toDate != null}
+    if (remandPeriods.isNotEmpty()) {
+      val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
+
+      var totalRange: LocalDateRange? = null
+
+      remandRanges.forEach {
+        if (totalRange == null) {
+          totalRange = it
+        } else if (it.isConnected(totalRange)) {
+          return listOf(ValidationMessage("Remand periods are overlapping", ValidationCode.REMAND_OVERLAPS_WITH_REMAND))
+        }
+      }
+    }
+    return emptyList()
   }
 
   private fun validateAdjustment(sentenceAdjustment: SentenceAdjustments): ValidationMessage? {
