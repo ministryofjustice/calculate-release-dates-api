@@ -225,22 +225,6 @@ class CalculationIntTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `Run calculation where remand periods overlap with other remand periods`() {
-    val error: ErrorResponse = webTestClient.post()
-      .uri("/calculation/$REMAND_OVERLAPS_WITH_REMAND_PRISONER_ID")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(ErrorResponse::class.java)
-      .returnResult().responseBody!!
-
-    assertThat(error.userMessage).isEqualTo("Remand of range 2000-04-01/2000-04-30 overlaps with remand of range 2000-04-28/2000-04-30")
-    assertThat(error.errorCode).isEqualTo("REMAND_OVERLAPS_WITH_REMAND")
-  }
-
-  @Test
   fun `Run calculation where remand periods overlap with a sentence periods`() {
     val error: ErrorResponse = webTestClient.post()
       .uri("/calculation/$REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID")
@@ -285,7 +269,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(validationMessages.type).isEqualTo(ValidationType.VALIDATION)
-    assertThat(validationMessages.messages).hasSize(7)
+    assertThat(validationMessages.messages).hasSize(8)
     assertThat(validationMessages.messages[0]).matches { it.code == ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE && it.sentenceSequence == 4 }
     assertThat(validationMessages.messages[1]).matches { it.code == ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE && it.sentenceSequence == 3 }
     assertThat(validationMessages.messages[2]).matches { it.code == ValidationCode.OFFENCE_MISSING_DATE && it.sentenceSequence == 2 }
@@ -293,6 +277,7 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(validationMessages.messages[4]).matches { it.code == ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS && it.sentenceSequence == 5 }
     assertThat(validationMessages.messages[5]).matches { it.code == ValidationCode.REMAND_FROM_TO_DATES_REQUIRED && it.sentenceSequence == null }
     assertThat(validationMessages.messages[6]).matches { it.code == ValidationCode.REMAND_FROM_TO_DATES_REQUIRED && it.sentenceSequence == null }
+    assertThat(validationMessages.messages[7]).matches { it.code == ValidationCode.REMAND_OVERLAPS_WITH_REMAND && it.sentenceSequence == null }
   }
 
   @Test
@@ -344,6 +329,7 @@ class CalculationIntTest : IntegrationTestBase() {
       Sentence 5 is invalid: Sentence has multiple terms
       Remand missing from and to date
       Remand missing from and to date
+      Remand periods are overlapping
       """.trimIndent()
     )
   }
