@@ -69,6 +69,7 @@ class CalculationServiceTest {
   private val bookingTimelineService = BookingTimelineService(
     sentenceCalculationService
   )
+  private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
 
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
@@ -84,7 +85,8 @@ class CalculationServiceTest {
       TestUtil.objectMapper(),
       prisonService,
       domainEventPublisher,
-      bookingTimelineService
+      bookingTimelineService,
+      prisonApiDataMapper
     )
 
   private val fakeSourceData = PrisonApiSourceData(
