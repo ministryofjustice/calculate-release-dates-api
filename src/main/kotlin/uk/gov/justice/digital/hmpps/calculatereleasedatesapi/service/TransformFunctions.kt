@@ -183,6 +183,7 @@ fun transform(
   objectMapper: ObjectMapper,
   calculationFragments: CalculationFragments? = null
 ): CalculationRequest {
+  val anySentenceAndOffenceHasTermsArray = sourceData.sentenceAndOffences.any { it.terms.isNotEmpty() }
   return CalculationRequest(
     prisonerId = booking.offender.reference,
     bookingId = booking.bookingId,
@@ -190,6 +191,7 @@ fun transform(
     calculatedByUsername = username,
     inputData = objectToJson(booking, objectMapper),
     sentenceAndOffences = objectToJson(sourceData.sentenceAndOffences, objectMapper),
+    sentenceAndOffencesVersion = if (anySentenceAndOffenceHasTermsArray) 1 else 0,
     prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
     adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments, objectMapper),
     breakdownHtml = calculationFragments?.breakdownHtml

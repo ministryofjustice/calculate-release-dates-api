@@ -285,13 +285,14 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(validationMessages.type).isEqualTo(ValidationType.VALIDATION)
-    assertThat(validationMessages.messages).hasSize(6)
+    assertThat(validationMessages.messages).hasSize(7)
     assertThat(validationMessages.messages[0]).matches { it.code == ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE && it.sentenceSequence == 4 }
     assertThat(validationMessages.messages[1]).matches { it.code == ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE && it.sentenceSequence == 3 }
     assertThat(validationMessages.messages[2]).matches { it.code == ValidationCode.OFFENCE_MISSING_DATE && it.sentenceSequence == 2 }
     assertThat(validationMessages.messages[3]).matches { it.code == ValidationCode.SENTENCE_HAS_NO_DURATION && it.sentenceSequence == 1 }
-    assertThat(validationMessages.messages[4]).matches { it.code == ValidationCode.REMAND_FROM_TO_DATES_REQUIRED && it.sentenceSequence == null }
+    assertThat(validationMessages.messages[4]).matches { it.code == ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS && it.sentenceSequence == 5 }
     assertThat(validationMessages.messages[5]).matches { it.code == ValidationCode.REMAND_FROM_TO_DATES_REQUIRED && it.sentenceSequence == null }
+    assertThat(validationMessages.messages[6]).matches { it.code == ValidationCode.REMAND_FROM_TO_DATES_REQUIRED && it.sentenceSequence == null }
   }
 
   @Test
@@ -340,6 +341,7 @@ class CalculationIntTest : IntegrationTestBase() {
       Sentence 3 is invalid: Offence date range shouldn't be after sentence date
       Sentence 2 is invalid: The offence must have a date
       Sentence 1 is invalid: Sentence has no duration
+      Sentence 5 is invalid: Sentence has multiple terms
       Remand missing from and to date
       Remand missing from and to date
       """.trimIndent()

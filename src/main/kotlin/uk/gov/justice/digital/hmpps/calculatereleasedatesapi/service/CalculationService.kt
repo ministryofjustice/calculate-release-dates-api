@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -38,7 +37,8 @@ class CalculationService(
   private val objectMapper: ObjectMapper,
   private val prisonService: PrisonService,
   private val domainEventPublisher: DomainEventPublisher,
-  private val bookingTimelineService: BookingTimelineService
+  private val bookingTimelineService: BookingTimelineService,
+  private val prisonApiDataMapper: PrisonApiDataMapper
 ) {
 
   fun getCurrentAuthentication(): AuthAwareAuthenticationToken =
@@ -128,8 +128,7 @@ class CalculationService(
     if (calculationRequest.sentenceAndOffences == null) {
       throw PrisonApiDataNotFoundException("Sentences and offence data not found for calculation $calculationRequestId")
     }
-    val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffences>>() {})
-    return reader.readValue(calculationRequest.sentenceAndOffences)
+    return prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
   }
 
   @Transactional(readOnly = true)
@@ -138,7 +137,7 @@ class CalculationService(
     if (calculationRequest.prisonerDetails == null) {
       throw PrisonApiDataNotFoundException("Prisoner details data not found for calculation $calculationRequestId")
     }
-    return objectMapper.convertValue(calculationRequest.prisonerDetails, PrisonerDetails::class.java)
+    return prisonApiDataMapper.mapPrisonerDetails(calculationRequest)
   }
 
   @Transactional(readOnly = true)
@@ -147,7 +146,7 @@ class CalculationService(
     if (calculationRequest.adjustments == null) {
       throw PrisonApiDataNotFoundException("Adjustments data not found for calculation $calculationRequestId")
     }
-    return objectMapper.convertValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
+    return prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequest)
   }
 
   private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest {

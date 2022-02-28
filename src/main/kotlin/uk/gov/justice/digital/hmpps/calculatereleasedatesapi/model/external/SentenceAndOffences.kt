@@ -17,5 +17,6 @@ data class SentenceAndOffences(
   val months: Int = 0,
   val weeks: Int = 0,
   val days: Int = 0,
+  val terms: List<SentenceTerms> = emptyList(),
   val offences: List<OffenderOffence> = emptyList(),
 )
