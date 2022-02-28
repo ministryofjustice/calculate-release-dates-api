@@ -63,8 +63,17 @@ class ValidationService(
       validateWithoutOffenceDate(it),
       validateOffenceDateAfterSentenceDate(it),
       validateOffenceRangeDateAfterSentenceDate(it),
-      validateDurationNotZero(it)
+      validateDurationNotZero(it),
+      validateSingleTerm(it)
     )
+  }
+
+  private fun validateSingleTerm(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
+    val invalid = sentencesAndOffence.terms.size > 1
+    if (invalid) {
+      return ValidationMessage("Sentence has multiple terms", ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS, sentencesAndOffence.sentenceSequence)
+    }
+    return null
   }
 
   private fun validateDurationNotZero(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
