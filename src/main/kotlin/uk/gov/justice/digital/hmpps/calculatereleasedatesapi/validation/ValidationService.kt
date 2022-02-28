@@ -2,9 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
@@ -58,7 +55,7 @@ class ValidationService(
   }
 
   private fun validateRemandOverlapping(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
-    val remandPeriods = adjustments.sentenceAdjustments.filter { it.type == SentenceAdjustmentType.REMAND && it.fromDate != null && it.toDate != null}
+    val remandPeriods = adjustments.sentenceAdjustments.filter { it.type == SentenceAdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
 
