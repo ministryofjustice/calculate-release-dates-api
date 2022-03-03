@@ -19,9 +19,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import java.time.LocalDate
 import java.time.Period
+import java.time.temporal.ChronoUnit
 
 @Service
 class BookingExtractionService(
@@ -126,7 +128,7 @@ class BookingExtractionService(
     }
 
     val isReleaseDateConditional = extractManyIsReleaseConditional(
-      sentences, latestReleaseDate, latestExpiryDate, latestLicenseExpiryDate
+      mostRecentSentenceByReleaseDate.releaseDateTypes, mostRecentSentenceByExpiryDate.releaseDateTypes, latestReleaseDate, sentences, effectiveSentenceLength
     )
 
     val latestNotionalConditionalReleaseDate: LocalDate? = extractionService.mostRecentOrNull(
@@ -230,26 +232,35 @@ class BookingExtractionService(
   }
 
   private fun extractManyIsReleaseConditional(
+    latestReleaseTypes: List<ReleaseDateType>,
+    latestExpiryTypes: List<ReleaseDateType>,
+    latestReleaseDate: LocalDate,
     sentences: List<ExtractableSentence>,
-    latestReleaseDate: LocalDate?,
-    latestExpiryDate: LocalDate?,
-    latestLicenseExpiryDate: LocalDate?
+    effectiveSentenceLength: Period
   ): Boolean {
-    var isReleaseDateConditional = extractionService.getAssociatedReleaseType(
-      sentences, latestReleaseDate
-    )
-    if (
-      (latestLicenseExpiryDate != null) &&
-      !(
-        latestLicenseExpiryDate.isEqual(latestReleaseDate) ||
-          latestLicenseExpiryDate.isEqual(latestExpiryDate)
-        )
+    val latestReleaseIsConditional = latestReleaseTypes.contains(CRD)
+    val latestSentenceExpiryIsSED = latestExpiryTypes.contains(SED)
 
-    ) {
-      // PSI Example 16 Release is therefore on license which means the release date is a CRD
-      isReleaseDateConditional = true
+    val hasOraSentences = sentences.any { (it is Sentence) && it.isOraSentence() }
+    val hasNonOraSentencesOfLessThan12Months = sentences.any { (it is Sentence) && !it.isOraSentence() && it.durationIsLessThan(12, ChronoUnit.MONTHS) }
+    val mostRecentSentenceWithASed = extractionService.mostRecentSentenceOrNull(
+      sentences, SentenceCalculation::expiryDate
+    ) { it.releaseDateTypes.contains(SED) }
+    val mostRecentSentenceWithASled = extractionService.mostRecentSentenceOrNull(
+      sentences, SentenceCalculation::expiryDate
+    ) { it.releaseDateTypes.contains(SLED) }
+
+    //We have a mix of ora and non-ora sentences
+    if (hasOraSentences && hasNonOraSentencesOfLessThan12Months && mostRecentSentenceWithASed != null && mostRecentSentenceWithASled != null && effectiveSentenceLength.years < FOUR) {
+      if (!latestReleaseIsConditional) {
+        return if (latestSentenceExpiryIsSED) {
+          !latestReleaseDate.isAfter(mostRecentSentenceWithASled.sentenceCalculation.expiryDate)
+        } else {
+          true
+        }
+      }
     }
-    return isReleaseDateConditional
+    return latestReleaseIsConditional
   }
 
   companion object {
