@@ -45,7 +45,7 @@ class SentencesExtractionService {
   fun mostRecentSentenceOrNull(
     sentences: List<ExtractableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>,
-    filter: (ExtractableSentence) -> Boolean = {true}
+    filter: (ExtractableSentence) -> Boolean = { true }
   ): ExtractableSentence? {
     return sentences
       .filter { property.get(it.sentenceCalculation) != null && filter(it) }

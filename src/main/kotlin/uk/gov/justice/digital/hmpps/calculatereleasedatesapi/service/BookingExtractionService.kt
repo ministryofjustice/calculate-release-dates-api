@@ -250,7 +250,7 @@ class BookingExtractionService(
       sentences, SentenceCalculation::expiryDate
     ) { it.releaseDateTypes.contains(SLED) }
 
-    //We have a mix of ora and non-ora sentences
+    // We have a mix of ora and non-ora sentences
     if (hasOraSentences && hasNonOraSentencesOfLessThan12Months && mostRecentSentenceWithASed != null && mostRecentSentenceWithASled != null && effectiveSentenceLength.years < FOUR) {
       if (!latestReleaseIsConditional) {
         return if (latestSentenceExpiryIsSED) {
