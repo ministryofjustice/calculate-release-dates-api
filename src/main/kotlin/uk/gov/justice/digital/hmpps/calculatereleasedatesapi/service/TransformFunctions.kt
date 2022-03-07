@@ -220,7 +220,9 @@ fun transform(calculationRequest: CalculationRequest): BookingCalculation {
       { ReleaseDateType.valueOf(it.calculationDateType) }, { it.outcomeDate }
     ).toMutableMap(),
     calculationRequestId = calculationRequest.id,
-    calculationFragments = if (calculationRequest.breakdownHtml != null) CalculationFragments(calculationRequest.breakdownHtml) else null
+    calculationFragments = if (calculationRequest.breakdownHtml != null) CalculationFragments(calculationRequest.breakdownHtml) else null,
+    bookingId = calculationRequest.bookingId,
+    prisonerId = calculationRequest.prisonerId
   )
 }
 
