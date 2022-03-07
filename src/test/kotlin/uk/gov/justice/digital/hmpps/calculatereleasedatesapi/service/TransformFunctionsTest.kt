@@ -142,7 +142,7 @@ class TransformFunctionsTest {
         releaseDatesByType,
         CALCULATION_REQUEST_ID,
         bookingId = BOOKING_ID,
-        prisonerId =  PRISONER_ID
+        prisonerId = PRISONER_ID
       )
     )
   }
