@@ -140,7 +140,9 @@ class TransformFunctionsTest {
     assertThat(transform(CALCULATION_REQUEST)).isEqualTo(
       BookingCalculation(
         releaseDatesByType,
-        CALCULATION_REQUEST_ID
+        CALCULATION_REQUEST_ID,
+        bookingId = BOOKING_ID,
+        prisonerId =  PRISONER_ID
       )
     )
   }
