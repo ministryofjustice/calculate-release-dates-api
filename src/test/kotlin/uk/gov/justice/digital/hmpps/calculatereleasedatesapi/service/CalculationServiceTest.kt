@@ -394,7 +394,9 @@ class CalculationServiceTest {
 
     val BOOKING_CALCULATION = BookingCalculation(
       dates = mutableMapOf(CRD to CALCULATION_OUTCOME_CRD.outcomeDate, SED to THIRD_FEB_2021),
-      calculationRequestId = CALCULATION_REQUEST_ID
+      calculationRequestId = CALCULATION_REQUEST_ID,
+      bookingId = BOOKING_ID,
+      prisonerId = PRISONER_ID
     )
 
     val UPDATE_OFFENDER_DATES = UpdateOffenderDates(

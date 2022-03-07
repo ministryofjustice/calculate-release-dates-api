@@ -61,6 +61,8 @@ class CalculationService(
       calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
     }
     bookingCalculation.calculationFragments = calculationFragments
+    bookingCalculation.bookingId = sourceData.prisonerDetails.bookingId
+    bookingCalculation.prisonerId = sourceData.prisonerDetails.offenderNo
 
     return bookingCalculation
   }

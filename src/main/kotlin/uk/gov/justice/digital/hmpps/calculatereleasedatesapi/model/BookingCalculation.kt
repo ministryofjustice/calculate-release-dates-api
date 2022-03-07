@@ -9,7 +9,10 @@ data class BookingCalculation(
   val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf(),
   var calculationRequestId: Long = -1,
   var effectiveSentenceLength: Period = Period.ZERO,
+  var calculationFragments: CalculationFragments? = null,
+  var bookingId: Long = -1,
+  var prisonerId: String = "",
   @JsonIgnore
-  var breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown> = mapOf(),
-  var calculationFragments: CalculationFragments? = null
+  var breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown> = mapOf()
+
 )
