@@ -1,0 +1,102 @@
+{
+  "concurrentSentences":[
+
+  ],
+  "consecutiveSentence":{
+    "sentencedAt":"2015-02-22",
+    "sentenceLength":"10 months",
+    "sentenceLengthDays":303,
+    "dates":{
+      "SED":{
+        "unadjusted":"2015-12-21",
+        "adjusted":"2015-12-21",
+        "daysFromSentenceStart":303,
+        "adjustedByDays":0
+      },
+      "CRD":{
+        "unadjusted":"2015-07-23",
+        "adjusted":"2015-07-23",
+        "daysFromSentenceStart":152,
+        "adjustedByDays":0
+      }
+    },
+    "sentenceParts":[
+      {
+        "lineSequence":1,
+        "caseSequence":1,
+        "sentenceLength":"3 months",
+        "sentenceLengthDays":89,
+        "consecutiveToLineSequence":null,
+        "consecutiveToCaseSequence":null
+      },
+      {
+        "lineSequence":2,
+        "caseSequence":1,
+        "sentenceLength":"7 months",
+        "sentenceLengthDays":212,
+        "consecutiveToLineSequence":1,
+        "consecutiveToCaseSequence":1
+      }
+    ]
+  },
+  "breakdownByReleaseDateType":{
+    "CRD":{
+      "rules":[
+
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":0,
+      "releaseDate":"2015-07-23",
+      "unadjustedDate":"2015-07-23"
+    },
+    "SED":{
+      "rules":[
+
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":0,
+      "releaseDate":"2015-12-21",
+      "unadjustedDate":"2015-12-21"
+    },
+    "TUSED":{
+      "rules":[
+        "TUSED_LICENCE_PERIOD_LT_1Y"
+      ],
+      "rulesWithExtraAdjustments":{
+        "TUSED_LICENCE_PERIOD_LT_1Y":{
+          "adjustmentValue":12,
+          "type":"MONTHS"
+        }
+      },
+      "adjustedDays":0,
+      "releaseDate":"2016-07-23",
+      "unadjustedDate":"2015-07-23"
+    },
+    "LED":{
+      "rules":[
+        "LED_CONSEC_ORA_AND_NON_ORA"
+      ],
+      "adjustedDays":44,
+      "releaseDate":"2015-09-05",
+      "unadjustedDate":"2015-07-23"
+    },
+    "HDCED":{
+      "rules":[
+        "HDCED_GE_12W_LT_18M"
+      ],
+      "rulesWithExtraAdjustments":{
+        "HDCED_GE_12W_LT_18M":{
+          "adjustmentValue":76,
+          "type":"DAYS"
+        }
+      },
+      "adjustedDays":0,
+      "releaseDate":"2015-05-09",
+      "unadjustedDate":"2015-02-22"
+    }
+  }
+}
