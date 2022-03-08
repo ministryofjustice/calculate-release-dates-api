@@ -149,6 +149,9 @@ class BookingExtractionService(
         if (latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(LED)) {
           breakdownByReleaseDateType[LED] =
             latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType[LED]!!
+        } else if (latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(SLED)) {
+          breakdownByReleaseDateType[LED] =
+            latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType[SLED]!!
         }
       }
     }
