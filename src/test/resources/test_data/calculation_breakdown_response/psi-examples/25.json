@@ -80,13 +80,7 @@
       "rules":[
         "LED_CONSEC_ORA_AND_NON_ORA"
       ],
-      "rulesWithExtraAdjustments":{
-        "LED_CONSEC_ORA_AND_NON_ORA":{
-          "adjustmentValue":44,
-          "type":"DAYS"
-        }
-      },
-      "adjustedDays":0,
+      "adjustedDays":44,
       "releaseDate":"2015-09-05",
       "unadjustedDate":"2015-07-23"
     },

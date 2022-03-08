@@ -186,8 +186,7 @@ class SentenceCalculationService {
       sentenceCalculation.breakdownByReleaseDateType[LED] =
         ReleaseDateCalculationBreakdown(
           rules = setOf(LED_CONSEC_ORA_AND_NON_ORA),
-          rulesWithExtraAdjustments = mapOf(LED_CONSEC_ORA_AND_NON_ORA to AdjustmentDuration(adjustment.toInt())),
-          adjustedDays = 0,
+          adjustedDays = adjustment.toInt(),
           releaseDate = sentenceCalculation.licenceExpiryDate!!,
           unadjustedDate = sentenceCalculation.releaseDate!!
         )
