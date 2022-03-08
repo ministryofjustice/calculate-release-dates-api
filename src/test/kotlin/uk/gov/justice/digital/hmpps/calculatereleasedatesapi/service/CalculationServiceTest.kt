@@ -126,12 +126,7 @@ class CalculationServiceTest {
       calculationBreakdown
     )
   }
-
-  @Test
-  fun blah() {
-    `Test UX Example Breakdowns`("psi-examples", "16", null)
-  }
-
+  
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
   fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {
