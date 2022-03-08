@@ -5,6 +5,8 @@
   },
   "sentences": [
     {
+      "caseSequence": 1,
+      "lineSequence": 1,
       "offence": {
         "committedAt": "2015-02-21"
       },
@@ -17,6 +19,8 @@
       "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
     },
     {
+      "caseSequence": 1,
+      "lineSequence": 2,
       "offence": {
         "committedAt": "2015-01-01"
       },
