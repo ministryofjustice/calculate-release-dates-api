@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_12W_LT_18M
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_18M_LT_4Y
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_MINIMUM_14D
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.LED_CONSEC_ORA_AND_NON_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.TUSED_LICENCE_PERIOD_LT_1Y
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
@@ -177,11 +178,19 @@ class SentenceCalculationService {
         .map { it.duration.copy() }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         .getLengthInDays(sentence.sentencedAt)
-
+      val adjustment = floor(lengthOfOraSentences.toDouble().div(TWO)).toLong()
       sentenceCalculation.licenceExpiryDate =
-        sentenceCalculation.releaseDate!!.plusDays(floor(lengthOfOraSentences.toDouble().div(TWO)).toLong())
+        sentenceCalculation.releaseDate!!.plusDays(adjustment)
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
         DAYS.between(sentence.sentencedAt, sentenceCalculation.licenceExpiryDate)
+      sentenceCalculation.breakdownByReleaseDateType[LED] =
+        ReleaseDateCalculationBreakdown(
+          rules = setOf(LED_CONSEC_ORA_AND_NON_ORA),
+          rulesWithExtraAdjustments = mapOf(LED_CONSEC_ORA_AND_NON_ORA to AdjustmentDuration(adjustment.toInt())),
+          adjustedDays = 0,
+          releaseDate = sentenceCalculation.licenceExpiryDate!!,
+          unadjustedDate = sentenceCalculation.releaseDate!!
+        )
     } else {
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
         ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(THREE).div(FOUR)).toLong()

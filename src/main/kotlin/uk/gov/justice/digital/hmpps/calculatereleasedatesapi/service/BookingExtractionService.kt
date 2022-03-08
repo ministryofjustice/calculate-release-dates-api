@@ -106,9 +106,10 @@ class BookingExtractionService(
       latestUnadjustedExpiryDate
     )
 
-    val latestLicenseExpiryDate: LocalDate? = extractionService.mostRecentOrNull(
+    val latestLicenseExpirySentence: ExtractableSentence? = extractionService.mostRecentSentenceOrNull(
       sentences, SentenceCalculation::licenceExpiryDate
     )
+    val latestLicenseExpiryDate: LocalDate? = latestLicenseExpirySentence?.sentenceCalculation?.licenceExpiryDate
 
     val latestNonParoleDate: LocalDate? = extractManyNonParoleDate(sentences, latestReleaseDate)
 
@@ -143,6 +144,10 @@ class BookingExtractionService(
         mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
       if (latestLicenseExpiryDate != null) {
         bookingCalculation.dates[LED] = latestLicenseExpiryDate
+        if (latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(LED)) {
+          breakdownByReleaseDateType[LED] =
+            latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType[LED]!!
+        }
       }
     }
 
