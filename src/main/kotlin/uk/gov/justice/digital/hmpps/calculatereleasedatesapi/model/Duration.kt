@@ -78,6 +78,7 @@ data class Duration(
 
   override fun toString(): String {
     return this.durationElements.entries.sortedByDescending { it.key.ordinal }
+      .filter { it.value != 0L }
       .joinToString(separator = " ") { "${it.value} ${nameForUnit(it.key, it.value)}" }
   }
 
