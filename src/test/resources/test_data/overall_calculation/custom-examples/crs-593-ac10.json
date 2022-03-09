@@ -1,0 +1,61 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2019-04-02"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 3,
+          "MONTHS": 10
+        }
+      },
+      "sentencedAt": "2019-04-03"
+    },
+    {
+      "offence": {
+        "committedAt": "2020-10-20"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 23
+        }
+      },
+      "sentencedAt": "2020-10-21"
+    }
+  ],
+  "adjustments": {
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "numberOfDays": 23,
+        "appliesToSentencesFrom": "2020-01-25",
+        "fromDate": "2020-01-25",
+        "toDate": "2020-02-16"
+      },
+      {
+        "numberOfDays": 28,
+        "appliesToSentencesFrom": "2020-04-17",
+        "fromDate": "2020-04-17",
+        "toDate": "2020-05-14"
+      }
+    ],
+    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      {
+        "numberOfDays": 4,
+        "appliesToSentencesFrom": "2020-10-08",
+        "fromDate": "2020-10-08",
+        "toDate": "2020-10-11"
+      },
+      {
+        "numberOfDays": 9,
+        "appliesToSentencesFrom": "2021-09-08",
+        "fromDate": "2021-09-08",
+        "toDate": "2021-09-16"
+      }
+    ]
+  }
+}
