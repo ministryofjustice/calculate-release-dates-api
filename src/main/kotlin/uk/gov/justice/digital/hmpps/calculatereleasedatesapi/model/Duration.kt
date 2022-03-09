@@ -77,13 +77,9 @@ data class Duration(
   }
 
   override fun toString(): String {
-    var durations = ""
-    for ((key, value) in this.durationElements) {
-      if (value != 0L) {
-        durations += "$value ${nameForUnit(key, value)} "
-      }
-    }
-    return durations.trim()
+    return this.durationElements.entries.sortedByDescending { it.key.ordinal }
+      .filter { it.value != 0L }
+      .joinToString(separator = " ") { "${it.value} ${nameForUnit(it.key, it.value)}" }
   }
 
   private fun nameForUnit(unit: ChronoUnit, size: Long): String {
