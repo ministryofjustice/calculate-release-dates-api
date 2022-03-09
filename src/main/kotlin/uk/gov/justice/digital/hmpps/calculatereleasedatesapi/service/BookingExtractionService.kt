@@ -128,7 +128,7 @@ class BookingExtractionService(
       null
     }
 
-    val isReleaseDateConditional = extractManyIsReleaseConditional(
+    val concurrentOraAndNonOraDetails = extractConcurrentOraAndNonOraDetails(
       mostRecentSentenceByReleaseDate.releaseDateTypes, mostRecentSentenceByExpiryDate.releaseDateTypes, latestReleaseDate, sentences, effectiveSentenceLength
     )
 
@@ -144,7 +144,7 @@ class BookingExtractionService(
       bookingCalculation.dates[SED] = latestExpiryDate
       breakdownByReleaseDateType[SED] =
         mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
-      if (latestLicenseExpiryDate != null) {
+      if (latestLicenseExpiryDate != null && concurrentOraAndNonOraDetails.canHaveLicenseExpiry) {
         bookingCalculation.dates[LED] = latestLicenseExpiryDate
         if (latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(LED)) {
           breakdownByReleaseDateType[LED] =
@@ -156,7 +156,7 @@ class BookingExtractionService(
       }
     }
 
-    if (isReleaseDateConditional) {
+    if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
       bookingCalculation.dates[CRD] = latestReleaseDate
       // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
       val releaseDateType = if (mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType.containsKey(CRD)) CRD else ARD
@@ -239,13 +239,13 @@ class BookingExtractionService(
     } else null
   }
 
-  private fun extractManyIsReleaseConditional(
+  private fun extractConcurrentOraAndNonOraDetails(
     latestReleaseTypes: List<ReleaseDateType>,
     latestExpiryTypes: List<ReleaseDateType>,
     latestReleaseDate: LocalDate,
     sentences: List<ExtractableSentence>,
     effectiveSentenceLength: Period
-  ): Boolean {
+  ): ConcurrentOraAndNonOraDetails {
     val latestReleaseIsConditional = latestReleaseTypes.contains(CRD)
     val latestSentenceExpiryIsSED = latestExpiryTypes.contains(SED)
 
@@ -261,15 +261,36 @@ class BookingExtractionService(
     // We have a mix of ora and non-ora sentences
     if (hasOraSentences && hasNonOraSentencesOfLessThan12Months && mostRecentSentenceWithASed != null && mostRecentSentenceWithASled != null && effectiveSentenceLength.years < FOUR) {
       if (!latestReleaseIsConditional) {
-        return if (latestSentenceExpiryIsSED) {
-          !latestReleaseDate.isAfter(mostRecentSentenceWithASled.sentenceCalculation.expiryDate)
+        if (latestSentenceExpiryIsSED) {
+          if (latestReleaseDate.isAfter(mostRecentSentenceWithASled.sentenceCalculation.expiryDate)) {
+            return ConcurrentOraAndNonOraDetails(
+              isReleaseDateConditional = false,
+              canHaveLicenseExpiry = false
+            )
+          } else {
+            return ConcurrentOraAndNonOraDetails(
+              isReleaseDateConditional = true,
+              canHaveLicenseExpiry = true
+            )
+          }
         } else {
-          true
+          return ConcurrentOraAndNonOraDetails(
+            isReleaseDateConditional = true,
+            canHaveLicenseExpiry = true
+          )
         }
       }
     }
-    return latestReleaseIsConditional
+    return ConcurrentOraAndNonOraDetails(
+      latestReleaseIsConditional,
+      canHaveLicenseExpiry = true
+    )
   }
+
+  data class ConcurrentOraAndNonOraDetails(
+    val isReleaseDateConditional: Boolean,
+    val canHaveLicenseExpiry: Boolean
+  )
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
