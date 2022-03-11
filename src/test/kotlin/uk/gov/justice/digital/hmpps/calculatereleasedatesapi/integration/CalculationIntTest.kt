@@ -467,7 +467,8 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectBody(BookingCalculation::class.java)
       .returnResult().responseBody!!
 
-    assertThat(calculation.dates[PRRD]).isEqualTo(LocalDate.of(2022, 8, 1)
+    assertThat(calculation.dates[PRRD]).isEqualTo(
+      LocalDate.of(2022, 8, 1)
     )
   }
 
