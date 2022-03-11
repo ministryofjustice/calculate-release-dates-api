@@ -81,7 +81,7 @@ dependencies {
   testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.32.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.0.29")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.0.30")
   testImplementation("org.mockito:mockito-inline:4.3.1")
   testImplementation("io.projectreactor:reactor-test")
   testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
@@ -104,4 +104,8 @@ kotlin {
 
 java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+
+dependencyCheck {
+  suppressionFiles.add("$rootDir/dependencyCheck/suppression.xml")
 }
