@@ -19,6 +19,11 @@ class ConsecutiveSentence(
       orderedSentences
     )
 
+  override val sentenceType: SentenceType
+    get() {
+      return orderedSentences[0].sentenceType
+    }
+
   @JsonIgnore
   override lateinit var sentenceCalculation: SentenceCalculation
 

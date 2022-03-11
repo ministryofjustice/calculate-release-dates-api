@@ -16,7 +16,8 @@ data class Sentence(
   // Sentence UUIDS that this sentence is consecutive to.
   val consecutiveSentenceUUIDs: List<UUID> = listOf(),
   val caseSequence: Int? = null,
-  val lineSequence: Int? = null
+  val lineSequence: Int? = null,
+  override val sentenceType: SentenceType = SentenceType.STANDARD_DETERMINATE
 ) : IdentifiableSentence, CalculableSentence, ExtractableSentence {
   @JsonIgnore
   @Transient
@@ -35,7 +36,8 @@ data class Sentence(
       "Identification Track\t:\t${identificationTrack}\n" +
       "Duration\t:\t$duration\n" +
       "${duration.toPeriodString(sentencedAt)}\n" +
-      "Sentence Types\t:\t$releaseDateTypes\n" +
+      "Sentence Types\t:\t$sentenceType\n" +
+      "Release Date Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
       sentenceCalculation.buildString(releaseDateTypes)
   }

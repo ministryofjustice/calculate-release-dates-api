@@ -7,6 +7,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
@@ -54,6 +56,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
@@ -95,7 +98,8 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
       identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
       consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
       caseSequence = sentence.caseSequence,
-      lineSequence = sentence.lineSequence
+      lineSequence = sentence.lineSequence,
+      sentenceType = SentenceCalculationType.valueOf(sentence.sentenceCalculationType).sentenceType
     )
   }.toMutableList()
 }
@@ -157,8 +161,8 @@ fun transform(
 
 fun transform(sentenceAdjustmentType: SentenceAdjustmentType): AdjustmentType? {
   return when (sentenceAdjustmentType) {
-    SentenceAdjustmentType.RECALL_SENTENCE_REMAND -> null
-    SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL -> null
+    SentenceAdjustmentType.RECALL_SENTENCE_REMAND -> RECALL_REMAND
+    SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL -> RECALL_TAGGED_BAIL
     SentenceAdjustmentType.REMAND -> REMAND
     SentenceAdjustmentType.TAGGED_BAIL -> TAGGED_BAIL
     SentenceAdjustmentType.UNUSED_REMAND -> null
@@ -330,9 +334,9 @@ private fun extractDates(sentence: ExtractableSentence): Map<ReleaseDateType, Da
     )
   }
   dates[sentence.getReleaseDateType()] = DateBreakdown(
-    sentenceCalculation.unadjustedReleaseDate,
-    sentenceCalculation.adjustedReleaseDate,
-    sentenceCalculation.numberOfDaysToReleaseDate.toLong()
+    sentenceCalculation.unadjustedDeterminateReleaseDate,
+    sentenceCalculation.adjustedDeterminateReleaseDate,
+    sentenceCalculation.numberOfDaysToDeterminateReleaseDate.toLong()
   )
 
   return dates
