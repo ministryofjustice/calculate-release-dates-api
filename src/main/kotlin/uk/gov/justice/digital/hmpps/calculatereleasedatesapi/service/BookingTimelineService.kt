@@ -75,7 +75,7 @@ class BookingTimelineService(
 
           // 2. A release date has occurred but there are more sentences on the booking, therefore previous deductions
           // should be wiped.
-          previousReleaseDateReached = previousSentence.sentenceCalculation.adjustedReleaseDate
+          previousReleaseDateReached = previousSentence.sentenceCalculation.releaseDate
           log.info("A release occurred in booking timeline at ${previousReleaseDateReached!!}")
 
           // This is the ends of the sentence group. Make sure all sentences share the adjustments in this group.
@@ -107,7 +107,7 @@ class BookingTimelineService(
     val remandPeriods = booking.adjustments.getOrEmptyList(REMAND)
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
-      val sentenceRanges = booking.getAllExtractableSentences().map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.adjustedReleaseDate) }
+      val sentenceRanges = booking.getAllExtractableSentences().map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.releaseDate) }
 
       val allRanges = (remandRanges + sentenceRanges).sortedBy { it.start }
       var totalRange: LocalDateRange? = null

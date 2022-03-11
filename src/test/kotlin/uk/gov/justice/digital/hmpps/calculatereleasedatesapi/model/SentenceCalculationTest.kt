@@ -25,6 +25,8 @@ internal class SentenceCalculationTest {
       4,
       date,
       date,
+      1,
+      date,
       Adjustments(
         mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(numberOfDays = 1, appliesToSentencesFrom = date)))
       ),
@@ -33,12 +35,12 @@ internal class SentenceCalculationTest {
 
     assertEquals(sentenceCalculation.sentence, sentence)
     assertEquals(3, sentenceCalculation.numberOfDaysToSentenceExpiryDate)
-    assertEquals(4, sentenceCalculation.numberOfDaysToReleaseDate)
+    assertEquals(4, sentenceCalculation.numberOfDaysToDeterminateReleaseDate)
     assertEquals(1, sentenceCalculation.calculatedTotalDeductedDays)
     assertEquals(0, sentenceCalculation.calculatedTotalAddedDays)
     assertEquals(date, sentenceCalculation.unadjustedExpiryDate)
-    assertEquals(date, sentenceCalculation.unadjustedReleaseDate)
+    assertEquals(date, sentenceCalculation.unadjustedDeterminateReleaseDate)
     assertEquals(LocalDate.of(2020, 12, 31), sentenceCalculation.adjustedExpiryDate)
-    assertEquals(LocalDate.of(2020, 12, 31), sentenceCalculation.adjustedReleaseDate)
+    assertEquals(LocalDate.of(2020, 12, 31), sentenceCalculation.adjustedDeterminateReleaseDate)
   }
 }

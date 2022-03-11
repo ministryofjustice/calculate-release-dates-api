@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessages
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
@@ -70,7 +71,7 @@ class BookingServiceTest {
       years = 5,
       sentenceStatus = "IMP",
       sentenceCategory = "CAT",
-      sentenceCalculationType = "SDS",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       sentenceTypeDescription = "Standard Determinate",
       offences = offences,
     )

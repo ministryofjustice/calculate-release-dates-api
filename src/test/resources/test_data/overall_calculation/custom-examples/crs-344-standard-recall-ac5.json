@@ -1,0 +1,58 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2020-10-18"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 14
+        }
+      },
+      "sentenceType": "STANDARD_RECALL",
+      "sentencedAt": "2021-01-25",
+      "identifier": "1ad25047-585a-4750-ac44-9cd2cc7640a6"
+    },
+    {
+      "offence": {
+        "committedAt": "2020-10-18"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 10
+        }
+      },
+      "sentenceType": "STANDARD_RECALL",
+      "sentencedAt": "2021-01-25",
+      "consecutiveSentenceUUIDs": ["1ad25047-585a-4750-ac44-9cd2cc7640a6"],
+      "identifier": "c090d292-ddc3-4f8f-af56-ea61b6d725f7"
+    },
+    {
+      "offence": {
+        "committedAt": "2020-10-18"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 7
+        }
+      },
+      "sentenceType": "STANDARD_RECALL",
+      "sentencedAt": "2021-01-25",
+      "consecutiveSentenceUUIDs": ["c090d292-ddc3-4f8f-af56-ea61b6d725f7"]
+    }
+  ],
+  "adjustments": {
+    "RECALL_REMAND": [
+      {
+        "numberOfDays": 10,
+        "appliesToSentencesFrom": "2021-01-25",
+        "toDate": "2021-01-15",
+        "fromDate": "2021-01-24"
+      }
+    ]
+  }
+}

@@ -2,27 +2,20 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
 
 @Service
 class ValidationService(
-  private val prisonService: PrisonService
+  private val prisonService: PrisonService,
+  private val featureToggles: FeatureToggles
 ) {
-
-  private val supportedSentences = listOf(
-    "ADIMP",
-    "ADIMP_ORA",
-    "YOI",
-    "YOI_ORA",
-    "SEC91_03",
-    "SEC91_03_ORA",
-    "SEC250",
-    "SEC250_ORA"
-  )
 
   fun validate(prisonerId: String): ValidationMessages {
     val prisonerDetails = prisonService.getOffenderDetail(prisonerId)
@@ -131,8 +124,19 @@ class ValidationService(
   }
 
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
-    return sentencesAndOffences.filter { !supportedSentences.contains(it.sentenceCalculationType) }
+    val supportedSentences: List<String> = SentenceCalculationType.values()
+      .filter { featureToggles.standardRecall || it.sentenceType != SentenceType.STANDARD_RECALL }
+      .map { it.name }
+    val validationMessages = sentencesAndOffences.filter { !supportedSentences.contains(it.sentenceCalculationType) }
       .map { ValidationMessage("Unsupported sentence type ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceTypeDescription)) }
+    if (validationMessages.isEmpty() && featureToggles.standardRecall) {
+      val bookingHasRecallSentences = sentencesAndOffences.any { SentenceCalculationType.valueOf(it.sentenceCalculationType).sentenceType == SentenceType.STANDARD_RECALL }
+      val bookingHasDeterminateSentences = sentencesAndOffences.any { SentenceCalculationType.valueOf(it.sentenceCalculationType).sentenceType == SentenceType.STANDARD_DETERMINATE }
+      if (bookingHasRecallSentences && bookingHasDeterminateSentences) {
+        return listOf(ValidationMessage("Unsupported parallel sentence", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, sentencesAndOffences[0].lineSequence, listOf("Parallel sentence")))
+      }
+    }
+    return validationMessages
   }
 
   private fun validateOffenceDateAfterSentenceDate(
