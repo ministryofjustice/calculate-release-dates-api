@@ -17,6 +17,12 @@ class SingleTermSentence(
       sentences.map(Sentence::offence).minByOrNull(Offence::committedAt)!!,
       sentences
     )
+
+  override val sentenceType: SentenceType
+    get() {
+      return sentences[0].sentenceType
+    }
+
   @JsonIgnore
   override lateinit var sentenceCalculation: SentenceCalculation
   @JsonIgnore

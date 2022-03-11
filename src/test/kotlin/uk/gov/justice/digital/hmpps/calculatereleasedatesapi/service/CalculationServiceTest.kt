@@ -127,6 +127,11 @@ class CalculationServiceTest {
     )
   }
 
+  @Test
+  fun removeThis() {
+    `Test Example`("custom-examples", "crs-344-standard-recall-ac1", null)
+  }
+
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
   fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {
@@ -371,7 +376,7 @@ class CalculationServiceTest {
     val INPUT_DATA: JsonNode =
       JacksonUtil.toJsonNode(
         "{ \"offender\":{ \"reference\":\"A1234AJ\", \"dateOfBirth\"" +
-          ":\"1980-01-01\",\"isActiveSexOffender\":false}, \"sentences\":[{\"caseSequence\":1,\"lineSequence\":2,\"offence\":{\"committedAt\":\"2021-02-03\",\"" +
+          ":\"1980-01-01\",\"isActiveSexOffender\":false}, \"sentences\":[{\"caseSequence\":1,\"lineSequence\":2, \"sentenceType\":\"STANDARD_DETERMINATE\", \"offence\":{\"committedAt\":\"2021-02-03\",\"" +
           "isScheduleFifteen\":false, \"isScheduleFifteenMaximumLife\":false},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"" +
           "MONTHS\":0,\"YEARS\":5}},\"sentencedAt\":\"2021-02-03\"," +
           "\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\",\"consecutiveSentenceUUIDs\":[]" +
