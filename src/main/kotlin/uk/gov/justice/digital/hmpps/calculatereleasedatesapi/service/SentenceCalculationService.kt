@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IdentifiableS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
@@ -52,15 +53,15 @@ class SentenceCalculationService {
     // create the intermediate values
     val numberOfDaysToSentenceExpiryDate = sentence.getLengthInDays()
 
-    val numberOfDaysToReleaseDateDouble = numberOfDaysToSentenceExpiryDate.toDouble().times(releaseDateMultiplier)
-    val numberOfDaysToReleaseDate = if (sentence is ConsecutiveSentence && sentence.isMadeUpOfSdsPlusAndSdsSentences()) {
+    val numberOfDaysToDeterminateReleaseDateDouble = numberOfDaysToSentenceExpiryDate.toDouble().times(releaseDateMultiplier)
+    val numberOfDaysToDeterminateReleaseDate = if (sentence is ConsecutiveSentence && sentence.isMadeUpOfSdsPlusAndSdsSentences()) {
       ceil(
-        sentence.orderedSentences.map { it.sentenceCalculation.numberOfDaysToReleaseDateDouble }
+        sentence.orderedSentences.map { it.sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble }
           .reduce { acc, it -> acc + it }
       )
         .toInt()
     } else {
-      ceil(numberOfDaysToReleaseDateDouble).toInt()
+      ceil(numberOfDaysToDeterminateReleaseDateDouble).toInt()
     }
 
     val unadjustedExpiryDate =
@@ -68,19 +69,28 @@ class SentenceCalculationService {
         .plusDays(numberOfDaysToSentenceExpiryDate.toLong())
         .minusDays(ONE)
 
-    val unadjustedReleaseDate =
+    val unadjustedDeterminateReleaseDate =
       sentence.sentencedAt
-        .plusDays(numberOfDaysToReleaseDate.toLong())
+        .plusDays(numberOfDaysToDeterminateReleaseDate.toLong())
         .minusDays(ONE)
+
+    var numberOfDaysToPostRecallReleaseDate: Int? = null
+    var unadjustedPostRecallReleaseDate: LocalDate? = null
+    if (sentence.sentenceType == SentenceType.STANDARD_RECALL) {
+      numberOfDaysToPostRecallReleaseDate = numberOfDaysToSentenceExpiryDate
+      unadjustedPostRecallReleaseDate = unadjustedExpiryDate
+    }
 
     // create new SentenceCalculation and associate it with a sentence
     return SentenceCalculation(
       sentence,
       numberOfDaysToSentenceExpiryDate,
-      numberOfDaysToReleaseDateDouble,
-      numberOfDaysToReleaseDate,
+      numberOfDaysToDeterminateReleaseDateDouble,
+      numberOfDaysToDeterminateReleaseDate,
       unadjustedExpiryDate,
-      unadjustedReleaseDate,
+      unadjustedDeterminateReleaseDate,
+      numberOfDaysToPostRecallReleaseDate,
+      unadjustedPostRecallReleaseDate,
       booking.adjustments,
       sentence.sentencedAt
     )
@@ -98,7 +108,7 @@ class SentenceCalculationService {
 
     // PSI 03/2015: P53: The license period is one of at least 12 month.
     // Hence, there is no requirement for a TUSED
-    if (sentenceCalculation.numberOfDaysToSentenceExpiryDate - sentenceCalculation.numberOfDaysToReleaseDate < YEAR_IN_DAYS && sentence.releaseDateTypes.contains(
+    if (sentenceCalculation.numberOfDaysToSentenceExpiryDate - sentenceCalculation.numberOfDaysToDeterminateReleaseDate < YEAR_IN_DAYS && sentence.releaseDateTypes.contains(
         TUSED
       )
     ) {
@@ -159,9 +169,9 @@ class SentenceCalculationService {
 
   private fun getBreakdownForReleaseDate(sentenceCalculation: SentenceCalculation) =
     ReleaseDateCalculationBreakdown(
-      releaseDate = sentenceCalculation.adjustedReleaseDate,
-      unadjustedDate = sentenceCalculation.unadjustedReleaseDate,
-      adjustedDays = DAYS.between(sentenceCalculation.unadjustedReleaseDate, sentenceCalculation.adjustedReleaseDate)
+      releaseDate = sentenceCalculation.adjustedDeterminateReleaseDate,
+      unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
+      adjustedDays = DAYS.between(sentenceCalculation.unadjustedDeterminateReleaseDate, sentenceCalculation.adjustedDeterminateReleaseDate)
         .toInt()
     )
 
@@ -218,7 +228,7 @@ class SentenceCalculationService {
   private fun calculateTUSED(sentenceCalculation: SentenceCalculation) {
     val adjustedDays =
       sentenceCalculation.calculatedTotalAddedDays.minus(sentenceCalculation.calculatedTotalDeductedDays)
-    sentenceCalculation.topUpSupervisionDate = sentenceCalculation.unadjustedReleaseDate
+    sentenceCalculation.topUpSupervisionDate = sentenceCalculation.unadjustedDeterminateReleaseDate
       .plus(TWELVE, MONTHS).plusDays(adjustedDays.toLong())
     sentenceCalculation.breakdownByReleaseDateType[TUSED] =
       ReleaseDateCalculationBreakdown(
@@ -226,7 +236,7 @@ class SentenceCalculationService {
         rulesWithExtraAdjustments = mapOf(TUSED_LICENCE_PERIOD_LT_1Y to AdjustmentDuration(TWELVE.toInt(), MONTHS)),
         adjustedDays = adjustedDays,
         releaseDate = sentenceCalculation.topUpSupervisionDate!!,
-        unadjustedDate = sentenceCalculation.unadjustedReleaseDate,
+        unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
       )
   }
 
@@ -273,7 +283,7 @@ class SentenceCalculationService {
   private fun calculateHDCED(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
     // If adjustments make the CRD before sentence date plus 14 days (i.e. a large REMAND days)
     // then we don't need a HDCED date.
-    if (sentenceCalculation.adjustedReleaseDate.isBefore(sentence.sentencedAt.plusDays(14))) {
+    if (sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(sentence.sentencedAt.plusDays(14))) {
       sentenceCalculation.homeDetentionCurfewEligibilityDate = null
       return
     }
@@ -319,7 +329,7 @@ class SentenceCalculationService {
     adjustedDays: Int,
     sentenceCalculation: SentenceCalculation
   ) {
-    sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.numberOfDaysToReleaseDate
+    sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.numberOfDaysToDeterminateReleaseDate
       .minus(ONE_HUNDRED_AND_THIRTY_FIVE).toLong()
       .plus(adjustedDays)
     sentenceCalculation.homeDetentionCurfewEligibilityDate = sentence.sentencedAt

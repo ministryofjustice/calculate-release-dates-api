@@ -1,6 +1,14 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_SERVED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_TAGGED_BAIL
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -8,44 +16,51 @@ import kotlin.math.max
 
 data class SentenceCalculation(
   var sentence: CalculableSentence, // values here are used to store working values
-  var numberOfDaysToSentenceExpiryDate: Int,
-  val numberOfDaysToReleaseDateDouble: Double,
-  val numberOfDaysToReleaseDate: Int,
+  val numberOfDaysToSentenceExpiryDate: Int,
+  val numberOfDaysToDeterminateReleaseDateDouble: Double,
+  val numberOfDaysToDeterminateReleaseDate: Int,
   val unadjustedExpiryDate: LocalDate,
-  val unadjustedReleaseDate: LocalDate,
+  val unadjustedDeterminateReleaseDate: LocalDate,
+  val numberOfDaysToPostRecallReleaseDate: Int?,
+  val unadjustedPostRecallReleaseDate: LocalDate?,
   val adjustments: Adjustments,
   var adjustmentsBefore: LocalDate,
   var adjustmentsAfter: LocalDate? = null
 ) {
 
   val calculatedTotalDeductedDays: Int get() {
-    return adjustments.getOrZero(AdjustmentType.REMAND, AdjustmentType.TAGGED_BAIL, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+    val adjustmentTypes: Array<AdjustmentType> = if (sentence.sentenceType === SentenceType.STANDARD_DETERMINATE) {
+      arrayOf(REMAND, TAGGED_BAIL)
+    } else {
+      arrayOf(RECALL_REMAND, RECALL_TAGGED_BAIL)
+    }
+    return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
   }
 
   val calculatedTotalAddedDays: Int get() {
-    return adjustments.getOrZero(AdjustmentType.UNLAWFULLY_AT_LARGE, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+    return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
   }
 
   val calculatedTotalAwardedDays: Int get() {
     return max(
       0,
-      adjustments.getOrZero(AdjustmentType.ADDITIONAL_DAYS_AWARDED, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter) -
-        adjustments.getOrZero(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, AdjustmentType.ADDITIONAL_DAYS_SERVED, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+      adjustments.getOrZero(ADDITIONAL_DAYS_AWARDED, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter) -
+        adjustments.getOrZero(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, ADDITIONAL_DAYS_SERVED, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
 
     )
   }
 
   val numberOfDaysToAddToLicenceExpiryDate: Int get() {
-    if (calculatedTotalDeductedDays >= numberOfDaysToReleaseDate) {
-      return calculatedTotalDeductedDays - numberOfDaysToReleaseDate
+    if (calculatedTotalDeductedDays >= numberOfDaysToDeterminateReleaseDate) {
+      return calculatedTotalDeductedDays - numberOfDaysToDeterminateReleaseDate
     }
     return 0
   }
 
   val adjustedExpiryDate: LocalDate get() {
     val calculatedExpiryTotalDeductedDays =
-      if (calculatedTotalDeductedDays >= numberOfDaysToReleaseDate) {
-        numberOfDaysToReleaseDate.toLong()
+      if (calculatedTotalDeductedDays >= numberOfDaysToDeterminateReleaseDate) {
+        numberOfDaysToDeterminateReleaseDate.toLong()
       } else {
         calculatedTotalDeductedDays.toLong()
       }
@@ -58,8 +73,8 @@ data class SentenceCalculation(
       )
   }
 
-  val adjustedReleaseDate: LocalDate get() {
-    val date = unadjustedReleaseDate.minusDays(
+  val adjustedDeterminateReleaseDate: LocalDate get() {
+    val date = unadjustedDeterminateReleaseDate.minusDays(
       calculatedTotalDeductedDays.toLong()
     ).plusDays(
       calculatedTotalAddedDays.toLong()
@@ -71,6 +86,14 @@ data class SentenceCalculation(
     } else {
       sentence.sentencedAt
     }
+  }
+
+  val adjustedPostRecallReleaseDate: LocalDate? get() {
+    return unadjustedPostRecallReleaseDate?.minusDays(
+      calculatedTotalDeductedDays.toLong()
+    )?.plusDays(
+      calculatedTotalAddedDays.toLong()
+    )
   }
 
   // Non Parole Date (NPD)
@@ -101,15 +124,16 @@ data class SentenceCalculation(
   var numberOfDaysToNotionalConditionalReleaseDate: Long = 0
   var notionalConditionalReleaseDate: LocalDate? = null
 
-  val releaseDate: LocalDate? get() {
+  val releaseDate: LocalDate get() {
     if (
       sentence.releaseDateTypes.contains(ReleaseDateType.CRD) ||
       sentence.releaseDateTypes.contains(ReleaseDateType.ARD) ||
       sentence.releaseDateTypes.contains(ReleaseDateType.PED)
     ) {
-      return adjustedReleaseDate
+      return adjustedDeterminateReleaseDate
+    } else {
+      return adjustedPostRecallReleaseDate!!
     }
-    return null
   }
 
   val expiryDate: LocalDate? get() {
@@ -121,6 +145,9 @@ data class SentenceCalculation(
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
 
+  var postRecallReleaseDate: LocalDate? = null
+  var unadjustedPreRecallReleaseDate: LocalDate? = null
+
   fun buildString(releaseDateTypes: List<ReleaseDateType>): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val expiryDateType = if (releaseDateTypes.contains(ReleaseDateType.SLED)) "SLED" else "SED"
@@ -129,8 +156,8 @@ data class SentenceCalculation(
     else "PED"
 
     return "Date of $expiryDateType\t:\t${unadjustedExpiryDate.format(formatter)}\n" +
-      "Number of days to $releaseDateType\t:\t${numberOfDaysToReleaseDate}\n" +
-      "Date of $releaseDateType\t:\t${unadjustedReleaseDate.format(formatter)}\n" +
+      "Number of days to $releaseDateType\t:\t${numberOfDaysToDeterminateReleaseDate}\n" +
+      "Date of $releaseDateType\t:\t${unadjustedDeterminateReleaseDate.format(formatter)}\n" +
       "Total number of days of deducted (remand / tagged bail)\t:" +
       "\t${calculatedTotalDeductedDays}\n" +
       "Total number of days of added (UAL) \t:\t${calculatedTotalAddedDays}\n" +

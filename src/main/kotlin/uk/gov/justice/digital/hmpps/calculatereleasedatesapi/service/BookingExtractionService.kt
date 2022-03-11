@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
@@ -21,6 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
@@ -156,14 +158,22 @@ class BookingExtractionService(
       }
     }
 
-    if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
-      bookingCalculation.dates[CRD] = latestReleaseDate
-      // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
-      val releaseDateType = if (mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType.containsKey(CRD)) CRD else ARD
-      breakdownByReleaseDateType[CRD] = mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]!!
-    } else {
-      bookingCalculation.dates[ARD] = latestReleaseDate
-      breakdownByReleaseDateType[ARD] = mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
+    if (sentences.any { it.sentenceType == SentenceType.STANDARD_DETERMINATE }) {
+      if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
+        bookingCalculation.dates[CRD] = latestReleaseDate
+        // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
+        val releaseDateType =
+          if (mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType.containsKey(CRD)) CRD else ARD
+        breakdownByReleaseDateType[CRD] =
+          mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]!!
+      } else {
+        bookingCalculation.dates[ARD] = latestReleaseDate
+        breakdownByReleaseDateType[ARD] =
+          mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
+      }
+    }
+    if (sentences.any { it.sentenceType == SentenceType.STANDARD_RECALL }) {
+      bookingCalculation.dates[PRRD] = latestReleaseDate
     }
 
     if (latestNonParoleDate != null) {

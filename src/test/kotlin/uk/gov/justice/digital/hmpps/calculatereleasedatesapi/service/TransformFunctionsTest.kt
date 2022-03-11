@@ -13,11 +13,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType.STANDARD_DETERMINATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Alert
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
@@ -56,7 +58,7 @@ class TransformFunctionsTest {
       days = 2,
       sentenceStatus = "IMP",
       sentenceCategory = "CAT",
-      sentenceCalculationType = "SDS",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       sentenceTypeDescription = "Standard Determinate",
       offences = offences,
       lineSequence = lineSequence,
@@ -72,7 +74,9 @@ class TransformFunctionsTest {
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(),
           lineSequence = lineSequence,
-          caseSequence = caseSequence
+          caseSequence = caseSequence,
+          sentenceType = STANDARD_DETERMINATE
+
         ),
         Sentence(
           sentencedAt = FIRST_JAN_2015,
@@ -81,7 +85,8 @@ class TransformFunctionsTest {
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(),
           lineSequence = lineSequence,
-          caseSequence = caseSequence
+          caseSequence = caseSequence,
+          sentenceType = STANDARD_DETERMINATE
         ),
       )
     )
@@ -108,7 +113,7 @@ class TransformFunctionsTest {
       years = 5,
       sentenceStatus = "IMP",
       sentenceCategory = "CAT",
-      sentenceCalculationType = "SDS",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       sentenceTypeDescription = "Standard Determinate",
       offences = offences,
       lineSequence = lineSequence,
