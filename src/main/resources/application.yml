@@ -125,3 +125,6 @@ domain-events-sns:
         key: secret_access_key
     topic:
       arn: topic_arn
+
+feature-toggles:
+  standard-recall: ${STANDARD_RECALL_FEATURE_TOGGLE}

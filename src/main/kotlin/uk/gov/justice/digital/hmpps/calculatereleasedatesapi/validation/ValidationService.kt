@@ -127,8 +127,16 @@ class ValidationService(
     val supportedSentences: List<String> = SentenceCalculationType.values()
       .filter { featureToggles.standardRecall || it.sentenceType != SentenceType.STANDARD_RECALL }
       .map { it.name }
-    return sentencesAndOffences.filter { supportedSentences.contains(it.sentenceCalculationType) }
+    val validationMessages = sentencesAndOffences.filter { !supportedSentences.contains(it.sentenceCalculationType) }
       .map { ValidationMessage("Unsupported sentence type ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceTypeDescription)) }
+    if (validationMessages.isEmpty() && featureToggles.standardRecall) {
+      val bookingHasRecallSentences = sentencesAndOffences.any { SentenceCalculationType.valueOf(it.sentenceCalculationType).sentenceType == SentenceType.STANDARD_RECALL }
+      val bookingHasDeterminateSentences = sentencesAndOffences.any { SentenceCalculationType.valueOf(it.sentenceCalculationType).sentenceType == SentenceType.STANDARD_DETERMINATE }
+      if (bookingHasRecallSentences && bookingHasDeterminateSentences) {
+        return listOf(ValidationMessage("Unsupported parallel sentence", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, sentencesAndOffences[0].lineSequence, listOf("Parallel sentence")))
+      }
+    }
+    return validationMessages
   }
 
   private fun validateOffenceDateAfterSentenceDate(

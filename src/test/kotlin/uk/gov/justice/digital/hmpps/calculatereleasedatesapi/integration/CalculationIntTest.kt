@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
@@ -436,6 +437,40 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(adjustments).isNotNull
   }
 
+  // Can't currently support a mixture of recall and determinate sentences
+  @Test
+  fun `Run validation on parallel data`() {
+    val validationMessages: ValidationMessages = webTestClient.get()
+      .uri("/calculation/$PARALLEL_PRISONER_ID/validate")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ValidationMessages::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(validationMessages.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(validationMessages.messages).hasSize(1)
+    assertThat(validationMessages.messages[0].message).isEqualTo("Unsupported parallel sentence")
+  }
+
+  @Test
+  fun `Run calculation on recall`() {
+    val calculation: BookingCalculation = webTestClient.post()
+      .uri("/calculation/RECALL")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(BookingCalculation::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[PRRD]).isEqualTo(LocalDate.of(2022, 8, 1)
+    )
+  }
+
   companion object {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"
@@ -448,6 +483,7 @@ class CalculationIntTest : IntegrationTestBase() {
     const val SDS_PLUS_CONSECUTIVE_TO_SDS = "SDS-CON"
     const val VALIDATION_PRISONER_ID = "VALIDATION"
     const val UNSUPPORTED_PRISONER_ID = "UNSUPPORTED"
+    const val PARALLEL_PRISONER_ID = "PARALLEL"
     const val INACTIVE_PRISONER_ID = "INACTIVE"
   }
 }
