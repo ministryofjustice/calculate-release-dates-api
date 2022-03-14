@@ -12,8 +12,9 @@ internal class SentenceCalculationTest {
   fun `Test that SentenceCalculation initialises correctly`() {
 
     val sentencedAt = LocalDate.of(2020, 1, 1)
-    val duration = Duration()
-    duration.append(1L, ChronoUnit.DAYS)
+    val duration = Duration(
+      mapOf(ChronoUnit.DAYS to 1L)
+    )
     val offence = Offence(LocalDate.of(2020, 1, 1))
     val sentence = Sentence(offence, duration, sentencedAt)
     val date = LocalDate.of(2021, 1, 1)
