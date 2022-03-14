@@ -11,8 +11,9 @@ internal class SentenceTest {
   fun testSentence() {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val uuidString = "219db65e-d7b7-4c70-9239-98babff7bcd5"
-    val duration = Duration()
-    duration.append(1L, ChronoUnit.DAYS)
+    val duration = Duration(
+      mapOf(ChronoUnit.DAYS to 1L)
+    )
     val offence = Offence(LocalDate.of(2020, 1, 1))
     val sentence = Sentence(
       offence, duration, sentencedAt, UUID.fromString(uuidString),

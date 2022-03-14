@@ -185,7 +185,7 @@ class SentenceCalculationService {
       sentence.hasNonOraSentences()
     ) {
       val lengthOfOraSentences = sentence.orderedSentences.filter(Sentence::isOraSentence)
-        .map { it.duration.copy() }
+        .map { it.duration }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         .getLengthInDays(sentence.sentencedAt)
       val adjustment = floor(lengthOfOraSentences.toDouble().div(TWO)).toLong()
@@ -246,13 +246,13 @@ class SentenceCalculationService {
     if (sentence is ConsecutiveSentence) {
       val daysOfNewStyleSentences = sentence.orderedSentences
         .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
-        .map { it.duration.copy() }
+        .map { it.duration }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         .getLengthInDays(sentence.sentencedAt)
 
       val daysOfOldStyleSentences = sentence.orderedSentences
         .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO }
-        .map { it.duration.copy() }
+        .map { it.duration }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         .getLengthInDays(sentence.sentencedAt)
 

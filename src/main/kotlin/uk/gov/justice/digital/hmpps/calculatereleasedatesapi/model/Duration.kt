@@ -23,16 +23,8 @@ import java.time.temporal.ChronoUnit.YEARS
  */
 
 data class Duration(
-  var durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()
+  var durationElements: Map<ChronoUnit, Long> = mapOf()
 ) {
-
-  fun append(length: Long, period: ChronoUnit) {
-    if (!this.durationElements.containsKey(period)) {
-      this.durationElements[period] = length
-    } else {
-      this.durationElements[period] = length + this.durationElements[period]!!
-    }
-  }
 
   // PSI 5.5 Converting a Sentence in to Days
   fun getLengthInDays(startDate: LocalDate): Int {
@@ -70,12 +62,6 @@ data class Duration(
     return calculatedDate
   }
 
-  fun copy(durationToCopy: Duration): Duration {
-    val durationOutcome = Duration()
-    durationOutcome.durationElements.putAll(durationToCopy.durationElements)
-    return durationOutcome
-  }
-
   override fun toString(): String {
     return this.durationElements.entries.sortedByDescending { it.key.ordinal }
       .filter { it.value != 0L }
@@ -96,8 +82,15 @@ data class Duration(
       "To\t:\t${getEndDate(sentencedAt).format(formatter)}"
   }
 
-  fun appendAll(durationElements: MutableMap<ChronoUnit, Long>): Duration {
-    durationElements.forEach { append(it.value, it.key) }
-    return this
+  fun appendAll(durationElements: Map<ChronoUnit, Long>): Duration {
+    val allElements = durationElements.toMutableMap()
+    this.durationElements.forEach {
+      if (!allElements.containsKey(it.key)) {
+        allElements[it.key] = it.value
+      } else {
+        allElements[it.key] = it.value + allElements[it.key]!!
+      }
+    }
+    return Duration(allElements.toMap())
   }
 }
