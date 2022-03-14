@@ -79,11 +79,14 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
       committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
       isScheduleFifteenMaximumLife = offendersOffence.indicators.any { it == OffenderOffence.SCHEDULE_15_LIFE_INDICATOR }
     )
-    val duration = Duration()
-    duration.append(sentence.days.toLong(), DAYS)
-    duration.append(sentence.weeks.toLong(), WEEKS)
-    duration.append(sentence.months.toLong(), MONTHS)
-    duration.append(sentence.years.toLong(), YEARS)
+    val duration = Duration(
+      mapOf(
+        DAYS to sentence.days.toLong(),
+        WEEKS to sentence.weeks.toLong(),
+        MONTHS to sentence.months.toLong(),
+        YEARS to sentence.years.toLong()
+      )
+    )
     val consecutiveSentenceUUIDs = if (sentence.consecutiveToSequence != null)
       listOf(
         generateUUIDForSentence(sentence.bookingId, sentence.consecutiveToSequence)
@@ -285,11 +288,9 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
 }
 
 private fun combineDuration(consecutiveSentence: ConsecutiveSentence): Duration {
-  val duration = Duration()
-  consecutiveSentence.orderedSentences.forEach {
-    duration.appendAll(it.duration.durationElements)
-  }
-  return duration
+  return consecutiveSentence.orderedSentences
+    .map { it.duration }
+    .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
 }
 
 fun transform(calculation: BookingCalculation) =
