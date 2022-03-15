@@ -9,10 +9,12 @@
        "sentenceCalculationType": "ADIMP_ORA",
        "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
        "sentenceDate": "2021-06-01",
-       "years": 0,
-       "months": 18,
-       "weeks": 0,
-       "days": 0,
+       "terms": [{
+         "years": 0,
+         "months": 18,
+         "weeks": 0,
+         "days": 0
+       }],
        "offences": [
          {
            "offenderChargeId": 3932623,
@@ -41,10 +43,12 @@
        "sentenceCalculationType": "ADIMP",
        "sentenceTypeDescription": "Sentencing Code Standard Determinate Sentence",
        "sentenceDate": "2021-07-01",
-       "years": 8,
-       "months": 0,
-       "weeks": 0,
-       "days": 0,
+       "terms": [{
+         "years": 8,
+         "months": 0,
+         "weeks": 0,
+         "days": 0
+       }],
        "offences": [
          {
            "offenderChargeId": 3932624,

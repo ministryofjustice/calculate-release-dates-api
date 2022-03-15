@@ -9,10 +9,12 @@
     "sentenceCalculationType":"LR_ORA",
     "sentenceTypeDescription":"ORA Licence Recall",
     "sentenceDate":"2021-01-04",
-    "years":0,
-    "months":18,
-    "weeks":0,
-    "days":0,
+    "terms": [{
+      "years": 0,
+      "months": 18,
+      "weeks": 0,
+      "days": 0
+    }],
     "offences":[
       {
         "offenderChargeId":6477659,
@@ -35,10 +37,12 @@
     "sentenceCalculationType":"LR_ORA",
     "sentenceTypeDescription":"ORA Licence Recall",
     "sentenceDate":"2021-01-04",
-    "years":0,
-    "months":3,
-    "weeks":0,
-    "days":0,
+    "terms": [{
+      "years": 0,
+      "months": 3,
+      "weeks": 0,
+      "days": 0
+    }],
     "offences":[
       {
         "offenderChargeId":6477658,
