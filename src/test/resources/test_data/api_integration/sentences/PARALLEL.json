@@ -7,10 +7,12 @@
     "sentenceSequence": 1,
     "sentenceStatus": "A",
     "sentenceCategory": "2003",
-    "years": 0,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
+    "terms": [{
+      "years": 1,
+      "months": 0,
+      "weeks": 0,
+      "days": 0
+    }],
     "sentenceCalculationType": "ADIMP",
     "sentenceTypeDescription": "Determinate sentence",
     "offences": [
@@ -31,10 +33,12 @@
     "sentenceSequence": 1,
     "sentenceStatus": "A",
     "sentenceCategory": "2003",
-    "years": 1,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
+    "terms": [{
+      "years": 1,
+      "months": 0,
+      "weeks": 0,
+      "days": 0
+    }],
     "sentenceCalculationType": "LR_ORA",
     "sentenceTypeDescription": "License recall",
     "offences": [

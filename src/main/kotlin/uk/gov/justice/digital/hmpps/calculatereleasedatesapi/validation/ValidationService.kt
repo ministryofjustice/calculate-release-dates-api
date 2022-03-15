@@ -77,24 +77,22 @@ class ValidationService(
       validateWithoutOffenceDate(it),
       validateOffenceDateAfterSentenceDate(it),
       validateOffenceRangeDateAfterSentenceDate(it),
-      validateDurationNotZero(it),
-      validateSingleTerm(it)
+      validateDuration(it)
     )
   }
 
-  private fun validateSingleTerm(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
-    val invalid = sentencesAndOffence.terms.size > 1
-    if (invalid) {
+  private fun validateDuration(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
+    val hasMultipleTerms = sentencesAndOffence.terms.size > 1
+    if (hasMultipleTerms) {
       return ValidationMessage("Sentence has multiple terms", ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS, sentencesAndOffence.sentenceSequence)
     }
-    return null
-  }
-
-  private fun validateDurationNotZero(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
-    val invalid = sentencesAndOffence.days == 0 &&
-      sentencesAndOffence.weeks == 0 &&
-      sentencesAndOffence.months == 0 &&
-      sentencesAndOffence.years == 0
+    val invalid = sentencesAndOffence.terms.isEmpty() ||
+      (
+        sentencesAndOffence.terms[0].days == 0 &&
+          sentencesAndOffence.terms[0].weeks == 0 &&
+          sentencesAndOffence.terms[0].months == 0 &&
+          sentencesAndOffence.terms[0].years == 0
+        )
     if (invalid) {
       return ValidationMessage("Sentence has no duration", ValidationCode.SENTENCE_HAS_NO_DURATION, sentencesAndOffence.sentenceSequence)
     }

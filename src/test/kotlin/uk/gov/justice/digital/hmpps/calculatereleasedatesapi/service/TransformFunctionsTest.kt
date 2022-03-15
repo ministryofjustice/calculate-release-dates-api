@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Offe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
@@ -52,10 +53,14 @@ class TransformFunctionsTest {
       bookingId = bookingId,
       sentenceSequence = sequence,
       sentenceDate = FIRST_JAN_2015,
-      years = 5,
-      months = 4,
-      weeks = 3,
-      days = 2,
+      terms = listOf(
+        SentenceTerms(
+          years = 5,
+          months = 4,
+          weeks = 3,
+          days = 2
+        )
+      ),
       sentenceStatus = "IMP",
       sentenceCategory = "CAT",
       sentenceCalculationType = SentenceCalculationType.ADIMP.name,
@@ -110,7 +115,11 @@ class TransformFunctionsTest {
       sentenceSequence = sequence,
       consecutiveToSequence = consecutiveTo,
       sentenceDate = FIRST_JAN_2015,
-      years = 5,
+      terms = listOf(
+        SentenceTerms(
+          years = 5
+        )
+      ),
       sentenceStatus = "IMP",
       sentenceCategory = "CAT",
       sentenceCalculationType = SentenceCalculationType.ADIMP.name,
