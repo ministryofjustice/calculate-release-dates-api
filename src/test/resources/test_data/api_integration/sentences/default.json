@@ -7,10 +7,12 @@
     "sentenceCalculationType": "ADIMP_ORA",
     "sentenceTypeDescription": "Standard Determinate",
     "sentenceDate": "2015-03-17",
-    "years": 0,
-    "months": 20,
-    "weeks": 0,
-    "days": 0,
+    "terms": [{
+      "years": 0,
+      "months": 20,
+      "weeks": 0,
+      "days": 0
+    }],
     "offences": [
       {
         "offenderChargeId": 9991,

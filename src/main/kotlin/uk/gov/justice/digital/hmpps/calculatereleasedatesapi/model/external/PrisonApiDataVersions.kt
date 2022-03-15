@@ -24,7 +24,7 @@ class PrisonApiDataVersions {
     ) {
       fun toLatest() = SentenceAndOffences(
         bookingId, sentenceSequence, lineSequence, caseSequence, consecutiveToSequence, sentenceStatus, sentenceCategory, sentenceCalculationType, sentenceTypeDescription, sentenceDate,
-        years, months, weeks, days, listOf(SentenceTerms(years, months, weeks, days)), offences
+        listOf(SentenceTerms(years, months, weeks, days)), offences
       )
     }
   }

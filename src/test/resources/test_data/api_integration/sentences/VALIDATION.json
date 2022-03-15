@@ -15,10 +15,6 @@
       "weeks": 0,
       "days": 1
     }],
-    "years": 0,
-    "months": 0,
-    "weeks": 0,
-    "days": 1,
     "offences": [
       {
         "offenderChargeId": 3932624,
@@ -40,10 +36,6 @@
       "weeks": 0,
       "days": 1
     }],
-    "years": 0,
-    "months": 0,
-    "weeks": 0,
-    "days": 1,
     "caseSequence": 1,
     "lineSequence": 2,
     "sentenceDate": "2021-02-05",
@@ -70,10 +62,6 @@
       "weeks": 0,
       "days": 1
     }],
-    "years": 0,
-    "months": 0,
-    "weeks": 0,
-    "days": 1,
     "caseSequence": 2,
     "lineSequence": 1,
     "sentenceDate": "2021-02-05",
@@ -98,10 +86,6 @@
       "weeks": 0,
       "days": 0
     }],
-    "years": 0,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
     "caseSequence": 2,
     "lineSequence": 1,
     "sentenceDate": "2021-02-05",
@@ -132,10 +116,6 @@
       "weeks": 0,
       "days": 0
     }],
-    "years": 2,
-    "months": 0,
-    "weeks": 0,
-    "days": 0,
     "caseSequence": 2,
     "lineSequence": 2,
     "sentenceDate": "2021-02-05",

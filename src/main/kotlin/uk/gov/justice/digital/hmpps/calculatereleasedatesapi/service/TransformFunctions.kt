@@ -81,10 +81,10 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
     )
     val duration = Duration(
       mapOf(
-        DAYS to sentence.days.toLong(),
-        WEEKS to sentence.weeks.toLong(),
-        MONTHS to sentence.months.toLong(),
-        YEARS to sentence.years.toLong()
+        DAYS to sentence.terms[0].days.toLong(),
+        WEEKS to sentence.terms[0].weeks.toLong(),
+        MONTHS to sentence.terms[0].months.toLong(),
+        YEARS to sentence.terms[0].years.toLong()
       )
     )
     val consecutiveSentenceUUIDs = if (sentence.consecutiveToSequence != null)
