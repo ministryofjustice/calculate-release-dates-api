@@ -253,12 +253,10 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectBody(ValidationMessages::class.java)
       .returnResult().responseBody!!
 
-
     assertThat(validationMessages.type).isEqualTo(ValidationType.VALIDATION)
     assertThat(validationMessages.messages).hasSize(1)
     assertThat(validationMessages.messages[0].code).isEqualTo(ValidationCode.REMAND_OVERLAPS_WITH_SENTENCE)
   }
-
 
   @Test
   fun `Run calculation where SDS+ is consecutive to SDS`() {
