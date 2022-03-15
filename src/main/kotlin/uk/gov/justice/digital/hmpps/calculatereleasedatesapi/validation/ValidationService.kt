@@ -5,6 +5,7 @@ import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
@@ -13,18 +14,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonServi
 
 @Service
 class ValidationService(
-  private val prisonService: PrisonService,
   private val featureToggles: FeatureToggles
 ) {
 
-  fun validate(prisonerId: String): ValidationMessages {
-    val prisonerDetails = prisonService.getOffenderDetail(prisonerId)
-    val sentencesAndOffences = prisonService.getSentencesAndOffences(prisonerDetails.bookingId)
-    val adjustments = prisonService.getBookingAndSentenceAdjustmentss(prisonerDetails.bookingId)
-    return validate(sentencesAndOffences, adjustments)
-  }
-
-  fun validate(sentencesAndOffences: List<SentenceAndOffences>, adjustments: BookingAndSentenceAdjustments): ValidationMessages {
+  fun validate(sourceData: PrisonApiSourceData): ValidationMessages {
+    val sentencesAndOffences = sourceData.sentenceAndOffences
+    val adjustments = sourceData.bookingAndSentenceAdjustments
     val sortedSentences = sentencesAndOffences.sortedWith(this::sortByCaseNumberAndLineSequence)
 
     val unsupportedValidationMessages = validateSupportedSentences(sortedSentences)

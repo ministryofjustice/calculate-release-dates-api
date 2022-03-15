@@ -17,7 +17,7 @@ class BookingService(
     val prisonerDetails = prisonApiSourceData.prisonerDetails
     val sentenceAndOffences = prisonApiSourceData.sentenceAndOffences
     val bookingAndSentenceAdjustments = prisonApiSourceData.bookingAndSentenceAdjustments
-    val validation = validationService.validate(sentenceAndOffences, bookingAndSentenceAdjustments)
+    val validation = validationService.validate(prisonApiSourceData)
     if (validation.type != ValidationType.VALID) {
       throw ValidationException(validation.toErrorString())
     }

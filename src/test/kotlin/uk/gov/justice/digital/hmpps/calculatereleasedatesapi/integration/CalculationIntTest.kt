@@ -242,6 +242,25 @@ class CalculationIntTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `Run validation where remand periods overlap with a sentence periods`() {
+    val validationMessages: ValidationMessages = webTestClient.get()
+      .uri("/calculation/$REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID/validate")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ValidationMessages::class.java)
+      .returnResult().responseBody!!
+
+
+    assertThat(validationMessages.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(validationMessages.messages).hasSize(1)
+    assertThat(validationMessages.messages[0].code).isEqualTo(ValidationCode.REMAND_OVERLAPS_WITH_SENTENCE)
+  }
+
+
+  @Test
   fun `Run calculation where SDS+ is consecutive to SDS`() {
     val bookingCalculation: BookingCalculation = webTestClient.post()
       .uri("/calculation/$SDS_PLUS_CONSECUTIVE_TO_SDS")

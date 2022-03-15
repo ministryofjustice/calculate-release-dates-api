@@ -110,9 +110,10 @@ class BookingServiceTest {
       firstName = "Harry",
       lastName = "Houdini"
     )
-    whenever(validationService.validate(listOf(sentenceAndOffences), bookingAndSentenceAdjustments)).thenReturn(ValidationMessages(ValidationType.VALID))
+    val sourceData = PrisonApiSourceData(listOf(sentenceAndOffences), prisonerDetails, bookingAndSentenceAdjustments)
+    whenever(validationService.validate(sourceData)).thenReturn(ValidationMessages(ValidationType.VALID))
 
-    val result = bookingService.getBooking(PrisonApiSourceData(listOf(sentenceAndOffences), prisonerDetails, bookingAndSentenceAdjustments))
+    val result = bookingService.getBooking(sourceData)
 
     assertThat(result).isEqualTo(
       Booking(
