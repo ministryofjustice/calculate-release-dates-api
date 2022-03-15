@@ -41,6 +41,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.LocalDate
@@ -57,13 +58,16 @@ class CalculationControllerTest {
   private lateinit var bookingService: BookingService
 
   @MockBean
-  private lateinit var calculationService: CalculationService
+  private lateinit var calculationTransactionalService: CalculationTransactionalService
 
   @MockBean
   private lateinit var validationService: ValidationService
 
   @MockBean
   private lateinit var prisonService: PrisonService
+
+  @MockBean
+  private lateinit var calculationService: CalculationService
 
   @Autowired
   private lateinit var mvc: MockMvc
@@ -80,10 +84,10 @@ class CalculationControllerTest {
   @BeforeEach
   fun reset() {
     reset(bookingService)
-    reset(calculationService)
+    reset(calculationTransactionalService)
 
     mvc = MockMvcBuilders
-      .standaloneSetup(CalculationController(bookingService, prisonService, calculationService, validationService))
+      .standaloneSetup(CalculationController(bookingService, prisonService, calculationTransactionalService, calculationService, validationService))
       .setControllerAdvice(ControllerAdvice())
       .build()
   }
@@ -99,7 +103,7 @@ class CalculationControllerTest {
     val bookingCalculation = BookingCalculation(calculationRequestId = 9991L)
     whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(sourceData)
     whenever(bookingService.getBooking(sourceData)).thenReturn(booking)
-    whenever(calculationService.calculate(booking, PRELIMINARY, sourceData)).thenReturn(bookingCalculation)
+    whenever(calculationTransactionalService.calculate(booking, PRELIMINARY, sourceData)).thenReturn(bookingCalculation)
 
     val result = mvc.perform(post("/calculation/$prisonerId").accept(APPLICATION_JSON))
       .andExpect(status().isOk)
@@ -107,7 +111,7 @@ class CalculationControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(bookingCalculation))
-    verify(calculationService, times(1)).calculate(booking, PRELIMINARY, sourceData)
+    verify(calculationTransactionalService, times(1)).calculate(booking, PRELIMINARY, sourceData)
   }
 
   @Test
@@ -121,7 +125,7 @@ class CalculationControllerTest {
     val bookingCalculation = BookingCalculation(calculationRequestId = 9991L)
     whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(sourceData)
     whenever(bookingService.getBooking(sourceData)).thenReturn(booking)
-    whenever(calculationService.calculate(booking, CONFIRMED, sourceData, calculationFragments)).thenReturn(bookingCalculation)
+    whenever(calculationTransactionalService.calculate(booking, CONFIRMED, sourceData, calculationFragments)).thenReturn(bookingCalculation)
 
     val result = mvc.perform(
       post("/calculation/$prisonerId/confirm/$calculationRequestId")
@@ -134,8 +138,8 @@ class CalculationControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(bookingCalculation))
-    verify(calculationService, times(1)).calculate(booking, CONFIRMED, sourceData, calculationFragments)
-    verify(calculationService, times(1)).writeToNomisAndPublishEvent(prisonerId, booking, bookingCalculation)
+    verify(calculationTransactionalService, times(1)).calculate(booking, CONFIRMED, sourceData, calculationFragments)
+    verify(calculationTransactionalService, times(1)).writeToNomisAndPublishEvent(prisonerId, booking, bookingCalculation)
   }
 
   @Test
@@ -149,8 +153,8 @@ class CalculationControllerTest {
     val bookingCalculation = BookingCalculation(calculationRequestId = 9991L)
     whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(sourceData)
     whenever(bookingService.getBooking(sourceData)).thenReturn(booking)
-    whenever(calculationService.calculate(booking, CONFIRMED, sourceData)).thenReturn(bookingCalculation)
-    whenever(calculationService.validateConfirmationRequest(any(), any())).then {
+    whenever(calculationTransactionalService.calculate(booking, CONFIRMED, sourceData)).thenReturn(bookingCalculation)
+    whenever(calculationTransactionalService.validateConfirmationRequest(any(), any())).then {
       throw PreconditionFailedException(
         "The booking data used for the preliminary calculation has changed"
       )
@@ -177,7 +181,7 @@ class CalculationControllerTest {
     val calculationRequestId = 9995L
     val bookingCalculation = BookingCalculation(calculationRequestId = calculationRequestId)
 
-    whenever(calculationService.findCalculationResults(calculationRequestId)).thenReturn(bookingCalculation)
+    whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(bookingCalculation)
 
     val result = mvc.perform(get("/calculation/results/$calculationRequestId").accept(APPLICATION_JSON))
       .andExpect(status().isOk)
@@ -185,7 +189,7 @@ class CalculationControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(bookingCalculation))
-    verify(calculationService, times(1)).findCalculationResults(calculationRequestId)
+    verify(calculationTransactionalService, times(1)).findCalculationResults(calculationRequestId)
   }
 
   @Test
@@ -198,12 +202,12 @@ class CalculationControllerTest {
     val breakdown = CalculationBreakdown(listOf(), null)
     val calculation = BookingCalculation()
 
-    whenever(calculationService.findCalculationResults(calculationRequestId)).thenReturn(calculation)
-    whenever(calculationService.findSentenceAndOffencesFromCalculation(calculationRequestId)).thenReturn(sentences)
-    whenever(calculationService.findPrisonerDetailsFromCalculation(calculationRequestId)).thenReturn(prisonerDetails)
-    whenever(calculationService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)).thenReturn(adjustments)
+    whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(calculation)
+    whenever(calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)).thenReturn(sentences)
+    whenever(calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId)).thenReturn(prisonerDetails)
+    whenever(calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)).thenReturn(adjustments)
     whenever(bookingService.getBooking(sourceData)).thenReturn(booking)
-    whenever(calculationService.calculateWithBreakdown(booking, calculation)).thenReturn(breakdown)
+    whenever(calculationTransactionalService.calculateWithBreakdown(booking, calculation)).thenReturn(breakdown)
 
     val result = mvc.perform(get("/calculation/breakdown/$calculationRequestId").accept(APPLICATION_JSON))
       .andExpect(status().isOk)

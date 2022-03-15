@@ -54,7 +54,7 @@ import java.util.Optional
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
-class CalculationServiceTest {
+class CalculationTransactionalServiceTest {
   private val jsonTransformation = JsonTransformation()
   private val sentenceCalculationService = SentenceCalculationService()
   private val sentencesExtractionService = SentencesExtractionService()
@@ -75,18 +75,21 @@ class CalculationServiceTest {
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val prisonService = mock<PrisonService>()
   private val domainEventPublisher = mock<DomainEventPublisher>()
+  private val calculationService = CalculationService(
+    bookingCalculationService,
+    bookingExtractionService,
+    bookingTimelineService
+  )
 
-  private val calculationService =
-    CalculationService(
-      bookingCalculationService,
-      bookingExtractionService,
+  private val calculationTransactionalService =
+    CalculationTransactionalService(
       calculationRequestRepository,
       calculationOutcomeRepository,
       TestUtil.objectMapper(),
       prisonService,
       domainEventPublisher,
-      bookingTimelineService,
-      prisonApiDataMapper
+      prisonApiDataMapper,
+      calculationService
     )
 
   private val fakeSourceData = PrisonApiSourceData(
@@ -107,7 +110,7 @@ class CalculationServiceTest {
 
     val calculationBreakdown: CalculationBreakdown
     try {
-      calculationBreakdown = calculationService.calculateWithBreakdown(booking, calculation)
+      calculationBreakdown = calculationTransactionalService.calculateWithBreakdown(booking, calculation)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -138,7 +141,7 @@ class CalculationServiceTest {
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val bookingCalculation: BookingCalculation
     try {
-      bookingCalculation = calculationService.calculate(booking, PRELIMINARY, fakeSourceData)
+      bookingCalculation = calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -161,7 +164,7 @@ class CalculationServiceTest {
       )
     )
 
-    val bookingCalculation = calculationService.findCalculationResults(CALCULATION_REQUEST_ID)
+    val bookingCalculation = calculationTransactionalService.findCalculationResults(CALCULATION_REQUEST_ID)
 
     assertEquals(
       bookingCalculation,
@@ -183,7 +186,7 @@ class CalculationServiceTest {
     )
 
     val exception = assertThrows<PreconditionFailedException> {
-      calculationService.validateConfirmationRequest(CALCULATION_REQUEST_ID, BOOKING)
+      calculationTransactionalService.validateConfirmationRequest(CALCULATION_REQUEST_ID, BOOKING)
     }
     assertThat(exception)
       .isInstanceOf(PreconditionFailedException::class.java)
@@ -200,7 +203,7 @@ class CalculationServiceTest {
     ).thenReturn(Optional.empty())
 
     val exception = assertThrows<EntityNotFoundException> {
-      calculationService.validateConfirmationRequest(CALCULATION_REQUEST_ID, BOOKING)
+      calculationTransactionalService.validateConfirmationRequest(CALCULATION_REQUEST_ID, BOOKING)
     }
     assertThat(exception)
       .isInstanceOf(EntityNotFoundException::class.java)
@@ -220,7 +223,7 @@ class CalculationServiceTest {
       )
     )
 
-    assertDoesNotThrow { calculationService.validateConfirmationRequest(CALCULATION_REQUEST_ID, BOOKING) }
+    assertDoesNotThrow { calculationTransactionalService.validateConfirmationRequest(CALCULATION_REQUEST_ID, BOOKING) }
   }
 
   @Test
@@ -235,7 +238,7 @@ class CalculationServiceTest {
       )
     )
 
-    val booking = calculationService.getBooking(CALCULATION_REQUEST_ID)
+    val booking = calculationTransactionalService.getBooking(CALCULATION_REQUEST_ID)
 
     assertThat(booking).isNotNull
   }
@@ -255,7 +258,7 @@ class CalculationServiceTest {
       )
     )
 
-    calculationService.writeToNomisAndPublishEvent(
+    calculationTransactionalService.writeToNomisAndPublishEvent(
       PRISONER_ID,
       BOOKING.copy(sentences = listOf(SENTENCE.copy(duration = ZERO_DURATION))),
       BOOKING_CALCULATION.copy(
@@ -301,7 +304,7 @@ class CalculationServiceTest {
     ).thenThrow(EntityNotFoundException("test ex"))
 
     val exception = assertThrows<EntityNotFoundException> {
-      calculationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION)
+      calculationTransactionalService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION)
     }
 
     assertThat(exception)
@@ -331,7 +334,7 @@ class CalculationServiceTest {
     ).thenThrow(EntityNotFoundException("test ex"))
 
     try {
-      calculationService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION)
+      calculationTransactionalService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION)
     } catch (ex: Exception) {
       fail("Exception was thrown!")
     }
