@@ -78,7 +78,7 @@ class CalculationControllerTest {
   private val sentences: List<SentenceAndOffences> = emptyList()
   private val prisonerDetails = PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
   private val adjustments = BookingAndSentenceAdjustments(emptyList(), emptyList())
-  private val sourceData = PrisonApiSourceData(sentences, prisonerDetails, adjustments)
+  private val sourceData = PrisonApiSourceData(sentences, prisonerDetails, adjustments, null)
   private val calculationFragments = CalculationFragments("<p>breakdown</p>")
 
   @BeforeEach
@@ -98,7 +98,7 @@ class CalculationControllerTest {
     val bookingId = 9995L
     val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
 
-    val booking = Booking(offender, mutableListOf(), Adjustments(), bookingId)
+    val booking = Booking(offender, mutableListOf(), Adjustments(), null, bookingId)
 
     val bookingCalculation = BookingCalculation(calculationRequestId = 9991L)
     whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(sourceData)
@@ -120,7 +120,7 @@ class CalculationControllerTest {
     val calculationRequestId = 12345
     val bookingId = 9995L
     val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
-    val booking = Booking(offender, mutableListOf(), Adjustments(), bookingId,)
+    val booking = Booking(offender, mutableListOf(), Adjustments(), null, bookingId,)
 
     val bookingCalculation = BookingCalculation(calculationRequestId = 9991L)
     whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(sourceData)
@@ -148,7 +148,7 @@ class CalculationControllerTest {
     val calculationRequestId = 12345L
     val bookingId = 9995L
     val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
-    val booking = Booking(offender, mutableListOf(), Adjustments(), bookingId)
+    val booking = Booking(offender, mutableListOf(), Adjustments(), null, bookingId)
 
     val bookingCalculation = BookingCalculation(calculationRequestId = 9991L)
     whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(sourceData)
@@ -198,7 +198,7 @@ class CalculationControllerTest {
     val calculationRequestId = 9995L
     val bookingId = 9995L
     val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
-    val booking = Booking(offender, mutableListOf(), Adjustments(), bookingId)
+    val booking = Booking(offender, mutableListOf(), Adjustments(), null, bookingId)
     val breakdown = CalculationBreakdown(listOf(), null)
     val calculation = BookingCalculation()
 

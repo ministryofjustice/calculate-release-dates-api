@@ -4,5 +4,5 @@ enum class SentenceIdentificationTrack {
   SDS_BEFORE_CJA_LASPO,
   SDS_AFTER_CJA_LASPO,
   SDS_PLUS,
-  STANDARD_RECALL
+  RECALL
 }

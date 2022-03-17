@@ -4,7 +4,9 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 
 @Service
@@ -16,7 +18,12 @@ class PrisonService(
     val prisonerDetails = getOffenderDetail(prisonerId)
     val sentenceAndOffences = getSentencesAndOffences(prisonerDetails.bookingId)
     val bookingAndSentenceAdjustments = getBookingAndSentenceAdjustmentss(prisonerDetails.bookingId)
-    return PrisonApiSourceData(sentenceAndOffences, prisonerDetails, bookingAndSentenceAdjustments)
+    val bookingHasFixedTermRecall = sentenceAndOffences.any { SentenceCalculationType.from(it.sentenceCalculationType)?.sentenceType?.isFixedTermRecall == true }
+    var returnToCustodyDate: ReturnToCustodyDate? = null
+    if (bookingHasFixedTermRecall) {
+      returnToCustodyDate = prisonApiClient.getReturnToCustodyDate(prisonerDetails.bookingId)
+    }
+    return PrisonApiSourceData(sentenceAndOffences, prisonerDetails, bookingAndSentenceAdjustments, returnToCustodyDate)
   }
 
   fun getOffenderDetail(prisonerId: String): PrisonerDetails {
