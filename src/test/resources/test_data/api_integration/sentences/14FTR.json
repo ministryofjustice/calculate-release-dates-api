@@ -1,0 +1,25 @@
+[
+  {
+    "bookingId": 1,
+    "sentenceSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "14FTR_ORA",
+    "sentenceTypeDescription": "14 Day fixed term recall",
+    "sentenceDate": "2021-03-01",
+    "terms": [{
+      "years": 0,
+      "months": 18,
+      "weeks": 0,
+      "days": 0
+    }],
+    "offences": [
+      {
+        "offenderChargeId": 9991,
+        "offenceStartDate": "2015-03-17",
+        "offenceCode": "GBH",
+        "offenceDescription": "Grievous bodily harm"
+      }
+    ]
+  }
+]

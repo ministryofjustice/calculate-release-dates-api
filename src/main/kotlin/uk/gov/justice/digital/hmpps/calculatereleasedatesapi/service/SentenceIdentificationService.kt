@@ -20,8 +20,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IdentifiableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType.STANDARD_DETERMINATE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType.STANDARD_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
@@ -32,22 +30,10 @@ import java.time.temporal.ChronoUnit
 class SentenceIdentificationService {
 
   fun identify(sentence: IdentifiableSentence, offender: Offender) {
-    if (sentence.sentenceType == STANDARD_DETERMINATE) {
-      identifyStandardDeterminate(sentence, offender)
-    } else if (sentence.sentenceType == STANDARD_RECALL) {
-      identifyStandardRecall(sentence, offender)
-    }
-  }
-
-  fun identifyStandardRecall(sentence: IdentifiableSentence, offender: Offender) {
-    sentence.identificationTrack = SentenceIdentificationTrack.STANDARD_RECALL
-    sentence.releaseDateTypes = listOf(
-      SLED,
-      NCRD,
-      PRRD
-    )
-    if (doesTopUpSentenceExpiryDateApply(sentence, offender)) {
-      sentence.releaseDateTypes += TUSED
+    identifyStandardDeterminate(sentence, offender)
+    if (sentence.sentenceType.isRecall) {
+      sentence.releaseDateTypes -= HDCED
+      sentence.releaseDateTypes += PRRD
     }
   }
 
@@ -217,9 +203,8 @@ class SentenceIdentificationService {
         false
       }
     }
-    val recallCondition = sentence.sentenceType == STANDARD_RECALL
 
-    return ((oraCondition && lapsoCondition) || recallCondition) &&
+    return oraCondition && lapsoCondition &&
       sentence.durationIsLessThanEqualTo(TWO, ChronoUnit.YEARS) &&
       sentence.getLengthInDays() > INT_ONE &&
       offender.getAgeOnDate(sentence.getHalfSentenceDate()) > INT_EIGHTEEN

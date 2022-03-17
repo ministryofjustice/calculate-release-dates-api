@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoMatchingReleaseDateFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import java.time.LocalDate
@@ -50,18 +49,6 @@ class SentencesExtractionService {
     return sentences
       .filter { property.get(it.sentenceCalculation) != null && filter(it) }
       .maxByOrNull { property.get(it.sentenceCalculation)!! }
-  }
-
-  fun getAssociatedReleaseType(sentences: List<ExtractableSentence>, latestReleaseDate: LocalDate?): Boolean {
-    val matchingReleaseTypes = sentences
-      .filter { it.sentenceCalculation.releaseDate?.equals(latestReleaseDate) == true }
-      .map { it.sentenceCalculation.isReleaseDateConditional }
-      .toMutableList()
-    return if (matchingReleaseTypes.size > 0) {
-      matchingReleaseTypes.all { it }
-    } else {
-      throw NoMatchingReleaseDateFoundException("Could not find release date in sentences")
-    }
   }
 
   companion object {

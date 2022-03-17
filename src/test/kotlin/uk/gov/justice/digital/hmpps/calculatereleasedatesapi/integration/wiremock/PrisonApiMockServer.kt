@@ -44,6 +44,8 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
     val sentences = jsonTransformation.getAllSentenceAndOffencesJson()
     val defaultSentence = sentences[DEFAULT]!!
 
+    val returnToCustodyDates = jsonTransformation.getAllReturnToCustodyDatesJson()
+
     val allPrisoners = (adjustments.keys + sentences.keys + prisoners.keys).distinct()
     allPrisoners.forEach {
       val prisoner = if (prisoners.containsKey(it)) {
@@ -74,6 +76,13 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
         defaultSentence
       }
       prisonApi.stubGetSentencesAndOffences(it.hashCode().toLong(), sentence)
+
+      if (returnToCustodyDates.containsKey(it)) {
+        log.info("Stubbing return to custody prisonerId $it, bookingId ${it.hashCode().toLong()} from file $it")
+        prisonApi.stubGetReturnToCustody(it.hashCode().toLong(), returnToCustodyDates[it]!!)
+      } else {
+        log.info("No return to custody to stub for prisonerId $it, bookingId ${it.hashCode().toLong()}")
+      }
 
       prisonApi.stubPostOffenderDates(it.hashCode().toLong())
     }
@@ -107,6 +116,17 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
   fun stubGetSentencesAndOffences(bookingId: Long, json: String): StubMapping =
     stubFor(
       get("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(json)
+            .withStatus(200)
+        )
+    )
+
+  fun stubGetReturnToCustody(bookingId: Long, json: String): StubMapping =
+    stubFor(
+      get("/api/bookings/$bookingId/return-to-custody")
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")

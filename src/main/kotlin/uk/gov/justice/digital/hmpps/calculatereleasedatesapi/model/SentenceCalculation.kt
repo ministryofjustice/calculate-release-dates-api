@@ -25,7 +25,8 @@ data class SentenceCalculation(
   val unadjustedPostRecallReleaseDate: LocalDate?,
   val adjustments: Adjustments,
   var adjustmentsBefore: LocalDate,
-  var adjustmentsAfter: LocalDate? = null
+  var adjustmentsAfter: LocalDate? = null,
+  val returnToCustodyDate: LocalDate? = null
 ) {
 
   val calculatedTotalDeductedDays: Int get() {
@@ -39,6 +40,10 @@ data class SentenceCalculation(
 
   val calculatedTotalAddedDays: Int get() {
     return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+  }
+
+  val calculatedFixedTermRecallAddedDays: Int get() {
+    return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = returnToCustodyDate)
   }
 
   val calculatedTotalAwardedDays: Int get() {
@@ -89,10 +94,16 @@ data class SentenceCalculation(
   }
 
   val adjustedPostRecallReleaseDate: LocalDate? get() {
-    return unadjustedPostRecallReleaseDate?.minusDays(
-      calculatedTotalDeductedDays.toLong()
-    )?.plusDays(
-      calculatedTotalAddedDays.toLong()
+    if (sentence.sentenceType == SentenceType.STANDARD_RECALL) {
+      return unadjustedPostRecallReleaseDate?.minusDays(
+        calculatedTotalDeductedDays.toLong()
+      )?.plusDays(
+        calculatedTotalAddedDays.toLong()
+      )
+    }
+    // Fixed term recalls only apply adjustments from return to custody date
+    return unadjustedPostRecallReleaseDate?.plusDays(
+      calculatedFixedTermRecallAddedDays.toLong()
     )
   }
 
@@ -125,14 +136,10 @@ data class SentenceCalculation(
   var notionalConditionalReleaseDate: LocalDate? = null
 
   val releaseDate: LocalDate get() {
-    if (
-      sentence.releaseDateTypes.contains(ReleaseDateType.CRD) ||
-      sentence.releaseDateTypes.contains(ReleaseDateType.ARD) ||
-      sentence.releaseDateTypes.contains(ReleaseDateType.PED)
-    ) {
-      return adjustedDeterminateReleaseDate
+    return if (sentence.sentenceType.isRecall) {
+      adjustedPostRecallReleaseDate!!
     } else {
-      return adjustedPostRecallReleaseDate!!
+      adjustedDeterminateReleaseDate
     }
   }
 

@@ -76,9 +76,23 @@ class SentenceCalculationService {
 
     var numberOfDaysToPostRecallReleaseDate: Int? = null
     var unadjustedPostRecallReleaseDate: LocalDate? = null
-    if (sentence.sentenceType == SentenceType.STANDARD_RECALL) {
-      numberOfDaysToPostRecallReleaseDate = numberOfDaysToSentenceExpiryDate
-      unadjustedPostRecallReleaseDate = unadjustedExpiryDate
+    if (sentence.sentenceType.isRecall) {
+      when (sentence.sentenceType) {
+        SentenceType.STANDARD_RECALL -> {
+          numberOfDaysToPostRecallReleaseDate = numberOfDaysToSentenceExpiryDate
+          unadjustedPostRecallReleaseDate = unadjustedExpiryDate
+        }
+        SentenceType.FIXED_TERM_RECALL_14 -> {
+          numberOfDaysToPostRecallReleaseDate = 14
+          unadjustedPostRecallReleaseDate = calculateFixedTermRecall(booking, 14)
+        }
+        SentenceType.FIXED_TERM_RECALL_28 -> {
+          numberOfDaysToPostRecallReleaseDate = 28
+          unadjustedPostRecallReleaseDate = calculateFixedTermRecall(booking, 28)
+        }
+      }
+      numberOfDaysToPostRecallReleaseDate = minOf(numberOfDaysToPostRecallReleaseDate!!, numberOfDaysToSentenceExpiryDate)
+      unadjustedPostRecallReleaseDate = minOf(unadjustedPostRecallReleaseDate!!, unadjustedExpiryDate)
     }
 
     // create new SentenceCalculation and associate it with a sentence
@@ -92,8 +106,15 @@ class SentenceCalculationService {
       numberOfDaysToPostRecallReleaseDate,
       unadjustedPostRecallReleaseDate,
       booking.adjustments,
-      sentence.sentencedAt
+      sentence.sentencedAt,
+      returnToCustodyDate = booking.returnToCustodyDate
     )
+  }
+
+  fun calculateFixedTermRecall(booking: Booking, days: Int): LocalDate {
+    return booking.returnToCustodyDate!!
+      .plusDays(days.toLong())
+      .minusDays(ONE)
   }
 
   /*
@@ -190,7 +211,7 @@ class SentenceCalculationService {
         .getLengthInDays(sentence.sentencedAt)
       val adjustment = floor(lengthOfOraSentences.toDouble().div(TWO)).toLong()
       sentenceCalculation.licenceExpiryDate =
-        sentenceCalculation.releaseDate!!.plusDays(adjustment)
+        sentenceCalculation.adjustedDeterminateReleaseDate!!.plusDays(adjustment)
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
         DAYS.between(sentence.sentencedAt, sentenceCalculation.licenceExpiryDate)
       sentenceCalculation.breakdownByReleaseDateType[LED] =
@@ -198,7 +219,7 @@ class SentenceCalculationService {
           rules = setOf(LED_CONSEC_ORA_AND_NON_ORA),
           adjustedDays = adjustment.toInt(),
           releaseDate = sentenceCalculation.licenceExpiryDate!!,
-          unadjustedDate = sentenceCalculation.releaseDate!!
+          unadjustedDate = sentenceCalculation.adjustedDeterminateReleaseDate!!
         )
     } else {
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =

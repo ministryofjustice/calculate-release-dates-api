@@ -102,7 +102,7 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
       consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
       caseSequence = sentence.caseSequence,
       lineSequence = sentence.lineSequence,
-      sentenceType = SentenceCalculationType.valueOf(sentence.sentenceCalculationType).sentenceType
+      sentenceType = SentenceCalculationType.from(sentence.sentenceCalculationType)!!.sentenceType
     )
   }.toMutableList()
 }
@@ -201,6 +201,7 @@ fun transform(
     sentenceAndOffencesVersion = if (anySentenceAndOffenceHasTermsArray) 1 else 0,
     prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
     adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments, objectMapper),
+    returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
     breakdownHtml = calculationFragments?.breakdownHtml
   )
 }

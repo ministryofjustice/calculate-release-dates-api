@@ -55,7 +55,8 @@ class TestController(
       emptyList(), PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
       BookingAndSentenceAdjustments(
         emptyList(), emptyList()
-      )
+      ),
+      null
     )
     return calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData)
   }

@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
@@ -116,19 +115,10 @@ class ValidationService(
   }
 
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
-    val supportedSentences: List<String> = SentenceCalculationType.values()
-      .filter { featureToggles.standardRecall || it.sentenceType != SentenceType.STANDARD_RECALL }
-      .map { it.name }
-    val validationMessages = sentencesAndOffences.filter { !supportedSentences.contains(it.sentenceCalculationType) }
+    val supportedSentences: List<SentenceCalculationType> = SentenceCalculationType.values()
+      .filter { featureToggles.recall || it.sentenceType.isRecall }
+    return sentencesAndOffences.filter { !supportedSentences.contains(SentenceCalculationType.from(it.sentenceCalculationType)) }
       .map { ValidationMessage("Unsupported sentence type ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceTypeDescription)) }
-    if (validationMessages.isEmpty() && featureToggles.standardRecall) {
-      val bookingHasRecallSentences = sentencesAndOffences.any { SentenceCalculationType.valueOf(it.sentenceCalculationType).sentenceType == SentenceType.STANDARD_RECALL }
-      val bookingHasDeterminateSentences = sentencesAndOffences.any { SentenceCalculationType.valueOf(it.sentenceCalculationType).sentenceType == SentenceType.STANDARD_DETERMINATE }
-      if (bookingHasRecallSentences && bookingHasDeterminateSentences) {
-        return listOf(ValidationMessage("Unsupported parallel sentence", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, sentencesAndOffences[0].lineSequence, listOf("Parallel sentence")))
-      }
-    }
-    return validationMessages
   }
 
   private fun validateOffenceDateAfterSentenceDate(

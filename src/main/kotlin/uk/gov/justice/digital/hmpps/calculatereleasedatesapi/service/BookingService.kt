@@ -30,7 +30,8 @@ class BookingService(
       offender = offender,
       sentences = sentences.toMutableList(),
       adjustments = adjustments,
-      bookingId = prisonerDetails.bookingId
+      bookingId = prisonerDetails.bookingId,
+      returnToCustodyDate = prisonApiSourceData.returnToCustodyDate?.returnToCustodyDate
     )
   }
 }

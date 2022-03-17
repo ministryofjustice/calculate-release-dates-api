@@ -22,7 +22,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
@@ -95,6 +94,8 @@ class BookingExtractionService(
 
     val mostRecentSentenceByReleaseDate =
       extractionService.mostRecentSentence(sentences, SentenceCalculation::releaseDate)
+    val mostRecentSentenceByAdjustedDeterminateReleaseDate =
+      extractionService.mostRecentSentence(sentences, SentenceCalculation::adjustedDeterminateReleaseDate)
     val mostRecentSentenceByExpiryDate =
       extractionService.mostRecentSentence(sentences, SentenceCalculation::expiryDate)
 
@@ -131,7 +132,7 @@ class BookingExtractionService(
     }
 
     val concurrentOraAndNonOraDetails = extractConcurrentOraAndNonOraDetails(
-      mostRecentSentenceByReleaseDate.releaseDateTypes, mostRecentSentenceByExpiryDate.releaseDateTypes, latestReleaseDate, sentences, effectiveSentenceLength
+      mostRecentSentenceByAdjustedDeterminateReleaseDate.releaseDateTypes, mostRecentSentenceByExpiryDate.releaseDateTypes, latestReleaseDate, sentences, effectiveSentenceLength
     )
 
     val latestNotionalConditionalReleaseDate: LocalDate? = extractionService.mostRecentOrNull(
@@ -158,7 +159,9 @@ class BookingExtractionService(
       }
     }
 
-    if (sentences.any { it.sentenceType == SentenceType.STANDARD_DETERMINATE }) {
+    if (mostRecentSentenceByReleaseDate.sentenceType.isRecall) {
+      bookingCalculation.dates[PRRD] = latestReleaseDate
+    } else {
       if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
         bookingCalculation.dates[CRD] = latestReleaseDate
         // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
@@ -171,9 +174,6 @@ class BookingExtractionService(
         breakdownByReleaseDateType[ARD] =
           mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
       }
-    }
-    if (sentences.any { it.sentenceType == SentenceType.STANDARD_RECALL }) {
-      bookingCalculation.dates[PRRD] = latestReleaseDate
     }
 
     if (latestNonParoleDate != null) {

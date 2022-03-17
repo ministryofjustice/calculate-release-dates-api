@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 
@@ -39,6 +40,15 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .uri("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
       .retrieve()
       .bodyToMono(typeReference<List<SentenceAndOffences>>())
+      .block()!!
+  }
+
+  fun getReturnToCustodyDate(bookingId: Long): ReturnToCustodyDate {
+    log.info("Requesting return to custody date for bookingId $bookingId")
+    return webClient.get()
+      .uri("/api/bookings/$bookingId/return-to-custody")
+      .retrieve()
+      .bodyToMono(typeReference<ReturnToCustodyDate>())
       .block()!!
   }
 
