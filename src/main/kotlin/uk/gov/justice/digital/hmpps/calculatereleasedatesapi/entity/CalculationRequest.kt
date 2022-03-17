@@ -9,7 +9,6 @@ import org.hibernate.annotations.FetchMode
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import org.hibernate.annotations.TypeDefs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.persistence.Column

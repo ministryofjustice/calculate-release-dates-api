@@ -42,6 +42,4 @@ enum class SentenceCalculationType(
       }
     }
   }
-
-
 }

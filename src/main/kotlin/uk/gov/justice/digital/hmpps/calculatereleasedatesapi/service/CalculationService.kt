@@ -161,7 +161,6 @@ class CalculationService(
     return prisonApiDataMapper.mapReturnToCustodyDate(calculationRequest)
   }
 
-
   private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest {
     return calculationRequestRepository.findById(calculationRequestId).orElseThrow {
       EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId ")

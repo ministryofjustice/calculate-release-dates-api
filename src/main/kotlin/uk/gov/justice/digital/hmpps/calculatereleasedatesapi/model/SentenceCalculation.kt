@@ -101,7 +101,7 @@ data class SentenceCalculation(
         calculatedTotalAddedDays.toLong()
       )
     }
-    //Fixed term recalls only apply adjustments from return to custody date
+    // Fixed term recalls only apply adjustments from return to custody date
     return unadjustedPostRecallReleaseDate?.plusDays(
       calculatedFixedTermRecallAddedDays.toLong()
     )

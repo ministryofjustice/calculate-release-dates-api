@@ -334,10 +334,9 @@ class CalculationController(
   ): ReturnToCustodyDate {
     log.info("Request received to get return to custody date from $calculationRequestId calculation")
     val returnToCustodyDate = calculationService.findReturnToCustodyDateFromCalculation(calculationRequestId)
-        ?: throw EntityNotFoundException("No return to custody date exists for calculationRequestId $calculationRequestId ")
+      ?: throw EntityNotFoundException("No return to custody date exists for calculationRequestId $calculationRequestId ")
     return returnToCustodyDate!!
   }
-
 
   @GetMapping(value = ["/adjustments/{calculationRequestId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")

@@ -74,7 +74,7 @@ class CalculationControllerTest {
   private val sentences: List<SentenceAndOffences> = emptyList()
   private val prisonerDetails = PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
   private val adjustments = BookingAndSentenceAdjustments(emptyList(), emptyList())
-    private val sourceData = PrisonApiSourceData(sentences, prisonerDetails, adjustments, null)
+  private val sourceData = PrisonApiSourceData(sentences, prisonerDetails, adjustments, null)
   private val calculationFragments = CalculationFragments("<p>breakdown</p>")
 
   @BeforeEach
