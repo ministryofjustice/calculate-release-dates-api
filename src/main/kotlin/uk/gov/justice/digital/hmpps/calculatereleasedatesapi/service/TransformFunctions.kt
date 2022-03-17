@@ -102,6 +102,7 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
       consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
       caseSequence = sentence.caseSequence,
       lineSequence = sentence.lineSequence,
+      caseReference = sentence.caseReference,
       sentenceType = SentenceCalculationType.from(sentence.sentenceCalculationType)!!.sentenceType
     )
   }.toMutableList()
@@ -249,6 +250,7 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
         extractDates(sentence),
         sentence.lineSequence!!,
         sentence.caseSequence!!,
+        sentence.caseReference
       )
     }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence })),
     consecutiveSentence = if (booking.consecutiveSentences.isNotEmpty()) {
@@ -270,6 +272,7 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
             ConsecutiveSentencePart(
               sentencePart.lineSequence!!,
               sentencePart.caseSequence!!,
+              sentencePart.caseReference,
               sentencePart.duration.toString(),
               sentencePart.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
               consecutiveToSentence?.lineSequence,

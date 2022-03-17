@@ -10,4 +10,5 @@ data class ConcurrentSentenceBreakdown(
   override val dates: Map<ReleaseDateType, DateBreakdown>,
   val lineSequence: Int,
   val caseSequence: Int,
+  val caseReference: String? = null,
 ) : SentenceBreakdown
