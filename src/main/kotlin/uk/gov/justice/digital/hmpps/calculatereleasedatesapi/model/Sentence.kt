@@ -17,6 +17,7 @@ data class Sentence(
   val consecutiveSentenceUUIDs: List<UUID> = listOf(),
   val caseSequence: Int? = null,
   val lineSequence: Int? = null,
+  val caseReference: String? = null,
   override val sentenceType: SentenceType = SentenceType.STANDARD_DETERMINATE
 ) : IdentifiableSentence, CalculableSentence, ExtractableSentence {
   @JsonIgnore

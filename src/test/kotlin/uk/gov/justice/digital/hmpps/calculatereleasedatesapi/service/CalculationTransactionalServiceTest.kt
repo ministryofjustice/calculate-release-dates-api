@@ -379,7 +379,7 @@ class CalculationTransactionalServiceTest {
           ":\"1980-01-01\",\"isActiveSexOffender\":false}, \"sentences\":[{\"caseSequence\":1,\"lineSequence\":2, \"sentenceType\":\"STANDARD_DETERMINATE\", \"offence\":{\"committedAt\":\"2021-02-03\",\"" +
           "isScheduleFifteen\":false, \"isScheduleFifteenMaximumLife\":false},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"" +
           "MONTHS\":0,\"YEARS\":5}},\"sentencedAt\":\"2021-02-03\"," +
-          "\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\",\"consecutiveSentenceUUIDs\":[]" +
+          "\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\",\"consecutiveSentenceUUIDs\":[], \"caseReference\":null" +
           "}], \"adjustments\":{}, \"bookingId\":12345, \"returnToCustodyDate\":null }"
       )
 
