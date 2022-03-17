@@ -110,7 +110,7 @@
     "sentenceParts": [
       {
         "lineSequence": 1,
-        "caseSequence": 1,,
+        "caseSequence": 1,
         "caseReference": "ABC123",
         "sentenceLength": "18 months",
         "sentenceLengthDays": 546,
@@ -119,7 +119,7 @@
       },
       {
         "lineSequence": 2,
-        "caseSequence": 1,,
+        "caseSequence": 1,
         "caseReference": "ABC123",
         "sentenceLength": "18 months",
         "sentenceLengthDays": 546,
