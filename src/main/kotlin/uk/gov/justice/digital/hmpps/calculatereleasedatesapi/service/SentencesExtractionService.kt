@@ -52,18 +52,6 @@ class SentencesExtractionService {
       .maxByOrNull { property.get(it.sentenceCalculation)!! }
   }
 
-  fun getAssociatedReleaseType(sentences: List<ExtractableSentence>, latestReleaseDate: LocalDate?): Boolean {
-    val matchingReleaseTypes = sentences
-      .filter { it.sentenceCalculation.releaseDate?.equals(latestReleaseDate) == true }
-      .map { it.sentenceCalculation.isReleaseDateConditional }
-      .toMutableList()
-    return if (matchingReleaseTypes.size > 0) {
-      matchingReleaseTypes.all { it }
-    } else {
-      throw NoMatchingReleaseDateFoundException("Could not find release date in sentences")
-    }
-  }
-
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }

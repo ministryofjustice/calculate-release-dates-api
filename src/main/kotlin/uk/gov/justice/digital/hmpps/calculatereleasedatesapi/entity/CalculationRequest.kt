@@ -9,6 +9,7 @@ import org.hibernate.annotations.FetchMode
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import org.hibernate.annotations.TypeDefs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.persistence.Column
@@ -72,6 +73,11 @@ data class CalculationRequest(
   @Column(columnDefinition = "jsonb")
   val adjustments: JsonNode? = null,
   val adjustmentsVersion: Int? = 0,
+
+  @Type(type = "json")
+  @Column(columnDefinition = "jsonb")
+  val returnToCustodyDate: JsonNode? = null,
+  val returnToCustodyDateVersion: Int? = 0,
 
   val breakdownHtml: String? = null,
 

@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
@@ -74,8 +75,8 @@ class BookingServiceTest {
       ),
       sentenceStatus = "IMP",
       sentenceCategory = "CAT",
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-      sentenceTypeDescription = "Standard Determinate",
+      sentenceCalculationType = SentenceCalculationType.FTRSCH18.name,
+      sentenceTypeDescription = "28 day fixed term recall",
       offences = offences,
     )
     val bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(
@@ -113,9 +114,10 @@ class BookingServiceTest {
       firstName = "Harry",
       lastName = "Houdini"
     )
+    val returnToCustodyDate = ReturnToCustodyDate(bookingId, LocalDate.of(2022, 3, 15))
     whenever(validationService.validate(listOf(sentenceAndOffences), bookingAndSentenceAdjustments)).thenReturn(ValidationMessages(ValidationType.VALID))
 
-    val result = bookingService.getBooking(PrisonApiSourceData(listOf(sentenceAndOffences), prisonerDetails, bookingAndSentenceAdjustments))
+    val result = bookingService.getBooking(PrisonApiSourceData(listOf(sentenceAndOffences), prisonerDetails, bookingAndSentenceAdjustments, returnToCustodyDate))
 
     assertThat(result).isEqualTo(
       Booking(

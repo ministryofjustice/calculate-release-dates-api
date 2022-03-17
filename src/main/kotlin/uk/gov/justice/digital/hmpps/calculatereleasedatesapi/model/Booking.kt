@@ -1,11 +1,13 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import java.time.LocalDate
 
 data class Booking(
   var offender: Offender,
   val sentences: List<Sentence>,
   val adjustments: Adjustments = Adjustments(),
+  val returnToCustodyDate: LocalDate? = null,
   val bookingId: Long = -1L,
 ) {
   @JsonIgnore

@@ -54,6 +54,10 @@ class JsonTransformation {
     return getAllJsonFromDir("api_integration/adjustments")
   }
 
+  fun getAllReturnToCustodyDatesJson(): Map<String, String> {
+    return getAllJsonFromDir("api_integration/returntocustody")
+  }
+
   fun getJsonTest(fileName: String, calculationType: String): String {
     return getResourceAsText("/test_data/$calculationType/$fileName")
   }

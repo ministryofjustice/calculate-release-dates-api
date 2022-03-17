@@ -93,8 +93,10 @@ class CalculationServiceTest {
     emptyList(), PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
     BookingAndSentenceAdjustments(
       emptyList(), emptyList()
-    )
+    ),
+    null
   )
+
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
   fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String, error: String?) {
@@ -375,7 +377,7 @@ class CalculationServiceTest {
           "isScheduleFifteen\":false, \"isScheduleFifteenMaximumLife\":false},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"" +
           "MONTHS\":0,\"YEARS\":5}},\"sentencedAt\":\"2021-02-03\"," +
           "\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\",\"consecutiveSentenceUUIDs\":[]" +
-          "}], \"adjustments\":{}, \"bookingId\":12345 }"
+          "}], \"adjustments\":{}, \"bookingId\":12345, \"returnToCustodyDate\":null }"
       )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
@@ -422,6 +424,6 @@ class CalculationServiceTest {
       lineSequence = 2
     )
 
-    val BOOKING = Booking(OFFENDER, listOf(SENTENCE), Adjustments(), BOOKING_ID)
+    val BOOKING = Booking(OFFENDER, listOf(SENTENCE), Adjustments(), null, BOOKING_ID)
   }
 }

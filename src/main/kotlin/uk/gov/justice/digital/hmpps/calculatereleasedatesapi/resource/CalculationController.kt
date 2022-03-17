@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
@@ -33,6 +34,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonServi
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessages
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
+import javax.persistence.EntityNotFoundException
 
 @RestController
 @RequestMapping("/calculation", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -214,8 +216,9 @@ class CalculationController(
     val sentencesAndOffences = calculationService.findSentenceAndOffencesFromCalculation(calculationRequestId)
     val prisonerDetails = calculationService.findPrisonerDetailsFromCalculation(calculationRequestId)
     val adjustments = calculationService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
+    val returnToCustodyDate = calculationService.findReturnToCustodyDateFromCalculation(calculationRequestId)
     val calculation = calculationService.findCalculationResults(calculationRequestId)
-    val sourceData = PrisonApiSourceData(sentencesAndOffences, prisonerDetails, adjustments)
+    val sourceData = PrisonApiSourceData(sentencesAndOffences, prisonerDetails, adjustments, returnToCustodyDate)
 
     return calculationService.calculateWithBreakdown(bookingService.getBooking(sourceData), calculation)
   }
@@ -305,6 +308,36 @@ class CalculationController(
     log.info("Request received to get prisoner details from $calculationRequestId calculation")
     return calculationService.findPrisonerDetailsFromCalculation(calculationRequestId)
   }
+
+  @GetMapping(value = ["/return-to-custody/{calculationRequestId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Get return to custody date for a calculationRequestId",
+    description = "This endpoint will return the return to custody date based on a calculationRequestId",
+    security = [
+      SecurityRequirement(name = "SYSTEM_USER"),
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
+    ],
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
+    ]
+  )
+  fun getReturnToCustodyDate(
+    @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
+    @PathVariable("calculationRequestId")
+    calculationRequestId: Long
+  ): ReturnToCustodyDate {
+    log.info("Request received to get return to custody date from $calculationRequestId calculation")
+    val returnToCustodyDate = calculationService.findReturnToCustodyDateFromCalculation(calculationRequestId)
+        ?: throw EntityNotFoundException("No return to custody date exists for calculationRequestId $calculationRequestId ")
+    return returnToCustodyDate!!
+  }
+
 
   @GetMapping(value = ["/adjustments/{calculationRequestId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")

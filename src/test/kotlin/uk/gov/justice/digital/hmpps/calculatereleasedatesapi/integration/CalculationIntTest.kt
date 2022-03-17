@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
@@ -66,7 +67,7 @@ class CalculationIntTest : IntegrationTestBase() {
     var result: BookingCalculation? = null
     var calculationRequest: CalculationRequest? = null
     if (resultCalculation != null) {
-      result = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId)
+      result = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId, PRISONER_ID)
       calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
         .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
     }
@@ -91,7 +92,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
     val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
     if (resultCalculation != null) {
-      createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId)
+      createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId, PRISONER_ID)
     }
 
     val result = webTestClient.get()
@@ -149,9 +150,9 @@ class CalculationIntTest : IntegrationTestBase() {
     .expectBody(BookingCalculation::class.java)
     .returnResult().responseBody
 
-  private fun createConfirmCalculationForPrisoner(calculationRequestId: Long): BookingCalculation {
+  private fun createConfirmCalculationForPrisoner(calculationRequestId: Long, prisonerId: String): BookingCalculation {
     return webTestClient.post()
-      .uri("/calculation/$PRISONER_ID/confirm/$calculationRequestId")
+      .uri("/calculation/$prisonerId/confirm/$calculationRequestId")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -183,7 +184,7 @@ class CalculationIntTest : IntegrationTestBase() {
   @Test
   fun `Get the calculation breakdown for a calculation`() {
     val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
-    val calc = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId)
+    val calc = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId, PRISONER_ID)
 
     val result = webTestClient.get()
       .uri("/calculation/breakdown/${calc.calculationRequestId}")
@@ -385,8 +386,8 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Get the source prison api data and html for a calculation`() {
-    val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
-    val calc = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId)
+    val resultCalculation = createPreliminaryCalculation("14FTR")
+    val calc = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId, "14FTR")
 
     val results = webTestClient.get()
       .uri("/calculation/results/${calc.calculationRequestId}")
@@ -435,24 +436,18 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(adjustments).isNotNull
-  }
 
-  // Can't currently support a mixture of recall and determinate sentences
-  @Test
-  fun `Run validation on parallel data`() {
-    val validationMessages: ValidationMessages = webTestClient.get()
-      .uri("/calculation/$PARALLEL_PRISONER_ID/validate")
+    val returnToCustody = webTestClient.get()
+      .uri("/calculation/return-to-custody/${calc.calculationRequestId}")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(ValidationMessages::class.java)
+      .expectBody(ReturnToCustodyDate::class.java)
       .returnResult().responseBody!!
 
-    assertThat(validationMessages.type).isEqualTo(ValidationType.UNSUPPORTED)
-    assertThat(validationMessages.messages).hasSize(1)
-    assertThat(validationMessages.messages[0].message).isEqualTo("Unsupported parallel sentence")
+    assertThat(returnToCustody).isNotNull
   }
 
   @Test
@@ -471,6 +466,41 @@ class CalculationIntTest : IntegrationTestBase() {
       LocalDate.of(2022, 8, 1)
     )
   }
+
+  @Test
+  fun `Run calculation on 14 day fixed term recall`() {
+    val calculation: BookingCalculation = webTestClient.post()
+      .uri("/calculation/14FTR")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(BookingCalculation::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[PRRD]).isEqualTo(
+      LocalDate.of(2022, 4, 12)
+    )
+  }
+
+  @Test
+  fun `Run calculation on 28 day fixed term recall`() {
+    val calculation: BookingCalculation = webTestClient.post()
+      .uri("/calculation/28FTR")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(BookingCalculation::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[PRRD]).isEqualTo(
+      LocalDate.of(2022, 4, 26)
+    )
+  }
+
 
   companion object {
     const val PRISONER_ID = "default"
