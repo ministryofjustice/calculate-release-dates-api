@@ -7,6 +7,7 @@
     {
       "caseSequence": 1,
       "lineSequence": 1,
+      "caseReference": "ABC123",
       "offence": {
         "committedAt": "2020-11-15"
       },
@@ -23,6 +24,7 @@
     {
       "caseSequence": 1,
       "lineSequence": 2,
+      "caseReference": "ABC123",
       "offence": {
         "committedAt": "2020-11-15"
       },
@@ -37,6 +39,7 @@
     {
       "caseSequence": 1,
       "lineSequence": 3,
+      "caseReference": "ABC123",
       "offence": {
         "committedAt": "2020-11-15"
       },
@@ -50,6 +53,7 @@
     {
       "caseSequence": 1,
       "lineSequence": 4,
+      "caseReference": "ABC123",
       "offence": {
         "committedAt": "2015-11-15"
       },
@@ -63,6 +67,7 @@
     {
       "caseSequence": 1,
       "lineSequence": 5,
+      "caseReference": "ABC123",
       "offence": {
         "committedAt": "2015-11-15"
       },
@@ -76,6 +81,7 @@
     {
       "caseSequence": 1,
       "lineSequence": 6,
+      "caseReference": "ABC123",
       "offence": {
         "committedAt": "2015-11-15"
       },

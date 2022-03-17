@@ -19,7 +19,8 @@
         }
       },
       "lineSequence": 3,
-      "caseSequence": 1
+      "caseSequence": 1,
+      "caseReference": "ABC123"
     },
     {
       "sentencedAt": "2021-09-21",
@@ -40,7 +41,8 @@
         }
       },
       "lineSequence": 4,
-      "caseSequence": 1
+      "caseSequence": 1,
+      "caseReference": "ABC123"
     },
     {
       "sentencedAt": "2021-09-21",
@@ -61,7 +63,8 @@
         }
       },
       "lineSequence": 5,
-      "caseSequence": 1
+      "caseSequence": 1,
+      "caseReference": "ABC123"
     },
     {
       "sentencedAt": "2021-09-21",
@@ -82,7 +85,8 @@
         }
       },
       "lineSequence": 6,
-      "caseSequence": 1
+      "caseSequence": 1,
+      "caseReference": "ABC123"
     }
   ],
   "consecutiveSentence": {
@@ -106,7 +110,8 @@
     "sentenceParts": [
       {
         "lineSequence": 1,
-        "caseSequence": 1,
+        "caseSequence": 1,,
+        "caseReference": "ABC123",
         "sentenceLength": "18 months",
         "sentenceLengthDays": 546,
         "consecutiveToLineSequence": 2,
@@ -114,7 +119,8 @@
       },
       {
         "lineSequence": 2,
-        "caseSequence": 1,
+        "caseSequence": 1,,
+        "caseReference": "ABC123",
         "sentenceLength": "18 months",
         "sentenceLengthDays": 546,
         "consecutiveToLineSequence": null,

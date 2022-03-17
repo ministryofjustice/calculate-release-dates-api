@@ -272,6 +272,7 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
             ConsecutiveSentencePart(
               sentencePart.lineSequence!!,
               sentencePart.caseSequence!!,
+              sentencePart.caseReference,
               sentencePart.duration.toString(),
               sentencePart.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
               consecutiveToSentence?.lineSequence,
