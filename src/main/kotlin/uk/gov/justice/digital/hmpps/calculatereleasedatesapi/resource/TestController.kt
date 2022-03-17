@@ -19,14 +19,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import java.time.LocalDate
 import javax.validation.constraints.NotEmpty
 
 @RestController
 @RequestMapping("/test", produces = [MediaType.APPLICATION_JSON_VALUE])
 class TestController(
-  private val calculationService: CalculationService,
+  private val calculationTransactionalService: CalculationTransactionalService,
 ) {
 
   //  TODO this is a temporary endpoint to aid diagnosis of calculation errors whilst in private beta - this whole
@@ -58,7 +58,7 @@ class TestController(
       ),
       null
     )
-    return calculationService.calculate(booking, PRELIMINARY, fakeSourceData)
+    return calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData)
   }
 
   companion object {

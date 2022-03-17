@@ -114,10 +114,12 @@ class BookingServiceTest {
       firstName = "Harry",
       lastName = "Houdini"
     )
-    val returnToCustodyDate = ReturnToCustodyDate(bookingId, LocalDate.of(2022, 3, 15))
-    whenever(validationService.validate(listOf(sentenceAndOffences), bookingAndSentenceAdjustments)).thenReturn(ValidationMessages(ValidationType.VALID))
 
-    val result = bookingService.getBooking(PrisonApiSourceData(listOf(sentenceAndOffences), prisonerDetails, bookingAndSentenceAdjustments, returnToCustodyDate))
+    val returnToCustodyDate = ReturnToCustodyDate(bookingId, LocalDate.of(2022, 3, 15))
+    val sourceData = PrisonApiSourceData(listOf(sentenceAndOffences), prisonerDetails, bookingAndSentenceAdjustments, returnToCustodyDate)
+    whenever(validationService.validate(sourceData)).thenReturn(ValidationMessages(ValidationType.VALID))
+
+    val result = bookingService.getBooking(sourceData)
 
     assertThat(result).isEqualTo(
       Booking(
