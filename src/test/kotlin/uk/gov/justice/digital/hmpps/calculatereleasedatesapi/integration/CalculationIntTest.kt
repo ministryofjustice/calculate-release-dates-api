@@ -497,7 +497,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[PRRD]).isEqualTo(
-      LocalDate.of(2022, 4, 12)
+      LocalDate.of(2022, 3, 14)
     )
   }
 
@@ -514,7 +514,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[PRRD]).isEqualTo(
-      LocalDate.of(2022, 4, 26)
+      LocalDate.of(2022, 3, 28)
     )
   }
 

@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -124,6 +125,7 @@ class BookingServiceTest {
     assertThat(result).isEqualTo(
       Booking(
         bookingId = 123456,
+        returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
         offender = Offender(
           dateOfBirth = DOB,
           reference = prisonerId,
@@ -138,7 +140,8 @@ class BookingServiceTest {
               UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
             ),
             lineSequence = lineSequence,
-            caseSequence = caseSequence
+            caseSequence = caseSequence,
+            sentenceType = SentenceType.FIXED_TERM_RECALL_28
           )
         ),
         adjustments = Adjustments(
