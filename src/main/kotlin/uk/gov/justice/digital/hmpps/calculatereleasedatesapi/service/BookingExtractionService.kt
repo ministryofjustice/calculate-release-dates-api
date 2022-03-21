@@ -123,6 +123,7 @@ class BookingExtractionService(
         sentences,
         effectiveSentenceLength,
         latestReleaseDate,
+        mostRecentSentenceByReleaseDate
       )
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
@@ -204,9 +205,10 @@ class BookingExtractionService(
   private fun extractManyHomeDetentionCurfewEligibilityDate(
     sentences: List<ExtractableSentence>,
     effectiveSentenceLength: Period,
-    latestAdjustedReleaseDate: LocalDate
+    latestAdjustedReleaseDate: LocalDate,
+    mostRecentSentenceByReleaseDate: ExtractableSentence
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
-    return if (effectiveSentenceLength.years < 4) {
+    return if (effectiveSentenceLength.years < 4 && !mostRecentSentenceByReleaseDate.sentenceType.isRecall) {
       val hdcedSentence = extractionService.mostRecentSentenceOrNull(
         sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) }, SentenceCalculation::homeDetentionCurfewEligibilityDate
       )

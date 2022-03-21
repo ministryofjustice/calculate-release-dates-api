@@ -107,7 +107,7 @@ class BookingTimelineService(
     val remandPeriods = booking.adjustments.getOrEmptyList(REMAND)
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
-      val sentenceRanges = booking.getAllExtractableSentences().map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.releaseDate) }
+      val sentenceRanges = booking.getAllExtractableSentences().map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.adjustedDeterminateReleaseDate) }
 
       val allRanges = (remandRanges + sentenceRanges).sortedBy { it.start }
       var totalRange: LocalDateRange? = null
