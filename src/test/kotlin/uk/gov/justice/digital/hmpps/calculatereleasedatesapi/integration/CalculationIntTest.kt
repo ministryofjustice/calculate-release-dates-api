@@ -485,6 +485,23 @@ class CalculationIntTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `Run calculation on bug`() {
+    val calculation: BookingCalculation = webTestClient.post()
+      .uri("/calculation/BUG")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(BookingCalculation::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[PRRD]).isEqualTo(
+      LocalDate.of(2022, 8, 1)
+    )
+  }
+
+  @Test
   fun `Run calculation on 14 day fixed term recall`() {
     val calculation: BookingCalculation = webTestClient.post()
       .uri("/calculation/14FTR")
