@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 
 @Service
@@ -30,7 +31,9 @@ class BookingCalculationService(
 
   fun createSingleTermSentences(booking: Booking): Booking {
     if (booking.sentences.size > 1 &&
-      booking.sentences.all { it.identificationTrack == SDS_BEFORE_CJA_LASPO && it.consecutiveSentenceUUIDs.isEmpty() }
+      booking.sentences.all { it.identificationTrack == SDS_BEFORE_CJA_LASPO && it.consecutiveSentenceUUIDs.isEmpty() } &&
+      booking.sentences.minOf { it.sentencedAt } != booking.sentences.maxOf { it.sentencedAt } &&
+      booking.sentences.all { it.sentenceType === SentenceType.STANDARD_DETERMINATE }
     ) {
       booking.singleTermSentence = SingleTermSentence(booking.sentences)
       sentenceIdentificationService.identify(booking.singleTermSentence!!, booking.offender)
