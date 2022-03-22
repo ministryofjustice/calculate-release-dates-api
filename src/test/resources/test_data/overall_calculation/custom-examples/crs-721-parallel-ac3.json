@@ -1,0 +1,48 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "returnToCustodyDate": "2022-01-07",
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2019-09-19"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 876
+        }
+      },
+      "sentenceType": "FIXED_TERM_RECALL_28",
+      "sentencedAt": "2020-01-03"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-11-29"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 876
+        }
+      },
+      "sentencedAt": "2022-02-03"
+    }
+  ],
+  "adjustments": {
+    "RECALL_REMAND": [
+      {
+        "numberOfDays": 3,
+        "appliesToSentencesFrom": "2020-01-03"
+      }
+    ],
+    "REMAND": [
+      {
+        "numberOfDays": 1,
+        "appliesToSentencesFrom": "2022-02-03",
+        "fromDate": "2022-01-06",
+        "toDate": "2022-01-06"
+      }
+    ]
+  }
+}
