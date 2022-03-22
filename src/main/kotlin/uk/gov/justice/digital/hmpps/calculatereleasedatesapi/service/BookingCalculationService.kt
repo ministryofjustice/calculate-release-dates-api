@@ -32,8 +32,8 @@ class BookingCalculationService(
   fun createSingleTermSentences(booking: Booking): Booking {
     if (booking.sentences.size > 1 &&
       booking.sentences.all { it.identificationTrack == SDS_BEFORE_CJA_LASPO && it.consecutiveSentenceUUIDs.isEmpty() } &&
-        booking.sentences.minOf { it.sentencedAt } != booking.sentences.maxOf { it.sentencedAt } &&
-        booking.sentences.all { it.sentenceType === SentenceType.STANDARD_DETERMINATE }
+      booking.sentences.minOf { it.sentencedAt } != booking.sentences.maxOf { it.sentencedAt } &&
+      booking.sentences.all { it.sentenceType === SentenceType.STANDARD_DETERMINATE }
     ) {
       booking.singleTermSentence = SingleTermSentence(booking.sentences)
       sentenceIdentificationService.identify(booking.singleTermSentence!!, booking.offender)
