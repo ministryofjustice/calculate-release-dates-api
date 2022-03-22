@@ -56,7 +56,7 @@ data class SentenceCalculation(
   }
 
   val numberOfDaysToAddToLicenceExpiryDate: Int get() {
-    if (calculatedTotalDeductedDays >= numberOfDaysToDeterminateReleaseDate) {
+    if (sentence.sentenceType === SentenceType.STANDARD_DETERMINATE && calculatedTotalDeductedDays >= numberOfDaysToDeterminateReleaseDate) {
       return calculatedTotalDeductedDays - numberOfDaysToDeterminateReleaseDate
     }
     return 0
@@ -64,7 +64,7 @@ data class SentenceCalculation(
 
   val adjustedExpiryDate: LocalDate get() {
     val calculatedExpiryTotalDeductedDays =
-      if (calculatedTotalDeductedDays >= numberOfDaysToDeterminateReleaseDate) {
+      if (sentence.sentenceType === SentenceType.STANDARD_DETERMINATE && calculatedTotalDeductedDays >= numberOfDaysToDeterminateReleaseDate) {
         numberOfDaysToDeterminateReleaseDate.toLong()
       } else {
         calculatedTotalDeductedDays.toLong()
@@ -151,9 +151,6 @@ data class SentenceCalculation(
   }
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
-
-  var postRecallReleaseDate: LocalDate? = null
-  var unadjustedPreRecallReleaseDate: LocalDate? = null
 
   fun buildString(releaseDateTypes: List<ReleaseDateType>): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
