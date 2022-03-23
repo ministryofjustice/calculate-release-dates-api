@@ -6,23 +6,23 @@
   "sentences": [
     {
       "offence": {
-        "committedAt": "2005-01-01"
+        "committedAt": "2019-01-01"
       },
       "duration": {
         "durationElements": {
           "MONTHS": 12
         }
       },
-      "sentencedAt": "2009-10-01"
+      "sentencedAt": "2020-10-01"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 183,
-        "appliesToSentencesFrom": "2009-10-01",
-        "fromDate": "2009-03-14",
-        "toDate": "2009-09-30"
+        "numberOfDays": 200,
+        "appliesToSentencesFrom": "2020-10-01",
+        "fromDate": "2020-03-14",
+        "toDate": "2020-09-30"
       }
     ]
   }
