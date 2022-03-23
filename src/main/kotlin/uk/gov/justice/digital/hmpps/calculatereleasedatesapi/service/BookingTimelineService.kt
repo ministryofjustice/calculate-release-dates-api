@@ -48,8 +48,8 @@ class BookingTimelineService(
       it.sentenceCalculation.adjustmentsAfter = previousReleaseDateReached
       val itRange = it.getRangeOfSentenceBeforeAwardedDays()
       if (previousSentence.sentenceType.isRecall && !it.sentenceType.isRecall) {
+        // The last sentence was a recall, this one is not. Treat this as release in-between so that adjustments are not shared.
         previousReleaseDateReached = it.sentencedAt.minusDays(1)
-        // The last sentence was a recall, this one is not. Treat this as release inbetween so that adjustments are not shared.
         shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
         // Clear the sentence group and start again.
         sentencesInGroup.clear()
