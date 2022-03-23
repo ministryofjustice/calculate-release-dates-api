@@ -32,7 +32,8 @@ class PrisonApiDataMapperTest {
     )
 
     val calculationRequest = CalculationRequest(
-      sentenceAndOffences = objectMapper.valueToTree(listOf(version0))
+      sentenceAndOffences = objectMapper.valueToTree(listOf(version0)),
+      sentenceAndOffencesVersion = 0
     )
 
     val sentencesAndOffences = prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
