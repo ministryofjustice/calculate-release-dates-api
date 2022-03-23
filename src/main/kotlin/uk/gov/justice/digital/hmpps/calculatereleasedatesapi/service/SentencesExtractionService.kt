@@ -41,6 +41,17 @@ class SentencesExtractionService {
       .maxByOrNull { property.get(it.sentenceCalculation)!! }!!
   }
 
+  fun mostRecentSentences(
+    sentences: List<ExtractableSentence>,
+    property: KProperty1<SentenceCalculation, LocalDate?>
+  ): List<ExtractableSentence> {
+    val maxSentence = sentences
+      .filter { property.get(it.sentenceCalculation) != null }
+      .maxByOrNull { property.get(it.sentenceCalculation)!! }!!
+    val max = property.get(maxSentence.sentenceCalculation)
+    return sentences.filter { property.get(it.sentenceCalculation) == max }
+  }
+
   fun mostRecentSentenceOrNull(
     sentences: List<ExtractableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>,

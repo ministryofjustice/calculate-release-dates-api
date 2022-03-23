@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
@@ -92,14 +93,14 @@ class BookingExtractionService(
     val sentences = booking.getAllExtractableSentences()
     val earliestSentenceDate = sentences.minOf { it.sentencedAt }
 
-    val mostRecentSentenceByReleaseDate =
-      extractionService.mostRecentSentence(sentences, SentenceCalculation::releaseDate)
+    val mostRecentSentencesByReleaseDate =
+      extractionService.mostRecentSentences(sentences, SentenceCalculation::releaseDate)
     val mostRecentSentenceByAdjustedDeterminateReleaseDate =
       extractionService.mostRecentSentence(sentences, SentenceCalculation::adjustedDeterminateReleaseDate)
     val mostRecentSentenceByExpiryDate =
       extractionService.mostRecentSentence(sentences, SentenceCalculation::expiryDate)
 
-    val latestReleaseDate = mostRecentSentenceByReleaseDate.sentenceCalculation.releaseDate!!
+    val latestReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate!!
     val latestExpiryDate = mostRecentSentenceByExpiryDate.sentenceCalculation.expiryDate!!
 
     val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(
@@ -121,8 +122,8 @@ class BookingExtractionService(
     val latestHDCEDAndBreakdown =
       extractManyHomeDetentionCurfewEligibilityDate(
         sentences,
-        effectiveSentenceLength,
         latestReleaseDate,
+        mostRecentSentencesByReleaseDate
       )
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
@@ -159,9 +160,11 @@ class BookingExtractionService(
       }
     }
 
-    if (mostRecentSentenceByReleaseDate.sentenceType.isRecall) {
+    if (mostRecentSentencesByReleaseDate.any { it.sentenceType.isRecall }) {
       bookingCalculation.dates[PRRD] = latestReleaseDate
-    } else {
+    }
+    if (mostRecentSentencesByReleaseDate.any { it.sentenceType === SentenceType.STANDARD_DETERMINATE }) {
+      val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { it.sentenceType === SentenceType.STANDARD_DETERMINATE }
       if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
         bookingCalculation.dates[CRD] = latestReleaseDate
         // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
@@ -203,17 +206,27 @@ class BookingExtractionService(
 
   private fun extractManyHomeDetentionCurfewEligibilityDate(
     sentences: List<ExtractableSentence>,
-    effectiveSentenceLength: Period,
-    latestAdjustedReleaseDate: LocalDate
+    latestAdjustedReleaseDate: LocalDate,
+    mostRecentSentencesByReleaseDate: List<ExtractableSentence>
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
-    return if (effectiveSentenceLength.years < 4) {
-      val hdcedSentence = extractionService.mostRecentSentenceOrNull(
-        sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) }, SentenceCalculation::homeDetentionCurfewEligibilityDate
+    if (mostRecentSentencesByReleaseDate.none { it.sentenceType.isRecall }) {
+      val earliestSentenceDate = sentences.filter { it.sentenceType === SentenceType.STANDARD_DETERMINATE }.minOf { it.sentencedAt }
+      val latestUnadjustedExpiryDate = extractionService.mostRecent(sentences.filter { it.sentenceType === SentenceType.STANDARD_DETERMINATE }, SentenceCalculation::unadjustedExpiryDate)
+      val effectiveSentenceLength = getEffectiveSentenceLength(
+        earliestSentenceDate,
+        latestUnadjustedExpiryDate
       )
-      if (hdcedSentence != null) {
-        hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
-      } else null
-    } else null
+      if (effectiveSentenceLength.years < 4) {
+        val hdcedSentence = extractionService.mostRecentSentenceOrNull(
+          sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
+          SentenceCalculation::homeDetentionCurfewEligibilityDate
+        )
+        if (hdcedSentence != null) {
+          return hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
+        }
+      }
+    }
+    return null
   }
 
   private fun getEffectiveSentenceLength(start: LocalDate, end: LocalDate): Period =

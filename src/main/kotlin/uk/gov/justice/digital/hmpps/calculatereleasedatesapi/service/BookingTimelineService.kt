@@ -47,7 +47,17 @@ class BookingTimelineService(
       it.sentenceCalculation.adjustmentsBefore = sentenceRange.end
       it.sentenceCalculation.adjustmentsAfter = previousReleaseDateReached
       val itRange = it.getRangeOfSentenceBeforeAwardedDays()
-      if (sentenceRange.isConnected(itRange)) {
+      if (previousSentence.sentenceType.isRecall && !it.sentenceType.isRecall) {
+        // The last sentence was a recall, this one is not. Treat this as release in-between so that adjustments are not shared.
+        previousReleaseDateReached = it.sentencedAt.minusDays(1)
+        shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
+        // Clear the sentence group and start again.
+        sentencesInGroup.clear()
+        sentencesInGroup.add(it)
+        it.sentenceCalculation.adjustmentsBefore = it.sentencedAt
+        it.sentenceCalculation.adjustmentsAfter = previousReleaseDateReached
+        sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
+      } else if (sentenceRange.isConnected(itRange)) {
         if (itRange.end.isAfter(sentenceRange.end)) {
           sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
         }
@@ -107,7 +117,7 @@ class BookingTimelineService(
     val remandPeriods = booking.adjustments.getOrEmptyList(REMAND)
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
-      val sentenceRanges = booking.getAllExtractableSentences().map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.releaseDate) }
+      val sentenceRanges = booking.getAllExtractableSentences().map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.adjustedDeterminateReleaseDate) }
 
       val allRanges = (remandRanges + sentenceRanges).sortedBy { it.start }
       var totalRange: LocalDateRange? = null
