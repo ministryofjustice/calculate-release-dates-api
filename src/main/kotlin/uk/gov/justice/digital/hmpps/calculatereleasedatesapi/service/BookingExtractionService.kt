@@ -209,7 +209,7 @@ class BookingExtractionService(
     latestAdjustedReleaseDate: LocalDate,
     mostRecentSentencesByReleaseDate: List<ExtractableSentence>
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
-    if (mostRecentSentencesByReleaseDate.none {it.sentenceType.isRecall}) {
+    if (mostRecentSentencesByReleaseDate.none { it.sentenceType.isRecall }) {
       val earliestSentenceDate = sentences.filter { it.sentenceType === SentenceType.STANDARD_DETERMINATE }.minOf { it.sentencedAt }
       val latestUnadjustedExpiryDate = extractionService.mostRecent(sentences.filter { it.sentenceType === SentenceType.STANDARD_DETERMINATE }, SentenceCalculation::unadjustedExpiryDate)
       val effectiveSentenceLength = getEffectiveSentenceLength(
@@ -226,7 +226,7 @@ class BookingExtractionService(
         }
       }
     }
-      return null
+    return null
   }
 
   private fun getEffectiveSentenceLength(start: LocalDate, end: LocalDate): Period =

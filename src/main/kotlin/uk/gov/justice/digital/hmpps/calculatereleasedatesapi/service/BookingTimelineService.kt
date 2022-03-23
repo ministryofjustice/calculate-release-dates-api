@@ -11,7 +11,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import kotlin.math.min
@@ -50,7 +49,7 @@ class BookingTimelineService(
       val itRange = it.getRangeOfSentenceBeforeAwardedDays()
       if (previousSentence.sentenceType.isRecall && !it.sentenceType.isRecall) {
         previousReleaseDateReached = it.sentencedAt.minusDays(1)
-        //The last sentence was a recall, this one is not. Treat this as release inbetween so that adjustments are not shared.
+        // The last sentence was a recall, this one is not. Treat this as release inbetween so that adjustments are not shared.
         shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
         // Clear the sentence group and start again.
         sentencesInGroup.clear()

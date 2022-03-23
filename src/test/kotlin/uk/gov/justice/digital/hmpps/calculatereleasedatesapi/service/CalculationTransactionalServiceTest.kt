@@ -100,11 +100,6 @@ class CalculationTransactionalServiceTest {
     null
   )
 
-  @Test
-  fun removeThisTest() {
-    `Test Example`("custom-examples", "crs-721-parallel-ac4", null)
-  }
-
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
   fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String, error: String?) {
