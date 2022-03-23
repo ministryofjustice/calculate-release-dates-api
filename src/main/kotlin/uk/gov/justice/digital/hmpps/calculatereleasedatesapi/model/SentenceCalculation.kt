@@ -29,17 +29,21 @@ data class SentenceCalculation(
   val returnToCustodyDate: LocalDate? = null
 ) {
 
+  fun getAdjustment(vararg adjustmentTypes: AdjustmentType): Int {
+    return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+  }
+
   val calculatedTotalDeductedDays: Int get() {
     val adjustmentTypes: Array<AdjustmentType> = if (sentence.sentenceType === SentenceType.STANDARD_DETERMINATE) {
       arrayOf(REMAND, TAGGED_BAIL)
     } else {
       arrayOf(RECALL_REMAND, RECALL_TAGGED_BAIL)
     }
-    return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+    return getAdjustment(*adjustmentTypes)
   }
 
   val calculatedTotalAddedDays: Int get() {
-    return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+    return getAdjustment(UNLAWFULLY_AT_LARGE)
   }
 
   val calculatedFixedTermRecallAddedDays: Int get() {
@@ -49,43 +53,40 @@ data class SentenceCalculation(
   val calculatedTotalAwardedDays: Int get() {
     return max(
       0,
-      adjustments.getOrZero(ADDITIONAL_DAYS_AWARDED, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter) -
-        adjustments.getOrZero(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, ADDITIONAL_DAYS_SERVED, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+      getAdjustment(ADDITIONAL_DAYS_AWARDED) -
+        getAdjustment(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, ADDITIONAL_DAYS_SERVED)
 
     )
   }
 
   val numberOfDaysToAddToLicenceExpiryDate: Int get() {
     if (sentence.sentenceType === SentenceType.STANDARD_DETERMINATE && calculatedTotalDeductedDays >= numberOfDaysToDeterminateReleaseDate) {
-      return calculatedTotalDeductedDays - numberOfDaysToDeterminateReleaseDate
+        return calculatedTotalDeductedDays - numberOfDaysToDeterminateReleaseDate
     }
     return 0
   }
 
   val adjustedExpiryDate: LocalDate get() {
-    val calculatedExpiryTotalDeductedDays =
-      if (sentence.sentenceType === SentenceType.STANDARD_DETERMINATE && calculatedTotalDeductedDays >= numberOfDaysToDeterminateReleaseDate) {
-        numberOfDaysToDeterminateReleaseDate.toLong()
-      } else {
-        calculatedTotalDeductedDays.toLong()
-      }
-
     return unadjustedExpiryDate
       .minusDays(
-        calculatedExpiryTotalDeductedDays
+        calculatedTotalDeductedDays.toLong()
       ).plusDays(
         calculatedTotalAddedDays.toLong()
       )
   }
 
-  val adjustedDeterminateReleaseDate: LocalDate get() {
-    val date = unadjustedDeterminateReleaseDate.minusDays(
+  val adjustedRawDeterminateReleaseDate: LocalDate get() {
+    return unadjustedDeterminateReleaseDate.minusDays(
       calculatedTotalDeductedDays.toLong()
     ).plusDays(
       calculatedTotalAddedDays.toLong()
     ).plusDays(
       calculatedTotalAwardedDays.toLong()
     )
+  }
+
+  val adjustedDeterminateReleaseDate: LocalDate get() {
+    val date = adjustedRawDeterminateReleaseDate
     return if (date.isAfter(sentence.sentencedAt)) {
       date
     } else {

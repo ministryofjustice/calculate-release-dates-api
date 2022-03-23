@@ -19,10 +19,10 @@
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 183,
+        "numberOfDays": 200,
         "appliesToSentencesFrom": "2009-10-01",
-        "fromDate": "2009-03-14",
-        "toDate": "2009-09-30"
+        "toDate": "2009-09-30",
+        "fromDate": "2009-03-14"
       }
     ]
   }
