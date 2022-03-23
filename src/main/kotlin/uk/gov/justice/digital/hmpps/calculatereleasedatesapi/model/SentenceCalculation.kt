@@ -61,7 +61,7 @@ data class SentenceCalculation(
 
   val numberOfDaysToAddToLicenceExpiryDate: Int get() {
     if (sentence.sentenceType === SentenceType.STANDARD_DETERMINATE && calculatedTotalDeductedDays >= numberOfDaysToDeterminateReleaseDate) {
-        return calculatedTotalDeductedDays - numberOfDaysToDeterminateReleaseDate
+      return calculatedTotalDeductedDays - numberOfDaysToDeterminateReleaseDate
     }
     return 0
   }

@@ -227,7 +227,6 @@ class BookingExtractionService(
         throw CustodialPeriodExtinguishedException("Custodial period extinguished", arguments)
       }
     }
-
   }
 
   private fun extractManyHomeDetentionCurfewEligibilityDate(
