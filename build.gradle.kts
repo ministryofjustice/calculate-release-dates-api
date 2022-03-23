@@ -49,7 +49,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-actuator")
 
   // GOVUK Notify:
-  implementation("uk.gov.service.notify:notifications-java-client:3.17.2-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:3.17.3-RELEASE")
 
   // Enable kotlin reflect
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
