@@ -261,7 +261,7 @@ class CalculationController(
       } catch (validationException: CrdCalculationValidationException) {
         validationMessages = ValidationMessages(
           ValidationType.VALIDATION,
-          listOf(ValidationMessage(validationException.message, validationException.validation))
+          listOf(ValidationMessage(validationException.message, validationException.validation, arguments = validationException.arguments))
         )
       }
     }

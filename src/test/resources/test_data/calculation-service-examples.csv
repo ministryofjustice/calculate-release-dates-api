@@ -22,6 +22,7 @@ psi-examples,28,
 psi-examples,29,
 psi-examples,30,
 psi-examples,31,
+psi-examples,31-error,CustodialPeriodExtinguishedException
 psi-examples,32,
 psi-examples,33,
 psi-examples,33_S15,
@@ -134,4 +135,10 @@ custom-examples,crs-816-ac3,
 custom-examples,crs-816-ac4,
 custom-examples,crs-816-extra-ac,
 custom-examples,crs-822-tagged-bail-recall-bug,
+custom-examples,crs-657-concurrent-different-date,CustodialPeriodExtinguishedException
+custom-examples,crs-657-concurrent-same-date,CustodialPeriodExtinguishedException
+custom-examples,crs-657-consecutive,CustodialPeriodExtinguishedException
+custom-examples,crs-657-consecutive-conc-different-date,CustodialPeriodExtinguishedException
+custom-examples,crs-657-consecutive-conc-same-date,CustodialPeriodExtinguishedException
+custom-examples,crs-657-single-sentence,CustodialPeriodExtinguishedException
 
