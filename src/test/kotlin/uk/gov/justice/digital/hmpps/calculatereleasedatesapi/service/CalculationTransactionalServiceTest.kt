@@ -69,7 +69,8 @@ class CalculationTransactionalServiceTest {
     sentencesExtractionService
   )
   private val bookingTimelineService = BookingTimelineService(
-    sentenceCalculationService
+    sentenceCalculationService,
+    sentencesExtractionService
   )
   private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
 

@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
@@ -16,7 +15,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CustodialPeriodExtinguishedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -37,7 +35,6 @@ class BookingExtractionService(
   fun extract(
     booking: Booking
   ): CalculationResult {
-    validateSentenceHasNotBeenExtinguished(booking.getAllExtractableSentences())
     return when (booking.getAllExtractableSentences().size) {
       0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
       1 -> extractSingle(booking)
@@ -49,7 +46,6 @@ class BookingExtractionService(
 
   private fun extractSingle(booking: Booking): CalculationResult {
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
-    val breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
     val sentence = booking.getAllExtractableSentences()[0]
     val sentenceCalculation = sentence.sentenceCalculation
 
@@ -203,28 +199,6 @@ class BookingExtractionService(
 
     dates[ESED] = latestUnadjustedExpiryDate
     return CalculationResult(dates.toMap(), breakdownByReleaseDateType.toMap(), effectiveSentenceLength)
-  }
-
-  private fun validateSentenceHasNotBeenExtinguished(sentences: List<ExtractableSentence>) {
-    val determinateSentences = sentences.filter { it.sentenceType === SentenceType.STANDARD_DETERMINATE }
-    if (determinateSentences.isNotEmpty()) {
-      val earliestSentenceDate = determinateSentences.minOf { it.sentencedAt }
-      val latestReleaseDateSentence = extractionService.mostRecentSentence(
-        determinateSentences, SentenceCalculation::adjustedRawDeterminateReleaseDate
-      )
-      if (earliestSentenceDate.minusDays(1).isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedRawDeterminateReleaseDate)) {
-        val hasRemand = latestReleaseDateSentence.sentenceCalculation.getAdjustment(AdjustmentType.REMAND) != 0
-        val hasTaggedBail = latestReleaseDateSentence.sentenceCalculation.getAdjustment(AdjustmentType.TAGGED_BAIL) != 0
-        val arguments: MutableList<String> = mutableListOf()
-        if (hasRemand) {
-          arguments += AdjustmentType.REMAND.name
-        }
-        if (hasTaggedBail) {
-          arguments += AdjustmentType.TAGGED_BAIL.name
-        }
-        throw CustodialPeriodExtinguishedException("Custodial period extinguished", arguments)
-      }
-    }
   }
 
   private fun extractManyHomeDetentionCurfewEligibilityDate(
