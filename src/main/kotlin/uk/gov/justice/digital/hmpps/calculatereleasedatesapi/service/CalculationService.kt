@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 
 @Service
 class CalculationService(
@@ -11,7 +11,7 @@ class CalculationService(
   private val bookingTimelineService: BookingTimelineService,
 ) {
 
-  fun calculateReleaseDates(booking: Booking): Pair<Booking, BookingCalculation> {
+  fun calculateReleaseDates(booking: Booking): Pair<Booking, CalculationResult> {
     val workingBooking = calculate(booking)
     // apply any rules to calculate the dates
     return workingBooking to bookingExtractionService.extract(workingBooking)

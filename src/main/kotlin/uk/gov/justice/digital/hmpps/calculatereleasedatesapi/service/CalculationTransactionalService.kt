@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.Breakdow
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PrisonApiDataNotFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -45,27 +45,31 @@ class CalculationTransactionalService(
       ?: throw IllegalStateException("User is not authenticated")
 
   @Transactional
-  fun calculate(booking: Booking, calculationStatus: CalculationStatus, sourceData: PrisonApiSourceData, calculationFragments: CalculationFragments? = null): BookingCalculation {
+  fun calculate(booking: Booking, calculationStatus: CalculationStatus, sourceData: PrisonApiSourceData, calculationFragments: CalculationFragments? = null): CalculatedReleaseDates {
     val calculationRequest =
       calculationRequestRepository.save(
         transform(booking, getCurrentAuthentication().principal, calculationStatus, sourceData, objectMapper, calculationFragments)
       )
 
-    val (workingBooking, bookingCalculation) = calculationService.calculateReleaseDates(booking)
+    val (workingBooking, calculationResult) = calculationService.calculateReleaseDates(booking)
 
-    bookingCalculation.calculationRequestId = calculationRequest.id
-    bookingCalculation.dates.forEach {
+    calculationResult.dates.forEach {
       calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
     }
-    bookingCalculation.calculationFragments = calculationFragments
-    bookingCalculation.bookingId = sourceData.prisonerDetails.bookingId
-    bookingCalculation.prisonerId = sourceData.prisonerDetails.offenderNo
 
-    return bookingCalculation
+    return CalculatedReleaseDates(
+      dates = calculationResult.dates,
+      effectiveSentenceLength = calculationResult.effectiveSentenceLength,
+      prisonerId = sourceData.prisonerDetails.offenderNo,
+      bookingId = sourceData.prisonerDetails.bookingId,
+      calculationFragments = calculationFragments,
+      calculationRequestId = calculationRequest.id,
+      calculationStatus = calculationStatus
+    )
   }
 
   @Transactional(readOnly = true)
-  fun calculateWithBreakdown(booking: Booking, previousCalculationResults: BookingCalculation): CalculationBreakdown {
+  fun calculateWithBreakdown(booking: Booking, previousCalculationResults: CalculatedReleaseDates): CalculationBreakdown {
     val (workingBooking, bookingCalculation) = calculationService.calculateReleaseDates(booking)
     if (bookingCalculation.dates == previousCalculationResults.dates) {
       return transform(workingBooking, bookingCalculation.breakdownByReleaseDateType)
@@ -75,7 +79,7 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun findConfirmedCalculationResults(prisonerId: String, bookingId: Long): BookingCalculation {
+  fun findConfirmedCalculationResults(prisonerId: String, bookingId: Long): CalculatedReleaseDates {
     val calculationRequest =
       calculationRequestRepository.findFirstByPrisonerIdAndBookingIdAndCalculationStatusOrderByCalculatedAtDesc(
         prisonerId,
@@ -89,7 +93,7 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun findCalculationResults(calculationRequestId: Long): BookingCalculation {
+  fun findCalculationResults(calculationRequestId: Long): CalculatedReleaseDates {
     return transform(getCalculationRequest(calculationRequestId))
   }
 
@@ -161,7 +165,7 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun writeToNomisAndPublishEvent(prisonerId: String, booking: Booking, calculation: BookingCalculation) {
+  fun writeToNomisAndPublishEvent(prisonerId: String, booking: Booking, calculation: CalculatedReleaseDates) {
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
 

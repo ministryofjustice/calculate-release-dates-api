@@ -4,11 +4,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -152,11 +153,12 @@ class TransformFunctionsTest {
     )
 
     assertThat(transform(CALCULATION_REQUEST)).isEqualTo(
-      BookingCalculation(
+      CalculatedReleaseDates(
         releaseDatesByType,
         CALCULATION_REQUEST_ID,
         bookingId = BOOKING_ID,
-        prisonerId = PRISONER_ID
+        prisonerId = PRISONER_ID,
+        calculationStatus = CalculationStatus.PRELIMINARY
       )
     )
   }
@@ -243,6 +245,7 @@ class TransformFunctionsTest {
       calculationReference = CALCULATION_REFERENCE,
       prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID,
+      calculationStatus = CalculationStatus.PRELIMINARY.name,
       calculationOutcomes = listOf(
         CalculationOutcome(
           calculationRequestId = CALCULATION_REQUEST_ID,
@@ -261,9 +264,12 @@ class TransformFunctionsTest {
     val SLED_DATE: LocalDate = LocalDate.of(2021, 3, 4)
     val ESED_DATE: LocalDate = LocalDate.of(2021, 5, 5)
 
-    val BOOKING_CALCULATION = BookingCalculation(
+    val BOOKING_CALCULATION = CalculatedReleaseDates(
       dates = mutableMapOf(CRD to CRD_DATE),
-      calculationRequestId = CALCULATION_REQUEST_ID
+      calculationRequestId = CALCULATION_REQUEST_ID,
+      bookingId = 1L,
+      prisonerId = PRISONER_ID,
+      calculationStatus = CalculationStatus.PRELIMINARY
     )
 
     val SEX_OFFENDER_ALERT = Alert(
