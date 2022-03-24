@@ -34,7 +34,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.Unsuppor
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
@@ -221,15 +221,16 @@ fun transform(
   )
 }
 
-fun transform(calculationRequest: CalculationRequest): BookingCalculation {
-  return BookingCalculation(
+fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates {
+  return CalculatedReleaseDates(
     dates = calculationRequest.calculationOutcomes.associateBy(
       { ReleaseDateType.valueOf(it.calculationDateType) }, { it.outcomeDate }
     ).toMutableMap(),
     calculationRequestId = calculationRequest.id,
     calculationFragments = if (calculationRequest.breakdownHtml != null) CalculationFragments(calculationRequest.breakdownHtml) else null,
     bookingId = calculationRequest.bookingId,
-    prisonerId = calculationRequest.prisonerId
+    prisonerId = calculationRequest.prisonerId,
+    calculationStatus = CalculationStatus.valueOf(calculationRequest.calculationStatus)
   )
 }
 
@@ -295,7 +296,7 @@ private fun combineDuration(consecutiveSentence: ConsecutiveSentence): Duration 
     .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
 }
 
-fun transform(calculation: BookingCalculation) =
+fun transform(calculation: CalculatedReleaseDates) =
   OffenderKeyDates(
     conditionalReleaseDate = calculation.dates[CRD],
     licenceExpiryDate = calculation.dates[SLED] ?: calculation.dates[LED],
@@ -313,9 +314,9 @@ fun transform(calculation: BookingCalculation) =
     effectiveSentenceEndDate = calculation.dates[ESED],
     sentenceLength = String.format(
       "%02d/%02d/%02d",
-      calculation.effectiveSentenceLength.years,
-      calculation.effectiveSentenceLength.months,
-      calculation.effectiveSentenceLength.days
+      calculation.effectiveSentenceLength?.years,
+      calculation.effectiveSentenceLength?.months,
+      calculation.effectiveSentenceLength?.days
     )
   )
 

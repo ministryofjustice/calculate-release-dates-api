@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -64,7 +64,7 @@ class CalculationIntTest : IntegrationTestBase() {
   fun `Confirm a calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
 
     val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
-    var result: BookingCalculation? = null
+    var result: CalculatedReleaseDates? = null
     var calculationRequest: CalculationRequest? = null
     if (resultCalculation != null) {
       result = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId, PRISONER_ID)
@@ -102,7 +102,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(BookingCalculation::class.java)
+      .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody
 
     assertThat(result).isNotNull
@@ -147,10 +147,10 @@ class CalculationIntTest : IntegrationTestBase() {
     .exchange()
     .expectStatus().isOk
     .expectHeader().contentType(MediaType.APPLICATION_JSON)
-    .expectBody(BookingCalculation::class.java)
+    .expectBody(CalculatedReleaseDates::class.java)
     .returnResult().responseBody
 
-  private fun createConfirmCalculationForPrisoner(calculationRequestId: Long, prisonerId: String): BookingCalculation {
+  private fun createConfirmCalculationForPrisoner(calculationRequestId: Long, prisonerId: String): CalculatedReleaseDates {
     return webTestClient.post()
       .uri("/calculation/$prisonerId/confirm/$calculationRequestId")
       .accept(MediaType.APPLICATION_JSON)
@@ -160,7 +160,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(BookingCalculation::class.java)
+      .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
   }
 
@@ -261,18 +261,18 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run calculation where SDS+ is consecutive to SDS`() {
-    val bookingCalculation: BookingCalculation = webTestClient.post()
+    val calculatedReleaseDates: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/$SDS_PLUS_CONSECUTIVE_TO_SDS")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(BookingCalculation::class.java)
+      .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
-    assertThat(bookingCalculation.dates[SLED]).isEqualTo(LocalDate.of(2030, 11, 30))
-    assertThat(bookingCalculation.dates[CRD]).isEqualTo(LocalDate.of(2027, 7, 1))
+    assertThat(calculatedReleaseDates.dates[SLED]).isEqualTo(LocalDate.of(2030, 11, 30))
+    assertThat(calculatedReleaseDates.dates[CRD]).isEqualTo(LocalDate.of(2027, 7, 1))
   }
 
   @Test
@@ -375,20 +375,20 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run calculation on inactive data`() {
-    val bookingCalculation: BookingCalculation = webTestClient.post()
+    val calculatedReleaseDates: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/$INACTIVE_PRISONER_ID")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(BookingCalculation::class.java)
+      .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
-    assertThat(bookingCalculation.dates[CRD]).isEqualTo("2021-07-21")
+    assertThat(calculatedReleaseDates.dates[CRD]).isEqualTo("2021-07-21")
 
     val result = webTestClient.get()
-      .uri("/calculation/breakdown/${bookingCalculation.calculationRequestId}")
+      .uri("/calculation/breakdown/${calculatedReleaseDates.calculationRequestId}")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
@@ -413,7 +413,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(BookingCalculation::class.java)
+      .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
     assertThat(results.calculationFragments?.breakdownHtml).isEqualTo("<p>BREAKDOWN</p>")
@@ -469,14 +469,14 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run calculation on recall`() {
-    val calculation: BookingCalculation = webTestClient.post()
+    val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/RECALL")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(BookingCalculation::class.java)
+      .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[PRRD]).isEqualTo(
@@ -486,14 +486,14 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run calculation on 14 day fixed term recall`() {
-    val calculation: BookingCalculation = webTestClient.post()
+    val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/14FTR")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(BookingCalculation::class.java)
+      .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[PRRD]).isEqualTo(
@@ -503,14 +503,14 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run calculation on 28 day fixed term recall`() {
-    val calculation: BookingCalculation = webTestClient.post()
+    val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/28FTR")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(BookingCalculation::class.java)
+      .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[PRRD]).isEqualTo(

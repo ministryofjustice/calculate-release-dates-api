@@ -4,8 +4,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -31,9 +31,9 @@ class JsonTransformation {
     return mapper.readValue(json, Booking::class.java)
   }
 
-  fun loadBookingCalculation(testData: String): BookingCalculation {
+  fun loadCalculationResult(testData: String): CalculationResult {
     val json = getJsonTest("$testData.json", "overall_calculation_response")
-    return mapper.readValue(json, BookingCalculation::class.java)
+    return mapper.readValue(json, CalculationResult::class.java)
   }
 
   fun loadCalculationBreakdown(testData: String): CalculationBreakdown {

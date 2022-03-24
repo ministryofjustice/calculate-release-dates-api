@@ -23,6 +23,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
@@ -30,7 +32,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
@@ -109,11 +111,11 @@ class CalculationTransactionalServiceTest {
       SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
     )
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val calculation = jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber")
+    val calculation = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
 
     val calculationBreakdown: CalculationBreakdown
     try {
-      calculationBreakdown = calculationTransactionalService.calculateWithBreakdown(booking, calculation)
+      calculationBreakdown = calculationTransactionalService.calculateWithBreakdown(booking, CalculatedReleaseDates(calculation.dates, -1, -1, "", PRELIMINARY))
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -142,9 +144,9 @@ class CalculationTransactionalServiceTest {
       SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
     )
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val bookingCalculation: BookingCalculation
+    val calculatedReleaseDates: CalculatedReleaseDates
     try {
-      bookingCalculation = calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData)
+      calculatedReleaseDates = calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -153,10 +155,10 @@ class CalculationTransactionalServiceTest {
         throw e
       }
     }
-    log.info("Example $exampleType/$exampleNumber outcome BookingCalculation: {}", bookingCalculation)
-    val bookingData = jsonTransformation.loadBookingCalculation("$exampleType/$exampleNumber")
-    assertEquals(bookingData.dates, bookingCalculation.dates)
-    assertEquals(bookingData.effectiveSentenceLength, bookingCalculation.effectiveSentenceLength)
+    log.info("Example $exampleType/$exampleNumber outcome BookingCalculation: {}", calculatedReleaseDates)
+    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
+    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
+    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
   }
 
   @Test
@@ -389,6 +391,7 @@ class CalculationTransactionalServiceTest {
       calculationReference = CALCULATION_REFERENCE, prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID,
       calculationOutcomes = listOf(CALCULATION_OUTCOME_CRD, CALCULATION_OUTCOME_SED),
+      calculationStatus = CONFIRMED.name,
       inputData = JacksonUtil.toJsonNode(
         "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +
           "\"dateOfBirth\":\"1970-03-03\"" + "}," + "\"sentences\":[" +
@@ -398,11 +401,12 @@ class CalculationTransactionalServiceTest {
       ),
     )
 
-    val BOOKING_CALCULATION = BookingCalculation(
+    val BOOKING_CALCULATION = CalculatedReleaseDates(
       dates = mutableMapOf(CRD to CALCULATION_OUTCOME_CRD.outcomeDate, SED to THIRD_FEB_2021),
       calculationRequestId = CALCULATION_REQUEST_ID,
       bookingId = BOOKING_ID,
-      prisonerId = PRISONER_ID
+      prisonerId = PRISONER_ID,
+      calculationStatus = CalculationStatus.CONFIRMED
     )
 
     val UPDATE_OFFENDER_DATES = UpdateOffenderDates(
