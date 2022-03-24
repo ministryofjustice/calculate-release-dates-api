@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CustodialPeriodExtinguishedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
@@ -36,7 +36,7 @@ class BookingExtractionService(
 
   fun extract(
     booking: Booking
-  ): BookingCalculation {
+  ): CalculationResult {
     validateSentenceHasNotBeenExtinguished(booking.getAllExtractableSentences())
     return when (booking.getAllExtractableSentences().size) {
       0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
@@ -47,52 +47,53 @@ class BookingExtractionService(
     }
   }
 
-  private fun extractSingle(booking: Booking): BookingCalculation {
-    val bookingCalculation = BookingCalculation()
+  private fun extractSingle(booking: Booking): CalculationResult {
+    val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
+    val breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
     val sentence = booking.getAllExtractableSentences()[0]
     val sentenceCalculation = sentence.sentenceCalculation
 
     if (sentence.releaseDateTypes.contains(SLED)) {
-      bookingCalculation.dates[SLED] = sentenceCalculation.expiryDate!!
+      dates[SLED] = sentenceCalculation.expiryDate!!
     } else {
-      bookingCalculation.dates[SED] = sentenceCalculation.expiryDate!!
+      dates[SED] = sentenceCalculation.expiryDate!!
     }
 
-    bookingCalculation.dates[sentence.getReleaseDateType()] = sentenceCalculation.releaseDate!!
+    dates[sentence.getReleaseDateType()] = sentenceCalculation.releaseDate!!
 
     if (sentenceCalculation.licenceExpiryDate != null &&
       sentenceCalculation.licenceExpiryDate != sentenceCalculation.expiryDate
     ) {
-      bookingCalculation.dates[LED] = sentenceCalculation.licenceExpiryDate!!
+      dates[LED] = sentenceCalculation.licenceExpiryDate!!
     }
 
     if (sentenceCalculation.nonParoleDate != null) {
-      bookingCalculation.dates[NPD] = sentenceCalculation.nonParoleDate!!
+      dates[NPD] = sentenceCalculation.nonParoleDate!!
     }
 
     if (sentenceCalculation.topUpSupervisionDate != null) {
-      bookingCalculation.dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
+      dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
     }
 
     if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null) {
-      bookingCalculation.dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
+      dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
     }
 
     if (sentenceCalculation.notionalConditionalReleaseDate != null) {
-      bookingCalculation.dates[NCRD] = sentenceCalculation.notionalConditionalReleaseDate!!
+      dates[NCRD] = sentenceCalculation.notionalConditionalReleaseDate!!
     }
 
-    bookingCalculation.dates[ESED] = sentenceCalculation.unadjustedExpiryDate
-    bookingCalculation.effectiveSentenceLength =
-      getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedExpiryDate)
-    bookingCalculation.breakdownByReleaseDateType = sentenceCalculation.breakdownByReleaseDateType
+    dates[ESED] = sentenceCalculation.unadjustedExpiryDate
 
-    return bookingCalculation
+    return CalculationResult(
+      dates, sentenceCalculation.breakdownByReleaseDateType,
+      getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedExpiryDate)
+    )
   }
 
-  private fun extractMultiple(booking: Booking): BookingCalculation {
+  private fun extractMultiple(booking: Booking): CalculationResult {
+    val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
-    val bookingCalculation = BookingCalculation()
     val sentences = booking.getAllExtractableSentences()
     val earliestSentenceDate = sentences.minOf { it.sentencedAt }
 
@@ -144,15 +145,15 @@ class BookingExtractionService(
     )
 
     if (latestExpiryDate == latestLicenseExpiryDate) {
-      bookingCalculation.dates[SLED] = latestExpiryDate
+      dates[SLED] = latestExpiryDate
       breakdownByReleaseDateType[SLED] =
         mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SLED]!!
     } else {
-      bookingCalculation.dates[SED] = latestExpiryDate
+      dates[SED] = latestExpiryDate
       breakdownByReleaseDateType[SED] =
         mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
       if (latestLicenseExpiryDate != null && concurrentOraAndNonOraDetails.canHaveLicenseExpiry) {
-        bookingCalculation.dates[LED] = latestLicenseExpiryDate
+        dates[LED] = latestLicenseExpiryDate
         if (latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(LED)) {
           breakdownByReleaseDateType[LED] =
             latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType[LED]!!
@@ -164,47 +165,44 @@ class BookingExtractionService(
     }
 
     if (mostRecentSentencesByReleaseDate.any { it.sentenceType.isRecall }) {
-      bookingCalculation.dates[PRRD] = latestReleaseDate
+      dates[PRRD] = latestReleaseDate
     }
     if (mostRecentSentencesByReleaseDate.any { it.sentenceType === SentenceType.STANDARD_DETERMINATE }) {
       val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { it.sentenceType === SentenceType.STANDARD_DETERMINATE }
       if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
-        bookingCalculation.dates[CRD] = latestReleaseDate
+        dates[CRD] = latestReleaseDate
         // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
         val releaseDateType =
           if (mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType.containsKey(CRD)) CRD else ARD
         breakdownByReleaseDateType[CRD] =
           mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]!!
       } else {
-        bookingCalculation.dates[ARD] = latestReleaseDate
+        dates[ARD] = latestReleaseDate
         breakdownByReleaseDateType[ARD] =
           mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
       }
     }
 
     if (latestNonParoleDate != null) {
-      bookingCalculation.dates[NPD] = latestNonParoleDate
+      dates[NPD] = latestNonParoleDate
     }
 
     if (latestTUSEDAndBreakdown != null) {
-      bookingCalculation.dates[TUSED] = latestTUSEDAndBreakdown.first
+      dates[TUSED] = latestTUSEDAndBreakdown.first
       breakdownByReleaseDateType[TUSED] = latestTUSEDAndBreakdown.second
     }
 
     if (latestHDCEDAndBreakdown != null) {
-      bookingCalculation.dates[HDCED] = latestHDCEDAndBreakdown.first
+      dates[HDCED] = latestHDCEDAndBreakdown.first
       breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdown.second
     }
 
     if (latestNotionalConditionalReleaseDate != null) {
-      bookingCalculation.dates[NCRD] = latestNotionalConditionalReleaseDate
+      dates[NCRD] = latestNotionalConditionalReleaseDate
     }
 
-    bookingCalculation.dates[ESED] = latestUnadjustedExpiryDate
-    bookingCalculation.effectiveSentenceLength = effectiveSentenceLength
-
-    bookingCalculation.breakdownByReleaseDateType = breakdownByReleaseDateType
-    return bookingCalculation
+    dates[ESED] = latestUnadjustedExpiryDate
+    return CalculationResult(dates.toMap(), breakdownByReleaseDateType.toMap(), effectiveSentenceLength)
   }
 
   private fun validateSentenceHasNotBeenExtinguished(sentences: List<ExtractableSentence>) {

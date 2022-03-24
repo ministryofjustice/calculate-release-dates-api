@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdCalculationValidationException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BookingCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -70,7 +70,7 @@ class CalculationController(
     @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
     @PathVariable("prisonerId")
     prisonerId: String,
-  ): BookingCalculation {
+  ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
     val booking = bookingService.getBooking(sourceData)
@@ -121,7 +121,7 @@ class CalculationController(
     // TODO this shouldn't be optional once we've done the frontend work.
     @RequestBody
     calculationFragments: CalculationFragments?
-  ): BookingCalculation {
+  ): CalculatedReleaseDates {
     log.info("Request received to confirm release dates calculation for $prisonerId")
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
     val booking = bookingService.getBooking(sourceData)
@@ -161,7 +161,7 @@ class CalculationController(
     @Parameter(required = true, example = "100001", description = "The booking ID associated with the calculation")
     @PathVariable("bookingId")
     bookingId: Long,
-  ): BookingCalculation {
+  ): CalculatedReleaseDates {
     log.info("Request received return calculation results for prisoner {} and bookingId {}", prisonerId, bookingId)
     return calculationTransactionalService.findConfirmedCalculationResults(prisonerId, bookingId)
   }
@@ -188,7 +188,7 @@ class CalculationController(
     @Parameter(required = true, example = "123456", description = "The calculationRequestId of the results")
     @PathVariable("calculationRequestId")
     calculationRequestId: Long,
-  ): BookingCalculation {
+  ): CalculatedReleaseDates {
     log.info("Request received return calculation results for calculationRequestId {}", calculationRequestId)
     return calculationTransactionalService.findCalculationResults(calculationRequestId)
   }
