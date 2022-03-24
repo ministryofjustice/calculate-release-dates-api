@@ -25,10 +25,10 @@
         "toDate": "2020-11-22"
       },
       {
-        "numberOfDays": 23,
+        "numberOfDays": 5,
         "appliesToSentencesFrom": "2020-12-15",
         "fromDate": "2020-11-22",
-        "toDate": "2020-12-14"
+        "toDate": "2020-12-27"
       }
     ]
   }
