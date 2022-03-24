@@ -4,20 +4,25 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_SERVED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CustodialPeriodExtinguishedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import kotlin.math.min
 
 @Service
 class BookingTimelineService(
-  val sentenceCalculationService: SentenceCalculationService
+  val sentenceCalculationService: SentenceCalculationService,
+  val extractionService: SentencesExtractionService
 ) {
   /*
      This method walks through the timeline of all the booking, checking for gaps between the release date (before ADAs)
@@ -40,7 +45,8 @@ class BookingTimelineService(
     // Which sentences are in the same "Group". A "Group" of sentences are sentences that are concurrent to each other,
     // and there sentenceAt dates overlap with the other release date. i.e. there is no release inbetween them
     // Whenever a release happens a new group is started.
-    val sentencesInGroup: MutableList<ExtractableSentence> = mutableListOf()
+    val sentenceGroups: MutableList<MutableList<ExtractableSentence>> = mutableListOf()
+    var sentencesInGroup: MutableList<ExtractableSentence> = mutableListOf()
     var previousReleaseDateReached: LocalDate? = null
 
     sortedSentences.forEach {
@@ -52,7 +58,8 @@ class BookingTimelineService(
         previousReleaseDateReached = it.sentencedAt.minusDays(1)
         shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
         // Clear the sentence group and start again.
-        sentencesInGroup.clear()
+        sentenceGroups.add(sentencesInGroup)
+        sentencesInGroup = mutableListOf()
         sentencesInGroup.add(it)
         it.sentenceCalculation.adjustmentsBefore = it.sentencedAt
         it.sentenceCalculation.adjustmentsAfter = previousReleaseDateReached
@@ -91,7 +98,8 @@ class BookingTimelineService(
           // This is the ends of the sentence group. Make sure all sentences share the adjustments in this group.
           shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
           // Clear the sentence group and start again.
-          sentencesInGroup.clear()
+          sentenceGroups.add(sentencesInGroup)
+          sentencesInGroup = mutableListOf()
           sentencesInGroup.add(it)
           it.sentenceCalculation.adjustmentsBefore = it.sentencedAt
           it.sentenceCalculation.adjustmentsAfter = previousReleaseDateReached
@@ -102,6 +110,8 @@ class BookingTimelineService(
     }
     shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
 
+    sentenceGroups.add(sentencesInGroup)
+    sentenceGroups.forEach { validateSentenceHasNotBeenExtinguished(it) }
     validateRemandPeriodsOverlapping(booking)
     return booking
   }
@@ -142,6 +152,28 @@ class BookingTimelineService(
         }
         previousRangeIsRemand = isRemand
         previousRange = it
+      }
+    }
+  }
+
+  private fun validateSentenceHasNotBeenExtinguished(sentences: List<ExtractableSentence>) {
+    val determinateSentences = sentences.filter { it.sentenceType === SentenceType.STANDARD_DETERMINATE }
+    if (determinateSentences.isNotEmpty()) {
+      val earliestSentenceDate = determinateSentences.minOf { it.sentencedAt }
+      val latestReleaseDateSentence = extractionService.mostRecentSentence(
+        determinateSentences, SentenceCalculation::adjustedRawDeterminateReleaseDate
+      )
+      if (earliestSentenceDate.minusDays(1).isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedRawDeterminateReleaseDate)) {
+        val hasRemand = latestReleaseDateSentence.sentenceCalculation.getAdjustment(AdjustmentType.REMAND) != 0
+        val hasTaggedBail = latestReleaseDateSentence.sentenceCalculation.getAdjustment(AdjustmentType.TAGGED_BAIL) != 0
+        val arguments: MutableList<String> = mutableListOf()
+        if (hasRemand) {
+          arguments += AdjustmentType.REMAND.name
+        }
+        if (hasTaggedBail) {
+          arguments += AdjustmentType.TAGGED_BAIL.name
+        }
+        throw CustodialPeriodExtinguishedException("Custodial period extinguished", arguments)
       }
     }
   }

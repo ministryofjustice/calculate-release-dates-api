@@ -518,6 +518,23 @@ class CalculationIntTest : IntegrationTestBase() {
     )
   }
 
+  @Test
+  fun `Run validation on extinguished crd booking`() {
+    val validationMessages: ValidationMessages = webTestClient.get()
+      .uri("/calculation/EXTINGUISH/validate")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ValidationMessages::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(validationMessages.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(validationMessages.messages).hasSize(1)
+    assertThat(validationMessages.messages[0].code).isEqualTo(ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED)
+  }
+
   companion object {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"
