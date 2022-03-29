@@ -48,6 +48,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
@@ -55,6 +56,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Offe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
@@ -147,8 +149,7 @@ fun transform(
     val adjustmentType = transform(it.type)
     if (adjustmentType != null) {
 
-      val sentence: SentenceAndOffences =
-        sentencesAndOffences.find { sentenceAndOffences -> it.sentenceSequence == sentenceAndOffences.sentenceSequence }!!
+      val sentence: SentenceAndOffences = findSentenceForAdjustment(it, sentencesAndOffences)
       adjustments.addAdjustment(
         adjustmentType,
         Adjustment(
@@ -161,6 +162,24 @@ fun transform(
     }
   }
   return adjustments
+}
+
+private fun findSentenceForAdjustment(adjustment: SentenceAdjustments, sentencesAndOffences: List<SentenceAndOffences>): SentenceAndOffences {
+  val sentence = sentencesAndOffences.find { adjustment.sentenceSequence == it.sentenceSequence }!!
+  val sentenceType = SentenceCalculationType.from(sentence.sentenceCalculationType)!!.sentenceType
+  if (listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.TAGGED_BAIL).contains(adjustment.type) && sentenceType.isRecall) {
+    val firstDeterminate = sentencesAndOffences.sortedBy { it.sentenceDate }.find { SentenceCalculationType.from(it.sentenceCalculationType)!!.sentenceType === SentenceType.STANDARD_DETERMINATE }
+    if (firstDeterminate != null) {
+      return firstDeterminate
+    }
+  }
+  if (listOf(SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL).contains(adjustment.type) && sentenceType === SentenceType.STANDARD_DETERMINATE) {
+    val firstRecall = sentencesAndOffences.sortedBy { it.sentenceDate }.find { SentenceCalculationType.from(it.sentenceCalculationType)!!.sentenceType.isRecall }
+    if (firstRecall != null) {
+      return firstRecall
+    }
+  }
+  return sentence
 }
 
 fun transform(sentenceAdjustmentType: SentenceAdjustmentType): AdjustmentType? {

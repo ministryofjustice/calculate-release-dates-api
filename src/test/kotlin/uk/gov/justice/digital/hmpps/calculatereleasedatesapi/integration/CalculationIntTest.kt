@@ -535,6 +535,45 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(validationMessages.messages[0].code).isEqualTo(ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED)
   }
 
+  @Test
+  fun `Run calculation on pre prod bug where adjustments are applied to wrong sentences CRS-829 AC-1`() {
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/CRS-829-1")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[CRD]).isEqualTo(
+      LocalDate.of(2025, 8, 28)
+    )
+    assertThat(calculation.dates[SLED]).isEqualTo(
+      LocalDate.of(2029, 3, 28)
+    )
+  }
+
+  @Test
+  fun `Run calculation on pre prod bug where adjustments are applied to wrong sentences CRS-829 AC-2`() {
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/CRS-829-2")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[CRD]).isEqualTo(
+      LocalDate.of(2025, 8, 30)
+    )
+    assertThat(calculation.dates[SLED]).isEqualTo(
+      LocalDate.of(2029, 3, 30)
+    )
+  }
   companion object {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"

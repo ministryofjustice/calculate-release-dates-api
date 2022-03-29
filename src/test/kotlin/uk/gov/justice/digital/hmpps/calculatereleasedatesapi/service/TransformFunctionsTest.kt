@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
@@ -16,9 +17,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType.STANDARD_DETERMINATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Alert
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -226,6 +232,113 @@ class TransformFunctionsTest {
         isActiveSexOffender = false,
       )
     )
+  }
+
+  @Test
+  fun `Transform adjustments`() {
+    val fromDate = LocalDate.of(2022, 3, 1)
+    val toDate = LocalDate.of(2022, 3, 10)
+    val recallSentence = SentenceAndOffences(
+      bookingId = 1L,
+      sentenceSequence = 1,
+      sentenceDate = FIRST_JAN_2015,
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.LR.name,
+      sentenceTypeDescription = "Recall",
+      lineSequence = 1,
+      caseSequence = 1
+    )
+
+    val standardSentence = SentenceAndOffences(
+      bookingId = 1L,
+      sentenceSequence = 2,
+      sentenceDate = SECOND_JAN_2015,
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceTypeDescription = "Recall",
+      lineSequence = 1,
+      caseSequence = 2
+    )
+
+    val bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(
+      sentenceAdjustments = listOf(
+        // All adjustment types for sentence 1
+        SentenceAdjustments(sentenceSequence = 1, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.REMAND),
+        SentenceAdjustments(sentenceSequence = 1, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.TAGGED_BAIL),
+        SentenceAdjustments(sentenceSequence = 1, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.RECALL_SENTENCE_REMAND),
+        SentenceAdjustments(sentenceSequence = 1, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL),
+        // All adjustment types for sentence 2
+        SentenceAdjustments(sentenceSequence = 2, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.REMAND),
+        SentenceAdjustments(sentenceSequence = 2, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.TAGGED_BAIL),
+        SentenceAdjustments(sentenceSequence = 2, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.RECALL_SENTENCE_REMAND),
+        SentenceAdjustments(sentenceSequence = 2, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL),
+      ),
+      bookingAdjustments = listOf(
+        BookingAdjustments(active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE),
+        BookingAdjustments(active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED),
+        BookingAdjustments(active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED),
+        BookingAdjustments(active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = BookingAdjustmentType.LAWFULLY_AT_LARGE),
+        BookingAdjustments(active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = BookingAdjustmentType.SPECIAL_REMISSION),
+      )
+    )
+
+    val adjustments = transform(bookingAndSentenceAdjustments, listOf(recallSentence, standardSentence))
+
+    val remand = adjustments.getOrEmptyList(AdjustmentType.REMAND)
+    assertThat(remand.size).isEqualTo(2)
+    assertThat(remand[0].appliesToSentencesFrom).isEqualTo(standardSentence.sentenceDate)
+    assertThat(remand[0].fromDate).isEqualTo(fromDate)
+    assertThat(remand[0].toDate).isEqualTo(toDate)
+    assertThat(remand[1].appliesToSentencesFrom).isEqualTo(standardSentence.sentenceDate)
+    assertThat(remand[1].fromDate).isEqualTo(fromDate)
+    assertThat(remand[1].toDate).isEqualTo(toDate)
+
+    val taggedBail = adjustments.getOrEmptyList(AdjustmentType.TAGGED_BAIL)
+    assertThat(taggedBail.size).isEqualTo(2)
+    assertThat(taggedBail[0].appliesToSentencesFrom).isEqualTo(standardSentence.sentenceDate)
+    assertThat(taggedBail[0].fromDate).isEqualTo(fromDate)
+    assertThat(taggedBail[0].toDate).isEqualTo(toDate)
+    assertThat(taggedBail[1].appliesToSentencesFrom).isEqualTo(standardSentence.sentenceDate)
+    assertThat(taggedBail[1].fromDate).isEqualTo(fromDate)
+    assertThat(taggedBail[1].toDate).isEqualTo(toDate)
+
+    val recallRemand = adjustments.getOrEmptyList(AdjustmentType.RECALL_REMAND)
+    assertThat(recallRemand.size).isEqualTo(2)
+    assertThat(recallRemand[0].appliesToSentencesFrom).isEqualTo(recallSentence.sentenceDate)
+    assertThat(recallRemand[0].fromDate).isEqualTo(fromDate)
+    assertThat(recallRemand[0].toDate).isEqualTo(toDate)
+    assertThat(recallRemand[1].appliesToSentencesFrom).isEqualTo(recallSentence.sentenceDate)
+    assertThat(recallRemand[1].fromDate).isEqualTo(fromDate)
+    assertThat(recallRemand[1].toDate).isEqualTo(toDate)
+
+    val recallTaggedBail = adjustments.getOrEmptyList(AdjustmentType.RECALL_TAGGED_BAIL)
+    assertThat(recallTaggedBail.size).isEqualTo(2)
+    assertThat(recallTaggedBail[0].appliesToSentencesFrom).isEqualTo(recallSentence.sentenceDate)
+    assertThat(recallTaggedBail[0].fromDate).isEqualTo(fromDate)
+    assertThat(recallTaggedBail[0].toDate).isEqualTo(toDate)
+    assertThat(recallTaggedBail[1].appliesToSentencesFrom).isEqualTo(recallSentence.sentenceDate)
+    assertThat(recallTaggedBail[1].fromDate).isEqualTo(fromDate)
+    assertThat(recallTaggedBail[1].toDate).isEqualTo(toDate)
+
+    val unlawfullyAtLarge = adjustments.getOrEmptyList(AdjustmentType.UNLAWFULLY_AT_LARGE)
+    assertThat(unlawfullyAtLarge.size).isEqualTo(1)
+    assertThat(unlawfullyAtLarge[0].appliesToSentencesFrom).isEqualTo(fromDate)
+    assertThat(unlawfullyAtLarge[0].fromDate).isEqualTo(fromDate)
+    assertThat(unlawfullyAtLarge[0].toDate).isEqualTo(toDate)
+
+    val restorationOfAdditionalDays = adjustments.getOrEmptyList(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED)
+    assertThat(restorationOfAdditionalDays.size).isEqualTo(1)
+    assertThat(restorationOfAdditionalDays[0].appliesToSentencesFrom).isEqualTo(fromDate)
+    assertThat(restorationOfAdditionalDays[0].fromDate).isEqualTo(fromDate)
+    assertThat(restorationOfAdditionalDays[0].toDate).isEqualTo(toDate)
+
+    val additionalDays = adjustments.getOrEmptyList(AdjustmentType.ADDITIONAL_DAYS_AWARDED)
+    assertThat(additionalDays.size).isEqualTo(1)
+    assertThat(additionalDays[0].appliesToSentencesFrom).isEqualTo(fromDate)
+    assertThat(additionalDays[0].fromDate).isEqualTo(fromDate)
+    assertThat(additionalDays[0].toDate).isEqualTo(toDate)
   }
 
   private companion object {
