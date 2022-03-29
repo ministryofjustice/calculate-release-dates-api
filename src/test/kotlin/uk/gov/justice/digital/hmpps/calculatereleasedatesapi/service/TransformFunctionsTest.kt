@@ -238,7 +238,7 @@ class TransformFunctionsTest {
   fun `Transform adjustments`() {
     val fromDate = LocalDate.of(2022, 3, 1)
     val toDate = LocalDate.of(2022, 3, 10)
-    val recallSentence =  SentenceAndOffences(
+    val recallSentence = SentenceAndOffences(
       bookingId = 1L,
       sentenceSequence = 1,
       sentenceDate = FIRST_JAN_2015,
@@ -250,7 +250,7 @@ class TransformFunctionsTest {
       caseSequence = 1
     )
 
-    val standardSentence =  SentenceAndOffences(
+    val standardSentence = SentenceAndOffences(
       bookingId = 1L,
       sentenceSequence = 2,
       sentenceDate = SECOND_JAN_2015,
@@ -264,24 +264,24 @@ class TransformFunctionsTest {
 
     val bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(
       sentenceAdjustments = listOf(
-        //All adjustment types for sentence 1
+        // All adjustment types for sentence 1
         SentenceAdjustments(sentenceSequence = 1, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.REMAND),
         SentenceAdjustments(sentenceSequence = 1, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.TAGGED_BAIL),
         SentenceAdjustments(sentenceSequence = 1, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.RECALL_SENTENCE_REMAND),
         SentenceAdjustments(sentenceSequence = 1, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL),
-        //All adjustment types for sentence 2
+        // All adjustment types for sentence 2
         SentenceAdjustments(sentenceSequence = 2, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.REMAND),
         SentenceAdjustments(sentenceSequence = 2, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.TAGGED_BAIL),
         SentenceAdjustments(sentenceSequence = 2, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.RECALL_SENTENCE_REMAND),
         SentenceAdjustments(sentenceSequence = 2, active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL),
       ),
-      bookingAdjustments =  listOf(
+      bookingAdjustments = listOf(
         BookingAdjustments(active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE),
         BookingAdjustments(active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED),
         BookingAdjustments(active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED),
         BookingAdjustments(active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = BookingAdjustmentType.LAWFULLY_AT_LARGE),
         BookingAdjustments(active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = BookingAdjustmentType.SPECIAL_REMISSION),
-        )
+      )
     )
 
     val adjustments = transform(bookingAndSentenceAdjustments, listOf(recallSentence, standardSentence))
@@ -294,7 +294,6 @@ class TransformFunctionsTest {
     assertThat(remand[1].appliesToSentencesFrom).isEqualTo(standardSentence.sentenceDate)
     assertThat(remand[1].fromDate).isEqualTo(fromDate)
     assertThat(remand[1].toDate).isEqualTo(toDate)
-
 
     val taggedBail = adjustments.getOrEmptyList(AdjustmentType.TAGGED_BAIL)
     assertThat(taggedBail.size).isEqualTo(2)
