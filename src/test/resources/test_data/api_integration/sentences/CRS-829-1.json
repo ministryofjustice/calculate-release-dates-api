@@ -1,0 +1,94 @@
+[
+  {
+    "bookingId":2715301,
+    "sentenceSequence":1,
+    "lineSequence":1,
+    "caseSequence":2,
+    "caseReference":"Recall",
+    "sentenceStatus":"A",
+    "sentenceCategory":"2003",
+    "sentenceCalculationType":"LR",
+    "sentenceTypeDescription":"Licence Recall",
+    "sentenceDate":"2016-07-18",
+    "years":6,
+    "months":0,
+    "weeks":0,
+    "days":0,
+    "terms":[
+      {
+        "years":6,
+        "months":0,
+        "weeks":0,
+        "days":0
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":6387659,
+        "offenceStartDate":"2016-02-23",
+        "offenceCode":"FI68421",
+        "offenceDescription":"Possessing a small firearm",
+        "indicators":[
+          "99"
+        ]
+      },
+      {
+        "offenderChargeId":6387660,
+        "offenceStartDate":"2016-02-23",
+        "offenceCode":"MD71230",
+        "offenceDescription":"Possess with intent to supply a controlled drug of Class A - Cocaine",
+        "indicators":[
+          "D",
+          "87"
+        ]
+      },
+      {
+        "offenderChargeId":6387661,
+        "offenceStartDate":"2016-02-23",
+        "offenceCode":"MD71239",
+        "offenceDescription":"Possessing controlled drug with intent to supply - Class A - Other",
+        "indicators":[
+          "D",
+          "87"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId":2715301,
+    "sentenceSequence":2,
+    "lineSequence":2,
+    "caseSequence":1,
+    "caseReference":"T20217181",
+    "sentenceStatus":"A",
+    "sentenceCategory":"2020",
+    "sentenceCalculationType":"ADIMP",
+    "sentenceTypeDescription":"Sentencing Code Standard Determinate Sentence",
+    "sentenceDate":"2022-02-03",
+    "years":7,
+    "months":2,
+    "weeks":0,
+    "days":0,
+    "terms":[
+      {
+        "years":7,
+        "months":2,
+        "weeks":0,
+        "days":0
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":6380215,
+        "offenceStartDate":"2021-04-22",
+        "offenceEndDate":"2021-05-03",
+        "offenceCode":"MD71131C",
+        "offenceDescription":"Conspire to supply controlled drug - Class A - Diamorphine (heroin)",
+        "indicators":[
+          "D",
+          "86"
+        ]
+      }
+    ]
+  }
+]
