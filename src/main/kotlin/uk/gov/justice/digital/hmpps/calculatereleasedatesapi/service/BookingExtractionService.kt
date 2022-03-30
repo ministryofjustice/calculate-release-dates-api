@@ -83,12 +83,14 @@ class BookingExtractionService(
 
     return CalculationResult(
       dates, sentenceCalculation.breakdownByReleaseDateType,
+      emptyMap(),
       getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedExpiryDate)
     )
   }
 
   private fun extractMultiple(booking: Booking): CalculationResult {
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
+    val otherDates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
     val sentences = booking.getAllExtractableSentences()
     val earliestSentenceDate = sentences.minOf { it.sentencedAt }
@@ -122,8 +124,7 @@ class BookingExtractionService(
     val latestHDCEDAndBreakdown =
       extractManyHomeDetentionCurfewEligibilityDate(
         sentences,
-        latestReleaseDate,
-        mostRecentSentencesByReleaseDate
+        latestReleaseDate
       )
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
@@ -179,6 +180,11 @@ class BookingExtractionService(
       }
     }
 
+    val latestPostRecallReleaseDate = extractionService.mostRecentOrNull(sentences, SentenceCalculation::adjustedPostRecallReleaseDate)
+    if (latestPostRecallReleaseDate != null) {
+      otherDates[PRRD] = latestPostRecallReleaseDate
+    }
+
     if (latestNonParoleDate != null) {
       dates[NPD] = latestNonParoleDate
     }
@@ -198,15 +204,14 @@ class BookingExtractionService(
     }
 
     dates[ESED] = latestUnadjustedExpiryDate
-    return CalculationResult(dates.toMap(), breakdownByReleaseDateType.toMap(), effectiveSentenceLength)
+    return CalculationResult(dates.toMap(), breakdownByReleaseDateType.toMap(), otherDates.toMap(), effectiveSentenceLength)
   }
 
   private fun extractManyHomeDetentionCurfewEligibilityDate(
     sentences: List<ExtractableSentence>,
-    latestAdjustedReleaseDate: LocalDate,
-    mostRecentSentencesByReleaseDate: List<ExtractableSentence>
+    latestAdjustedReleaseDate: LocalDate
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
-    if (mostRecentSentencesByReleaseDate.none { it.sentenceType.isRecall }) {
+    if (sentences.any { it.sentenceType === SentenceType.STANDARD_DETERMINATE }) {
       val earliestSentenceDate = sentences.filter { it.sentenceType === SentenceType.STANDARD_DETERMINATE }.minOf { it.sentencedAt }
       val latestUnadjustedExpiryDate = extractionService.mostRecent(sentences.filter { it.sentenceType === SentenceType.STANDARD_DETERMINATE }, SentenceCalculation::unadjustedExpiryDate)
       val effectiveSentenceLength = getEffectiveSentenceLength(

@@ -574,6 +574,7 @@ class CalculationIntTest : IntegrationTestBase() {
       LocalDate.of(2029, 3, 30)
     )
   }
+
   companion object {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"

@@ -72,7 +72,7 @@ class CalculationTransactionalService(
   fun calculateWithBreakdown(booking: Booking, previousCalculationResults: CalculatedReleaseDates): CalculationBreakdown {
     val (workingBooking, bookingCalculation) = calculationService.calculateReleaseDates(booking)
     if (bookingCalculation.dates == previousCalculationResults.dates) {
-      return transform(workingBooking, bookingCalculation.breakdownByReleaseDateType)
+      return transform(workingBooking, bookingCalculation.breakdownByReleaseDateType, bookingCalculation.otherDates)
     } else {
       throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")
     }
