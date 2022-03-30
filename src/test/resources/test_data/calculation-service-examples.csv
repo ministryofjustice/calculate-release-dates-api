@@ -141,4 +141,7 @@ custom-examples,crs-657-consecutive,CustodialPeriodExtinguishedException
 custom-examples,crs-657-consecutive-conc-different-date,CustodialPeriodExtinguishedException
 custom-examples,crs-657-consecutive-conc-same-date,CustodialPeriodExtinguishedException
 custom-examples,crs-657-single-sentence,CustodialPeriodExtinguishedException
+custom-examples,crs-824-hdced-prrd-ac1,
+custom-examples,crs-824-hdced-prrd-ac2,
+custom-examples,crs-824-hdced-prrd-ac3,
 
