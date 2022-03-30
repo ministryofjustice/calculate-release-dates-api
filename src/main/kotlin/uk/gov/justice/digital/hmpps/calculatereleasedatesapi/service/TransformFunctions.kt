@@ -253,7 +253,7 @@ fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates {
   )
 }
 
-fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>): CalculationBreakdown {
+fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>, otherDates: Map<ReleaseDateType, LocalDate>): CalculationBreakdown {
   val concurrentSentences = booking.sentences.filter {
     booking.consecutiveSentences.none { consecutiveSentence ->
       consecutiveSentence.orderedSentences.contains(it)
@@ -305,7 +305,8 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
     } else {
       null
     },
-    breakdownByReleaseDateType = breakdownByReleaseDateType
+    breakdownByReleaseDateType = breakdownByReleaseDateType,
+    otherDates = otherDates
   )
 }
 
