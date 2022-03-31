@@ -102,10 +102,14 @@ data class SentenceCalculation(
         calculatedTotalAddedDays.toLong()
       )
     }
-    // Fixed term recalls only apply adjustments from return to custody date
-    return unadjustedPostRecallReleaseDate?.plusDays(
-      calculatedFixedTermRecallAddedDays.toLong()
-    )
+    if (sentence.sentenceType.isFixedTermRecall) {
+      // Fixed term recalls only apply adjustments from return to custody date
+      val fixedTermRecallRelease = unadjustedPostRecallReleaseDate?.plusDays(
+        calculatedFixedTermRecallAddedDays.toLong()
+      )
+      return minOf(fixedTermRecallRelease!!, expiryDate!!)
+    }
+    return null
   }
 
   // Non Parole Date (NPD)

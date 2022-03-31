@@ -91,8 +91,6 @@ class SentenceCalculationService {
           unadjustedPostRecallReleaseDate = calculateFixedTermRecall(booking, 28)
         }
       }
-      numberOfDaysToPostRecallReleaseDate = minOf(numberOfDaysToPostRecallReleaseDate!!, numberOfDaysToSentenceExpiryDate)
-      unadjustedPostRecallReleaseDate = minOf(unadjustedPostRecallReleaseDate!!, unadjustedExpiryDate)
     }
 
     // create new SentenceCalculation and associate it with a sentence
