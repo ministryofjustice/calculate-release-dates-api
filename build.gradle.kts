@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.1"
-  kotlin("plugin.spring") version "1.6.10"
-  kotlin("plugin.jpa") version "1.6.10"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.3-beta"
+  kotlin("plugin.spring") version "1.6.20"
+  kotlin("plugin.jpa") version "1.6.20"
   id("io.gitlab.arturbosch.detekt").version("1.18.0-RC2")
   id("jacoco")
 }
@@ -52,7 +52,7 @@ dependencies {
   implementation("uk.gov.service.notify:notifications-java-client:3.17.3-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.20")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.7.0")
