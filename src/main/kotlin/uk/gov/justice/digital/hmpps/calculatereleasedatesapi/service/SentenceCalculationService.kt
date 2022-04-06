@@ -191,7 +191,8 @@ class SentenceCalculationService {
       releaseDate = sentenceCalculation.adjustedDeterminateReleaseDate,
       unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
       adjustedDays = DAYS.between(sentenceCalculation.unadjustedDeterminateReleaseDate, sentenceCalculation.adjustedDeterminateReleaseDate)
-        .toInt()
+        .toInt(),
+      rulesWithExtraAdjustments = if (sentenceCalculation.calculatedUnusedReleaseAda != 0) mapOf(CalculationRule.UNUSED_ADA to AdjustmentDuration(sentenceCalculation.calculatedUnusedReleaseAda, DAYS)) else emptyMap()
     )
 
   private fun calculateLED(
@@ -209,7 +210,9 @@ class SentenceCalculationService {
         .getLengthInDays(sentence.sentencedAt)
       val adjustment = floor(lengthOfOraSentences.toDouble().div(TWO)).toLong()
       sentenceCalculation.licenceExpiryDate =
-        sentenceCalculation.adjustedDeterminateReleaseDate!!.plusDays(adjustment)
+        sentenceCalculation.adjustedDeterminateReleaseDate
+          .plusDays(adjustment)
+          .minusDays(sentenceCalculation.calculatedUnusedLicenseAda.toLong())
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
         DAYS.between(sentence.sentencedAt, sentenceCalculation.licenceExpiryDate)
       sentenceCalculation.breakdownByReleaseDateType[LED] =
@@ -217,7 +220,8 @@ class SentenceCalculationService {
           rules = setOf(LED_CONSEC_ORA_AND_NON_ORA),
           adjustedDays = adjustment.toInt(),
           releaseDate = sentenceCalculation.licenceExpiryDate!!,
-          unadjustedDate = sentenceCalculation.adjustedDeterminateReleaseDate!!
+          unadjustedDate = sentenceCalculation.adjustedDeterminateReleaseDate!!,
+          rulesWithExtraAdjustments = if (sentenceCalculation.calculatedUnusedLicenseAda != 0) mapOf(CalculationRule.UNUSED_ADA to AdjustmentDuration(sentenceCalculation.calculatedUnusedLicenseAda, DAYS)) else emptyMap()
         )
     } else {
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
@@ -310,6 +314,7 @@ class SentenceCalculationService {
     val adjustedDays = sentenceCalculation.calculatedTotalAddedDays
       .plus(sentenceCalculation.calculatedTotalAwardedDays)
       .minus(sentenceCalculation.calculatedTotalDeductedDays)
+      .minus(sentenceCalculation.calculatedUnusedReleaseAda)
 
     // Any sentences < 12W or >= 4Y have been excluded already in the identification service (no HDCED)
     if (sentence.durationIsLessThan(EIGHTEEN, MONTHS)) {

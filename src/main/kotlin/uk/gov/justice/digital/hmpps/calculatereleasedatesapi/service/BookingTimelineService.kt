@@ -5,17 +5,26 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_SERVED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.LICENSE_UNUSED_ADA
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RELEASE_UNUSED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CustodialPeriodExtinguishedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.DAYS
 import kotlin.math.min
 
@@ -113,7 +122,31 @@ class BookingTimelineService(
     sentenceGroups.add(sentencesInGroup)
     sentenceGroups.forEach { validateSentenceHasNotBeenExtinguished(it) }
     validateRemandPeriodsOverlapping(booking)
+
+    val expiryDate = extractionService.mostRecent(sortedSentences, SentenceCalculation::expiryDate)
+
+    sortedSentences.forEach {
+      capDatesByExpiry(it, expiryDate)
+    }
     return booking
+  }
+
+  private fun capDatesByExpiry(sentence: ExtractableSentence, expiry: LocalDate) {
+    val releaseDate = sentence.sentenceCalculation.releaseDate
+    if (releaseDate.isAfter(expiry)) {
+      val unusedDays = DAYS.between(expiry, releaseDate)
+      sentence.sentenceCalculation.adjustments.addAdjustment(RELEASE_UNUSED_ADA, Adjustment(sentence.sentencedAt, unusedDays.toInt()))
+      readjustDates(sentence)
+    }
+    val ledBreakdown = sentence.sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.LED]
+    if (ledBreakdown != null && ledBreakdown.rules.contains(CalculationRule.LED_CONSEC_ORA_AND_NON_ORA)) {
+      val led = sentence.sentenceCalculation.licenceExpiryDate!!
+      if (led.isAfter(expiry)) {
+        val unusedDays = DAYS.between(expiry, led)
+        sentence.sentenceCalculation.adjustments.addAdjustment(LICENSE_UNUSED_ADA, Adjustment(sentence.sentencedAt, unusedDays.toInt()))
+        readjustDates(sentence)
+      }
+    }
   }
 
   private fun shareAdjustmentsThroughSentenceGroup(sentencesInGroup: List<ExtractableSentence>, endOfGroup: LocalDate) {
@@ -161,9 +194,9 @@ class BookingTimelineService(
     if (determinateSentences.isNotEmpty()) {
       val earliestSentenceDate = determinateSentences.minOf { it.sentencedAt }
       val latestReleaseDateSentence = extractionService.mostRecentSentence(
-        determinateSentences, SentenceCalculation::adjustedRawDeterminateReleaseDate
+        determinateSentences, SentenceCalculation::adjustedUncappedDeterminateReleaseDate
       )
-      if (earliestSentenceDate.minusDays(1).isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedRawDeterminateReleaseDate)) {
+      if (earliestSentenceDate.minusDays(1).isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate)) {
         val hasRemand = latestReleaseDateSentence.sentenceCalculation.getAdjustment(AdjustmentType.REMAND) != 0
         val hasTaggedBail = latestReleaseDateSentence.sentenceCalculation.getAdjustment(AdjustmentType.TAGGED_BAIL) != 0
         val arguments: MutableList<String> = mutableListOf()

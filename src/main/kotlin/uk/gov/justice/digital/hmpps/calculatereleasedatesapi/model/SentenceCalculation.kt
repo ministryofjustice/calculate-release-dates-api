@@ -3,8 +3,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_SERVED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.LICENSE_UNUSED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_TAGGED_BAIL
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RELEASE_UNUSED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
@@ -59,6 +61,14 @@ data class SentenceCalculation(
     )
   }
 
+  val calculatedUnusedReleaseAda: Int get() {
+    return getAdjustment(RELEASE_UNUSED_ADA)
+  }
+
+  val calculatedUnusedLicenseAda: Int get() {
+    return getAdjustment(LICENSE_UNUSED_ADA)
+  }
+
   val numberOfDaysToAddToLicenceExpiryDate: Int get() {
     if (sentence.sentenceType === SentenceType.STANDARD_DETERMINATE && calculatedTotalDeductedDays >= numberOfDaysToDeterminateReleaseDate) {
       return calculatedTotalDeductedDays - numberOfDaysToDeterminateReleaseDate
@@ -75,7 +85,10 @@ data class SentenceCalculation(
       )
   }
 
-  val adjustedRawDeterminateReleaseDate: LocalDate get() {
+  /*
+    Determinate release date that is not "capped" by the sentence date or expiry date.
+   */
+  val adjustedUncappedDeterminateReleaseDate: LocalDate get() {
     return unadjustedDeterminateReleaseDate.minusDays(
       calculatedTotalDeductedDays.toLong()
     ).plusDays(
@@ -86,7 +99,7 @@ data class SentenceCalculation(
   }
 
   val adjustedDeterminateReleaseDate: LocalDate get() {
-    val date = adjustedRawDeterminateReleaseDate
+    val date = adjustedUncappedDeterminateReleaseDate.minusDays(calculatedUnusedReleaseAda.toLong())
     return if (date.isAfter(sentence.sentencedAt)) {
       date
     } else {
