@@ -38,7 +38,7 @@ import kotlin.math.max
 class SentenceCalculationService {
 
   fun calculate(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
-    val sentenceCalculation = getInitialCalculation(sentence, booking, sentence.sentencedAt)
+    val sentenceCalculation = getInitialCalculation(sentence, booking)
     // create association between the sentence and it's calculation
     sentence.sentenceCalculation = sentenceCalculation
     return calculateDatesFromAdjustments(sentence)
@@ -46,8 +46,7 @@ class SentenceCalculationService {
 
   private fun getInitialCalculation(
     sentence: CalculableSentence,
-    booking: Booking,
-    adjustmentsFrom: LocalDate
+    booking: Booking
   ): SentenceCalculation {
     val releaseDateMultiplier = determineReleaseDateMultiplier(sentence)
     // create the intermediate values
@@ -77,19 +76,15 @@ class SentenceCalculationService {
     var numberOfDaysToPostRecallReleaseDate: Int? = null
     var unadjustedPostRecallReleaseDate: LocalDate? = null
     if (sentence.sentenceType.isRecall) {
-      when (sentence.sentenceType) {
-        SentenceType.STANDARD_RECALL -> {
-          numberOfDaysToPostRecallReleaseDate = numberOfDaysToSentenceExpiryDate
-          unadjustedPostRecallReleaseDate = unadjustedExpiryDate
-        }
-        SentenceType.FIXED_TERM_RECALL_14 -> {
-          numberOfDaysToPostRecallReleaseDate = 14
-          unadjustedPostRecallReleaseDate = calculateFixedTermRecall(booking, 14)
-        }
-        SentenceType.FIXED_TERM_RECALL_28 -> {
-          numberOfDaysToPostRecallReleaseDate = 28
-          unadjustedPostRecallReleaseDate = calculateFixedTermRecall(booking, 28)
-        }
+      if (sentence.sentenceType == SentenceType.STANDARD_RECALL) {
+        numberOfDaysToPostRecallReleaseDate = numberOfDaysToSentenceExpiryDate
+        unadjustedPostRecallReleaseDate = unadjustedExpiryDate
+      } else if (sentence.sentenceType == SentenceType.FIXED_TERM_RECALL_14) {
+        numberOfDaysToPostRecallReleaseDate = 14
+        unadjustedPostRecallReleaseDate = calculateFixedTermRecall(booking, 14)
+      } else if (sentence.sentenceType == SentenceType.FIXED_TERM_RECALL_28) {
+        numberOfDaysToPostRecallReleaseDate = 28
+        unadjustedPostRecallReleaseDate = calculateFixedTermRecall(booking, 28)
       }
     }
 
@@ -222,7 +217,7 @@ class SentenceCalculationService {
           rules = setOf(LED_CONSEC_ORA_AND_NON_ORA),
           adjustedDays = adjustment.toInt(),
           releaseDate = sentenceCalculation.licenceExpiryDate!!,
-          unadjustedDate = sentenceCalculation.adjustedDeterminateReleaseDate!!,
+          unadjustedDate = sentenceCalculation.adjustedDeterminateReleaseDate,
           rulesWithExtraAdjustments = if (unusedAda != 0) mapOf(CalculationRule.UNUSED_ADA to AdjustmentDuration(unusedAda, DAYS)) else emptyMap()
         )
     } else {
