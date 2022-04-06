@@ -67,7 +67,9 @@ class BookingTimelineService(
         sentencesInGroup.add(it)
         it.sentenceCalculation.adjustmentsBefore = it.sentencedAt
         it.sentenceCalculation.adjustmentsAfter = previousReleaseDateReached
-        sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
+        if (itRange.end.isAfter(sentenceRange.end)) {
+          sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
+        }
       } else if (sentenceRange.isConnected(itRange)) {
         if (itRange.end.isAfter(sentenceRange.end)) {
           sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
