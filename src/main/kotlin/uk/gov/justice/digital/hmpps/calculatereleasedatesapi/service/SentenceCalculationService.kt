@@ -215,7 +215,7 @@ class SentenceCalculationService {
           .minusDays(sentenceCalculation.calculatedUnusedLicenseAda.toLong())
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
         DAYS.between(sentence.sentencedAt, sentenceCalculation.licenceExpiryDate)
-      //The LED is calculated from the adjusted release date, therefore unused ADA from the release date has also been applied.
+      // The LED is calculated from the adjusted release date, therefore unused ADA from the release date has also been applied.
       val unusedAda = sentenceCalculation.calculatedUnusedReleaseAda + sentenceCalculation.calculatedUnusedLicenseAda
       sentenceCalculation.breakdownByReleaseDateType[LED] =
         ReleaseDateCalculationBreakdown(
