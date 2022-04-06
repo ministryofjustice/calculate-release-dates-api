@@ -1,44 +1,68 @@
 {
   "concurrentSentences":[
     {
-      "sentencedAt":"2020-10-19",
-      "sentenceLength":"7 months",
-      "sentenceLengthDays":212,
+      "sentencedAt":"2015-02-12",
+      "sentenceLength":"3 months",
+      "sentenceLengthDays":89,
       "dates":{
-        "SED":{
-          "unadjusted":"2021-05-18",
-          "adjusted":"2021-05-18",
-          "daysFromSentenceStart":212,
+        "SLED":{
+          "unadjusted":"2015-05-11",
+          "adjusted":"2015-05-11",
+          "daysFromSentenceStart":89,
           "adjustedByDays":0
         },
-        "ARD":{
-          "unadjusted":"2021-02-01",
-          "adjusted":"2021-05-18",
-          "daysFromSentenceStart":106,
+        "CRD":{
+          "unadjusted":"2015-03-28",
+          "adjusted":"2015-07-12",
+          "daysFromSentenceStart":45,
           "adjustedByDays":-106
         }
       },
-      "lineSequence":1,
+      "lineSequence":2,
       "caseSequence":1,
       "caseReference":null
     }
   ],
-  "consecutiveSentence":null,
-  "breakdownByReleaseDateType":{
-    "ARD":{
-      "rules":[
-
-      ],
-      "rulesWithExtraAdjustments":{
-        "UNUSED_ADA":{
-          "adjustmentValue":29,
-          "type":"DAYS"
-        }
+  "consecutiveSentence":{
+    "sentencedAt":"2015-02-12",
+    "sentenceLength":"7 months",
+    "sentenceLengthDays":212,
+    "dates":{
+      "SED":{
+        "unadjusted":"2015-09-11",
+        "adjusted":"2015-09-11",
+        "daysFromSentenceStart":212,
+        "adjustedByDays":0
       },
-      "adjustedDays":106,
-      "releaseDate":"2021-05-18",
-      "unadjustedDate":"2021-02-01"
+      "CRD":{
+        "unadjusted":"2015-05-28",
+        "adjusted":"2015-09-11",
+        "daysFromSentenceStart":106,
+        "adjustedByDays":-106
+      }
     },
+    "sentenceParts":[
+      {
+        "lineSequence":1,
+        "caseSequence":1,
+        "caseReference":null,
+        "sentenceLength":"4 months",
+        "sentenceLengthDays":120,
+        "consecutiveToLineSequence":null,
+        "consecutiveToCaseSequence":null
+      },
+      {
+        "lineSequence":3,
+        "caseSequence":1,
+        "caseReference":null,
+        "sentenceLength":"3 months",
+        "sentenceLengthDays":89,
+        "consecutiveToLineSequence":1,
+        "consecutiveToCaseSequence":1
+      }
+    ]
+  },
+  "breakdownByReleaseDateType":{
     "SED":{
       "rules":[
 
@@ -47,8 +71,50 @@
 
       },
       "adjustedDays":0,
-      "releaseDate":"2021-05-18",
-      "unadjustedDate":"2021-05-18"
+      "releaseDate":"2015-09-11",
+      "unadjustedDate":"2015-09-11"
+    },
+    "LED":{
+      "rules":[
+        "LED_CONSEC_ORA_AND_NON_ORA"
+      ],
+      "rulesWithExtraAdjustments":{
+        "UNUSED_ADA":{
+          "adjustmentValue":50,
+          "type":"DAYS"
+        }
+      },
+      "adjustedDays":44,
+      "releaseDate":"2015-09-11",
+      "unadjustedDate":"2015-09-11"
+    },
+    "CRD":{
+      "rules":[
+
+      ],
+      "rulesWithExtraAdjustments":{
+        "UNUSED_ADA":{
+          "adjustmentValue":6,
+          "type":"DAYS"
+        }
+      },
+      "adjustedDays":106,
+      "releaseDate":"2015-09-11",
+      "unadjustedDate":"2015-05-28"
+    },
+    "TUSED":{
+      "rules":[
+        "TUSED_LICENCE_PERIOD_LT_1Y"
+      ],
+      "rulesWithExtraAdjustments":{
+        "TUSED_LICENCE_PERIOD_LT_1Y":{
+          "adjustmentValue":12,
+          "type":"MONTHS"
+        }
+      },
+      "adjustedDays":0,
+      "releaseDate":"2016-05-28",
+      "unadjustedDate":"2015-05-28"
     },
     "HDCED":{
       "rules":[
@@ -61,8 +127,8 @@
         }
       },
       "adjustedDays":106,
-      "releaseDate":"2021-03-27",
-      "unadjustedDate":"2020-10-19"
+      "releaseDate":"2015-07-21",
+      "unadjustedDate":"2015-02-12"
     }
   },
   "otherDates":{

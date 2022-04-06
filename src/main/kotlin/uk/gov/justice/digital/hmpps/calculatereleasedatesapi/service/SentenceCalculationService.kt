@@ -215,13 +215,15 @@ class SentenceCalculationService {
           .minusDays(sentenceCalculation.calculatedUnusedLicenseAda.toLong())
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
         DAYS.between(sentence.sentencedAt, sentenceCalculation.licenceExpiryDate)
+      //The LED is calculated from the adjusted release date, therefore unused ADA from the release date has also been applied.
+      val unusedAda = sentenceCalculation.calculatedUnusedReleaseAda + sentenceCalculation.calculatedUnusedLicenseAda
       sentenceCalculation.breakdownByReleaseDateType[LED] =
         ReleaseDateCalculationBreakdown(
           rules = setOf(LED_CONSEC_ORA_AND_NON_ORA),
           adjustedDays = adjustment.toInt(),
           releaseDate = sentenceCalculation.licenceExpiryDate!!,
           unadjustedDate = sentenceCalculation.adjustedDeterminateReleaseDate!!,
-          rulesWithExtraAdjustments = if (sentenceCalculation.calculatedUnusedLicenseAda != 0) mapOf(CalculationRule.UNUSED_ADA to AdjustmentDuration(sentenceCalculation.calculatedUnusedLicenseAda, DAYS)) else emptyMap()
+          rulesWithExtraAdjustments = if (unusedAda != 0) mapOf(CalculationRule.UNUSED_ADA to AdjustmentDuration(unusedAda, DAYS)) else emptyMap()
         )
     } else {
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =

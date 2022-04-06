@@ -135,13 +135,6 @@ class CalculationTransactionalServiceTest {
     )
   }
 
-  @Test
-  fun removeThis() {
-    `Test Example`("custom-examples", "crs-795-unused-ada-ac7", null)
-//    `Test Example`("custom-examples", "crs-593-ac7", null)
-
-  }
-
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
   fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {

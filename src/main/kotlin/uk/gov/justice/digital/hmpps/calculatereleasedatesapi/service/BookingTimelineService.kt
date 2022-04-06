@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_SERVED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.LICENSE_UNUSED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RELEASE_UNUSED_ADA
@@ -16,15 +15,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.Custodia
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.DAYS
 import kotlin.math.min
 
@@ -125,26 +120,36 @@ class BookingTimelineService(
 
     val expiryDate = extractionService.mostRecent(sortedSentences, SentenceCalculation::expiryDate)
 
-    sortedSentences.forEach {
-      capDatesByExpiry(it, expiryDate)
-    }
+    capDatesByExpiry(expiryDate, sentenceGroups)
+
     return booking
   }
 
-  private fun capDatesByExpiry(sentence: ExtractableSentence, expiry: LocalDate) {
-    val releaseDate = sentence.sentenceCalculation.releaseDate
-    if (releaseDate.isAfter(expiry)) {
-      val unusedDays = DAYS.between(expiry, releaseDate)
-      sentence.sentenceCalculation.adjustments.addAdjustment(RELEASE_UNUSED_ADA, Adjustment(sentence.sentencedAt, unusedDays.toInt()))
-      readjustDates(sentence)
-    }
-    val ledBreakdown = sentence.sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.LED]
-    if (ledBreakdown != null && ledBreakdown.rules.contains(CalculationRule.LED_CONSEC_ORA_AND_NON_ORA)) {
-      val led = sentence.sentenceCalculation.licenceExpiryDate!!
-      if (led.isAfter(expiry)) {
-        val unusedDays = DAYS.between(expiry, led)
-        sentence.sentenceCalculation.adjustments.addAdjustment(LICENSE_UNUSED_ADA, Adjustment(sentence.sentencedAt, unusedDays.toInt()))
-        readjustDates(sentence)
+  private fun capDatesByExpiry(
+    expiry: LocalDate,
+    sentenceGroups: MutableList<MutableList<ExtractableSentence>>
+  ) {
+    val adjustments = sentenceGroups[0][0].sentenceCalculation.adjustments
+    sentenceGroups.forEach { group ->
+      val unusedDays = group.filter { it.sentenceCalculation.releaseDate.isAfter(expiry) }.maxOfOrNull { DAYS.between(expiry, it.sentenceCalculation.releaseDate) }
+      if (unusedDays != null && unusedDays > 0) {
+        adjustments.addAdjustment(RELEASE_UNUSED_ADA, Adjustment(group.minOf { it.sentencedAt }, unusedDays.toInt()))
+        group.forEach {
+          readjustDates(it)
+        }
+      }
+      val unusedLicenseDays = group.filter {
+        val ledBreakdown = it.sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.LED]
+        ledBreakdown != null && ledBreakdown.rules.contains(CalculationRule.LED_CONSEC_ORA_AND_NON_ORA) && it.sentenceCalculation.licenceExpiryDate!!.isAfter(expiry)
+      }.maxOfOrNull {
+        DAYS.between(expiry, it.sentenceCalculation.licenceExpiryDate!!)
+      }
+
+      if (unusedLicenseDays != null && unusedLicenseDays > 0) {
+        adjustments.addAdjustment(LICENSE_UNUSED_ADA, Adjustment(group.minOf { it.sentencedAt }, unusedLicenseDays.toInt()))
+        group.forEach {
+          readjustDates(it)
+        }
       }
     }
   }
