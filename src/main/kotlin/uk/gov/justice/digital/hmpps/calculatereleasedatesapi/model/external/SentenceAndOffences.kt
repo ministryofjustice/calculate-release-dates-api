@@ -15,5 +15,6 @@ data class SentenceAndOffences(
   val sentenceDate: LocalDate,
   val terms: List<SentenceTerms> = emptyList(),
   val offences: List<OffenderOffence> = emptyList(),
-  val caseReference: String? = null
+  val caseReference: String? = null,
+  val courtDescription: String? = null
 )
