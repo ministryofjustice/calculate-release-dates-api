@@ -6,7 +6,11 @@ import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_SERVED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.LICENSE_UNUSED_ADA
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RELEASE_UNUSED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CustodialPeriodExtinguishedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
@@ -115,7 +119,41 @@ class BookingTimelineService(
     sentenceGroups.add(sentencesInGroup)
     sentenceGroups.forEach { validateSentenceHasNotBeenExtinguished(it) }
     validateRemandPeriodsOverlapping(booking)
+
+    val expiryDate = extractionService.mostRecent(sortedSentences, SentenceCalculation::expiryDate)
+
+    capDatesByExpiry(expiryDate, sentenceGroups)
+
     return booking
+  }
+
+  private fun capDatesByExpiry(
+    expiry: LocalDate,
+    sentenceGroups: MutableList<MutableList<ExtractableSentence>>
+  ) {
+    val adjustments = sentenceGroups[0][0].sentenceCalculation.adjustments
+    sentenceGroups.forEach { group ->
+      val unusedDays = group.filter { it.sentenceCalculation.releaseDate.isAfter(expiry) }.maxOfOrNull { DAYS.between(expiry, it.sentenceCalculation.releaseDate) }
+      if (unusedDays != null && unusedDays > 0) {
+        adjustments.addAdjustment(RELEASE_UNUSED_ADA, Adjustment(group.minOf { it.sentencedAt }, unusedDays.toInt()))
+        group.forEach {
+          readjustDates(it)
+        }
+      }
+      val unusedLicenseDays = group.filter {
+        val ledBreakdown = it.sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.LED]
+        ledBreakdown != null && ledBreakdown.rules.contains(CalculationRule.LED_CONSEC_ORA_AND_NON_ORA) && it.sentenceCalculation.licenceExpiryDate!!.isAfter(expiry)
+      }.maxOfOrNull {
+        DAYS.between(expiry, it.sentenceCalculation.licenceExpiryDate!!)
+      }
+
+      if (unusedLicenseDays != null && unusedLicenseDays > 0) {
+        adjustments.addAdjustment(LICENSE_UNUSED_ADA, Adjustment(group.minOf { it.sentencedAt }, unusedLicenseDays.toInt()))
+        group.forEach {
+          readjustDates(it)
+        }
+      }
+    }
   }
 
   private fun shareAdjustmentsThroughSentenceGroup(sentencesInGroup: List<ExtractableSentence>, endOfGroup: LocalDate) {
@@ -163,9 +201,9 @@ class BookingTimelineService(
     if (determinateSentences.isNotEmpty()) {
       val earliestSentenceDate = determinateSentences.minOf { it.sentencedAt }
       val latestReleaseDateSentence = extractionService.mostRecentSentence(
-        determinateSentences, SentenceCalculation::adjustedRawDeterminateReleaseDate
+        determinateSentences, SentenceCalculation::adjustedUncappedDeterminateReleaseDate
       )
-      if (earliestSentenceDate.minusDays(1).isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedRawDeterminateReleaseDate)) {
+      if (earliestSentenceDate.minusDays(1).isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate)) {
         val hasRemand = latestReleaseDateSentence.sentenceCalculation.getAdjustment(AdjustmentType.REMAND) != 0
         val hasTaggedBail = latestReleaseDateSentence.sentenceCalculation.getAdjustment(AdjustmentType.TAGGED_BAIL) != 0
         val arguments: MutableList<String> = mutableListOf()

@@ -6,4 +6,5 @@ enum class CalculationRule {
   HDCED_MINIMUM_14D,
   TUSED_LICENCE_PERIOD_LT_1Y,
   LED_CONSEC_ORA_AND_NON_ORA,
+  UNUSED_ADA
 }
