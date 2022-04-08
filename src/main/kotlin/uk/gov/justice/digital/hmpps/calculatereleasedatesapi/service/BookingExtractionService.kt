@@ -58,7 +58,7 @@ class BookingExtractionService(
     dates[sentence.getReleaseDateType()] = sentenceCalculation.releaseDate!!
 
     if (sentenceCalculation.licenceExpiryDate != null &&
-      sentenceCalculation.licenceExpiryDate != sentenceCalculation.expiryDate
+      sentence.releaseDateTypes.contains(LED)
     ) {
       dates[LED] = sentenceCalculation.licenceExpiryDate!!
     }
@@ -141,7 +141,7 @@ class BookingExtractionService(
       sentences, SentenceCalculation::notionalConditionalReleaseDate
     )
 
-    if (latestExpiryDate == latestLicenseExpiryDate) {
+    if (latestExpiryDate == latestLicenseExpiryDate && mostRecentSentenceByExpiryDate.releaseDateTypes.contains(SLED)) {
       dates[SLED] = latestExpiryDate
       breakdownByReleaseDateType[SLED] =
         mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SLED]!!

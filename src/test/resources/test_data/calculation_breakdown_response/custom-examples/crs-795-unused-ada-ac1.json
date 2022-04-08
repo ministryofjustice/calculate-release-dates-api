@@ -1,0 +1,71 @@
+{
+  "concurrentSentences":[
+    {
+      "sentencedAt":"2020-10-19",
+      "sentenceLength":"7 months",
+      "sentenceLengthDays":212,
+      "dates":{
+        "SED":{
+          "unadjusted":"2021-05-18",
+          "adjusted":"2021-05-18",
+          "daysFromSentenceStart":212,
+          "adjustedByDays":0
+        },
+        "ARD":{
+          "unadjusted":"2021-02-01",
+          "adjusted":"2021-05-18",
+          "daysFromSentenceStart":106,
+          "adjustedByDays":-106
+        }
+      },
+      "lineSequence":1,
+      "caseSequence":1,
+      "caseReference":null
+    }
+  ],
+  "consecutiveSentence":null,
+  "breakdownByReleaseDateType":{
+    "ARD":{
+      "rules":[
+
+      ],
+      "rulesWithExtraAdjustments":{
+        "UNUSED_ADA":{
+          "adjustmentValue":29,
+          "type":"DAYS"
+        }
+      },
+      "adjustedDays":106,
+      "releaseDate":"2021-05-18",
+      "unadjustedDate":"2021-02-01"
+    },
+    "SED":{
+      "rules":[
+
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":0,
+      "releaseDate":"2021-05-18",
+      "unadjustedDate":"2021-05-18"
+    },
+    "HDCED":{
+      "rules":[
+        "HDCED_GE_12W_LT_18M"
+      ],
+      "rulesWithExtraAdjustments":{
+        "HDCED_GE_12W_LT_18M":{
+          "adjustmentValue":53,
+          "type":"DAYS"
+        }
+      },
+      "adjustedDays":106,
+      "releaseDate":"2021-03-27",
+      "unadjustedDate":"2020-10-19"
+    }
+  },
+  "otherDates":{
+
+  }
+}
