@@ -575,6 +575,42 @@ class CalculationIntTest : IntegrationTestBase() {
     )
   }
 
+  @Test
+  fun `Run validation on argument after release date 1`() {
+    val validationMessages: ValidationMessages = webTestClient.get()
+      .uri("/calculation/CRS-796-1/validate")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ValidationMessages::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(validationMessages.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(validationMessages.messages).hasSize(1)
+    assertThat(validationMessages.messages[0].code).isEqualTo(ValidationCode.ADJUSTMENT_AFTER_RELEASE)
+    assertThat(validationMessages.messages[0].arguments).isEqualTo(listOf("ADDITIONAL_DAYS_AWARDED", "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED"))
+  }
+
+  @Test
+  fun `Run validation on argument after release date 2`() {
+    val validationMessages: ValidationMessages = webTestClient.get()
+      .uri("/calculation/CRS-796-2/validate")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ValidationMessages::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(validationMessages.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(validationMessages.messages).hasSize(1)
+    assertThat(validationMessages.messages[0].code).isEqualTo(ValidationCode.ADJUSTMENT_AFTER_RELEASE)
+    assertThat(validationMessages.messages[0].arguments).isEqualTo(listOf("ADDITIONAL_DAYS_AWARDED"))
+  }
+
   companion object {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"
