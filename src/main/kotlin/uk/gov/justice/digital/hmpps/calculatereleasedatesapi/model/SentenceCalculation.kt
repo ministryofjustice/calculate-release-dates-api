@@ -161,6 +161,16 @@ data class SentenceCalculation(
     }
   }
 
+  val releaseDateWithoutAdditions: LocalDate get() {
+    return if (sentence.sentenceType == SentenceType.STANDARD_RECALL) {
+      releaseDate.minusDays(calculatedTotalAddedDays.toLong())
+    } else if (sentence.sentenceType.isFixedTermRecall) {
+      releaseDate.minusDays(calculatedFixedTermRecallAddedDays.toLong())
+    } else {
+      adjustedDeterminateReleaseDate.minusDays(calculatedTotalAddedDays.toLong()).minusDays(calculatedTotalAwardedDays.toLong())
+    }
+  }
+
   val expiryDate: LocalDate? get() {
     if (sentence.releaseDateTypes.contains(ReleaseDateType.SLED) || sentence.releaseDateTypes.contains(ReleaseDateType.SED)) {
       return adjustedExpiryDate

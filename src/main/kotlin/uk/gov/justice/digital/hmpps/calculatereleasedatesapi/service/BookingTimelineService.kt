@@ -5,12 +5,16 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_SERVED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.LICENSE_UNUSED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RELEASE_UNUSED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.AdjustmentIsAfterReleaseDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CustodialPeriodExtinguishedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
@@ -119,12 +123,48 @@ class BookingTimelineService(
     sentenceGroups.add(sentencesInGroup)
     sentenceGroups.forEach { validateSentenceHasNotBeenExtinguished(it) }
     validateRemandPeriodsOverlapping(booking)
+    validateAdditionAdjustmentsInsideLatestReleaseDate(booking)
 
     val expiryDate = extractionService.mostRecent(sortedSentences, SentenceCalculation::expiryDate)
 
     capDatesByExpiry(expiryDate, sentenceGroups)
 
     return booking
+  }
+
+  private fun validateAdditionAdjustmentsInsideLatestReleaseDate(booking: Booking) {
+    val sentences = booking.getAllExtractableSentences()
+    val latestReleaseDatePreAddedDays = sentences.maxOf { it.sentenceCalculation.releaseDateWithoutAdditions }
+
+    val adas = booking.adjustments.getOrEmptyList(ADDITIONAL_DAYS_AWARDED)
+    val radas = booking.adjustments.getOrEmptyList(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED)
+    val uals = booking.adjustments.getOrEmptyList(UNLAWFULLY_AT_LARGE)
+    val adjustments = adas + radas + uals
+
+    val adjustmentsAfterRelease = adjustments.filter {
+      it.appliesToSentencesFrom.isAfter(latestReleaseDatePreAddedDays)
+    }
+    if (adjustmentsAfterRelease.isNotEmpty()) {
+      var anyAda = false
+      var anyRada = false
+      var anyUal = false
+      adjustmentsAfterRelease.forEach {
+        anyAda = anyAda || adas.contains(it)
+        anyRada = anyRada || radas.contains(it)
+        anyUal = anyUal || uals.contains(it)
+      }
+      val arguments = mutableListOf<String>()
+      if (anyAda)
+        arguments.add(ADDITIONAL_DAYS_AWARDED.name)
+      if (anyRada)
+        arguments.add(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED.name)
+      if (anyUal)
+        arguments.add(UNLAWFULLY_AT_LARGE.name)
+      throw AdjustmentIsAfterReleaseDateException(
+        "Adjustments are applied after latest release date of booking",
+        arguments
+      )
+    }
   }
 
   private fun capDatesByExpiry(
