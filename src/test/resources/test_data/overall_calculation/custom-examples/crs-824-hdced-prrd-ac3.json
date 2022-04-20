@@ -18,7 +18,7 @@
       "caseSequence":2,
       "lineSequence":1,
       "caseReference":"STD LR",
-      "sentenceType":"STANDARD_RECALL"
+      "recallType":"STANDARD_RECALL"
     },
     {
       "offence":{
@@ -33,7 +33,7 @@
       "caseSequence":2,
       "lineSequence":2,
       "caseReference":"STD LR",
-      "sentenceType":"STANDARD_RECALL"
+      "recallType":"STANDARD_RECALL"
     },
     {
       "offence":{
@@ -47,8 +47,7 @@
       "sentencedAt":"2020-11-20",
       "caseSequence":1,
       "lineSequence":3,
-      "caseReference":"T20207226",
-      "sentenceType":"STANDARD_DETERMINATE"
+      "caseReference":"T20207226"
     },
     {
       "offence":{
@@ -62,8 +61,7 @@
       "sentencedAt":"2020-11-20",
       "caseSequence":1,
       "lineSequence":4,
-      "caseReference":"T20207226",
-      "sentenceType":"STANDARD_DETERMINATE"
+      "caseReference":"T20207226"
     },
     {
       "offence":{
@@ -77,8 +75,7 @@
       "sentencedAt":"2020-11-20",
       "caseSequence":1,
       "lineSequence":5,
-      "caseReference":"T20207226",
-      "sentenceType":"STANDARD_DETERMINATE"
+      "caseReference":"T20207226"
     }
   ],
   "adjustments":{

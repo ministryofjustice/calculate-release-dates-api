@@ -20,12 +20,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IdentifiableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
@@ -53,9 +53,9 @@ class SentenceCalculationService {
     val numberOfDaysToSentenceExpiryDate = sentence.getLengthInDays()
 
     val numberOfDaysToDeterminateReleaseDateDouble = numberOfDaysToSentenceExpiryDate.toDouble().times(releaseDateMultiplier)
-    val numberOfDaysToDeterminateReleaseDate = if (sentence is ConsecutiveSentence && sentence.isMadeUpOfSdsPlusAndSdsSentences()) {
+    val numberOfDaysToDeterminateReleaseDate = if (sentence is StandardConsecutiveSentence && sentence.isMadeUpOfSdsPlusAndSdsSentences()) {
       ceil(
-        sentence.orderedSentences.map { it.sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble }
+        sentence.orderedStandardSentences.map { it.sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble }
           .reduce { acc, it -> acc + it }
       )
         .toInt()
@@ -75,14 +75,14 @@ class SentenceCalculationService {
 
     var numberOfDaysToPostRecallReleaseDate: Int? = null
     var unadjustedPostRecallReleaseDate: LocalDate? = null
-    if (sentence.sentenceType.isRecall) {
-      if (sentence.sentenceType == SentenceType.STANDARD_RECALL) {
+    if (sentence.isRecall()) {
+      if (sentence.recallType == RecallType.STANDARD_RECALL) {
         numberOfDaysToPostRecallReleaseDate = numberOfDaysToSentenceExpiryDate
         unadjustedPostRecallReleaseDate = unadjustedExpiryDate
-      } else if (sentence.sentenceType == SentenceType.FIXED_TERM_RECALL_14) {
+      } else if (sentence.recallType == RecallType.FIXED_TERM_RECALL_14) {
         numberOfDaysToPostRecallReleaseDate = 14
         unadjustedPostRecallReleaseDate = calculateFixedTermRecall(booking, 14)
-      } else if (sentence.sentenceType == SentenceType.FIXED_TERM_RECALL_28) {
+      } else if (sentence.recallType == RecallType.FIXED_TERM_RECALL_28) {
         numberOfDaysToPostRecallReleaseDate = 28
         unadjustedPostRecallReleaseDate = calculateFixedTermRecall(booking, 28)
       }
@@ -194,12 +194,12 @@ class SentenceCalculationService {
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation
   ) {
-    if (sentence is ConsecutiveSentence &&
+    if (sentence is StandardConsecutiveSentence &&
       sentence.isMadeUpOfOnlyAfterCjaLaspoSentences() &&
       sentence.hasOraSentences() &&
       sentence.hasNonOraSentences()
     ) {
-      val lengthOfOraSentences = sentence.orderedSentences.filter(Sentence::isOraSentence)
+      val lengthOfOraSentences = sentence.orderedStandardSentences.filter(StandardSentence::isOraSentence)
         .map { it.duration }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         .getLengthInDays(sentence.sentencedAt)
@@ -263,14 +263,14 @@ class SentenceCalculationService {
   // If a sentence needs to calculate an NPD, but it is an aggregated sentence made up of "old" and "new" type sentences
   // The NPD calc becomes much more complicated, see PSI example 40.
   private fun calculateNPDFromNotionalCRD(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
-    if (sentence is ConsecutiveSentence) {
-      val daysOfNewStyleSentences = sentence.orderedSentences
+    if (sentence is StandardConsecutiveSentence) {
+      val daysOfNewStyleSentences = sentence.orderedStandardSentences
         .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
         .map { it.duration }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         .getLengthInDays(sentence.sentencedAt)
 
-      val daysOfOldStyleSentences = sentence.orderedSentences
+      val daysOfOldStyleSentences = sentence.orderedStandardSentences
         .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO }
         .map { it.duration }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }

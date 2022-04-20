@@ -15,23 +15,23 @@ internal class SentenceTest {
       mapOf(ChronoUnit.DAYS to 1L)
     )
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = Sentence(
+    val standardSentence = StandardSentence(
       offence, duration, sentencedAt, UUID.fromString(uuidString),
       caseSequence = 1,
       lineSequence = 2,
       caseReference = "ABC123"
     )
 
-    assertEquals(duration, sentence.duration)
-    assertEquals(sentencedAt, sentence.sentencedAt)
-    assertEquals(uuidString, sentence.identifier.toString())
+    assertEquals(duration, standardSentence.duration)
+    assertEquals(sentencedAt, standardSentence.sentencedAt)
+    assertEquals(uuidString, standardSentence.identifier.toString())
 
     assertEquals(
       "Sentence(offence=Offence(committedAt=2020-01-01, isScheduleFifteen=false," +
         " isScheduleFifteenMaximumLife=false), duration=1 day, sentencedAt=2020-01-01," +
         " identifier=219db65e-d7b7-4c70-9239-98babff7bcd5, consecutiveSentenceUUIDs=[], caseSequence=1, lineSequence=2," +
         " caseReference=ABC123, sentenceType=STANDARD_DETERMINATE)",
-      sentence.toString()
+      standardSentence.toString()
     )
   }
 }

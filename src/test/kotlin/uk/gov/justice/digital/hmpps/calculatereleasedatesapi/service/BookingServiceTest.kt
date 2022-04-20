@@ -14,8 +14,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -131,7 +131,7 @@ class BookingServiceTest {
           reference = prisonerId,
         ),
         sentences = mutableListOf(
-          Sentence(
+          StandardSentence(
             sentencedAt = FIRST_JAN_2015,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(committedAt = FIRST_JAN_2015),
@@ -141,7 +141,7 @@ class BookingServiceTest {
             ),
             lineSequence = lineSequence,
             caseSequence = caseSequence,
-            sentenceType = SentenceType.FIXED_TERM_RECALL_28
+            recallType = RecallType.FIXED_TERM_RECALL_28
           )
         ),
         adjustments = Adjustments(

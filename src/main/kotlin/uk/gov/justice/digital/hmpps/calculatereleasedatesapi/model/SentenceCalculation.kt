@@ -36,7 +36,7 @@ data class SentenceCalculation(
   }
 
   val calculatedTotalDeductedDays: Int get() {
-    val adjustmentTypes: Array<AdjustmentType> = if (sentence.sentenceType === SentenceType.STANDARD_DETERMINATE) {
+    val adjustmentTypes: Array<AdjustmentType> = if (!sentence.isRecall()) {
       arrayOf(REMAND, TAGGED_BAIL)
     } else {
       arrayOf(RECALL_REMAND, RECALL_TAGGED_BAIL)
@@ -70,7 +70,7 @@ data class SentenceCalculation(
   }
 
   val numberOfDaysToAddToLicenceExpiryDate: Int get() {
-    if (sentence.sentenceType === SentenceType.STANDARD_DETERMINATE && calculatedTotalDeductedDays >= numberOfDaysToDeterminateReleaseDate) {
+    if (!sentence.isRecall() && calculatedTotalDeductedDays >= numberOfDaysToDeterminateReleaseDate) {
       return calculatedTotalDeductedDays - numberOfDaysToDeterminateReleaseDate
     }
     return 0
@@ -108,19 +108,21 @@ data class SentenceCalculation(
   }
 
   val adjustedPostRecallReleaseDate: LocalDate? get() {
-    if (sentence.sentenceType == SentenceType.STANDARD_RECALL) {
-      return unadjustedPostRecallReleaseDate?.minusDays(
-        calculatedTotalDeductedDays.toLong()
-      )?.plusDays(
-        calculatedTotalAddedDays.toLong()
-      )
-    }
-    if (sentence.sentenceType.isFixedTermRecall) {
-      // Fixed term recalls only apply adjustments from return to custody date
-      val fixedTermRecallRelease = unadjustedPostRecallReleaseDate?.plusDays(
-        calculatedFixedTermRecallAddedDays.toLong()
-      )
-      return minOf(fixedTermRecallRelease!!, expiryDate!!)
+    if (sentence.isRecall()) {
+      if (sentence.recallType == RecallType.STANDARD_RECALL) {
+        return unadjustedPostRecallReleaseDate?.minusDays(
+          calculatedTotalDeductedDays.toLong()
+        )?.plusDays(
+          calculatedTotalAddedDays.toLong()
+        )
+      }
+      if (sentence.recallType!!.isFixedTermRecall) {
+        // Fixed term recalls only apply adjustments from return to custody date
+        val fixedTermRecallRelease = unadjustedPostRecallReleaseDate?.plusDays(
+          calculatedFixedTermRecallAddedDays.toLong()
+        )
+        return minOf(fixedTermRecallRelease!!, expiryDate!!)
+      }
     }
     return null
   }
@@ -154,7 +156,7 @@ data class SentenceCalculation(
   var notionalConditionalReleaseDate: LocalDate? = null
 
   val releaseDate: LocalDate get() {
-    return if (sentence.sentenceType.isRecall) {
+    return if (sentence.isRecall()) {
       adjustedPostRecallReleaseDate!!
     } else {
       adjustedDeterminateReleaseDate
@@ -162,9 +164,9 @@ data class SentenceCalculation(
   }
 
   val releaseDateWithoutAdditions: LocalDate get() {
-    return if (sentence.sentenceType == SentenceType.STANDARD_RECALL) {
+    return if (sentence.recallType == RecallType.STANDARD_RECALL) {
       releaseDate.minusDays(calculatedTotalAddedDays.toLong())
-    } else if (sentence.sentenceType.isFixedTermRecall) {
+    } else if (sentence.recallType?.isFixedTermRecall == true) {
       releaseDate.minusDays(calculatedFixedTermRecallAddedDays.toLong())
     } else {
       adjustedDeterminateReleaseDate.minusDays(calculatedTotalAddedDays.toLong()).minusDays(calculatedTotalAwardedDays.toLong())

@@ -15,7 +15,7 @@
         }
       },
       "sentencedAt": "2021-01-24",
-      "sentenceType": "FIXED_TERM_RECALL_28"
+      "recallType": "FIXED_TERM_RECALL_28"
     }
   ]
 }

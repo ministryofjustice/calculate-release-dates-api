@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
@@ -117,7 +117,7 @@ class ValidationService(
 
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedSentences: List<SentenceCalculationType> = SentenceCalculationType.values()
-      .filter { (featureToggles.recall && it.sentenceType.isRecall) || it.sentenceType == SentenceType.STANDARD_DETERMINATE }
+      .filter { (featureToggles.recall && it.recallType != null) || it.recallType == null }
     return sentencesAndOffences.filter { !supportedSentences.contains(SentenceCalculationType.from(it.sentenceCalculationType)) }
       .map { ValidationMessage("Unsupported sentence type ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceTypeDescription)) }
   }

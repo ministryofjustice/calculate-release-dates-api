@@ -5,37 +5,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import java.util.UUID
 
-class ConsecutiveSentence(
-  override val sentencedAt: LocalDate,
-  override val offence: Offence,
-  val orderedSentences: List<Sentence>
-) : IdentifiableSentence, CalculableSentence, ExtractableSentence {
-
-  constructor(orderedSentences: List<Sentence>) :
-    this(
-      orderedSentences.minOf(Sentence::sentencedAt),
-      orderedSentences.map(Sentence::offence).minByOrNull(Offence::committedAt)!!,
-      orderedSentences
-    )
-
-  override val sentenceType: SentenceType
-    get() {
-      return orderedSentences[0].sentenceType
-    }
-
-  @JsonIgnore
-  override lateinit var sentenceCalculation: SentenceCalculation
-
-  @JsonIgnore
-  override lateinit var identificationTrack: SentenceIdentificationTrack
-
-  @JsonIgnore
-  override lateinit var releaseDateTypes: List<ReleaseDateType>
+class StandardConsecutiveSentence(orderedStandardSentences: List<StandardSentence>) : AbstractConsecutiveSentence<StandardSentence>(
+  orderedStandardSentences
+) {
 
   override fun buildString(): String {
     return "ConsecutiveSentence\t:\t\n" +
-      "Number of sentences\t:\t${orderedSentences.size}\n" +
+      "Number of sentences\t:\t${orderedStandardSentences.size}\n" +
       "Sentence Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
       sentenceCalculation.buildString(releaseDateTypes)
@@ -43,26 +21,27 @@ class ConsecutiveSentence(
 
   override fun getLengthInDays(): Int {
     var date = sentencedAt
-    orderedSentences.forEach {
+    orderedStandardSentences.forEach {
       date = date.plusDays(it.duration.getLengthInDays(date).toLong())
     }
     return (ChronoUnit.DAYS.between(sentencedAt, date)).toInt()
   }
 
+
   private fun hasAfterCjaLaspo(): Boolean {
-    return orderedSentences.any() { it.identificationTrack === SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
+    return orderedStandardSentences.any() { it.identificationTrack === SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
   }
 
   private fun hasBeforeCjaLaspo(): Boolean {
-    return orderedSentences.any() { it.identificationTrack === SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO }
+    return orderedStandardSentences.any() { it.identificationTrack === SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO }
   }
 
   fun hasOraSentences(): Boolean {
-    return orderedSentences.any(Sentence::isOraSentence)
+    return orderedStandardSentences.any(StandardSentence::isOraSentence)
   }
 
   fun hasNonOraSentences(): Boolean {
-    return orderedSentences.any { !it.isOraSentence() }
+    return orderedStandardSentences.any { !it.isOraSentence() }
   }
 
   fun isMadeUpOfBeforeAndAfterCjaLaspoSentences(): Boolean {
@@ -78,11 +57,11 @@ class ConsecutiveSentence(
   }
 
   private fun hasSdsPlusSentences(): Boolean {
-    return orderedSentences.any(Sentence::isSdsSentence)
+    return orderedStandardSentences.any(StandardSentence::isSdsSentence)
   }
 
   private fun hasSdsSentences(): Boolean {
-    return orderedSentences.any { !it.isSdsSentence() }
+    return orderedStandardSentences.any { !it.isSdsSentence() }
   }
 
   fun isMadeUpOfSdsPlusAndSdsSentences(): Boolean {
