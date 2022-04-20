@@ -25,6 +25,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
+import java.util.Collections
+import kotlin.math.max
 import kotlin.math.min
 
 @Service
@@ -47,7 +49,6 @@ class BookingTimelineService(
     val sortedSentences = booking.getAllExtractableSentences().sortedBy { it.sentencedAt }
     val firstSentence = sortedSentences[0]
     var sentenceRange = firstSentence.getRangeOfSentenceBeforeAwardedDays()
-    val totalAda = firstSentence.sentenceCalculation.calculatedTotalAwardedDays
     var previousSentence = firstSentence
 
     // Which sentences are in the same "Group". A "Group" of sentences are sentences that are concurrent to each other,
@@ -58,7 +59,7 @@ class BookingTimelineService(
     var previousReleaseDateReached: LocalDate? = null
 
     sortedSentences.forEach {
-      it.sentenceCalculation.adjustmentsBefore = sentenceRange.end
+      it.sentenceCalculation.adjustmentsBefore = Collections.max(listOf(sentenceRange.end, it.sentencedAt))
       it.sentenceCalculation.adjustmentsAfter = previousReleaseDateReached
       val itRange = it.getRangeOfSentenceBeforeAwardedDays()
       if (previousSentence.sentenceType.isRecall && !it.sentenceType.isRecall) {
@@ -83,7 +84,8 @@ class BookingTimelineService(
         // There is gap here.
         // 1. Check if there have been any ADAs served
         var daysBetween = DAYS.between(sentenceRange.end, it.sentencedAt)
-        val daysAdaServed = min(daysBetween - 1, totalAda.toLong())
+        val adaAvailable = it.sentenceCalculation.calculatedTotalAwardedDays
+        val daysAdaServed = min(daysBetween - 1, adaAvailable.toLong())
         booking.adjustments.addAdjustment(
           ADDITIONAL_DAYS_SERVED,
           Adjustment(
@@ -244,8 +246,8 @@ class BookingTimelineService(
         determinateSentences, SentenceCalculation::adjustedUncappedDeterminateReleaseDate
       )
       if (earliestSentenceDate.minusDays(1).isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate)) {
-        val hasRemand = latestReleaseDateSentence.sentenceCalculation.getAdjustment(AdjustmentType.REMAND) != 0
-        val hasTaggedBail = latestReleaseDateSentence.sentenceCalculation.getAdjustment(AdjustmentType.TAGGED_BAIL) != 0
+        val hasRemand = latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND) != 0
+        val hasTaggedBail = latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.TAGGED_BAIL) != 0
         val arguments: MutableList<String> = mutableListOf()
         if (hasRemand) {
           arguments += AdjustmentType.REMAND.name
