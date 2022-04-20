@@ -31,8 +31,12 @@ data class SentenceCalculation(
   val returnToCustodyDate: LocalDate? = null
 ) {
 
-  fun getAdjustment(vararg adjustmentTypes: AdjustmentType, adjustmentBeforeOverride: LocalDate? = null): Int {
-    return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = adjustmentBeforeOverride ?: adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+  fun getAdjustmentBeforeSentence(vararg adjustmentTypes: AdjustmentType): Int {
+    return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+  }
+
+  fun getAdjustmentDuringSentence(vararg adjustmentTypes: AdjustmentType): Int {
+    return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = releaseDateWithoutAwarded, adjustmentsAfter = adjustmentsAfter)
   }
 
   val calculatedTotalDeductedDays: Int get() {
@@ -41,11 +45,11 @@ data class SentenceCalculation(
     } else {
       arrayOf(RECALL_REMAND, RECALL_TAGGED_BAIL)
     }
-    return getAdjustment(*adjustmentTypes)
+    return getAdjustmentBeforeSentence(*adjustmentTypes)
   }
 
   val calculatedTotalAddedDays: Int get() {
-    return getAdjustment(UNLAWFULLY_AT_LARGE)
+    return getAdjustmentBeforeSentence(UNLAWFULLY_AT_LARGE)
   }
 
   val calculatedFixedTermRecallAddedDays: Int get() {
@@ -55,18 +59,18 @@ data class SentenceCalculation(
   val calculatedTotalAwardedDays: Int get() {
     return max(
       0,
-      getAdjustment(ADDITIONAL_DAYS_AWARDED, adjustmentBeforeOverride = releaseDateWithoutAwarded) -
-        getAdjustment(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, ADDITIONAL_DAYS_SERVED, adjustmentBeforeOverride = releaseDateWithoutAwarded)
+      getAdjustmentDuringSentence(ADDITIONAL_DAYS_AWARDED) -
+        getAdjustmentDuringSentence(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, ADDITIONAL_DAYS_SERVED)
 
     )
   }
 
   val calculatedUnusedReleaseAda: Int get() {
-    return getAdjustment(RELEASE_UNUSED_ADA)
+    return getAdjustmentDuringSentence(RELEASE_UNUSED_ADA)
   }
 
   val calculatedUnusedLicenseAda: Int get() {
-    return getAdjustment(LICENSE_UNUSED_ADA)
+    return getAdjustmentDuringSentence(LICENSE_UNUSED_ADA)
   }
 
   val numberOfDaysToAddToLicenceExpiryDate: Int get() {
@@ -171,7 +175,7 @@ data class SentenceCalculation(
     } else if (sentence.sentenceType.isFixedTermRecall) {
       releaseDate.minusDays(calculatedFixedTermRecallAddedDays.toLong())
     } else {
-      adjustedDeterminateReleaseDate.minusDays(calculatedTotalAddedDays.toLong()).minusDays(calculatedTotalAwardedDays.toLong())
+      releaseDate.minusDays(calculatedTotalAddedDays.toLong()).minusDays(calculatedTotalAwardedDays.toLong())
     }
   }
 

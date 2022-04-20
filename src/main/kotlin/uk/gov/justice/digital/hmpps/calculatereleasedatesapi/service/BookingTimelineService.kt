@@ -246,8 +246,8 @@ class BookingTimelineService(
         determinateSentences, SentenceCalculation::adjustedUncappedDeterminateReleaseDate
       )
       if (earliestSentenceDate.minusDays(1).isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate)) {
-        val hasRemand = latestReleaseDateSentence.sentenceCalculation.getAdjustment(AdjustmentType.REMAND) != 0
-        val hasTaggedBail = latestReleaseDateSentence.sentenceCalculation.getAdjustment(AdjustmentType.TAGGED_BAIL) != 0
+        val hasRemand = latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND) != 0
+        val hasTaggedBail = latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.TAGGED_BAIL) != 0
         val arguments: MutableList<String> = mutableListOf()
         if (hasRemand) {
           arguments += AdjustmentType.REMAND.name
