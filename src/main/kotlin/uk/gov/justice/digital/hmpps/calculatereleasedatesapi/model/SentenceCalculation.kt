@@ -31,8 +31,8 @@ data class SentenceCalculation(
   val returnToCustodyDate: LocalDate? = null
 ) {
 
-  fun getAdjustment(vararg adjustmentTypes: AdjustmentType): Int {
-    return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+  fun getAdjustment(vararg adjustmentTypes: AdjustmentType, adjustmentBeforeOverride: LocalDate? = null): Int {
+    return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = adjustmentBeforeOverride ?: adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
   }
 
   val calculatedTotalDeductedDays: Int get() {
@@ -55,8 +55,8 @@ data class SentenceCalculation(
   val calculatedTotalAwardedDays: Int get() {
     return max(
       0,
-      getAdjustment(ADDITIONAL_DAYS_AWARDED) -
-        getAdjustment(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, ADDITIONAL_DAYS_SERVED)
+      getAdjustment(ADDITIONAL_DAYS_AWARDED, adjustmentBeforeOverride = releaseDateWithoutAwarded) -
+        getAdjustment(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, ADDITIONAL_DAYS_SERVED, adjustmentBeforeOverride = releaseDateWithoutAwarded)
 
     )
   }
@@ -85,15 +85,19 @@ data class SentenceCalculation(
       )
   }
 
-  /*
-    Determinate release date that is not "capped" by the sentence date or expiry date.
-   */
-  val adjustedUncappedDeterminateReleaseDate: LocalDate get() {
+  val releaseDateWithoutAwarded: LocalDate get() {
     return unadjustedDeterminateReleaseDate.minusDays(
       calculatedTotalDeductedDays.toLong()
     ).plusDays(
       calculatedTotalAddedDays.toLong()
-    ).plusDays(
+    )
+  }
+
+  /*
+    Determinate release date that is not "capped" by the sentence date or expiry date.
+   */
+  val adjustedUncappedDeterminateReleaseDate: LocalDate get() {
+    return releaseDateWithoutAwarded.plusDays(
       calculatedTotalAwardedDays.toLong()
     )
   }
