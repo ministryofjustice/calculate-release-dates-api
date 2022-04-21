@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
-import java.util.UUID
 
 abstract class AbstractConsecutiveSentence<S : AbstractSentence>(val orderedStandardSentences: List<S>) : IdentifiableSentence, CalculableSentence, ExtractableSentence {
   override val sentencedAt: LocalDate = orderedStandardSentences.minOf(AbstractSentence::sentencedAt)
@@ -24,5 +22,4 @@ abstract class AbstractConsecutiveSentence<S : AbstractSentence>(val orderedStan
 
   @JsonIgnore
   override lateinit var releaseDateTypes: List<ReleaseDateType>
-
 }

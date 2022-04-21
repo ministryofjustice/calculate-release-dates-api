@@ -20,9 +20,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit

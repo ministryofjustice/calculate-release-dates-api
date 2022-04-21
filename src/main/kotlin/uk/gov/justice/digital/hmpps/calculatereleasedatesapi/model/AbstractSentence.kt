@@ -12,7 +12,8 @@ import java.util.UUID
   use = JsonTypeInfo.Id.NAME,
   include = JsonTypeInfo.As.PROPERTY,
   property = "type",
-  defaultImpl = StandardSentence::class)
+  defaultImpl = StandardSentence::class
+)
 @JsonSubTypes(
   JsonSubTypes.Type(value = StandardSentence::class, name = "StandardSentence"),
   JsonSubTypes.Type(value = ExtendedDeterminateSentence::class, name = "ExtendedDeterminateSentence")
@@ -40,4 +41,3 @@ abstract class AbstractSentence(
   @Transient
   override lateinit var releaseDateTypes: List<ReleaseDateType>
 }
-

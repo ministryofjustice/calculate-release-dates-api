@@ -1,11 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
-import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.UUID
 
 class StandardConsecutiveSentence(orderedStandardSentences: List<StandardSentence>) : AbstractConsecutiveSentence<StandardSentence>(
   orderedStandardSentences
@@ -26,7 +22,6 @@ class StandardConsecutiveSentence(orderedStandardSentences: List<StandardSentenc
     }
     return (ChronoUnit.DAYS.between(sentencedAt, date)).toInt()
   }
-
 
   private fun hasAfterCjaLaspo(): Boolean {
     return orderedStandardSentences.any() { it.identificationTrack === SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }

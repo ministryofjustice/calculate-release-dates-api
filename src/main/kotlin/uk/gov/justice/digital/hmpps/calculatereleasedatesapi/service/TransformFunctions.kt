@@ -38,7 +38,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentencePart
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DateBreakdown
@@ -47,8 +46,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
@@ -257,8 +256,8 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
   val concurrentSentences = booking.sentences.filter {
     booking.consecutiveSentences.none { consecutiveSentence ->
       consecutiveSentence.orderedStandardSentences.contains(it)
-    }
-      && it is StandardSentence
+    } &&
+      it is StandardSentence
   }.map { it as StandardSentence }
   return CalculationBreakdown(
     concurrentSentences = concurrentSentences.map { sentence ->

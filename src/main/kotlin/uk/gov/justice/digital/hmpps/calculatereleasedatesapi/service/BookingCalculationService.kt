@@ -7,8 +7,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedStandardConsecutiveSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
 
 @Service
@@ -37,7 +37,7 @@ class BookingCalculationService(
       booking.sentences.minOf { it.sentencedAt } != booking.sentences.maxOf { it.sentencedAt } &&
       booking.sentences.all { !it.isRecall() }
     ) {
-      booking.singleTermSentence = SingleTermSentence(booking.sentences.map { it as StandardSentence})
+      booking.singleTermSentence = SingleTermSentence(booking.sentences.map { it as StandardSentence })
       sentenceIdentificationService.identify(booking.singleTermSentence!!, booking.offender)
       sentenceCalculationService.calculate(booking.singleTermSentence!!, booking)
       log.info(booking.singleTermSentence!!.buildString())
