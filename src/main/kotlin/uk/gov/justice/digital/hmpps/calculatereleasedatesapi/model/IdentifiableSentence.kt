@@ -7,5 +7,5 @@ interface IdentifiableSentence : SentenceTimeline {
   val offence: Offence
   var identificationTrack: SentenceIdentificationTrack
   var releaseDateTypes: List<ReleaseDateType>
-  val sentenceType: SentenceType
+  val recallType: RecallType?
 }

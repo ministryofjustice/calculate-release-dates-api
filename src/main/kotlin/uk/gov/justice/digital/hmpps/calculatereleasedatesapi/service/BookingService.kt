@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.ValidationException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
@@ -22,13 +22,13 @@ class BookingService(
       throw ValidationException(validation.toErrorString())
     }
     val offender = transform(prisonerDetails)
-    val sentences = mutableListOf<Sentence>()
+    val standardSentences = mutableListOf<StandardSentence>()
     val adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences)
-    sentenceAndOffences.forEach { sentences.addAll(transform(it)) }
+    sentenceAndOffences.forEach { standardSentences.addAll(transform(it)) }
 
     return Booking(
       offender = offender,
-      sentences = sentences.toMutableList(),
+      sentences = standardSentences.toMutableList(),
       adjustments = adjustments,
       bookingId = prisonerDetails.bookingId,
       returnToCustodyDate = prisonApiSourceData.returnToCustodyDate?.returnToCustodyDate

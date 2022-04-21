@@ -5,9 +5,11 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedStandardConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
 
 @Service
 class BookingCalculationService(
@@ -33,9 +35,9 @@ class BookingCalculationService(
     if (booking.sentences.size > 1 &&
       booking.sentences.all { it.identificationTrack == SDS_BEFORE_CJA_LASPO && it.consecutiveSentenceUUIDs.isEmpty() } &&
       booking.sentences.minOf { it.sentencedAt } != booking.sentences.maxOf { it.sentencedAt } &&
-      booking.sentences.all { it.sentenceType === SentenceType.STANDARD_DETERMINATE }
+      booking.sentences.all { !it.isRecall() }
     ) {
-      booking.singleTermSentence = SingleTermSentence(booking.sentences)
+      booking.singleTermSentence = SingleTermSentence(booking.sentences.map { it as StandardSentence })
       sentenceIdentificationService.identify(booking.singleTermSentence!!, booking.offender)
       sentenceCalculationService.calculate(booking.singleTermSentence!!, booking)
       log.info(booking.singleTermSentence!!.buildString())
@@ -50,7 +52,13 @@ class BookingCalculationService(
     booking.consecutiveSentences = baseSentences
       .map { baseSentence -> generateSequence(baseSentence) { sentencesByPrevious[it.identifier] }.toList() }
       .filter { it.size > 1 }
-      .map { ConsecutiveSentence(it) }
+      .map { it ->
+        if (it[0] is StandardSentence) {
+          StandardConsecutiveSentence(it.map { it as StandardSentence })
+        } else {
+          ExtendedStandardConsecutiveSentence(it.map { it as ExtendedDeterminateSentence })
+        }
+      }
 
     booking.consecutiveSentences.forEach {
       sentenceIdentificationService.identify(it, booking.offender)

@@ -16,10 +16,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_PLUS
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IdentifiableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
@@ -31,7 +31,7 @@ class SentenceIdentificationService {
 
   fun identify(sentence: IdentifiableSentence, offender: Offender) {
     identifyStandardDeterminate(sentence, offender)
-    if (sentence.sentenceType.isRecall) {
+    if (sentence.recallType != null) {
       sentence.releaseDateTypes -= HDCED
       sentence.releaseDateTypes += PRRD
     }
@@ -39,7 +39,7 @@ class SentenceIdentificationService {
 
   fun identifyStandardDeterminate(sentence: IdentifiableSentence, offender: Offender) {
     sentence.releaseDateTypes = listOf()
-    if (sentence is ConsecutiveSentence) {
+    if (sentence is StandardConsecutiveSentence) {
       if (sentence.isMadeUpOfOnlySdsPlusSentences()) {
         sentence.identificationTrack = SDS_PLUS
         sentence.releaseDateTypes = listOf(
@@ -49,7 +49,7 @@ class SentenceIdentificationService {
       } else if (sentence.isMadeUpOfBeforeAndAfterCjaLaspoSentences()) {
         sentence.identificationTrack = SDS_AFTER_CJA_LASPO
         // This consecutive sentence is made up of pre and post laspo date sentences. (Old and new style)
-        val hasScheduleFifteen = sentence.orderedSentences.any() { it.offence.isScheduleFifteen }
+        val hasScheduleFifteen = sentence.orderedStandardSentences.any() { it.offence.isScheduleFifteen }
         if (hasScheduleFifteen) {
           // PSI example 40
           sentence.releaseDateTypes = listOf(
@@ -181,10 +181,10 @@ class SentenceIdentificationService {
 
   private fun doesTopUpSentenceExpiryDateApply(sentence: IdentifiableSentence, offender: Offender): Boolean {
     val oraCondition = when (sentence) {
-      is Sentence -> {
+      is StandardSentence -> {
         sentence.isOraSentence()
       }
-      is ConsecutiveSentence -> {
+      is StandardConsecutiveSentence -> {
         sentence.hasOraSentences()
       }
       else -> {
@@ -193,10 +193,10 @@ class SentenceIdentificationService {
     }
 
     val lapsoCondition = when (sentence) {
-      is Sentence -> {
+      is StandardSentence -> {
         sentence.identificationTrack == SDS_AFTER_CJA_LASPO
       }
-      is ConsecutiveSentence -> {
+      is StandardConsecutiveSentence -> {
         sentence.isMadeUpOfOnlyAfterCjaLaspoSentences()
       }
       else -> {

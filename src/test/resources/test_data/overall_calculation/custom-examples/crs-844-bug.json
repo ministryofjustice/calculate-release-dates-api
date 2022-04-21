@@ -15,7 +15,7 @@
         }
       },
       "sentencedAt":"2018-04-19",
-      "sentenceType":"STANDARD_RECALL"
+      "recallType":"STANDARD_RECALL"
     },
     {
       "offence":{
@@ -26,8 +26,7 @@
           "MONTHS":8
         }
       },
-      "sentencedAt":"2020-01-06",
-      "sentenceType":"STANDARD_DETERMINATE"
+      "sentencedAt":"2020-01-06"
     },
     {
       "offence":{
@@ -39,8 +38,7 @@
           "YEARS":6
         }
       },
-      "sentencedAt":"2021-03-12",
-      "sentenceType":"STANDARD_DETERMINATE"
+      "sentencedAt":"2021-03-12"
     },
     {
       "offence":{
@@ -51,8 +49,7 @@
           "MONTHS":45
         }
       },
-      "sentencedAt":"2021-03-12",
-      "sentenceType":"STANDARD_DETERMINATE"
+      "sentencedAt":"2021-03-12"
     }
   ],
   "adjustments":{

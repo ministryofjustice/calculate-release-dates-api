@@ -15,7 +15,7 @@
         }
       },
       "sentencedAt": "2021-03-10",
-      "sentenceType": "FIXED_TERM_RECALL_14"
+      "recallType": "FIXED_TERM_RECALL_14"
     },
     {
       "offence": {
@@ -27,7 +27,7 @@
         }
       },
       "sentencedAt": "2021-06-06",
-      "sentenceType": "FIXED_TERM_RECALL_14"
+      "recallType": "FIXED_TERM_RECALL_14"
     }
   ]
 }

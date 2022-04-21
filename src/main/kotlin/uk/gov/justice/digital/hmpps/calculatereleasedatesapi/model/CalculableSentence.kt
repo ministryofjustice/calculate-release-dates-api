@@ -6,11 +6,16 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 interface CalculableSentence : SentenceTimeline {
   var releaseDateTypes: List<ReleaseDateType>
   var sentenceCalculation: SentenceCalculation
-  val sentenceType: SentenceType
+  val recallType: RecallType?
+
+  @JsonIgnore
+  fun isRecall(): Boolean {
+    return recallType != null
+  }
 
   @JsonIgnore
   fun getReleaseDateType(): ReleaseDateType {
-    return if (sentenceType.isRecall)
+    return if (isRecall())
       ReleaseDateType.PRRD else if (releaseDateTypes.contains(ReleaseDateType.PED))
       ReleaseDateType.PED else if (sentenceCalculation.isReleaseDateConditional)
       ReleaseDateType.CRD else

@@ -1,43 +1,30 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.util.UUID
 
-data class Sentence(
+data class StandardSentence(
   override val offence: Offence,
   val duration: Duration,
   override val sentencedAt: LocalDate,
-  val identifier: UUID = UUID.randomUUID(),
-  // Sentence UUIDS that this sentence is consecutive to.
-  val consecutiveSentenceUUIDs: List<UUID> = listOf(),
-  val caseSequence: Int? = null,
-  val lineSequence: Int? = null,
-  val caseReference: String? = null,
-  override val sentenceType: SentenceType = SentenceType.STANDARD_DETERMINATE
-) : IdentifiableSentence, CalculableSentence, ExtractableSentence {
-  @JsonIgnore
-  @Transient
-  override lateinit var sentenceCalculation: SentenceCalculation
-
-  @JsonIgnore
-  @Transient
-  override lateinit var identificationTrack: SentenceIdentificationTrack
-
-  @JsonIgnore
-  @Transient
-  override lateinit var releaseDateTypes: List<ReleaseDateType>
+  override val identifier: UUID = UUID.randomUUID(),
+  override val consecutiveSentenceUUIDs: List<UUID> = listOf(),
+  override val caseSequence: Int? = null,
+  override val lineSequence: Int? = null,
+  override val caseReference: String? = null,
+  override val recallType: RecallType? = null
+) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType) {
 
   override fun buildString(): String {
     return "Sentence\t:\t\n" +
       "Identification Track\t:\t${identificationTrack}\n" +
       "Duration\t:\t$duration\n" +
       "${duration.toPeriodString(sentencedAt)}\n" +
-      "Sentence Types\t:\t$sentenceType\n" +
+      "Sentence Types\t:\t$recallType\n" +
       "Release Date Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
       sentenceCalculation.buildString(releaseDateTypes)

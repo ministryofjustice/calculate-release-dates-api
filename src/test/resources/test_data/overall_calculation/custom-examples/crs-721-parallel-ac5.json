@@ -14,7 +14,7 @@
           "MONTHS": 12
         }
       },
-      "sentenceType": "STANDARD_RECALL",
+      "recallType": "STANDARD_RECALL",
       "sentencedAt": "2021-08-17"
     },
     {
