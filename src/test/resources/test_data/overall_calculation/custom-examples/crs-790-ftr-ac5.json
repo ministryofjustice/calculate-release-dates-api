@@ -15,7 +15,7 @@
         }
       },
       "sentencedAt": "2021-01-25",
-      "sentenceType": "FIXED_TERM_RECALL_28",
+      "recallType": "FIXED_TERM_RECALL_28",
       "identifier": "56a92750-dc7c-4301-9ebd-ca9dbd3de015"
     },
     {
@@ -28,7 +28,7 @@
         }
       },
       "sentencedAt": "2021-01-25",
-      "sentenceType": "FIXED_TERM_RECALL_28",
+      "recallType": "FIXED_TERM_RECALL_28",
       "consecutiveSentenceUUIDs": ["56a92750-dc7c-4301-9ebd-ca9dbd3de015"]
     }
   ],

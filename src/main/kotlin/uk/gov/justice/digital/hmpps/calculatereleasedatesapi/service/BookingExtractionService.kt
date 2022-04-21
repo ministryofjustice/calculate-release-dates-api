@@ -20,9 +20,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
@@ -161,11 +160,11 @@ class BookingExtractionService(
       }
     }
 
-    if (mostRecentSentencesByReleaseDate.any { it.sentenceType.isRecall }) {
+    if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
       dates[PRRD] = latestReleaseDate
     }
-    if (mostRecentSentencesByReleaseDate.any { it.sentenceType === SentenceType.STANDARD_DETERMINATE }) {
-      val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { it.sentenceType === SentenceType.STANDARD_DETERMINATE }
+    if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
+      val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }
       if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
         dates[CRD] = latestReleaseDate
         // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
@@ -211,9 +210,9 @@ class BookingExtractionService(
     sentences: List<ExtractableSentence>,
     latestAdjustedReleaseDate: LocalDate
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
-    if (sentences.any { it.sentenceType === SentenceType.STANDARD_DETERMINATE }) {
-      val earliestSentenceDate = sentences.filter { it.sentenceType === SentenceType.STANDARD_DETERMINATE }.minOf { it.sentencedAt }
-      val latestUnadjustedExpiryDate = extractionService.mostRecent(sentences.filter { it.sentenceType === SentenceType.STANDARD_DETERMINATE }, SentenceCalculation::unadjustedExpiryDate)
+    if (sentences.any { !it.isRecall() }) {
+      val earliestSentenceDate = sentences.filter { !it.isRecall() }.minOf { it.sentencedAt }
+      val latestUnadjustedExpiryDate = extractionService.mostRecent(sentences.filter { !it.isRecall() }, SentenceCalculation::unadjustedExpiryDate)
       val effectiveSentenceLength = getEffectiveSentenceLength(
         earliestSentenceDate,
         latestUnadjustedExpiryDate
@@ -274,8 +273,8 @@ class BookingExtractionService(
     val latestReleaseIsConditional = latestReleaseTypes.contains(CRD)
     val latestSentenceExpiryIsSED = latestExpiryTypes.contains(SED)
 
-    val hasOraSentences = sentences.any { (it is Sentence) && it.isOraSentence() }
-    val hasNonOraSentencesOfLessThan12Months = sentences.any { (it is Sentence) && !it.isOraSentence() && it.durationIsLessThan(12, ChronoUnit.MONTHS) }
+    val hasOraSentences = sentences.any { (it is StandardSentence) && it.isOraSentence() }
+    val hasNonOraSentencesOfLessThan12Months = sentences.any { (it is StandardSentence) && !it.isOraSentence() && it.durationIsLessThan(12, ChronoUnit.MONTHS) }
     val mostRecentSentenceWithASed = extractionService.mostRecentSentenceOrNull(
       sentences, SentenceCalculation::expiryDate
     ) { it.releaseDateTypes.contains(SED) }

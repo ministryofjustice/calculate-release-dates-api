@@ -14,7 +14,7 @@
         }
       },
       "sentencedAt":"2021-04-15",
-      "sentenceType":"STANDARD_RECALL"
+      "recallType":"STANDARD_RECALL"
     },
     {
       "offence":{
@@ -26,7 +26,7 @@
         }
       },
       "sentencedAt":"2021-04-15",
-      "sentenceType":"STANDARD_RECALL"
+      "recallType":"STANDARD_RECALL"
     }
   ],
   "adjustments":{

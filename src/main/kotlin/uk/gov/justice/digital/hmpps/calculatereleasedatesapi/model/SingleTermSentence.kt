@@ -9,18 +9,18 @@ import java.time.temporal.ChronoUnit
 class SingleTermSentence(
   override val sentencedAt: LocalDate,
   override val offence: Offence,
-  val sentences: List<Sentence>
+  val standardSentences: List<StandardSentence>
 ) : IdentifiableSentence, CalculableSentence, ExtractableSentence {
-  constructor(sentences: List<Sentence>) :
+  constructor(standardSentences: List<StandardSentence>) :
     this(
-      sentences.minOf(Sentence::sentencedAt),
-      sentences.map(Sentence::offence).minByOrNull(Offence::committedAt)!!,
-      sentences
+      standardSentences.minOf(StandardSentence::sentencedAt),
+      standardSentences.map(StandardSentence::offence).minByOrNull(Offence::committedAt)!!,
+      standardSentences
     )
 
-  override val sentenceType: SentenceType
+  override val recallType: RecallType?
     get() {
-      return sentences[0].sentenceType
+      return standardSentences[0].recallType
     }
 
   @JsonIgnore
@@ -33,15 +33,15 @@ class SingleTermSentence(
 
   override fun buildString(): String {
     return "SingleTermSentence\t:\t\n" +
-      "Number of sentences\t:\t${sentences.size}\n" +
+      "Number of sentences\t:\t${standardSentences.size}\n" +
       "Sentence Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
       sentenceCalculation.buildString(releaseDateTypes)
   }
 
   override fun getLengthInDays(): Int {
-    val firstSentence = sentences.get(0)
-    val secondSentence = sentences.get(1)
+    val firstSentence = standardSentences.get(0)
+    val secondSentence = standardSentences.get(1)
     val durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()
     durationElements[ChronoUnit.DAYS] = ChronoUnit.DAYS.between(
       earliestSentencedAt(firstSentence, secondSentence),
@@ -50,21 +50,21 @@ class SingleTermSentence(
     return Duration(durationElements).getLengthInDays(sentencedAt)
   }
 
-  private fun earliestSentencedAt(firstSentence: Sentence, secondSentence: Sentence): LocalDate {
-    return if (firstSentence.sentencedAt.isBefore(secondSentence.sentencedAt)) {
-      firstSentence.sentencedAt
+  private fun earliestSentencedAt(firstStandardSentence: StandardSentence, secondStandardSentence: StandardSentence): LocalDate {
+    return if (firstStandardSentence.sentencedAt.isBefore(secondStandardSentence.sentencedAt)) {
+      firstStandardSentence.sentencedAt
     } else {
-      secondSentence.sentencedAt
+      secondStandardSentence.sentencedAt
     }
   }
 
-  private fun latestExpiryDate(firstSentence: Sentence, secondSentence: Sentence): LocalDate? {
+  private fun latestExpiryDate(firstStandardSentence: StandardSentence, secondStandardSentence: StandardSentence): LocalDate? {
     return if (
-      firstSentence.sentenceCalculation.expiryDate?.isAfter(secondSentence.sentenceCalculation.expiryDate) == true
+      firstStandardSentence.sentenceCalculation.expiryDate?.isAfter(secondStandardSentence.sentenceCalculation.expiryDate) == true
     ) {
-      firstSentence.sentenceCalculation.expiryDate
+      firstStandardSentence.sentenceCalculation.expiryDate
     } else {
-      secondSentence.sentenceCalculation.expiryDate
+      secondStandardSentence.sentenceCalculation.expiryDate
     }
   }
 }

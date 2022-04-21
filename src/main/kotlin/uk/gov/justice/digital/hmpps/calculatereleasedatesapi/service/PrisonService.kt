@@ -18,7 +18,7 @@ class PrisonService(
     val prisonerDetails = getOffenderDetail(prisonerId)
     val sentenceAndOffences = getSentencesAndOffences(prisonerDetails.bookingId)
     val bookingAndSentenceAdjustments = getBookingAndSentenceAdjustmentss(prisonerDetails.bookingId)
-    val bookingHasFixedTermRecall = sentenceAndOffences.any { SentenceCalculationType.from(it.sentenceCalculationType)?.sentenceType?.isFixedTermRecall == true }
+    val bookingHasFixedTermRecall = sentenceAndOffences.any { SentenceCalculationType.from(it.sentenceCalculationType)?.recallType?.isFixedTermRecall == true }
     var returnToCustodyDate: ReturnToCustodyDate? = null
     if (bookingHasFixedTermRecall) {
       returnToCustodyDate = prisonApiClient.getReturnToCustodyDate(prisonerDetails.bookingId)

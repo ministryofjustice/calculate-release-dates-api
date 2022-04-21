@@ -37,7 +37,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
@@ -266,7 +266,7 @@ class CalculationTransactionalServiceTest {
 
     calculationTransactionalService.writeToNomisAndPublishEvent(
       PRISONER_ID,
-      BOOKING.copy(sentences = listOf(SENTENCE.copy(duration = ZERO_DURATION))),
+      BOOKING.copy(sentences = listOf(StandardSENTENCE.copy(duration = ZERO_DURATION))),
       BOOKING_CALCULATION.copy(
         dates = mutableMapOf(
           CRD to CALCULATION_OUTCOME_CRD.outcomeDate,
@@ -380,9 +380,9 @@ class CalculationTransactionalServiceTest {
     val INPUT_DATA: JsonNode =
       JacksonUtil.toJsonNode(
         "{ \"offender\":{ \"reference\":\"A1234AJ\", \"dateOfBirth\"" +
-          ":\"1980-01-01\",\"isActiveSexOffender\":false}, \"sentences\":[{\"caseSequence\":1,\"lineSequence\":2, \"sentenceType\":\"STANDARD_DETERMINATE\", \"offence\":{\"committedAt\":\"2021-02-03\",\"" +
+          ":\"1980-01-01\",\"isActiveSexOffender\":false}, \"sentences\":[{\"caseSequence\":1,\"lineSequence\":2, \"recallType\":null, \"offence\":{\"committedAt\":\"2021-02-03\",\"" +
           "isScheduleFifteen\":false, \"isScheduleFifteenMaximumLife\":false},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"" +
-          "MONTHS\":0,\"YEARS\":5}},\"sentencedAt\":\"2021-02-03\"," +
+          "MONTHS\":0,\"YEARS\":5}},\"type\":\"StandardSentence\",\"sentencedAt\":\"2021-02-03\"," +
           "\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\",\"consecutiveSentenceUUIDs\":[], \"caseReference\":null" +
           "}], \"adjustments\":{}, \"bookingId\":12345, \"returnToCustodyDate\":null }"
       )
@@ -424,7 +424,7 @@ class CalculationTransactionalServiceTest {
 
     private val OFFENDER = Offender(PRISONER_ID, LocalDate.of(1980, 1, 1))
 
-    private val SENTENCE = Sentence(
+    private val StandardSENTENCE = StandardSentence(
       sentencedAt = THIRD_FEB_2021,
       duration = FIVE_YEAR_DURATION,
       offence = Offence(committedAt = THIRD_FEB_2021),
@@ -433,6 +433,6 @@ class CalculationTransactionalServiceTest {
       lineSequence = 2
     )
 
-    val BOOKING = Booking(OFFENDER, listOf(SENTENCE), Adjustments(), null, BOOKING_ID)
+    val BOOKING = Booking(OFFENDER, listOf(StandardSENTENCE), Adjustments(), null, BOOKING_ID)
   }
 }

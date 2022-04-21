@@ -1,22 +1,21 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType.FIXED_TERM_RECALL_14
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType.FIXED_TERM_RECALL_28
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType.STANDARD_DETERMINATE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType.STANDARD_RECALL
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.STANDARD_RECALL
 
 enum class SentenceCalculationType(
-  val sentenceType: SentenceType
+  val recallType: RecallType?
 ) {
-  ADIMP(STANDARD_DETERMINATE),
-  ADIMP_ORA(STANDARD_DETERMINATE),
-  YOI(STANDARD_DETERMINATE),
-  YOI_ORA(STANDARD_DETERMINATE),
-  SEC91_03(STANDARD_DETERMINATE),
-  SEC91_03_ORA(STANDARD_DETERMINATE),
-  SEC250(STANDARD_DETERMINATE),
-  SEC250_ORA(STANDARD_DETERMINATE),
+  ADIMP(null),
+  ADIMP_ORA(null),
+  YOI(null),
+  YOI_ORA(null),
+  SEC91_03(null),
+  SEC91_03_ORA(null),
+  SEC250(null),
+  SEC250_ORA(null),
   LR(STANDARD_RECALL),
   LR_ORA(STANDARD_RECALL),
   LR_YOI_ORA(STANDARD_RECALL),

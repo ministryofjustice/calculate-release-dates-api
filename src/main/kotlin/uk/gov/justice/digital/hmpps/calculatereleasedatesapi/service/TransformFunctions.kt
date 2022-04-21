@@ -38,7 +38,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentencePart
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DateBreakdown
@@ -47,8 +46,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Sentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
@@ -72,7 +71,7 @@ import java.util.UUID
 ** Sometimes a pass-thru but very useful when objects need to be altered or enriched
 */
 
-fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
+fun transform(sentence: SentenceAndOffences): MutableList<StandardSentence> {
   // There shouldn't be multiple offences associated to a single sentence; however there are at the moment (NOMIS doesnt
   // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
   // treated as a separate sentence
@@ -96,7 +95,7 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
     else
       listOf()
 
-    Sentence(
+    StandardSentence(
       sentencedAt = sentence.sentenceDate,
       duration = duration,
       offence = offence,
@@ -105,7 +104,7 @@ fun transform(sentence: SentenceAndOffences): MutableList<Sentence> {
       caseSequence = sentence.caseSequence,
       lineSequence = sentence.lineSequence,
       caseReference = sentence.caseReference,
-      sentenceType = SentenceCalculationType.from(sentence.sentenceCalculationType)!!.sentenceType
+      recallType = SentenceCalculationType.from(sentence.sentenceCalculationType)!!.recallType
     )
   }.toMutableList()
 }
@@ -166,15 +165,15 @@ fun transform(
 
 private fun findSentenceForAdjustment(adjustment: SentenceAdjustments, sentencesAndOffences: List<SentenceAndOffences>): SentenceAndOffences {
   val sentence = sentencesAndOffences.find { adjustment.sentenceSequence == it.sentenceSequence }!!
-  val sentenceType = SentenceCalculationType.from(sentence.sentenceCalculationType)!!.sentenceType
-  if (listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.TAGGED_BAIL).contains(adjustment.type) && sentenceType.isRecall) {
-    val firstDeterminate = sentencesAndOffences.sortedBy { it.sentenceDate }.find { SentenceCalculationType.from(it.sentenceCalculationType)!!.sentenceType === SentenceType.STANDARD_DETERMINATE }
+  val recallType = SentenceCalculationType.from(sentence.sentenceCalculationType)!!.recallType
+  if (listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.TAGGED_BAIL).contains(adjustment.type) && recallType != null) {
+    val firstDeterminate = sentencesAndOffences.sortedBy { it.sentenceDate }.find { SentenceCalculationType.from(it.sentenceCalculationType)!!.recallType == null }
     if (firstDeterminate != null) {
       return firstDeterminate
     }
   }
-  if (listOf(SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL).contains(adjustment.type) && sentenceType === SentenceType.STANDARD_DETERMINATE) {
-    val firstRecall = sentencesAndOffences.sortedBy { it.sentenceDate }.find { SentenceCalculationType.from(it.sentenceCalculationType)!!.sentenceType.isRecall }
+  if (listOf(SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL).contains(adjustment.type) && recallType == null) {
+    val firstRecall = sentencesAndOffences.sortedBy { it.sentenceDate }.find { SentenceCalculationType.from(it.sentenceCalculationType)!!.recallType != null }
     if (firstRecall != null) {
       return firstRecall
     }
@@ -256,9 +255,10 @@ fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates {
 fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>, otherDates: Map<ReleaseDateType, LocalDate>): CalculationBreakdown {
   val concurrentSentences = booking.sentences.filter {
     booking.consecutiveSentences.none { consecutiveSentence ->
-      consecutiveSentence.orderedSentences.contains(it)
-    }
-  }
+      consecutiveSentence.orderedStandardSentences.contains(it)
+    } &&
+      it is StandardSentence
+  }.map { it as StandardSentence }
   return CalculationBreakdown(
     concurrentSentences = concurrentSentences.map { sentence ->
       ConcurrentSentenceBreakdown(
@@ -273,13 +273,13 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
     }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence })),
     consecutiveSentence = if (booking.consecutiveSentences.isNotEmpty()) {
       if (booking.consecutiveSentences.size == 1) {
-        val consecutiveSentence = booking.consecutiveSentences[0]
+        val consecutiveSentence = booking.consecutiveSentences.filter { it is StandardConsecutiveSentence }[0] as StandardConsecutiveSentence
         ConsecutiveSentenceBreakdown(
           consecutiveSentence.sentencedAt,
           combineDuration(consecutiveSentence).toString(),
           consecutiveSentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
           extractDates(consecutiveSentence),
-          consecutiveSentence.orderedSentences.map { sentencePart ->
+          consecutiveSentence.orderedStandardSentences.map { sentencePart ->
             val originalSentence = booking.sentences.find { it.identifier == sentencePart.identifier }!!
             val consecutiveToUUID =
               if (originalSentence.consecutiveSentenceUUIDs.isNotEmpty()) originalSentence.consecutiveSentenceUUIDs[0]
@@ -310,8 +310,8 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
   )
 }
 
-private fun combineDuration(consecutiveSentence: ConsecutiveSentence): Duration {
-  return consecutiveSentence.orderedSentences
+private fun combineDuration(standardConsecutiveSentence: StandardConsecutiveSentence): Duration {
+  return standardConsecutiveSentence.orderedStandardSentences
     .map { it.duration }
     .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
 }

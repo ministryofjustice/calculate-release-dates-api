@@ -14,7 +14,7 @@
           "MONTHS": 9
         }
       },
-      "sentenceType": "FIXED_TERM_RECALL_14",
+      "recallType": "FIXED_TERM_RECALL_14",
       "sentencedAt": "2020-11-16",
       "identifier": "665db14d-162d-47ed-8a49-5e8994aa8895"
     },
@@ -27,7 +27,7 @@
           "MONTHS": 7
         }
       },
-      "sentenceType": "FIXED_TERM_RECALL_14",
+      "recallType": "FIXED_TERM_RECALL_14",
       "sentencedAt": "2020-11-16"
     },
     {
@@ -40,7 +40,7 @@
           "WEEKS": 2
         }
       },
-      "sentenceType": "FIXED_TERM_RECALL_14",
+      "recallType": "FIXED_TERM_RECALL_14",
       "sentencedAt": "2020-11-16",
       "consecutiveSentenceUUIDs": ["665db14d-162d-47ed-8a49-5e8994aa8895"]
     },

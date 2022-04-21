@@ -14,7 +14,7 @@
         }
       },
       "sentencedAt":"2006-11-14",
-      "sentenceType":"STANDARD_RECALL"
+      "recallType":"STANDARD_RECALL"
     },
     {
       "offence":{
@@ -26,7 +26,7 @@
         }
       },
       "sentencedAt":"2006-11-14",
-      "sentenceType":"STANDARD_RECALL"
+      "recallType":"STANDARD_RECALL"
     },
     {
       "offence":{
@@ -38,7 +38,7 @@
         }
       },
       "sentencedAt":"2006-11-14",
-      "sentenceType":"STANDARD_RECALL"
+      "recallType":"STANDARD_RECALL"
     }
   ],
   "adjustments":{

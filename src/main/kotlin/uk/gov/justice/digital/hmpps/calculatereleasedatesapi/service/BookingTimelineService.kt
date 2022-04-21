@@ -22,7 +22,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceType
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.util.Collections
@@ -62,7 +61,7 @@ class BookingTimelineService(
       it.sentenceCalculation.adjustmentsBefore = Collections.max(listOf(sentenceRange.end, it.sentencedAt))
       it.sentenceCalculation.adjustmentsAfter = previousReleaseDateReached
       val itRange = it.getRangeOfSentenceBeforeAwardedDays()
-      if (previousSentence.sentenceType.isRecall && !it.sentenceType.isRecall) {
+      if (previousSentence.isRecall() && !it.isRecall()) {
         // The last sentence was a recall, this one is not. Treat this as release in-between so that adjustments are not shared.
         previousReleaseDateReached = it.sentencedAt.minusDays(1)
         shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
@@ -239,7 +238,7 @@ class BookingTimelineService(
   }
 
   private fun validateSentenceHasNotBeenExtinguished(sentences: List<ExtractableSentence>) {
-    val determinateSentences = sentences.filter { it.sentenceType === SentenceType.STANDARD_DETERMINATE }
+    val determinateSentences = sentences.filter { !it.isRecall() }
     if (determinateSentences.isNotEmpty()) {
       val earliestSentenceDate = determinateSentences.minOf { it.sentencedAt }
       val latestReleaseDateSentence = extractionService.mostRecentSentence(

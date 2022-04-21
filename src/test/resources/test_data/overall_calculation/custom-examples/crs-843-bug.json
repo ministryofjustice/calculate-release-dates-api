@@ -26,7 +26,7 @@
         }
       },
       "sentencedAt":"2020-01-09",
-      "sentenceType":"STANDARD_RECALL"
+      "recallType":"STANDARD_RECALL"
     },
     {
       "offence":{
@@ -37,8 +37,7 @@
           "WEEKS":18
         }
       },
-      "sentencedAt":"2022-02-25",
-      "sentenceType":"STANDARD_DETERMINATE"
+      "sentencedAt":"2022-02-25"
     }
   ],
   "adjustments":{
