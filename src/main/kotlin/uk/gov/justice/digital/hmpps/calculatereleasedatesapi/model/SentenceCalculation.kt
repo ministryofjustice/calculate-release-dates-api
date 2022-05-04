@@ -35,6 +35,10 @@ data class SentenceCalculation(
     return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
   }
 
+  fun getAdustmentsAfterSentenceAtDate(vararg adjustmentTypes: AdjustmentType): Int {
+    return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1))
+  }
+
   fun getAdjustmentDuringSentence(vararg adjustmentTypes: AdjustmentType): Int {
     return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = releaseDateWithoutAwarded, adjustmentsAfter = adjustmentsAfter)
   }
@@ -49,7 +53,7 @@ data class SentenceCalculation(
   }
 
   val calculatedTotalAddedDays: Int get() {
-    return getAdjustmentBeforeSentence(UNLAWFULLY_AT_LARGE)
+    return getAdustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
   }
 
   val calculatedFixedTermRecallAddedDays: Int get() {
