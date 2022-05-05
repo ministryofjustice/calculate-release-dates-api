@@ -3,12 +3,14 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 
 @Service
 class CalculationService(
   private val bookingCalculationService: BookingCalculationService,
   private val bookingExtractionService: BookingExtractionService,
   private val bookingTimelineService: BookingTimelineService,
+  private val validationService: ValidationService
 ) {
 
   fun calculateReleaseDates(booking: Booking): Pair<Booking, CalculationResult> {
@@ -40,6 +42,8 @@ class CalculationService(
 
     workingBooking = bookingTimelineService
       .walkTimelineOfBooking(workingBooking)
+
+    validationService.validateAfterCalculation(workingBooking)
 
     return workingBooking
   }

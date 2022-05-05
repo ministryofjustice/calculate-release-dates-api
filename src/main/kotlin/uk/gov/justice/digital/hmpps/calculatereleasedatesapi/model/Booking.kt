@@ -19,6 +19,10 @@ data class Booking(
   var singleTermSentence: SingleTermSentence? = null
 
   @JsonIgnore
+  @Transient
+  lateinit var sentenceGroups: List<List<ExtractableSentence>>
+
+  @JsonIgnore
   fun getAllExtractableSentences(): List<ExtractableSentence> {
     val extractableSentences: MutableList<ExtractableSentence> = consecutiveSentences.toMutableList()
     if (singleTermSentence != null) {
