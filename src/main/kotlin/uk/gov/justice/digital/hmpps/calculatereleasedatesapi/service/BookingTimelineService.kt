@@ -4,20 +4,11 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_SERVED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.LICENSE_UNUSED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RELEASE_UNUSED_ADA
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.AdjustmentIsAfterReleaseDateException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CustodialPeriodExtinguishedException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
@@ -25,7 +16,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalcu
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.util.Collections
-import kotlin.math.max
 import kotlin.math.min
 
 @Service
@@ -33,56 +23,40 @@ class BookingTimelineService(
   val sentenceCalculationService: SentenceCalculationService,
   val extractionService: SentencesExtractionService
 ) {
-  /*
-     This method walks through the timeline of all the booking, checking for gaps between the release date (before ADAs)
-     and the next sentence date of all the extractable sentences.
-     If there is a gap, it must be filled by any of:
-     1. Served ADAs
-     2. Remand
-     3. Tagged bail
-     4. A license recall (TODO)
-     5. Untagged bail or other forms of bail that don't get recorded in NOMIS (out of scope)
-    */
+
   fun walkTimelineOfBooking(booking: Booking): Booking {
+    val workingBooking = createSentenceGroupsAndShareAdjustments(booking)
+    val expiryDate = extractionService.mostRecent(workingBooking.getAllExtractableSentences(), SentenceCalculation::expiryDate)
+    capDatesByExpiry(expiryDate, workingBooking.sentenceGroups)
+    return booking
+  }
+
+  private fun createSentenceGroupsAndShareAdjustments(booking: Booking): Booking {
     log.info("Building timeline of sentences")
     val sortedSentences = booking.getAllExtractableSentences().sortedBy { it.sentencedAt }
-    val firstSentence = sortedSentences[0]
-    var sentenceRange = firstSentence.getRangeOfSentenceBeforeAwardedDays()
-    var previousSentence = firstSentence
-
-    // Which sentences are in the same "Group". A "Group" of sentences are sentences that are concurrent to each other,
-    // and there sentenceAt dates overlap with the other release date. i.e. there is no release inbetween them
-    // Whenever a release happens a new group is started.
-    val sentenceGroups: MutableList<MutableList<ExtractableSentence>> = mutableListOf()
-    var sentencesInGroup: MutableList<ExtractableSentence> = mutableListOf()
-    var previousReleaseDateReached: LocalDate? = null
+    val timelineTracker = TimelineTracker(
+      firstSentence = sortedSentences[0],
+      timelineRange = sortedSentences[0].getRangeOfSentenceBeforeAwardedDays(),
+      previousSentence = sortedSentences[0]
+    )
 
     sortedSentences.forEach {
-      it.sentenceCalculation.adjustmentsBefore = Collections.max(listOf(sentenceRange.end, it.sentencedAt))
-      it.sentenceCalculation.adjustmentsAfter = previousReleaseDateReached
+      it.sentenceCalculation.adjustmentsBefore = Collections.max(listOf(timelineTracker.timelineRange.end, it.sentencedAt))
+      it.sentenceCalculation.adjustmentsAfter = timelineTracker.previousReleaseDateReached
       val itRange = it.getRangeOfSentenceBeforeAwardedDays()
-      if (previousSentence.isRecall() && !it.isRecall()) {
-        // The last sentence was a recall, this one is not. Treat this as release in-between so that adjustments are not shared.
-        previousReleaseDateReached = it.sentencedAt.minusDays(1)
-        shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
-        // Clear the sentence group and start again.
-        sentenceGroups.add(sentencesInGroup)
-        sentencesInGroup = mutableListOf()
-        sentencesInGroup.add(it)
-        it.sentenceCalculation.adjustmentsBefore = it.sentencedAt
-        it.sentenceCalculation.adjustmentsAfter = previousReleaseDateReached
-        if (itRange.end.isAfter(sentenceRange.end)) {
-          sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
+      if (isThisSentenceTheFirstOfSentencesParallelToRecall(timelineTracker, it)) {
+        endCurrentSentenceGroup(timelineTracker)
+        startNewSentenceGroup(timelineTracker, it, itRange)
+      } else if (timelineTracker.timelineRange.isConnected(itRange)) {
+        // This sentence overlaps with the previous. Its therefore in the same sentence group.
+        if (itRange.end.isAfter(timelineTracker.timelineRange.end)) {
+          timelineTracker.timelineRange = LocalDateRange.of(timelineTracker.timelineRange.start, itRange.end)
         }
-      } else if (sentenceRange.isConnected(itRange)) {
-        if (itRange.end.isAfter(sentenceRange.end)) {
-          sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
-        }
-        sentencesInGroup.add(it)
+        timelineTracker.currentSentenceGroup.add(it)
       } else {
-        // There is gap here.
+        // There sentence doesn't overlap with the previous sentence group.
         // 1. Check if there have been any ADAs served
-        var daysBetween = DAYS.between(sentenceRange.end, it.sentencedAt)
+        var daysBetween = DAYS.between(timelineTracker.timelineRange.end, it.sentencedAt)
         val adaAvailable = it.sentenceCalculation.calculatedTotalAwardedDays
         val daysAdaServed = min(daysBetween - 1, adaAvailable.toLong())
         booking.adjustments.addAdjustment(
@@ -93,84 +67,51 @@ class BookingTimelineService(
           )
         )
 
-        daysBetween = DAYS.between(sentenceRange.end.plusDays(daysAdaServed), it.sentencedAt)
+        daysBetween = DAYS.between(timelineTracker.timelineRange.end.plusDays(daysAdaServed), it.sentencedAt)
         if (daysBetween <= 1) {
-          // The gap has been filled by served adas.
-          sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
-          sentencesInGroup.add(it)
+          // With ADAs served the sentence now overlaps with the sentence group and therefore belongs to the group.
+          timelineTracker.timelineRange = LocalDateRange.of(timelineTracker.timelineRange.start, itRange.end)
+          timelineTracker.currentSentenceGroup.add(it)
         } else {
-          // There is still a gap
-
-          // 2. A release date has occurred but there are more sentences on the booking, therefore previous deductions
-          // should be wiped.
-          previousReleaseDateReached = previousSentence.sentenceCalculation.releaseDate
-          log.info("A release occurred in booking timeline at ${previousReleaseDateReached!!}")
-
-          // This is the ends of the sentence group. Make sure all sentences share the adjustments in this group.
-          shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
-          // Clear the sentence group and start again.
-          sentenceGroups.add(sentencesInGroup)
-          sentencesInGroup = mutableListOf()
-          sentencesInGroup.add(it)
-          it.sentenceCalculation.adjustmentsBefore = it.sentencedAt
-          it.sentenceCalculation.adjustmentsAfter = previousReleaseDateReached
-          sentenceRange = LocalDateRange.of(sentenceRange.start, itRange.end)
+          // Even with all ADAs applied the sentence does not overlap with the sentence group, it therefore belongs to a new group.
+          endCurrentSentenceGroup(timelineTracker)
+          startNewSentenceGroup(timelineTracker, it, itRange)
         }
       }
-      previousSentence = it
+      timelineTracker.previousSentence = it
     }
-    shareAdjustmentsThroughSentenceGroup(sentencesInGroup, sentenceRange.end)
-
-    sentenceGroups.add(sentencesInGroup)
-    sentenceGroups.forEach { validateSentenceHasNotBeenExtinguished(it) }
-    validateRemandPeriodsOverlapping(booking)
-    validateAdditionAdjustmentsInsideLatestReleaseDate(booking)
-
-    val expiryDate = extractionService.mostRecent(sortedSentences, SentenceCalculation::expiryDate)
-
-    capDatesByExpiry(expiryDate, sentenceGroups)
-
+    endCurrentSentenceGroup(timelineTracker)
+    booking.sentenceGroups = timelineTracker.sentenceGroups
     return booking
   }
 
-  private fun validateAdditionAdjustmentsInsideLatestReleaseDate(booking: Booking) {
-    val sentences = booking.getAllExtractableSentences()
-    val latestReleaseDatePreAddedDays = sentences.maxOf { it.sentenceCalculation.releaseDateWithoutAdditions }
+  /*
+    When we have the first non-recall sentence parallel to recall sentences, we need to start a new sentence group so that adjustments are not shared.
+   */
+  private fun isThisSentenceTheFirstOfSentencesParallelToRecall(timelineTracker: TimelineTracker, it: ExtractableSentence): Boolean {
+    return timelineTracker.previousSentence.isRecall() && !it.isRecall()
+  }
 
-    val adas = booking.adjustments.getOrEmptyList(ADDITIONAL_DAYS_AWARDED)
-    val radas = booking.adjustments.getOrEmptyList(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED)
-    val uals = booking.adjustments.getOrEmptyList(UNLAWFULLY_AT_LARGE)
-    val adjustments = adas + radas + uals
+  private fun startNewSentenceGroup(timelineTracker: TimelineTracker, it: ExtractableSentence, itRange: LocalDateRange) {
+    timelineTracker.currentSentenceGroup = mutableListOf()
+    timelineTracker.currentSentenceGroup.add(it)
+    timelineTracker.previousReleaseDateReached = it.sentencedAt.minusDays(1)
+    it.sentenceCalculation.adjustmentsBefore = it.sentencedAt
+    it.sentenceCalculation.adjustmentsAfter = timelineTracker.previousReleaseDateReached
+    if (itRange.end.isAfter(timelineTracker.timelineRange.end)) {
+      timelineTracker.timelineRange = LocalDateRange.of(timelineTracker.timelineRange.start, itRange.end)
+    }
+  }
 
-    val adjustmentsAfterRelease = adjustments.filter {
-      it.appliesToSentencesFrom.isAfter(latestReleaseDatePreAddedDays)
-    }
-    if (adjustmentsAfterRelease.isNotEmpty()) {
-      var anyAda = false
-      var anyRada = false
-      var anyUal = false
-      adjustmentsAfterRelease.forEach {
-        anyAda = anyAda || adas.contains(it)
-        anyRada = anyRada || radas.contains(it)
-        anyUal = anyUal || uals.contains(it)
-      }
-      val arguments = mutableListOf<String>()
-      if (anyAda)
-        arguments.add(ADDITIONAL_DAYS_AWARDED.name)
-      if (anyRada)
-        arguments.add(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED.name)
-      if (anyUal)
-        arguments.add(UNLAWFULLY_AT_LARGE.name)
-      throw AdjustmentIsAfterReleaseDateException(
-        "Adjustments are applied after latest release date of booking",
-        arguments
-      )
-    }
+  private fun endCurrentSentenceGroup(timelineTracker: TimelineTracker) {
+    shareAdjustmentsThroughSentenceGroup(timelineTracker)
+    // Clear the sentence group and start again.
+    timelineTracker.sentenceGroups.add(timelineTracker.currentSentenceGroup)
   }
 
   private fun capDatesByExpiry(
     expiry: LocalDate,
-    sentenceGroups: MutableList<MutableList<ExtractableSentence>>
+    sentenceGroups: List<List<ExtractableSentence>>
   ) {
     val adjustments = sentenceGroups[0][0].sentenceCalculation.adjustments
     sentenceGroups.forEach { group ->
@@ -197,65 +138,10 @@ class BookingTimelineService(
     }
   }
 
-  private fun shareAdjustmentsThroughSentenceGroup(sentencesInGroup: List<ExtractableSentence>, endOfGroup: LocalDate) {
-    sentencesInGroup.forEach {
-      it.sentenceCalculation.adjustmentsBefore = endOfGroup
+  private fun shareAdjustmentsThroughSentenceGroup(timelineTracker: TimelineTracker) {
+    timelineTracker.currentSentenceGroup.forEach {
+      it.sentenceCalculation.adjustmentsBefore = timelineTracker.timelineRange.end
       readjustDates(it)
-    }
-  }
-
-  private fun validateRemandPeriodsOverlapping(booking: Booking) {
-    val remandPeriods = booking.adjustments.getOrEmptyList(REMAND)
-    if (remandPeriods.isNotEmpty()) {
-      val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
-      val sentenceRanges = booking.getAllExtractableSentences().map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.adjustedDeterminateReleaseDate) }
-
-      val allRanges = (remandRanges + sentenceRanges).sortedBy { it.start }
-      var totalRange: LocalDateRange? = null
-      var previousRangeIsRemand: Boolean? = null
-      var previousRange: LocalDateRange? = null
-
-      allRanges.forEach {
-        val isRemand = remandRanges.any { sentenceRange -> sentenceRange === it }
-        if (totalRange == null && previousRangeIsRemand == null) {
-          totalRange = it
-        } else if (it.isConnected(totalRange) &&
-          (previousRangeIsRemand!! || isRemand)
-        ) {
-          // Remand overlaps
-          if (previousRangeIsRemand!! && isRemand) {
-            throw RemandPeriodOverlapsWithRemandException("Remand of range ${previousRange!!} overlaps with remand of range $it")
-          } else {
-            throw RemandPeriodOverlapsWithSentenceException("${if (previousRangeIsRemand!!) "Remand" else "Sentence"} of range ${previousRange!!} overlaps with ${if (isRemand) "remand" else "sentence"} of range $it")
-          }
-        } else if (it.end.isAfter(totalRange!!.end)) {
-          totalRange = LocalDateRange.of(totalRange!!.start, it.end)
-        }
-        previousRangeIsRemand = isRemand
-        previousRange = it
-      }
-    }
-  }
-
-  private fun validateSentenceHasNotBeenExtinguished(sentences: List<ExtractableSentence>) {
-    val determinateSentences = sentences.filter { !it.isRecall() }
-    if (determinateSentences.isNotEmpty()) {
-      val earliestSentenceDate = determinateSentences.minOf { it.sentencedAt }
-      val latestReleaseDateSentence = extractionService.mostRecentSentence(
-        determinateSentences, SentenceCalculation::adjustedUncappedDeterminateReleaseDate
-      )
-      if (earliestSentenceDate.minusDays(1).isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate)) {
-        val hasRemand = latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND) != 0
-        val hasTaggedBail = latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.TAGGED_BAIL) != 0
-        val arguments: MutableList<String> = mutableListOf()
-        if (hasRemand) {
-          arguments += AdjustmentType.REMAND.name
-        }
-        if (hasTaggedBail) {
-          arguments += AdjustmentType.TAGGED_BAIL.name
-        }
-        throw CustodialPeriodExtinguishedException("Custodial period extinguished", arguments)
-      }
     }
   }
 
