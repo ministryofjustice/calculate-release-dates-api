@@ -3,16 +3,26 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.AdjustmentIsAfterReleaseDateException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CustodialPeriodExtinguishedException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 
 @Service
 class ValidationService(
-  private val featureToggles: FeatureToggles
+  private val featureToggles: FeatureToggles,
+  private val extractionService: SentencesExtractionService
 ) {
 
   fun validate(sourceData: PrisonApiSourceData): ValidationMessages {
@@ -36,11 +46,11 @@ class ValidationService(
 
   private fun validateAdjustments(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
     val validationMessages = adjustments.sentenceAdjustments.mapNotNull { validateAdjustment(it) }.toMutableList()
-    validationMessages += validateRemandOverlapping(adjustments)
+    validationMessages += validateRemandOverlappingRemand(adjustments)
     return validationMessages
   }
 
-  private fun validateRemandOverlapping(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
+  private fun validateRemandOverlappingRemand(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
     val remandPeriods = adjustments.sentenceAdjustments.filter { it.type == SentenceAdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
@@ -129,5 +139,104 @@ class ValidationService(
       return ValidationMessage("Offence date shouldn't be after sentence date", ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE, sentencesAndOffence.sentenceSequence)
     }
     return null
+  }
+
+  /*
+    Run the validation that can only happen after calculations. I.e. validate that adjustments happen before release date
+   */
+  fun validateAfterCalculation(workingBooking: Booking) {
+    workingBooking.sentenceGroups.forEach { validateSentenceHasNotBeenExtinguished(it) }
+    validateRemandOverlappingSentences(workingBooking)
+    validateAdditionAdjustmentsInsideLatestReleaseDate(workingBooking)
+  }
+
+  private fun validateAdditionAdjustmentsInsideLatestReleaseDate(booking: Booking) {
+    val sentences = booking.getAllExtractableSentences()
+    val latestReleaseDatePreAddedDays = sentences.maxOf { it.sentenceCalculation.releaseDateWithoutAdditions }
+
+    val adas = booking.adjustments.getOrEmptyList(AdjustmentType.ADDITIONAL_DAYS_AWARDED)
+    val radas = booking.adjustments.getOrEmptyList(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED)
+    val uals = booking.adjustments.getOrEmptyList(AdjustmentType.UNLAWFULLY_AT_LARGE)
+    val adjustments = adas + radas + uals
+
+    val adjustmentsAfterRelease = adjustments.filter {
+      it.appliesToSentencesFrom.isAfter(latestReleaseDatePreAddedDays)
+    }
+    if (adjustmentsAfterRelease.isNotEmpty()) {
+      var anyAda = false
+      var anyRada = false
+      var anyUal = false
+      adjustmentsAfterRelease.forEach {
+        anyAda = anyAda || adas.contains(it)
+        anyRada = anyRada || radas.contains(it)
+        anyUal = anyUal || uals.contains(it)
+      }
+      val arguments = mutableListOf<String>()
+      if (anyAda)
+        arguments.add(AdjustmentType.ADDITIONAL_DAYS_AWARDED.name)
+      if (anyRada)
+        arguments.add(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED.name)
+      if (anyUal)
+        arguments.add(AdjustmentType.UNLAWFULLY_AT_LARGE.name)
+      throw AdjustmentIsAfterReleaseDateException(
+        "Adjustments are applied after latest release date of booking",
+        arguments
+      )
+    }
+  }
+
+  private fun validateRemandOverlappingSentences(booking: Booking) {
+    val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
+    if (remandPeriods.isNotEmpty()) {
+      val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
+      val sentenceRanges = booking.getAllExtractableSentences().map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.adjustedDeterminateReleaseDate) }
+
+      val allRanges = (remandRanges + sentenceRanges).sortedBy { it.start }
+      var totalRange: LocalDateRange? = null
+      var previousRangeIsRemand: Boolean? = null
+      var previousRange: LocalDateRange? = null
+
+      allRanges.forEach {
+        val isRemand = remandRanges.any { sentenceRange -> sentenceRange === it }
+        if (totalRange == null && previousRangeIsRemand == null) {
+          totalRange = it
+        } else if (it.isConnected(totalRange) &&
+          (previousRangeIsRemand!! || isRemand)
+        ) {
+          // Remand overlaps
+          if (previousRangeIsRemand!! && isRemand) {
+            throw RemandPeriodOverlapsWithRemandException("Remand of range ${previousRange!!} overlaps with remand of range $it")
+          } else {
+            throw RemandPeriodOverlapsWithSentenceException("${if (previousRangeIsRemand!!) "Remand" else "Sentence"} of range ${previousRange!!} overlaps with ${if (isRemand) "remand" else "sentence"} of range $it")
+          }
+        } else if (it.end.isAfter(totalRange!!.end)) {
+          totalRange = LocalDateRange.of(totalRange!!.start, it.end)
+        }
+        previousRangeIsRemand = isRemand
+        previousRange = it
+      }
+    }
+  }
+
+  private fun validateSentenceHasNotBeenExtinguished(sentences: List<ExtractableSentence>) {
+    val determinateSentences = sentences.filter { !it.isRecall() }
+    if (determinateSentences.isNotEmpty()) {
+      val earliestSentenceDate = determinateSentences.minOf { it.sentencedAt }
+      val latestReleaseDateSentence = extractionService.mostRecentSentence(
+        determinateSentences, SentenceCalculation::adjustedUncappedDeterminateReleaseDate
+      )
+      if (earliestSentenceDate.minusDays(1).isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate)) {
+        val hasRemand = latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND) != 0
+        val hasTaggedBail = latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.TAGGED_BAIL) != 0
+        val arguments: MutableList<String> = mutableListOf()
+        if (hasRemand) {
+          arguments += AdjustmentType.REMAND.name
+        }
+        if (hasTaggedBail) {
+          arguments += AdjustmentType.TAGGED_BAIL.name
+        }
+        throw CustodialPeriodExtinguishedException("Custodial period extinguished", arguments)
+      }
+    }
   }
 }
