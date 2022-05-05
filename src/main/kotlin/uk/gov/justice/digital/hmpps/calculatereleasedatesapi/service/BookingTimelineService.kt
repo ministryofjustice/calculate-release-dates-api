@@ -93,7 +93,7 @@ class BookingTimelineService(
   }
 
   private fun startNewSentenceGroup(timelineTracker: TimelineTracker, it: ExtractableSentence, itRange: LocalDateRange) {
-    timelineTracker.currentSentenceGroup.clear()
+    timelineTracker.currentSentenceGroup = mutableListOf()
     timelineTracker.currentSentenceGroup.add(it)
     timelineTracker.previousReleaseDateReached = it.sentencedAt.minusDays(1)
     it.sentenceCalculation.adjustmentsBefore = it.sentencedAt
