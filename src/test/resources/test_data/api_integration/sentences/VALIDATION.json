@@ -128,5 +128,57 @@
         "offenceCode": "GBH"
       }
     ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 6,
+    "consecutiveToSequence": 5,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceTypeDescription": "Standard Determinate",
+    "terms": [{
+      "years": 1,
+      "months": 0,
+      "weeks": 0,
+      "days": 0
+    }],
+    "caseSequence": 2,
+    "lineSequence": 3,
+    "sentenceDate": "2021-02-05",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "offences": [
+      {
+        "offenderChargeId": 3932624,
+        "offenceStartDate": "2021-02-03",
+        "offenceDescription": "Rape of a boy under 13 - SOA 2003",
+        "offenceCode": "GBH"
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 7,
+    "consecutiveToSequence": 5,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceTypeDescription": "Standard Determinate",
+    "terms": [{
+      "years": 1,
+      "months": 0,
+      "weeks": 0,
+      "days": 0
+    }],
+    "caseSequence": 2,
+    "lineSequence": 4,
+    "sentenceDate": "2021-02-05",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "offences": [
+      {
+        "offenderChargeId": 3932624,
+        "offenceStartDate": "2021-02-03",
+        "offenceDescription": "Rape of a boy under 13 - SOA 2003",
+        "offenceCode": "GBH"
+      }
+    ]
   }
 ]
