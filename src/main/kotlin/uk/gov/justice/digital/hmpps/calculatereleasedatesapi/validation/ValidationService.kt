@@ -34,7 +34,7 @@ class ValidationService(
     return ValidationMessages(ValidationType.VALID)
   }
 
-  private fun validateSentences(sentences:List<SentenceAndOffences>): MutableList<ValidationMessage> {
+  private fun validateSentences(sentences: List<SentenceAndOffences>): MutableList<ValidationMessage> {
     val validationMessages = sentences.map { validateSentence(it) }.flatten().toMutableList()
     validationMessages += validateConsecutiveSentenceUnique(sentences)
     return validationMessages
@@ -46,8 +46,8 @@ class ValidationService(
     return sentencesGroupedByConsecutiveTo.entries
       .filter { it.value.size > 1 }
       .map { entry ->
-      ValidationMessage("Multiple sentences are consecutive to the same sentence", ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO, entry.key, arguments = entry.value.map { it.sentenceSequence.toString() })
-    }
+        ValidationMessage("Multiple sentences are consecutive to the same sentence", ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO, entry.key, arguments = entry.value.map { it.sentenceSequence.toString() })
+      }
   }
 
   private fun validateAdjustments(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
