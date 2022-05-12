@@ -40,7 +40,7 @@ data class StandardSentence(
   }
 
   @JsonIgnore
-  fun isSdsSentence(): Boolean {
+  fun isSdsPlusSentence(): Boolean {
     return identificationTrack == SentenceIdentificationTrack.SDS_PLUS
   }
 }
