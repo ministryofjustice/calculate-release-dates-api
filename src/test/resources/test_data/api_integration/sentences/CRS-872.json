@@ -1,0 +1,84 @@
+ [
+     {
+       "bookingId": 1202231,
+       "sentenceSequence": 1,
+       "lineSequence": 1,
+       "caseSequence": 1,
+       "courtDescription": "Amersham Crown Court",
+       "sentenceStatus": "A",
+       "sentenceCategory": "2020",
+       "sentenceCalculationType": "ADIMP_ORA",
+       "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
+       "sentenceDate": "2022-05-05",
+       "terms": [
+           {
+             "years": 0,
+             "months": 3,
+             "weeks": 0,
+             "days": 0,
+             "code": "IMP"
+           }
+         ],
+       "offences": [
+           {
+             "offenderChargeId": 3932966,
+             "offenceStartDate": "2022-05-04",
+             "offenceCode": "TH68007A",
+             "offenceDescription": "Attempt theft from motor vehicle",
+             "indicators": [
+                 "D",
+                 "50"
+               ]
+           }
+         ]
+     },
+     {
+       "bookingId": 1202231,
+       "sentenceSequence": 2,
+       "consecutiveToSequence": 1,
+       "lineSequence": 2,
+       "caseSequence": 1,
+       "courtDescription": "Amersham Crown Court",
+       "sentenceStatus": "A",
+       "sentenceCategory": "2020",
+       "sentenceCalculationType": "ADIMP",
+       "sentenceTypeDescription": "Sentencing Code Standard Determinate Sentence",
+       "sentenceDate": "2022-05-05",
+       "terms": [
+           {
+             "years": 7,
+             "months": 6,
+             "weeks": 0,
+             "days": 0,
+             "code": "IMP"
+           }
+         ],
+       "offences": [
+           {
+             "offenderChargeId": 3932972,
+             "offenceStartDate": "2022-05-04",
+             "offenceCode": "SX03001",
+             "offenceDescription": "Rape a girl aged 13 / 14 / 15 - SOA 2003",
+             "indicators": [
+                 "M",
+                 "S",
+                 "23",
+                 "ERS",
+                 "PIMMS1",
+                 "S1",
+                 "SOR",
+                 "S15/CJIB",
+                 "V",
+                 "SCH15/CJIB/L"
+               ]
+           },
+           {
+             "offenderChargeId": 3932973,
+             "offenceStartDate": "2022-05-04",
+             "offenceCode": "TR68132",
+             "offenceDescription": "13 hours or more working",
+             "indicators": []
+           }
+         ]
+     }
+   ]

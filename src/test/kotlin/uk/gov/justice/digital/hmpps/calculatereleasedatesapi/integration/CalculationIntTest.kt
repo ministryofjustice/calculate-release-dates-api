@@ -613,6 +613,26 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(validationMessages.messages[0].arguments).isEqualTo(listOf("ADDITIONAL_DAYS_AWARDED"))
   }
 
+  @Test
+  fun `Run calculation on CRS-872 a consecutive sentence having multiple offences, some schedule 15 attracting life, some not`() {
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/CRS-872")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[CRD]).isEqualTo(
+      LocalDate.of(2027, 6, 20)
+    )
+    assertThat(calculation.dates[SLED]).isEqualTo(
+      LocalDate.of(2030, 2, 4)
+    )
+  }
+
   companion object {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"
