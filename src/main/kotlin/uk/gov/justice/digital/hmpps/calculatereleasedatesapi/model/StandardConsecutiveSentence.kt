@@ -52,11 +52,11 @@ class StandardConsecutiveSentence(orderedStandardSentences: List<StandardSentenc
   }
 
   private fun hasSdsPlusSentences(): Boolean {
-    return orderedStandardSentences.any(StandardSentence::isSdsSentence)
+    return orderedStandardSentences.any(StandardSentence::isSdsPlusSentence)
   }
 
   private fun hasSdsSentences(): Boolean {
-    return orderedStandardSentences.any { !it.isSdsSentence() }
+    return orderedStandardSentences.any { !it.isSdsPlusSentence() }
   }
 
   fun isMadeUpOfSdsPlusAndSdsSentences(): Boolean {
