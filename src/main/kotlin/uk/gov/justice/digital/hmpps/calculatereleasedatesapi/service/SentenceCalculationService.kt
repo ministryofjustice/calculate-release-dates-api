@@ -56,19 +56,23 @@ class SentenceCalculationService {
     val numberOfDaysToDeterminateReleaseDateDouble = numberOfDaysToSentenceExpiryDate.toDouble().times(releaseDateMultiplier)
     val numberOfDaysToDeterminateReleaseDate = if (sentence is StandardConsecutiveSentence && sentence.isMadeUpOfSdsPlusAndSdsSentences()) {
       var firstSentenceIsSDSPlus = sentence.orderedStandardSentences[0].isSdsPlusSentence()
-        val daysInFirstSentenceType =
-          ceil(sentence.orderedStandardSentences.filter { if (firstSentenceIsSDSPlus) it.isSdsPlusSentence() else !it.isSdsPlusSentence() }
+      val daysInFirstSentenceType =
+        ceil(
+          sentence.orderedStandardSentences.filter { if (firstSentenceIsSDSPlus) it.isSdsPlusSentence() else !it.isSdsPlusSentence() }
             .map { it.sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble }
-            .reduce { acc, it -> acc + it })
-        val endOfFirstSentenceType =
-          Duration(mapOf(DAYS to daysInFirstSentenceType.toLong())).getEndDate(sentence.sentencedAt)
-        val daysInSecondSentenceType =
-          ceil(sentence.orderedStandardSentences.filter { if (firstSentenceIsSDSPlus) !it.isSdsPlusSentence() else it.isSdsPlusSentence() }
+            .reduce { acc, it -> acc + it }
+        )
+      val endOfFirstSentenceType =
+        Duration(mapOf(DAYS to daysInFirstSentenceType.toLong())).getEndDate(sentence.sentencedAt)
+      val daysInSecondSentenceType =
+        ceil(
+          sentence.orderedStandardSentences.filter { if (firstSentenceIsSDSPlus) !it.isSdsPlusSentence() else it.isSdsPlusSentence() }
             .map {
               it.duration.getLengthInDays(endOfFirstSentenceType.plusDays(1)).toDouble().times(determineReleaseDateMultiplier(it))
             }
-            .reduce { acc, it -> acc + it })
-        (daysInFirstSentenceType + daysInSecondSentenceType).toInt()
+            .reduce { acc, it -> acc + it }
+        )
+      (daysInFirstSentenceType + daysInSecondSentenceType).toInt()
     } else {
       ceil(numberOfDaysToDeterminateReleaseDateDouble).toInt()
     }
