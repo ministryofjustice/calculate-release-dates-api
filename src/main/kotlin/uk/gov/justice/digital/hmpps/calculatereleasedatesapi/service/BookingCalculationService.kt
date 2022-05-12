@@ -60,7 +60,6 @@ class BookingCalculationService(
       createSentenceChain(it, chain, sentencesByPrevious, chains)
     }
 
-
     booking.consecutiveSentences = chains.filter { it.size > 1 }
       .map { it ->
         if (it[0] is StandardSentence) {
@@ -90,15 +89,14 @@ class BookingCalculationService(
         chain.add(it)
         createSentenceChain(it, chain, sentencesByPrevious, chains)
       } else {
-        //This sentence has two sentences consecutive to it. This is not allowed in practice, however it can happen
-        //when a sentence in NOMIS has multiple offices, which means it becomes multiple sentences in our model.
+        // This sentence has two sentences consecutive to it. This is not allowed in practice, however it can happen
+        // when a sentence in NOMIS has multiple offices, which means it becomes multiple sentences in our model.
         val chainCopy = originalChain.toMutableList()
         chains.add(chainCopy)
         chainCopy.add(it)
         createSentenceChain(it, chainCopy, sentencesByPrevious, chains)
       }
     }
-
   }
 
   companion object {
