@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.threeten.extra.LocalDateRange
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.roundToLong
@@ -42,7 +41,6 @@ interface SentenceTimeline {
     val days = (getLengthInDays().toDouble() / 2).roundToLong()
     return this.sentencedAt.plusDays(days)
   }
-
 
   @JsonIgnore
   fun getLengthInDays(): Int

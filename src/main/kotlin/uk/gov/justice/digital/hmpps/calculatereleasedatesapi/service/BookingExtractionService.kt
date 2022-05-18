@@ -214,7 +214,7 @@ class BookingExtractionService(
 
     if (latestExtendedDeterminateParoleEligibilityDate != null) {
       val latestAutomaticRelease = extractionService.mostRecentOrNull(
-      sentences.filter { it is ExtendedDeterminate && it.automaticRelease }, SentenceCalculation::releaseDate
+        sentences.filter { it is ExtendedDeterminate && it.automaticRelease }, SentenceCalculation::releaseDate
       )
       dates[PED] = if (latestAutomaticRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestAutomaticRelease)) latestAutomaticRelease else latestExtendedDeterminateParoleEligibilityDate
     }

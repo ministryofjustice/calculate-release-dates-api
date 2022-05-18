@@ -33,6 +33,6 @@ data class ExtendedDeterminateSentence(
   }
 
   override fun getLengthInDays(): Int {
-   return custodialDuration.appendAll(extensionDuration.durationElements).getLengthInDays(sentencedAt)
+    return custodialDuration.appendAll(extensionDuration.durationElements).getLengthInDays(sentencedAt)
   }
 }

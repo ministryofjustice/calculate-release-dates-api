@@ -3,9 +3,11 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.temporal.ChronoUnit
 
-class StandardDeterminateConsecutiveSentence(orderedStandardSentences: List<StandardDeterminateSentence>) : AbstractConsecutiveSentence<StandardDeterminateSentence>(
-  orderedStandardSentences
-), StandardDeterminate {
+class StandardDeterminateConsecutiveSentence(orderedStandardSentences: List<StandardDeterminateSentence>) :
+  AbstractConsecutiveSentence<StandardDeterminateSentence>(
+    orderedStandardSentences
+  ),
+  StandardDeterminate {
 
   override fun buildString(): String {
     return "StandardDeterminateConsecutiveSentence\t:\t\n" +

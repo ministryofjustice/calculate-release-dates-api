@@ -156,7 +156,7 @@ class ValidationService(
       }
       !supportedSentences.contains(sentenceType)
     }
-    .map { ValidationMessage("Unsupported sentence type ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceTypeDescription)) }.toMutableList()
+      .map { ValidationMessage("Unsupported sentence type ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceTypeDescription)) }.toMutableList()
     if (sds && eds) {
       validationMessages.add(ValidationMessage("Booking contains SDS and EDS sentences, this is currently not supported", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, -1, listOf("SDS and EDS sentences")))
     }

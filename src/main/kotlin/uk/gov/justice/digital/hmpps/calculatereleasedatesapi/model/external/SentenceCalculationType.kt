@@ -38,7 +38,6 @@ enum class SentenceCalculationType(
   EDS21(null, ExtendedDeterminateSentence::class.java),
   EDSU18(null, ExtendedDeterminateSentence::class.java);
 
-
   companion object {
     fun from(sentenceCalculationType: String): SentenceCalculationType? {
       if (sentenceCalculationType == "14FTR_ORA") {

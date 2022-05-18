@@ -22,7 +22,7 @@ class BookingService(
     }
     val offender = transform(prisonerDetails)
     val adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences)
-    val sentences = sentenceAndOffences.map{ transform(it) }.flatten()
+    val sentences = sentenceAndOffences.map { transform(it) }.flatten()
 
     return Booking(
       offender = offender,
