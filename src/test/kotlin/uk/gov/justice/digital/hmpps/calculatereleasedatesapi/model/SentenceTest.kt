@@ -15,7 +15,7 @@ internal class SentenceTest {
       mapOf(ChronoUnit.DAYS to 1L)
     )
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val standardSentence = StandardSentence(
+    val standardSentence = StandardDeterminateSentence(
       offence, duration, sentencedAt, UUID.fromString(uuidString),
       caseSequence = 1,
       lineSequence = 2,

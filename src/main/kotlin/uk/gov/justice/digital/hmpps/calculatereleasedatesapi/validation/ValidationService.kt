@@ -9,8 +9,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.Custodia
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
@@ -102,7 +104,8 @@ class ValidationService(
 
   private fun validateDuration(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
     val hasMultipleTerms = sentencesAndOffence.terms.size > 1
-    if (hasMultipleTerms) {
+    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
+    if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java && hasMultipleTerms) {
       return ValidationMessage("Sentence has multiple terms", ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS, sentencesAndOffence.sentenceSequence)
     }
     val invalid = sentencesAndOffence.terms.isEmpty() ||
@@ -142,9 +145,22 @@ class ValidationService(
 
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedSentences: List<SentenceCalculationType> = SentenceCalculationType.values()
-      .filter { (featureToggles.recall && it.recallType != null) || it.recallType == null }
-    return sentencesAndOffences.filter { !supportedSentences.contains(SentenceCalculationType.from(it.sentenceCalculationType)) }
-      .map { ValidationMessage("Unsupported sentence type ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceTypeDescription)) }
+      .filter { (featureToggles.eds && it.sentenceClazz == ExtendedDeterminateSentence::class.java) || it.sentenceClazz == StandardDeterminateSentence::class.java }
+    var sds = false
+    var eds = false
+    val validationMessages = sentencesAndOffences.filter {
+      val sentenceType = SentenceCalculationType.from(it.sentenceCalculationType)
+      if (sentenceType != null) {
+        sds = sds || sentenceType.sentenceClazz == StandardDeterminateSentence::class.java
+        eds = eds || sentenceType.sentenceClazz == ExtendedDeterminateSentence::class.java
+      }
+      !supportedSentences.contains(sentenceType)
+    }
+    .map { ValidationMessage("Unsupported sentence type ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceTypeDescription)) }.toMutableList()
+    if (sds && eds) {
+      validationMessages.add(ValidationMessage("Booking contains SDS and EDS sentences, this is currently not supported", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, -1, listOf("SDS and EDS sentences")))
+    }
+    return validationMessages.toList()
   }
 
   private fun validateOffenceDateAfterSentenceDate(

@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
@@ -21,12 +22,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDur
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IdentifiableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardConsecutiveSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
@@ -39,13 +42,52 @@ import kotlin.math.max
 class SentenceCalculationService {
 
   fun calculate(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
-    val sentenceCalculation = getInitialCalculation(sentence, booking)
+    val sentenceCalculation = if (sentence is StandardDeterminate) {
+      getInitialStandardDeterminateCalculation(sentence, booking)
+    } else if (sentence is ExtendedDeterminate) {
+      getInitialExtendedDeterminateCalculation(sentence, booking)
+    } else {
+      throw UnknownError("Unknown sentence")
+    }
     // create association between the sentence and it's calculation
     sentence.sentenceCalculation = sentenceCalculation
     return calculateDatesFromAdjustments(sentence)
   }
 
-  private fun getInitialCalculation(
+  private fun getInitialExtendedDeterminateCalculation(
+    sentence: ExtendedDeterminate,
+    booking: Booking
+  ): SentenceCalculation {
+    val numberOfDaysToSentenceExpiryDate = sentence.getLengthInDays()
+    val releaseDateMultiplier = determineReleaseExtendedDeterminateDateMultiplier(sentence)
+    val numberOfDaysToReleaseDateDouble = sentence.getCustodialLengthInDays().times(releaseDateMultiplier)
+    val numberOfDaysToReleaseDate = ceil(numberOfDaysToReleaseDateDouble).toInt()
+
+    val unadjustedExpiryDate =
+      sentence.sentencedAt
+        .plusDays(numberOfDaysToSentenceExpiryDate.toLong())
+        .minusDays(ONE)
+
+    val unadjustedDeterminateReleaseDate =
+      sentence.sentencedAt
+        .plusDays(numberOfDaysToReleaseDate.toLong())
+        .minusDays(ONE)
+    // create new SentenceCalculation and associate it with a sentence
+    return SentenceCalculation(
+      sentence,
+      numberOfDaysToSentenceExpiryDate,
+      numberOfDaysToReleaseDateDouble,
+      numberOfDaysToReleaseDate,
+      unadjustedExpiryDate,
+      unadjustedDeterminateReleaseDate,
+      null,
+      null,
+      booking.adjustments,
+      sentence.sentencedAt,
+    )
+  }
+
+  private fun getInitialStandardDeterminateCalculation(
     sentence: CalculableSentence,
     booking: Booking
   ): SentenceCalculation {
@@ -54,7 +96,7 @@ class SentenceCalculationService {
     val numberOfDaysToSentenceExpiryDate = sentence.getLengthInDays()
 
     val numberOfDaysToDeterminateReleaseDateDouble = numberOfDaysToSentenceExpiryDate.toDouble().times(releaseDateMultiplier)
-    val numberOfDaysToDeterminateReleaseDate = if (sentence is StandardConsecutiveSentence && sentence.isMadeUpOfSdsPlusAndSdsSentences()) {
+    val numberOfDaysToDeterminateReleaseDate = if (sentence is StandardDeterminateConsecutiveSentence && sentence.isMadeUpOfSdsPlusAndSdsSentences()) {
       var firstSentenceIsSDSPlus = sentence.orderedStandardSentences[0].isSdsPlusSentence()
       val daysInFirstSentenceType =
         ceil(
@@ -159,8 +201,23 @@ class SentenceCalculationService {
       calculateHDCED(sentence, sentenceCalculation)
     }
 
+    if (sentence is ExtendedDeterminate && sentence.releaseDateTypes.contains(PED)) {
+      calculateExtendedDeterminatePED(sentence, sentenceCalculation)
+    }
+
     BookingCalculationService.log.info(sentence.buildString())
     return sentenceCalculation
+  }
+
+  private fun calculateExtendedDeterminatePED(sentence: ExtendedDeterminate, sentenceCalculation: SentenceCalculation) {
+    sentenceCalculation.numberOfDaysToParoleEligibilityDate =
+      ceil(sentenceCalculation.numberOfDaysToDeterminateReleaseDate.toDouble().times(TWO).div(THREE)).toLong()
+        .plus(sentenceCalculation.calculatedTotalAddedDays)
+        .minus(sentenceCalculation.calculatedTotalDeductedDays)
+        .plus(sentenceCalculation.calculatedTotalAwardedDays)
+    sentenceCalculation.extendedDeterminateParoleEligibilityDate = sentence.sentencedAt.plusDays(
+      sentenceCalculation.numberOfDaysToParoleEligibilityDate
+    ).minusDays(ONE)
   }
 
   private fun setSedOrSledDetails(
@@ -208,12 +265,12 @@ class SentenceCalculationService {
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation
   ) {
-    if (sentence is StandardConsecutiveSentence &&
+    if (sentence is StandardDeterminateConsecutiveSentence &&
       sentence.isMadeUpOfOnlyAfterCjaLaspoSentences() &&
       sentence.hasOraSentences() &&
       sentence.hasNonOraSentences()
     ) {
-      val lengthOfOraSentences = sentence.orderedStandardSentences.filter(StandardSentence::isOraSentence)
+      val lengthOfOraSentences = sentence.orderedStandardSentences.filter(StandardDeterminateSentence::isOraSentence)
         .map { it.duration }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         .getLengthInDays(sentence.sentencedAt)
@@ -277,7 +334,7 @@ class SentenceCalculationService {
   // If a sentence needs to calculate an NPD, but it is an aggregated sentence made up of "old" and "new" type sentences
   // The NPD calc becomes much more complicated, see PSI example 40.
   private fun calculateNPDFromNotionalCRD(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
-    if (sentence is StandardConsecutiveSentence) {
+    if (sentence is StandardDeterminateConsecutiveSentence) {
       val daysOfNewStyleSentences = sentence.orderedStandardSentences
         .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
         .map { it.duration }
@@ -409,6 +466,16 @@ class SentenceCalculationService {
       2 / 3.toDouble()
     } else {
       1 / 2.toDouble()
+    }
+  }
+  private fun determineReleaseExtendedDeterminateDateMultiplier(sentence: CalculableSentence): Double {
+    return if (
+      (sentence is IdentifiableSentence) &&
+      sentence.identificationTrack == SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE
+    ) {
+      2 / 3.toDouble()
+    } else {
+      1.toDouble()
     }
   }
 

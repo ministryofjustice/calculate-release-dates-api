@@ -3,12 +3,12 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.temporal.ChronoUnit
 
-class StandardConsecutiveSentence(orderedStandardSentences: List<StandardSentence>) : AbstractConsecutiveSentence<StandardSentence>(
+class StandardDeterminateConsecutiveSentence(orderedStandardSentences: List<StandardDeterminateSentence>) : AbstractConsecutiveSentence<StandardDeterminateSentence>(
   orderedStandardSentences
-) {
+), StandardDeterminate {
 
   override fun buildString(): String {
-    return "ConsecutiveSentence\t:\t\n" +
+    return "StandardDeterminateConsecutiveSentence\t:\t\n" +
       "Number of sentences\t:\t${orderedStandardSentences.size}\n" +
       "Sentence Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
@@ -32,7 +32,7 @@ class StandardConsecutiveSentence(orderedStandardSentences: List<StandardSentenc
   }
 
   fun hasOraSentences(): Boolean {
-    return orderedStandardSentences.any(StandardSentence::isOraSentence)
+    return orderedStandardSentences.any(StandardDeterminateSentence::isOraSentence)
   }
 
   fun hasNonOraSentences(): Boolean {
@@ -52,7 +52,7 @@ class StandardConsecutiveSentence(orderedStandardSentences: List<StandardSentenc
   }
 
   private fun hasSdsPlusSentences(): Boolean {
-    return orderedStandardSentences.any(StandardSentence::isSdsPlusSentence)
+    return orderedStandardSentences.any(StandardDeterminateSentence::isSdsPlusSentence)
   }
 
   private fun hasSdsSentences(): Boolean {
