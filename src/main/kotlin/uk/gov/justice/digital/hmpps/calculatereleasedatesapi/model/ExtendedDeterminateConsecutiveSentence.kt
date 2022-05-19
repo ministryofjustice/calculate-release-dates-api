@@ -2,11 +2,12 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import java.time.LocalDate
 
-class ExtendedDeterminateConsecutiveSentence(orderedStandardSentences: List<ExtendedDeterminateSentence>,
-                                            // override val automaticRelease: Boolean
+class ExtendedDeterminateConsecutiveSentence(
+  orderedStandardSentences: List<ExtendedDeterminateSentence>
 ) : AbstractConsecutiveSentence<ExtendedDeterminateSentence>(
   orderedStandardSentences
-), ExtendedDeterminate {
+),
+  ExtendedDeterminate {
 
   override fun buildString(): String {
     return "ExtendedDeterminateSentence\t:\t\n" +

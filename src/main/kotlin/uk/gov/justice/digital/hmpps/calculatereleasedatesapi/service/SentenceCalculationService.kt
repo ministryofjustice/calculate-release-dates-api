@@ -78,7 +78,6 @@ class SentenceCalculationService {
         numberOfDaysToReleaseDateDouble = numberOfDaysToAutomaticReleaseDouble + numberOfDaysToDiscretionaryReleaseDouble
         numberOfDaysToReleaseDate = numberOfDaysToAutomaticRelease + numberOfDaysToDiscretionaryRelease
         numberOfDaysToParoleEligibilityDate = numberOfDaysToAutomaticRelease + ceil(numberOfDaysToDiscretionaryRelease.toDouble().times(TWO).div(THREE)).toLong()
-
       } else if (sentence.hasAutomaticRelease()) {
         val releaseDateMultiplier = determineReleaseExtendedDeterminateDateMultiplier(SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE)
         numberOfDaysToReleaseDateDouble = sentence.getAutomaticReleaseCustodialLengthInDays().times(releaseDateMultiplier)

@@ -56,7 +56,7 @@ class SentenceIdentificationService {
       if (sentence.hasDiscretionaryRelease()) {
         sentence.releaseDateTypes += PED
       }
-      //TODO Do consec sentences need an identificationTrack? It doesn't really fit.
+      // TODO Do consec sentences need an identificationTrack? It doesn't really fit.
     } else {
       sentence as ExtendedDeterminateSentence
       if (sentence.automaticRelease) {
