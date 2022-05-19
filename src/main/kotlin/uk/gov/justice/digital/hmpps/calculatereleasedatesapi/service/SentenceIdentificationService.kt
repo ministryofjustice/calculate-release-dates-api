@@ -13,13 +13,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_PLUS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IdentifiableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardConsecutiveSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
@@ -30,16 +34,37 @@ import java.time.temporal.ChronoUnit
 class SentenceIdentificationService {
 
   fun identify(sentence: IdentifiableSentence, offender: Offender) {
-    identifyStandardDeterminate(sentence, offender)
-    if (sentence.recallType != null) {
-      sentence.releaseDateTypes -= HDCED
-      sentence.releaseDateTypes += PRRD
+    if (sentence is ExtendedDeterminate) {
+      identifyExtendedDeterminate(sentence)
+    } else if (sentence is StandardDeterminate) {
+      identifyStandardDeterminate(sentence, offender)
+      if (sentence.recallType != null) {
+        sentence.releaseDateTypes -= HDCED
+        sentence.releaseDateTypes += PRRD
+      }
+    }
+  }
+
+  private fun identifyExtendedDeterminate(sentence: IdentifiableSentence) {
+    if ((sentence as ExtendedDeterminate).automaticRelease) {
+      sentence.identificationTrack = EDS_AUTOMATIC_RELEASE
+      sentence.releaseDateTypes = listOf(
+        SLED,
+        CRD
+      )
+    } else {
+      sentence.identificationTrack = EDS_DISCRETIONARY_RELEASE
+      sentence.releaseDateTypes = listOf(
+        SLED,
+        CRD,
+        PED
+      )
     }
   }
 
   fun identifyStandardDeterminate(sentence: IdentifiableSentence, offender: Offender) {
     sentence.releaseDateTypes = listOf()
-    if (sentence is StandardConsecutiveSentence) {
+    if (sentence is StandardDeterminateConsecutiveSentence) {
       if (sentence.isMadeUpOfOnlySdsPlusSentences()) {
         sentence.identificationTrack = SDS_PLUS
         sentence.releaseDateTypes = listOf(
@@ -181,10 +206,10 @@ class SentenceIdentificationService {
 
   private fun doesTopUpSentenceExpiryDateApply(sentence: IdentifiableSentence, offender: Offender): Boolean {
     val oraCondition = when (sentence) {
-      is StandardSentence -> {
+      is StandardDeterminateSentence -> {
         sentence.isOraSentence()
       }
-      is StandardConsecutiveSentence -> {
+      is StandardDeterminateConsecutiveSentence -> {
         sentence.hasOraSentences()
       }
       else -> {
@@ -193,10 +218,10 @@ class SentenceIdentificationService {
     }
 
     val lapsoCondition = when (sentence) {
-      is StandardSentence -> {
+      is StandardDeterminateSentence -> {
         sentence.identificationTrack == SDS_AFTER_CJA_LASPO
       }
-      is StandardConsecutiveSentence -> {
+      is StandardDeterminateConsecutiveSentence -> {
         sentence.isMadeUpOfOnlyAfterCjaLaspoSentences()
       }
       else -> {

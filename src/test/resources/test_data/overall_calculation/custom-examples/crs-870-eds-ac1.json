@@ -1,0 +1,42 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2013-01-20"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "automaticRelease": true,
+      "sentencedAt": "2013-01-21"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "numberOfDays": 70,
+        "appliesToSentencesFrom": "2013-01-21",
+        "fromDate": "2012-10-20",
+        "toDate": "2013-01-20"
+      }
+    ],
+    "TAGGED_BAIL": [
+      {
+        "numberOfDays": 20,
+        "appliesToSentencesFrom": "2013-01-21"
+      }
+    ]
+  }
+}

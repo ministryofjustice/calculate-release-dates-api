@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Alert
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustments
@@ -78,7 +78,7 @@ class TransformFunctionsTest {
 
     assertThat(transform(request)).isEqualTo(
       listOf(
-        StandardSentence(
+        StandardDeterminateSentence(
           sentencedAt = FIRST_JAN_2015,
           duration = FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION,
           offence = Offence(committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = false),
@@ -88,7 +88,7 @@ class TransformFunctionsTest {
           caseSequence = caseSequence
 
         ),
-        StandardSentence(
+        StandardDeterminateSentence(
           sentencedAt = FIRST_JAN_2015,
           duration = FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION,
           offence = Offence(committedAt = SECOND_JAN_2015, isScheduleFifteenMaximumLife = true),
@@ -135,7 +135,7 @@ class TransformFunctionsTest {
 
     assertThat(transform(request)).isEqualTo(
       listOf(
-        StandardSentence(
+        StandardDeterminateSentence(
           sentencedAt = FIRST_JAN_2015,
           duration = FIVE_YEAR_DURATION,
           offence = Offence(committedAt = SECOND_JAN_2015),
