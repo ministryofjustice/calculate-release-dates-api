@@ -9,8 +9,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedStandardConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardConsecutiveSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import java.util.UUID
 
 @Service
@@ -39,7 +39,7 @@ class BookingCalculationService(
       booking.sentences.minOf { it.sentencedAt } != booking.sentences.maxOf { it.sentencedAt } &&
       booking.sentences.all { !it.isRecall() }
     ) {
-      booking.singleTermSentence = SingleTermSentence(booking.sentences.map { it as StandardSentence })
+      booking.singleTermSentence = SingleTermSentence(booking.sentences.map { it as StandardDeterminateSentence })
       sentenceIdentificationService.identify(booking.singleTermSentence!!, booking.offender)
       sentenceCalculationService.calculate(booking.singleTermSentence!!, booking)
       log.info(booking.singleTermSentence!!.buildString())
@@ -62,8 +62,8 @@ class BookingCalculationService(
 
     booking.consecutiveSentences = chains.filter { it.size > 1 }
       .map { it ->
-        if (it[0] is StandardSentence) {
-          StandardConsecutiveSentence(it.map { it as StandardSentence })
+        if (it[0] is StandardDeterminateSentence) {
+          StandardDeterminateConsecutiveSentence(it.map { it as StandardDeterminateSentence })
         } else {
           ExtendedStandardConsecutiveSentence(it.map { it as ExtendedDeterminateSentence })
         }

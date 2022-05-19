@@ -16,7 +16,7 @@ interface CalculableSentence : SentenceTimeline {
   @JsonIgnore
   fun getReleaseDateType(): ReleaseDateType {
     return if (isRecall())
-      ReleaseDateType.PRRD else if (releaseDateTypes.contains(ReleaseDateType.PED))
+      ReleaseDateType.PRRD else if (releaseDateTypes.contains(ReleaseDateType.PED) && this is StandardDeterminate)
       ReleaseDateType.PED else if (sentenceCalculation.isReleaseDateConditional)
       ReleaseDateType.CRD else
       ReleaseDateType.ARD

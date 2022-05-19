@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
@@ -631,6 +632,47 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(calculation.dates[SLED]).isEqualTo(
       LocalDate.of(2030, 2, 4)
     )
+  }
+
+  @Test
+  fun `Run calculation on EDS sentence`() {
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/EDS")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[CRD]).isEqualTo(
+      LocalDate.of(2020, 4, 14)
+    )
+    assertThat(calculation.dates[PED]).isEqualTo(
+      LocalDate.of(2019, 5, 21)
+    )
+    assertThat(calculation.dates[SLED]).isEqualTo(
+      LocalDate.of(2023, 7, 20)
+    )
+  }
+
+  @Test
+  fun `Run validation on a mixture of SDS and EDS sentences`() {
+    val validationMessages: ValidationMessages = webTestClient.get()
+      .uri("/calculation/EDS-SDS/validate")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ValidationMessages::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(validationMessages.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(validationMessages.messages).hasSize(1)
+    assertThat(validationMessages.messages[0].code).isEqualTo(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)
+    assertThat(validationMessages.messages[0].arguments).isEqualTo(listOf("SDS and EDS sentences"))
   }
 
   companion object {

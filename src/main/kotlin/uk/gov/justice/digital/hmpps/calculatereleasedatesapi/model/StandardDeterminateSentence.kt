@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqual
 import java.time.LocalDate
 import java.util.UUID
 
-data class StandardSentence(
+data class StandardDeterminateSentence(
   override val offence: Offence,
   val duration: Duration,
   override val sentencedAt: LocalDate,
@@ -17,7 +17,7 @@ data class StandardSentence(
   override val lineSequence: Int? = null,
   override val caseReference: String? = null,
   override val recallType: RecallType? = null
-) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType) {
+) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType), StandardDeterminate {
 
   override fun buildString(): String {
     return "Sentence\t:\t\n" +

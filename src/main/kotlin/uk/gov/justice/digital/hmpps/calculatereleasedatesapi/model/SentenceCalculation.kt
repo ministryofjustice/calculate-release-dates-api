@@ -143,6 +143,10 @@ data class SentenceCalculation(
   var numberOfDaysToNonParoleDate: Long = 0
   var nonParoleDate: LocalDate? = null
 
+  // Parole Eligibility Date (PED). This is only used for EDS, for SDS the PED is the release date.
+  var numberOfDaysToParoleEligibilityDate: Long = 0
+  var extendedDeterminateParoleEligibilityDate: LocalDate? = null
+
   // Licence Expiry Date (LED)
   var numberOfDaysToLicenceExpiryDate: Long = 0
   private var _licenceExpiryDate: LocalDate? = null

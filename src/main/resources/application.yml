@@ -127,4 +127,4 @@ domain-events-sns:
       arn: topic_arn
 
 feature-toggles:
-  recall: ${RECALL_FEATURE_TOGGLE}
+  eds: ${EDS_FEATURE_TOGGLE}

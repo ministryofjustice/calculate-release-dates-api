@@ -38,7 +38,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
@@ -428,7 +428,7 @@ class CalculationTransactionalServiceTest {
 
     private val OFFENDER = Offender(PRISONER_ID, LocalDate.of(1980, 1, 1))
 
-    private val StandardSENTENCE = StandardSentence(
+    private val StandardSENTENCE = StandardDeterminateSentence(
       sentencedAt = THIRD_FEB_2021,
       duration = FIVE_YEAR_DURATION,
       offence = Offence(committedAt = THIRD_FEB_2021),

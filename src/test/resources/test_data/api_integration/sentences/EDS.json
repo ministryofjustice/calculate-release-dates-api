@@ -1,0 +1,80 @@
+[
+  {
+    "bookingId":1202241,
+    "sentenceSequence":1,
+    "lineSequence":1,
+    "caseSequence":1,
+    "courtDescription":"Aylesbury Magistrates Court",
+    "sentenceStatus":"A",
+    "sentenceCategory":"2003",
+    "sentenceCalculationType":"LASPO_AR",
+    "sentenceTypeDescription":"EDS LASPO Automatic Release",
+    "sentenceDate":"2015-01-21",
+    "terms":[
+      {
+        "years":6,
+        "months":6,
+        "weeks":0,
+        "days":0,
+        "code":"IMP"
+      },
+      {
+        "years":2,
+        "months":0,
+        "weeks":0,
+        "days":0,
+        "code":"LIC"
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":3933004,
+        "offenceStartDate":"2014-12-12",
+        "offenceCode":"CD79009",
+        "offenceDescription":"Acquire relieved goods for use by another contrary to a condition upon which relief was granted",
+        "indicators":[
+          "99"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId":1202241,
+    "sentenceSequence":2,
+    "lineSequence":2,
+    "caseSequence":2,
+    "courtDescription":"Aberdare County Court",
+    "sentenceStatus":"A",
+    "sentenceCategory":"2003",
+    "sentenceCalculationType":"LASPO_DR",
+    "sentenceTypeDescription":"EDS LASPO Discretionary Release",
+    "sentenceDate":"2016-04-15",
+    "terms":[
+      {
+        "years":4,
+        "months":0,
+        "weeks":0,
+        "days":0,
+        "code":"IMP"
+      },
+      {
+        "years":1,
+        "months":0,
+        "weeks":0,
+        "days":0,
+        "code":"LIC"
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":3933005,
+        "offenceStartDate":"2014-04-25",
+        "offenceCode":"TR68132",
+        "offenceDescription":"13 hours or more working",
+        "indicators":[
+
+        ]
+      }
+    ]
+  }
+]

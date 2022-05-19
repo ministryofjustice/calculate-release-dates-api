@@ -12,10 +12,10 @@ import java.util.UUID
   use = JsonTypeInfo.Id.NAME,
   include = JsonTypeInfo.As.PROPERTY,
   property = "type",
-  defaultImpl = StandardSentence::class
+  defaultImpl = StandardDeterminateSentence::class
 )
 @JsonSubTypes(
-  JsonSubTypes.Type(value = StandardSentence::class, name = "StandardSentence"),
+  JsonSubTypes.Type(value = StandardDeterminateSentence::class, name = "StandardSentence"),
   JsonSubTypes.Type(value = ExtendedDeterminateSentence::class, name = "ExtendedDeterminateSentence")
 )
 abstract class AbstractSentence(

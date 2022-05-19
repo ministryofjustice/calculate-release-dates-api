@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
@@ -18,10 +19,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
@@ -78,6 +80,10 @@ class BookingExtractionService(
       dates[NCRD] = sentenceCalculation.notionalConditionalReleaseDate!!
     }
 
+    if (sentenceCalculation.extendedDeterminateParoleEligibilityDate != null) {
+      dates[PED] = sentenceCalculation.extendedDeterminateParoleEligibilityDate!!
+    }
+
     dates[ESED] = sentenceCalculation.unadjustedExpiryDate
 
     return CalculationResult(
@@ -131,6 +137,10 @@ class BookingExtractionService(
     } else {
       null
     }
+
+    val latestExtendedDeterminateParoleEligibilityDate: LocalDate? = extractionService.mostRecentOrNull(
+      sentences, SentenceCalculation::extendedDeterminateParoleEligibilityDate
+    )
 
     val concurrentOraAndNonOraDetails = extractConcurrentOraAndNonOraDetails(
       mostRecentSentenceByAdjustedDeterminateReleaseDate.releaseDateTypes, mostRecentSentenceByExpiryDate.releaseDateTypes, latestReleaseDate, sentences, effectiveSentenceLength
@@ -200,6 +210,13 @@ class BookingExtractionService(
 
     if (latestNotionalConditionalReleaseDate != null) {
       dates[NCRD] = latestNotionalConditionalReleaseDate
+    }
+
+    if (latestExtendedDeterminateParoleEligibilityDate != null) {
+      val latestAutomaticRelease = extractionService.mostRecentOrNull(
+        sentences.filter { it is ExtendedDeterminate && it.automaticRelease }, SentenceCalculation::releaseDate
+      )
+      dates[PED] = if (latestAutomaticRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestAutomaticRelease)) latestAutomaticRelease else latestExtendedDeterminateParoleEligibilityDate
     }
 
     dates[ESED] = latestUnadjustedExpiryDate
@@ -273,8 +290,8 @@ class BookingExtractionService(
     val latestReleaseIsConditional = latestReleaseTypes.contains(CRD)
     val latestSentenceExpiryIsSED = latestExpiryTypes.contains(SED)
 
-    val hasOraSentences = sentences.any { (it is StandardSentence) && it.isOraSentence() }
-    val hasNonOraSentencesOfLessThan12Months = sentences.any { (it is StandardSentence) && !it.isOraSentence() && it.durationIsLessThan(12, ChronoUnit.MONTHS) }
+    val hasOraSentences = sentences.any { (it is StandardDeterminateSentence) && it.isOraSentence() }
+    val hasNonOraSentencesOfLessThan12Months = sentences.any { (it is StandardDeterminateSentence) && !it.isOraSentence() && it.durationIsLessThan(12, ChronoUnit.MONTHS) }
     val mostRecentSentenceWithASed = extractionService.mostRecentSentenceOrNull(
       sentences, SentenceCalculation::expiryDate
     ) { it.releaseDateTypes.contains(SED) }

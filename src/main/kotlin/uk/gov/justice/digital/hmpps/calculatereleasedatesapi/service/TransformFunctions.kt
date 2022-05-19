@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -42,12 +43,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentencePart
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DateBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardConsecutiveSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
@@ -58,6 +60,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
@@ -71,7 +74,7 @@ import java.util.UUID
 ** Sometimes a pass-thru but very useful when objects need to be altered or enriched
 */
 
-fun transform(sentence: SentenceAndOffences): MutableList<StandardSentence> {
+fun transform(sentence: SentenceAndOffences): MutableList<out AbstractSentence> {
   // There shouldn't be multiple offences associated to a single sentence; however there are at the moment (NOMIS doesnt
   // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
   // treated as a separate sentence
@@ -80,14 +83,7 @@ fun transform(sentence: SentenceAndOffences): MutableList<StandardSentence> {
       committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
       isScheduleFifteenMaximumLife = offendersOffence.indicators.any { it == OffenderOffence.SCHEDULE_15_LIFE_INDICATOR }
     )
-    val duration = Duration(
-      mapOf(
-        DAYS to sentence.terms[0].days.toLong(),
-        WEEKS to sentence.terms[0].weeks.toLong(),
-        MONTHS to sentence.terms[0].months.toLong(),
-        YEARS to sentence.terms[0].years.toLong()
-      )
-    )
+
     val consecutiveSentenceUUIDs = if (sentence.consecutiveToSequence != null)
       listOf(
         generateUUIDForSentence(sentence.bookingId, sentence.consecutiveToSequence)
@@ -95,18 +91,49 @@ fun transform(sentence: SentenceAndOffences): MutableList<StandardSentence> {
     else
       listOf()
 
-    StandardSentence(
-      sentencedAt = sentence.sentenceDate,
-      duration = duration,
-      offence = offence,
-      identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-      consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-      caseSequence = sentence.caseSequence,
-      lineSequence = sentence.lineSequence,
-      caseReference = sentence.caseReference,
-      recallType = SentenceCalculationType.from(sentence.sentenceCalculationType)!!.recallType
-    )
+    val sentenceCalculationType = SentenceCalculationType.from(sentence.sentenceCalculationType)!!
+    if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java) {
+      StandardDeterminateSentence(
+        sentencedAt = sentence.sentenceDate,
+        duration = transform(sentence.terms[0]),
+        offence = offence,
+        identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+        consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+        caseSequence = sentence.caseSequence,
+        lineSequence = sentence.lineSequence,
+        caseReference = sentence.caseReference,
+        recallType = sentenceCalculationType.recallType
+      )
+    } else {
+      val imprisonmentTerm = sentence.terms.first { it.code == "IMP" }
+      val licenseTerm = sentence.terms.first { it.code == "LIC" }
+
+      ExtendedDeterminateSentence(
+        sentencedAt = sentence.sentenceDate,
+        custodialDuration = transform(imprisonmentTerm),
+        extensionDuration = transform(licenseTerm),
+        automaticRelease = sentenceCalculationType == SentenceCalculationType.LASPO_AR,
+        offence = offence,
+        identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+        consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+        caseSequence = sentence.caseSequence,
+        lineSequence = sentence.lineSequence,
+        caseReference = sentence.caseReference,
+        recallType = sentenceCalculationType.recallType
+      )
+    }
   }.toMutableList()
+}
+
+private fun transform(term: SentenceTerms): Duration {
+  return Duration(
+    mapOf(
+      DAYS to term.days.toLong(),
+      WEEKS to term.weeks.toLong(),
+      MONTHS to term.months.toLong(),
+      YEARS to term.years.toLong()
+    )
+  )
 }
 
 private fun generateUUIDForSentence(bookingId: Long, sequence: Int) =
@@ -257,8 +284,8 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
     booking.consecutiveSentences.none { consecutiveSentence ->
       consecutiveSentence.orderedStandardSentences.contains(it)
     } &&
-      it is StandardSentence
-  }.map { it as StandardSentence }
+      it is StandardDeterminateSentence
+  }.map { it as StandardDeterminateSentence }
   return CalculationBreakdown(
     concurrentSentences = concurrentSentences.map { sentence ->
       ConcurrentSentenceBreakdown(
@@ -273,7 +300,7 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
     }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence })),
     consecutiveSentence = if (booking.consecutiveSentences.isNotEmpty()) {
       if (booking.consecutiveSentences.size == 1) {
-        val consecutiveSentence = booking.consecutiveSentences.filter { it is StandardConsecutiveSentence }[0] as StandardConsecutiveSentence
+        val consecutiveSentence = booking.consecutiveSentences.filter { it is StandardDeterminateConsecutiveSentence }[0] as StandardDeterminateConsecutiveSentence
         ConsecutiveSentenceBreakdown(
           consecutiveSentence.sentencedAt,
           combineDuration(consecutiveSentence).toString(),
@@ -310,7 +337,7 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
   )
 }
 
-private fun combineDuration(standardConsecutiveSentence: StandardConsecutiveSentence): Duration {
+private fun combineDuration(standardConsecutiveSentence: StandardDeterminateConsecutiveSentence): Duration {
   return standardConsecutiveSentence.orderedStandardSentences
     .map { it.duration }
     .reduce { acc, duration -> acc.appendAll(duration.durationElements) }

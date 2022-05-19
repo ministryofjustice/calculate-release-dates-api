@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import java.io.File
 import java.io.FileNotFoundException
@@ -21,9 +21,9 @@ class JsonTransformation {
     return mapper.readValue(json, Offender::class.java)
   }
 
-  fun loadSentence(testData: String): StandardSentence {
+  fun loadSentence(testData: String): StandardDeterminateSentence {
     val json = getJsonTest("$testData.json", "sentence")
-    return mapper.readValue(json, StandardSentence::class.java)
+    return mapper.readValue(json, StandardDeterminateSentence::class.java)
   }
 
   fun loadBooking(testData: String): Booking {
