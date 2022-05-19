@@ -29,7 +29,7 @@ data class Booking(
       extractableSentences.add(singleTermSentence!!)
     }
     sentences.forEach {
-      if (consecutiveSentences.none { consecutive -> consecutive.orderedStandardSentences.contains(it) } &&
+      if (consecutiveSentences.none { consecutive -> consecutive.orderedSentences.contains(it) } &&
         singleTermSentence?.standardSentences?.contains(it) != true
       ) {
         extractableSentences.add(it)

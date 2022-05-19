@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -214,7 +214,8 @@ class BookingExtractionService(
 
     if (latestExtendedDeterminateParoleEligibilityDate != null) {
       val latestAutomaticRelease = extractionService.mostRecentOrNull(
-        sentences.filter { it is ExtendedDeterminate && it.automaticRelease }, SentenceCalculation::releaseDate
+        // TODO should we do the same for consec?
+        sentences.filter { it is ExtendedDeterminateSentence && it.automaticRelease }, SentenceCalculation::releaseDate
       )
       dates[PED] = if (latestAutomaticRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestAutomaticRelease)) latestAutomaticRelease else latestExtendedDeterminateParoleEligibilityDate
     }

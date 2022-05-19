@@ -282,7 +282,7 @@ fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates {
 fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>, otherDates: Map<ReleaseDateType, LocalDate>): CalculationBreakdown {
   val concurrentSentences = booking.sentences.filter {
     booking.consecutiveSentences.none { consecutiveSentence ->
-      consecutiveSentence.orderedStandardSentences.contains(it)
+      consecutiveSentence.orderedSentences.contains(it)
     } &&
       it is StandardDeterminateSentence
   }.map { it as StandardDeterminateSentence }
@@ -306,7 +306,7 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
           combineDuration(consecutiveSentence).toString(),
           consecutiveSentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
           extractDates(consecutiveSentence),
-          consecutiveSentence.orderedStandardSentences.map { sentencePart ->
+          consecutiveSentence.orderedSentences.map { sentencePart ->
             val originalSentence = booking.sentences.find { it.identifier == sentencePart.identifier }!!
             val consecutiveToUUID =
               if (originalSentence.consecutiveSentenceUUIDs.isNotEmpty()) originalSentence.consecutiveSentenceUUIDs[0]
@@ -338,7 +338,7 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
 }
 
 private fun combineDuration(standardConsecutiveSentence: StandardDeterminateConsecutiveSentence): Duration {
-  return standardConsecutiveSentence.orderedStandardSentences
+  return standardConsecutiveSentence.orderedSentences
     .map { it.duration }
     .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
 }

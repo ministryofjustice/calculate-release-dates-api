@@ -28,7 +28,8 @@ data class SentenceCalculation(
   val adjustments: Adjustments,
   var adjustmentsBefore: LocalDate,
   var adjustmentsAfter: LocalDate? = null,
-  val returnToCustodyDate: LocalDate? = null
+  val returnToCustodyDate: LocalDate? = null,
+  val numberOfDaysToParoleEligibilityDate: Long? = null
 ) {
 
   fun getAdjustmentBeforeSentence(vararg adjustmentTypes: AdjustmentType): Int {
@@ -144,8 +145,17 @@ data class SentenceCalculation(
   var nonParoleDate: LocalDate? = null
 
   // Parole Eligibility Date (PED). This is only used for EDS, for SDS the PED is the release date.
-  var numberOfDaysToParoleEligibilityDate: Long = 0
-  var extendedDeterminateParoleEligibilityDate: LocalDate? = null
+  val extendedDeterminateParoleEligibilityDate: LocalDate? get() {
+    if (numberOfDaysToParoleEligibilityDate == null) {
+      return null
+    }
+    return sentence.sentencedAt
+      .plusDays(numberOfDaysToParoleEligibilityDate)
+      .minusDays(1)
+      .plusDays(calculatedTotalAddedDays.toLong())
+      .minusDays(calculatedTotalDeductedDays.toLong())
+      .plusDays(calculatedTotalAwardedDays.toLong())
+  }
 
   // Licence Expiry Date (LED)
   var numberOfDaysToLicenceExpiryDate: Long = 0

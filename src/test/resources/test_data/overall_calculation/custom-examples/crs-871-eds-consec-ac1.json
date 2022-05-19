@@ -1,0 +1,58 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2022-02-09"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "MONTHS": 42
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "MONTHS": 36
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2022-02-10",
+      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
+    },
+    {
+      "offence": {
+        "committedAt": "2022-02-09"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "MONTHS": 66
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "MONTHS": 24
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2022-02-10",
+      "consecutiveSentenceUUIDs": [
+        "e40f48b6-92df-49d0-af99-507194c380fa"
+      ]
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "numberOfDays": 265,
+        "appliesToSentencesFrom": "2022-02-10",
+        "fromDate": "2021-05-21",
+        "toDate": "2022-02-09"
+      }
+    ]
+  }
+}
