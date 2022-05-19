@@ -23,6 +23,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IdentifiableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
@@ -58,11 +60,46 @@ class SentenceCalculationService {
     sentence: ExtendedDeterminate,
     booking: Booking
   ): SentenceCalculation {
-    val numberOfDaysToSentenceExpiryDate = sentence.getLengthInDays()
-    val releaseDateMultiplier = determineReleaseExtendedDeterminateDateMultiplier(sentence)
-    val numberOfDaysToReleaseDateDouble = sentence.getCustodialLengthInDays().times(releaseDateMultiplier)
-    val numberOfDaysToReleaseDate = ceil(numberOfDaysToReleaseDateDouble).toInt()
+    val numberOfDaysToReleaseDateDouble: Double
+    val numberOfDaysToReleaseDate: Int
+    var numberOfDaysToParoleEligibilityDate: Long? = null
+    if (sentence is ExtendedDeterminateConsecutiveSentence) {
+      if (sentence.hasAutomaticAndDiscretionaryRelease()) {
+        val automaticReleaseDateMultiplier = determineReleaseExtendedDeterminateDateMultiplier(SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE)
+        val numberOfDaysToAutomaticReleaseDouble = sentence.getAutomaticReleaseCustodialLengthInDays().times(automaticReleaseDateMultiplier)
+        val numberOfDaysToAutomaticRelease = ceil(numberOfDaysToAutomaticReleaseDouble).toInt()
 
+        val discretionaryStartDate = sentence.sentencedAt
+          .plusDays(numberOfDaysToAutomaticRelease.toLong())
+        val discretionaryReleaseDateMultiplier = determineReleaseExtendedDeterminateDateMultiplier(SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE)
+        val numberOfDaysToDiscretionaryReleaseDouble = sentence.getDiscretionaryReleaseCustodialLengthInDays(discretionaryStartDate).times(discretionaryReleaseDateMultiplier)
+        val numberOfDaysToDiscretionaryRelease = ceil(numberOfDaysToDiscretionaryReleaseDouble).toInt()
+
+        numberOfDaysToReleaseDateDouble = numberOfDaysToAutomaticReleaseDouble + numberOfDaysToDiscretionaryReleaseDouble
+        numberOfDaysToReleaseDate = numberOfDaysToAutomaticRelease + numberOfDaysToDiscretionaryRelease
+        numberOfDaysToParoleEligibilityDate = numberOfDaysToAutomaticRelease + ceil(numberOfDaysToDiscretionaryRelease.toDouble().times(TWO).div(THREE)).toLong()
+
+      } else if (sentence.hasAutomaticRelease()) {
+        val releaseDateMultiplier = determineReleaseExtendedDeterminateDateMultiplier(SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE)
+        numberOfDaysToReleaseDateDouble = sentence.getAutomaticReleaseCustodialLengthInDays().times(releaseDateMultiplier)
+        numberOfDaysToReleaseDate = ceil(numberOfDaysToReleaseDateDouble).toInt()
+      } else {
+        val releaseDateMultiplier = determineReleaseExtendedDeterminateDateMultiplier(SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE)
+        numberOfDaysToReleaseDateDouble = sentence.getDiscretionaryReleaseCustodialLengthInDays(sentence.sentencedAt).times(releaseDateMultiplier)
+        numberOfDaysToReleaseDate = ceil(numberOfDaysToReleaseDateDouble).toInt()
+        numberOfDaysToParoleEligibilityDate = ceil(numberOfDaysToReleaseDate.toDouble().times(TWO).div(THREE)).toLong()
+      }
+    } else {
+      sentence as ExtendedDeterminateSentence
+      val releaseDateMultiplier = determineReleaseExtendedDeterminateDateMultiplier(sentence.identificationTrack)
+      numberOfDaysToReleaseDateDouble = sentence.getCustodialLengthInDays().times(releaseDateMultiplier)
+      numberOfDaysToReleaseDate = ceil(numberOfDaysToReleaseDateDouble).toInt()
+      if (sentence.releaseDateTypes.contains(PED)) {
+        numberOfDaysToParoleEligibilityDate = ceil(numberOfDaysToReleaseDate.toDouble().times(TWO).div(THREE)).toLong()
+      }
+    }
+
+    val numberOfDaysToSentenceExpiryDate = sentence.getLengthInDays()
     val unadjustedExpiryDate =
       sentence.sentencedAt
         .plusDays(numberOfDaysToSentenceExpiryDate.toLong())
@@ -72,6 +109,7 @@ class SentenceCalculationService {
       sentence.sentencedAt
         .plusDays(numberOfDaysToReleaseDate.toLong())
         .minusDays(ONE)
+
     // create new SentenceCalculation and associate it with a sentence
     return SentenceCalculation(
       sentence,
@@ -84,6 +122,7 @@ class SentenceCalculationService {
       null,
       booking.adjustments,
       sentence.sentencedAt,
+      numberOfDaysToParoleEligibilityDate = numberOfDaysToParoleEligibilityDate
     )
   }
 
@@ -97,10 +136,10 @@ class SentenceCalculationService {
 
     val numberOfDaysToDeterminateReleaseDateDouble = numberOfDaysToSentenceExpiryDate.toDouble().times(releaseDateMultiplier)
     val numberOfDaysToDeterminateReleaseDate = if (sentence is StandardDeterminateConsecutiveSentence && sentence.isMadeUpOfSdsPlusAndSdsSentences()) {
-      var firstSentenceIsSDSPlus = sentence.orderedStandardSentences[0].isSdsPlusSentence()
+      var firstSentenceIsSDSPlus = sentence.orderedSentences[0].isSdsPlusSentence()
       val daysInFirstSentenceType =
         ceil(
-          sentence.orderedStandardSentences.filter { if (firstSentenceIsSDSPlus) it.isSdsPlusSentence() else !it.isSdsPlusSentence() }
+          sentence.orderedSentences.filter { if (firstSentenceIsSDSPlus) it.isSdsPlusSentence() else !it.isSdsPlusSentence() }
             .map { it.sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble }
             .reduce { acc, it -> acc + it }
         )
@@ -108,7 +147,7 @@ class SentenceCalculationService {
         Duration(mapOf(DAYS to daysInFirstSentenceType.toLong())).getEndDate(sentence.sentencedAt)
       val daysInSecondSentenceType =
         ceil(
-          sentence.orderedStandardSentences.filter { if (firstSentenceIsSDSPlus) !it.isSdsPlusSentence() else it.isSdsPlusSentence() }
+          sentence.orderedSentences.filter { if (firstSentenceIsSDSPlus) !it.isSdsPlusSentence() else it.isSdsPlusSentence() }
             .map {
               it.duration.getLengthInDays(endOfFirstSentenceType.plusDays(1)).toDouble().times(determineReleaseDateMultiplier(it))
             }
@@ -201,23 +240,8 @@ class SentenceCalculationService {
       calculateHDCED(sentence, sentenceCalculation)
     }
 
-    if (sentence is ExtendedDeterminate && sentence.releaseDateTypes.contains(PED)) {
-      calculateExtendedDeterminatePED(sentence, sentenceCalculation)
-    }
-
     BookingCalculationService.log.info(sentence.buildString())
     return sentenceCalculation
-  }
-
-  private fun calculateExtendedDeterminatePED(sentence: ExtendedDeterminate, sentenceCalculation: SentenceCalculation) {
-    sentenceCalculation.numberOfDaysToParoleEligibilityDate =
-      ceil(sentenceCalculation.numberOfDaysToDeterminateReleaseDate.toDouble().times(TWO).div(THREE)).toLong()
-        .plus(sentenceCalculation.calculatedTotalAddedDays)
-        .minus(sentenceCalculation.calculatedTotalDeductedDays)
-        .plus(sentenceCalculation.calculatedTotalAwardedDays)
-    sentenceCalculation.extendedDeterminateParoleEligibilityDate = sentence.sentencedAt.plusDays(
-      sentenceCalculation.numberOfDaysToParoleEligibilityDate
-    ).minusDays(ONE)
   }
 
   private fun setSedOrSledDetails(
@@ -270,7 +294,7 @@ class SentenceCalculationService {
       sentence.hasOraSentences() &&
       sentence.hasNonOraSentences()
     ) {
-      val lengthOfOraSentences = sentence.orderedStandardSentences.filter(StandardDeterminateSentence::isOraSentence)
+      val lengthOfOraSentences = sentence.orderedSentences.filter(StandardDeterminateSentence::isOraSentence)
         .map { it.duration }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         .getLengthInDays(sentence.sentencedAt)
@@ -335,13 +359,13 @@ class SentenceCalculationService {
   // The NPD calc becomes much more complicated, see PSI example 40.
   private fun calculateNPDFromNotionalCRD(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
     if (sentence is StandardDeterminateConsecutiveSentence) {
-      val daysOfNewStyleSentences = sentence.orderedStandardSentences
+      val daysOfNewStyleSentences = sentence.orderedSentences
         .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
         .map { it.duration }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         .getLengthInDays(sentence.sentencedAt)
 
-      val daysOfOldStyleSentences = sentence.orderedStandardSentences
+      val daysOfOldStyleSentences = sentence.orderedSentences
         .filter { it.identificationTrack == SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO }
         .map { it.duration }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
@@ -468,10 +492,9 @@ class SentenceCalculationService {
       1 / 2.toDouble()
     }
   }
-  private fun determineReleaseExtendedDeterminateDateMultiplier(sentence: CalculableSentence): Double {
+  private fun determineReleaseExtendedDeterminateDateMultiplier(identification: SentenceIdentificationTrack): Double {
     return if (
-      (sentence is IdentifiableSentence) &&
-      sentence.identificationTrack == SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE
+      identification == SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE
     ) {
       2 / 3.toDouble()
     } else {

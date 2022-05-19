@@ -5,13 +5,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 
-abstract class AbstractConsecutiveSentence<S : AbstractSentence>(val orderedStandardSentences: List<S>) : IdentifiableSentence, CalculableSentence, ExtractableSentence {
-  override val sentencedAt: LocalDate = orderedStandardSentences.minOf(AbstractSentence::sentencedAt)
-  override val offence: Offence = orderedStandardSentences.map(AbstractSentence::offence).minByOrNull(Offence::committedAt)!!
+abstract class AbstractConsecutiveSentence<S : AbstractSentence>(val orderedSentences: List<S>) : IdentifiableSentence, CalculableSentence, ExtractableSentence {
+  override val sentencedAt: LocalDate = orderedSentences.minOf(AbstractSentence::sentencedAt)
+  override val offence: Offence = orderedSentences.map(AbstractSentence::offence).minByOrNull(Offence::committedAt)!!
 
   override val recallType: RecallType?
     get() {
-      return orderedStandardSentences[0].recallType
+      return orderedSentences[0].recallType
     }
 
   @JsonIgnore

@@ -7,7 +7,7 @@ data class ExtendedDeterminateSentence(
   override val offence: Offence,
   val custodialDuration: Duration,
   val extensionDuration: Duration,
-  override val automaticRelease: Boolean,
+  val automaticRelease: Boolean,
   override val sentencedAt: LocalDate,
   override val identifier: UUID = UUID.randomUUID(),
   override val consecutiveSentenceUUIDs: List<UUID> = listOf(),
@@ -28,7 +28,7 @@ data class ExtendedDeterminateSentence(
       sentenceCalculation.buildString(releaseDateTypes)
   }
 
-  override fun getCustodialLengthInDays(): Int {
+  fun getCustodialLengthInDays(): Int {
     return custodialDuration.getLengthInDays(sentencedAt)
   }
 

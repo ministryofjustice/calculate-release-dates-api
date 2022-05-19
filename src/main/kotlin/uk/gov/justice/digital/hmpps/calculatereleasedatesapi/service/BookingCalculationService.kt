@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedStandardConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -65,7 +65,7 @@ class BookingCalculationService(
         if (it[0] is StandardDeterminateSentence) {
           StandardDeterminateConsecutiveSentence(it.map { it as StandardDeterminateSentence })
         } else {
-          ExtendedStandardConsecutiveSentence(it.map { it as ExtendedDeterminateSentence })
+          ExtendedDeterminateConsecutiveSentence(it.map { it as ExtendedDeterminateSentence })
         }
       }
 

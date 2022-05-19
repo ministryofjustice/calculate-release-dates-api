@@ -19,6 +19,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_PLUS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IdentifiableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminate
@@ -46,19 +48,31 @@ class SentenceIdentificationService {
   }
 
   private fun identifyExtendedDeterminate(sentence: IdentifiableSentence) {
-    if ((sentence as ExtendedDeterminate).automaticRelease) {
-      sentence.identificationTrack = EDS_AUTOMATIC_RELEASE
+    if (sentence is ExtendedDeterminateConsecutiveSentence) {
       sentence.releaseDateTypes = listOf(
         SLED,
         CRD
       )
+      if (sentence.hasDiscretionaryRelease()) {
+        sentence.releaseDateTypes += PED
+      }
+      //TODO Do consec sentences need an identificationTrack? It doesn't really fit.
     } else {
-      sentence.identificationTrack = EDS_DISCRETIONARY_RELEASE
-      sentence.releaseDateTypes = listOf(
-        SLED,
-        CRD,
-        PED
-      )
+      sentence as ExtendedDeterminateSentence
+      if (sentence.automaticRelease) {
+        sentence.identificationTrack = EDS_AUTOMATIC_RELEASE
+        sentence.releaseDateTypes = listOf(
+          SLED,
+          CRD
+        )
+      } else {
+        sentence.identificationTrack = EDS_DISCRETIONARY_RELEASE
+        sentence.releaseDateTypes = listOf(
+          SLED,
+          CRD,
+          PED
+        )
+      }
     }
   }
 
@@ -74,7 +88,7 @@ class SentenceIdentificationService {
       } else if (sentence.isMadeUpOfBeforeAndAfterCjaLaspoSentences()) {
         sentence.identificationTrack = SDS_AFTER_CJA_LASPO
         // This consecutive sentence is made up of pre and post laspo date sentences. (Old and new style)
-        val hasScheduleFifteen = sentence.orderedStandardSentences.any() { it.offence.isScheduleFifteen }
+        val hasScheduleFifteen = sentence.orderedSentences.any() { it.offence.isScheduleFifteen }
         if (hasScheduleFifteen) {
           // PSI example 40
           sentence.releaseDateTypes = listOf(
