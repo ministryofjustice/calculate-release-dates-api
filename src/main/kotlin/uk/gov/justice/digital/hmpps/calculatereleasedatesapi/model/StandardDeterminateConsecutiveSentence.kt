@@ -11,7 +11,7 @@ class StandardDeterminateConsecutiveSentence(orderedStandardSentences: List<Stan
 
   override fun buildString(): String {
     return "StandardDeterminateConsecutiveSentence\t:\t\n" +
-      "Number of sentences\t:\t${orderedStandardSentences.size}\n" +
+      "Number of sentences\t:\t${orderedSentences.size}\n" +
       "Sentence Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
       sentenceCalculation.buildString(releaseDateTypes)
@@ -19,26 +19,26 @@ class StandardDeterminateConsecutiveSentence(orderedStandardSentences: List<Stan
 
   override fun getLengthInDays(): Int {
     var date = sentencedAt
-    orderedStandardSentences.forEach {
+    orderedSentences.forEach {
       date = date.plusDays(it.duration.getLengthInDays(date).toLong())
     }
     return (ChronoUnit.DAYS.between(sentencedAt, date)).toInt()
   }
 
   private fun hasAfterCjaLaspo(): Boolean {
-    return orderedStandardSentences.any() { it.identificationTrack === SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
+    return orderedSentences.any() { it.identificationTrack === SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
   }
 
   private fun hasBeforeCjaLaspo(): Boolean {
-    return orderedStandardSentences.any() { it.identificationTrack === SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO }
+    return orderedSentences.any() { it.identificationTrack === SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO }
   }
 
   fun hasOraSentences(): Boolean {
-    return orderedStandardSentences.any(StandardDeterminateSentence::isOraSentence)
+    return orderedSentences.any(StandardDeterminateSentence::isOraSentence)
   }
 
   fun hasNonOraSentences(): Boolean {
-    return orderedStandardSentences.any { !it.isOraSentence() }
+    return orderedSentences.any { !it.isOraSentence() }
   }
 
   fun isMadeUpOfBeforeAndAfterCjaLaspoSentences(): Boolean {
@@ -54,11 +54,11 @@ class StandardDeterminateConsecutiveSentence(orderedStandardSentences: List<Stan
   }
 
   private fun hasSdsPlusSentences(): Boolean {
-    return orderedStandardSentences.any(StandardDeterminateSentence::isSdsPlusSentence)
+    return orderedSentences.any(StandardDeterminateSentence::isSdsPlusSentence)
   }
 
   private fun hasSdsSentences(): Boolean {
-    return orderedStandardSentences.any { !it.isSdsPlusSentence() }
+    return orderedSentences.any { !it.isSdsPlusSentence() }
   }
 
   fun isMadeUpOfSdsPlusAndSdsSentences(): Boolean {
