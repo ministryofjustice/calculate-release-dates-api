@@ -8,6 +8,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import java.time.LocalDate
 import java.util.UUID
 
+/**
+ * A sentence that was imposed. This could be any sentence type and could be a single sentence as part of a consecutive
+ * chain. 
+ */
 @JsonTypeInfo(
   use = JsonTypeInfo.Id.NAME,
   include = JsonTypeInfo.As.PROPERTY,
