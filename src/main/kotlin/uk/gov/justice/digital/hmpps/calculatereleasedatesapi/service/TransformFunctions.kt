@@ -35,6 +35,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSente
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
@@ -44,7 +45,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DateBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
@@ -367,7 +367,7 @@ fun transform(calculation: CalculatedReleaseDates) =
     )
   )
 
-private fun extractDates(sentence: ExtractableSentence): Map<ReleaseDateType, DateBreakdown> {
+private fun extractDates(sentence: CalculableSentence): Map<ReleaseDateType, DateBreakdown> {
   val dates: MutableMap<ReleaseDateType, DateBreakdown> = mutableMapOf()
   val sentenceCalculation = sentence.sentenceCalculation
 

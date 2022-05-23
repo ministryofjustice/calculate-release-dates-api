@@ -9,8 +9,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.Custodia
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -250,7 +250,7 @@ class ValidationService(
     }
   }
 
-  private fun validateSentenceHasNotBeenExtinguished(sentences: List<ExtractableSentence>) {
+  private fun validateSentenceHasNotBeenExtinguished(sentences: List<CalculableSentence>) {
     val determinateSentences = sentences.filter { !it.isRecall() }
     if (determinateSentences.isNotEmpty()) {
       val earliestSentenceDate = determinateSentences.minOf { it.sentencedAt }

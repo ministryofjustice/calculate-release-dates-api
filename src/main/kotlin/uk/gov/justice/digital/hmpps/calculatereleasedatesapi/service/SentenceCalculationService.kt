@@ -25,7 +25,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IdentifiableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -483,7 +482,7 @@ class SentenceCalculationService {
 
   private fun determineReleaseDateMultiplier(sentence: CalculableSentence): Double {
     return if (
-      (sentence is IdentifiableSentence) &&
+      (sentence is CalculableSentence) &&
       sentence.identificationTrack == SentenceIdentificationTrack.SDS_PLUS
     ) {
       2 / 3.toDouble()

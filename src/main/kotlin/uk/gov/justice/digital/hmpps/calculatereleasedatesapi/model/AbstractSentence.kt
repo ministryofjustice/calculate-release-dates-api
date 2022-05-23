@@ -28,7 +28,7 @@ abstract class AbstractSentence(
   open val lineSequence: Int? = null,
   open val caseReference: String? = null,
   override val recallType: RecallType? = null
-) : IdentifiableSentence, CalculableSentence, ExtractableSentence {
+) : CalculableSentence {
   @JsonIgnore
   @Transient
   override lateinit var sentenceCalculation: SentenceCalculation

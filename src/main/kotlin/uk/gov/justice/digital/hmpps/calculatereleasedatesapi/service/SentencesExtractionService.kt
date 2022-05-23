@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import java.time.LocalDate
 import java.util.Objects
@@ -13,7 +13,7 @@ import kotlin.reflect.KProperty1
 class SentencesExtractionService {
 
   fun mostRecentOrNull(
-    sentences: List<ExtractableSentence>,
+    sentences: List<CalculableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>
   ): LocalDate? {
     return sentences
@@ -23,7 +23,7 @@ class SentencesExtractionService {
   }
 
   fun mostRecent(
-    sentences: List<ExtractableSentence>,
+    sentences: List<CalculableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>
   ): LocalDate {
     return sentences
@@ -33,18 +33,18 @@ class SentencesExtractionService {
   }
 
   fun mostRecentSentence(
-    sentences: List<ExtractableSentence>,
+    sentences: List<CalculableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>
-  ): ExtractableSentence {
+  ): CalculableSentence {
     return sentences
       .filter { property.get(it.sentenceCalculation) != null }
       .maxByOrNull { property.get(it.sentenceCalculation)!! }!!
   }
 
   fun mostRecentSentences(
-    sentences: List<ExtractableSentence>,
+    sentences: List<CalculableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>
-  ): List<ExtractableSentence> {
+  ): List<CalculableSentence> {
     val maxSentence = sentences
       .filter { property.get(it.sentenceCalculation) != null }
       .maxByOrNull { property.get(it.sentenceCalculation)!! }!!
@@ -53,10 +53,10 @@ class SentencesExtractionService {
   }
 
   fun mostRecentSentenceOrNull(
-    sentences: List<ExtractableSentence>,
+    sentences: List<CalculableSentence>,
     property: KProperty1<SentenceCalculation, LocalDate?>,
-    filter: (ExtractableSentence) -> Boolean = { true }
-  ): ExtractableSentence? {
+    filter: (CalculableSentence) -> Boolean = { true }
+  ): CalculableSentence? {
     return sentences
       .filter { property.get(it.sentenceCalculation) != null && filter(it) }
       .maxByOrNull { property.get(it.sentenceCalculation)!! }

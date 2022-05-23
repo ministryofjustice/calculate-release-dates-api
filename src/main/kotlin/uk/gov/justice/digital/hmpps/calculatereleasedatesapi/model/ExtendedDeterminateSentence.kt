@@ -3,6 +3,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import java.time.LocalDate
 import java.util.UUID
 
+/**
+ * This class is used to model the Extended Determinate Sentences. This differ from standard sentences in that
+ * they have two durations.
+ */
 data class ExtendedDeterminateSentence(
   override val offence: Offence,
   val custodialDuration: Duration,
