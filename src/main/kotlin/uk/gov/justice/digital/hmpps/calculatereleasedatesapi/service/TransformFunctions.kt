@@ -175,7 +175,7 @@ fun transform(
     val adjustmentType = transform(it.type)
     if (adjustmentType != null) {
       val sentence: SentenceAndOffences? = findSentenceForAdjustment(it, sentencesAndOffences)
-      //If sentence is not present it could be that the adjustment is linked to an inactive sentence, which needs filtering out.
+      // If sentence is not present it could be that the adjustment is linked to an inactive sentence, which needs filtering out.
       if (sentence != null) {
         adjustments.addAdjustment(
           adjustmentType,

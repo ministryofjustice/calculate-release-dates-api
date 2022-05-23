@@ -675,8 +675,6 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(validationMessages.messages[0].arguments).isEqualTo(listOf("SDS and EDS sentences"))
   }
 
-
-
   @Test
   fun `Run calculation on adjustment linked to inactive sentence CRS-892`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()
