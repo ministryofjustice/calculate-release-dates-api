@@ -174,38 +174,54 @@ fun transform(
   bookingAndSentenceAdjustments.sentenceAdjustments.forEach {
     val adjustmentType = transform(it.type)
     if (adjustmentType != null) {
-
-      val sentence: SentenceAndOffences = findSentenceForAdjustment(it, sentencesAndOffences)
-      adjustments.addAdjustment(
-        adjustmentType,
-        Adjustment(
-          appliesToSentencesFrom = sentence.sentenceDate,
-          fromDate = it.fromDate,
-          toDate = it.toDate,
-          numberOfDays = it.numberOfDays
+      val sentence: SentenceAndOffences? = findSentenceForAdjustment(it, sentencesAndOffences)
+      // If sentence is not present it could be that the adjustment is linked to an inactive sentence, which needs filtering out.
+      if (sentence != null) {
+        adjustments.addAdjustment(
+          adjustmentType,
+          Adjustment(
+            appliesToSentencesFrom = sentence.sentenceDate,
+            fromDate = it.fromDate,
+            toDate = it.toDate,
+            numberOfDays = it.numberOfDays
+          )
         )
-      )
+      }
     }
   }
   return adjustments
 }
 
-private fun findSentenceForAdjustment(adjustment: SentenceAdjustments, sentencesAndOffences: List<SentenceAndOffences>): SentenceAndOffences {
-  val sentence = sentencesAndOffences.find { adjustment.sentenceSequence == it.sentenceSequence }!!
-  val recallType = SentenceCalculationType.from(sentence.sentenceCalculationType)!!.recallType
-  if (listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.TAGGED_BAIL).contains(adjustment.type) && recallType != null) {
-    val firstDeterminate = sentencesAndOffences.sortedBy { it.sentenceDate }.find { SentenceCalculationType.from(it.sentenceCalculationType)!!.recallType == null }
-    if (firstDeterminate != null) {
-      return firstDeterminate
+private fun findSentenceForAdjustment(adjustment: SentenceAdjustments, sentencesAndOffences: List<SentenceAndOffences>): SentenceAndOffences? {
+  val sentence = sentencesAndOffences.find { adjustment.sentenceSequence == it.sentenceSequence }
+  if (sentence == null) {
+    return null
+  } else {
+    val recallType = SentenceCalculationType.from(sentence.sentenceCalculationType)!!.recallType
+    if (listOf(
+        SentenceAdjustmentType.REMAND,
+        SentenceAdjustmentType.TAGGED_BAIL
+      ).contains(adjustment.type) && recallType != null
+    ) {
+      val firstDeterminate = sentencesAndOffences.sortedBy { it.sentenceDate }
+        .find { SentenceCalculationType.from(it.sentenceCalculationType)!!.recallType == null }
+      if (firstDeterminate != null) {
+        return firstDeterminate
+      }
     }
-  }
-  if (listOf(SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL).contains(adjustment.type) && recallType == null) {
-    val firstRecall = sentencesAndOffences.sortedBy { it.sentenceDate }.find { SentenceCalculationType.from(it.sentenceCalculationType)!!.recallType != null }
-    if (firstRecall != null) {
-      return firstRecall
+    if (listOf(
+        SentenceAdjustmentType.RECALL_SENTENCE_REMAND,
+        SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL
+      ).contains(adjustment.type) && recallType == null
+    ) {
+      val firstRecall = sentencesAndOffences.sortedBy { it.sentenceDate }
+        .find { SentenceCalculationType.from(it.sentenceCalculationType)!!.recallType != null }
+      if (firstRecall != null) {
+        return firstRecall
+      }
     }
+    return sentence
   }
-  return sentence
 }
 
 fun transform(sentenceAdjustmentType: SentenceAdjustmentType): AdjustmentType? {

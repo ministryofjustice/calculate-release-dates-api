@@ -675,6 +675,23 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(validationMessages.messages[0].arguments).isEqualTo(listOf("SDS and EDS sentences"))
   }
 
+  @Test
+  fun `Run calculation on adjustment linked to inactive sentence CRS-892`() {
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/CRS-892")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[CRD]).isEqualTo(
+      LocalDate.of(2025, 4, 19)
+    )
+  }
+
   companion object {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"
