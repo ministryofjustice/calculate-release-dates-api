@@ -1,0 +1,81 @@
+[
+  {
+    "bookingId":1202259,
+    "sentenceSequence":1,
+    "lineSequence":1,
+    "caseSequence":1,
+    "courtDescription":"Barnstaple Crown Court",
+    "sentenceStatus":"I",
+    "sentenceCategory":"2020",
+    "sentenceCalculationType":"EDS21",
+    "sentenceTypeDescription":"EDS Sec 279 Sentencing Code (21+)",
+    "sentenceDate":"2022-05-20",
+    "terms":[
+      {
+        "years":6,
+        "months":0,
+        "weeks":0,
+        "days":0,
+        "code":"IMP"
+      },
+      {
+        "years":4,
+        "months":0,
+        "weeks":0,
+        "days":0,
+        "code":"LIC"
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":3933029,
+        "offenceStartDate":"2022-01-01",
+        "offenceCode":"TR68132",
+        "offenceDescription":"13 hours or more working",
+        "indicators":[
+
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId":1202259,
+    "sentenceSequence":2,
+    "lineSequence":2,
+    "caseSequence":2,
+    "courtDescription":"Aylesbury Magistrates Court",
+    "sentenceStatus":"A",
+    "sentenceCategory":"2020",
+    "sentenceCalculationType":"EDS21",
+    "sentenceTypeDescription":"EDS Sec 279 Sentencing Code (21+)",
+    "sentenceDate":"2022-05-20",
+    "terms":[
+      {
+        "years":3,
+        "months":0,
+        "weeks":0,
+        "days":0,
+        "code":"IMP"
+      },
+      {
+        "years":1,
+        "months":0,
+        "weeks":0,
+        "days":0,
+        "code":"LIC"
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":3933030,
+        "offenceStartDate":"2022-01-01",
+        "offenceCode":"TH68010A",
+        "offenceDescription":"Attempt theft from shop",
+        "indicators":[
+          "D",
+          "50"
+        ]
+      }
+    ]
+  }
+]
