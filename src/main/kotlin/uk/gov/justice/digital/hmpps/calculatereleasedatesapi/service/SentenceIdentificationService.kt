@@ -18,10 +18,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_PLUS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IdentifiableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateConsecutiveSentence
@@ -35,7 +35,7 @@ import java.time.temporal.ChronoUnit
 @Service
 class SentenceIdentificationService {
 
-  fun identify(sentence: IdentifiableSentence, offender: Offender) {
+  fun identify(sentence: CalculableSentence, offender: Offender) {
     if (sentence is ExtendedDeterminate) {
       identifyExtendedDeterminate(sentence)
     } else if (sentence is StandardDeterminate) {
@@ -47,7 +47,7 @@ class SentenceIdentificationService {
     }
   }
 
-  private fun identifyExtendedDeterminate(sentence: IdentifiableSentence) {
+  private fun identifyExtendedDeterminate(sentence: CalculableSentence) {
     if (sentence is ExtendedDeterminateConsecutiveSentence) {
       sentence.releaseDateTypes = listOf(
         SLED,
@@ -76,7 +76,7 @@ class SentenceIdentificationService {
     }
   }
 
-  fun identifyStandardDeterminate(sentence: IdentifiableSentence, offender: Offender) {
+  fun identifyStandardDeterminate(sentence: CalculableSentence, offender: Offender) {
     sentence.releaseDateTypes = listOf()
     if (sentence is StandardDeterminateConsecutiveSentence) {
       if (sentence.isMadeUpOfOnlySdsPlusSentences()) {
@@ -140,7 +140,7 @@ class SentenceIdentificationService {
     }
   }
 
-  fun identifyConcurrentSentence(sentence: IdentifiableSentence, offender: Offender) {
+  fun identifyConcurrentSentence(sentence: CalculableSentence, offender: Offender) {
     if (
       sentence.sentencedAt.isBefore(LASPO_DATE) &&
       sentence.offence.committedAt.isBefore(CJA_DATE)
@@ -151,7 +151,7 @@ class SentenceIdentificationService {
     }
   }
 
-  private fun afterCJAAndLASPOorSDSPlus(sentence: IdentifiableSentence, offender: Offender) {
+  private fun afterCJAAndLASPOorSDSPlus(sentence: CalculableSentence, offender: Offender) {
 
     sentence.identificationTrack = SDS_AFTER_CJA_LASPO
 
@@ -186,7 +186,7 @@ class SentenceIdentificationService {
     }
   }
 
-  private fun beforeCJAAndLASPO(sentence: IdentifiableSentence) {
+  private fun beforeCJAAndLASPO(sentence: CalculableSentence) {
 
     sentence.identificationTrack = SDS_BEFORE_CJA_LASPO
 
@@ -218,7 +218,7 @@ class SentenceIdentificationService {
     }
   }
 
-  private fun doesTopUpSentenceExpiryDateApply(sentence: IdentifiableSentence, offender: Offender): Boolean {
+  private fun doesTopUpSentenceExpiryDateApply(sentence: CalculableSentence, offender: Offender): Boolean {
     val oraCondition = when (sentence) {
       is StandardDeterminateSentence -> {
         sentence.isOraSentence()

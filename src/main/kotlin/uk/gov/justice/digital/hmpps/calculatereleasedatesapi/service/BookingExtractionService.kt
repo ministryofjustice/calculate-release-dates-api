@@ -18,9 +18,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -119,7 +119,7 @@ class BookingExtractionService(
       latestUnadjustedExpiryDate
     )
 
-    val latestLicenseExpirySentence: ExtractableSentence? = extractionService.mostRecentSentenceOrNull(
+    val latestLicenseExpirySentence: CalculableSentence? = extractionService.mostRecentSentenceOrNull(
       sentences, SentenceCalculation::licenceExpiryDate
     )
     val latestLicenseExpiryDate: LocalDate? = latestLicenseExpirySentence?.sentenceCalculation?.licenceExpiryDate
@@ -225,7 +225,7 @@ class BookingExtractionService(
   }
 
   private fun extractManyHomeDetentionCurfewEligibilityDate(
-    sentences: List<ExtractableSentence>,
+    sentences: List<CalculableSentence>,
     latestAdjustedReleaseDate: LocalDate
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
     if (sentences.any { !it.isRecall() }) {
@@ -252,7 +252,7 @@ class BookingExtractionService(
     Period.between(start, end.plusDays(1))
 
   private fun extractManyNonParoleDate(
-    sentences: List<ExtractableSentence>,
+    sentences: List<CalculableSentence>,
     latestReleaseDate: LocalDate
   ): LocalDate? {
 
@@ -269,7 +269,7 @@ class BookingExtractionService(
   }
 
   private fun extractManyTopUpSuperVisionDate(
-    sentences: List<ExtractableSentence>,
+    sentences: List<CalculableSentence>,
     latestLicenseExpiryDate: LocalDate
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
     val latestTUSEDSentence = sentences
@@ -285,7 +285,7 @@ class BookingExtractionService(
     latestReleaseTypes: List<ReleaseDateType>,
     latestExpiryTypes: List<ReleaseDateType>,
     latestReleaseDate: LocalDate,
-    sentences: List<ExtractableSentence>,
+    sentences: List<CalculableSentence>,
     effectiveSentenceLength: Period
   ): ConcurrentOraAndNonOraDetails {
     val latestReleaseIsConditional = latestReleaseTypes.contains(CRD)

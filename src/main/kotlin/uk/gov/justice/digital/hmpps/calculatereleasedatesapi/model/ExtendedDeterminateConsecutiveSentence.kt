@@ -2,6 +2,9 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import java.time.LocalDate
 
+/**
+ * This class is used to model consecutive Extended Determinate Sentences.
+ */
 class ExtendedDeterminateConsecutiveSentence(
   orderedStandardSentences: List<ExtendedDeterminateSentence>
 ) : AbstractConsecutiveSentence<ExtendedDeterminateSentence>(

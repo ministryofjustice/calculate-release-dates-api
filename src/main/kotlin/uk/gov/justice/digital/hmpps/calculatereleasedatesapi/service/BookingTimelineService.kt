@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtractableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
@@ -88,11 +88,11 @@ class BookingTimelineService(
   /*
     When we have the first non-recall sentence parallel to recall sentences, we need to start a new sentence group so that adjustments are not shared.
    */
-  private fun isThisSentenceTheFirstOfSentencesParallelToRecall(timelineTracker: TimelineTracker, it: ExtractableSentence): Boolean {
+  private fun isThisSentenceTheFirstOfSentencesParallelToRecall(timelineTracker: TimelineTracker, it: CalculableSentence): Boolean {
     return timelineTracker.previousSentence.isRecall() && !it.isRecall()
   }
 
-  private fun startNewSentenceGroup(timelineTracker: TimelineTracker, it: ExtractableSentence, itRange: LocalDateRange) {
+  private fun startNewSentenceGroup(timelineTracker: TimelineTracker, it: CalculableSentence, itRange: LocalDateRange) {
     timelineTracker.currentSentenceGroup = mutableListOf()
     timelineTracker.currentSentenceGroup.add(it)
     timelineTracker.previousReleaseDateReached = it.sentencedAt.minusDays(1)
@@ -111,7 +111,7 @@ class BookingTimelineService(
 
   private fun capDatesByExpiry(
     expiry: LocalDate,
-    sentenceGroups: List<List<ExtractableSentence>>
+    sentenceGroups: List<List<CalculableSentence>>
   ) {
     val adjustments = sentenceGroups[0][0].sentenceCalculation.adjustments
     sentenceGroups.forEach { group ->
@@ -145,7 +145,7 @@ class BookingTimelineService(
     }
   }
 
-  private fun readjustDates(it: ExtractableSentence) {
+  private fun readjustDates(it: CalculableSentence) {
     sentenceCalculationService.calculateDatesFromAdjustments(it)
     log.info(it.buildString())
   }

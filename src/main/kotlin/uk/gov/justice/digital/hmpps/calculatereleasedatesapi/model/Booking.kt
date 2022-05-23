@@ -20,11 +20,11 @@ data class Booking(
 
   @JsonIgnore
   @Transient
-  lateinit var sentenceGroups: List<List<ExtractableSentence>>
+  lateinit var sentenceGroups: List<List<CalculableSentence>>
 
   @JsonIgnore
-  fun getAllExtractableSentences(): List<ExtractableSentence> {
-    val extractableSentences: MutableList<ExtractableSentence> = consecutiveSentences.toMutableList()
+  fun getAllExtractableSentences(): List<CalculableSentence> {
+    val extractableSentences: MutableList<CalculableSentence> = consecutiveSentences.toMutableList()
     if (singleTermSentence != null) {
       extractableSentences.add(singleTermSentence!!)
     }
