@@ -24,7 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserQuestions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
@@ -75,15 +75,15 @@ class CalculationController(
     @PathVariable("prisonerId")
     prisonerId: String,
     @RequestBody
-    calculationUserInput: CalculationUserInput?
+    calculationUserInputs: CalculationUserInputs?
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
-    val booking = bookingService.getBooking(sourceData, calculationUserInput)
+    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     try {
-      return calculationTransactionalService.calculate(booking, PRELIMINARY, sourceData, calculationUserInput)
+      return calculationTransactionalService.calculate(booking, PRELIMINARY, sourceData, calculationUserInputs)
     } catch (error: Exception) {
-      calculationTransactionalService.recordError(booking, sourceData, calculationUserInput, error)
+      calculationTransactionalService.recordError(booking, sourceData, calculationUserInputs, error)
       throw error
     }
   }
@@ -258,14 +258,14 @@ class CalculationController(
     @PathVariable("prisonerId")
     prisonerId: String,
     @RequestBody
-    calculationUserInput: CalculationUserInput?
+    calculationUserInputs: CalculationUserInputs?
   ): ResponseEntity<ValidationMessages?> {
     log.info("Request received to validate $prisonerId")
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
     var validationMessages = validationService.validate(sourceData)
     if (validationMessages.type == ValidationType.VALID) {
       try {
-        val booking = bookingService.getBooking(sourceData, calculationUserInput)
+        val booking = bookingService.getBooking(sourceData, calculationUserInputs)
         calculationService.calculateReleaseDates(booking)
       } catch (validationException: CrdCalculationValidationException) {
         validationMessages = ValidationMessages(
@@ -387,7 +387,7 @@ class CalculationController(
     @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
     @PathVariable("calculationRequestId")
     calculationRequestId: Long
-  ): CalculationUserInput? {
+  ): CalculationUserInputs? {
     log.info("Request received to get user input from $calculationRequestId calculation")
     return calculationTransactionalService.findUserInput(calculationRequestId)
   }

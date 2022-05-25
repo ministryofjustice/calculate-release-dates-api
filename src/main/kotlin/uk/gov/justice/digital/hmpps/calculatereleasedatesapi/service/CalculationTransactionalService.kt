@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -46,10 +46,10 @@ class CalculationTransactionalService(
       ?: throw IllegalStateException("User is not authenticated")
 
   @Transactional
-  fun calculate(booking: Booking, calculationStatus: CalculationStatus, sourceData: PrisonApiSourceData, calculationUserInput: CalculationUserInput?, calculationFragments: CalculationFragments? = null): CalculatedReleaseDates {
+  fun calculate(booking: Booking, calculationStatus: CalculationStatus, sourceData: PrisonApiSourceData, calculationUserInputs: CalculationUserInputs?, calculationFragments: CalculationFragments? = null): CalculatedReleaseDates {
     val calculationRequest =
       calculationRequestRepository.save(
-        transform(booking, getCurrentAuthentication().principal, calculationStatus, sourceData, objectMapper, calculationUserInput, calculationFragments)
+        transform(booking, getCurrentAuthentication().principal, calculationStatus, sourceData, objectMapper, calculationUserInputs, calculationFragments)
       )
 
     val (workingBooking, calculationResult) = calculationService.calculateReleaseDates(booking)
@@ -99,7 +99,7 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun findUserInput(calculationRequestId: Long): CalculationUserInput? {
+  fun findUserInput(calculationRequestId: Long): CalculationUserInputs? {
     val calculationRequest = getCalculationRequest(calculationRequestId)
     return transform(calculationRequest.calculationRequestUserInputs)
   }
@@ -203,9 +203,9 @@ class CalculationTransactionalService(
   }
 
   @Transactional
-  fun recordError(booking: Booking, sourceData: PrisonApiSourceData, calculationUserInput: CalculationUserInput?, error: Exception) {
+  fun recordError(booking: Booking, sourceData: PrisonApiSourceData, calculationUserInputs: CalculationUserInputs?, error: Exception) {
     calculationRequestRepository.save(
-      transform(booking, getCurrentAuthentication().principal, ERROR, sourceData, objectMapper, calculationUserInput)
+      transform(booking, getCurrentAuthentication().principal, ERROR, sourceData, objectMapper, calculationUserInputs)
     )
   }
 

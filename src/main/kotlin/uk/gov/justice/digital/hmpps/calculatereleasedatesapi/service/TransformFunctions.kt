@@ -40,7 +40,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentencePart
@@ -50,7 +51,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
@@ -77,13 +77,13 @@ import java.util.UUID
 ** Sometimes a pass-thru but very useful when objects need to be altered or enriched
 */
 
-fun transform(sentence: SentenceAndOffences, calculationUserInput: CalculationUserInput?): MutableList<out AbstractSentence> {
+fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationUserInputs?): MutableList<out AbstractSentence> {
   // There shouldn't be multiple offences associated to a single sentence; however there are at the moment (NOMIS doesnt
   // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
   // treated as a separate sentence
   return sentence.offences.map { offendersOffence ->
-    val isScheduleFifteenMaximumLife = if (calculationUserInput != null) {
-      val matchingSentenceInput = calculationUserInput.sentenceCalculationUserInputs.find {
+    val isScheduleFifteenMaximumLife = if (calculationUserInputs != null) {
+      val matchingSentenceInput = calculationUserInputs.sentenceCalculationUserInputs.find {
         it.sentenceSequence == sentence.sentenceSequence && it.offenceCode == offendersOffence.offenceCode
       }
       matchingSentenceInput?.isScheduleFifteenMaximumLife ?: offendersOffence.isScheduleFifteenMaximumLife
@@ -262,7 +262,7 @@ fun transform(
   calculationStatus: CalculationStatus,
   sourceData: PrisonApiSourceData,
   objectMapper: ObjectMapper,
-  calculationUserInput: CalculationUserInput?,
+  calculationUserInputs: CalculationUserInputs?,
   calculationFragments: CalculationFragments? = null
 ): CalculationRequest {
   return CalculationRequest(
@@ -275,16 +275,16 @@ fun transform(
     prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
     adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments, objectMapper),
     returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
-    calculationRequestUserInputs = transform(calculationUserInput, sourceData),
+    calculationRequestUserInputs = transform(calculationUserInputs, sourceData),
     breakdownHtml = calculationFragments?.breakdownHtml
   )
 }
 
-fun transform(calculationUserInput: CalculationUserInput?, sourceData: PrisonApiSourceData): List<CalculationRequestUserInput> {
-  if (calculationUserInput == null) {
+fun transform(calculationUserInputs: CalculationUserInputs?, sourceData: PrisonApiSourceData): List<CalculationRequestUserInput> {
+  if (calculationUserInputs == null) {
     return emptyList()
   }
-  return calculationUserInput.sentenceCalculationUserInputs.map {
+  return calculationUserInputs.sentenceCalculationUserInputs.map {
     CalculationRequestUserInput(
       sentenceSequence = it.sentenceSequence,
       offenceCode = it.offenceCode,
@@ -295,13 +295,13 @@ fun transform(calculationUserInput: CalculationUserInput?, sourceData: PrisonApi
   }
 }
 
-fun transform(calculationRequestUserInputs: List<CalculationRequestUserInput>): CalculationUserInput? {
+fun transform(calculationRequestUserInputs: List<CalculationRequestUserInput>): CalculationUserInputs? {
   if (calculationRequestUserInputs.isEmpty()) {
     return null
   }
-  return CalculationUserInput(
+  return CalculationUserInputs(
     calculationRequestUserInputs.map {
-      SentenceCalculationUserInput(
+      CalculationSentenceUserInput(
         sentenceSequence = it.sentenceSequence,
         offenceCode = it.offenceCode,
         isScheduleFifteenMaximumLife = it.userChoice // we'll need to look at the type column when we have psc changes (dependent on UI design)

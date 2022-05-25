@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserQuestions
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
@@ -27,9 +27,9 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
   @Test
   @Transactional(readOnly = true)
   fun `Use a user input that differs from NOMIS and check its persisted through prelim, confirmed and view`() {
-    val userInput = CalculationUserInput(
+    val userInput = CalculationUserInputs(
       listOf(
-        SentenceCalculationUserInput(
+        CalculationSentenceUserInput(
           sentenceSequence = 1,
           offenceCode = "SX03014",
           isScheduleFifteenMaximumLife = false // Different to NOMIS.
@@ -72,7 +72,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculationUserInput::class.java)
+      .expectBody(CalculationUserInputs::class.java)
       .returnResult().responseBody!!
 
     assertThat(userInputResponse).isEqualTo(userInput)
@@ -86,9 +86,9 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
   @Test
   @Transactional(readOnly = true)
   fun `Use a user input that is the same as NOMIS`() {
-    val userInput = CalculationUserInput(
+    val userInput = CalculationUserInputs(
       listOf(
-        SentenceCalculationUserInput(
+        CalculationSentenceUserInput(
           sentenceSequence = 1,
           offenceCode = "SX03014",
           isScheduleFifteenMaximumLife = true // same as NOMIS.
