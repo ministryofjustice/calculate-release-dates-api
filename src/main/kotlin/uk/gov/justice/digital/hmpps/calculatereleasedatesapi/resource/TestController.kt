@@ -58,7 +58,7 @@ class TestController(
       ),
       null
     )
-    return calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData)
+    return calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, null)
   }
 
   companion object {

@@ -28,8 +28,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_PLUS_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
-import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 @Service
@@ -256,6 +256,5 @@ class SentenceIdentificationService {
     private const val FOUR = 4L
     private const val SEVEN = 7L
     private const val TWELVE = 12L
-    private val SDS_PLUS_COMMENCEMENT_DATE = LocalDate.of(2020, 4, 1)
   }
 }
