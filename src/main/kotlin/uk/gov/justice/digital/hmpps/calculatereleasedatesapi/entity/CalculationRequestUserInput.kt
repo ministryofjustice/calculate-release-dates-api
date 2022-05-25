@@ -21,7 +21,7 @@ data class CalculationRequestUserInput(
   @NotNull
   @ManyToOne(optional = false)
   @JoinColumn(name = "calculationRequestId", nullable = false, updatable = false)
-  var calculationRequest: CalculationRequest? = null,
+  var calculationRequest: CalculationRequest = CalculationRequest(),
   @NotNull
   val sentenceSequence: Int,
   @NotNull
