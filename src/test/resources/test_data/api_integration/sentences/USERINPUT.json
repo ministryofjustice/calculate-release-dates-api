@@ -1,0 +1,38 @@
+[
+  {
+    "bookingId": 1,
+    "sentenceSequence": 1,
+    "lineSequence": 1,
+    "caseSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "Sentencing Code Standard Determinate Sentence",
+    "sentenceDate": "2022-01-10",
+    "terms": [{
+      "years": 12,
+      "months": 0,
+      "weeks": 0,
+      "days": 0
+    }],
+    "offences": [
+      {
+        "offenderChargeId": 3932624,
+        "offenceStartDate": "2021-06-20",
+        "offenceCode": "SX03014",
+        "offenceDescription": "Rape of a boy under 13 - SOA 2003",
+        "indicators": [
+          "S",
+          "M",
+          "23",
+          "ERS",
+          "PIMMS1",
+          "S1",
+          "SOR",
+          "SCH15/CJIB/L",
+          "V"
+        ]
+      }
+    ]
+  }
+]

@@ -11,6 +11,7 @@ import org.hibernate.annotations.TypeDef
 import org.hibernate.annotations.TypeDefs
 import java.time.LocalDateTime
 import java.util.UUID
+import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -84,7 +85,14 @@ data class CalculationRequest(
   @OneToMany
   @Fetch(FetchMode.JOIN)
   val calculationOutcomes: List<CalculationOutcome> = ArrayList(),
+
+  @OneToMany(mappedBy = "calculationRequest", cascade = [CascadeType.ALL])
+  val calculationRequestUserInputs: List<CalculationRequestUserInput> = ArrayList()
 ) {
+
+  init {
+    calculationRequestUserInputs.forEach { it.calculationRequest = this }
+  }
 
   @Override
   override fun equals(other: Any?): Boolean {

@@ -245,7 +245,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run validation where remand periods overlap with a sentence periods`() {
-    val validationMessages: ValidationMessages = webTestClient.get()
+    val validationMessages: ValidationMessages = webTestClient.post()
       .uri("/calculation/$REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID/validate")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -278,7 +278,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run validation on invalid data`() {
-    val validationMessages: ValidationMessages = webTestClient.get()
+    val validationMessages: ValidationMessages = webTestClient.post()
       .uri("/calculation/$VALIDATION_PRISONER_ID/validate")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -303,7 +303,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run validation on unsupported data`() {
-    val validationMessages: ValidationMessages = webTestClient.get()
+    val validationMessages: ValidationMessages = webTestClient.post()
       .uri("/calculation/$UNSUPPORTED_PRISONER_ID/validate")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -320,7 +320,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run validation on valid data`() {
-    webTestClient.get()
+    webTestClient.post()
       .uri("/calculation/$PRISONER_ID/validate")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -523,7 +523,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run validation on extinguished crd booking`() {
-    val validationMessages: ValidationMessages = webTestClient.get()
+    val validationMessages: ValidationMessages = webTestClient.post()
       .uri("/calculation/EXTINGUISH/validate")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -580,7 +580,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run validation on argument after release date 1`() {
-    val validationMessages: ValidationMessages = webTestClient.get()
+    val validationMessages: ValidationMessages = webTestClient.post()
       .uri("/calculation/CRS-796-1/validate")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -598,7 +598,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run validation on argument after release date 2`() {
-    val validationMessages: ValidationMessages = webTestClient.get()
+    val validationMessages: ValidationMessages = webTestClient.post()
       .uri("/calculation/CRS-796-2/validate")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -659,7 +659,7 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run validation on a mixture of SDS and EDS sentences`() {
-    val validationMessages: ValidationMessages = webTestClient.get()
+    val validationMessages: ValidationMessages = webTestClient.post()
       .uri("/calculation/EDS-SDS/validate")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))

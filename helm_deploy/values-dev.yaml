@@ -12,6 +12,7 @@ generic-service:
     HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
     PRISON_API_URL: https://api-dev.prison.service.justice.gov.uk
     EDS_FEATURE_TOGGLE: true
+    PCSC_START_DATE: 2022-05-01
 
   # Switches off the allow list in the DEV env only.
   allowlist: null

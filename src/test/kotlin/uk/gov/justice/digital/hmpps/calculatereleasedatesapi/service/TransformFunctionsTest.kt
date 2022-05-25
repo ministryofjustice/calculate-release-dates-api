@@ -76,7 +76,7 @@ class TransformFunctionsTest {
       caseSequence = caseSequence
     )
 
-    assertThat(transform(request)).isEqualTo(
+    assertThat(transform(request, null)).isEqualTo(
       listOf(
         StandardDeterminateSentence(
           sentencedAt = FIRST_JAN_2015,
@@ -133,7 +133,7 @@ class TransformFunctionsTest {
       caseSequence = caseSequence
     )
 
-    assertThat(transform(request)).isEqualTo(
+    assertThat(transform(request, null)).isEqualTo(
       listOf(
         StandardDeterminateSentence(
           sentencedAt = FIRST_JAN_2015,
