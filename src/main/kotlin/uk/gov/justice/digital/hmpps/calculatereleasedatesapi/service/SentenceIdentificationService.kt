@@ -171,6 +171,7 @@ class SentenceIdentificationService {
         And the offender was aged 18 or over at the time the sentence
       */
       if (
+        sentence is StandardDeterminateSentence &&
         sentence.durationIsGreaterThanOrEqualTo(SEVEN, ChronoUnit.YEARS) &&
         sentence.sentencedAt.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE) &&
         sentence.offence.isScheduleFifteenMaximumLife &&
