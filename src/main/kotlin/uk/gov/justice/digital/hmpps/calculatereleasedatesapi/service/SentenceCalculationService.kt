@@ -482,7 +482,6 @@ class SentenceCalculationService {
 
   private fun determineReleaseDateMultiplier(sentence: CalculableSentence): Double {
     return if (
-      (sentence is CalculableSentence) &&
       sentence.identificationTrack == SentenceIdentificationTrack.SDS_PLUS
     ) {
       2 / 3.toDouble()
