@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
-import java.time.temporal.ChronoUnit
 
 class StandardDeterminateConsecutiveSentence(orderedStandardSentences: List<StandardDeterminateSentence>) :
   AbstractConsecutiveSentence<StandardDeterminateSentence>(
@@ -18,11 +17,9 @@ class StandardDeterminateConsecutiveSentence(orderedStandardSentences: List<Stan
   }
 
   override fun getLengthInDays(): Int {
-    var date = sentencedAt
-    orderedSentences.forEach {
-      date = date.plusDays(it.duration.getLengthInDays(date).toLong())
-    }
-    return (ChronoUnit.DAYS.between(sentencedAt, date)).toInt()
+    val duration = this.orderedSentences.map { it.duration }
+      .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
+    return duration.getLengthInDays(sentencedAt)
   }
 
   private fun hasAfterCjaLaspo(): Boolean {
