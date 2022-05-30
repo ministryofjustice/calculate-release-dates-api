@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
@@ -134,24 +133,23 @@ class SentenceCalculationService {
 
     val numberOfDaysToDeterminateReleaseDateDouble = numberOfDaysToSentenceExpiryDate.toDouble().times(releaseDateMultiplier)
     val numberOfDaysToDeterminateReleaseDate = if (sentence is StandardDeterminateConsecutiveSentence && sentence.isMadeUpOfSdsPlusAndSdsSentences()) {
-      var firstSentenceIsSDSPlus = sentence.orderedSentences[0].isSdsPlusSentence()
-      val daysInFirstSentenceType =
-        ceil(
-          sentence.orderedSentences.filter { if (firstSentenceIsSDSPlus) it.isSdsPlusSentence() else !it.isSdsPlusSentence() }
-            .map { it.sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble }
-            .reduce { acc, it -> acc + it }
-        )
-      val endOfFirstSentenceType =
-        Duration(mapOf(DAYS to daysInFirstSentenceType.toLong())).getEndDate(sentence.sentencedAt)
-      val daysInSecondSentenceType =
-        ceil(
-          sentence.orderedSentences.filter { if (firstSentenceIsSDSPlus) !it.isSdsPlusSentence() else it.isSdsPlusSentence() }
-            .map {
-              it.duration.getLengthInDays(endOfFirstSentenceType.plusDays(1)).toDouble().times(determineReleaseDateMultiplier(it))
-            }
-            .reduce { acc, it -> acc + it }
-        )
-      (daysInFirstSentenceType + daysInSecondSentenceType).toInt()
+      val firstSentenceIsSDSPlus = sentence.orderedSentences[0].isSdsPlusSentence()
+      val firstSentences = sentence.orderedSentences.filter { if (firstSentenceIsSDSPlus) it.isSdsPlusSentence() else !it.isSdsPlusSentence() }
+      val secondSentences = sentence.orderedSentences.filter { if (firstSentenceIsSDSPlus) !it.isSdsPlusSentence() else it.isSdsPlusSentence() }
+      val durationsInFirstSentenceType =
+        firstSentences.map { it.duration }
+          .reduce { acc, it -> it.appendAll(acc.durationElements) }
+      val durationsInSecondSentenceType =
+        secondSentences.map { it.duration }
+          .reduce { acc, it -> it.appendAll(acc.durationElements) }
+      val daysInFirstSentenceType = durationsInFirstSentenceType.getLengthInDays(sentence.sentencedAt)
+      val daysToReleaseInFirstSentenceType = ceil(determineReleaseDateMultiplier(firstSentences[0]).times(daysInFirstSentenceType))
+      val notionalCrd = sentence.sentencedAt
+        .plusDays(daysToReleaseInFirstSentenceType.toLong())
+        .minusDays(ONE)
+      val daysInSecondSentenceType = durationsInSecondSentenceType.getLengthInDays(notionalCrd.plusDays(ONE))
+      val daysToReleaseInSecondSentenceType = ceil(determineReleaseDateMultiplier(secondSentences[0]).times(daysInSecondSentenceType))
+      (daysToReleaseInFirstSentenceType + daysToReleaseInSecondSentenceType).toInt()
     } else {
       ceil(numberOfDaysToDeterminateReleaseDateDouble).toInt()
     }
