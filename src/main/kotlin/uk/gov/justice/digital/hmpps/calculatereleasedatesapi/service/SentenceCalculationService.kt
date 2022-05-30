@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
@@ -139,7 +138,7 @@ class SentenceCalculationService {
       val secondSentences = sentence.orderedSentences.filter { if (firstSentenceIsSDSPlus) !it.isSdsPlusSentence() else it.isSdsPlusSentence() }
       val durationsInFirstSentenceType =
         firstSentences.map { it.duration }
-            .reduce { acc, it -> it.appendAll(acc.durationElements) }
+          .reduce { acc, it -> it.appendAll(acc.durationElements) }
       val durationsInSecondSentenceType =
         secondSentences.map { it.duration }
           .reduce { acc, it -> it.appendAll(acc.durationElements) }
@@ -147,7 +146,7 @@ class SentenceCalculationService {
       val daysToReleaseInFirstSentenceType = ceil(determineReleaseDateMultiplier(firstSentences[0]).times(daysInFirstSentenceType))
       val notionalCrd = sentence.sentencedAt
         .plusDays(daysToReleaseInFirstSentenceType.toLong())
-      .minusDays(ONE)
+        .minusDays(ONE)
       val daysInSecondSentenceType = durationsInSecondSentenceType.getLengthInDays(notionalCrd.plusDays(ONE))
       val daysToReleaseInSecondSentenceType = ceil(determineReleaseDateMultiplier(secondSentences[0]).times(daysInSecondSentenceType))
       (daysToReleaseInFirstSentenceType + daysToReleaseInSecondSentenceType).toInt()
