@@ -9,9 +9,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.ADIMP
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.ADIMP_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.SEC250
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.SEC250_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.SEC91_03
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.SEC91_03_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.YOI
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.YOI_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.Period
@@ -21,7 +25,10 @@ import java.util.EnumSet
 class CalculationUserQuestionService(
   val featureToggles: FeatureToggles
 ) {
-  val sentenceCalcTypes = EnumSet.of(ADIMP, YOI, SEC250, SEC91_03)
+  val sentenceCalcTypes: EnumSet<SentenceCalculationType> = EnumSet.of(
+    ADIMP, YOI, SEC250, SEC91_03,
+    ADIMP_ORA, YOI_ORA, SEC250_ORA, SEC91_03_ORA,
+  )
 
   fun getQuestionsForSentences(prisonerDetails: PrisonerDetails, sentencesAndOffences: List<SentenceAndOffences>): CalculationUserQuestions {
 
