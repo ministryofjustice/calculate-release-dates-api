@@ -73,7 +73,6 @@ class CalculationUserQuestionServiceTest {
     offences = offences,
   )
 
-
   private val edsSentence = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 2,
@@ -89,7 +88,6 @@ class CalculationUserQuestionServiceTest {
     sentenceTypeDescription = "EDS21",
     offences = offences,
   )
-
 
   private val beforeSdsWindow = SentenceAndOffences(
     bookingId = 1L,
