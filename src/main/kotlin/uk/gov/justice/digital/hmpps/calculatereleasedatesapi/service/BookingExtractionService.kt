@@ -215,7 +215,7 @@ class BookingExtractionService(
     }
 
     if (latestExtendedDeterminateParoleEligibilityDate != null) {
-      val mostRecentReleaseSentenceHasParoleDate = mostRecentSentencesByReleaseDate.any {it is ExtendedDeterminate && it.sentenceCalculation.extendedDeterminateParoleEligibilityDate != null}
+      val mostRecentReleaseSentenceHasParoleDate = mostRecentSentencesByReleaseDate.any { it is ExtendedDeterminate && it.sentenceCalculation.extendedDeterminateParoleEligibilityDate != null }
       if (mostRecentReleaseSentenceHasParoleDate) {
         val latestAutomaticRelease = extractionService.mostRecentOrNull(
           sentences.filter { (it is ExtendedDeterminateSentence && it.automaticRelease) || (it is ExtendedDeterminateConsecutiveSentence && !it.hasDiscretionaryRelease()) },
