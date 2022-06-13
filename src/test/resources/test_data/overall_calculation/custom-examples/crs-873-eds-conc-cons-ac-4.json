@@ -1,0 +1,84 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2014-12-03"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 8
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "automaticRelease": true,
+      "sentencedAt": "2015-02-01"
+    },
+    {
+      "offence": {
+        "committedAt": "2019-07-06"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 7
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2020-04-20",
+      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
+    },
+    {
+      "offence": {
+        "committedAt": "2019-07-06"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 6
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2020-04-20",
+      "consecutiveSentenceUUIDs": [
+        "e40f48b6-92df-49d0-af99-507194c380fa"
+      ]
+    }
+  ],
+  "adjustments": {
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "numberOfDays": 25,
+        "appliesToSentencesFrom": "2015-02-01",
+        "fromDate": "2022-01-01",
+        "toDate": "2022-01-25"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "numberOfDays": 20,
+        "appliesToSentencesFrom": "2021-03-01",
+        "fromDate": "2021-03-01",
+        "toDate": "2021-03-20"
+      }
+    ]
+  }
+}
