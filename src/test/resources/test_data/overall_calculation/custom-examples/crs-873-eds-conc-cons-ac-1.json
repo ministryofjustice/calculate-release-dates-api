@@ -1,0 +1,66 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2014-08-07"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 14
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 5
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2015-01-13"
+    },
+    {
+      "offence": {
+        "committedAt": "2020-11-20"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2020-12-02",
+      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
+    },
+    {
+      "offence": {
+        "committedAt": "2020-11-20"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 1
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2020-12-02",
+      "consecutiveSentenceUUIDs": [
+        "e40f48b6-92df-49d0-af99-507194c380fa"
+      ]
+    }
+  ]
+}
