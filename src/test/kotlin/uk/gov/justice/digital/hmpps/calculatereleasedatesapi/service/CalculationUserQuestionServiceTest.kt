@@ -73,7 +73,6 @@ class CalculationUserQuestionServiceTest {
     offences = offences,
   )
 
-
   private val sdsPlus6Year13Month = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 2,
@@ -111,7 +110,7 @@ class CalculationUserQuestionServiceTest {
     sentenceSequence = 2,
     lineSequence = 2,
     caseSequence = 1,
-    sentenceDate = LocalDate.of(2022,6, 10),
+    sentenceDate = LocalDate.of(2022, 6, 10),
     terms = listOf(
       SentenceTerms(weeks = 366)
     ),
