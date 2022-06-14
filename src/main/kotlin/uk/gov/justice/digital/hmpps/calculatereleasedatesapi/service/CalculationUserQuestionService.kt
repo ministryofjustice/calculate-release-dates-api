@@ -39,8 +39,10 @@ class CalculationUserQuestionService(
         } else {
           val duration = Period.of(it.terms[0].years, it.terms[0].months, it.terms[0].weeks * 7 + it.terms[0].days)
           val ageDuration = Period.between(prisonerDetails.dateOfBirth, it.sentenceDate)
+          val endOfDuration = it.sentenceDate.plus(duration)
+          val endOfSevenYears = it.sentenceDate.plusYears(7)
 
-          val sevenYearsOrMore = duration.years >= 7
+          val sevenYearsOrMore = endOfDuration.isAfterOrEqualTo(endOfSevenYears)
           val overEighteen = ageDuration.years >= 18
           val withinSdsPlusWindow =
             it.sentenceDate.isAfterOrEqualTo(ImportantDates.SDS_PLUS_COMMENCEMENT_DATE) && it.sentenceDate.isBeforeOrEqualTo(
