@@ -174,10 +174,9 @@ class SentenceIdentificationService {
         sentence is StandardDeterminateSentence &&
         sentence.durationIsGreaterThanOrEqualTo(SEVEN, ChronoUnit.YEARS) &&
         sentence.sentencedAt.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE) &&
-        sentence.offence.isScheduleFifteenMaximumLife &&
-        offender.getAgeOnDate(sentence.sentencedAt) >= 18
+        sentence.offence.isScheduleFifteenMaximumLife
       ) {
-        sentence.identificationTrack = SentenceIdentificationTrack.SDS_PLUS
+        sentence.identificationTrack = SDS_PLUS
       }
 
       sentence.releaseDateTypes = listOf(
