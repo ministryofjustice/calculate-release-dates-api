@@ -218,7 +218,7 @@ class BookingExtractionService(
       val mostRecentReleaseSentenceHasParoleDate = mostRecentSentencesByReleaseDate.any { it is ExtendedDeterminate && it.sentenceCalculation.extendedDeterminateParoleEligibilityDate != null }
       if (mostRecentReleaseSentenceHasParoleDate) {
         val latestAutomaticRelease = extractionService.mostRecentOrNull(
-          sentences.filter { (it is ExtendedDeterminateSentence && it.automaticRelease) || (it is ExtendedDeterminateConsecutiveSentence && !it.hasDiscretionaryRelease()) },
+          sentences.filter { it.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null },
           SentenceCalculation::releaseDate
         )
         dates[PED] = if (latestAutomaticRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(
@@ -332,7 +332,7 @@ class BookingExtractionService(
       }
     }
     return ConcurrentOraAndNonOraDetails(
-      latestReleaseIsConditional,
+      latestReleaseIsConditional || !latestSentenceExpiryIsSED,
       canHaveLicenseExpiry = true
     )
   }

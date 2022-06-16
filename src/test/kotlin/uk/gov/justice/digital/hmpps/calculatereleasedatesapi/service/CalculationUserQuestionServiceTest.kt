@@ -45,6 +45,7 @@ class CalculationUserQuestionServiceTest {
     bookingId = 1L,
     sentenceSequence = 2,
     lineSequence = 2,
+
     caseSequence = 1,
     sentenceDate = FIRST_MAY_2020,
     terms = listOf(
