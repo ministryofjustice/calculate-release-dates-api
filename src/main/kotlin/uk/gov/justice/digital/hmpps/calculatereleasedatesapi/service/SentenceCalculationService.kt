@@ -286,7 +286,7 @@ class SentenceCalculationService {
       releaseDate = sentenceCalculation.adjustedDeterminateReleaseDate,
       unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
       rules = if (immediateRelease) setOf(IMMEDIATE_RELEASE) else emptySet(),
-      adjustedDays = if (immediateRelease) daysBetween.plus(1) else daysBetween,
+      adjustedDays = daysBetween,
       rulesWithExtraAdjustments = if (sentenceCalculation.calculatedUnusedReleaseAda != 0) mapOf(
         CalculationRule.UNUSED_ADA to AdjustmentDuration(
           sentenceCalculation.calculatedUnusedReleaseAda,
