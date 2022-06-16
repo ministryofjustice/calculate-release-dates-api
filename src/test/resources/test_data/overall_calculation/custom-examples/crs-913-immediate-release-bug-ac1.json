@@ -13,7 +13,9 @@
           "MONTHS":6
         }
       },
-      "sentencedAt":"2020-06-04"
+      "sentencedAt":"2020-06-04",
+      "caseSequence": 1,
+      "lineSequence": 1
     }
   ],
   "adjustments": {
