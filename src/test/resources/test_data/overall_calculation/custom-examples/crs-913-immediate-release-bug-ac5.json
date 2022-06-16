@@ -1,0 +1,29 @@
+{
+  "offender":{
+    "reference": "ABC123D",
+    "dateOfBirth": "2002-07-07"
+  },
+  "sentences":[
+    {
+      "offence":{
+        "committedAt":"2018-09-02"
+      },
+      "duration":{
+        "durationElements":{
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt":"2020-06-04"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "numberOfDays": 92,
+        "appliesToSentencesFrom": "2020-06-04",
+        "toDate": "2020-06-03",
+        "fromDate": "2020-03-04"
+      }
+    ]
+  }
+}
