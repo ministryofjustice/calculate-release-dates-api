@@ -12,7 +12,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
@@ -174,10 +173,9 @@ class SentenceIdentificationService {
         sentence is StandardDeterminateSentence &&
         sentence.durationIsGreaterThanOrEqualTo(SEVEN, ChronoUnit.YEARS) &&
         sentence.sentencedAt.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE) &&
-        sentence.offence.isScheduleFifteenMaximumLife &&
-        offender.getAgeOnDate(sentence.sentencedAt) >= 18
+        sentence.offence.isScheduleFifteenMaximumLife
       ) {
-        sentence.identificationTrack = SentenceIdentificationTrack.SDS_PLUS
+        sentence.identificationTrack = SDS_PLUS
       }
 
       sentence.releaseDateTypes = listOf(
