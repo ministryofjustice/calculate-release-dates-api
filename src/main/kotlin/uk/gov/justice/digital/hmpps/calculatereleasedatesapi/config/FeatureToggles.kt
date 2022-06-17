@@ -7,10 +7,6 @@ import java.time.LocalDate
 data class FeatureToggles(
   var eds: Boolean = false,
   /* This will allow us to change the comencement date of PCSC in order to test the functionality. */
-  //TODO there must be a better way to inject a date from property.
-  var pcscStartDateString: String = "2022-06-28"
+  var pcscStartDate: LocalDate = LocalDate.parse("2022-06-28")
 ) {
-  val pcscStartDate: LocalDate get() {
-    return LocalDate.parse(pcscStartDateString)
-  }
 }
