@@ -202,6 +202,7 @@ class CalculationUserQuestionServiceTest {
   )
   @Test
   fun `The sentences which may fall under SDS+, but under 18 are not returned`() {
+
     val result = calculationUserQuestionService.getQuestionsForSentences(under18PrisonerDetails, listOf(sdsPlusSentence, beforeSdsWindow, afterSdsWindow, under7YearSentence, ftrSentence))
     assertThat(result.sentenceQuestions).isEmpty()
   }
