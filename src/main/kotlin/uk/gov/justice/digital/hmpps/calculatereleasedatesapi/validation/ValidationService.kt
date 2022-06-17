@@ -155,7 +155,7 @@ class ValidationService(
     val afterPcscCommencement = LocalDate.now().isAfterOrEqualTo(featureToggles.pcscStartDate)
     val hasPtdAlert = prisonerDetails.activeAlerts().any() {
       it.alertCode == "PTD" &&
-      it.alertType == "O"
+        it.alertType == "O"
     }
 
     if (afterPcscCommencement && hasPtdAlert) {

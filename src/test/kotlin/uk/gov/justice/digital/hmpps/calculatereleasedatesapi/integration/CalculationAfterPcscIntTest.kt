@@ -32,5 +32,4 @@ class CalculationAfterPcscIntTest : IntegrationTestBase() {
   companion object {
     const val UNSUPPORTED_PRISONER_PRISONER_ID = "UNSUPP_PRIS"
   }
-
 }
