@@ -302,9 +302,9 @@ class CalculationIntTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `Run validation on unsupported data`() {
+  fun `Run validation on unsupported sentence data`() {
     val validationMessages: ValidationMessages = webTestClient.post()
-      .uri("/calculation/$UNSUPPORTED_PRISONER_ID/validate")
+      .uri("/calculation/$UNSUPPORTED_SENTENCE_PRISONER_ID/validate")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
@@ -359,7 +359,7 @@ class CalculationIntTest : IntegrationTestBase() {
   @Test
   fun `Run calculation on unsupported data`() {
     val errorResponse: ErrorResponse = webTestClient.post()
-      .uri("/calculation/$UNSUPPORTED_PRISONER_ID")
+      .uri("/calculation/$UNSUPPORTED_SENTENCE_PRISONER_ID")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
@@ -703,7 +703,8 @@ class CalculationIntTest : IntegrationTestBase() {
     const val REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID = "REM-SEN"
     const val SDS_PLUS_CONSECUTIVE_TO_SDS = "SDS-CON"
     const val VALIDATION_PRISONER_ID = "VALIDATION"
-    const val UNSUPPORTED_PRISONER_ID = "UNSUPPORTED"
+    const val UNSUPPORTED_SENTENCE_PRISONER_ID = "UNSUPP_SENT"
+    const val UNSUPPORTED_PRISONER_PRISONER_ID = "UNSUPP_PRIS"
     const val PARALLEL_PRISONER_ID = "PARALLEL"
     const val INACTIVE_PRISONER_ID = "INACTIVE"
   }

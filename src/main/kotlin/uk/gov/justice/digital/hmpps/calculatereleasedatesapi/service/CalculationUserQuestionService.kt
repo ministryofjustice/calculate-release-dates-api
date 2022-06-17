@@ -17,7 +17,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.YOI
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.YOI_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.Period
 import java.util.EnumSet
 
@@ -45,7 +44,7 @@ class CalculationUserQuestionService(
           val sevenYearsOrMore = endOfDuration.isAfterOrEqualTo(endOfSevenYears)
           val overEighteen = ageDuration.years >= 18
           val withinSdsPlusWindow =
-            it.sentenceDate.isAfterOrEqualTo(ImportantDates.SDS_PLUS_COMMENCEMENT_DATE) && it.sentenceDate.isBeforeOrEqualTo(
+            it.sentenceDate.isAfterOrEqualTo(ImportantDates.SDS_PLUS_COMMENCEMENT_DATE) && it.sentenceDate.isBefore(
               featureToggles.pcscStartDate
             )
 

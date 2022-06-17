@@ -64,4 +64,4 @@ domain-events-sns:
 
 feature-toggles:
   eds: true
-  pcscStartDateString: 2022-06-27
+  pcscStartDate: 2022-06-28
