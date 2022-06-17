@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.LocalDate
 
 data class PrisonerDetails(
@@ -9,4 +11,12 @@ data class PrisonerDetails(
   val lastName: String = "",
   val dateOfBirth: LocalDate,
   val alerts: List<Alert> = emptyList(),
-)
+) {
+
+  fun activeAlerts(): List<Alert>{
+    return alerts.filter {
+        it.dateCreated.isBeforeOrEqualTo(LocalDate.now()) &&
+        (it.dateExpires == null || it.dateExpires.isAfter(LocalDate.now()))
+    }
+  }
+}

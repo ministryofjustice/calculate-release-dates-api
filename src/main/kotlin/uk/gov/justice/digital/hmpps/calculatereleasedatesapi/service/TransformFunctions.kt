@@ -155,11 +155,9 @@ fun transform(prisonerDetails: PrisonerDetails): Offender {
   return Offender(
     dateOfBirth = prisonerDetails.dateOfBirth,
     reference = prisonerDetails.offenderNo,
-    isActiveSexOffender = prisonerDetails.alerts.any { pd ->
-      pd.alertType == "S" &&
-        pd.alertCode == "SOR" && // Sex offence register
-        pd.dateCreated.isBeforeOrEqualTo(LocalDate.now()) &&
-        (pd.dateExpires == null || pd.dateExpires.isAfter(LocalDate.now()))
+    isActiveSexOffender = prisonerDetails.activeAlerts().any {
+      it.alertType == "S" &&
+        it.alertCode == "SOR" // Sex offence register
     }
   )
 }

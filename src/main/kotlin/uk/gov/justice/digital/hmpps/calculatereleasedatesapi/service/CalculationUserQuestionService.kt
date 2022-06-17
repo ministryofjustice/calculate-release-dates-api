@@ -45,7 +45,7 @@ class CalculationUserQuestionService(
           val sevenYearsOrMore = endOfDuration.isAfterOrEqualTo(endOfSevenYears)
           val overEighteen = ageDuration.years >= 18
           val withinSdsPlusWindow =
-            it.sentenceDate.isAfterOrEqualTo(ImportantDates.SDS_PLUS_COMMENCEMENT_DATE) && it.sentenceDate.isBeforeOrEqualTo(
+            it.sentenceDate.isAfterOrEqualTo(ImportantDates.SDS_PLUS_COMMENCEMENT_DATE) && it.sentenceDate.isBefore(
               featureToggles.pcscStartDate
             )
 
