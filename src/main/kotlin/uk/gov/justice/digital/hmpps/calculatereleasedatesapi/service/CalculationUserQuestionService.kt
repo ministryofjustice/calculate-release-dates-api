@@ -140,7 +140,7 @@ class CalculationUserQuestionService(
     val endOfSentence = endOfSentence(sentence)
     val endOfFourYears = sentence.sentenceDate.plusYears(4)
     val endOfSevenYears = sentence.sentenceDate.plusYears(7)
-    return endOfSentence.isAfterOrEqualTo(endOfFourYears) && endOfSevenYears.isBefore(endOfSevenYears)
+    return endOfSentence.isAfterOrEqualTo(endOfFourYears) && endOfSentence.isBefore(endOfSevenYears)
   }
 
   private fun endOfSentence(sentence: SentenceAndOffences): LocalDate {

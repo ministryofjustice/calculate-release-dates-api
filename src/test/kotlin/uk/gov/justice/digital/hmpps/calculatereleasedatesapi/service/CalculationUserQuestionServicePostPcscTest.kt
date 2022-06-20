@@ -188,9 +188,14 @@ class CalculationUserQuestionServicePostPcscTest {
 
   @Test
   fun `The sentences which may fall under PCSC, but for an under 18 year old`() {
-    val result = calculationUserQuestionService.getQuestionsForSentences(under18PrisonerDetails, listOf(under7YearSentencePrePcsc,
-      beforeSdsWindow, under4YearSentencePostPcsc, originalSentence, fourToUnderSevenSentence, updatedSentence, section250Sentence,
-      edsSentence, beforeSdsWindow, ftrSentence))
+    val result = calculationUserQuestionService.getQuestionsForSentences(
+      under18PrisonerDetails,
+      listOf(
+        under7YearSentencePrePcsc,
+        beforeSdsWindow, under4YearSentencePostPcsc, originalSentence, fourToUnderSevenSentence, updatedSentence, section250Sentence,
+        edsSentence, beforeSdsWindow, ftrSentence
+      )
+    )
     assertThat(result.sentenceQuestions.size).isEqualTo(1)
     assertThat(result.sentenceQuestions[0].sentenceSequence).isEqualTo(section250Sentence.sentenceSequence)
     assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.SECTION_250)
@@ -198,8 +203,13 @@ class CalculationUserQuestionServicePostPcscTest {
 
   @Test
   fun `The service identifies original sds+ sentences`() {
-    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(originalSentence, edsSentence, beforeSdsWindow, ftrSentence, under7YearSentencePrePcsc,
-      beforeSdsWindow))
+    val result = calculationUserQuestionService.getQuestionsForSentences(
+      over18PrisonerDetails,
+      listOf(
+        originalSentence, edsSentence, beforeSdsWindow, ftrSentence, under7YearSentencePrePcsc,
+        beforeSdsWindow
+      )
+    )
     assertThat(result.sentenceQuestions.size).isEqualTo(1)
     assertThat(result.sentenceQuestions[0].sentenceSequence).isEqualTo(originalSentence.sentenceSequence)
     assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.ORIGINAL)
