@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
@@ -17,7 +18,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import java.time.LocalDate
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-class CalculationUserInputIntTest : IntegrationTestBase() {
+@ActiveProfiles("beforepcsc")
+class CalculationUserInputBeforeIntTest : IntegrationTestBase() {
   @Autowired
   lateinit var calculationRequestRepository: CalculationRequestRepository
 

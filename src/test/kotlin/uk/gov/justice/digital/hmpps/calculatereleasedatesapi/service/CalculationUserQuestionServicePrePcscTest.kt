@@ -11,8 +11,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.time.LocalDate
 
-class CalculationUserQuestionServiceTest {
-  private val featureToggles = FeatureToggles()
+class CalculationUserQuestionServicePrePcscTest {
+  private val pcscDate = LocalDate.now().plusDays(1)
+  private val featureToggles = FeatureToggles(pcscStartDate = pcscDate)
   private val calculationUserQuestionService = CalculationUserQuestionService(featureToggles)
 
   val offences = listOf(
@@ -153,12 +154,12 @@ class CalculationUserQuestionServiceTest {
     offences = offences,
   )
 
-  private val afterSdsWindow = SentenceAndOffences(
+  private val afterPcscCommencement = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 4,
     lineSequence = 4,
     caseSequence = 1,
-    sentenceDate = FIRST_MAY_2023,
+    sentenceDate = pcscDate.plusDays(1),
     terms = listOf(
       SentenceTerms(years = 8)
     ),
@@ -202,14 +203,15 @@ class CalculationUserQuestionServiceTest {
   )
   @Test
   fun `The sentences which may fall under SDS+, but under 18 are not returned`() {
-    val result = calculationUserQuestionService.getQuestionsForSentences(under18PrisonerDetails, listOf(sdsPlusSentence, beforeSdsWindow, afterSdsWindow, under7YearSentence, ftrSentence))
+
+    val result = calculationUserQuestionService.getQuestionsForSentences(under18PrisonerDetails, listOf(sdsPlusSentence, beforeSdsWindow, afterPcscCommencement, under7YearSentence, ftrSentence))
     assertThat(result.sentenceQuestions).isEmpty()
   }
 
   @Test
   fun `The sentences which may fall under SDS+ are returned`() {
 
-    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(sdsPlusSentence, beforeSdsWindow, afterSdsWindow, under7YearSentence, ftrSentence))
+    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(sdsPlusSentence, beforeSdsWindow, afterPcscCommencement, under7YearSentence, ftrSentence))
     assertThat(result.sentenceQuestions.size).isEqualTo(1)
     assertThat(result.sentenceQuestions[0].sentenceSequence).isEqualTo(sdsPlusSentence.sentenceSequence)
     assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.SCHEDULE_15_ATTRACTING_LIFE)
@@ -217,7 +219,7 @@ class CalculationUserQuestionServiceTest {
 
   @Test
   fun `The ORA sentences which temporarily fall under SDS+ are returned`() {
-    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(sdsPlusOraSentence, beforeSdsWindow, afterSdsWindow, under7YearSentence, ftrSentence))
+    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(sdsPlusOraSentence, beforeSdsWindow, afterPcscCommencement, under7YearSentence, ftrSentence))
     assertThat(result.sentenceQuestions.size).isEqualTo(1)
     assertThat(result.sentenceQuestions[0].sentenceSequence).isEqualTo(sdsPlusSentence.sentenceSequence)
     assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.SCHEDULE_15_ATTRACTING_LIFE)
@@ -249,7 +251,7 @@ class CalculationUserQuestionServiceTest {
 
   @Test
   fun `Other sentences which don't fall under SDS+ are not returned`() {
-    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(edsSentence, beforeSdsWindow, afterSdsWindow, under7YearSentence, ftrSentence))
+    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(edsSentence, beforeSdsWindow, afterPcscCommencement, under7YearSentence, ftrSentence))
     assertThat(result.sentenceQuestions).isEmpty()
   }
 
