@@ -37,7 +37,6 @@ class SentenceIdentificationService(
   private val featureToggles: FeatureToggles
 ) {
 
-
   fun identify(sentence: CalculableSentence, offender: Offender) {
     if (sentence is ExtendedDeterminate) {
       identifyExtendedDeterminate(sentence)
@@ -169,9 +168,8 @@ class SentenceIdentificationService(
 
       val durationGreaterThanSevenYears = sentence.durationIsGreaterThanOrEqualTo(SEVEN, ChronoUnit.YEARS)
       val durationGreaterThanFourLessThanSevenYears = sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS) &&
-          sentence.durationIsLessThan(SEVEN, ChronoUnit.YEARS)
+        sentence.durationIsLessThan(SEVEN, ChronoUnit.YEARS)
       val overEighteen = offender.getAgeOnDate(sentence.sentencedAt) > INT_EIGHTEEN
-
 
       if (sentence is StandardDeterminateSentence && sentence.sentencedAt.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE)) {
         if (sentence.sentencedAt.isAfterOrEqualTo(featureToggles.pcscStartDate)) {
