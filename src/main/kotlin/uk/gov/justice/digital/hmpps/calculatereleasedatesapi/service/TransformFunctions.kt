@@ -303,6 +303,7 @@ fun transform(calculationUserInputs: CalculationUserInputs?, sourceData: PrisonA
 
 fun offenceMatchesChoice(offence: OffenderOffence, userInputType: UserInputType, userChoice: Boolean): Boolean {
   return when (userInputType) {
+    UserInputType.SCHEDULE_15_ATTRACTING_LIFE -> offence.isScheduleFifteenMaximumLife == userChoice
     UserInputType.ORIGINAL -> offence.isScheduleFifteenMaximumLife == userChoice
     UserInputType.FOUR_TO_UNDER_SEVEN -> offence.isPcscSds == userChoice
     UserInputType.SECTION_250 -> offence.isPcscSec250 == userChoice
