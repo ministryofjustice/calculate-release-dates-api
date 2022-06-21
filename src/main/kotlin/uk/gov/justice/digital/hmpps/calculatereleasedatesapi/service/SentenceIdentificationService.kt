@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
@@ -16,7 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_PLUS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateConsecutiveSentence
@@ -32,7 +33,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqual
 import java.time.temporal.ChronoUnit
 
 @Service
-class SentenceIdentificationService {
+class SentenceIdentificationService(
+  private val featureToggles: FeatureToggles
+) {
 
   fun identify(sentence: CalculableSentence, offender: Offender) {
     if (sentence is ExtendedDeterminate) {
@@ -78,8 +81,8 @@ class SentenceIdentificationService {
   fun identifyStandardDeterminate(sentence: CalculableSentence, offender: Offender) {
     sentence.releaseDateTypes = listOf()
     if (sentence is StandardDeterminateConsecutiveSentence) {
-      if (sentence.isMadeUpOfOnlySdsPlusSentences()) {
-        sentence.identificationTrack = SDS_PLUS
+      if (sentence.isMadeUpOfOnlySdsTwoThirdsReleaseSentences()) {
+        sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
         sentence.releaseDateTypes = listOf(
           SLED,
           CRD
@@ -163,19 +166,29 @@ class SentenceIdentificationService {
       )
     } else {
 
-      /*
-        Given a single SDS sentence of 7 years or more in length
-        And the sentence was passed on or after 1st April 2020
-        And the sentence was for a schedule 15 offence
-        And the offender was aged 18 or over at the time the sentence
-      */
-      if (
-        sentence is StandardDeterminateSentence &&
-        sentence.durationIsGreaterThanOrEqualTo(SEVEN, ChronoUnit.YEARS) &&
-        sentence.sentencedAt.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE) &&
-        sentence.offence.isScheduleFifteenMaximumLife
-      ) {
-        sentence.identificationTrack = SDS_PLUS
+      val durationGreaterThanSevenYears = sentence.durationIsGreaterThanOrEqualTo(SEVEN, ChronoUnit.YEARS)
+      val durationGreaterThanFourLessThanSevenYears = sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS) &&
+        sentence.durationIsLessThan(SEVEN, ChronoUnit.YEARS)
+      val overEighteen = offender.getAgeOnDate(sentence.sentencedAt) > INT_EIGHTEEN
+
+      if (sentence is StandardDeterminateSentence && sentence.sentencedAt.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE)) {
+        if (sentence.sentencedAt.isAfterOrEqualTo(featureToggles.pcscStartDate)) {
+          if (sentence.section250) {
+            if (durationGreaterThanSevenYears && sentence.offence.isPcscSec250) {
+              sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
+            }
+          } else if (overEighteen) {
+            if (durationGreaterThanFourLessThanSevenYears && sentence.offence.isPcscSds) {
+              sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
+            } else if (durationGreaterThanSevenYears && sentence.offence.isPcscSdsPlus) {
+              sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
+            }
+          }
+        } else {
+          if (overEighteen && durationGreaterThanSevenYears && sentence.offence.isScheduleFifteenMaximumLife) {
+            sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
+          }
+        }
       }
 
       sentence.releaseDateTypes = listOf(
