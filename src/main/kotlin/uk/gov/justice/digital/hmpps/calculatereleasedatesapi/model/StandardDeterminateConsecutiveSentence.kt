@@ -50,19 +50,19 @@ class StandardDeterminateConsecutiveSentence(orderedStandardSentences: List<Stan
     return hasAfterCjaLaspo() && !hasBeforeCjaLaspo()
   }
 
-  private fun hasSdsPlusSentences(): Boolean {
-    return orderedSentences.any(StandardDeterminateSentence::isSdsPlusSentence)
+  private fun hasSdsTwoThirdsReleaseSentence(): Boolean {
+    return orderedSentences.any(StandardDeterminateSentence::isTwoThirdsReleaseSentence)
   }
 
-  private fun hasSdsSentences(): Boolean {
-    return orderedSentences.any { !it.isSdsPlusSentence() }
+  private fun hasSdsHalfwayReleaseSentence(): Boolean {
+    return orderedSentences.any { !it.isTwoThirdsReleaseSentence() }
   }
 
-  fun isMadeUpOfSdsPlusAndSdsSentences(): Boolean {
-    return hasSdsSentences() && hasSdsPlusSentences()
+  fun isMadeUpOfSdsHalfwayReleaseAndTwoThirdsReleaseSentence(): Boolean {
+    return hasSdsHalfwayReleaseSentence() && hasSdsTwoThirdsReleaseSentence()
   }
 
-  fun isMadeUpOfOnlySdsPlusSentences(): Boolean {
-    return !hasSdsSentences() && hasSdsPlusSentences()
+  fun isMadeUpOfOnlySdsTwoThirdsReleaseSentences(): Boolean {
+    return !hasSdsHalfwayReleaseSentence() && hasSdsTwoThirdsReleaseSentence()
   }
 }
