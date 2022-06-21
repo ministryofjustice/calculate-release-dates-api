@@ -88,7 +88,7 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
       }
       Offence(
         committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
-        isScheduleFifteenMaximumLife = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.ORIGINAL,
+        isScheduleFifteenMaximumLife = matchingSentenceInput?.userChoice == true && (matchingSentenceInput.userInputType == UserInputType.ORIGINAL || matchingSentenceInput.userInputType == UserInputType.SCHEDULE_15_ATTRACTING_LIFE),
         isPcscSds = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.FOUR_TO_UNDER_SEVEN,
         isPcscSec250 = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.SECTION_250,
         isPcscSdsPlus = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.UPDATED,

@@ -34,7 +34,7 @@ class CalculationUserInputBeforeIntTest : IntegrationTestBase() {
         CalculationSentenceUserInput(
           sentenceSequence = 1,
           offenceCode = "SX03014",
-          userInputType = UserInputType.ORIGINAL,
+          userInputType = UserInputType.SCHEDULE_15_ATTRACTING_LIFE,
           userChoice = false // difference to NOMIS.
         )
       )
@@ -94,7 +94,7 @@ class CalculationUserInputBeforeIntTest : IntegrationTestBase() {
         CalculationSentenceUserInput(
           sentenceSequence = 1,
           offenceCode = "SX03014",
-          userInputType = UserInputType.ORIGINAL,
+          userInputType = UserInputType.SCHEDULE_15_ATTRACTING_LIFE,
           userChoice = true // same as NOMIS.
         )
       )

@@ -176,7 +176,7 @@ class BookingServiceTest {
   fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input`() {
     whenever(validationService.validate(sourceData)).thenReturn(ValidationMessages(ValidationType.VALID))
 
-    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.ORIGINAL, false))))
+    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.ORIGINAL, true))))
 
     assertThat(result).isEqualTo(
       Booking(
@@ -190,7 +190,160 @@ class BookingServiceTest {
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
             duration = FIVE_YEAR_DURATION,
-            offence = Offence(committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = false),
+            offence = Offence(committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = true),
+            identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
+            consecutiveSentenceUUIDs = mutableListOf(
+              UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
+            ),
+            lineSequence = lineSequence,
+            caseSequence = caseSequence,
+            recallType = RecallType.FIXED_TERM_RECALL_28
+          )
+        ),
+        adjustments = Adjustments(
+          mutableMapOf(
+            UNLAWFULLY_AT_LARGE to mutableListOf(
+              Adjustment(
+                appliesToSentencesFrom = FIRST_JAN_2015.minusDays(6),
+                numberOfDays = 5, fromDate = FIRST_JAN_2015.minusDays(6),
+                toDate = FIRST_JAN_2015.minusDays(1)
+              )
+            ),
+            REMAND to mutableListOf(
+              Adjustment(
+                appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 6,
+                fromDate = FIRST_JAN_2015.minusDays(7),
+                toDate = FIRST_JAN_2015.minusDays(1)
+              )
+            )
+          )
+        )
+      )
+    )
+  }
+
+  @Test
+  @Suppress("LongMethod")
+  fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input of UPDATED`() {
+    whenever(validationService.validate(sourceData)).thenReturn(ValidationMessages(ValidationType.VALID))
+
+    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.UPDATED, true))))
+
+    assertThat(result).isEqualTo(
+      Booking(
+        bookingId = 123456,
+        returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
+        offender = Offender(
+          dateOfBirth = DOB,
+          reference = prisonerId,
+        ),
+        sentences = mutableListOf(
+          StandardDeterminateSentence(
+            sentencedAt = FIRST_JAN_2015,
+            duration = FIVE_YEAR_DURATION,
+            offence = Offence(committedAt = FIRST_JAN_2015, isPcscSdsPlus = true),
+            identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
+            consecutiveSentenceUUIDs = mutableListOf(
+              UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
+            ),
+            lineSequence = lineSequence,
+            caseSequence = caseSequence,
+            recallType = RecallType.FIXED_TERM_RECALL_28
+          )
+        ),
+        adjustments = Adjustments(
+          mutableMapOf(
+            UNLAWFULLY_AT_LARGE to mutableListOf(
+              Adjustment(
+                appliesToSentencesFrom = FIRST_JAN_2015.minusDays(6),
+                numberOfDays = 5, fromDate = FIRST_JAN_2015.minusDays(6),
+                toDate = FIRST_JAN_2015.minusDays(1)
+              )
+            ),
+            REMAND to mutableListOf(
+              Adjustment(
+                appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 6,
+                fromDate = FIRST_JAN_2015.minusDays(7),
+                toDate = FIRST_JAN_2015.minusDays(1)
+              )
+            )
+          )
+        )
+      )
+    )
+  }
+
+  @Test
+  @Suppress("LongMethod")
+  fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input of SECTION 250`() {
+    whenever(validationService.validate(sourceData)).thenReturn(ValidationMessages(ValidationType.VALID))
+
+    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.SECTION_250, true))))
+
+    assertThat(result).isEqualTo(
+      Booking(
+        bookingId = 123456,
+        returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
+        offender = Offender(
+          dateOfBirth = DOB,
+          reference = prisonerId,
+        ),
+        sentences = mutableListOf(
+          StandardDeterminateSentence(
+            sentencedAt = FIRST_JAN_2015,
+            duration = FIVE_YEAR_DURATION,
+            offence = Offence(committedAt = FIRST_JAN_2015, isPcscSec250 = true),
+            identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
+            consecutiveSentenceUUIDs = mutableListOf(
+              UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
+            ),
+            lineSequence = lineSequence,
+            caseSequence = caseSequence,
+            recallType = RecallType.FIXED_TERM_RECALL_28
+          )
+        ),
+        adjustments = Adjustments(
+          mutableMapOf(
+            UNLAWFULLY_AT_LARGE to mutableListOf(
+              Adjustment(
+                appliesToSentencesFrom = FIRST_JAN_2015.minusDays(6),
+                numberOfDays = 5, fromDate = FIRST_JAN_2015.minusDays(6),
+                toDate = FIRST_JAN_2015.minusDays(1)
+              )
+            ),
+            REMAND to mutableListOf(
+              Adjustment(
+                appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 6,
+                fromDate = FIRST_JAN_2015.minusDays(7),
+                toDate = FIRST_JAN_2015.minusDays(1)
+              )
+            )
+          )
+        )
+      )
+    )
+  }
+
+  @Test
+  @Suppress("LongMethod")
+  fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input of FOUR_TO_UNDER_SEVEN`() {
+    whenever(validationService.validate(sourceData)).thenReturn(ValidationMessages(ValidationType.VALID))
+
+    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.FOUR_TO_UNDER_SEVEN, true))))
+
+    assertThat(result).isEqualTo(
+      Booking(
+        bookingId = 123456,
+        returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
+        offender = Offender(
+          dateOfBirth = DOB,
+          reference = prisonerId,
+        ),
+        sentences = mutableListOf(
+          StandardDeterminateSentence(
+            sentencedAt = FIRST_JAN_2015,
+            duration = FIVE_YEAR_DURATION,
+            offence = Offence(committedAt = FIRST_JAN_2015, isPcscSds = true),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
             consecutiveSentenceUUIDs = mutableListOf(
               UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
