@@ -1,0 +1,21 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2020-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2010-06-28",
+        "isPcscSec250": false
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 12
+        }
+      },
+      "sentencedAt": "2022-06-28",
+      "section250": true
+    }
+  ]
+}

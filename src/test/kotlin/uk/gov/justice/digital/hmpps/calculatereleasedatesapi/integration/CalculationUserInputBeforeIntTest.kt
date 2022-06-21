@@ -34,7 +34,8 @@ class CalculationUserInputBeforeIntTest : IntegrationTestBase() {
         CalculationSentenceUserInput(
           sentenceSequence = 1,
           offenceCode = "SX03014",
-          isScheduleFifteenMaximumLife = false // Different to NOMIS.
+          userInputType = UserInputType.ORIGINAL,
+          userChoice = false // difference to NOMIS.
         )
       )
     )
@@ -93,7 +94,8 @@ class CalculationUserInputBeforeIntTest : IntegrationTestBase() {
         CalculationSentenceUserInput(
           sentenceSequence = 1,
           offenceCode = "SX03014",
-          isScheduleFifteenMaximumLife = true // same as NOMIS.
+          userInputType = UserInputType.ORIGINAL,
+          userChoice = true // same as NOMIS.
         )
       )
     )

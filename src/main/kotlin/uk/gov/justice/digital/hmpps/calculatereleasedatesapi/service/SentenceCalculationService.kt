@@ -133,10 +133,10 @@ class SentenceCalculationService {
     val numberOfDaysToSentenceExpiryDate = sentence.getLengthInDays()
 
     val numberOfDaysToDeterminateReleaseDateDouble = numberOfDaysToSentenceExpiryDate.toDouble().times(releaseDateMultiplier)
-    val numberOfDaysToDeterminateReleaseDate = if (sentence is StandardDeterminateConsecutiveSentence && sentence.isMadeUpOfSdsPlusAndSdsSentences()) {
-      val firstSentenceIsSDSPlus = sentence.orderedSentences[0].isSdsPlusSentence()
-      val firstSentences = sentence.orderedSentences.filter { if (firstSentenceIsSDSPlus) it.isSdsPlusSentence() else !it.isSdsPlusSentence() }
-      val secondSentences = sentence.orderedSentences.filter { if (firstSentenceIsSDSPlus) !it.isSdsPlusSentence() else it.isSdsPlusSentence() }
+    val numberOfDaysToDeterminateReleaseDate = if (sentence is StandardDeterminateConsecutiveSentence && sentence.isMadeUpOfSdsHalfwayReleaseAndTwoThirdsReleaseSentence()) {
+      val firstSentenceIsSDSPlus = sentence.orderedSentences[0].isTwoThirdsReleaseSentence()
+      val firstSentences = sentence.orderedSentences.filter { if (firstSentenceIsSDSPlus) it.isTwoThirdsReleaseSentence() else !it.isTwoThirdsReleaseSentence() }
+      val secondSentences = sentence.orderedSentences.filter { if (firstSentenceIsSDSPlus) !it.isTwoThirdsReleaseSentence() else it.isTwoThirdsReleaseSentence() }
       val durationsInFirstSentenceType =
         firstSentences.map { it.duration }
           .reduce { acc, it -> it.appendAll(acc.durationElements) }
@@ -500,7 +500,7 @@ class SentenceCalculationService {
 
   private fun determineReleaseDateMultiplier(sentence: CalculableSentence): Double {
     return if (
-      sentence.identificationTrack == SentenceIdentificationTrack.SDS_PLUS
+      sentence.identificationTrack == SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE
     ) {
       2 / 3.toDouble()
     } else {

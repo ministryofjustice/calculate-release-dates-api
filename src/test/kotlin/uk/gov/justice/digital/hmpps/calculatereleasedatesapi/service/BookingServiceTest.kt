@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -175,7 +176,7 @@ class BookingServiceTest {
   fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input`() {
     whenever(validationService.validate(sourceData)).thenReturn(ValidationMessages(ValidationType.VALID))
 
-    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, false))))
+    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.ORIGINAL, false))))
 
     assertThat(result).isEqualTo(
       Booking(
