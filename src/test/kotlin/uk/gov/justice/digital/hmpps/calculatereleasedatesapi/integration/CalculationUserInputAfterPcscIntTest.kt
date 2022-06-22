@@ -52,38 +52,40 @@ class CalculationUserInputAfterPcscIntTest : IntegrationTestBase() {
       .returnResult().responseBody
 
     // Halfway
-    assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2028, 1, 10))
+    if (prelimResponse != null) {
+      assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2028, 1, 10))
 
-    val confirmResponse = webTestClient.post()
-      .uri("/calculation/USERINPUT/confirm/${prelimResponse.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(objectMapper.writeValueAsString(CalculationFragments("<p>BREAKDOWN</p>")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculatedReleaseDates::class.java)
-      .returnResult().responseBody!!
+      val confirmResponse = webTestClient.post()
+        .uri("/calculation/USERINPUT/confirm/${prelimResponse.calculationRequestId}")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+        .bodyValue(objectMapper.writeValueAsString(CalculationFragments("<p>BREAKDOWN</p>")))
+        .exchange()
+        .expectStatus().isOk
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+        .expectBody(CalculatedReleaseDates::class.java)
+        .returnResult().responseBody!!
 
-    assertThat(confirmResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2028, 1, 10))
+      assertThat(confirmResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2028, 1, 10))
 
-    val userInputResponse = webTestClient.get()
-      .uri("/calculation/calculation-user-input/${confirmResponse.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculationUserInputs::class.java)
-      .returnResult().responseBody!!
+      val userInputResponse = webTestClient.get()
+        .uri("/calculation/calculation-user-input/${confirmResponse.calculationRequestId}")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+        .exchange()
+        .expectStatus().isOk
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+        .expectBody(CalculationUserInputs::class.java)
+        .returnResult().responseBody!!
 
-    assertThat(userInputResponse).isEqualTo(userInput)
+      assertThat(userInputResponse).isEqualTo(userInput)
 
-    val dbRequest = calculationRequestRepository.findById(confirmResponse.calculationRequestId).get()
-    assertThat(dbRequest.calculationRequestUserInputs).isNotEmpty
-    assertThat(dbRequest.calculationRequestUserInputs[0].nomisMatches).isFalse
-    assertThat(dbRequest.calculationRequestUserInputs[0].userChoice).isFalse
+      val dbRequest = calculationRequestRepository.findById(confirmResponse.calculationRequestId).get()
+      assertThat(dbRequest.calculationRequestUserInputs).isNotEmpty
+      assertThat(dbRequest.calculationRequestUserInputs[0].nomisMatches).isFalse
+      assertThat(dbRequest.calculationRequestUserInputs[0].userChoice).isFalse
+    }
   }
 
   @Test
@@ -112,12 +114,14 @@ class CalculationUserInputAfterPcscIntTest : IntegrationTestBase() {
       .returnResult().responseBody
 
     // Halfway
-    assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2030, 1, 9))
+    if (prelimResponse != null) {
+      assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2030, 1, 9))
 
-    val dbRequest = calculationRequestRepository.findById(prelimResponse.calculationRequestId).get()
-    assertThat(dbRequest.calculationRequestUserInputs).isNotEmpty
-    assertThat(dbRequest.calculationRequestUserInputs[0].nomisMatches).isTrue
-    assertThat(dbRequest.calculationRequestUserInputs[0].userChoice).isTrue
+      val dbRequest = calculationRequestRepository.findById(prelimResponse.calculationRequestId).get()
+      assertThat(dbRequest.calculationRequestUserInputs).isNotEmpty
+      assertThat(dbRequest.calculationRequestUserInputs[0].nomisMatches).isTrue
+      assertThat(dbRequest.calculationRequestUserInputs[0].userChoice).isTrue
+    }
   }
 
   @Test
@@ -133,7 +137,9 @@ class CalculationUserInputAfterPcscIntTest : IntegrationTestBase() {
       .returnResult().responseBody
 
     // Halfway
-    assertThat(response.sentenceQuestions.size).isEqualTo(1)
-    assertThat(response.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.ORIGINAL)
+    if (response != null) {
+      assertThat(response.sentenceQuestions.size).isEqualTo(1)
+      assertThat(response.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.ORIGINAL)
+    }
   }
 }

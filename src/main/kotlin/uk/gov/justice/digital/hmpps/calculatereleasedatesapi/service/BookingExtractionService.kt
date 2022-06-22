@@ -58,7 +58,7 @@ class BookingExtractionService(
       dates[SED] = sentenceCalculation.expiryDate!!
     }
 
-    dates[sentence.getReleaseDateType()] = sentenceCalculation.releaseDate!!
+    dates[sentence.getReleaseDateType()] = sentenceCalculation.releaseDate
 
     if (sentenceCalculation.licenceExpiryDate != null &&
       sentence.releaseDateTypes.contains(LED)
@@ -109,7 +109,7 @@ class BookingExtractionService(
     val mostRecentSentenceByExpiryDate =
       extractionService.mostRecentSentence(sentences, SentenceCalculation::expiryDate)
 
-    val latestReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate!!
+    val latestReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
     val latestExpiryDate = mostRecentSentenceByExpiryDate.sentenceCalculation.expiryDate!!
 
     val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(

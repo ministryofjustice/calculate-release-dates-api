@@ -185,27 +185,30 @@ class CalculationIntTest : IntegrationTestBase() {
   @Test
   fun `Get the calculation breakdown for a calculation`() {
     val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
-    val calc = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId, PRISONER_ID)
+    if (resultCalculation != null) {
 
-    val result = webTestClient.get()
-      .uri("/calculation/breakdown/${calc.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculationBreakdown::class.java)
-      .returnResult().responseBody!!
+      val calc = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId, PRISONER_ID)
 
-    assertThat(result).isNotNull
-    assertThat(result.consecutiveSentence).isNull()
-    assertThat(result.concurrentSentences).hasSize(1)
-    assertThat(result.concurrentSentences[0].dates[SLED]!!.unadjusted).isEqualTo(LocalDate.of(2016, 11, 16))
-    assertThat(result.concurrentSentences[0].dates[SLED]!!.adjusted).isEqualTo(LocalDate.of(2016, 11, 6))
-    assertThat(result.concurrentSentences[0].dates[SLED]!!.adjustedByDays).isEqualTo(10)
-    assertThat(result.breakdownByReleaseDateType.keys).isEqualTo(setOf(CRD, SLED, TUSED, HDCED))
-    assertThat(result.breakdownByReleaseDateType[TUSED]!!.rules).isEqualTo(setOf(TUSED_LICENCE_PERIOD_LT_1Y))
-    assertThat(result.breakdownByReleaseDateType[HDCED]!!.rules).isEqualTo(setOf(HDCED_GE_18M_LT_4Y))
+      val result = webTestClient.get()
+        .uri("/calculation/breakdown/${calc.calculationRequestId}")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+        .exchange()
+        .expectStatus().isOk
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+        .expectBody(CalculationBreakdown::class.java)
+        .returnResult().responseBody!!
+
+      assertThat(result).isNotNull
+      assertThat(result.consecutiveSentence).isNull()
+      assertThat(result.concurrentSentences).hasSize(1)
+      assertThat(result.concurrentSentences[0].dates[SLED]!!.unadjusted).isEqualTo(LocalDate.of(2016, 11, 16))
+      assertThat(result.concurrentSentences[0].dates[SLED]!!.adjusted).isEqualTo(LocalDate.of(2016, 11, 6))
+      assertThat(result.concurrentSentences[0].dates[SLED]!!.adjustedByDays).isEqualTo(10)
+      assertThat(result.breakdownByReleaseDateType.keys).isEqualTo(setOf(CRD, SLED, TUSED, HDCED))
+      assertThat(result.breakdownByReleaseDateType[TUSED]!!.rules).isEqualTo(setOf(TUSED_LICENCE_PERIOD_LT_1Y))
+      assertThat(result.breakdownByReleaseDateType[HDCED]!!.rules).isEqualTo(setOf(HDCED_GE_18M_LT_4Y))
+    }
   }
 
   @Test
@@ -407,67 +410,69 @@ class CalculationIntTest : IntegrationTestBase() {
   @Test
   fun `Get the source prison api data and html for a calculation`() {
     val resultCalculation = createPreliminaryCalculation("14FTR")
-    val calc = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId, "14FTR")
+    if (resultCalculation != null) {
+      val calc = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId, "14FTR")
 
-    val results = webTestClient.get()
-      .uri("/calculation/results/${calc.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculatedReleaseDates::class.java)
-      .returnResult().responseBody!!
+      val results = webTestClient.get()
+        .uri("/calculation/results/${calc.calculationRequestId}")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+        .exchange()
+        .expectStatus().isOk
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+        .expectBody(CalculatedReleaseDates::class.java)
+        .returnResult().responseBody!!
 
-    assertThat(results.calculationFragments?.breakdownHtml).isEqualTo("<p>BREAKDOWN</p>")
+      assertThat(results.calculationFragments?.breakdownHtml).isEqualTo("<p>BREAKDOWN</p>")
 
-    val sentenceAndOffences = webTestClient.get()
-      .uri("/calculation/sentence-and-offences/${calc.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(object : ParameterizedTypeReference<List<SentenceAndOffences>>() {})
-      .returnResult().responseBody!!
+      val sentenceAndOffences = webTestClient.get()
+        .uri("/calculation/sentence-and-offences/${calc.calculationRequestId}")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+        .exchange()
+        .expectStatus().isOk
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+        .expectBody(object : ParameterizedTypeReference<List<SentenceAndOffences>>() {})
+        .returnResult().responseBody!!
 
-    assertThat(sentenceAndOffences).isNotNull
+      assertThat(sentenceAndOffences).isNotNull
 
-    val prisonerDetails = webTestClient.get()
-      .uri("/calculation/prisoner-details/${calc.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(PrisonerDetails::class.java)
-      .returnResult().responseBody!!
+      val prisonerDetails = webTestClient.get()
+        .uri("/calculation/prisoner-details/${calc.calculationRequestId}")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+        .exchange()
+        .expectStatus().isOk
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+        .expectBody(PrisonerDetails::class.java)
+        .returnResult().responseBody!!
 
-    assertThat(prisonerDetails).isNotNull
+      assertThat(prisonerDetails).isNotNull
 
-    val adjustments = webTestClient.get()
-      .uri("/calculation/adjustments/${calc.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(BookingAndSentenceAdjustments::class.java)
-      .returnResult().responseBody!!
+      val adjustments = webTestClient.get()
+        .uri("/calculation/adjustments/${calc.calculationRequestId}")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+        .exchange()
+        .expectStatus().isOk
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+        .expectBody(BookingAndSentenceAdjustments::class.java)
+        .returnResult().responseBody!!
 
-    assertThat(adjustments).isNotNull
+      assertThat(adjustments).isNotNull
 
-    val returnToCustody = webTestClient.get()
-      .uri("/calculation/return-to-custody/${calc.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(ReturnToCustodyDate::class.java)
-      .returnResult().responseBody!!
+      val returnToCustody = webTestClient.get()
+        .uri("/calculation/return-to-custody/${calc.calculationRequestId}")
+        .accept(MediaType.APPLICATION_JSON)
+        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+        .exchange()
+        .expectStatus().isOk
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
+        .expectBody(ReturnToCustodyDate::class.java)
+        .returnResult().responseBody!!
 
-    assertThat(returnToCustody).isNotNull
+      assertThat(returnToCustody).isNotNull
+    }
   }
 
   @Test

@@ -1,4 +1,4 @@
-FROM openjdk:17-slim AS builder
+FROM openjdk:18-slim AS builder
 
 ARG BUILD_NUMBER
 ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
@@ -7,7 +7,7 @@ WORKDIR /app
 ADD . .
 RUN ./gradlew assemble -Dorg.gradle.daemon=false
 
-FROM openjdk:17-slim
+FROM openjdk:18-slim
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 ARG BUILD_NUMBER
