@@ -37,6 +37,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -130,7 +131,7 @@ class CalculationControllerTest {
     val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
 
     val booking = Booking(offender, mutableListOf(), Adjustments(), null, bookingId)
-    val userInput = CalculationUserInputs(listOf(CalculationSentenceUserInput(1, "ABC", true)))
+    val userInput = CalculationUserInputs(listOf(CalculationSentenceUserInput(1, "ABC", UserInputType.ORIGINAL, true)))
     val calculatedReleaseDates = CalculatedReleaseDates(
       calculationRequestId = 9991L, dates = mapOf(), calculationStatus = PRELIMINARY,
       bookingId = bookingId, prisonerId = prisonerId
@@ -254,7 +255,7 @@ class CalculationControllerTest {
       calculationRequestId = 9991L, dates = mapOf(), calculationStatus = PRELIMINARY,
       bookingId = bookingId, prisonerId = prisonerId
     )
-    val userInput = CalculationUserInputs(listOf(CalculationSentenceUserInput(1, "ABC", true)))
+    val userInput = CalculationUserInputs(listOf(CalculationSentenceUserInput(1, "ABC", UserInputType.ORIGINAL, true)))
 
     whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(calculation)
     whenever(calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)).thenReturn(sentences)

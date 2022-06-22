@@ -27,7 +27,7 @@ class BookingTimelineService(
   fun walkTimelineOfBooking(booking: Booking): Booking {
     val workingBooking = createSentenceGroupsAndShareAdjustments(booking)
     val expiryDate = extractionService.mostRecent(workingBooking.getAllExtractableSentences(), SentenceCalculation::expiryDate)
-    capDatesByExpiry(expiryDate, workingBooking.sentenceGroups)
+    capDatesByExpiry(expiryDate, workingBooking.sentenceGroups, workingBooking)
     return booking
   }
 
@@ -45,7 +45,7 @@ class BookingTimelineService(
       it.sentenceCalculation.adjustmentsAfter = timelineTracker.previousReleaseDateReached
       val itRange = it.getRangeOfSentenceBeforeAwardedDays()
       if (isThisSentenceTheFirstOfSentencesParallelToRecall(timelineTracker, it)) {
-        endCurrentSentenceGroup(timelineTracker)
+        endCurrentSentenceGroup(timelineTracker, booking)
         startNewSentenceGroup(timelineTracker, it, itRange)
       } else if (timelineTracker.timelineRange.isConnected(itRange)) {
         // This sentence overlaps with the previous. Its therefore in the same sentence group.
@@ -74,13 +74,13 @@ class BookingTimelineService(
           timelineTracker.currentSentenceGroup.add(it)
         } else {
           // Even with all ADAs applied the sentence does not overlap with the sentence group, it therefore belongs to a new group.
-          endCurrentSentenceGroup(timelineTracker)
+          endCurrentSentenceGroup(timelineTracker, booking)
           startNewSentenceGroup(timelineTracker, it, itRange)
         }
       }
       timelineTracker.previousSentence = it
     }
-    endCurrentSentenceGroup(timelineTracker)
+    endCurrentSentenceGroup(timelineTracker, booking)
     booking.sentenceGroups = timelineTracker.sentenceGroups
     return booking
   }
@@ -103,15 +103,16 @@ class BookingTimelineService(
     }
   }
 
-  private fun endCurrentSentenceGroup(timelineTracker: TimelineTracker) {
-    shareAdjustmentsThroughSentenceGroup(timelineTracker)
+  private fun endCurrentSentenceGroup(timelineTracker: TimelineTracker, booking: Booking) {
+    shareAdjustmentsThroughSentenceGroup(timelineTracker, booking)
     // Clear the sentence group and start again.
     timelineTracker.sentenceGroups.add(timelineTracker.currentSentenceGroup)
   }
 
   private fun capDatesByExpiry(
     expiry: LocalDate,
-    sentenceGroups: List<List<CalculableSentence>>
+    sentenceGroups: List<List<CalculableSentence>>,
+    booking: Booking
   ) {
     val adjustments = sentenceGroups[0][0].sentenceCalculation.adjustments
     sentenceGroups.forEach { group ->
@@ -119,7 +120,7 @@ class BookingTimelineService(
       if (unusedDays != null && unusedDays > 0) {
         adjustments.addAdjustment(RELEASE_UNUSED_ADA, Adjustment(group.minOf { it.sentencedAt }, unusedDays.toInt()))
         group.forEach {
-          readjustDates(it)
+          readjustDates(it, booking)
         }
       }
       val unusedLicenseDays = group.filter {
@@ -132,21 +133,21 @@ class BookingTimelineService(
       if (unusedLicenseDays != null && unusedLicenseDays > 0) {
         adjustments.addAdjustment(LICENSE_UNUSED_ADA, Adjustment(group.minOf { it.sentencedAt }, unusedLicenseDays.toInt()))
         group.forEach {
-          readjustDates(it)
+          readjustDates(it, booking)
         }
       }
     }
   }
 
-  private fun shareAdjustmentsThroughSentenceGroup(timelineTracker: TimelineTracker) {
+  private fun shareAdjustmentsThroughSentenceGroup(timelineTracker: TimelineTracker, booking: Booking) {
     timelineTracker.currentSentenceGroup.forEach {
       it.sentenceCalculation.adjustmentsBefore = timelineTracker.timelineRange.end
-      readjustDates(it)
+      readjustDates(it, booking)
     }
   }
 
-  private fun readjustDates(it: CalculableSentence) {
-    sentenceCalculationService.calculateDatesFromAdjustments(it)
+  private fun readjustDates(it: CalculableSentence, booking: Booking) {
+    sentenceCalculationService.calculateDatesFromAdjustments(it, booking)
     log.info(it.buildString())
   }
 

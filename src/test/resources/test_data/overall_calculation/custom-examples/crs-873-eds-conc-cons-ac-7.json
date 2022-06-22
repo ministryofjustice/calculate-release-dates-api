@@ -1,0 +1,98 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2015-04-11"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 9
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 6
+        }
+      },
+      "automaticRelease": true,
+      "sentencedAt": "2015-04-12"
+    },
+    {
+      "offence": {
+        "committedAt": "2014-05-02"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 1
+        }
+      },
+      "automaticRelease": true,
+      "sentencedAt": "2014-05-03",
+      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
+    },
+    {
+      "offence": {
+        "committedAt": "2014-05-02"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 1
+        }
+      },
+      "automaticRelease": true,
+      "sentencedAt": "2014-05-03",
+      "identifier": "a177c6dd-2b7e-41b4-a839-05dce9bbd4f0",
+      "consecutiveSentenceUUIDs": [
+        "e40f48b6-92df-49d0-af99-507194c380fa"
+      ]
+    },
+    {
+      "offence": {
+        "committedAt": "2014-05-02"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 1
+        }
+      },
+      "automaticRelease": true,
+      "sentencedAt": "2014-05-03",
+      "consecutiveSentenceUUIDs": [
+        "a177c6dd-2b7e-41b4-a839-05dce9bbd4f0"
+      ]
+    }
+  ],
+  "adjustments": {
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "numberOfDays": 30,
+        "appliesToSentencesFrom": "2014-05-04",
+        "fromDate": "2014-05-04",
+        "toDate": "2014-06-02"
+      }
+    ]
+  }
+}

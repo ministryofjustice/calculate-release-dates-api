@@ -15,11 +15,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import java.time.LocalDate
 
 @Service
 class ValidationService(
@@ -31,6 +34,11 @@ class ValidationService(
     val sentencesAndOffences = sourceData.sentenceAndOffences
     val adjustments = sourceData.bookingAndSentenceAdjustments
     val sortedSentences = sentencesAndOffences.sortedWith(this::sortByCaseNumberAndLineSequence)
+
+    val validateOffender = validateOffenderSupported(sourceData.prisonerDetails)
+    if (validateOffender.isNotEmpty()) {
+      return ValidationMessages(ValidationType.UNSUPPORTED, validateOffender)
+    }
 
     val unsupportedValidationMessages = validateSupportedSentences(sortedSentences)
     if (unsupportedValidationMessages.isNotEmpty()) {
@@ -143,6 +151,18 @@ class ValidationService(
     return a.lineSequence - b.lineSequence
   }
 
+  private fun validateOffenderSupported(prisonerDetails: PrisonerDetails): List<ValidationMessage> {
+    val afterPcscCommencement = LocalDate.now().isAfterOrEqualTo(featureToggles.pcscStartDate)
+    val hasPtdAlert = prisonerDetails.activeAlerts().any() {
+      it.alertCode == "PTD" &&
+        it.alertType == "O"
+    }
+
+    if (afterPcscCommencement && hasPtdAlert) {
+      return listOf(ValidationMessage("Prisoner has PTD alert after PCSC commencement date, this is unsupported", ValidationCode.PRISONER_SUBJECT_TO_PTD))
+    }
+    return emptyList()
+  }
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedSentences: List<SentenceCalculationType> = SentenceCalculationType.values()
       .filter { (featureToggles.eds && it.sentenceClazz == ExtendedDeterminateSentence::class.java) || it.sentenceClazz == StandardDeterminateSentence::class.java }

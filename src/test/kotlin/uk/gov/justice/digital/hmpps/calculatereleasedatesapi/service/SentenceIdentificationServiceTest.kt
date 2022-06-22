@@ -2,11 +2,13 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 
 class SentenceIdentificationServiceTest {
 
-  private var sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService()
+  private val featureToggles = FeatureToggles()
+  private var sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(featureToggles)
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
   private val offenderU18 = jsonTransformation.loadOffender("john_doe_under18")

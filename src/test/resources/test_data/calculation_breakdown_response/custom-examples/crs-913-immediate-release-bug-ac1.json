@@ -1,0 +1,69 @@
+{
+  "concurrentSentences":[
+    {
+      "sentencedAt":"2020-06-04",
+      "sentenceLength":"6 months",
+      "sentenceLengthDays":183,
+      "dates":{
+        "SLED":{
+          "unadjusted":"2020-12-03",
+          "adjusted":"2020-09-02",
+          "daysFromSentenceStart":183,
+          "adjustedByDays":92
+        },
+        "CRD":{
+          "unadjusted":"2020-09-03",
+          "adjusted":"2020-06-04",
+          "daysFromSentenceStart":92,
+          "adjustedByDays":91
+        }
+      },
+      "lineSequence":1,
+      "caseSequence":1,
+      "caseReference":null
+    }
+  ],
+  "consecutiveSentence":null,
+  "breakdownByReleaseDateType":{
+    "CRD":{
+      "rules":[
+        "IMMEDIATE_RELEASE"
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":-91,
+      "releaseDate":"2020-06-04",
+      "unadjustedDate":"2020-09-03"
+    },
+    "SLED":{
+      "rules":[
+
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":-92,
+      "releaseDate":"2020-09-02",
+      "unadjustedDate":"2020-12-03"
+    },
+    "TUSED":{
+      "rules":[
+        "TUSED_LICENCE_PERIOD_LT_1Y",
+        "IMMEDIATE_RELEASE"
+      ],
+      "rulesWithExtraAdjustments":{
+        "TUSED_LICENCE_PERIOD_LT_1Y":{
+          "adjustmentValue":12,
+          "type":"MONTHS"
+        }
+      },
+      "adjustedDays":-92,
+      "releaseDate":"2021-06-04",
+      "unadjustedDate":"2020-09-03"
+    }
+  },
+  "otherDates":{
+
+  }
+}

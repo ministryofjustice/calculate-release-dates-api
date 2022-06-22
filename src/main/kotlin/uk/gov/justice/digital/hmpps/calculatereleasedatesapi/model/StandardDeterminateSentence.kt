@@ -16,7 +16,8 @@ data class StandardDeterminateSentence(
   override val caseSequence: Int? = null,
   override val lineSequence: Int? = null,
   override val caseReference: String? = null,
-  override val recallType: RecallType? = null
+  override val recallType: RecallType? = null,
+  val section250: Boolean = false
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType), StandardDeterminate {
 
   override fun buildString(): String {
@@ -40,7 +41,7 @@ data class StandardDeterminateSentence(
   }
 
   @JsonIgnore
-  fun isSdsPlusSentence(): Boolean {
-    return identificationTrack == SentenceIdentificationTrack.SDS_PLUS
+  fun isTwoThirdsReleaseSentence(): Boolean {
+    return identificationTrack == SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE
   }
 }

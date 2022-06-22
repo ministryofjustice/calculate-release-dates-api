@@ -1,0 +1,14 @@
+{
+   "offenderNo": "default",
+   "bookingId": 1,
+   "firstName": "Default",
+   "lastName": "Prisoner",
+   "dateOfBirth": "1990-02-01",
+   "alerts": [
+      {
+         "alertCode": "PTD",
+         "alertType": "O",
+         "dateCreated": "2019-08-20"
+      }
+   ]
+}

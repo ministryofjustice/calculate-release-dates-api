@@ -18,7 +18,8 @@
     {
       "offence": {
         "committedAt": "2021-02-01",
-        "isScheduleFifteenMaximumLife": true
+        "isScheduleFifteenMaximumLife": true,
+        "isPcscSdsPlus": true
       },
       "duration": {
         "durationElements": {
