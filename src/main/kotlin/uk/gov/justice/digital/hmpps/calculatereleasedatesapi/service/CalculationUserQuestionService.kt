@@ -25,11 +25,6 @@ import java.util.EnumSet
 class CalculationUserQuestionService(
   val featureToggles: FeatureToggles
 ) {
-  val sentenceCalcTypes: EnumSet<SentenceCalculationType> = EnumSet.of(
-    ADIMP, YOI, SEC250, SEC91_03,
-    ADIMP_ORA, YOI_ORA, SEC250_ORA, SEC91_03_ORA,
-  )
-
   val postPcscCalcTypes: Map<UserInputType, EnumSet<SentenceCalculationType>> = mapOf(
     UserInputType.ORIGINAL to EnumSet.of(
       ADIMP, YOI, SEC250, SEC91_03,
@@ -50,14 +45,6 @@ class CalculationUserQuestionService(
   )
 
   fun getQuestionsForSentences(prisonerDetails: PrisonerDetails, sentencesAndOffences: List<SentenceAndOffences>): CalculationUserQuestions {
-    return if (LocalDate.now().isAfter(featureToggles.pcscStartDate)) {
-      postPcscQuestions(prisonerDetails, sentencesAndOffences)
-    } else {
-      prePcscQuestions(prisonerDetails, sentencesAndOffences)
-    }
-  }
-
-  fun postPcscQuestions(prisonerDetails: PrisonerDetails, sentencesAndOffences: List<SentenceAndOffences>): CalculationUserQuestions {
     return CalculationUserQuestions(
       sentenceQuestions = sentencesAndOffences.mapNotNull {
         val sentenceCalculationType = SentenceCalculationType.from(it.sentenceCalculationType)
@@ -91,26 +78,6 @@ class CalculationUserQuestionService(
           }
         }
         question
-      }
-    )
-  }
-
-  fun prePcscQuestions(prisonerDetails: PrisonerDetails, sentencesAndOffences: List<SentenceAndOffences>): CalculationUserQuestions {
-    return CalculationUserQuestions(
-      sentenceQuestions = sentencesAndOffences.mapNotNull {
-        if (!sentenceCalcTypes.contains(SentenceCalculationType.from(it.sentenceCalculationType))) {
-          null
-        } else {
-          val overEighteenOnSentenceDate = overEighteenOnSentenceDate(prisonerDetails, it)
-          val sevenYearsOrMore = sevenYearsOrMore(it)
-          val sentencedWithinOriginalSdsPlusWindow = sentencedWithinOriginalSdsPlusWindow(it)
-
-          if (sevenYearsOrMore && overEighteenOnSentenceDate && sentencedWithinOriginalSdsPlusWindow) {
-            CalculationSentenceQuestion(it.sentenceSequence, UserInputType.SCHEDULE_15_ATTRACTING_LIFE)
-          } else {
-            null
-          }
-        }
       }
     )
   }

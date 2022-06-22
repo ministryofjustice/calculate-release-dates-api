@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.time.LocalDate
 
-class CalculationUserQuestionServicePostPcscTest {
+class CalculationUserQuestionServiceTest {
   private val pcscDate = LocalDate.now().minusDays(1)
   private val featureToggles = FeatureToggles(pcscStartDate = pcscDate)
   private val calculationUserQuestionService = CalculationUserQuestionService(featureToggles)

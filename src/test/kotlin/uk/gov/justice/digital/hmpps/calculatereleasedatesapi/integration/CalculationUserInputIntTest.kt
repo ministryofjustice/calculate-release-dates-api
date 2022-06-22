@@ -19,7 +19,7 @@ import java.time.LocalDate
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 @ActiveProfiles("afterpcsc")
-class CalculationUserInputAfterPcscIntTest : IntegrationTestBase() {
+class CalculationUserInputIntTest : IntegrationTestBase() {
   @Autowired
   lateinit var calculationRequestRepository: CalculationRequestRepository
 
