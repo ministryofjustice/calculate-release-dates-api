@@ -40,9 +40,6 @@ private class ResourceServerConfiguration {
         authorize(AntPathRequestMatcher("/h2-console/**", HttpMethod.POST.name), permitAll)
         authorize(anyRequest, authenticated)
       }
-      authorizeRequests {
-        authorize(anyRequest, authenticated)
-      }
       oauth2ResourceServer {
         jwt {
           jwtAuthenticationConverter = AuthAwareTokenConverter()
