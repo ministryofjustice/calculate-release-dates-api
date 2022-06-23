@@ -122,7 +122,7 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
         lineSequence = sentence.lineSequence,
         caseReference = sentence.caseReference,
         recallType = sentenceCalculationType.recallType,
-        section250 = sentenceCalculationType == SentenceCalculationType.SEC250 && sentenceCalculationType == SentenceCalculationType.SEC250_ORA
+        section250 = sentenceCalculationType == SentenceCalculationType.SEC250 || sentenceCalculationType == SentenceCalculationType.SEC250_ORA
       )
     } else {
       val imprisonmentTerm = sentence.terms.first { it.code == "IMP" }
