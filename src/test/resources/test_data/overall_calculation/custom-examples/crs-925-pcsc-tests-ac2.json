@@ -1,0 +1,42 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2004-07-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2020-01-28",
+        "isPcscSec250": true
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 7
+        }
+      },
+      "section250": true,
+      "sentencedAt": "2022-06-28"
+    },
+    {
+      "offence": {
+        "committedAt": "2020-01-28"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2022-06-28"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "numberOfDays": 133,
+        "appliesToSentencesFrom": "2020-06-12",
+        "toDate": "2020-06-11",
+        "fromDate": "2020-01-30"
+      }
+    ]
+  }
+}
