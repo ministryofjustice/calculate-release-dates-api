@@ -22,6 +22,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -689,6 +692,35 @@ class CalculationIntTest : IntegrationTestBase() {
 
     assertThat(calculation.dates[CRD]).isEqualTo(
       LocalDate.of(2025, 4, 19)
+    )
+  }
+
+  @Test
+  fun `Run calculation on a PCSC section 250`() {
+    val userInput = CalculationUserInputs(
+      listOf(
+        CalculationSentenceUserInput(
+          sentenceSequence = 1,
+          offenceCode = "SX03013A",
+          userInputType = UserInputType.SECTION_250,
+          userChoice = true
+        )
+      )
+    )
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/SEC250")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(userInput))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[CRD]).isEqualTo(
+      LocalDate.of(2027, 2, 26)
     )
   }
 
