@@ -292,16 +292,18 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(validationMessages.type).isEqualTo(ValidationType.VALIDATION)
-    assertThat(validationMessages.messages).hasSize(9)
+    assertThat(validationMessages.messages).hasSize(11)
     assertThat(validationMessages.messages[0]).matches { it.code == ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE && it.sentenceSequence == 4 }
     assertThat(validationMessages.messages[1]).matches { it.code == ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE && it.sentenceSequence == 3 }
     assertThat(validationMessages.messages[2]).matches { it.code == ValidationCode.OFFENCE_MISSING_DATE && it.sentenceSequence == 2 }
     assertThat(validationMessages.messages[3]).matches { it.code == ValidationCode.SENTENCE_HAS_NO_DURATION && it.sentenceSequence == 1 }
     assertThat(validationMessages.messages[4]).matches { it.code == ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS && it.sentenceSequence == 5 }
-    assertThat(validationMessages.messages[5]).matches { it.code == ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO && it.sentenceSequence == 5 && it.arguments.contains("6") && it.arguments.contains("7") }
-    assertThat(validationMessages.messages[6]).matches { it.code == ValidationCode.REMAND_FROM_TO_DATES_REQUIRED && it.sentenceSequence == null }
-    assertThat(validationMessages.messages[7]).matches { it.code == ValidationCode.REMAND_FROM_TO_DATES_REQUIRED && it.sentenceSequence == null }
-    assertThat(validationMessages.messages[8]).matches { it.code == ValidationCode.REMAND_OVERLAPS_WITH_REMAND && it.sentenceSequence == null }
+    assertThat(validationMessages.messages[5]).matches { it.code == ValidationCode.SEC_91_SENTENCE_TYPE_INCORRECT && it.sentenceSequence == 8 && it.arguments.contains("SEC91_03") }
+    assertThat(validationMessages.messages[6]).matches { it.code == ValidationCode.SEC_91_SENTENCE_TYPE_INCORRECT && it.sentenceSequence == 10 && it.arguments.contains("SEC91_03_ORA") }
+    assertThat(validationMessages.messages[7]).matches { it.code == ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO && it.sentenceSequence == 5 && it.arguments.contains("6") && it.arguments.contains("7") }
+    assertThat(validationMessages.messages[8]).matches { it.code == ValidationCode.REMAND_FROM_TO_DATES_REQUIRED && it.sentenceSequence == null }
+    assertThat(validationMessages.messages[9]).matches { it.code == ValidationCode.REMAND_FROM_TO_DATES_REQUIRED && it.sentenceSequence == null }
+    assertThat(validationMessages.messages[10]).matches { it.code == ValidationCode.REMAND_OVERLAPS_WITH_REMAND && it.sentenceSequence == null }
   }
 
   @Test
@@ -345,16 +347,18 @@ class CalculationIntTest : IntegrationTestBase() {
 
     assertThat(errorResponse.userMessage).isEqualTo(
       """
-      The data for this prisoner is invalid
-      Sentence 4 is invalid: Offence date shouldn't be after sentence date
-      Sentence 3 is invalid: Offence date range shouldn't be after sentence date
-      Sentence 2 is invalid: The offence must have a date
-      Sentence 1 is invalid: Sentence has no duration
-      Sentence 5 is invalid: Sentence has multiple terms
-      Sentence 5 is invalid: Multiple sentences are consecutive to the same sentence
-      Remand missing from and to date
-      Remand missing from and to date
-      Remand periods are overlapping
+        The data for this prisoner is invalid
+        Sentence 4 is invalid: Offence date shouldn't be after sentence date
+        Sentence 3 is invalid: Offence date range shouldn't be after sentence date
+        Sentence 2 is invalid: The offence must have a date
+        Sentence 1 is invalid: Sentence has no duration
+        Sentence 5 is invalid: Sentence has multiple terms
+        Sentence 8 is invalid: SEC91_03 sentence type incorrectly applied
+        Sentence 10 is invalid: SEC91_03_ORA sentence type incorrectly applied
+        Sentence 5 is invalid: Multiple sentences are consecutive to the same sentence
+        Remand missing from and to date
+        Remand missing from and to date
+        Remand periods are overlapping
       """.trimIndent()
     )
   }
