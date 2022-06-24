@@ -12,7 +12,7 @@ generic-service:
     HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
     PRISON_API_URL: https://api-preprod.prison.service.justice.gov.uk
     EDS_FEATURE_TOGGLE: true
-    PCSC_START_DATE: 2022-06-28
+    PCSC_START_DATE: 2022-05-01
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
