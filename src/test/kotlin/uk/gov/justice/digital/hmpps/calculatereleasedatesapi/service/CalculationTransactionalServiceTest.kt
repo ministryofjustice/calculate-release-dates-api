@@ -107,10 +107,6 @@ class CalculationTransactionalServiceTest {
     ),
     null
   )
-  @Test
-  fun removethis() {
-    `Test Example`("psi-examples", "18", null)
-  }
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
