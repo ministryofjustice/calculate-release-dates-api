@@ -17,7 +17,7 @@ data class StandardDeterminateSentence(
   override val lineSequence: Int? = null,
   override val caseReference: String? = null,
   override val recallType: RecallType? = null
-) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType), StandardDeterminate {
+) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType) {
 
   override fun buildString(): String {
     return "Sentence\t:\t\n" +

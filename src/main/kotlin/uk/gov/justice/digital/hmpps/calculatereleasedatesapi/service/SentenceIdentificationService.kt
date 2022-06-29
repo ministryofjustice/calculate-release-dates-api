@@ -19,12 +19,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_PLUS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
@@ -36,9 +34,9 @@ import java.time.temporal.ChronoUnit
 class SentenceIdentificationService {
 
   fun identify(sentence: CalculableSentence, offender: Offender) {
-    if (sentence is ExtendedDeterminate) {
+    if (sentence is ExtendedDeterminateSentence || (sentence is ConsecutiveSentence && sentence.allSentencesAreExtendedSentences())) {
       identifyExtendedDeterminate(sentence)
-    } else if (sentence is StandardDeterminate) {
+    } else if (sentence is StandardDeterminateSentence || sentence is SingleTermSentence || (sentence is ConsecutiveSentence && sentence.allSentencesAreStandardSentences())) {
       identifyStandardDeterminate(sentence, offender)
       if (sentence.recallType != null) {
         sentence.releaseDateTypes -= HDCED
@@ -48,7 +46,7 @@ class SentenceIdentificationService {
   }
 
   private fun identifyExtendedDeterminate(sentence: CalculableSentence) {
-    if (sentence is ExtendedDeterminateConsecutiveSentence) {
+    if (sentence is ConsecutiveSentence) {
       sentence.releaseDateTypes = listOf(
         SLED,
         CRD
@@ -78,7 +76,7 @@ class SentenceIdentificationService {
 
   fun identifyStandardDeterminate(sentence: CalculableSentence, offender: Offender) {
     sentence.releaseDateTypes = listOf()
-    if (sentence is StandardDeterminateConsecutiveSentence) {
+    if (sentence is ConsecutiveSentence) {
       if (sentence.isMadeUpOfOnlySdsPlusSentences()) {
         sentence.identificationTrack = SDS_PLUS
         sentence.releaseDateTypes = listOf(
@@ -224,7 +222,7 @@ class SentenceIdentificationService {
       is StandardDeterminateSentence -> {
         sentence.isOraSentence()
       }
-      is StandardDeterminateConsecutiveSentence -> {
+      is ConsecutiveSentence -> {
         sentence.hasOraSentences()
       }
       else -> {
@@ -236,7 +234,7 @@ class SentenceIdentificationService {
       is StandardDeterminateSentence -> {
         sentence.identificationTrack == SDS_AFTER_CJA_LASPO
       }
-      is StandardDeterminateConsecutiveSentence -> {
+      is ConsecutiveSentence -> {
         sentence.isMadeUpOfOnlyAfterCjaLaspoSentences()
       }
       else -> {

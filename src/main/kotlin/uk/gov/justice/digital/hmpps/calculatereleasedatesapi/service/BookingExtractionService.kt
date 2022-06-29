@@ -20,9 +20,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSenten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateConsecutiveSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -215,7 +212,7 @@ class BookingExtractionService(
     }
 
     if (latestExtendedDeterminateParoleEligibilityDate != null) {
-      val mostRecentReleaseSentenceHasParoleDate = mostRecentSentencesByReleaseDate.any { it is ExtendedDeterminate && it.sentenceCalculation.extendedDeterminateParoleEligibilityDate != null }
+      val mostRecentReleaseSentenceHasParoleDate = mostRecentSentencesByReleaseDate.any { it.sentenceCalculation.extendedDeterminateParoleEligibilityDate != null }
       if (mostRecentReleaseSentenceHasParoleDate) {
         val latestAutomaticRelease = extractionService.mostRecentOrNull(
           sentences.filter { it.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null },

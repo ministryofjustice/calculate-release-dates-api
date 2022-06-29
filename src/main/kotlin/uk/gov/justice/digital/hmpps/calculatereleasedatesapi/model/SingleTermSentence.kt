@@ -10,7 +10,7 @@ class SingleTermSentence(
   override val sentencedAt: LocalDate,
   override val offence: Offence,
   val standardSentences: List<StandardDeterminateSentence>
-) : StandardDeterminate {
+) : CalculableSentence {
   constructor(standardSentences: List<StandardDeterminateSentence>) :
     this(
       standardSentences.minOf(StandardDeterminateSentence::sentencedAt),
