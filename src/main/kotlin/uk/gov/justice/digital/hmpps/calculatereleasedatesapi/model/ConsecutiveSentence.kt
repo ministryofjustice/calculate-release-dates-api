@@ -89,11 +89,11 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>): Calcu
   }
 
   private fun hasSdsTwoThirdsReleaseSentence(): Boolean {
-    return orderedSentences.any(StandardDeterminateSentence::isTwoThirdsReleaseSentence)
+    return orderedSentences.any { it is StandardDeterminateSentence && it.isTwoThirdsReleaseSentence()}
   }
 
   private fun hasSdsHalfwayReleaseSentence(): Boolean {
-    return orderedSentences.any { !it.isTwoThirdsReleaseSentence() }
+    return orderedSentences.any { it is StandardDeterminateSentence && !it.isTwoThirdsReleaseSentence()}
   }
 
   fun isMadeUpOfSdsHalfwayReleaseAndTwoThirdsReleaseSentence(): Boolean {
