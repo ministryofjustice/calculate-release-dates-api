@@ -12,7 +12,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import java.time.LocalDate
 
 class CalculationUserQuestionServiceTest {
-  private val featureToggles = FeatureToggles()
+  private val pcscDate = LocalDate.now().minusDays(1)
+  private val featureToggles = FeatureToggles(pcscStartDate = pcscDate)
   private val calculationUserQuestionService = CalculationUserQuestionService(featureToggles)
 
   val offences = listOf(
@@ -25,12 +26,12 @@ class CalculationUserQuestionServiceTest {
     ),
   )
 
-  private val under7YearSentence = SentenceAndOffences(
+  private val under7YearSentencePrePcsc = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 1,
     lineSequence = 1,
     caseSequence = 1,
-    sentenceDate = FIRST_MAY_2020,
+    sentenceDate = pcscDate.minusDays(1),
     terms = listOf(
       SentenceTerms(years = 6, months = 11)
     ),
@@ -41,13 +42,28 @@ class CalculationUserQuestionServiceTest {
     offences = offences,
   )
 
-  private val sdsPlusSentence = SentenceAndOffences(
+  private val under4YearSentencePostPcsc = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 2,
-    lineSequence = 2,
-
+    lineSequence = 1,
     caseSequence = 1,
-    sentenceDate = FIRST_MAY_2020,
+    sentenceDate = pcscDate.plusDays(1),
+    terms = listOf(
+      SentenceTerms(years = 3, months = 11)
+    ),
+    sentenceStatus = "IMP",
+    sentenceCategory = "CAT",
+    sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+    sentenceTypeDescription = "ADMIP",
+    offences = offences,
+  )
+
+  private val originalSentence = SentenceAndOffences(
+    bookingId = 1L,
+    sentenceSequence = 3,
+    lineSequence = 2,
+    caseSequence = 1,
+    sentenceDate = pcscDate.minusDays(1),
     terms = listOf(
       SentenceTerms(years = 8)
     ),
@@ -58,73 +74,57 @@ class CalculationUserQuestionServiceTest {
     offences = offences,
   )
 
-  private val sdsPlusOraSentence = SentenceAndOffences(
+  private val fourToUnderSevenSentence = SentenceAndOffences(
     bookingId = 1L,
-    sentenceSequence = 2,
+    sentenceSequence = 4,
     lineSequence = 2,
     caseSequence = 1,
-    sentenceDate = FIRST_MAY_2020,
+    sentenceDate = pcscDate,
+    terms = listOf(
+      SentenceTerms(years = 6)
+    ),
+    sentenceStatus = "IMP",
+    sentenceCategory = "CAT",
+    sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+    sentenceTypeDescription = "ADMIP",
+    offences = offences,
+  )
+
+  private val updatedSentence = SentenceAndOffences(
+    bookingId = 1L,
+    sentenceSequence = 5,
+    lineSequence = 2,
+    caseSequence = 1,
+    sentenceDate = pcscDate,
     terms = listOf(
       SentenceTerms(years = 8)
     ),
     sentenceStatus = "IMP",
     sentenceCategory = "CAT",
-    sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
-    sentenceTypeDescription = "ADMIP_ORA",
+    sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+    sentenceTypeDescription = "ADMIP",
     offences = offences,
   )
 
-  private val sdsPlus6Year13Month = SentenceAndOffences(
+  private val section250Sentence = SentenceAndOffences(
     bookingId = 1L,
-    sentenceSequence = 2,
+    sentenceSequence = 6,
     lineSequence = 2,
     caseSequence = 1,
-    sentenceDate = FIRST_MAY_2020,
+    sentenceDate = pcscDate,
     terms = listOf(
-      SentenceTerms(years = 6, months = 13)
+      SentenceTerms(years = 8)
     ),
     sentenceStatus = "IMP",
     sentenceCategory = "CAT",
-    sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
-    sentenceTypeDescription = "ADMIP_ORA",
-    offences = offences,
-  )
-
-  private val sdsPlus84Month = SentenceAndOffences(
-    bookingId = 1L,
-    sentenceSequence = 2,
-    lineSequence = 2,
-    caseSequence = 1,
-    sentenceDate = FIRST_MAY_2020,
-    terms = listOf(
-      SentenceTerms(months = 84)
-    ),
-    sentenceStatus = "IMP",
-    sentenceCategory = "CAT",
-    sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
-    sentenceTypeDescription = "ADMIP_ORA",
-    offences = offences,
-  )
-
-  private val sdsPlus366Week = SentenceAndOffences(
-    bookingId = 1L,
-    sentenceSequence = 2,
-    lineSequence = 2,
-    caseSequence = 1,
-    sentenceDate = LocalDate.of(2022, 6, 10),
-    terms = listOf(
-      SentenceTerms(weeks = 366)
-    ),
-    sentenceStatus = "IMP",
-    sentenceCategory = "CAT",
-    sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
-    sentenceTypeDescription = "ADMIP_ORA",
+    sentenceCalculationType = SentenceCalculationType.SEC250.name,
+    sentenceTypeDescription = "SEC250",
     offences = offences,
   )
 
   private val edsSentence = SentenceAndOffences(
     bookingId = 1L,
-    sentenceSequence = 2,
+    sentenceSequence = 7,
     lineSequence = 2,
     caseSequence = 1,
     sentenceDate = FIRST_MAY_2020,
@@ -140,7 +140,7 @@ class CalculationUserQuestionServiceTest {
 
   private val beforeSdsWindow = SentenceAndOffences(
     bookingId = 1L,
-    sentenceSequence = 3,
+    sentenceSequence = 8,
     lineSequence = 3,
     caseSequence = 1,
     sentenceDate = FIRST_MAY_2018,
@@ -154,25 +154,9 @@ class CalculationUserQuestionServiceTest {
     offences = offences,
   )
 
-  private val afterSdsWindow = SentenceAndOffences(
-    bookingId = 1L,
-    sentenceSequence = 4,
-    lineSequence = 4,
-    caseSequence = 1,
-    sentenceDate = FIRST_MAY_2023,
-    terms = listOf(
-      SentenceTerms(years = 8)
-    ),
-    sentenceStatus = "IMP",
-    sentenceCategory = "CAT",
-    sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-    sentenceTypeDescription = "ADMIP",
-    offences = offences,
-  )
-
   val ftrSentence = SentenceAndOffences(
     bookingId = 1L,
-    sentenceSequence = 5,
+    sentenceSequence = 9,
     lineSequence = 5,
     caseSequence = 1,
     sentenceDate = FIRST_MAY_2020,
@@ -201,62 +185,62 @@ class CalculationUserQuestionServiceTest {
     firstName = "Harry",
     lastName = "Houdini"
   )
-  @Test
-  fun `The sentences which may fall under SDS+, but under 18 are not returned`() {
-    val result = calculationUserQuestionService.getQuestionsForSentences(under18PrisonerDetails, listOf(sdsPlusSentence, beforeSdsWindow, afterSdsWindow, under7YearSentence, ftrSentence))
-    assertThat(result.sentenceQuestions).isEmpty()
-  }
 
   @Test
-  fun `The sentences which may fall under SDS+ are returned`() {
-
-    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(sdsPlusSentence, beforeSdsWindow, afterSdsWindow, under7YearSentence, ftrSentence))
+  fun `The sentences which may fall under PCSC, but for an under 18 year old`() {
+    val result = calculationUserQuestionService.getQuestionsForSentences(
+      under18PrisonerDetails,
+      listOf(
+        under7YearSentencePrePcsc,
+        beforeSdsWindow, under4YearSentencePostPcsc, originalSentence, fourToUnderSevenSentence, updatedSentence, section250Sentence,
+        edsSentence, beforeSdsWindow, ftrSentence
+      )
+    )
     assertThat(result.sentenceQuestions.size).isEqualTo(1)
-    assertThat(result.sentenceQuestions[0].sentenceSequence).isEqualTo(sdsPlusSentence.sentenceSequence)
-    assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.SCHEDULE_15_ATTRACTING_LIFE)
+    assertThat(result.sentenceQuestions[0].sentenceSequence).isEqualTo(section250Sentence.sentenceSequence)
+    assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.SECTION_250)
   }
 
   @Test
-  fun `The ORA sentences which temporarily fall under SDS+ are returned`() {
-    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(sdsPlusOraSentence, beforeSdsWindow, afterSdsWindow, under7YearSentence, ftrSentence))
+  fun `The service identifies original sds+ sentences`() {
+    val result = calculationUserQuestionService.getQuestionsForSentences(
+      over18PrisonerDetails,
+      listOf(
+        originalSentence, edsSentence, beforeSdsWindow, ftrSentence, under7YearSentencePrePcsc,
+        beforeSdsWindow
+      )
+    )
     assertThat(result.sentenceQuestions.size).isEqualTo(1)
-    assertThat(result.sentenceQuestions[0].sentenceSequence).isEqualTo(sdsPlusSentence.sentenceSequence)
-    assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.SCHEDULE_15_ATTRACTING_LIFE)
+    assertThat(result.sentenceQuestions[0].sentenceSequence).isEqualTo(originalSentence.sentenceSequence)
+    assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.ORIGINAL)
   }
 
   @Test
-  fun `The sentences which are 6 year 13 months fall under sds+`() {
-    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(sdsPlus6Year13Month))
+  fun `The service identifies original four to under seven sentences`() {
+    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(fourToUnderSevenSentence))
     assertThat(result.sentenceQuestions.size).isEqualTo(1)
-    assertThat(result.sentenceQuestions[0].sentenceSequence).isEqualTo(sdsPlusSentence.sentenceSequence)
-    assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.SCHEDULE_15_ATTRACTING_LIFE)
+    assertThat(result.sentenceQuestions[0].sentenceSequence).isEqualTo(fourToUnderSevenSentence.sentenceSequence)
+    assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.FOUR_TO_UNDER_SEVEN)
   }
 
   @Test
-  fun `The sentences which are 364 weeks fall under sds+`() {
-    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(sdsPlus366Week))
+  fun `The service identifies updated  sentences`() {
+    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(updatedSentence))
     assertThat(result.sentenceQuestions.size).isEqualTo(1)
-    assertThat(result.sentenceQuestions[0].sentenceSequence).isEqualTo(sdsPlusSentence.sentenceSequence)
-    assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.SCHEDULE_15_ATTRACTING_LIFE)
+    assertThat(result.sentenceQuestions[0].sentenceSequence).isEqualTo(updatedSentence.sentenceSequence)
+    assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.UPDATED)
   }
 
   @Test
-  fun `The sentences which are 84 months fall under sds+`() {
-    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(sdsPlus84Month))
+  fun `The service identifies sec250  sentences`() {
+    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(section250Sentence))
     assertThat(result.sentenceQuestions.size).isEqualTo(1)
-    assertThat(result.sentenceQuestions[0].sentenceSequence).isEqualTo(sdsPlusSentence.sentenceSequence)
-    assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.SCHEDULE_15_ATTRACTING_LIFE)
-  }
-
-  @Test
-  fun `Other sentences which don't fall under SDS+ are not returned`() {
-    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(edsSentence, beforeSdsWindow, afterSdsWindow, under7YearSentence, ftrSentence))
-    assertThat(result.sentenceQuestions).isEmpty()
+    assertThat(result.sentenceQuestions[0].sentenceSequence).isEqualTo(section250Sentence.sentenceSequence)
+    assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.SECTION_250)
   }
 
   private companion object {
     val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     val FIRST_MAY_2020: LocalDate = LocalDate.of(2020, 5, 1)
-    val FIRST_MAY_2023: LocalDate = LocalDate.of(2023, 5, 1)
   }
 }

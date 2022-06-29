@@ -88,20 +88,20 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>): Calcu
     return hasAfterCjaLaspo() && !hasBeforeCjaLaspo()
   }
 
-  private fun hasSdsPlusSentences(): Boolean {
-    return orderedSentences.any { it is StandardDeterminateSentence && it.isSdsPlusSentence() }
+  private fun hasSdsTwoThirdsReleaseSentence(): Boolean {
+    return orderedSentences.any(StandardDeterminateSentence::isTwoThirdsReleaseSentence)
   }
 
-  private fun hasSdsSentences(): Boolean {
-    return orderedSentences.any { it is StandardDeterminateSentence && !it.isSdsPlusSentence() }
+  private fun hasSdsHalfwayReleaseSentence(): Boolean {
+    return orderedSentences.any { !it.isTwoThirdsReleaseSentence() }
   }
 
-  fun isMadeUpOfSdsPlusAndSdsSentences(): Boolean {
-    return hasSdsSentences() && hasSdsPlusSentences()
+  fun isMadeUpOfSdsHalfwayReleaseAndTwoThirdsReleaseSentence(): Boolean {
+    return hasSdsHalfwayReleaseSentence() && hasSdsTwoThirdsReleaseSentence()
   }
 
-  fun isMadeUpOfOnlySdsPlusSentences(): Boolean {
-    return !hasSdsSentences() && hasSdsPlusSentences()
+  fun isMadeUpOfOnlySdsTwoThirdsReleaseSentences(): Boolean {
+    return !hasSdsHalfwayReleaseSentence() && hasSdsTwoThirdsReleaseSentence()
   }
 
   fun hasAutomaticRelease(): Boolean {

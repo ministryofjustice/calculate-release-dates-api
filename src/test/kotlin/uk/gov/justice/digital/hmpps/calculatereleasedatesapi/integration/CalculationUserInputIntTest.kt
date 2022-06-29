@@ -5,8 +5,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
@@ -17,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import java.time.LocalDate
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+@ActiveProfiles("afterpcsc")
 class CalculationUserInputIntTest : IntegrationTestBase() {
   @Autowired
   lateinit var calculationRequestRepository: CalculationRequestRepository
@@ -32,7 +34,8 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
         CalculationSentenceUserInput(
           sentenceSequence = 1,
           offenceCode = "SX03014",
-          isScheduleFifteenMaximumLife = false // Different to NOMIS.
+          userInputType = UserInputType.ORIGINAL,
+          userChoice = false // difference to NOMIS.
         )
       )
     )
@@ -49,7 +52,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .returnResult().responseBody
 
     // Halfway
-    assertThat(prelimResponse.dates[CRD]).isEqualTo(LocalDate.of(2028, 1, 10))
+    assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2028, 1, 10))
 
     val confirmResponse = webTestClient.post()
       .uri("/calculation/USERINPUT/confirm/${prelimResponse.calculationRequestId}")
@@ -63,7 +66,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
-    assertThat(confirmResponse.dates[CRD]).isEqualTo(LocalDate.of(2028, 1, 10))
+    assertThat(confirmResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2028, 1, 10))
 
     val userInputResponse = webTestClient.get()
       .uri("/calculation/calculation-user-input/${confirmResponse.calculationRequestId}")
@@ -91,7 +94,8 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
         CalculationSentenceUserInput(
           sentenceSequence = 1,
           offenceCode = "SX03014",
-          isScheduleFifteenMaximumLife = true // same as NOMIS.
+          userInputType = UserInputType.ORIGINAL,
+          userChoice = true // same as NOMIS.
         )
       )
     )
@@ -108,7 +112,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .returnResult().responseBody
 
     // Halfway
-    assertThat(prelimResponse.dates[CRD]).isEqualTo(LocalDate.of(2030, 1, 9))
+    assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2030, 1, 9))
 
     val dbRequest = calculationRequestRepository.findById(prelimResponse.calculationRequestId).get()
     assertThat(dbRequest.calculationRequestUserInputs).isNotEmpty
@@ -130,6 +134,6 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
 
     // Halfway
     assertThat(response.sentenceQuestions.size).isEqualTo(1)
-    assertThat(response.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.SCHEDULE_15_ATTRACTING_LIFE)
+    assertThat(response.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.ORIGINAL)
   }
 }

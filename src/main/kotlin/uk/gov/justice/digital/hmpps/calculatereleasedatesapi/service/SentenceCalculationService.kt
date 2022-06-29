@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_12W_LT_18M
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_18M_LT_4Y
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_MINIMUM_14D
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.IMMEDIATE_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.LED_CONSEC_ORA_AND_NON_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.TUSED_LICENCE_PERIOD_LT_1Y
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
@@ -51,7 +52,7 @@ class SentenceCalculationService {
     }
     // create association between the sentence and it's calculation
     sentence.sentenceCalculation = sentenceCalculation
-    return calculateDatesFromAdjustments(sentence)
+    return calculateDatesFromAdjustments(sentence, booking)
   }
 
   private fun getInitialConsecutiveCalculation(sentence: ConsecutiveSentence, booking: Booking): SentenceCalculation {
@@ -82,13 +83,13 @@ class SentenceCalculationService {
       numberOfDaysToReleaseDateDouble = sentence.getDiscretionaryReleaseCustodialLengthInDays(sentence.sentencedAt).times(releaseDateMultiplier)
       numberOfDaysToReleaseDate = ceil(numberOfDaysToReleaseDateDouble).toInt()
       numberOfDaysToParoleEligibilityDate = ceil(numberOfDaysToReleaseDate.toDouble().times(TWO).div(THREE)).toLong()
-    } else if (sentence.isMadeUpOfSdsPlusAndSdsSentences()) {
+    } else if (sentence.isMadeUpOfSdsHalfwayReleaseAndTwoThirdsReleaseSentence()) {
       val releaseDateMultiplier = determineReleaseDateMultiplier(sentence)
       numberOfDaysToReleaseDateDouble = numberOfDaysToSentenceExpiryDate.toDouble().times(releaseDateMultiplier)
         val firstSentence = sentence.orderedSentences[0] as StandardDeterminateSentence
-        val firstSentenceIsSDSPlus = firstSentence.isSdsPlusSentence()
-        val firstSentences = sentence.orderedSentences.map {it as StandardDeterminateSentence}.filter { if (firstSentenceIsSDSPlus) it.isSdsPlusSentence() else !it.isSdsPlusSentence() }
-        val secondSentences = sentence.orderedSentences.map {it as StandardDeterminateSentence}.filter { if (firstSentenceIsSDSPlus) !it.isSdsPlusSentence() else it.isSdsPlusSentence() }
+        val firstSentenceIsSDSPlus = firstSentence.isTwoThirdsReleaseSentence()
+        val firstSentences = sentence.orderedSentences.map {it as StandardDeterminateSentence}.filter { if (firstSentenceIsSDSPlus) it.isTwoThirdsReleaseSentence() else !it.isTwoThirdsReleaseSentence() }
+        val secondSentences = sentence.orderedSentences.map {it as StandardDeterminateSentence}.filter { if (firstSentenceIsSDSPlus) !it.isTwoThirdsReleaseSentence() else it.isTwoThirdsReleaseSentence() }
         val durationsInFirstSentenceType =
           firstSentences.map { it.duration }
             .reduce { acc, it -> it.appendAll(acc.durationElements) }
@@ -253,7 +254,7 @@ class SentenceCalculationService {
     This function calculates dates after adjustments have been decided.
     It can be run many times to recalculate dates. It needs to be run if there is a change to adjustments.
    */
-  fun calculateDatesFromAdjustments(sentence: CalculableSentence): SentenceCalculation {
+  fun calculateDatesFromAdjustments(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
     val sentenceCalculation: SentenceCalculation = sentence.sentenceCalculation
     // Other adjustments need to be included in the sentence calculation here
     setCrdOrArdDetails(sentence, sentenceCalculation)
@@ -265,7 +266,9 @@ class SentenceCalculationService {
         TUSED
       )
     ) {
-      calculateTUSED(sentenceCalculation)
+      if (booking.offender.getAgeOnDate(sentence.sentenceCalculation.releaseDateWithoutAwarded) >= 18) {
+        calculateTUSED(sentenceCalculation)
+      }
     }
 
     if (sentence.releaseDateTypes.contains(NPD)) {
@@ -320,15 +323,26 @@ class SentenceCalculationService {
         .toInt()
     )
 
-  private fun getBreakdownForReleaseDate(sentenceCalculation: SentenceCalculation) =
-    ReleaseDateCalculationBreakdown(
+  private fun getBreakdownForReleaseDate(sentenceCalculation: SentenceCalculation): ReleaseDateCalculationBreakdown {
+    val immediateRelease = sentenceCalculation.sentence.sentencedAt == sentenceCalculation.releaseDate
+    val daysBetween = DAYS.between(
+      sentenceCalculation.unadjustedDeterminateReleaseDate,
+      sentenceCalculation.adjustedDeterminateReleaseDate
+    )
+      .toInt()
+    return ReleaseDateCalculationBreakdown(
       releaseDate = sentenceCalculation.adjustedDeterminateReleaseDate,
       unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
-      adjustedDays = DAYS.between(sentenceCalculation.unadjustedDeterminateReleaseDate, sentenceCalculation.adjustedDeterminateReleaseDate)
-        .toInt(),
-      rulesWithExtraAdjustments = if (sentenceCalculation.calculatedUnusedReleaseAda != 0) mapOf(CalculationRule.UNUSED_ADA to AdjustmentDuration(sentenceCalculation.calculatedUnusedReleaseAda, DAYS)) else emptyMap()
+      rules = if (immediateRelease) setOf(IMMEDIATE_RELEASE) else emptySet(),
+      adjustedDays = daysBetween,
+      rulesWithExtraAdjustments = if (sentenceCalculation.calculatedUnusedReleaseAda != 0) mapOf(
+        CalculationRule.UNUSED_ADA to AdjustmentDuration(
+          sentenceCalculation.calculatedUnusedReleaseAda,
+          DAYS
+        )
+      ) else emptyMap()
     )
-
+  }
   private fun calculateLED(
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation
@@ -388,11 +402,17 @@ class SentenceCalculationService {
   private fun calculateTUSED(sentenceCalculation: SentenceCalculation) {
     val adjustedDays =
       sentenceCalculation.calculatedTotalAddedDays.minus(sentenceCalculation.calculatedTotalDeductedDays)
-    sentenceCalculation.topUpSupervisionDate = sentenceCalculation.unadjustedDeterminateReleaseDate
-      .plus(TWELVE, MONTHS).plusDays(adjustedDays.toLong())
+    val immediateRelease = sentenceCalculation.sentence.sentencedAt == sentenceCalculation.releaseDate
+    if (immediateRelease) {
+      sentenceCalculation.topUpSupervisionDate = sentenceCalculation.sentence.sentencedAt
+        .plus(TWELVE, MONTHS)
+    } else {
+      sentenceCalculation.topUpSupervisionDate = sentenceCalculation.unadjustedDeterminateReleaseDate
+        .plus(TWELVE, MONTHS).plusDays(adjustedDays.toLong())
+    }
     sentenceCalculation.breakdownByReleaseDateType[TUSED] =
       ReleaseDateCalculationBreakdown(
-        rules = setOf(TUSED_LICENCE_PERIOD_LT_1Y),
+        rules = setOf(TUSED_LICENCE_PERIOD_LT_1Y) + if (immediateRelease) setOf(IMMEDIATE_RELEASE) else emptySet(),
         rulesWithExtraAdjustments = mapOf(TUSED_LICENCE_PERIOD_LT_1Y to AdjustmentDuration(TWELVE.toInt(), MONTHS)),
         adjustedDays = adjustedDays,
         releaseDate = sentenceCalculation.topUpSupervisionDate!!,
@@ -530,7 +550,7 @@ class SentenceCalculationService {
 
   private fun determineReleaseDateMultiplier(sentence: CalculableSentence): Double {
     return if (
-      sentence.identificationTrack == SentenceIdentificationTrack.SDS_PLUS
+      sentence.identificationTrack == SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE
     ) {
       2 / 3.toDouble()
     } else {

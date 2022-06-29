@@ -60,9 +60,10 @@ import javax.persistence.EntityNotFoundException
 
 class CalculationTransactionalServiceTest {
   private val jsonTransformation = JsonTransformation()
+  private val featureToggles = FeatureToggles(true)
   private val sentenceCalculationService = SentenceCalculationService()
   private val sentencesExtractionService = SentencesExtractionService()
-  private val sentenceIdentificationService = SentenceIdentificationService()
+  private val sentenceIdentificationService = SentenceIdentificationService(featureToggles)
   private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
     sentenceIdentificationService
@@ -75,7 +76,7 @@ class CalculationTransactionalServiceTest {
     sentencesExtractionService
   )
   private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
-  private val validationService = ValidationService(FeatureToggles(true), sentencesExtractionService)
+  private val validationService = ValidationService(featureToggles, sentencesExtractionService)
 
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
@@ -391,12 +392,14 @@ class CalculationTransactionalServiceTest {
 
     val INPUT_DATA: JsonNode =
       JacksonUtil.toJsonNode(
-        "{ \"offender\":{ \"reference\":\"A1234AJ\", \"dateOfBirth\"" +
-          ":\"1980-01-01\",\"isActiveSexOffender\":false}, \"sentences\":[{\"caseSequence\":1,\"lineSequence\":2, \"recallType\":null, \"offence\":{\"committedAt\":\"2021-02-03\",\"" +
-          "isScheduleFifteen\":false, \"isScheduleFifteenMaximumLife\":false},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"" +
-          "MONTHS\":0,\"YEARS\":5}},\"type\":\"StandardSentence\",\"sentencedAt\":\"2021-02-03\"," +
-          "\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\",\"consecutiveSentenceUUIDs\":[], \"caseReference\":null" +
-          "}], \"adjustments\":{}, \"bookingId\":12345, \"returnToCustodyDate\":null }"
+        "{\"offender\":{\"reference\":\"A1234AJ\",\"dateOfBirth\":\"1980-01-01\",\"isActiveSexOffender\":false}," +
+          "\"sentences\":[{\"type\":\"StandardSentence\",\"offence\":{\"committedAt\":\"2021-02-03\"," +
+          "\"isScheduleFifteen\":false,\"isScheduleFifteenMaximumLife\":false,\"isPcscSds\":false,\"isPcscSec250\":false," +
+          "\"isPcscSdsPlus\":false},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}}," +
+          "\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\"," +
+          "\"consecutiveSentenceUUIDs\":[],\"caseSequence\":1,\"lineSequence\":2,\"caseReference\":null," +
+          "\"recallType\":null,\"section250\":false}],\"adjustments\":{},\"returnToCustodyDate\":null," +
+          "\"bookingId\":12345}"
       )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(

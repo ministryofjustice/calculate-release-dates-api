@@ -57,6 +57,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
@@ -64,7 +65,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
@@ -82,19 +82,26 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
   // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
   // treated as a separate sentence
   return sentence.offences.map { offendersOffence ->
-    val isScheduleFifteenMaximumLife = if (calculationUserInputs != null) {
+    val offence = if (calculationUserInputs != null) {
       val matchingSentenceInput = calculationUserInputs.sentenceCalculationUserInputs.find {
         it.sentenceSequence == sentence.sentenceSequence && it.offenceCode == offendersOffence.offenceCode
       }
-      matchingSentenceInput?.isScheduleFifteenMaximumLife ?: offendersOffence.isScheduleFifteenMaximumLife
+      Offence(
+        committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
+        isScheduleFifteenMaximumLife = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.ORIGINAL,
+        isPcscSds = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.FOUR_TO_UNDER_SEVEN,
+        isPcscSec250 = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.SECTION_250,
+        isPcscSdsPlus = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.UPDATED,
+      )
     } else {
-      offendersOffence.isScheduleFifteenMaximumLife
+      Offence(
+        committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
+        isScheduleFifteenMaximumLife = offendersOffence.isScheduleFifteenMaximumLife,
+        isPcscSds = offendersOffence.isPcscSds,
+        isPcscSec250 = offendersOffence.isPcscSec250,
+        isPcscSdsPlus = offendersOffence.isPcscSdsPlus,
+      )
     }
-
-    val offence = Offence(
-      committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
-      isScheduleFifteenMaximumLife = isScheduleFifteenMaximumLife
-    )
 
     val consecutiveSentenceUUIDs = if (sentence.consecutiveToSequence != null)
       listOf(
@@ -114,7 +121,8 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
         caseSequence = sentence.caseSequence,
         lineSequence = sentence.lineSequence,
         caseReference = sentence.caseReference,
-        recallType = sentenceCalculationType.recallType
+        recallType = sentenceCalculationType.recallType,
+        section250 = sentenceCalculationType == SentenceCalculationType.SEC250 || sentenceCalculationType == SentenceCalculationType.SEC250_ORA
       )
     } else {
       val imprisonmentTerm = sentence.terms.first { it.code == "IMP" }
@@ -155,11 +163,9 @@ fun transform(prisonerDetails: PrisonerDetails): Offender {
   return Offender(
     dateOfBirth = prisonerDetails.dateOfBirth,
     reference = prisonerDetails.offenderNo,
-    isActiveSexOffender = prisonerDetails.alerts.any { pd ->
-      pd.alertType == "S" &&
-        pd.alertCode == "SOR" && // Sex offence register
-        pd.dateCreated.isBeforeOrEqualTo(LocalDate.now()) &&
-        (pd.dateExpires == null || pd.dateExpires.isAfter(LocalDate.now()))
+    isActiveSexOffender = prisonerDetails.activeAlerts().any {
+      it.alertType == "S" &&
+        it.alertCode == "SOR" // Sex offence register
     }
   )
 }
@@ -288,10 +294,19 @@ fun transform(calculationUserInputs: CalculationUserInputs?, sourceData: PrisonA
     CalculationRequestUserInput(
       sentenceSequence = it.sentenceSequence,
       offenceCode = it.offenceCode,
-      type = UserInputType.SCHEDULE_15_ATTRACTING_LIFE,
-      userChoice = it.isScheduleFifteenMaximumLife,
-      nomisMatches = sourceData.sentenceAndOffences.any { sentence -> sentence.sentenceSequence == it.sentenceSequence && sentence.offences.any { offence -> offence.offenceCode == it.offenceCode && offence.isScheduleFifteenMaximumLife == it.isScheduleFifteenMaximumLife } }
+      type = it.userInputType,
+      userChoice = it.userChoice,
+      nomisMatches = sourceData.sentenceAndOffences.any { sentence -> sentence.sentenceSequence == it.sentenceSequence && sentence.offences.any { offence -> offence.offenceCode == it.offenceCode && offenceMatchesChoice(offence, it.userInputType, it.userChoice) } }
     )
+  }
+}
+
+fun offenceMatchesChoice(offence: OffenderOffence, userInputType: UserInputType, userChoice: Boolean): Boolean {
+  return when (userInputType) {
+    UserInputType.ORIGINAL -> offence.isScheduleFifteenMaximumLife == userChoice
+    UserInputType.FOUR_TO_UNDER_SEVEN -> offence.isPcscSds == userChoice
+    UserInputType.SECTION_250 -> offence.isPcscSec250 == userChoice
+    UserInputType.UPDATED -> offence.isPcscSdsPlus == userChoice
   }
 }
 
@@ -304,7 +319,8 @@ fun transform(calculationRequestUserInputs: List<CalculationRequestUserInput>): 
       CalculationSentenceUserInput(
         sentenceSequence = it.sentenceSequence,
         offenceCode = it.offenceCode,
-        isScheduleFifteenMaximumLife = it.userChoice // we'll need to look at the type column when we have psc changes (dependent on UI design)
+        userInputType = it.type,
+        userChoice = it.userChoice,
       )
     }
   )
