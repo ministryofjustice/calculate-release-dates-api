@@ -387,9 +387,10 @@ class CalculationController(
     @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
     @PathVariable("calculationRequestId")
     calculationRequestId: Long
-  ): CalculationUserInputs? {
+  ): CalculationUserInputs {
     log.info("Request received to get user input from $calculationRequestId calculation")
     return calculationTransactionalService.findUserInput(calculationRequestId)
+      ?: throw EntityNotFoundException("No user inputs for calculationRequestId $calculationRequestId ")
   }
 
   @GetMapping(value = ["/adjustments/{calculationRequestId}"])
