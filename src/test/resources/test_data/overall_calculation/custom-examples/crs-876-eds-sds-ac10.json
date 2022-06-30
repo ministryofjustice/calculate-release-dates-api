@@ -31,7 +31,7 @@
           "YEARS": 1
         }
       },
-      "automaticRelease": false,
+      "automaticRelease": true,
       "sentencedAt": "2015-03-03",
       "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
     },
@@ -51,7 +51,7 @@
           "YEARS": 1
         }
       },
-      "automaticRelease": true,
+      "automaticRelease": false,
       "sentencedAt": "2015-06-17",
       "consecutiveSentenceUUIDs": [
         "e40f48b6-92df-49d0-af99-507194c380fa"
