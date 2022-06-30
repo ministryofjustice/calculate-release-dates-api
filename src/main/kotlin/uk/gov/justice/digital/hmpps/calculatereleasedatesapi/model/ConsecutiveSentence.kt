@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import java.lang.UnsupportedOperationException
 import java.time.LocalDate
 
-class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>): CalculableSentence {
+class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : CalculableSentence {
   override val sentencedAt: LocalDate = orderedSentences.minOf(CalculableSentence::sentencedAt)
   override val offence: Offence = orderedSentences.map(CalculableSentence::offence).minByOrNull(Offence::committedAt)!!
 
@@ -60,6 +60,10 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>): Calcu
     return orderedSentences.all { it is ExtendedDeterminateSentence }
   }
 
+  fun hasExtendedSentence(): Boolean {
+    return orderedSentences.any { it is ExtendedDeterminateSentence }
+  }
+
   private fun hasAfterCjaLaspo(): Boolean {
     return orderedSentences.any { it.identificationTrack === SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
   }
@@ -69,11 +73,11 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>): Calcu
   }
 
   fun hasOraSentences(): Boolean {
-    return orderedSentences.any{ it is StandardDeterminateSentence && it.isOraSentence() }
+    return orderedSentences.any { it is StandardDeterminateSentence && it.isOraSentence() }
   }
 
   fun hasNonOraSentences(): Boolean {
-    return  orderedSentences.any { it is StandardDeterminateSentence && !it.isOraSentence() }
+    return orderedSentences.any { it is StandardDeterminateSentence && !it.isOraSentence() }
   }
 
   fun isMadeUpOfBeforeAndAfterCjaLaspoSentences(): Boolean {
@@ -89,11 +93,11 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>): Calcu
   }
 
   private fun hasSdsTwoThirdsReleaseSentence(): Boolean {
-    return orderedSentences.any { it is StandardDeterminateSentence && it.isTwoThirdsReleaseSentence()}
+    return orderedSentences.any { it is StandardDeterminateSentence && it.isTwoThirdsReleaseSentence() }
   }
 
   private fun hasSdsHalfwayReleaseSentence(): Boolean {
-    return orderedSentences.any { it is StandardDeterminateSentence && !it.isTwoThirdsReleaseSentence()}
+    return orderedSentences.any { it is StandardDeterminateSentence && !it.isTwoThirdsReleaseSentence() }
   }
 
   fun isMadeUpOfSdsHalfwayReleaseAndTwoThirdsReleaseSentence(): Boolean {
@@ -109,7 +113,7 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>): Calcu
   }
 
   fun hasDiscretionaryRelease(): Boolean {
-    return orderedSentences.any {  it is ExtendedDeterminateSentence && !it.automaticRelease }
+    return orderedSentences.any { it is ExtendedDeterminateSentence && !it.automaticRelease }
   }
 
   fun hasAutomaticAndDiscretionaryRelease(): Boolean {
@@ -118,7 +122,7 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>): Calcu
 
   fun getAutomaticReleaseCustodialLengthInDays(): Int {
     return orderedSentences
-      .filter {  it is ExtendedDeterminateSentence && it.automaticRelease }
+      .filter { it is ExtendedDeterminateSentence && it.automaticRelease }
       .map { (it as ExtendedDeterminateSentence).custodialDuration }
       .reduce { acc, it -> acc.appendAll(it.durationElements) }
       .getLengthInDays(sentencedAt)
@@ -126,7 +130,7 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>): Calcu
 
   fun getDiscretionaryReleaseCustodialLengthInDays(startDate: LocalDate): Int {
     return orderedSentences
-      .filter {  it is ExtendedDeterminateSentence && !it.automaticRelease }
+      .filter { it is ExtendedDeterminateSentence && !it.automaticRelease }
       .map { (it as ExtendedDeterminateSentence).custodialDuration }
       .reduce { acc, it -> acc.appendAll(it.durationElements) }
       .getLengthInDays(startDate)

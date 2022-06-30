@@ -1,8 +1,8 @@
 {
   "dates": {
-    "SLED": "2020-05-19",
-    "CRD": "2017-09-18",
-    "ESED": "2020-05-19"
+    "SLED": "2023-11-01",
+    "CRD": "2017-01-01",
+    "ESED": "2023-12-16"
   },
-  "effectiveSentenceLength": "P6Y"
+  "effectiveSentenceLength": "P11Y"
 }

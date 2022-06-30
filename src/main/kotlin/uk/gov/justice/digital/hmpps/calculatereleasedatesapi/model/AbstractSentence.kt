@@ -44,5 +44,4 @@ abstract class AbstractSentence(
   @JsonIgnore
   @Transient
   override lateinit var releaseDateTypes: List<ReleaseDateType>
-
 }
