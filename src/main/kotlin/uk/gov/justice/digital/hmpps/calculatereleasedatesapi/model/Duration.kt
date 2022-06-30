@@ -93,4 +93,11 @@ data class Duration(
     }
     return Duration(allElements.toMap())
   }
+
+  fun isEmpty():Boolean {
+    return this.durationElements.entries.none { it.value != 0L }
+  }
+  fun isNotEmpty():Boolean {
+    return !this.isEmpty()
+  }
 }
