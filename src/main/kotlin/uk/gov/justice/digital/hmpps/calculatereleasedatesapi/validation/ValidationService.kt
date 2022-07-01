@@ -180,7 +180,7 @@ class ValidationService(
     val validationMessages = sentencesAndOffences.filter {
       !supportedSentences.contains(SentenceCalculationType.from(it.sentenceCalculationType))
     }
-    .map { ValidationMessage("Unsupported sentence type ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceTypeDescription)) }.toMutableList()
+      .map { ValidationMessage("Unsupported sentence type ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceTypeDescription)) }.toMutableList()
     return validationMessages.toList()
   }
 
