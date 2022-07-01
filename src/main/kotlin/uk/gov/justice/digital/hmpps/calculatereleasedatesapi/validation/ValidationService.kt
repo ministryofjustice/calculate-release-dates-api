@@ -177,20 +177,10 @@ class ValidationService(
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedSentences: List<SentenceCalculationType> = SentenceCalculationType.values()
       .filter { (featureToggles.eds && it.sentenceClazz == ExtendedDeterminateSentence::class.java) || it.sentenceClazz == StandardDeterminateSentence::class.java }
-    var sds = false
-    var eds = false
     val validationMessages = sentencesAndOffences.filter {
-      val sentenceType = SentenceCalculationType.from(it.sentenceCalculationType)
-      if (sentenceType != null) {
-        sds = sds || sentenceType.sentenceClazz == StandardDeterminateSentence::class.java
-        eds = eds || sentenceType.sentenceClazz == ExtendedDeterminateSentence::class.java
-      }
-      !supportedSentences.contains(sentenceType)
+      !supportedSentences.contains(SentenceCalculationType.from(it.sentenceCalculationType))
     }
-      .map { ValidationMessage("Unsupported sentence type ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceTypeDescription)) }.toMutableList()
-    if (sds && eds) {
-      validationMessages.add(ValidationMessage("Booking contains SDS and EDS sentences, this is currently not supported", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, -1, listOf("SDS and EDS sentences")))
-    }
+    .map { ValidationMessage("Unsupported sentence type ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceTypeDescription)) }.toMutableList()
     return validationMessages.toList()
   }
 
