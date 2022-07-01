@@ -2,19 +2,17 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
 import java.time.LocalDate
 
 class CalculationUserQuestionServiceTest {
-  private val pcscDate = LocalDate.now().minusDays(1)
-  private val featureToggles = FeatureToggles(pcscStartDate = pcscDate)
-  private val calculationUserQuestionService = CalculationUserQuestionService(featureToggles)
+  private val calculationUserQuestionService = CalculationUserQuestionService()
 
   val offences = listOf(
     OffenderOffence(
@@ -31,7 +29,7 @@ class CalculationUserQuestionServiceTest {
     sentenceSequence = 1,
     lineSequence = 1,
     caseSequence = 1,
-    sentenceDate = pcscDate.minusDays(1),
+    sentenceDate = PCSC_COMMENCEMENT_DATE.minusDays(1),
     terms = listOf(
       SentenceTerms(years = 6, months = 11)
     ),
@@ -47,7 +45,7 @@ class CalculationUserQuestionServiceTest {
     sentenceSequence = 2,
     lineSequence = 1,
     caseSequence = 1,
-    sentenceDate = pcscDate.plusDays(1),
+    sentenceDate = PCSC_COMMENCEMENT_DATE.plusDays(1),
     terms = listOf(
       SentenceTerms(years = 3, months = 11)
     ),
@@ -63,7 +61,7 @@ class CalculationUserQuestionServiceTest {
     sentenceSequence = 3,
     lineSequence = 2,
     caseSequence = 1,
-    sentenceDate = pcscDate.minusDays(1),
+    sentenceDate = PCSC_COMMENCEMENT_DATE.minusDays(1),
     terms = listOf(
       SentenceTerms(years = 8)
     ),
@@ -79,7 +77,7 @@ class CalculationUserQuestionServiceTest {
     sentenceSequence = 4,
     lineSequence = 2,
     caseSequence = 1,
-    sentenceDate = pcscDate,
+    sentenceDate = PCSC_COMMENCEMENT_DATE,
     terms = listOf(
       SentenceTerms(years = 6)
     ),
@@ -95,7 +93,7 @@ class CalculationUserQuestionServiceTest {
     sentenceSequence = 5,
     lineSequence = 2,
     caseSequence = 1,
-    sentenceDate = pcscDate,
+    sentenceDate = PCSC_COMMENCEMENT_DATE,
     terms = listOf(
       SentenceTerms(years = 8)
     ),
@@ -111,7 +109,7 @@ class CalculationUserQuestionServiceTest {
     sentenceSequence = 6,
     lineSequence = 2,
     caseSequence = 1,
-    sentenceDate = pcscDate,
+    sentenceDate = PCSC_COMMENCEMENT_DATE,
     terms = listOf(
       SentenceTerms(years = 8)
     ),

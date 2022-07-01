@@ -8,4 +8,5 @@ object ImportantDates {
   val LASPO_DATE: LocalDate = LocalDate.of(2012, 12, 3)
   val SDS_PLUS_COMMENCEMENT_DATE = LocalDate.of(2020, 4, 1)
   val SEC_91_END_DATE = LocalDate.of(2020, 12, 1)
+  val PCSC_COMMENCEMENT_DATE = LocalDate.of(2022, 6, 28)
 }
