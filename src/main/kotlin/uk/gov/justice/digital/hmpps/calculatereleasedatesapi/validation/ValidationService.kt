@@ -165,13 +165,12 @@ class ValidationService(
   }
 
   private fun validateOffenderSupported(prisonerDetails: PrisonerDetails): List<ValidationMessage> {
-    val afterPcscCommencement = LocalDate.now().isAfterOrEqualTo(featureToggles.pcscStartDate)
     val hasPtdAlert = prisonerDetails.activeAlerts().any() {
       it.alertCode == "PTD" &&
         it.alertType == "O"
     }
 
-    if (afterPcscCommencement && hasPtdAlert) {
+    if (hasPtdAlert) {
       return listOf(ValidationMessage("Prisoner has PTD alert after PCSC commencement date, this is unsupported", ValidationCode.PRISONER_SUBJECT_TO_PTD))
     }
     return emptyList()
