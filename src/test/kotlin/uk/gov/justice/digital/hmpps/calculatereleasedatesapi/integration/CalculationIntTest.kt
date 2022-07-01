@@ -665,24 +665,6 @@ class CalculationIntTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `Run validation on a mixture of SDS and EDS sentences`() {
-    val validationMessages: ValidationMessages = webTestClient.post()
-      .uri("/calculation/EDS-SDS/validate")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(ValidationMessages::class.java)
-      .returnResult().responseBody!!
-
-    assertThat(validationMessages.type).isEqualTo(ValidationType.UNSUPPORTED)
-    assertThat(validationMessages.messages).hasSize(1)
-    assertThat(validationMessages.messages[0].code).isEqualTo(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)
-    assertThat(validationMessages.messages[0].arguments).isEqualTo(listOf("SDS and EDS sentences"))
-  }
-
-  @Test
   fun `Run calculation on adjustment linked to inactive sentence CRS-892`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-892")
