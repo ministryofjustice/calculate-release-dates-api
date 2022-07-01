@@ -10,7 +10,7 @@ class SingleTermSentence(
   override val sentencedAt: LocalDate,
   override val offence: Offence,
   val standardSentences: List<StandardDeterminateSentence>
-) : StandardDeterminate {
+) : CalculableSentence {
   constructor(standardSentences: List<StandardDeterminateSentence>) :
     this(
       standardSentences.minOf(StandardDeterminateSentence::sentencedAt),
@@ -39,7 +39,7 @@ class SingleTermSentence(
       sentenceCalculation.buildString(releaseDateTypes)
   }
 
-  override fun getLengthInDays(): Int {
+  fun combinedDuration(): Duration {
     val firstSentence = standardSentences.get(0)
     val secondSentence = standardSentences.get(1)
     val durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()
@@ -47,7 +47,11 @@ class SingleTermSentence(
       earliestSentencedAt(firstSentence, secondSentence),
       latestExpiryDate(firstSentence, secondSentence)?.plusDays(1L)
     )
-    return Duration(durationElements).getLengthInDays(sentencedAt)
+    return Duration(durationElements)
+  }
+
+  override fun getLengthInDays(): Int {
+    return combinedDuration().getLengthInDays(sentencedAt)
   }
 
   private fun earliestSentencedAt(firstStandardSentence: StandardDeterminateSentence, secondStandardSentence: StandardDeterminateSentence): LocalDate {

@@ -12,7 +12,7 @@ data class Booking(
 ) {
   @JsonIgnore
   @Transient
-  lateinit var consecutiveSentences: List<AbstractConsecutiveSentence<out AbstractSentence>>
+  lateinit var consecutiveSentences: List<ConsecutiveSentence>
 
   @JsonIgnore
   @Transient

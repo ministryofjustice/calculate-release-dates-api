@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isFirstDayOfMonth
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.plusDaysUntilEndOfMonth
 import java.time.LocalDate
@@ -92,5 +93,15 @@ data class Duration(
       }
     }
     return Duration(allElements.toMap())
+  }
+
+  @JsonIgnore
+  fun isEmpty(): Boolean {
+    return this.durationElements.entries.none { it.value != 0L }
+  }
+
+  @JsonIgnore
+  fun isNotEmpty(): Boolean {
+    return !this.isEmpty()
   }
 }

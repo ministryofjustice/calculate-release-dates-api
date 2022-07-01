@@ -20,12 +20,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSenten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
@@ -215,16 +214,31 @@ class BookingExtractionService(
     }
 
     if (latestExtendedDeterminateParoleEligibilityDate != null) {
-      val mostRecentReleaseSentenceHasParoleDate = mostRecentSentencesByReleaseDate.any { it is ExtendedDeterminate && it.sentenceCalculation.extendedDeterminateParoleEligibilityDate != null }
-      if (mostRecentReleaseSentenceHasParoleDate) {
-        val latestAutomaticRelease = extractionService.mostRecentOrNull(
-          sentences.filter { (it is ExtendedDeterminateSentence && it.automaticRelease) || (it is ExtendedDeterminateConsecutiveSentence && !it.hasDiscretionaryRelease()) },
+      val mostRecentReleaseSentenceHasParoleDate = mostRecentSentencesByReleaseDate.find { it.sentenceCalculation.extendedDeterminateParoleEligibilityDate != null }
+      if (mostRecentReleaseSentenceHasParoleDate != null) {
+        val latestNonPedRelease = extractionService.mostRecentOrNull(
+          sentences.filter { it.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null },
           SentenceCalculation::releaseDate
         )
-        dates[PED] = if (latestAutomaticRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(
-            latestAutomaticRelease
-          )
-        ) latestAutomaticRelease else latestExtendedDeterminateParoleEligibilityDate
+        val latestSdsRelease = extractionService.mostRecentOrNull(
+          sentences.filter { it is StandardDeterminateSentence },
+          SentenceCalculation::releaseDate
+        )
+        val latestEdsRelease = extractionService.mostRecentOrNull(
+          sentences.filter { it is ExtendedDeterminateSentence },
+          SentenceCalculation::releaseDate
+        )
+        if (latestSdsRelease != null && latestEdsRelease != null && latestSdsRelease.isAfterOrEqualTo(latestEdsRelease)) {
+          // SDS release is after PED, so no PED required.
+        } else {
+          dates[PED] = if (latestSdsRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestSdsRelease)) {
+            latestSdsRelease
+          } else if (latestNonPedRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestNonPedRelease)) {
+            latestNonPedRelease
+          } else {
+            latestExtendedDeterminateParoleEligibilityDate
+          }
+        }
       }
     }
 
@@ -332,7 +346,7 @@ class BookingExtractionService(
       }
     }
     return ConcurrentOraAndNonOraDetails(
-      latestReleaseIsConditional,
+      latestReleaseIsConditional || !latestSentenceExpiryIsSED,
       canHaveLicenseExpiry = true
     )
   }

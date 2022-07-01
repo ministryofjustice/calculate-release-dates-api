@@ -1,0 +1,80 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2014-03-01"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 6,
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2016-09-24"
+    },
+    {
+      "offence": {
+        "committedAt": "2014-03-01"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 3,
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2016-09-24"
+    },
+    {
+      "offence": {
+        "committedAt": "2014-03-01"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "automaticRelease": true,
+      "sentencedAt": "2015-03-04",
+      "identifier": "d5b45331-fa60-4325-876f-fd54e34154dc"
+    },
+    {
+      "offence": {
+        "committedAt": "2014-03-01"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2015-03-04",
+      "consecutiveSentenceUUIDs": [
+        "d5b45331-fa60-4325-876f-fd54e34154dc"
+      ]
+    }
+  ],
+  "adjustments": {
+    "TAGGED_BAIL": [
+      {
+        "numberOfDays": 23,
+        "appliesToSentencesFrom": "2015-02-09"
+      }
+    ]
+  }
+}

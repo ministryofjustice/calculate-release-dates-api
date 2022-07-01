@@ -1,0 +1,63 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2014-04-06"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 5
+        }
+      },
+      "sentencedAt": "2014-07-13"
+    },
+    {
+      "offence": {
+        "committedAt": "2014-04-06"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 1
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2014-07-13"
+    },
+    {
+      "offence": {
+        "committedAt": "2014-04-06"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2014-07-13"
+    }
+  ],
+  "adjustments": {
+    "TAGGED_BAIL": [
+      {
+        "numberOfDays": 16,
+        "appliesToSentencesFrom": "2014-06-27"
+      }
+    ]
+  }
+}
