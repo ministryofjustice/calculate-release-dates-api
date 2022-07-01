@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_PLUS_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.temporal.ChronoUnit
@@ -170,7 +171,7 @@ class SentenceIdentificationService(
       val overEighteen = offender.getAgeOnDate(sentence.sentencedAt) > INT_EIGHTEEN
 
       if (sentence is StandardDeterminateSentence && sentence.sentencedAt.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE)) {
-        if (sentence.sentencedAt.isAfterOrEqualTo(featureToggles.pcscStartDate)) {
+        if (sentence.sentencedAt.isAfterOrEqualTo(PCSC_COMMENCEMENT_DATE)) {
           if (sentence.section250) {
             if (durationGreaterThanSevenYears && sentence.offence.isPcscSec250) {
               sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE

@@ -1,10 +1,13 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceQuestion
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserQuestions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType.FOUR_TO_UNDER_SEVEN
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType.ORIGINAL
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType.SECTION_250
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType.UPDATED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
@@ -16,29 +19,29 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.SEC91_03_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.YOI
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.YOI_ORA
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_PLUS_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.Period
 import java.util.EnumSet
 
 @Service
-class CalculationUserQuestionService(
-  val featureToggles: FeatureToggles
-) {
+class CalculationUserQuestionService {
   val postPcscCalcTypes: Map<UserInputType, EnumSet<SentenceCalculationType>> = mapOf(
-    UserInputType.ORIGINAL to EnumSet.of(
+    ORIGINAL to EnumSet.of(
       ADIMP, YOI, SEC250, SEC91_03,
       ADIMP_ORA, YOI_ORA, SEC250_ORA, SEC91_03_ORA,
     ),
-    UserInputType.FOUR_TO_UNDER_SEVEN to EnumSet.of(
+    FOUR_TO_UNDER_SEVEN to EnumSet.of(
       ADIMP, YOI,
       ADIMP_ORA, YOI_ORA
     ),
-    UserInputType.UPDATED to EnumSet.of(
+    UPDATED to EnumSet.of(
       ADIMP, YOI,
       ADIMP_ORA, YOI_ORA
     ),
-    UserInputType.SECTION_250 to EnumSet.of(
+    SECTION_250 to EnumSet.of(
       SEC250,
       SEC250_ORA
     ),
@@ -57,23 +60,23 @@ class CalculationUserQuestionService(
 
         var question: CalculationSentenceQuestion? = null
         if (sentencedWithinOriginalSdsPlusWindow) {
-          val matchingSentenceType = postPcscCalcTypes[UserInputType.ORIGINAL]!!.contains(sentenceCalculationType)
+          val matchingSentenceType = postPcscCalcTypes[ORIGINAL]!!.contains(sentenceCalculationType)
           if (matchingSentenceType && sevenYearsOrMore && overEighteenOnSentenceDate) {
-            question = CalculationSentenceQuestion(it.sentenceSequence, UserInputType.ORIGINAL)
+            question = CalculationSentenceQuestion(it.sentenceSequence, ORIGINAL)
           }
         } else if (sentencedAfterPcsc) {
           if (fourToUnderSeven) {
-            val matchingSentenceType = postPcscCalcTypes[UserInputType.FOUR_TO_UNDER_SEVEN]!!.contains(sentenceCalculationType)
+            val matchingSentenceType = postPcscCalcTypes[FOUR_TO_UNDER_SEVEN]!!.contains(sentenceCalculationType)
             if (matchingSentenceType && overEighteenOnSentenceDate) {
-              question = CalculationSentenceQuestion(it.sentenceSequence, UserInputType.FOUR_TO_UNDER_SEVEN)
+              question = CalculationSentenceQuestion(it.sentenceSequence, FOUR_TO_UNDER_SEVEN)
             }
           } else if (sevenYearsOrMore) {
-            val isUpdatedSentenceType = postPcscCalcTypes[UserInputType.UPDATED]!!.contains(sentenceCalculationType)
-            val isSection250SentenceType = postPcscCalcTypes[UserInputType.SECTION_250]!!.contains(sentenceCalculationType)
+            val isUpdatedSentenceType = postPcscCalcTypes[UPDATED]!!.contains(sentenceCalculationType)
+            val isSection250SentenceType = postPcscCalcTypes[SECTION_250]!!.contains(sentenceCalculationType)
             if (isUpdatedSentenceType && overEighteenOnSentenceDate) {
-              question = CalculationSentenceQuestion(it.sentenceSequence, UserInputType.UPDATED)
+              question = CalculationSentenceQuestion(it.sentenceSequence, UPDATED)
             } else if (isSection250SentenceType) {
-              question = CalculationSentenceQuestion(it.sentenceSequence, UserInputType.SECTION_250)
+              question = CalculationSentenceQuestion(it.sentenceSequence, SECTION_250)
             }
           }
         }
@@ -84,12 +87,12 @@ class CalculationUserQuestionService(
 
   private fun sentencedAfterPcsc(sentence: SentenceAndOffences): Boolean {
     return sentence.sentenceDate.isAfterOrEqualTo(
-      featureToggles.pcscStartDate
+      PCSC_COMMENCEMENT_DATE
     )
   }
 
   private fun sentencedWithinOriginalSdsPlusWindow(sentence: SentenceAndOffences): Boolean {
-    return sentence.sentenceDate.isAfterOrEqualTo(ImportantDates.SDS_PLUS_COMMENCEMENT_DATE) && !sentencedAfterPcsc(sentence)
+    return sentence.sentenceDate.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE) && !sentencedAfterPcsc(sentence)
   }
 
   private fun overEighteenOnSentenceDate(prisonerDetails: PrisonerDetails, sentence: SentenceAndOffences): Boolean {
