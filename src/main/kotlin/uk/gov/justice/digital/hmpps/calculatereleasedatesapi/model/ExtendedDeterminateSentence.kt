@@ -19,7 +19,7 @@ data class ExtendedDeterminateSentence(
   override val lineSequence: Int? = null,
   override val caseReference: String?,
   override val recallType: RecallType? = null
-) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType), ExtendedDeterminate {
+) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType) {
 
   override fun buildString(): String {
     return "Sentence\t:\t\n" +
