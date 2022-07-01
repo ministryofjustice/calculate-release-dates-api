@@ -1,0 +1,79 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2014-04-18"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 6
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 1
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2014-05-02",
+      "identifier": "597df4c3-96af-4932-8fd0-d8460c030fcb"
+    },
+    {
+      "offence": {
+        "committedAt": "2014-04-18"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 6
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 1
+        }
+      },
+      "automaticRelease": true,
+      "sentencedAt": "2014-05-02",
+      "identifier": "0194ce7a-288b-447f-a6ad-191226a769eb",
+      "consecutiveSentenceUUIDs": [
+        "597df4c3-96af-4932-8fd0-d8460c030fcb"
+      ]
+    },
+    {
+      "offence": {
+        "committedAt": "2014-04-18",
+        "isScheduleFifteenMaximumLife": true
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 7
+        }
+      },
+      "sentencedAt": "2020-04-06",
+      "identifier": "18f096c7-7e61-484b-a4df-d9846dd88609",
+      "consecutiveSentenceUUIDs": [
+        "0194ce7a-288b-447f-a6ad-191226a769eb"
+      ]
+    },
+    {
+      "offence": {
+        "committedAt": "2014-04-18"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 1
+        }
+      },
+      "sentencedAt": "2020-09-16",
+      "consecutiveSentenceUUIDs": [
+        "18f096c7-7e61-484b-a4df-d9846dd88609"
+      ]
+    }
+  ]
+}
