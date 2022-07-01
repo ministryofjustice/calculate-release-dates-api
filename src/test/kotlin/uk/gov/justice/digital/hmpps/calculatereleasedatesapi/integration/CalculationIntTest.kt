@@ -731,7 +731,7 @@ class CalculationIntTest : IntegrationTestBase() {
   @Test
   fun `Run validation on unsupported prisoner data`() {
     val validationMessages: ValidationMessages = webTestClient.post()
-      .uri("/calculation/${UNSUPPORTED_PRISONER_PRISONER_ID}/validate")
+      .uri("/calculation/$UNSUPPORTED_PRISONER_PRISONER_ID/validate")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
@@ -744,7 +744,6 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(validationMessages.messages).hasSize(1)
     assertThat(validationMessages.messages[0]).matches { it.code == ValidationCode.PRISONER_SUBJECT_TO_PTD }
   }
-
 
   companion object {
     const val PRISONER_ID = "default"
