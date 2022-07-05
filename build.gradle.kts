@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.3.0-beta-1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.3.2"
   kotlin("plugin.spring") version "1.7.0"
   kotlin("plugin.jpa") version "1.7.0"
   id("jacoco")
@@ -97,7 +97,7 @@ jacoco {
 
 kotlin {
   jvmToolchain {
-    (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of("18"))
+    this.languageVersion.set(JavaLanguageVersion.of("18"))
   }
 }
 
