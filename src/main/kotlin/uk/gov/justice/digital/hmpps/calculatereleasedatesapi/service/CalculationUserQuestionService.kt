@@ -30,8 +30,8 @@ import java.util.EnumSet
 class CalculationUserQuestionService {
   val postPcscCalcTypes: Map<UserInputType, EnumSet<SentenceCalculationType>> = mapOf(
     ORIGINAL to EnumSet.of(
-      ADIMP, YOI, SEC250, SEC91_03,
-      ADIMP_ORA, YOI_ORA, SEC250_ORA, SEC91_03_ORA,
+      ADIMP, YOI,
+      ADIMP_ORA, YOI_ORA
     ),
     FOUR_TO_UNDER_SEVEN to EnumSet.of(
       ADIMP, YOI,
