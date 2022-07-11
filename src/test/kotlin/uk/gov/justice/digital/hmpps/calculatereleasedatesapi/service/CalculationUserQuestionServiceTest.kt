@@ -72,6 +72,22 @@ class CalculationUserQuestionServiceTest {
     offences = offences,
   )
 
+  private val originalSentenceSec250 = SentenceAndOffences(
+    bookingId = 1L,
+    sentenceSequence = 3,
+    lineSequence = 2,
+    caseSequence = 1,
+    sentenceDate = PCSC_COMMENCEMENT_DATE.minusDays(1),
+    terms = listOf(
+      SentenceTerms(years = 8)
+    ),
+    sentenceStatus = "IMP",
+    sentenceCategory = "CAT",
+    sentenceCalculationType = SentenceCalculationType.SEC250.name,
+    sentenceTypeDescription = "SEC250",
+    offences = offences,
+  )
+
   private val fourToUnderSevenSentence = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 4,
@@ -237,6 +253,11 @@ class CalculationUserQuestionServiceTest {
     assertThat(result.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.SECTION_250)
   }
 
+  @Test
+  fun `The service identifies that sec250 sentences do not apply to original sentences`() {
+    val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails, listOf(originalSentenceSec250))
+    assertThat(result.sentenceQuestions.size).isEqualTo(0)
+  }
   private companion object {
     val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     val FIRST_MAY_2020: LocalDate = LocalDate.of(2020, 5, 1)
