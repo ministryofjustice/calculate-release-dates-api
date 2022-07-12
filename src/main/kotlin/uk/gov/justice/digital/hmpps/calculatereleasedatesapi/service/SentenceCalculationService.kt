@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_12W_LT_18M
@@ -48,36 +49,52 @@ class SentenceCalculationService {
   }
 
   private fun getConsecutiveRelease(sentence: ConsecutiveSentence): ReleaseDateCalculation {
-    val sentencesWithPed = sentence.orderedSentences.filter { it is ExtendedDeterminateSentence && !it.automaticRelease }
-    val sentencesTwoThirdsWithoutPed = sentence.orderedSentences.filter { !sentencesWithPed.contains(it) && ((it is StandardDeterminateSentence && it.isTwoThirdsReleaseSentence()) || (it is ExtendedDeterminateSentence && it.automaticRelease)) }
-    val sentencesHalfwayWithoutPed = sentence.orderedSentences.filter { !sentencesWithPed.contains(it) && !sentencesTwoThirdsWithoutPed.contains(it) }
+    val sentencesWithPed =
+      sentence.orderedSentences.filter { it is ExtendedDeterminateSentence && !it.automaticRelease }
+    val sentencesTwoThirdsWithoutPed =
+      sentence.orderedSentences.filter { !sentencesWithPed.contains(it) && ((it is StandardDeterminateSentence && it.isTwoThirdsReleaseSentence()) || (it is ExtendedDeterminateSentence && it.automaticRelease)) }
+    val sentencesHalfwayWithoutPed = sentence.orderedSentences.filter {
+      !sentencesWithPed.contains(it) && !sentencesTwoThirdsWithoutPed.contains(it)
+    }
 
-    val firstIndexOfNonPedTwoThirds = sentencesTwoThirdsWithoutPed.minOfOrNull { sentence.orderedSentences.indexOf(it) }
+    val firstIndexOfNonPedTwoThirds =
+      sentencesTwoThirdsWithoutPed.minOfOrNull { sentence.orderedSentences.indexOf(it) }
     val firstIndexOfNonPedHalfway = sentencesHalfwayWithoutPed.minOfOrNull { sentence.orderedSentences.indexOf(it) }
     val sentencesInCalculationOrder =
-      if (firstIndexOfNonPedTwoThirds != null && firstIndexOfNonPedHalfway != null && firstIndexOfNonPedTwoThirds < firstIndexOfNonPedHalfway) listOf(sentencesTwoThirdsWithoutPed, sentencesHalfwayWithoutPed, sentencesWithPed)
+      if (firstIndexOfNonPedTwoThirds != null && firstIndexOfNonPedHalfway != null && firstIndexOfNonPedTwoThirds < firstIndexOfNonPedHalfway) listOf(
+        sentencesTwoThirdsWithoutPed,
+        sentencesHalfwayWithoutPed,
+        sentencesWithPed
+      )
       else listOf(sentencesHalfwayWithoutPed, sentencesTwoThirdsWithoutPed, sentencesWithPed)
 
-    var notionalCrd = sentence.sentencedAt
+    var notionalCrd: LocalDate? = null
     var days = 0
     var numberOfDaysToParoleEligibilityDate: Long? = null
     sentencesInCalculationOrder.forEach {
       if (it.isNotEmpty()) {
+        if (notionalCrd != null) {
+          System.err.println("NOTIONAL CRD: ${notionalCrd.toString()}")
+        }
         val duration = it.map { getCustodialDuration(it) }
           .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
-        val daysInThisDuration = duration.getLengthInDays(notionalCrd)
+        val sentenceStartDate = if (notionalCrd != null) notionalCrd!!.plusDays(1) else sentence.sentencedAt
+        val daysInThisDuration = duration.getLengthInDays(sentenceStartDate)
         if (it == sentencesWithPed) {
           numberOfDaysToParoleEligibilityDate =
             days + ceil(daysInThisDuration.toDouble().times(TWO).div(THREE)).toLong()
         }
         val multiplier = determineReleaseDateMultiplier(it[0].identificationTrack)
         val daysToRelease = ceil(daysInThisDuration.toDouble().times(multiplier)).toLong()
-        notionalCrd = notionalCrd
+        notionalCrd = sentenceStartDate
           .plusDays(daysToRelease)
           .minusDays(ONE)
         days += daysToRelease.toInt()
+
       }
     }
+
+    System.err.println("CRD: ${notionalCrd.toString()}")
     val numberOfDaysToReleaseDateDouble = days.toDouble()
     val numberOfDaysToReleaseDate = days
 
@@ -153,18 +170,25 @@ class SentenceCalculationService {
       numberOfDaysToParoleEligibilityDate = release.numberOfDaysToParoleEligibilityDate
     )
   }
+
   private fun getSingleSentenceRelease(
     sentence: CalculableSentence
   ): ReleaseDateCalculation {
     var numberOfDaysToParoleEligibilityDate: Long? = null
     val releaseDateMultiplier = determineReleaseDateMultiplier(sentence.identificationTrack)
     val custodialDuration = getCustodialDuration(sentence)
-    val numberOfDaysToReleaseDateDouble = custodialDuration.getLengthInDays(sentence.sentencedAt).times(releaseDateMultiplier)
+    val numberOfDaysToReleaseDateDouble =
+      custodialDuration.getLengthInDays(sentence.sentencedAt).times(releaseDateMultiplier)
     val numberOfDaysToReleaseDate: Int = ceil(numberOfDaysToReleaseDateDouble).toInt()
     if (sentence.releaseDateTypes.contains(PED) && sentence is ExtendedDeterminateSentence) {
-      numberOfDaysToParoleEligibilityDate = ceil(numberOfDaysToReleaseDate.toDouble().times(TWO).div(THREE)).toLong()
+      numberOfDaysToParoleEligibilityDate =
+        ceil(numberOfDaysToReleaseDate.toDouble().times(TWO).div(THREE)).toLong()
     }
-    return ReleaseDateCalculation(numberOfDaysToReleaseDateDouble, numberOfDaysToReleaseDate, numberOfDaysToParoleEligibilityDate)
+    return ReleaseDateCalculation(
+      numberOfDaysToReleaseDateDouble,
+      numberOfDaysToReleaseDate,
+      numberOfDaysToParoleEligibilityDate
+    )
   }
 
   fun calculateFixedTermRecall(booking: Booking, days: Int): LocalDate {
@@ -173,10 +197,10 @@ class SentenceCalculationService {
       .minusDays(ONE)
   }
 
-  /*
-    This function calculates dates after adjustments have been decided.
-    It can be run many times to recalculate dates. It needs to be run if there is a change to adjustments.
-   */
+    /*
+      This function calculates dates after adjustments have been decided.
+      It can be run many times to recalculate dates. It needs to be run if there is a change to adjustments.
+     */
   fun calculateDatesFromAdjustments(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
     val sentenceCalculation: SentenceCalculation = sentence.sentenceCalculation
     // Other adjustments need to be included in the sentence calculation here
@@ -242,7 +266,10 @@ class SentenceCalculationService {
     ReleaseDateCalculationBreakdown(
       releaseDate = sentenceCalculation.adjustedExpiryDate,
       unadjustedDate = sentenceCalculation.unadjustedExpiryDate,
-      adjustedDays = DAYS.between(sentenceCalculation.unadjustedExpiryDate, sentenceCalculation.adjustedExpiryDate)
+      adjustedDays = DAYS.between(
+        sentenceCalculation.unadjustedExpiryDate,
+        sentenceCalculation.adjustedExpiryDate
+      )
         .toInt()
     )
 
@@ -266,6 +293,7 @@ class SentenceCalculationService {
       ) else emptyMap()
     )
   }
+
   private fun calculateLED(
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation
@@ -275,10 +303,11 @@ class SentenceCalculationService {
       sentence.hasOraSentences() &&
       sentence.hasNonOraSentences()
     ) {
-      val lengthOfOraSentences = sentence.orderedSentences.filter { it is StandardDeterminateSentence && it.isOraSentence() }
-        .map { (it as StandardDeterminateSentence).duration }
-        .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
-        .getLengthInDays(sentence.sentencedAt)
+      val lengthOfOraSentences =
+        sentence.orderedSentences.filter { it is StandardDeterminateSentence && it.isOraSentence() }
+          .map { (it as StandardDeterminateSentence).duration }
+          .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
+          .getLengthInDays(sentence.sentencedAt)
       val adjustment = floor(lengthOfOraSentences.toDouble().div(TWO)).toLong()
       sentenceCalculation.licenceExpiryDate =
         sentenceCalculation.adjustedDeterminateReleaseDate
@@ -287,14 +316,20 @@ class SentenceCalculationService {
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
         DAYS.between(sentence.sentencedAt, sentenceCalculation.licenceExpiryDate)
       // The LED is calculated from the adjusted release date, therefore unused ADA from the release date has also been applied.
-      val unusedAda = sentenceCalculation.calculatedUnusedReleaseAda + sentenceCalculation.calculatedUnusedLicenseAda
+      val unusedAda =
+        sentenceCalculation.calculatedUnusedReleaseAda + sentenceCalculation.calculatedUnusedLicenseAda
       sentenceCalculation.breakdownByReleaseDateType[LED] =
         ReleaseDateCalculationBreakdown(
           rules = setOf(LED_CONSEC_ORA_AND_NON_ORA),
           adjustedDays = adjustment.toInt(),
           releaseDate = sentenceCalculation.licenceExpiryDate!!,
           unadjustedDate = sentenceCalculation.adjustedDeterminateReleaseDate,
-          rulesWithExtraAdjustments = if (unusedAda != 0) mapOf(CalculationRule.UNUSED_ADA to AdjustmentDuration(unusedAda, DAYS)) else emptyMap()
+          rulesWithExtraAdjustments = if (unusedAda != 0) mapOf(
+            CalculationRule.UNUSED_ADA to AdjustmentDuration(
+              unusedAda,
+              DAYS
+            )
+          ) else emptyMap()
         )
     } else {
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
@@ -335,7 +370,12 @@ class SentenceCalculationService {
     sentenceCalculation.breakdownByReleaseDateType[TUSED] =
       ReleaseDateCalculationBreakdown(
         rules = setOf(TUSED_LICENCE_PERIOD_LT_1Y) + if (immediateRelease) setOf(IMMEDIATE_RELEASE) else emptySet(),
-        rulesWithExtraAdjustments = mapOf(TUSED_LICENCE_PERIOD_LT_1Y to AdjustmentDuration(TWELVE.toInt(), MONTHS)),
+        rulesWithExtraAdjustments = mapOf(
+          TUSED_LICENCE_PERIOD_LT_1Y to AdjustmentDuration(
+            TWELVE.toInt(),
+            MONTHS
+          )
+        ),
         adjustedDays = adjustedDays,
         releaseDate = sentenceCalculation.topUpSupervisionDate!!,
         unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
@@ -375,7 +415,8 @@ class SentenceCalculationService {
         sentenceCalculation.calculatedTotalAwardedDays.toLong()
       )
 
-      val dayAfterNotionalConditionalReleaseDate = sentenceCalculation.notionalConditionalReleaseDate!!.plusDays(ONE)
+      val dayAfterNotionalConditionalReleaseDate =
+        sentenceCalculation.notionalConditionalReleaseDate!!.plusDays(ONE)
       sentenceCalculation.numberOfDaysToNonParoleDate =
         ceil(daysOfOldStyleSentences.toDouble().times(TWO).div(THREE)).toLong()
       sentenceCalculation.nonParoleDate = dayAfterNotionalConditionalReleaseDate
@@ -410,12 +451,16 @@ class SentenceCalculationService {
     sentence: CalculableSentence,
     adjustedDays: Int
   ) {
-    val twentyEightOrMore = max(TWENTY_EIGHT, ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().div(FOUR)).toLong())
+    val twentyEightOrMore =
+      max(TWENTY_EIGHT, ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().div(FOUR)).toLong())
 
     sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = twentyEightOrMore.plus(adjustedDays)
-    sentenceCalculation.homeDetentionCurfewEligibilityDate = sentence.sentencedAt.plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate)
+    sentenceCalculation.homeDetentionCurfewEligibilityDate =
+      sentence.sentencedAt.plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate)
 
-    if (sentence.sentencedAt.plusDays(FOURTEEN).isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewEligibilityDate!!)) {
+    if (sentence.sentencedAt.plusDays(FOURTEEN)
+      .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewEligibilityDate!!)
+    ) {
       calculateHDCEDFourteenDays(sentence, sentenceCalculation, HDCED_GE_12W_LT_18M)
     } else {
       sentenceCalculation.breakdownByReleaseDateType[HDCED] =
@@ -434,13 +479,16 @@ class SentenceCalculationService {
     adjustedDays: Int,
     sentenceCalculation: SentenceCalculation
   ) {
-    sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.numberOfDaysToDeterminateReleaseDate
-      .minus(ONE_HUNDRED_AND_THIRTY_FIVE).toLong()
-      .plus(adjustedDays)
+    sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate =
+      sentenceCalculation.numberOfDaysToDeterminateReleaseDate
+        .minus(ONE_HUNDRED_AND_THIRTY_FIVE).toLong()
+        .plus(adjustedDays)
     sentenceCalculation.homeDetentionCurfewEligibilityDate = sentence.sentencedAt
       .plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate)
 
-    if (sentence.sentencedAt.plusDays(FOURTEEN).isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewEligibilityDate!!)) {
+    if (sentence.sentencedAt.plusDays(FOURTEEN)
+      .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewEligibilityDate!!)
+    ) {
       calculateHDCEDFourteenDays(sentence, sentenceCalculation, HDCED_GE_18M_LT_4Y)
     } else {
       sentenceCalculation.breakdownByReleaseDateType[HDCED] =
@@ -449,7 +497,9 @@ class SentenceCalculationService {
           rulesWithExtraAdjustments = mapOf(HDCED_GE_18M_LT_4Y to AdjustmentDuration(-ONE_HUNDRED_AND_THIRTY_FIVE)),
           adjustedDays = adjustedDays,
           releaseDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
-          unadjustedDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!.plusDays(ONE_HUNDRED_AND_THIRTY_FIVE.toLong())
+          unadjustedDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!.plusDays(
+            ONE_HUNDRED_AND_THIRTY_FIVE.toLong()
+          )
         )
     }
   }
@@ -497,5 +547,6 @@ class SentenceCalculationService {
     private const val TWENTY_EIGHT = 28L
     private const val YEAR_IN_DAYS = 365
     private const val ONE_HUNDRED_AND_THIRTY_FIVE = 135
+    private val log = LoggerFactory.getLogger(this::class.java)
   }
 }
