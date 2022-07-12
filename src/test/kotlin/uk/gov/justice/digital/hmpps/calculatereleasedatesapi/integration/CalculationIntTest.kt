@@ -366,6 +366,7 @@ class CalculationIntTest : IntegrationTestBase() {
         Sentence 5 is invalid: Multiple sentences are consecutive to the same sentence
         Remand missing from and to date
         Remand missing from and to date
+        Adjustment should not be future dated.
         Remand periods are overlapping
       """.trimIndent()
     )
