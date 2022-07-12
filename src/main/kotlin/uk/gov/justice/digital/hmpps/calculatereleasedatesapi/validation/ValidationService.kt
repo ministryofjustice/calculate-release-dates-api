@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.*
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.AdjustmentIsAfterReleaseDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CustodialPeriodExtinguishedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
@@ -14,7 +13,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.UNLAWFULLY_AT_LARGE
@@ -226,7 +224,7 @@ class ValidationService(
     val latestReleaseDatePreAddedDays = sentences.maxOf { it.sentenceCalculation.releaseDateWithoutAdditions }
 
     val adas = booking.adjustments.getOrEmptyList(AdjustmentType.ADDITIONAL_DAYS_AWARDED)
-    val radas = booking.adjustments.getOrEmptyList(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED)
+    val radas = booking.adjustments.getOrEmptyList(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED)
     val uals = booking.adjustments.getOrEmptyList(AdjustmentType.UNLAWFULLY_AT_LARGE)
     val adjustments = adas + radas + uals
 
@@ -246,7 +244,7 @@ class ValidationService(
       if (anyAda)
         arguments.add(AdjustmentType.ADDITIONAL_DAYS_AWARDED.name)
       if (anyRada)
-        arguments.add(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED.name)
+        arguments.add(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED.name)
       if (anyUal)
         arguments.add(AdjustmentType.UNLAWFULLY_AT_LARGE.name)
       throw AdjustmentIsAfterReleaseDateException(
@@ -257,7 +255,7 @@ class ValidationService(
   }
 
   private fun validateRemandOverlappingSentences(booking: Booking) {
-    val remandPeriods = booking.adjustments.getOrEmptyList(REMAND)
+    val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
       val sentenceRanges = booking.getAllExtractableSentences().map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.adjustedDeterminateReleaseDate) }
@@ -297,14 +295,14 @@ class ValidationService(
         determinateSentences, SentenceCalculation::adjustedUncappedDeterminateReleaseDate
       )
       if (earliestSentenceDate.minusDays(1).isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate)) {
-        val hasRemand = latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(REMAND) != 0
-        val hasTaggedBail = latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(TAGGED_BAIL) != 0
+        val hasRemand = latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND) != 0
+        val hasTaggedBail = latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.TAGGED_BAIL) != 0
         val arguments: MutableList<String> = mutableListOf()
         if (hasRemand) {
-          arguments += REMAND.name
+          arguments += AdjustmentType.REMAND.name
         }
         if (hasTaggedBail) {
-          arguments += TAGGED_BAIL.name
+          arguments += AdjustmentType.TAGGED_BAIL.name
         }
         throw CustodialPeriodExtinguishedException("Custodial period extinguished", arguments)
       }

@@ -25,8 +25,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.*
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -305,8 +306,11 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(validationMessages.messages[7]).matches { it.code == ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO && it.sentenceSequence == 5 && it.arguments.contains("6") && it.arguments.contains("7") }
     assertThat(validationMessages.messages[8]).matches { it.code == ValidationCode.REMAND_FROM_TO_DATES_REQUIRED && it.sentenceSequence == null }
     assertThat(validationMessages.messages[9]).matches { it.code == ValidationCode.REMAND_FROM_TO_DATES_REQUIRED && it.sentenceSequence == null }
-    assertThat(validationMessages.messages[10]).matches { it.code == ValidationCode.ADJUSTMENT_FUTURE_DATED && it.sentenceSequence == null && it.arguments.containsAll(
-      listOf(RESTORED_ADDITIONAL_DAYS_AWARDED.name, ADDITIONAL_DAYS_AWARDED.name, UNLAWFULLY_AT_LARGE.name)) }
+    assertThat(validationMessages.messages[10]).matches {
+      it.code == ValidationCode.ADJUSTMENT_FUTURE_DATED && it.sentenceSequence == null && it.arguments.containsAll(
+        listOf(RESTORED_ADDITIONAL_DAYS_AWARDED.name, ADDITIONAL_DAYS_AWARDED.name, UNLAWFULLY_AT_LARGE.name)
+      )
+    }
     assertThat(validationMessages.messages[11]).matches { it.code == ValidationCode.REMAND_OVERLAPS_WITH_REMAND && it.sentenceSequence == null }
   }
 
