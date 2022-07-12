@@ -1,5 +1,34 @@
 {
-  "bookingAdjustments": [],
+  "bookingAdjustments": [
+    {
+      "active": true,
+      "type": "ADDITIONAL_DAYS_AWARDED",
+      "fromDate": "2200-04-28",
+      "toDate": null,
+      "numberOfDays": 2
+    },
+    {
+      "active": true,
+      "type": "ADDITIONAL_DAYS_AWARDED",
+      "fromDate": "2200-04-28",
+      "toDate": null,
+      "numberOfDays": 2
+    },
+    {
+      "active": true,
+      "type": "RESTORED_ADDITIONAL_DAYS_AWARDED",
+      "fromDate": "2200-04-28",
+      "toDate": null,
+      "numberOfDays": 2
+    },
+    {
+      "active": true,
+      "type": "UNLAWFULLY_AT_LARGE",
+      "fromDate": "2200-04-28",
+      "toDate": null,
+      "numberOfDays": 2
+    }
+  ],
   "sentenceAdjustments": [
     {
       "sentenceSequence": 1,

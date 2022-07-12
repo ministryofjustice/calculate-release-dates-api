@@ -13,6 +13,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.UNLAWFULLY_AT_LARGE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -23,6 +27,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import java.time.LocalDate
 
 @Service
 class ValidationService(
@@ -71,7 +76,8 @@ class ValidationService(
   }
 
   private fun validateAdjustments(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
-    val validationMessages = adjustments.sentenceAdjustments.mapNotNull { validateAdjustment(it) }.toMutableList()
+    val validationMessages = adjustments.sentenceAdjustments.mapNotNull { validateSentenceAdjustment(it) }.toMutableList()
+    validationMessages += listOfNotNull(validateBookingAdjustment(adjustments.bookingAdjustments))
     validationMessages += validateRemandOverlappingRemand(adjustments)
     return validationMessages
   }
@@ -94,7 +100,17 @@ class ValidationService(
     return emptyList()
   }
 
-  private fun validateAdjustment(sentenceAdjustment: SentenceAdjustments): ValidationMessage? {
+  private fun validateBookingAdjustment(bookingAdjustments: List<BookingAdjustments>): ValidationMessage? {
+    val invalidAdjustmentTypes = bookingAdjustments.filter {
+      BOOKING_ADJUSTMENTS_TO_VALIDATE.contains(it.type) && it.fromDate.isAfter(LocalDate.now())
+    }.map { it.type }.distinct()
+    if (invalidAdjustmentTypes.isNotEmpty()) {
+      return ValidationMessage("Adjustment should not be future dated.", ValidationCode.ADJUSTMENT_FUTURE_DATED, arguments = invalidAdjustmentTypes.map { it.name })
+    }
+    return null
+  }
+
+  private fun validateSentenceAdjustment(sentenceAdjustment: SentenceAdjustments): ValidationMessage? {
     if (sentenceAdjustment.type == SentenceAdjustmentType.REMAND && (sentenceAdjustment.fromDate == null || sentenceAdjustment.toDate == null)) {
       return ValidationMessage("Remand missing from and to date", ValidationCode.REMAND_FROM_TO_DATES_REQUIRED)
     }
@@ -291,5 +307,9 @@ class ValidationService(
         throw CustodialPeriodExtinguishedException("Custodial period extinguished", arguments)
       }
     }
+  }
+
+  companion object {
+    private val BOOKING_ADJUSTMENTS_TO_VALIDATE = listOf(ADDITIONAL_DAYS_AWARDED, UNLAWFULLY_AT_LARGE, RESTORED_ADDITIONAL_DAYS_AWARDED)
   }
 }
