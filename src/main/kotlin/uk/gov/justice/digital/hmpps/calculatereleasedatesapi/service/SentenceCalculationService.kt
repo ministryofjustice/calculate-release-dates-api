@@ -73,9 +73,6 @@ class SentenceCalculationService {
     var numberOfDaysToParoleEligibilityDate: Long? = null
     sentencesInCalculationOrder.forEach {
       if (it.isNotEmpty()) {
-        if (notionalCrd != null) {
-          System.err.println("NOTIONAL CRD: ${notionalCrd.toString()}")
-        }
         val duration = it.map { getCustodialDuration(it) }
           .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         val sentenceStartDate = if (notionalCrd != null) notionalCrd!!.plusDays(1) else sentence.sentencedAt
@@ -94,7 +91,6 @@ class SentenceCalculationService {
       }
     }
 
-    System.err.println("CRD: ${notionalCrd.toString()}")
     val numberOfDaysToReleaseDateDouble = days.toDouble()
     val numberOfDaysToReleaseDate = days
 
