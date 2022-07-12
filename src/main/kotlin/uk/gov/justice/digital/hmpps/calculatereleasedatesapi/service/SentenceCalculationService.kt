@@ -87,7 +87,6 @@ class SentenceCalculationService {
           .plusDays(daysToRelease)
           .minusDays(ONE)
         days += daysToRelease.toInt()
-
       }
     }
 
