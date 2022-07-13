@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.LocalDate
 import java.util.UUID
 
@@ -31,7 +32,7 @@ data class ExtendedDeterminateSentence(
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
       sentenceCalculation.buildString(releaseDateTypes)
   }
-
+  @JsonIgnore
   fun getCustodialLengthInDays(): Int {
     return custodialDuration.getLengthInDays(sentencedAt)
   }
