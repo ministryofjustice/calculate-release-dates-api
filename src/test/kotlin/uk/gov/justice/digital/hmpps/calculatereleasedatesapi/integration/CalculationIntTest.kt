@@ -359,7 +359,7 @@ class CalculationIntTest : IntegrationTestBase() {
         Sentence 4 is invalid: Offence date shouldn't be after sentence date
         Sentence 3 is invalid: Offence date range shouldn't be after sentence date
         Sentence 2 is invalid: The offence must have a date
-        Sentence 1 is invalid: Sentence has no duration
+        Sentence 1 is invalid: Sentence has no imprisonment duration
         Sentence 5 is invalid: Sentence has multiple terms
         Sentence 8 is invalid: SEC91_03 sentence type incorrectly applied
         Sentence 10 is invalid: SEC91_03_ORA sentence type incorrectly applied
