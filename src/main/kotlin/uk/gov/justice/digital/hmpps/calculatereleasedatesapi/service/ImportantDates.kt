@@ -9,4 +9,6 @@ object ImportantDates {
   val SDS_PLUS_COMMENCEMENT_DATE = LocalDate.of(2020, 4, 1)
   val SEC_91_END_DATE = LocalDate.of(2020, 12, 1)
   val PCSC_COMMENCEMENT_DATE = LocalDate.of(2022, 6, 28)
+  val EDS18_SENTENCE_TYPES_START_DATE = LocalDate.of(2020, 12, 1)
+  val LASPO_AR_SENTENCE_TYPES_END_DATE = LocalDate.of(2015, 4, 13)
 }

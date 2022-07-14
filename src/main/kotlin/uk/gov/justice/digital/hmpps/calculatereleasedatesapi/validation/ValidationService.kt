@@ -24,10 +24,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
+import java.time.Period
 
 @Service
 class ValidationService(
@@ -122,11 +124,8 @@ class ValidationService(
       validateWithoutOffenceDate(it),
       validateOffenceDateAfterSentenceDate(it),
       validateOffenceRangeDateAfterSentenceDate(it),
-      validateDuration(it),
-      validateThatSec91SentenceTypeCorrectlyApplied(it)
-    )
+    ) + validateDuration(it) + listOfNotNull(validateThatSec91SentenceTypeCorrectlyApplied(it), validateEdsSentenceTypesCorrectlyApplied(it))
   }
-
   private fun validateThatSec91SentenceTypeCorrectlyApplied(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
 
@@ -138,25 +137,58 @@ class ValidationService(
     return null
   }
 
-  private fun validateDuration(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
-    val hasMultipleTerms = sentencesAndOffence.terms.size > 1
+  private fun validateEdsSentenceTypesCorrectlyApplied(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
-    if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java && hasMultipleTerms) {
-      return ValidationMessage("Sentence has multiple terms", ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS, sentencesAndOffence.sentenceSequence)
-    }
-    val invalid = sentencesAndOffence.terms.isEmpty() ||
-      (
-        sentencesAndOffence.terms[0].days == 0 &&
-          sentencesAndOffence.terms[0].weeks == 0 &&
-          sentencesAndOffence.terms[0].months == 0 &&
-          sentencesAndOffence.terms[0].years == 0
-        )
-    if (invalid) {
-      return ValidationMessage("Sentence has no duration", ValidationCode.SENTENCE_HAS_NO_DURATION, sentencesAndOffence.sentenceSequence)
+
+    if (listOf(SentenceCalculationType.EDS18, SentenceCalculationType.EDS21, SentenceCalculationType.EDSU18).contains(sentenceCalculationType)) {
+      if (sentencesAndOffence.sentenceDate.isBefore(ImportantDates.EDS18_SENTENCE_TYPES_START_DATE)) {
+        return ValidationMessage("${sentencesAndOffence.sentenceCalculationType} sentence type incorrectly applied", ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, sentencesAndOffence.sentenceSequence, listOf(sentencesAndOffence.sentenceCalculationType))
+      }
+    } else if (sentenceCalculationType == SentenceCalculationType.LASPO_AR) {
+      if (sentencesAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE)) {
+        return ValidationMessage("${sentencesAndOffence.sentenceCalculationType} sentence type incorrectly applied", ValidationCode.LASPO_AR_SENTENCE_TYPE_INCORRECT, sentencesAndOffence.sentenceSequence, listOf(sentencesAndOffence.sentenceCalculationType))
+      }
     }
     return null
   }
 
+  private fun validateDuration(sentencesAndOffence: SentenceAndOffences): List<ValidationMessage> {
+    val validationMessages = mutableListOf<ValidationMessage>()
+    val hasMultipleTerms = sentencesAndOffence.terms.size > 1
+    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
+    if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java && hasMultipleTerms) {
+      validationMessages.add(ValidationMessage("Sentence has multiple terms", ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS, sentencesAndOffence.sentenceSequence))
+    }
+    val imprisonmentTerm = sentencesAndOffence.terms.firstOrNull() { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
+    val invalidImprisonmentTerm = imprisonmentTerm == null || (
+      sentencesAndOffence.terms[0].days == 0 &&
+        sentencesAndOffence.terms[0].weeks == 0 &&
+        sentencesAndOffence.terms[0].months == 0 &&
+        sentencesAndOffence.terms[0].years == 0
+      )
+    if (invalidImprisonmentTerm) {
+      validationMessages.add(ValidationMessage("Sentence has no imprisonment duration", ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_DURATION, sentencesAndOffence.sentenceSequence))
+    }
+
+    if (sentenceCalculationType.sentenceClazz == ExtendedDeterminateSentence::class.java) {
+      val licenseTerm = sentencesAndOffence.terms.firstOrNull() { it.code == SentenceTerms.LICENCE_TERM_CODE }
+      if (licenseTerm == null) {
+        validationMessages.add(ValidationMessage("Sentence has no licence duration", ValidationCode.SENTENCE_HAS_NO_LICENCE_DURATION, sentencesAndOffence.sentenceSequence))
+      } else {
+        val duration = Period.of(licenseTerm!!.years, licenseTerm.months, licenseTerm.weeks * 7 + licenseTerm.days)
+        val endOfDuration = sentencesAndOffence.sentenceDate.plus(duration)
+        val endOfOneYear = sentencesAndOffence.sentenceDate.plusYears(1)
+        val endOfEightYears = sentencesAndOffence.sentenceDate.plusYears(8)
+
+        if (endOfDuration.isBefore(endOfOneYear)) {
+          validationMessages.add(ValidationMessage("Licence duration less than one year", ValidationCode.LICENCE_TERM_LESS_THAN_ONE_YEAR, sentencesAndOffence.sentenceSequence))
+        } else if (endOfDuration.isAfter(endOfEightYears)) {
+          validationMessages.add(ValidationMessage("Licence duration greater than eight years", ValidationCode.LICENCE_TERM_MORE_THAN_EIGHT_YEARS, sentencesAndOffence.sentenceSequence))
+        }
+      }
+    }
+    return validationMessages
+  }
   private fun validateOffenceRangeDateAfterSentenceDate(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
     val invalid = sentencesAndOffence.offences.any { it.offenceEndDate != null && it.offenceEndDate > sentencesAndOffence.sentenceDate }
     if (invalid) {

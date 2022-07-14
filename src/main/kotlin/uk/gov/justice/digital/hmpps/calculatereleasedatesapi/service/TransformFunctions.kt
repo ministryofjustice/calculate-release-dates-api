@@ -125,8 +125,8 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
         section250 = sentenceCalculationType == SentenceCalculationType.SEC250 || sentenceCalculationType == SentenceCalculationType.SEC250_ORA
       )
     } else {
-      val imprisonmentTerm = sentence.terms.first { it.code == "IMP" }
-      val licenseTerm = sentence.terms.first { it.code == "LIC" }
+      val imprisonmentTerm = sentence.terms.first { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
+      val licenseTerm = sentence.terms.first { it.code == SentenceTerms.LICENCE_TERM_CODE }
 
       ExtendedDeterminateSentence(
         sentencedAt = sentence.sentenceDate,
