@@ -299,7 +299,7 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(validationMessages.messages[0]).matches { it.code == ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE && it.sentenceSequence == 4 }
     assertThat(validationMessages.messages[1]).matches { it.code == ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE && it.sentenceSequence == 3 }
     assertThat(validationMessages.messages[2]).matches { it.code == ValidationCode.OFFENCE_MISSING_DATE && it.sentenceSequence == 2 }
-    assertThat(validationMessages.messages[3]).matches { it.code == ValidationCode.SENTENCE_HAS_NO_DURATION && it.sentenceSequence == 1 }
+    assertThat(validationMessages.messages[3]).matches { it.code == ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_DURATION && it.sentenceSequence == 1 }
     assertThat(validationMessages.messages[4]).matches { it.code == ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS && it.sentenceSequence == 5 }
     assertThat(validationMessages.messages[5]).matches { it.code == ValidationCode.SEC_91_SENTENCE_TYPE_INCORRECT && it.sentenceSequence == 8 && it.arguments.contains("SEC91_03") }
     assertThat(validationMessages.messages[6]).matches { it.code == ValidationCode.SEC_91_SENTENCE_TYPE_INCORRECT && it.sentenceSequence == 10 && it.arguments.contains("SEC91_03_ORA") }

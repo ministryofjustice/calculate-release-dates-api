@@ -14,7 +14,8 @@
         "years":0,
         "months":0,
         "weeks":0,
-        "days":1
+        "days":1,
+        "code": "IMP"
       }
     ],
     "offences":[
@@ -37,7 +38,8 @@
         "years":0,
         "months":0,
         "weeks":0,
-        "days":1
+        "days":1,
+        "code": "IMP"
       }
     ],
     "caseSequence":1,
@@ -65,7 +67,8 @@
         "years":0,
         "months":0,
         "weeks":0,
-        "days":1
+        "days":1,
+        "code": "IMP"
       }
     ],
     "caseSequence":2,
@@ -91,7 +94,8 @@
         "years":0,
         "months":0,
         "weeks":0,
-        "days":0
+        "days":0,
+        "code": "IMP"
       }
     ],
     "caseSequence":2,
@@ -118,13 +122,15 @@
         "years":1,
         "months":0,
         "weeks":0,
-        "days":0
+        "days":0,
+        "code": "IMP"
       },
       {
         "years":1,
         "months":0,
         "weeks":0,
-        "days":0
+        "days":0,
+        "code": "IMP"
       }
     ],
     "caseSequence":2,
@@ -152,7 +158,8 @@
         "years":1,
         "months":0,
         "weeks":0,
-        "days":0
+        "days":0,
+        "code": "IMP"
       }
     ],
     "caseSequence":2,
@@ -180,7 +187,8 @@
         "years":1,
         "months":0,
         "weeks":0,
-        "days":0
+        "days":0,
+        "code": "IMP"
       }
     ],
     "caseSequence":2,
@@ -207,7 +215,8 @@
         "years":1,
         "months":0,
         "weeks":0,
-        "days":0
+        "days":0,
+        "code": "IMP"
       }
     ],
     "caseSequence":2,
@@ -234,7 +243,8 @@
         "years":1,
         "months":0,
         "weeks":0,
-        "days":0
+        "days":0,
+        "code": "IMP"
       }
     ],
     "caseSequence":2,
@@ -261,7 +271,8 @@
         "years":1,
         "months":0,
         "weeks":0,
-        "days":0
+        "days":0,
+        "code": "IMP"
       }
     ],
     "caseSequence":2,
