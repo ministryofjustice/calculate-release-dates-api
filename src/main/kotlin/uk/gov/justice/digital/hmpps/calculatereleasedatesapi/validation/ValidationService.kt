@@ -125,7 +125,6 @@ class ValidationService(
       validateOffenceDateAfterSentenceDate(it),
       validateOffenceRangeDateAfterSentenceDate(it),
     ) + validateDuration(it) + listOfNotNull(validateThatSec91SentenceTypeCorrectlyApplied(it), validateEdsSentenceTypesCorrectlyApplied(it))
-
   }
   private fun validateThatSec91SentenceTypeCorrectlyApplied(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
@@ -162,10 +161,11 @@ class ValidationService(
     }
     val imprisonmentTerm = sentencesAndOffence.terms.firstOrNull() { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
     val invalidImprisonmentTerm = imprisonmentTerm == null || (
-            sentencesAndOffence.terms[0].days == 0 &&
-                              sentencesAndOffence.terms[0].weeks == 0 &&
-                             sentencesAndOffence.terms[0].months == 0 &&
-                              sentencesAndOffence.terms[0].years == 0)
+      sentencesAndOffence.terms[0].days == 0 &&
+        sentencesAndOffence.terms[0].weeks == 0 &&
+        sentencesAndOffence.terms[0].months == 0 &&
+        sentencesAndOffence.terms[0].years == 0
+      )
     if (invalidImprisonmentTerm) {
       validationMessages.add(ValidationMessage("Sentence has no imprisonment duration", ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_DURATION, sentencesAndOffence.sentenceSequence))
     }

@@ -5,10 +5,10 @@ data class SentenceTerms(
   val months: Int = 0,
   val weeks: Int = 0,
   val days: Int = 0,
-  val code: String = "") {
+  val code: String = ""
+) {
   companion object {
     const val LICENCE_TERM_CODE = "LIC"
     const val IMPRISONMENT_TERM_CODE = "IMP"
-
   }
 }
