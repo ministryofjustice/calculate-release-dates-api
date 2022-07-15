@@ -1,0 +1,87 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2017-08-28"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 18
+        }
+      },
+      "recallType": "STANDARD_RECALL",
+      "sentencedAt": "2021-02-11"
+    },
+    {
+      "offence": {
+        "committedAt": "2017-08-28"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 12
+        }
+      },
+      "recallType": "STANDARD_RECALL",
+      "sentencedAt": "2021-02-11"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-10-02"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 1
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2022-01-28"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-10-02"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 1,
+          "MONTHS": 6
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 1
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2022-01-28"
+    }
+  ],
+  "adjustments": {
+    "RECALL_REMAND": [
+      {
+        "numberOfDays": 24,
+        "appliesToSentencesFrom": "2021-02-11",
+        "fromDate": "2021-01-10",
+        "toDate": "2021-02-10"
+      }
+    ],
+    "REMAND": [
+      {
+        "numberOfDays": 6,
+        "appliesToSentencesFrom": "2022-01-28",
+        "fromDate": "2022-01-21",
+        "toDate": "2022-01-27"
+      }
+    ]
+  }
+}
