@@ -214,18 +214,18 @@ class BookingExtractionService(
     }
 
     if (latestExtendedDeterminateParoleEligibilityDate != null) {
-      val mostRecentReleaseSentenceHasParoleDate = mostRecentSentencesByReleaseDate.find { it.sentenceCalculation.extendedDeterminateParoleEligibilityDate != null }
+      val mostRecentReleaseSentenceHasParoleDate = mostRecentSentenceByAdjustedDeterminateReleaseDate.sentenceCalculation.extendedDeterminateParoleEligibilityDate
       if (mostRecentReleaseSentenceHasParoleDate != null) {
         val latestNonPedRelease = extractionService.mostRecentOrNull(
-          sentences.filter { it.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null },
+          sentences.filter { !it.isRecall() && it.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null },
           SentenceCalculation::releaseDate
         )
         val latestSdsRelease = extractionService.mostRecentOrNull(
-          sentences.filter { it is StandardDeterminateSentence },
+          sentences.filter { !it.isRecall() && it is StandardDeterminateSentence },
           SentenceCalculation::releaseDate
         )
         val latestEdsRelease = extractionService.mostRecentOrNull(
-          sentences.filter { it is ExtendedDeterminateSentence },
+          sentences.filter { !it.isRecall() && it is ExtendedDeterminateSentence },
           SentenceCalculation::releaseDate
         )
         if (latestSdsRelease != null && latestEdsRelease != null && latestSdsRelease.isAfterOrEqualTo(latestEdsRelease)) {
