@@ -99,6 +99,9 @@ interface CalculableSentence {
   }
 
   @JsonIgnore
+  fun hasAnyEdsSentence(): Boolean
+
+  @JsonIgnore
   fun getReleaseDateType(): ReleaseDateType {
     return if (isRecall())
       ReleaseDateType.PRRD else if (releaseDateTypes.contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null)

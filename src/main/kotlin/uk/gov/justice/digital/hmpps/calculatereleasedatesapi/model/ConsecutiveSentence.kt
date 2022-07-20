@@ -52,6 +52,10 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
     return duration.getLengthInDays(sentencedAt)
   }
 
+  override fun hasAnyEdsSentence(): Boolean {
+    return hasExtendedSentence()
+  }
+
   fun allSentencesAreStandardSentences(): Boolean {
     return orderedSentences.all { it is StandardDeterminateSentence }
   }
