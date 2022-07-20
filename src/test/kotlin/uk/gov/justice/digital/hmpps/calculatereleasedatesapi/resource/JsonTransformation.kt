@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceDiagram
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import java.io.File
@@ -40,7 +41,10 @@ class JsonTransformation {
     val json = getJsonTest("$testData.json", "calculation_breakdown_response")
     return mapper.readValue(json, CalculationBreakdown::class.java)
   }
-
+  fun loadSentenceDiagram(testData: String): SentenceDiagram {
+    val json = getJsonTest("$testData.json", "sentence_diagram_response")
+    return mapper.readValue(json, SentenceDiagram::class.java)
+  }
   fun getAllPrisonerDetails(): Map<String, PrisonerDetails> {
     return getAllJsonFromDir("api_integration/prisoners")
       .mapValues { mapper.readValue(it.value, PrisonerDetails::class.java) }
