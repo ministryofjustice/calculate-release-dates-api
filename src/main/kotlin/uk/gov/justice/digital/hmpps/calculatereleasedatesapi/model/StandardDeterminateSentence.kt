@@ -35,6 +35,10 @@ data class StandardDeterminateSentence(
     return duration.getLengthInDays(this.sentencedAt)
   }
 
+  override fun hasAnyEdsSentence(): Boolean {
+    return false
+  }
+
   @JsonIgnore
   fun isOraSentence(): Boolean {
     return offence.committedAt.isAfterOrEqualTo(ImportantDates.ORA_DATE)

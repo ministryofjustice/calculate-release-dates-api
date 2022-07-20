@@ -250,7 +250,7 @@ class BookingExtractionService(
     sentences: List<CalculableSentence>,
     latestAdjustedReleaseDate: LocalDate
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
-    if (sentences.any { !it.isRecall() }) {
+    if (sentences.any { !it.isRecall() } && sentences.all { !it.hasAnyEdsSentence() }) {
       val earliestSentenceDate = sentences.filter { !it.isRecall() }.minOf { it.sentencedAt }
       val latestUnadjustedExpiryDate = extractionService.mostRecent(sentences.filter { !it.isRecall() }, SentenceCalculation::unadjustedExpiryDate)
       val effectiveSentenceLength = getEffectiveSentenceLength(

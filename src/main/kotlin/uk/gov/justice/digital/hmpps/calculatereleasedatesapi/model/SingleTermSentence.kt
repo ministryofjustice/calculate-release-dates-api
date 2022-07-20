@@ -54,6 +54,10 @@ class SingleTermSentence(
     return combinedDuration().getLengthInDays(sentencedAt)
   }
 
+  override fun hasAnyEdsSentence(): Boolean {
+    return false
+  }
+
   private fun earliestSentencedAt(firstStandardSentence: StandardDeterminateSentence, secondStandardSentence: StandardDeterminateSentence): LocalDate {
     return if (firstStandardSentence.sentencedAt.isBefore(secondStandardSentence.sentencedAt)) {
       firstStandardSentence.sentencedAt
