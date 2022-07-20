@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: data-extractor-analytics
+spec:
+  schedule: "0 1 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: "Never"
+          containers:
+            - name: data-extractor-analytics
+              image: ministryofjustice/data-engineering-data-extractor:v1
+              imagePullPolicy: Always
+              args: ["extract_psql_all_tables_to_jsonl.sh && transfer_local_to_s3.sh"]
+              env:
+                - name: PGHOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: rds-instance-output
+                      key: rds_instance_address
+                - name: PGDATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: rds-instance-output
+                      key: database_name
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: rds-instance-output
+                      key: database_username
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: rds-instance-output
+                      key: database_password
+                - name: S3_DESTINATION
+                  valueFrom:
+                    secretKeyRef:
+                      name: analytical-platform-reporting-s3-bucket
+                      key: destination_bucket
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: analytical-platform-reporting-s3-bucket
+                      key: access_key_id
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: analytical-platform-reporting-s3-bucket
+                      key: secret_access_key
+                - name: AWS_DEFAULT_REGION
+                  value: eu-west-2
+                - name: SAVE_EVENTS_LOG
+                  value: "true"
