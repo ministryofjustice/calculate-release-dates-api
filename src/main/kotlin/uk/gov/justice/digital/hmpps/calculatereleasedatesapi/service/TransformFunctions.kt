@@ -492,43 +492,43 @@ fun transform(booking: Booking): SentenceDiagram {
   val sentenceRows = booking.getAllExtractableSentences()
     .map {
       when (it) {
-          is AbstractSentence -> {
-            SentenceDiagramRow(
-              "Court case ${it.caseSequence} sentence ${it.lineSequence}",
-              listOf(
+        is AbstractSentence -> {
+          SentenceDiagramRow(
+            "Court case ${it.caseSequence} sentence ${it.lineSequence}",
+            listOf(
               SentenceDiagramRowSection(start = it.sentencedAt, end = it.sentenceCalculation.releaseDate, description = "Release date"),
               SentenceDiagramRowSection(start = it.sentenceCalculation.releaseDate, end = it.sentenceCalculation.expiryDate!!, description = "Expiry date")
-            ))
-          }
-          is SingleTermSentence -> {
-            SentenceDiagramRow(
-              "Single term sentence",
-              listOf(
-                SentenceDiagramRowSection(start = it.sentencedAt, end = it.sentenceCalculation.releaseDate, description = "Release date"),
-                SentenceDiagramRowSection(start = it.sentenceCalculation.releaseDate, end = it.sentenceCalculation.expiryDate!!, description = "Expiry date")
-              ))
-          }
-          is ConsecutiveSentence -> {
-            val nameOfSentence = it.orderedSentences.joinToString { sentence ->
-              (sentence as AbstractSentence)
-              "Court case ${sentence.caseSequence} sentence ${sentence.lineSequence}"
-            }
-            SentenceDiagramRow(
-                "Consecutive sentence $nameOfSentence",
-                listOf(
-                  SentenceDiagramRowSection(start = it.sentencedAt, end = it.sentenceCalculation.releaseDate, description = "Release date"),
-                  SentenceDiagramRowSection(start = it.sentenceCalculation.releaseDate, end = it.sentenceCalculation.expiryDate!!, description = "Expiry date")
-                )
             )
+          )
+        }
+        is SingleTermSentence -> {
+          SentenceDiagramRow(
+            "Single term sentence",
+            listOf(
+              SentenceDiagramRowSection(start = it.sentencedAt, end = it.sentenceCalculation.releaseDate, description = "Release date"),
+              SentenceDiagramRowSection(start = it.sentenceCalculation.releaseDate, end = it.sentenceCalculation.expiryDate!!, description = "Expiry date")
+            )
+          )
+        }
+        is ConsecutiveSentence -> {
+          val nameOfSentence = it.orderedSentences.joinToString { sentence ->
+            (sentence as AbstractSentence)
+            "Court case ${sentence.caseSequence} sentence ${sentence.lineSequence}"
           }
-          else -> {
-            throw UnsupportedCalculationBreakdown("unsupported")
-          }
+          SentenceDiagramRow(
+            "Consecutive sentence $nameOfSentence",
+            listOf(
+              SentenceDiagramRowSection(start = it.sentencedAt, end = it.sentenceCalculation.releaseDate, description = "Release date"),
+              SentenceDiagramRowSection(start = it.sentenceCalculation.releaseDate, end = it.sentenceCalculation.expiryDate!!, description = "Expiry date")
+            )
+          )
+        }
+        else -> {
+          throw UnsupportedCalculationBreakdown("unsupported")
+        }
       }
     }
   return SentenceDiagram(
     rows = adjustmentRows + sentenceRows
   )
-
 }
-
