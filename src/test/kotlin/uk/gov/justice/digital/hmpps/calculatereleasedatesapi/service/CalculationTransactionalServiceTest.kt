@@ -38,6 +38,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceDiagram
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
@@ -109,6 +110,31 @@ class CalculationTransactionalServiceTest {
   )
 
   @ParameterizedTest
+  @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
+  fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {
+    log.info("Testing example $exampleType/$exampleNumber")
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
+    SecurityContextHolder.setContext(
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+    )
+    val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
+    val calculatedReleaseDates: CalculatedReleaseDates
+    try {
+      calculatedReleaseDates = calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, null)
+    } catch (e: Exception) {
+      if (!error.isNullOrEmpty()) {
+        assertEquals(error, e.javaClass.simpleName)
+        return
+      } else {
+        throw e
+      }
+    }
+    log.info("Example $exampleType/$exampleNumber outcome BookingCalculation: {}", calculatedReleaseDates)
+    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
+    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
+    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
+  }
+  @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
   fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String, error: String?) {
     log.info("Testing example $exampleType/$exampleNumber")
@@ -139,19 +165,19 @@ class CalculationTransactionalServiceTest {
       calculationBreakdown
     )
   }
-
   @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
-  fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {
+  @CsvFileSource(resources = ["/test_data/sentence-diagram-examples.csv"], numLinesToSkip = 1)
+  fun `Test Sentence Diagram`(exampleType: String, exampleNumber: String, error: String?) {
     log.info("Testing example $exampleType/$exampleNumber")
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
     SecurityContextHolder.setContext(
       SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
     )
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val calculatedReleaseDates: CalculatedReleaseDates
+    val calculation = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
+
+    val sentenceDiagram: SentenceDiagram
     try {
-      calculatedReleaseDates = calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, null)
+      sentenceDiagram = calculationTransactionalService.calculateWithDiagram(booking, CalculatedReleaseDates(calculation.dates, -1, -1, "", PRELIMINARY))
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -160,10 +186,15 @@ class CalculationTransactionalServiceTest {
         throw e
       }
     }
-    log.info("Example $exampleType/$exampleNumber outcome BookingCalculation: {}", calculatedReleaseDates)
-    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
-    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
-    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
+    log.info(
+      "Example $exampleType/$exampleNumber outcome SentenceDiagram: {}",
+      TestUtil.objectMapper().writeValueAsString(sentenceDiagram)
+    )
+
+    assertEquals(
+      jsonTransformation.loadSentenceDiagram("$exampleType/$exampleNumber"),
+      sentenceDiagram
+    )
   }
 
   @Test
