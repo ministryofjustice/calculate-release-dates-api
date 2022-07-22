@@ -33,8 +33,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
+import java.time.temporal.ChronoUnit.WEEKS
+import java.time.temporal.ChronoUnit.YEARS
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
@@ -76,7 +79,7 @@ class SentenceCalculationService {
         val duration = it.map { getCustodialDuration(it) }
           .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         val sentenceStartDate = if (notionalCrd != null) notionalCrd!!.plusDays(1) else sentence.sentencedAt
-        val daysInThisDuration = duration.getLengthInDays(sentenceStartDate)
+        val daysInThisDuration = getDaysInGroup(it, duration, sentenceStartDate)
         if (it == sentencesWithPed) {
           numberOfDaysToParoleEligibilityDate =
             days + ceil(daysInThisDuration.toDouble().times(TWO).div(THREE)).toLong()
@@ -100,6 +103,39 @@ class SentenceCalculationService {
     )
   }
 
+  private fun getDaysInGroup(sentences: List<CalculableSentence>, duration: Duration, sentenceStartDate: LocalDate): Int {
+    val it = sentences[0]
+    val firstDuration = getTotalDuration(it)
+    val months = firstDuration.durationElements.getOrDefault(MONTHS, 0L)
+    val years = firstDuration.durationElements.getOrDefault(YEARS, 0L)
+    val hasMonthsAndYearsInFirstSentence = months != 0L || years != 0L
+
+    if (!hasMonthsAndYearsInFirstSentence) {
+      val daysWeeksDuration = Duration(mapOf(DAYS to duration.durationElements.getOrDefault(DAYS, 0), WEEKS to duration.durationElements.getOrDefault(WEEKS, 0)))
+      val monthsYearsDuration = Duration(mapOf(MONTHS to duration.durationElements.getOrDefault(MONTHS, 0), YEARS to duration.durationElements.getOrDefault(YEARS, 0)))
+      val firstDays = daysWeeksDuration.getLengthInDays(sentenceStartDate)
+      val notional = sentenceStartDate.plusDays(firstDays.toLong()).minusDays(1)
+      val secondDays = monthsYearsDuration.getLengthInDays(notional)
+      return firstDays + secondDays
+    }
+    return duration.getLengthInDays(sentenceStartDate)
+  }
+  private fun getTotalDuration(sentence: CalculableSentence): Duration {
+    return when (sentence) {
+      is StandardDeterminateSentence -> {
+        sentence.duration
+      }
+      is ExtendedDeterminateSentence -> {
+        sentence.combinedDuration()
+      }
+      is SingleTermSentence -> {
+        sentence.combinedDuration()
+      }
+      else -> {
+        throw UnknownError("Uknown sentence in consecutive sentence")
+      }
+    }
+  }
   private fun getCustodialDuration(sentence: CalculableSentence): Duration {
     return when (sentence) {
       is StandardDeterminateSentence -> {
