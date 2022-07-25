@@ -71,34 +71,42 @@ class SentenceCalculationService {
       )
       else listOf(sentencesHalfwayWithoutPed, sentencesTwoThirdsWithoutPed, sentencesWithPed)
 
+    var notionalSled: LocalDate? = null
     var notionalCrd: LocalDate? = null
-    var days = 0
+    var daysToExpiry = 0
+    var daysToRelease = 0
     var numberOfDaysToParoleEligibilityDate: Long? = null
     sentencesInCalculationOrder.forEach {
       if (it.isNotEmpty()) {
-        val duration = it.map { getCustodialDuration(it) }
+        val custodialDuration = it.map { getCustodialDuration(it) }
           .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
-        val sentenceStartDate = if (notionalCrd != null) notionalCrd!!.plusDays(1) else sentence.sentencedAt
-        val daysInThisDuration = getDaysInGroup(it, duration, sentenceStartDate)
+        val totalDuration = it.map { getTotalDuration(it) }
+          .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
+        val sentenceStartDate = if (notionalSled != null) notionalSled!!.plusDays(1) else sentence.sentencedAt
+        val releaseStartDate = if (notionalCrd != null) notionalCrd!!.plusDays(1) else sentence.sentencedAt
+        val daysInThisCustodialDuration = getDaysInGroup(it, custodialDuration, releaseStartDate)
+        val daysInThisTotalDuration = getDaysInGroup(it, totalDuration, sentenceStartDate)
         if (it == sentencesWithPed) {
           numberOfDaysToParoleEligibilityDate =
-            days + ceil(daysInThisDuration.toDouble().times(TWO).div(THREE)).toLong()
+            daysToRelease + ceil(daysInThisCustodialDuration.toDouble().times(TWO).div(THREE)).toLong()
         }
         val multiplier = determineReleaseDateMultiplier(it[0].identificationTrack)
-        val daysToRelease = ceil(daysInThisDuration.toDouble().times(multiplier)).toLong()
-        notionalCrd = sentenceStartDate
-          .plusDays(daysToRelease)
+        val daysToReleaseInThisGroup = ceil(daysInThisCustodialDuration.toDouble().times(multiplier)).toLong()
+        notionalSled = sentenceStartDate
+          .plusDays(daysInThisTotalDuration.toLong())
           .minusDays(ONE)
-        days += daysToRelease.toInt()
+        daysToExpiry += daysInThisTotalDuration
+        notionalCrd = releaseStartDate
+          .plusDays(daysToReleaseInThisGroup)
+          .minusDays(ONE)
+        daysToRelease += daysToReleaseInThisGroup.toInt()
       }
     }
 
-    val numberOfDaysToReleaseDateDouble = days.toDouble()
-    val numberOfDaysToReleaseDate = days
-
     return ReleaseDateCalculation(
-      numberOfDaysToReleaseDateDouble,
-      numberOfDaysToReleaseDate,
+      daysToExpiry,
+      daysToRelease.toDouble(),
+      daysToRelease,
       numberOfDaysToParoleEligibilityDate
     )
   }
@@ -120,6 +128,7 @@ class SentenceCalculationService {
     }
     return duration.getLengthInDays(sentenceStartDate)
   }
+
   private fun getTotalDuration(sentence: CalculableSentence): Duration {
     return when (sentence) {
       is StandardDeterminateSentence -> {
@@ -159,10 +168,9 @@ class SentenceCalculationService {
     } else {
       getSingleSentenceRelease(sentence)
     }
-    val numberOfDaysToSentenceExpiryDate = sentence.getLengthInDays()
     val unadjustedExpiryDate =
       sentence.sentencedAt
-        .plusDays(numberOfDaysToSentenceExpiryDate.toLong())
+        .plusDays(release.numberOfDaysToSentenceExpiryDate.toLong())
         .minusDays(ONE)
 
     val unadjustedDeterminateReleaseDate =
@@ -174,7 +182,7 @@ class SentenceCalculationService {
     var unadjustedPostRecallReleaseDate: LocalDate? = null
     if (sentence.isRecall()) {
       if (sentence.recallType == RecallType.STANDARD_RECALL) {
-        numberOfDaysToPostRecallReleaseDate = numberOfDaysToSentenceExpiryDate
+        numberOfDaysToPostRecallReleaseDate = release.numberOfDaysToSentenceExpiryDate
         unadjustedPostRecallReleaseDate = unadjustedExpiryDate
       } else if (sentence.recallType == RecallType.FIXED_TERM_RECALL_14) {
         numberOfDaysToPostRecallReleaseDate = 14
@@ -188,7 +196,7 @@ class SentenceCalculationService {
     // create new SentenceCalculation and associate it with a sentence
     return SentenceCalculation(
       sentence,
-      numberOfDaysToSentenceExpiryDate,
+      release.numberOfDaysToSentenceExpiryDate,
       release.numberOfDaysToDeterminateReleaseDateDouble,
       release.numberOfDaysToDeterminateReleaseDate,
       unadjustedExpiryDate,
@@ -216,6 +224,7 @@ class SentenceCalculationService {
         ceil(numberOfDaysToReleaseDate.toDouble().times(TWO).div(THREE)).toLong()
     }
     return ReleaseDateCalculation(
+      sentence.getLengthInDays(),
       numberOfDaysToReleaseDateDouble,
       numberOfDaysToReleaseDate,
       numberOfDaysToParoleEligibilityDate
@@ -562,6 +571,7 @@ class SentenceCalculationService {
   }
 
   data class ReleaseDateCalculation(
+    val numberOfDaysToSentenceExpiryDate: Int,
     val numberOfDaysToDeterminateReleaseDateDouble: Double,
     val numberOfDaysToDeterminateReleaseDate: Int,
     val numberOfDaysToParoleEligibilityDate: Long?
