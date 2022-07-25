@@ -37,8 +37,11 @@ data class ExtendedDeterminateSentence(
     return custodialDuration.getLengthInDays(sentencedAt)
   }
 
+  fun combinedDuration(): Duration {
+    return custodialDuration.appendAll(extensionDuration.durationElements)
+  }
   override fun getLengthInDays(): Int {
-    return custodialDuration.appendAll(extensionDuration.durationElements).getLengthInDays(sentencedAt)
+    return combinedDuration().getLengthInDays(sentencedAt)
   }
 
   override fun hasAnyEdsSentence(): Boolean {
