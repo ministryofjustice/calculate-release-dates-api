@@ -129,7 +129,10 @@ class CalculationTransactionalServiceTest {
         throw e
       }
     }
-    log.info("Example $exampleType/$exampleNumber outcome BookingCalculation: {}", calculatedReleaseDates)
+    log.info(
+      "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
+      TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates)
+    )
     val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
     assertEquals(bookingData.dates, calculatedReleaseDates.dates)
     assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
