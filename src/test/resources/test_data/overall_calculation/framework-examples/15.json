@@ -1,0 +1,36 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2015-02-18"
+      },
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 15
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 5
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2015-02-19"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "numberOfDays": 150,
+        "appliesToSentencesFrom": "2015-02-19",
+        "toDate": "2015-02-18",
+        "fromDate": "2014-09-22"
+      }
+    ]
+  }
+}

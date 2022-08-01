@@ -1,0 +1,30 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2022-10-10"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 5
+        }
+      },
+      "sentencedAt": "2023-12-08"
+    },
+    {
+      "offence": {
+        "committedAt": "2022-10-10"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "sentencedAt": "2025-09-28"
+    }
+  ]
+}
