@@ -374,8 +374,8 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
         sentence.duration.toString(),
         sentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
         extractDates(sentence),
-        sentence.lineSequence!!,
-        sentence.caseSequence!!,
+        sentence.lineSequence ?: 0,
+        sentence.caseSequence ?: 0,
         sentence.caseReference
       )
     }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence })),
@@ -397,8 +397,8 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
               if (consecutiveToUUID != null) booking.sentences.find { it.identifier == consecutiveToUUID }!!
               else null
             ConsecutiveSentencePart(
-              sentencePart.lineSequence!!,
-              sentencePart.caseSequence!!,
+              sentencePart.lineSequence ?: 0,
+              sentencePart.caseSequence ?: 0,
               sentencePart.caseReference,
               if (sentencePart is StandardDeterminateSentence) sentencePart.duration.toString() else "",
               sentencePart.sentenceCalculation.numberOfDaysToSentenceExpiryDate,

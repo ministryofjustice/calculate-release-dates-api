@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
@@ -231,12 +232,26 @@ class BookingExtractionService(
         if (latestSdsRelease != null && latestEdsRelease != null && latestSdsRelease.isAfterOrEqualTo(latestEdsRelease)) {
           // SDS release is after PED, so no PED required.
         } else {
-          dates[PED] = if (latestSdsRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestSdsRelease)) {
-            latestSdsRelease
+          if (latestSdsRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestSdsRelease)) {
+            dates[PED] = latestSdsRelease
+            breakdownByReleaseDateType[PED] = ReleaseDateCalculationBreakdown(
+              rules = setOf(CalculationRule.PED_EQUAL_TO_LATEST_SDS_RELEASE),
+              releaseDate = dates[PED]!!,
+              unadjustedDate = latestExtendedDeterminateParoleEligibilityDate
+            )
           } else if (latestNonPedRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestNonPedRelease)) {
-            latestNonPedRelease
+            dates[PED] = latestNonPedRelease
+            breakdownByReleaseDateType[PED] = ReleaseDateCalculationBreakdown(
+              rules = setOf(CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_RELEASE),
+              releaseDate = dates[PED]!!,
+              unadjustedDate = latestExtendedDeterminateParoleEligibilityDate
+            )
           } else {
-            latestExtendedDeterminateParoleEligibilityDate
+            dates[PED] = latestExtendedDeterminateParoleEligibilityDate
+            breakdownByReleaseDateType[PED] = ReleaseDateCalculationBreakdown(
+              releaseDate = dates[PED]!!,
+              unadjustedDate = latestExtendedDeterminateParoleEligibilityDate
+            )
           }
         }
       }

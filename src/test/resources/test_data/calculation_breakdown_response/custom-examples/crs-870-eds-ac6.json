@@ -1,0 +1,44 @@
+{
+  "concurrentSentences":[
+
+  ],
+  "consecutiveSentence":null,
+  "breakdownByReleaseDateType":{
+    "SLED":{
+      "rules":[
+
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":0,
+      "releaseDate":"2023-07-20",
+      "unadjustedDate":"2023-07-20"
+    },
+    "CRD":{
+      "rules":[
+
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":0,
+      "releaseDate":"2020-04-14",
+      "unadjustedDate":"2020-04-14"
+    },
+    "PED":{
+      "rules":[
+        "PED_EQUAL_TO_LATEST_NON_PED_RELEASE"
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":0,
+      "releaseDate":"2019-05-21",
+      "unadjustedDate":"2018-12-14"
+    }
+  },
+  "otherDates":{
+
+  }
+}

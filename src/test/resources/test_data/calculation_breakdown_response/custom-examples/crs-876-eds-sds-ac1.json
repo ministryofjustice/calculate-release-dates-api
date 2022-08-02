@@ -1,0 +1,65 @@
+{
+  "concurrentSentences":[
+    {
+      "sentencedAt":"2017-05-10",
+      "sentenceLength":"8 years",
+      "sentenceLengthDays":2922,
+      "dates":{
+        "SLED":{
+          "unadjusted":"2025-05-09",
+          "adjusted":"2025-05-09",
+          "daysFromSentenceStart":2922,
+          "adjustedByDays":0
+        },
+        "CRD":{
+          "unadjusted":"2021-05-09",
+          "adjusted":"2021-05-09",
+          "daysFromSentenceStart":1461,
+          "adjustedByDays":0
+        }
+      },
+      "lineSequence":0,
+      "caseSequence":0,
+      "caseReference":null
+    }
+  ],
+  "consecutiveSentence":null,
+  "breakdownByReleaseDateType":{
+    "SLED":{
+      "rules":[
+
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":0,
+      "releaseDate":"2027-12-16",
+      "unadjustedDate":"2027-12-16"
+    },
+    "CRD":{
+      "rules":[
+
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":0,
+      "releaseDate":"2022-12-16",
+      "unadjustedDate":"2022-12-16"
+    },
+    "PED":{
+      "rules":[
+        "PED_EQUAL_TO_LATEST_SDS_RELEASE"
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":0,
+      "releaseDate":"2021-05-09",
+      "unadjustedDate":"2019-08-17"
+    }
+  },
+  "otherDates":{
+
+  }
+}
