@@ -222,6 +222,32 @@ class ValidationServiceTest {
     Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.LASPO_AR_SENTENCE_TYPE_INCORRECT)
   }
 
+  @Test
+  fun `Test EDS sentences shouldnt have more than one license term or imprisonment term`() {
+    val sentences = listOf(
+      validSentence.copy(
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+          SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+          SentenceTerms(2, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
+        ),
+      ),
+      validSentence.copy(
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+          SentenceTerms(2, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
+          SentenceTerms(2, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
+        ),
+      )
+    )
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
+
+    Assertions.assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
+    Assertions.assertThat(result.messages).hasSize(2)
+    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.MORE_THAN_ONE_IMPRISONMENT_TERM)
+    Assertions.assertThat(result.messages[1].code).isEqualTo(ValidationCode.MORE_THAN_ONE_LICENCE_TERM)
+  }
+
   private companion object {
     val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     val FIRST_MAY_2020: LocalDate = LocalDate.of(2020, 5, 1)
