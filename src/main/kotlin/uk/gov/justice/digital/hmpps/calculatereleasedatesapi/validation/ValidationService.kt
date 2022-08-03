@@ -160,7 +160,7 @@ class ValidationService(
       validationMessages.add(ValidationMessage("Sentence has multiple terms", ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS, sentencesAndOffence.sentenceSequence))
     }
     val imprisonmentTerms = sentencesAndOffence.terms.filter { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
-    if (imprisonmentTerms.size > 1) {
+    if (imprisonmentTerms.size > 1 && sentenceCalculationType.sentenceClazz == ExtendedDeterminateSentence::class.java) {
       validationMessages.add(ValidationMessage("Sentence has multiple imprisonment terms", ValidationCode.MORE_THAN_ONE_IMPRISONMENT_TERM, sentencesAndOffence.sentenceSequence))
     }
     val emptyImprisonmentTerm = imprisonmentTerms.isEmpty() || (
