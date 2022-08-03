@@ -159,23 +159,29 @@ class ValidationService(
     if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java && hasMultipleTerms) {
       validationMessages.add(ValidationMessage("Sentence has multiple terms", ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS, sentencesAndOffence.sentenceSequence))
     }
-    val imprisonmentTerm = sentencesAndOffence.terms.firstOrNull() { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
-    val invalidImprisonmentTerm = imprisonmentTerm == null || (
-      sentencesAndOffence.terms[0].days == 0 &&
-        sentencesAndOffence.terms[0].weeks == 0 &&
-        sentencesAndOffence.terms[0].months == 0 &&
-        sentencesAndOffence.terms[0].years == 0
+    val imprisonmentTerms = sentencesAndOffence.terms.filter { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
+    if (imprisonmentTerms.size > 1 && sentenceCalculationType.sentenceClazz == ExtendedDeterminateSentence::class.java) {
+      validationMessages.add(ValidationMessage("Sentence has multiple imprisonment terms", ValidationCode.MORE_THAN_ONE_IMPRISONMENT_TERM, sentencesAndOffence.sentenceSequence))
+    }
+    val emptyImprisonmentTerm = imprisonmentTerms.isEmpty() || (
+      imprisonmentTerms[0].days == 0 &&
+        imprisonmentTerms[0].weeks == 0 &&
+        imprisonmentTerms[0].months == 0 &&
+        imprisonmentTerms[0].years == 0
       )
-    if (invalidImprisonmentTerm) {
+    if (emptyImprisonmentTerm) {
       validationMessages.add(ValidationMessage("Sentence has no imprisonment duration", ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_DURATION, sentencesAndOffence.sentenceSequence))
     }
 
     if (sentenceCalculationType.sentenceClazz == ExtendedDeterminateSentence::class.java) {
-      val licenseTerm = sentencesAndOffence.terms.firstOrNull() { it.code == SentenceTerms.LICENCE_TERM_CODE }
-      if (licenseTerm == null) {
+      val licenceTerms = sentencesAndOffence.terms.filter { it.code == SentenceTerms.LICENCE_TERM_CODE }
+      if (licenceTerms.size > 1) {
+        validationMessages.add(ValidationMessage("Sentence has multiple licence terms", ValidationCode.MORE_THAN_ONE_LICENCE_TERM, sentencesAndOffence.sentenceSequence))
+      }
+      if (licenceTerms.isEmpty()) {
         validationMessages.add(ValidationMessage("Sentence has no licence duration", ValidationCode.SENTENCE_HAS_NO_LICENCE_DURATION, sentencesAndOffence.sentenceSequence))
       } else {
-        val duration = Period.of(licenseTerm!!.years, licenseTerm.months, licenseTerm.weeks * 7 + licenseTerm.days)
+        val duration = Period.of(licenceTerms[0].years, licenceTerms[0].months, licenceTerms[0].weeks * 7 + licenceTerms[0].days)
         val endOfDuration = sentencesAndOffence.sentenceDate.plus(duration)
         val endOfOneYear = sentencesAndOffence.sentenceDate.plusYears(1)
         val endOfEightYears = sentencesAndOffence.sentenceDate.plusYears(8)
