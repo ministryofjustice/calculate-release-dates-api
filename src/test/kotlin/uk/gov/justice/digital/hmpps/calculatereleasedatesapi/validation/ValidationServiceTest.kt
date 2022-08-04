@@ -64,7 +64,7 @@ class ValidationServiceTest {
 
     Assertions.assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     Assertions.assertThat(result.messages).hasSize(1)
-    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_DURATION)
+    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)
   }
 
   @Test
@@ -79,7 +79,7 @@ class ValidationServiceTest {
 
     Assertions.assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     Assertions.assertThat(result.messages).hasSize(1)
-    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_DURATION)
+    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.ZERO_IMPRISONMENT_TERM)
   }
 
   @Test
@@ -93,7 +93,7 @@ class ValidationServiceTest {
 
     Assertions.assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     Assertions.assertThat(result.messages).hasSize(1)
-    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.SENTENCE_HAS_NO_LICENCE_DURATION)
+    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.SENTENCE_HAS_NO_LICENCE_TERM)
   }
 
   @Test
