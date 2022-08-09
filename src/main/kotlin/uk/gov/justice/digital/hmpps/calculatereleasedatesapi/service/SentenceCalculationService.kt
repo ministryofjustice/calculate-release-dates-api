@@ -128,7 +128,7 @@ class SentenceCalculationService {
         sentence.combinedDuration()
       }
       else -> {
-        throw UnknownError("Uknown sentence in consecutive sentence")
+        throw UnknownError("Unknown sentence in consecutive sentence")
       }
     }
   }
