@@ -5,14 +5,13 @@ import java.time.LocalDate
 import java.util.UUID
 
 /**
- * This class is used to model the Extended Determinate Sentences. This differ from standard sentences in that
- * they have two durations.
+ * This class is used to model the SOPC Sentences
  */
-data class ExtendedDeterminateSentence(
+data class SopcSentence(
   override val offence: Offence,
   val custodialDuration: Duration,
   val extensionDuration: Duration,
-  val automaticRelease: Boolean,
+  val sdopcu18: Boolean = false,
   override val sentencedAt: LocalDate,
   override val identifier: UUID = UUID.randomUUID(),
   override val consecutiveSentenceUUIDs: List<UUID> = listOf(),
@@ -23,7 +22,7 @@ data class ExtendedDeterminateSentence(
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType) {
 
   override fun buildString(): String {
-    return "ExtendedDeterminateSentence\t:\t\n" +
+    return "SopcSentence\t:\t\n" +
       "Identification Track\t:\t${identificationTrack}\n" +
       "Custodial duration\t:\t${custodialDuration}\n" +
       "Extension duration\t:\t${extensionDuration}\n" +

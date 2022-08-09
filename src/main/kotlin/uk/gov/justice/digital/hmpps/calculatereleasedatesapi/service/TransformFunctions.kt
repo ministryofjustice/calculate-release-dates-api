@@ -57,6 +57,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceDiagr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceDiagramRow
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceDiagramRowSection
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
@@ -133,19 +134,35 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
       val imprisonmentTerm = sentence.terms.first { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
       val licenseTerm = sentence.terms.first { it.code == SentenceTerms.LICENCE_TERM_CODE }
 
-      ExtendedDeterminateSentence(
-        sentencedAt = sentence.sentenceDate,
-        custodialDuration = transform(imprisonmentTerm),
-        extensionDuration = transform(licenseTerm),
-        automaticRelease = sentenceCalculationType == SentenceCalculationType.LASPO_AR,
-        offence = offence,
-        identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-        consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-        caseSequence = sentence.caseSequence,
-        lineSequence = sentence.lineSequence,
-        caseReference = sentence.caseReference,
-        recallType = sentenceCalculationType.recallType
-      )
+      if (sentenceCalculationType.sentenceClazz == ExtendedDeterminateSentence::class.java) {
+        ExtendedDeterminateSentence(
+          sentencedAt = sentence.sentenceDate,
+          custodialDuration = transform(imprisonmentTerm),
+          extensionDuration = transform(licenseTerm),
+          automaticRelease = sentenceCalculationType == SentenceCalculationType.LASPO_AR,
+          offence = offence,
+          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+          caseSequence = sentence.caseSequence,
+          lineSequence = sentence.lineSequence,
+          caseReference = sentence.caseReference,
+          recallType = sentenceCalculationType.recallType
+        )
+      } else {
+        SopcSentence(
+          sentencedAt = sentence.sentenceDate,
+          custodialDuration = transform(imprisonmentTerm),
+          extensionDuration = transform(licenseTerm),
+          sdopcu18 = sentenceCalculationType == SentenceCalculationType.SDOPCU18,
+          offence = offence,
+          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+          caseSequence = sentence.caseSequence,
+          lineSequence = sentence.lineSequence,
+          caseReference = sentence.caseReference,
+          recallType = sentenceCalculationType.recallType
+        )
+      }
     }
   }.toMutableList()
 }

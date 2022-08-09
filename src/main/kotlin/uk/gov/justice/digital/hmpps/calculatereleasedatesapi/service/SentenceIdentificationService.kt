@@ -18,11 +18,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_POST_PCSC
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
@@ -37,7 +39,9 @@ class SentenceIdentificationService(
 ) {
 
   fun identify(sentence: CalculableSentence, offender: Offender) {
-    if (sentence is ExtendedDeterminateSentence || (sentence is ConsecutiveSentence && sentence.hasExtendedSentence())) {
+    if (sentence is SopcSentence || (sentence is ConsecutiveSentence && sentence.hasSopcSentence())) {
+      identifySopcSentence(sentence)
+    } else if (sentence is ExtendedDeterminateSentence || (sentence is ConsecutiveSentence && sentence.hasExtendedSentence())) {
       identifyExtendedDeterminate(sentence)
     } else if (sentence is StandardDeterminateSentence || sentence is SingleTermSentence || (sentence is ConsecutiveSentence && sentence.allSentencesAreStandardSentences())) {
       identifyStandardDeterminate(sentence, offender)
@@ -47,7 +51,24 @@ class SentenceIdentificationService(
       }
     }
   }
-
+  private fun identifySopcSentence(sentence: CalculableSentence) {
+    if (sentence is ConsecutiveSentence) {
+      sentence.releaseDateTypes = listOf(
+        SLED,
+        CRD
+      )
+    } else {
+      sentence as SopcSentence
+      if (sentence.sdopcu18 || sentence.sentencedAt.isAfterOrEqualTo(PCSC_COMMENCEMENT_DATE)) {
+        sentence.identificationTrack = SOPC_POST_PCSC
+        sentence.releaseDateTypes = listOf(
+          SLED,
+          CRD,
+          PED
+        )
+      }
+    }
+  }
   private fun identifyExtendedDeterminate(sentence: CalculableSentence) {
     if (sentence is ConsecutiveSentence) {
       sentence.releaseDateTypes = listOf(

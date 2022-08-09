@@ -30,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
@@ -50,7 +51,7 @@ class SentenceCalculationService {
 
   private fun getConsecutiveRelease(sentence: ConsecutiveSentence): ReleaseDateCalculation {
     val sentencesWithPed =
-      sentence.orderedSentences.filter { it is ExtendedDeterminateSentence && !it.automaticRelease }
+      sentence.orderedSentences.filter { (it is ExtendedDeterminateSentence && !it.automaticRelease) || it is SopcSentence }
     val sentencesTwoThirdsWithoutPed =
       sentence.orderedSentences.filter { !sentencesWithPed.contains(it) && ((it is StandardDeterminateSentence && it.isTwoThirdsReleaseSentence()) || (it is ExtendedDeterminateSentence && it.automaticRelease)) }
     val sentencesHalfwayWithoutPed = sentence.orderedSentences.filter {
@@ -120,6 +121,9 @@ class SentenceCalculationService {
       is ExtendedDeterminateSentence -> {
         sentence.combinedDuration()
       }
+      is SopcSentence -> {
+        sentence.combinedDuration()
+      }
       is SingleTermSentence -> {
         sentence.combinedDuration()
       }
@@ -136,11 +140,14 @@ class SentenceCalculationService {
       is ExtendedDeterminateSentence -> {
         sentence.custodialDuration
       }
+      is SopcSentence -> {
+        sentence.custodialDuration
+      }
       is SingleTermSentence -> {
         sentence.combinedDuration()
       }
       else -> {
-        throw UnknownError("Uknown sentence in consecutive sentence")
+        throw UnknownError("Uknown sentence")
       }
     }
   }
@@ -202,7 +209,7 @@ class SentenceCalculationService {
     val numberOfDaysToReleaseDateDouble =
       custodialDuration.getLengthInDays(sentence.sentencedAt).times(releaseDateMultiplier)
     val numberOfDaysToReleaseDate: Int = ceil(numberOfDaysToReleaseDateDouble).toInt()
-    if (sentence.releaseDateTypes.contains(PED) && sentence is ExtendedDeterminateSentence) {
+    if (sentence.releaseDateTypes.contains(PED) && (sentence is ExtendedDeterminateSentence || sentence is SopcSentence)) {
       numberOfDaysToParoleEligibilityDate =
         ceil(numberOfDaysToReleaseDate.toDouble().times(TWO).div(THREE)).toLong()
     }
@@ -548,6 +555,7 @@ class SentenceCalculationService {
     return when (identification) {
       SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE -> 2 / 3.toDouble()
       SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE -> 1.toDouble()
+      SentenceIdentificationTrack.SOPC_POST_PCSC -> 1.toDouble()
       SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE -> 2 / 3.toDouble()
       else -> 1 / 2.toDouble()
     }
