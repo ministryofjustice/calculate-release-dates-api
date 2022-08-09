@@ -128,4 +128,4 @@ domain-events-sns:
 
 feature-toggles:
   eds: ${EDS_FEATURE_TOGGLE}
-  pcscStartDate: ${PCSC_START_DATE}
+  sopc: ${SOPC_FEATURE_TOGGLE}

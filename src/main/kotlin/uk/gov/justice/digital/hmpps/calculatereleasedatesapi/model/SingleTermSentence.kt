@@ -54,7 +54,7 @@ class SingleTermSentence(
     return combinedDuration().getLengthInDays(sentencedAt)
   }
 
-  override fun hasAnyEdsSentence(): Boolean {
+  override fun hasAnyEdsOrSopcSentence(): Boolean {
     return false
   }
 

@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
@@ -266,7 +267,7 @@ class ValidationService(
   }
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedSentences: List<SentenceCalculationType> = SentenceCalculationType.values()
-      .filter { (featureToggles.eds && it.sentenceClazz == ExtendedDeterminateSentence::class.java) || it.sentenceClazz == StandardDeterminateSentence::class.java }
+      .filter { (featureToggles.eds && it.sentenceClazz == ExtendedDeterminateSentence::class.java) || (featureToggles.sopc && it.sentenceClazz == SopcSentence::class.java) || it.sentenceClazz == StandardDeterminateSentence::class.java }
     val validationMessages = sentencesAndOffences.filter {
       !supportedSentences.contains(SentenceCalculationType.from(it.sentenceCalculationType))
     }

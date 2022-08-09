@@ -1,0 +1,41 @@
+[
+  {
+    "bookingId":1202241,
+    "sentenceSequence":1,
+    "lineSequence":1,
+    "caseSequence":1,
+    "courtDescription":"Aylesbury Magistrates Court",
+    "sentenceStatus":"A",
+    "sentenceCategory":"2003",
+    "sentenceCalculationType":"SOPC18",
+    "sentenceTypeDescription":"SOPC 18",
+    "sentenceDate":"2026-11-17",
+    "terms":[
+      {
+        "years":5,
+        "months":7,
+        "weeks":0,
+        "days":0,
+        "code":"IMP"
+      },
+      {
+        "years":1,
+        "months":0,
+        "weeks":0,
+        "days":0,
+        "code":"LIC"
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":3933004,
+        "offenceStartDate":"2014-12-12",
+        "offenceCode":"CD79009",
+        "offenceDescription":"Acquire relieved goods for use by another contrary to a condition upon which relief was granted",
+        "indicators":[
+          "99"
+        ]
+      }
+    ]
+  }
+]
