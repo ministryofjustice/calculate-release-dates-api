@@ -23,7 +23,7 @@ data class ExtendedDeterminateSentence(
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType) {
 
   override fun buildString(): String {
-    return "Sentence\t:\t\n" +
+    return "ExtendedDeterminateSentence\t:\t\n" +
       "Identification Track\t:\t${identificationTrack}\n" +
       "Custodial duration\t:\t${custodialDuration}\n" +
       "Extension duration\t:\t${extensionDuration}\n" +
@@ -44,7 +44,7 @@ data class ExtendedDeterminateSentence(
     return combinedDuration().getLengthInDays(sentencedAt)
   }
 
-  override fun hasAnyEdsSentence(): Boolean {
+  override fun hasAnyEdsOrSopcSentence(): Boolean {
     return true
   }
 }

@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -16,7 +16,8 @@ import java.time.LocalDate
 
 class ValidationServiceTest {
 
-  private val validationService = ValidationService(FeatureToggles(eds = true), SentencesExtractionService())
+  private val featureToggles = FeatureToggles(eds = true, sopc = true)
+  private val validationService = ValidationService(featureToggles, SentencesExtractionService())
   private val offences = listOf(
     OffenderOffence(
       offenderChargeId = 1L,
@@ -49,8 +50,8 @@ class ValidationServiceTest {
   fun `Test EDS valid sentence should pass`() {
     val result = validationService.validate(PrisonApiSourceData(listOf(validSentence), validPrisoner, validAdjustments, null))
 
-    Assertions.assertThat(result.type).isEqualTo(ValidationType.VALID)
-    Assertions.assertThat(result.messages).hasSize(0)
+    assertThat(result.type).isEqualTo(ValidationType.VALID)
+    assertThat(result.messages).hasSize(0)
   }
 
   @Test
@@ -62,9 +63,9 @@ class ValidationServiceTest {
     )
     val result = validationService.validate(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, null))
 
-    Assertions.assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
-    Assertions.assertThat(result.messages).hasSize(1)
-    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)
+    assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)
   }
 
   @Test
@@ -77,9 +78,9 @@ class ValidationServiceTest {
     )
     val result = validationService.validate(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, null))
 
-    Assertions.assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
-    Assertions.assertThat(result.messages).hasSize(1)
-    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.ZERO_IMPRISONMENT_TERM)
+    assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.ZERO_IMPRISONMENT_TERM)
   }
 
   @Test
@@ -91,9 +92,9 @@ class ValidationServiceTest {
     )
     val result = validationService.validate(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, null))
 
-    Assertions.assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
-    Assertions.assertThat(result.messages).hasSize(1)
-    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.SENTENCE_HAS_NO_LICENCE_TERM)
+    assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.SENTENCE_HAS_NO_LICENCE_TERM)
   }
 
   @Test
@@ -114,10 +115,10 @@ class ValidationServiceTest {
     )
     val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
 
-    Assertions.assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
-    Assertions.assertThat(result.messages).hasSize(2)
-    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.LICENCE_TERM_LESS_THAN_ONE_YEAR)
-    Assertions.assertThat(result.messages[1].code).isEqualTo(ValidationCode.LICENCE_TERM_LESS_THAN_ONE_YEAR)
+    assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(result.messages).hasSize(2)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.LICENCE_TERM_LESS_THAN_ONE_YEAR)
+    assertThat(result.messages[1].code).isEqualTo(ValidationCode.LICENCE_TERM_LESS_THAN_ONE_YEAR)
   }
 
   @Test
@@ -138,7 +139,7 @@ class ValidationServiceTest {
     )
     val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
 
-    Assertions.assertThat(result.type).isEqualTo(ValidationType.VALID)
+    assertThat(result.type).isEqualTo(ValidationType.VALID)
   }
 
   @Test
@@ -153,9 +154,9 @@ class ValidationServiceTest {
     )
     val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
 
-    Assertions.assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
-    Assertions.assertThat(result.messages).hasSize(1)
-    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.LICENCE_TERM_MORE_THAN_EIGHT_YEARS)
+    assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.LICENCE_TERM_MORE_THAN_EIGHT_YEARS)
   }
 
   @Test
@@ -192,11 +193,11 @@ class ValidationServiceTest {
     )
     val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
 
-    Assertions.assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
-    Assertions.assertThat(result.messages).hasSize(3)
-    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT)
-    Assertions.assertThat(result.messages[1].code).isEqualTo(ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT)
-    Assertions.assertThat(result.messages[2].code).isEqualTo(ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT)
+    assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(result.messages).hasSize(3)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT)
+    assertThat(result.messages[1].code).isEqualTo(ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT)
+    assertThat(result.messages[2].code).isEqualTo(ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT)
   }
 
   @Test
@@ -217,9 +218,9 @@ class ValidationServiceTest {
     )
     val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
 
-    Assertions.assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
-    Assertions.assertThat(result.messages).hasSize(1)
-    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.LASPO_AR_SENTENCE_TYPE_INCORRECT)
+    assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.LASPO_AR_SENTENCE_TYPE_INCORRECT)
   }
 
   @Test
@@ -242,10 +243,33 @@ class ValidationServiceTest {
     )
     val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
 
-    Assertions.assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
-    Assertions.assertThat(result.messages).hasSize(2)
-    Assertions.assertThat(result.messages[0].code).isEqualTo(ValidationCode.MORE_THAN_ONE_IMPRISONMENT_TERM)
-    Assertions.assertThat(result.messages[1].code).isEqualTo(ValidationCode.MORE_THAN_ONE_LICENCE_TERM)
+    assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(result.messages).hasSize(2)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.MORE_THAN_ONE_IMPRISONMENT_TERM)
+    assertThat(result.messages[1].code).isEqualTo(ValidationCode.MORE_THAN_ONE_LICENCE_TERM)
+  }
+
+  @Test
+  fun `Test EDS sentences should be unsupported if feature toggle disabled`() {
+    val featureToggles = FeatureToggles(eds = false, sopc = true)
+    val validationService = ValidationService(featureToggles, SentencesExtractionService())
+    val sentences = listOf(validSentence)
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
+
+    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)
+  }
+  @Test
+  fun `Test SOPC sentences should be unsupported if feature toggle disabled`() {
+    val featureToggles = FeatureToggles(eds = true, sopc = false)
+    val validationService = ValidationService(featureToggles, SentencesExtractionService())
+    val sentences = listOf(validSentence.copy(sentenceCalculationType = SentenceCalculationType.SOPC18.name))
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
+
+    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)
   }
 
   private companion object {

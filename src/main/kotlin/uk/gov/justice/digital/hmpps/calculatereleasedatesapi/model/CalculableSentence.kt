@@ -99,7 +99,7 @@ interface CalculableSentence {
   }
 
   @JsonIgnore
-  fun hasAnyEdsSentence(): Boolean
+  fun hasAnyEdsOrSopcSentence(): Boolean
 
   @JsonIgnore
   fun getReleaseDateType(): ReleaseDateType {

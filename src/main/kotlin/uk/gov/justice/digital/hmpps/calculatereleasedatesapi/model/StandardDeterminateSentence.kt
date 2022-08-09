@@ -35,7 +35,7 @@ data class StandardDeterminateSentence(
     return duration.getLengthInDays(this.sentencedAt)
   }
 
-  override fun hasAnyEdsSentence(): Boolean {
+  override fun hasAnyEdsOrSopcSentence(): Boolean {
     return false
   }
 

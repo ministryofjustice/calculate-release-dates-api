@@ -672,6 +672,28 @@ class CalculationIntTest : IntegrationTestBase() {
       LocalDate.of(2023, 7, 20)
     )
   }
+  @Test
+  fun `Run calculation on SOPC sentence`() {
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/SOPC")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[CRD]).isEqualTo(
+      LocalDate.of(2032, 6, 16)
+    )
+    assertThat(calculation.dates[PED]).isEqualTo(
+      LocalDate.of(2030, 8, 7)
+    )
+    assertThat(calculation.dates[SLED]).isEqualTo(
+      LocalDate.of(2033, 6, 16)
+    )
+  }
 
   @Test
   fun `Run calculation on adjustment linked to inactive sentence CRS-892`() {

@@ -39,7 +39,10 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
           it.duration
         }
         is ExtendedDeterminateSentence -> {
-          it.custodialDuration.appendAll(it.extensionDuration.durationElements)
+          it.combinedDuration()
+        }
+        is SopcSentence -> {
+          it.combinedDuration()
         }
         else -> {
           throw UnsupportedOperationException("Unknown type of sentence in a consecutive sentence ${it.javaClass}")
@@ -52,8 +55,8 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
     return duration.getLengthInDays(sentencedAt)
   }
 
-  override fun hasAnyEdsSentence(): Boolean {
-    return hasExtendedSentence()
+  override fun hasAnyEdsOrSopcSentence(): Boolean {
+    return hasExtendedSentence() || hasSopcSentence()
   }
 
   fun allSentencesAreStandardSentences(): Boolean {
@@ -66,6 +69,9 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
 
   fun hasExtendedSentence(): Boolean {
     return orderedSentences.any { it is ExtendedDeterminateSentence }
+  }
+  fun hasSopcSentence(): Boolean {
+    return orderedSentences.any { it is SopcSentence }
   }
 
   private fun hasAfterCjaLaspo(): Boolean {
