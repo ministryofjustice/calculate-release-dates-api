@@ -189,13 +189,7 @@ class ValidationService(
           sentencesAndOffence.terms[0].years == 0
 
       if (emptyImprisonmentTerm) {
-        validationMessages.add(
-          ValidationMessage(
-            "Sentence has no imprisonment duration",
-            ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_DURATION,
-            sentencesAndOffence.sentenceSequence
-          )
-        )
+        validationMessages.add(ValidationMessage("Sentence empty imprisonment term", ValidationCode.ZERO_IMPRISONMENT_TERM, sentencesAndOffence.sentenceSequence))
       }
     }
     return validationMessages
