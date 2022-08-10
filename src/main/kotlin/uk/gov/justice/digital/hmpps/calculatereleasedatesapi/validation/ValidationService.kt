@@ -125,7 +125,7 @@ class ValidationService(
       validateWithoutOffenceDate(it),
       validateOffenceDateAfterSentenceDate(it),
       validateOffenceRangeDateAfterSentenceDate(it),
-    ) + validateDuration(it) + listOfNotNull(validateThatSec91SentenceTypeCorrectlyApplied(it), validateEdsSentenceTypesCorrectlyApplied(it))
+    ) + validateDuration(it) + listOfNotNull(validateThatSec91SentenceTypeCorrectlyApplied(it), validateEdsSentenceTypesCorrectlyApplied(it), validateSopcSentenceTypesCorrectlyApplied(it))
   }
   private fun validateThatSec91SentenceTypeCorrectlyApplied(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
@@ -153,6 +153,20 @@ class ValidationService(
     return null
   }
 
+  private fun validateSopcSentenceTypesCorrectlyApplied(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
+    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
+
+    if (listOf(SentenceCalculationType.SOPC18, SentenceCalculationType.SOPC21).contains(sentenceCalculationType)) {
+      if (sentencesAndOffence.sentenceDate.isBefore(ImportantDates.SEC_91_END_DATE)) {
+        return ValidationMessage("${sentencesAndOffence.sentenceCalculationType} sentence type incorrectly applied", ValidationCode.SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, sentencesAndOffence.sentenceSequence, listOf(sentencesAndOffence.sentenceCalculationType))
+      }
+    } else if (sentenceCalculationType == SentenceCalculationType.SEC236A) {
+      if (sentencesAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.SEC_91_END_DATE)) {
+        return ValidationMessage("${sentencesAndOffence.sentenceCalculationType} sentence type incorrectly applied", ValidationCode.SEC236A_SENTENCE_TYPE_INCORRECT, sentencesAndOffence.sentenceSequence, listOf(sentencesAndOffence.sentenceCalculationType))
+      }
+    }
+    return null
+  }
   private fun validateDuration(sentencesAndOffence: SentenceAndOffences): List<ValidationMessage> {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
     if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java) {
@@ -211,15 +225,45 @@ class ValidationService(
     } else if (licenceTerms.size > 1) {
       validationMessages.add(ValidationMessage("Sentence has multiple licence terms", ValidationCode.MORE_THAN_ONE_LICENCE_TERM, sentencesAndOffence.sentenceSequence))
     } else {
-      val duration = Period.of(licenceTerms[0].years, licenceTerms[0].months, licenceTerms[0].weeks * 7 + licenceTerms[0].days)
-      val endOfDuration = sentencesAndOffence.sentenceDate.plus(duration)
-      val endOfOneYear = sentencesAndOffence.sentenceDate.plusYears(1)
-      val endOfEightYears = sentencesAndOffence.sentenceDate.plusYears(8)
+      val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
+      if (sentenceCalculationType.sentenceClazz == ExtendedDeterminateSentence::class.java) {
+        val duration =
+          Period.of(licenceTerms[0].years, licenceTerms[0].months, licenceTerms[0].weeks * 7 + licenceTerms[0].days)
+        val endOfDuration = sentencesAndOffence.sentenceDate.plus(duration)
+        val endOfOneYear = sentencesAndOffence.sentenceDate.plusYears(1)
+        val endOfEightYears = sentencesAndOffence.sentenceDate.plusYears(8)
 
-      if (endOfDuration.isBefore(endOfOneYear)) {
-        validationMessages.add(ValidationMessage("Licence duration less than one year", ValidationCode.LICENCE_TERM_LESS_THAN_ONE_YEAR, sentencesAndOffence.sentenceSequence))
-      } else if (endOfDuration.isAfter(endOfEightYears)) {
-        validationMessages.add(ValidationMessage("Licence duration greater than eight years", ValidationCode.LICENCE_TERM_MORE_THAN_EIGHT_YEARS, sentencesAndOffence.sentenceSequence))
+        if (endOfDuration.isBefore(endOfOneYear)) {
+          validationMessages.add(
+            ValidationMessage(
+              "EDS Licence duration less than one year",
+              ValidationCode.EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR,
+              sentencesAndOffence.sentenceSequence
+            )
+          )
+        } else if (endOfDuration.isAfter(endOfEightYears)) {
+          validationMessages.add(
+            ValidationMessage(
+              "EDS Licence duration greater than eight years",
+              ValidationCode.EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS,
+              sentencesAndOffence.sentenceSequence
+            )
+          )
+        }
+      } else if (sentenceCalculationType.sentenceClazz == SopcSentence::class.java) {
+        val duration =
+          Period.of(licenceTerms[0].years, licenceTerms[0].months, licenceTerms[0].weeks * 7 + licenceTerms[0].days)
+        val endOfDuration = sentencesAndOffence.sentenceDate.plus(duration)
+        val endOfOneYear = sentencesAndOffence.sentenceDate.plusYears(1)
+        if (endOfDuration != endOfOneYear) {
+          validationMessages.add(
+            ValidationMessage(
+              " SOPC Licence duration should be exactly 1 year/12 months",
+              ValidationCode.SOPC_LICENCE_TERM_NOT_12_MONTHS,
+              sentencesAndOffence.sentenceSequence
+            )
+          )
+        }
       }
     }
 
