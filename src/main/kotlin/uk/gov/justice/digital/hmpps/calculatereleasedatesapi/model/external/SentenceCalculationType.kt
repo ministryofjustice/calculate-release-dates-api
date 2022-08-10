@@ -40,7 +40,8 @@ enum class SentenceCalculationType(
   EDSU18(sentenceClazz = ExtendedDeterminateSentence::class.java),
   SDOPCU18(sentenceClazz = SopcSentence::class.java),
   SOPC18(sentenceClazz = SopcSentence::class.java),
-  SOPC21(sentenceClazz = SopcSentence::class.java);
+  SOPC21(sentenceClazz = SopcSentence::class.java),
+  SEC236A(sentenceClazz = SopcSentence::class.java);
 
   companion object {
     fun from(sentenceCalculationType: String): SentenceCalculationType? {
