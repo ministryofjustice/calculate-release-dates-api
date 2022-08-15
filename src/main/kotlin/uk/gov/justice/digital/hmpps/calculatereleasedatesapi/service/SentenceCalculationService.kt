@@ -106,11 +106,17 @@ class SentenceCalculationService {
   }
 
   private fun getDaysInGroup(sentences: List<CalculableSentence>, sentenceStartDate: LocalDate, durationSupplier: (sentence: CalculableSentence) -> Duration): Int {
-    var date = sentenceStartDate
-    sentences.forEach {
-      date = date.plusDays(durationSupplier(it).getLengthInDays(date).toLong())
+    val sentencesHasMonthsYears = sentences.any { durationSupplier(it).hasMonthsYears() }
+    val sentencesHasWeeksDays = sentences.any { durationSupplier(it).hasWeeksDays() }
+    if (sentencesHasMonthsYears && sentencesHasWeeksDays) {
+      var date = sentenceStartDate
+      sentences.forEach {
+        date = date.plusDays(durationSupplier(it).getLengthInDays(date).toLong())
+      }
+      return DAYS.between(sentenceStartDate, date).toInt()
     }
-    return DAYS.between(sentenceStartDate, date).toInt()
+    return sentences.map(durationSupplier).reduce { acc, duration -> acc.appendAll(duration.durationElements) }
+      .getLengthInDays(sentenceStartDate)
   }
 
   private fun getTotalDuration(sentence: CalculableSentence): Duration {
