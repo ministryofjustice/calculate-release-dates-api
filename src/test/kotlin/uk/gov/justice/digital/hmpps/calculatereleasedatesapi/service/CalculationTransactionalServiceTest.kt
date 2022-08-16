@@ -109,6 +109,11 @@ class CalculationTransactionalServiceTest {
     null
   )
 
+  @Test
+  fun blha() {
+    `Test Example`("custom-examples", "crs-1006-consec-calc-prod-bug-test-agg", null)
+  }
+
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
   fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {
