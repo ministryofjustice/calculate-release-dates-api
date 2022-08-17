@@ -131,9 +131,6 @@ class SentenceCalculationService {
     if (sentencesHasMonthsYears && sentencesHasWeeksDays) {
       var date = sentenceStartDate
       sentences.forEach {
-        var formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-
-        System.out.println("${date.format(formatter)} + ${durationSupplier(it)} = ${date.plusDays(durationSupplier(it).getLengthInDays(date).toLong()).minusDays(1).format(formatter)}")
         date = date.plusDays(durationSupplier(it).getLengthInDays(date).toLong())
       }
       return DAYS.between(sentenceStartDate, date).toInt()
