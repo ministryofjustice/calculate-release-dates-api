@@ -81,8 +81,7 @@ class SentenceCalculationService {
         val daysInThisCustodialDuration = getDaysInGroup(it, releaseStartDate) { getCustodialDuration(it) }
         val daysInThisTotalDuration = getDaysInGroup(it, sentenceStartDate) { getTotalDuration(it) }
         if (it == sentencesWithPed) {
-          numberOfDaysToParoleEligibilityDate =
-            daysToRelease + ceil(daysInThisCustodialDuration.toDouble().times(TWO).div(THREE)).toLong()
+          numberOfDaysToParoleEligibilityDate = calculateConsecutivePed(it, daysToRelease, releaseStartDate)
         }
         val multiplier = determineReleaseDateMultiplier(it[0].identificationTrack)
         val daysToReleaseInThisGroup = ceil(daysInThisCustodialDuration.toDouble().times(multiplier)).toLong()
@@ -105,9 +104,29 @@ class SentenceCalculationService {
     )
   }
 
+  private fun calculateConsecutivePed(calculableSentences: List<CalculableSentence>, daysToRelease: Int, releaseStartDate: LocalDate): Long {
+    val firstSentence = calculableSentences[0]
+    val firstSentenceMultiplier = determinePedMultiplier(firstSentence.identificationTrack)
+    val sentencesOfFirstType = calculableSentences.filter { determinePedMultiplier(it.identificationTrack) == firstSentenceMultiplier }
+    val sentencesOfOtherType = calculableSentences.filter { determinePedMultiplier(it.identificationTrack) != firstSentenceMultiplier }
+
+    val daysInFirstCustodialDuration = getDaysInGroup(sentencesOfFirstType, releaseStartDate) { getCustodialDuration(it) }
+    var daysToPed = ceil(daysInFirstCustodialDuration.times(firstSentenceMultiplier)).toLong()
+    val notionalPed = releaseStartDate
+      .plusDays(daysToPed)
+      .minusDays(ONE)
+    if (sentencesOfOtherType.isNotEmpty()) {
+      val otherSentenceMultiplier = determinePedMultiplier(sentencesOfOtherType[0].identificationTrack)
+      val daysInOtherCustodialDuration = getDaysInGroup(sentencesOfOtherType, notionalPed) { getCustodialDuration(it) }
+      daysToPed += ceil(daysInOtherCustodialDuration.times(otherSentenceMultiplier)).toLong()
+    }
+    return daysToRelease + daysToPed
+  }
+
   private fun getDaysInGroup(sentences: List<CalculableSentence>, sentenceStartDate: LocalDate, durationSupplier: (sentence: CalculableSentence) -> Duration): Int {
     val sentencesHasMonthsYears = sentences.any { durationSupplier(it).hasMonthsYears() }
     val sentencesHasWeeksDays = sentences.any { durationSupplier(it).hasWeeksDays() }
+
     if (sentencesHasMonthsYears && sentencesHasWeeksDays) {
       var date = sentenceStartDate
       sentences.forEach {
@@ -216,8 +235,9 @@ class SentenceCalculationService {
       custodialDuration.getLengthInDays(sentence.sentencedAt).times(releaseDateMultiplier)
     val numberOfDaysToReleaseDate: Int = ceil(numberOfDaysToReleaseDateDouble).toInt()
     if (sentence.releaseDateTypes.contains(PED) && (sentence is ExtendedDeterminateSentence || sentence is SopcSentence)) {
+      val pedMultiplier = determinePedMultiplier(sentence.identificationTrack)
       numberOfDaysToParoleEligibilityDate =
-        ceil(numberOfDaysToReleaseDate.toDouble().times(TWO).div(THREE)).toLong()
+        ceil(numberOfDaysToReleaseDate.toDouble().times(pedMultiplier)).toLong()
     }
     return ReleaseDateCalculation(
       sentence.getLengthInDays(),
@@ -560,10 +580,19 @@ class SentenceCalculationService {
   private fun determineReleaseDateMultiplier(identification: SentenceIdentificationTrack): Double {
     return when (identification) {
       SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE -> 2 / 3.toDouble()
-      SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE -> 1.toDouble()
-      SentenceIdentificationTrack.SOPC_POST_PCSC -> 1.toDouble()
+      SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE,
+      SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS,
+      SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY, -> 1.toDouble()
       SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE -> 2 / 3.toDouble()
       else -> 1 / 2.toDouble()
+    }
+  }
+  private fun determinePedMultiplier(identification: SentenceIdentificationTrack): Double {
+    return when (identification) {
+      SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS,
+      SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE, -> 2 / 3.toDouble()
+      SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY -> 1 / 2.toDouble()
+      else -> throw UnsupportedOperationException("Unknown identification for a PED calculation $identification")
     }
   }
 
