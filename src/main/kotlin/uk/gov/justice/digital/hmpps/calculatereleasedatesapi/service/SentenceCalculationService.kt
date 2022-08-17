@@ -34,7 +34,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import kotlin.math.ceil
@@ -113,7 +112,7 @@ class SentenceCalculationService {
 
     val daysInFirstCustodialDuration = getDaysInGroup(sentencesOfFirstType, releaseStartDate) { getCustodialDuration(it) }
     var daysToPed = ceil(daysInFirstCustodialDuration.times(firstSentenceMultiplier)).toLong()
-    val notionalPed =  releaseStartDate
+    val notionalPed = releaseStartDate
       .plusDays(daysToPed)
       .minusDays(ONE)
     if (sentencesOfOtherType.isNotEmpty()) {
@@ -583,7 +582,7 @@ class SentenceCalculationService {
       SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE -> 2 / 3.toDouble()
       SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE,
       SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS,
-      SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY,-> 1.toDouble()
+      SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY, -> 1.toDouble()
       SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE -> 2 / 3.toDouble()
       else -> 1 / 2.toDouble()
     }
@@ -596,7 +595,6 @@ class SentenceCalculationService {
       else -> throw UnsupportedOperationException("Unknown identification for a PED calculation $identification")
     }
   }
-
 
   data class ReleaseDateCalculation(
     val numberOfDaysToSentenceExpiryDate: Int,
