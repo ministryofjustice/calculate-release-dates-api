@@ -18,7 +18,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_POST_PCSC
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
@@ -52,20 +53,16 @@ class SentenceIdentificationService(
     }
   }
   private fun identifySopcSentence(sentence: CalculableSentence) {
-    if (sentence is ConsecutiveSentence) {
-      sentence.releaseDateTypes = listOf(
-        SLED,
-        CRD
-      )
-    } else {
-      sentence as SopcSentence
+    sentence.releaseDateTypes = listOf(
+      SLED,
+      CRD,
+      PED
+    )
+    if (sentence is SopcSentence) {
       if (sentence.sdopcu18 || sentence.sentencedAt.isAfterOrEqualTo(PCSC_COMMENCEMENT_DATE)) {
-        sentence.identificationTrack = SOPC_POST_PCSC
-        sentence.releaseDateTypes = listOf(
-          SLED,
-          CRD,
-          PED
-        )
+        sentence.identificationTrack = SOPC_PED_AT_TWO_THIRDS
+      } else {
+        sentence.identificationTrack = SOPC_PED_AT_HALFWAY
       }
     }
   }

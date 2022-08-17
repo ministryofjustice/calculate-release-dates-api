@@ -1,0 +1,25 @@
+{
+  "offender":{
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences":[
+    {
+      "type":"SopcSentence",
+      "offence":{
+        "committedAt":"2020-09-02"
+      },
+      "custodialDuration":{
+        "durationElements":{
+          "YEARS": 6
+        }
+      },
+      "extensionDuration":{
+        "durationElements":{
+          "MONTHS": 12
+        }
+      },
+      "sentencedAt":"2020-10-02"
+    }
+  ]
+}
