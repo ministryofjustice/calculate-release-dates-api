@@ -40,72 +40,47 @@ class SentenceIdentificationService(
 ) {
 
   fun identify(sentence: CalculableSentence, offender: Offender) {
-    if (sentence is SopcSentence || (sentence is ConsecutiveSentence && sentence.hasSopcSentence())) {
-      identifySopcSentence(sentence)
-    } else if (sentence is ExtendedDeterminateSentence || (sentence is ConsecutiveSentence && sentence.hasExtendedSentence())) {
-      identifyExtendedDeterminate(sentence)
-    } else if (sentence is StandardDeterminateSentence || sentence is SingleTermSentence || (sentence is ConsecutiveSentence && sentence.allSentencesAreStandardSentences())) {
-      identifyStandardDeterminate(sentence, offender)
-      if (sentence.recallType != null) {
-        sentence.releaseDateTypes -= HDCED
-        sentence.releaseDateTypes += PRRD
+    when (sentence) {
+      is ConsecutiveSentence -> {
+        identifyConsecutiveSentence(sentence, offender)
+      }
+      is SopcSentence -> {
+        identifySopcSentence(sentence)
+      }
+      is ExtendedDeterminateSentence -> {
+        identifyExtendedDeterminate(sentence)
+      }
+      is StandardDeterminateSentence, is SingleTermSentence -> {
+        identifyStandardDeterminate(sentence, offender)
       }
     }
-  }
-  private fun identifySopcSentence(sentence: CalculableSentence) {
-    sentence.releaseDateTypes = listOf(
-      SLED,
-      CRD,
-      PED
-    )
-    if (sentence is SopcSentence) {
-      if (sentence.sdopcu18 || sentence.sentencedAt.isAfterOrEqualTo(PCSC_COMMENCEMENT_DATE)) {
-        sentence.identificationTrack = SOPC_PED_AT_TWO_THIRDS
-      } else {
-        sentence.identificationTrack = SOPC_PED_AT_HALFWAY
-      }
+
+    if (sentence.recallType != null) {
+      sentence.releaseDateTypes -= HDCED
+      sentence.releaseDateTypes += PRRD
     }
   }
-  private fun identifyExtendedDeterminate(sentence: CalculableSentence) {
-    if (sentence is ConsecutiveSentence) {
-      sentence.releaseDateTypes = listOf(
-        SLED,
-        CRD
-      )
-      if (sentence.hasDiscretionaryRelease()) {
-        sentence.releaseDateTypes += PED
-      }
-      // TODO Do consec sentences need an identificationTrack? It doesn't really fit.
-    } else {
-      sentence as ExtendedDeterminateSentence
-      if (sentence.automaticRelease) {
-        sentence.identificationTrack = EDS_AUTOMATIC_RELEASE
-        sentence.releaseDateTypes = listOf(
-          SLED,
-          CRD
-        )
-      } else {
-        sentence.identificationTrack = EDS_DISCRETIONARY_RELEASE
+  private fun identifyConsecutiveSentence(sentence: ConsecutiveSentence, offender: Offender) {
+    if (sentence.hasAnyEdsOrSopcSentence()) {
+      if (sentence.hasSopcSentence() || sentence.hasDiscretionaryRelease()) {
         sentence.releaseDateTypes = listOf(
           SLED,
           CRD,
           PED
         )
+      } else {
+        sentence.releaseDateTypes = listOf(
+          SLED,
+          CRD
+        )
       }
-    }
-  }
-
-  fun identifyStandardDeterminate(sentence: CalculableSentence, offender: Offender) {
-    sentence.releaseDateTypes = listOf()
-    if (sentence is ConsecutiveSentence) {
+    } else {
       if (sentence.isMadeUpOfOnlySdsTwoThirdsReleaseSentences()) {
-        sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
         sentence.releaseDateTypes = listOf(
           SLED,
           CRD
         )
       } else if (sentence.isMadeUpOfBeforeAndAfterCjaLaspoSentences()) {
-        sentence.identificationTrack = SDS_AFTER_CJA_LASPO
         // This consecutive sentence is made up of pre and post laspo date sentences. (Old and new style)
         val hasScheduleFifteen = sentence.orderedSentences.any() { it.offence.isScheduleFifteen }
         if (hasScheduleFifteen) {
@@ -124,10 +99,9 @@ class SentenceIdentificationService(
           )
         }
       } else if (sentence.isMadeUpOfOnlyAfterCjaLaspoSentences()) {
-        sentence.identificationTrack = SDS_AFTER_CJA_LASPO
         if (sentence.hasOraSentences() && sentence.hasNonOraSentences()) {
           // PSI example 25
-          if (sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS)) {
+          if (sentence.durationIsLessThan(12, ChronoUnit.MONTHS)) {
             sentence.releaseDateTypes = listOf(
               LED,
               SED,
@@ -140,26 +114,60 @@ class SentenceIdentificationService(
               CRD
             )
           }
+        } else {
+          afterCJAAndLASPOorSDSPlus(sentence, offender)
         }
+      } else if (sentence.isMadeUpOfOnlyBeforeCjaLaspoSentences()) {
+        beforeCJAAndLASPO(sentence)
       }
-    }
 
-    if (sentence.releaseDateTypes.isEmpty()) {
-      identifyConcurrentSentence(sentence, offender)
-    }
+      if (doesTopUpSentenceExpiryDateApply(sentence, offender)) {
+        sentence.releaseDateTypes += TUSED
+      }
 
-    if (doesTopUpSentenceExpiryDateApply(sentence, offender)) {
-      sentence.releaseDateTypes += TUSED
-    }
-
-    if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.WEEKS) &&
-      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS) && !offender.isActiveSexOffender
-    ) {
-      sentence.releaseDateTypes += HDCED
+      if (doesHdcedDateApply(sentence, offender)) {
+        sentence.releaseDateTypes += HDCED
+      }
     }
   }
 
-  fun identifyConcurrentSentence(sentence: CalculableSentence, offender: Offender) {
+  private fun doesHdcedDateApply(sentence: CalculableSentence, offender: Offender): Boolean {
+    return sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.WEEKS) &&
+      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS) && !offender.isActiveSexOffender
+  }
+
+  private fun identifySopcSentence(sentence: SopcSentence) {
+    sentence.releaseDateTypes = listOf(
+      SLED,
+      CRD,
+      PED
+    )
+    if (sentence.sdopcu18 || sentence.sentencedAt.isAfterOrEqualTo(PCSC_COMMENCEMENT_DATE)) {
+      sentence.identificationTrack = SOPC_PED_AT_TWO_THIRDS
+    } else {
+      sentence.identificationTrack = SOPC_PED_AT_HALFWAY
+    }
+  }
+  private fun identifyExtendedDeterminate(sentence: ExtendedDeterminateSentence) {
+    if (sentence.automaticRelease) {
+      sentence.identificationTrack = EDS_AUTOMATIC_RELEASE
+      sentence.releaseDateTypes = listOf(
+        SLED,
+        CRD
+      )
+    } else {
+      sentence.identificationTrack = EDS_DISCRETIONARY_RELEASE
+      sentence.releaseDateTypes = listOf(
+        SLED,
+        CRD,
+        PED
+      )
+    }
+  }
+
+  fun identifyStandardDeterminate(sentence: CalculableSentence, offender: Offender) {
+    sentence.releaseDateTypes = listOf()
+
     if (
       sentence.sentencedAt.isBefore(LASPO_DATE) &&
       sentence.offence.committedAt.isBefore(CJA_DATE)
@@ -167,6 +175,14 @@ class SentenceIdentificationService(
       beforeCJAAndLASPO(sentence)
     } else {
       afterCJAAndLASPOorSDSPlus(sentence, offender)
+    }
+
+    if (doesTopUpSentenceExpiryDateApply(sentence, offender)) {
+      sentence.releaseDateTypes += TUSED
+    }
+
+    if (doesHdcedDateApply(sentence, offender)) {
+      sentence.releaseDateTypes += HDCED
     }
   }
 
