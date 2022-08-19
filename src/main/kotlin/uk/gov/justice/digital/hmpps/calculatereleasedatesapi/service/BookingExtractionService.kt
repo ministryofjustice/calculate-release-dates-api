@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
@@ -225,11 +226,11 @@ class BookingExtractionService(
           sentences.filter { !it.isRecall() && it is StandardDeterminateSentence },
           SentenceCalculation::releaseDate
         )
-        val latestEdsRelease = extractionService.mostRecentOrNull(
-          sentences.filter { !it.isRecall() && it is ExtendedDeterminateSentence },
+        val latestEdsOrSopcReleaseRelease = extractionService.mostRecentOrNull(
+          sentences.filter { !it.isRecall() && (it is ExtendedDeterminateSentence || it is SopcSentence) },
           SentenceCalculation::releaseDate
         )
-        if (latestSdsRelease != null && latestEdsRelease != null && latestSdsRelease.isAfterOrEqualTo(latestEdsRelease)) {
+        if (latestSdsRelease != null && latestEdsOrSopcReleaseRelease != null && latestSdsRelease.isAfterOrEqualTo(latestEdsOrSopcReleaseRelease)) {
           // SDS release is after PED, so no PED required.
         } else {
           if (latestSdsRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestSdsRelease)) {
