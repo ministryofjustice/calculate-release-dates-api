@@ -20,7 +20,7 @@ import kotlin.math.min
 
 @Service
 class BookingTimelineService(
-  val sentenceCalculationService: SentenceCalculationService,
+  val sentenceAdjustedCalculationService: SentenceAdjustedCalculationService,
   val extractionService: SentencesExtractionService
 ) {
 
@@ -147,7 +147,7 @@ class BookingTimelineService(
   }
 
   private fun readjustDates(it: CalculableSentence, booking: Booking) {
-    sentenceCalculationService.calculateDatesFromAdjustments(it, booking)
+    sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, booking)
     log.info(it.buildString())
   }
 

@@ -62,7 +62,8 @@ import javax.persistence.EntityNotFoundException
 class CalculationTransactionalServiceTest {
   private val jsonTransformation = JsonTransformation()
   private val featureToggles = FeatureToggles(true)
-  private val sentenceCalculationService = SentenceCalculationService()
+  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService()
+  private val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
   private val sentencesExtractionService = SentencesExtractionService()
   private val sentenceIdentificationService = SentenceIdentificationService(featureToggles)
   private val bookingCalculationService = BookingCalculationService(
@@ -73,7 +74,7 @@ class CalculationTransactionalServiceTest {
     sentencesExtractionService
   )
   private val bookingTimelineService = BookingTimelineService(
-    sentenceCalculationService,
+    sentenceAdjustedCalculationService,
     sentencesExtractionService
   )
   private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())

@@ -14,7 +14,8 @@ import java.time.LocalDate
 class SentenceCalculationServiceTest {
 
   private val featureToggles = FeatureToggles()
-  private val sentenceCalculationService: SentenceCalculationService = SentenceCalculationService()
+  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService()
+  private val sentenceCalculationService: SentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
   private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(featureToggles)
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
