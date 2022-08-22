@@ -127,5 +127,4 @@ domain-events-sns:
       arn: topic_arn
 
 feature-toggles:
-  eds: ${EDS_FEATURE_TOGGLE}
   sopc: ${SOPC_FEATURE_TOGGLE}

@@ -63,5 +63,4 @@ domain-events-sns:
   provider: localstack
 
 feature-toggles:
-  eds: true
   sopc: true

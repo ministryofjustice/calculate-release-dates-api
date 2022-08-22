@@ -16,7 +16,7 @@ import java.time.LocalDate
 
 class ValidationServiceTest {
 
-  private val featureToggles = FeatureToggles(eds = true, sopc = true)
+  private val featureToggles = FeatureToggles(sopc = true)
   private val validationService = ValidationService(featureToggles, SentencesExtractionService())
   private val offences = listOf(
     OffenderOffence(
@@ -258,19 +258,8 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test EDS sentences should be unsupported if feature toggle disabled`() {
-    val featureToggles = FeatureToggles(eds = false, sopc = true)
-    val validationService = ValidationService(featureToggles, SentencesExtractionService())
-    val sentences = listOf(validEdsSentence)
-    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
-
-    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
-    assertThat(result.messages).hasSize(1)
-    assertThat(result.messages[0].code).isEqualTo(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)
-  }
-  @Test
   fun `Test SOPC sentences should be unsupported if feature toggle disabled`() {
-    val featureToggles = FeatureToggles(eds = true, sopc = false)
+    val featureToggles = FeatureToggles(sopc = false)
     val validationService = ValidationService(featureToggles, SentencesExtractionService())
     val sentences = listOf(validSopcSentence)
     val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
