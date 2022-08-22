@@ -305,7 +305,7 @@ class ValidationService(
   }
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedSentences: List<SentenceCalculationType> = SentenceCalculationType.values()
-      .filter { (featureToggles.eds && it.sentenceClazz == ExtendedDeterminateSentence::class.java) || (featureToggles.sopc && it.sentenceClazz == SopcSentence::class.java) || it.sentenceClazz == StandardDeterminateSentence::class.java }
+      .filter { (featureToggles.sopc && it.sentenceClazz == SopcSentence::class.java) || it.sentenceClazz == ExtendedDeterminateSentence::class.java || it.sentenceClazz == StandardDeterminateSentence::class.java }
     val validationMessages = sentencesAndOffences.filter {
       !supportedSentences.contains(SentenceCalculationType.from(it.sentenceCalculationType))
     }
