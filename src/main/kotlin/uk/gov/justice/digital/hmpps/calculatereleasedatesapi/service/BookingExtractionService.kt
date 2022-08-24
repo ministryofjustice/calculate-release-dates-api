@@ -21,10 +21,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSenten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
@@ -222,25 +220,10 @@ class BookingExtractionService(
           sentences.filter { !it.isRecall() && it.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null },
           SentenceCalculation::releaseDate
         )
-        val latestSdsRelease = extractionService.mostRecentOrNull(
-          sentences.filter { !it.isRecall() && it is StandardDeterminateSentence },
-          SentenceCalculation::releaseDate
-        )
-        val latestEdsOrSopcReleaseRelease = extractionService.mostRecentOrNull(
-          sentences.filter { !it.isRecall() && (it is ExtendedDeterminateSentence || it is SopcSentence) },
-          SentenceCalculation::releaseDate
-        )
-        if (latestSdsRelease != null && latestEdsOrSopcReleaseRelease != null && latestSdsRelease.isAfterOrEqualTo(latestEdsOrSopcReleaseRelease)) {
+        if (latestNonPedRelease != null && latestNonPedRelease.isAfterOrEqualTo(mostRecentSentenceByAdjustedDeterminateReleaseDate.sentenceCalculation.releaseDate)) {
           // SDS release is after PED, so no PED required.
         } else {
-          if (latestSdsRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestSdsRelease)) {
-            dates[PED] = latestSdsRelease
-            breakdownByReleaseDateType[PED] = ReleaseDateCalculationBreakdown(
-              rules = setOf(CalculationRule.PED_EQUAL_TO_LATEST_SDS_RELEASE),
-              releaseDate = dates[PED]!!,
-              unadjustedDate = latestExtendedDeterminateParoleEligibilityDate
-            )
-          } else if (latestNonPedRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestNonPedRelease)) {
+          if (latestNonPedRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestNonPedRelease)) {
             dates[PED] = latestNonPedRelease
             breakdownByReleaseDateType[PED] = ReleaseDateCalculationBreakdown(
               rules = setOf(CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_RELEASE),
