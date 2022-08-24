@@ -1,8 +1,7 @@
 {
   "offender":{
-    "reference":"BUG",
-    "dateOfBirth":"1995-03-08",
-    "isActiveSexOffender":false
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
   },
   "sentences":[
     {
