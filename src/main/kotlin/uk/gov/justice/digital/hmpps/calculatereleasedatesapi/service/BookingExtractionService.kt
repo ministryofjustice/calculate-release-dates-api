@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSenten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -249,7 +250,7 @@ class BookingExtractionService(
     sentences: List<CalculableSentence>,
     latestAdjustedReleaseDate: LocalDate
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
-    if (sentences.any { !it.isRecall() } && sentences.all { !it.hasAnyEdsOrSopcSentence() }) {
+    if (sentences.any { !it.isRecall() } && sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
       val earliestSentenceDate = sentences.filter { !it.isRecall() }.minOf { it.sentencedAt }
       val latestUnadjustedExpiryDate = extractionService.mostRecent(sentences.filter { !it.isRecall() }, SentenceCalculation::unadjustedExpiryDate)
       val effectiveSentenceLength = getEffectiveSentenceLength(
@@ -261,8 +262,23 @@ class BookingExtractionService(
           sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
           SentenceCalculation::homeDetentionCurfewEligibilityDate
         )
+        val latestSopcOrEdsRelease = extractionService.mostRecentOrNull(sentences.filter { it.hasAnyEdsOrSopcSentence() }, SentenceCalculation::releaseDate)
         if (hdcedSentence != null) {
-          return hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
+          if (latestSopcOrEdsRelease != null && hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(
+              latestSopcOrEdsRelease
+            )
+          ) {
+            if (latestAdjustedReleaseDate.isAfter(latestSopcOrEdsRelease)) {
+              return latestSopcOrEdsRelease to ReleaseDateCalculationBreakdown(
+                rules = setOf(CalculationRule.HDCED_ADJUSTED_TO_SOPC_OR_EDS_RELEASE),
+                releaseDate = latestSopcOrEdsRelease,
+                unadjustedDate = hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
+                adjustedDays = ChronoUnit.DAYS.between(latestSopcOrEdsRelease, hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!).toInt()
+              )
+            }
+          } else {
+            return hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
+          }
         }
       }
     }
