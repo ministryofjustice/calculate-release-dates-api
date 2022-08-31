@@ -27,6 +27,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
   }
 
   private fun getConsecutiveRelease(sentence: ConsecutiveSentence): ReleaseDateCalculation {
+    val daysToExpiry = getDaysInGroup(sentence.orderedSentences, sentence.sentencedAt, this::getTotalDuration)
     val sentencesWithPed =
       sentence.orderedSentences.filter { (it is ExtendedDeterminateSentence && !it.automaticRelease) || it is SopcSentence }
     val sentencesTwoThirdsWithoutPed =
@@ -46,26 +47,18 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       )
       else listOf(sentencesHalfwayWithoutPed, sentencesTwoThirdsWithoutPed, sentencesWithPed)
 
-    var notionalSled: LocalDate? = null
     var notionalCrd: LocalDate? = null
-    var daysToExpiry = 0
     var daysToRelease = 0
     var numberOfDaysToParoleEligibilityDate: Long? = null
     sentencesInCalculationOrder.forEach {
       if (it.isNotEmpty()) {
-        val sentenceStartDate = if (notionalSled != null) notionalSled!!.plusDays(1) else sentence.sentencedAt
         val releaseStartDate = if (notionalCrd != null) notionalCrd!!.plusDays(1) else sentence.sentencedAt
-        val daysInThisCustodialDuration = getDaysInGroup(it, releaseStartDate) { getCustodialDuration(it) }
-        val daysInThisTotalDuration = getDaysInGroup(it, sentenceStartDate) { getTotalDuration(it) }
+        val daysInThisCustodialDuration = getDaysInGroup(it, releaseStartDate, this::getCustodialDuration)
         if (it == sentencesWithPed) {
           numberOfDaysToParoleEligibilityDate = calculateConsecutivePed(it, daysToRelease, releaseStartDate)
         }
         val multiplier = determineReleaseDateMultiplier(it[0].identificationTrack)
         val daysToReleaseInThisGroup = ceil(daysInThisCustodialDuration.toDouble().times(multiplier)).toLong()
-        notionalSled = sentenceStartDate
-          .plusDays(daysInThisTotalDuration.toLong())
-          .minusDays(1)
-        daysToExpiry += daysInThisTotalDuration
         notionalCrd = releaseStartDate
           .plusDays(daysToReleaseInThisGroup)
           .minusDays(1)
@@ -101,18 +94,12 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
   }
 
   private fun getDaysInGroup(sentences: List<CalculableSentence>, sentenceStartDate: LocalDate, durationSupplier: (sentence: CalculableSentence) -> Duration): Int {
-    val sentencesHasMonthsYears = sentences.any { durationSupplier(it).hasMonthsYears() }
-    val sentencesHasWeeksDays = sentences.any { durationSupplier(it).hasWeeksDays() }
-
-    if (sentencesHasMonthsYears && sentencesHasWeeksDays) {
+      val durations = ConsecutiveSentenceAggregator(sentences.map(durationSupplier)).aggregate()
       var date = sentenceStartDate
-      sentences.forEach {
-        date = date.plusDays(durationSupplier(it).getLengthInDays(date).toLong())
+      durations.forEach {
+        date = date.plusDays(it.getLengthInDays(date).toLong())
       }
       return DAYS.between(sentenceStartDate, date).toInt()
-    }
-    return sentences.map(durationSupplier).reduce { acc, duration -> acc.appendAll(duration.durationElements) }
-      .getLengthInDays(sentenceStartDate)
   }
 
   private fun getTotalDuration(sentence: CalculableSentence): Duration {

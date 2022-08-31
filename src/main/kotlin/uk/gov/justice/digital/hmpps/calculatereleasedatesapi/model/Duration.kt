@@ -106,15 +106,30 @@ data class Duration(
   }
 
   @JsonIgnore
-  fun hasMonthsYears(): Boolean {
-    val years = durationElements.getOrDefault(YEARS, 0L)
-    val months = durationElements.getOrDefault(MONTHS, 0L)
-    return years != 0L || months != 0L
+  fun hasMonthsOrYears(): Boolean {
+    return this.getMonthAndYearPart().isNotEmpty()
+  }
+
+  @JsonIgnore
+  fun hasDaysOrWeeks(): Boolean {
+    return this.getDayAndWeekPart().isNotEmpty()
   }
   @JsonIgnore
-  fun hasWeeksDays(): Boolean {
-    val weeks = durationElements.getOrDefault(WEEKS, 0L)
-    val days = durationElements.getOrDefault(DAYS, 0L)
-    return weeks != 0L || days != 0L
+  fun getMonthAndYearPart(): Duration {
+    return Duration(
+      mapOf(
+        MONTHS to this.durationElements.getOrDefault(MONTHS, 0),
+        YEARS to this.durationElements.getOrDefault(YEARS, 0L)
+      ).filter { entry -> entry.value != 0L }
+    )
+  }
+  @JsonIgnore
+  fun getDayAndWeekPart(): Duration {
+    return  Duration(
+      mapOf(
+        WEEKS to this.durationElements.getOrDefault(WEEKS, 0),
+        DAYS to this.durationElements.getOrDefault(DAYS, 0L)
+      ).filter { entry -> entry.value != 0L }
+    )
   }
 }
