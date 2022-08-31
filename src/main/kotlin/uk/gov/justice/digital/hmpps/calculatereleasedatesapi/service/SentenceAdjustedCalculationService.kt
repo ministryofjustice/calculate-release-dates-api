@@ -202,7 +202,7 @@ class SentenceAdjustedCalculationService {
         .plus(TWELVE, MONTHS)
     } else {
       sentenceCalculation.topUpSupervisionDate = sentenceCalculation.unadjustedDeterminateReleaseDate
-        .plus(TWELVE, MONTHS).plusDays(adjustedDays.toLong())
+        .plusDays(adjustedDays.toLong()).plus(TWELVE, MONTHS)
     }
     sentenceCalculation.breakdownByReleaseDateType[TUSED] =
       ReleaseDateCalculationBreakdown(
