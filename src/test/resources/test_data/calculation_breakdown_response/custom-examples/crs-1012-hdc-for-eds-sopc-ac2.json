@@ -1,0 +1,67 @@
+{
+  "concurrentSentences": [
+    {
+      "sentencedAt": "2022-11-26",
+      "sentenceLength": "1 year",
+      "sentenceLengthDays": 365,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2023-11-25",
+          "adjusted": "2023-10-11",
+          "daysFromSentenceStart": 365,
+          "adjustedByDays": 45
+        },
+        "CRD": {
+          "unadjusted": "2023-05-27",
+          "adjusted": "2023-04-12",
+          "daysFromSentenceStart": 183,
+          "adjustedByDays": 45
+        }
+      },
+      "lineSequence": 0,
+      "caseSequence": 0,
+      "caseReference": null
+    }
+  ],
+  "consecutiveSentence": null,
+  "breakdownByReleaseDateType": {
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -45,
+      "releaseDate": "2024-03-09",
+      "unadjustedDate": "2024-04-23"
+    },
+    "CRD": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -45,
+      "releaseDate": "2023-04-12",
+      "unadjustedDate": "2023-05-27"
+    },
+    "TUSED": {
+      "rules": [
+        "TUSED_LICENCE_PERIOD_LT_1Y"
+      ],
+      "rulesWithExtraAdjustments": {
+        "TUSED_LICENCE_PERIOD_LT_1Y": {
+          "adjustmentValue": 12,
+          "type": "MONTHS"
+        }
+      },
+      "adjustedDays": -45,
+      "releaseDate": "2024-04-12",
+      "unadjustedDate": "2023-05-27"
+    },
+    "HDCED": {
+      "rules": [
+        "HDCED_ADJUSTED_TO_SOPC_OR_EDS_RELEASE"
+      ],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -56,
+      "releaseDate": "2023-03-09",
+      "unadjustedDate": "2023-01-12"
+    }
+  },
+  "otherDates": {}
+}
