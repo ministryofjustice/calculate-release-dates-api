@@ -1,0 +1,21 @@
+{
+  "sentenceAdjustments":[
+    {
+      "sentenceSequence":1,
+      "type":"REMAND",
+      "numberOfDays":20,
+      "fromDate":"2021-05-10",
+      "toDate":"2021-05-29",
+      "active":false
+    }
+  ],
+  "bookingAdjustments":[
+    {
+      "type":"UNLAWFULLY_AT_LARGE",
+      "numberOfDays":2,
+      "fromDate":"2021-05-31",
+      "toDate":"2021-06-01",
+      "active":false
+    }
+  ]
+}
