@@ -96,7 +96,7 @@ class CalculationController(
   @Operation(
     summary = "Calculate release dates for a prisoner - test calculation, this does not publish to NOMIS",
     description = "This endpoint will calculate release dates based on a prisoners latest booking, this can include" +
-            "inactive bookings of historic prisoners. Endpoint is used to test calculations against NOMIS.",
+      "inactive bookings of historic prisoners. Endpoint is used to test calculations against NOMIS.",
     security = [
       SecurityRequirement(name = "SYSTEM_USER"),
       SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")

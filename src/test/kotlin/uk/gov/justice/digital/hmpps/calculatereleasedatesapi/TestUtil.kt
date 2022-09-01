@@ -12,7 +12,7 @@ class TestUtil private constructor() {
       val mapper = ObjectMapper()
       mapper.registerModule(JavaTimeModule())
       mapper.dateFormat = SimpleDateFormat("yyyy-MM-dd")
-      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
       return mapper.registerKotlinModule()
     }
   }

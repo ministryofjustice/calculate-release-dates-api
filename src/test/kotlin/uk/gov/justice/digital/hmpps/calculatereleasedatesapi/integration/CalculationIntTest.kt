@@ -792,7 +792,6 @@ class CalculationIntTest : IntegrationTestBase() {
     )
   }
 
-
   companion object {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"

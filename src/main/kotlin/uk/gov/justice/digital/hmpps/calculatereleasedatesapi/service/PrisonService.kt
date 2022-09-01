@@ -49,7 +49,6 @@ class PrisonService(
     return PrisonApiSourceData(sentenceAndOffences, prisonerDetails, bookingAndSentenceAdjustments, returnToCustodyDate)
   }
 
-
   fun getOffenderDetail(prisonerId: String): PrisonerDetails {
     return prisonApiClient.getOffenderDetail(prisonerId)
   }
