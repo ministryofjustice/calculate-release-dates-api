@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.TEST
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdCalculationValidationException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -83,6 +84,42 @@ class CalculationController(
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     try {
       return calculationTransactionalService.calculate(booking, PRELIMINARY, sourceData, calculationUserInputs)
+    } catch (error: Exception) {
+      calculationTransactionalService.recordError(booking, sourceData, calculationUserInputs, error)
+      throw error
+    }
+  }
+
+  @PostMapping(value = ["/{prisonerId}/test"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Calculate release dates for a prisoner - test calculation, this does not publish to NOMIS",
+    description = "This endpoint will calculate release dates based on a prisoners latest booking, this can include" +
+      "inactive bookings of historic prisoners. Endpoint is used to test calculations against NOMIS.",
+    security = [
+      SecurityRequirement(name = "SYSTEM_USER"),
+      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
+    ],
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
+    ]
+  )
+  fun testCalculation(
+    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
+    @PathVariable("prisonerId")
+    prisonerId: String,
+    @RequestBody
+    calculationUserInputs: CalculationUserInputs?
+  ): CalculatedReleaseDates {
+    log.info("Request received to calculate release dates for $prisonerId")
+    val sourceData = prisonService.getPrisonApiSourceDataIncludingInactive(prisonerId)
+    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    try {
+      return calculationTransactionalService.calculate(booking, TEST, sourceData, calculationUserInputs)
     } catch (error: Exception) {
       calculationTransactionalService.recordError(booking, sourceData, calculationUserInputs, error)
       throw error

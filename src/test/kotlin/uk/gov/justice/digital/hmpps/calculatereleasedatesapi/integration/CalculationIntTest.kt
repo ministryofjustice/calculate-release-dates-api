@@ -758,6 +758,38 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(validationMessages.messages[0]).matches { it.code == ValidationCode.PRISONER_SUBJECT_TO_PTD }
   }
 
+  @Test
+  fun `Run calculation on a test of historic inactive released prisoner`() {
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/OUT_CALC/test")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[CRD]).isEqualTo(
+      LocalDate.of(2021, 12, 29)
+    )
+  }
+
+  @Test
+  fun `Run calculation on a test of prisoner`() {
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/default/test")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
+  }
+
   companion object {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"

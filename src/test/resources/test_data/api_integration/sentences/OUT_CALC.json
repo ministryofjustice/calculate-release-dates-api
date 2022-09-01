@@ -1,0 +1,71 @@
+[
+  {
+    "bookingId":1202876,
+    "sentenceSequence":1,
+    "lineSequence":1,
+    "caseSequence":1,
+    "courtDescription":"Bristol Crown Court",
+    "sentenceStatus":"I",
+    "sentenceCategory":"2020",
+    "sentenceCalculationType":"ADIMP_ORA",
+    "sentenceTypeDescription":"ORA Sentencing Code Standard Determinate Sentence",
+    "sentenceDate":"2021-05-30",
+    "terms":[
+      {
+        "years":0,
+        "months":6,
+        "weeks":0,
+        "days":0,
+        "code":"IMP"
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":3933344,
+        "offenceStartDate":"2021-02-28",
+        "offenceCode":"TH68010A",
+        "offenceDescription":"Attempt theft from shop",
+        "indicators":[
+          "D",
+          "50"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId":1202876,
+    "sentenceSequence":2,
+    "lineSequence":2,
+    "caseSequence":2,
+    "courtDescription":"Bristol Crown Court",
+    "sentenceStatus":"I",
+    "sentenceCategory":"2020",
+    "sentenceCalculationType":"ADIMP_ORA",
+    "sentenceTypeDescription":"ORA Sentencing Code Standard Determinate Sentence",
+    "sentenceDate":"2021-08-30",
+    "terms":[
+      {
+        "years":0,
+        "months":8,
+        "weeks":0,
+        "days":0,
+        "code":"IMP"
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":3933345,
+        "offenceStartDate":"2021-08-29",
+        "offenceCode":"TH68164",
+        "offenceDescription":"Aggravated vehicle taking - (being carried in / on) and death caused by an accident",
+        "indicators":[
+          "ERS",
+          "V",
+          "D",
+          "50",
+          "S15/CJIB"
+        ]
+      }
+    ]
+  }
+]
