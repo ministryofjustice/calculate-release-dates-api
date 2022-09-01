@@ -14,10 +14,33 @@ class PrisonService(
   private val prisonApiClient: PrisonApiClient,
 ) {
 
+  fun getPrisonApiSourceDataIncludingInactive(prisonerId: String): PrisonApiSourceData {
+    val prisonerDetails = getOffenderDetail(prisonerId)
+    return if (prisonerDetails.agencyId == "OUT") {
+      getInactivePrisonApiSourceData(prisonerDetails)
+    } else {
+      getActivePrisonApiSourceData(prisonerDetails)
+    }
+  }
   fun getPrisonApiSourceData(prisonerId: String): PrisonApiSourceData {
     val prisonerDetails = getOffenderDetail(prisonerId)
+    return getActivePrisonApiSourceData(prisonerDetails)
+  }
+
+  private fun getActivePrisonApiSourceData(prisonerDetails: PrisonerDetails): PrisonApiSourceData {
     val sentenceAndOffences = getSentencesAndOffences(prisonerDetails.bookingId)
-    val bookingAndSentenceAdjustments = getBookingAndSentenceAdjustmentss(prisonerDetails.bookingId)
+    val bookingAndSentenceAdjustments = getBookingAndSentenceAdjustments(prisonerDetails.bookingId)
+    val bookingHasFixedTermRecall = sentenceAndOffences.any { SentenceCalculationType.from(it.sentenceCalculationType)?.recallType?.isFixedTermRecall == true }
+    var returnToCustodyDate: ReturnToCustodyDate? = null
+    if (bookingHasFixedTermRecall) {
+      returnToCustodyDate = prisonApiClient.getReturnToCustodyDate(prisonerDetails.bookingId)
+    }
+    return PrisonApiSourceData(sentenceAndOffences, prisonerDetails, bookingAndSentenceAdjustments, returnToCustodyDate)
+  }
+
+  private fun getInactivePrisonApiSourceData(prisonerDetails: PrisonerDetails): PrisonApiSourceData {
+    val sentenceAndOffences = getSentencesAndOffences(prisonerDetails.bookingId, false)
+    val bookingAndSentenceAdjustments = getBookingAndSentenceAdjustments(prisonerDetails.bookingId, false)
     val bookingHasFixedTermRecall = sentenceAndOffences.any { SentenceCalculationType.from(it.sentenceCalculationType)?.recallType?.isFixedTermRecall == true }
     var returnToCustodyDate: ReturnToCustodyDate? = null
     if (bookingHasFixedTermRecall) {
@@ -30,17 +53,17 @@ class PrisonService(
     return prisonApiClient.getOffenderDetail(prisonerId)
   }
 
-  fun getBookingAndSentenceAdjustmentss(bookingId: Long): BookingAndSentenceAdjustments {
+  fun getBookingAndSentenceAdjustments(bookingId: Long, filterActive: Boolean = true): BookingAndSentenceAdjustments {
     val adjustments = prisonApiClient.getSentenceAndBookingAdjustments(bookingId)
     return BookingAndSentenceAdjustments(
-      sentenceAdjustments = adjustments.sentenceAdjustments.filter { it.active },
-      bookingAdjustments = adjustments.bookingAdjustments.filter { it.active }
+      sentenceAdjustments = adjustments.sentenceAdjustments.filter { !filterActive || it.active },
+      bookingAdjustments = adjustments.bookingAdjustments.filter { !filterActive || it.active }
     )
   }
 
-  fun getSentencesAndOffences(bookingId: Long): List<SentenceAndOffences> {
+  fun getSentencesAndOffences(bookingId: Long, filterActive: Boolean = true): List<SentenceAndOffences> {
     return prisonApiClient.getSentencesAndOffences(bookingId)
-      .filter { it.sentenceStatus == "A" }
+      .filter { !filterActive || it.sentenceStatus == "A" }
   }
 
   fun postReleaseDates(bookingId: Long, updateOffenderDates: UpdateOffenderDates) {
