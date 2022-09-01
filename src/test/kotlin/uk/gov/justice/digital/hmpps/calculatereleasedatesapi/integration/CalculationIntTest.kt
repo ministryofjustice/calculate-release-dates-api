@@ -771,7 +771,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2025, 4, 19)
+      LocalDate.of(2021, 12, 29)
     )
   }
 
@@ -787,9 +787,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
-    assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2025, 4, 19)
-    )
+    assertThat(calculation.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
   }
 
   companion object {
