@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.4.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.4.3"
   kotlin("plugin.spring") version "1.7.10"
   kotlin("plugin.jpa") version "1.7.10"
   id("jacoco")
@@ -64,9 +64,9 @@ dependencies {
   implementation("com.vladmihalcea:hibernate-types-52:2.16.2")
 
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.9")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.9")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.9")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.11")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.11")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.11")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.1.0")
   implementation("com.amazonaws:aws-java-sdk-sns:1.12.239")
