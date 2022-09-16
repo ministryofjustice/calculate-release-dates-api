@@ -21,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.oauth2.jwt.Jwt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -61,11 +60,10 @@ import javax.persistence.EntityNotFoundException
 
 class CalculationTransactionalServiceTest {
   private val jsonTransformation = JsonTransformation()
-  private val featureToggles = FeatureToggles(true)
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService()
   private val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
   private val sentencesExtractionService = SentencesExtractionService()
-  private val sentenceIdentificationService = SentenceIdentificationService(featureToggles)
+  private val sentenceIdentificationService = SentenceIdentificationService()
   private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
     sentenceIdentificationService
@@ -78,7 +76,7 @@ class CalculationTransactionalServiceTest {
     sentencesExtractionService
   )
   private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
-  private val validationService = ValidationService(featureToggles, sentencesExtractionService)
+  private val validationService = ValidationService(sentencesExtractionService)
 
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
