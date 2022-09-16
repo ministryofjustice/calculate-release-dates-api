@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
@@ -16,8 +15,7 @@ import java.time.LocalDate
 
 class ValidationServiceTest {
 
-  private val featureToggles = FeatureToggles(sopc = true)
-  private val validationService = ValidationService(featureToggles, SentencesExtractionService())
+  private val validationService = ValidationService(SentencesExtractionService())
   private val offences = listOf(
     OffenderOffence(
       offenderChargeId = 1L,
@@ -255,18 +253,6 @@ class ValidationServiceTest {
     assertThat(result.messages).hasSize(2)
     assertThat(result.messages[0].code).isEqualTo(ValidationCode.MORE_THAN_ONE_IMPRISONMENT_TERM)
     assertThat(result.messages[1].code).isEqualTo(ValidationCode.MORE_THAN_ONE_LICENCE_TERM)
-  }
-
-  @Test
-  fun `Test SOPC sentences should be unsupported if feature toggle disabled`() {
-    val featureToggles = FeatureToggles(sopc = false)
-    val validationService = ValidationService(featureToggles, SentencesExtractionService())
-    val sentences = listOf(validSopcSentence)
-    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
-
-    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
-    assertThat(result.messages).hasSize(1)
-    assertThat(result.messages[0].code).isEqualTo(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)
   }
   @Test
   fun `Test SOPC valid sentence should pass`() {
