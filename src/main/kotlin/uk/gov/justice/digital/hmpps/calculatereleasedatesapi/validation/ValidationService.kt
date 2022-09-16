@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.AdjustmentIsAfterReleaseDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CustodialPeriodExtinguishedException
@@ -34,7 +33,6 @@ import java.time.Period
 
 @Service
 class ValidationService(
-  private val featureToggles: FeatureToggles,
   private val extractionService: SentencesExtractionService
 ) {
 
@@ -305,7 +303,7 @@ class ValidationService(
   }
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedSentences: List<SentenceCalculationType> = SentenceCalculationType.values()
-      .filter { (featureToggles.sopc && it.sentenceClazz == SopcSentence::class.java) || it.sentenceClazz == ExtendedDeterminateSentence::class.java || it.sentenceClazz == StandardDeterminateSentence::class.java }
+      .filter { it.sentenceClazz == SopcSentence::class.java || it.sentenceClazz == ExtendedDeterminateSentence::class.java || it.sentenceClazz == StandardDeterminateSentence::class.java }
     val validationMessages = sentencesAndOffences.filter {
       !supportedSentences.contains(SentenceCalculationType.from(it.sentenceCalculationType))
     }

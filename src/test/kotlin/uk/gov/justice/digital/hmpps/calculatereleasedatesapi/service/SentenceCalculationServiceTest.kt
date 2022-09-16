@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
@@ -13,10 +12,9 @@ import java.time.LocalDate
 
 class SentenceCalculationServiceTest {
 
-  private val featureToggles = FeatureToggles()
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService()
   private val sentenceCalculationService: SentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
-  private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(featureToggles)
+  private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService()
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
 

@@ -62,5 +62,3 @@ bank-holiday:
 domain-events-sns:
   provider: localstack
 
-feature-toggles:
-  sopc: true
