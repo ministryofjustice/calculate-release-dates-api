@@ -267,6 +267,24 @@ class CalculationIntTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `Run validation on future dated adjustments`() {
+    val validationMessages: ValidationMessages = webTestClient.post()
+      .uri("/calculation/CRS-1044/validate")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ValidationMessages::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(validationMessages.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(validationMessages.messages).hasSize(1)
+    assertThat(validationMessages.messages[0].code).isEqualTo(ValidationCode.ADJUSTMENT_FUTURE_DATED)
+    assertThat(validationMessages.messages[0].arguments).isEqualTo(listOf("RESTORATION_OF_ADDITIONAL_DAYS_AWARDED"))
+  }
+
+  @Test
   fun `Run calculation where SDS+ is consecutive to SDS`() {
     val calculatedReleaseDates: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/$SDS_PLUS_CONSECUTIVE_TO_SDS")
