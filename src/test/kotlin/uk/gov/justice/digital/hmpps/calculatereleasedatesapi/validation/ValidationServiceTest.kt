@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
@@ -306,6 +308,35 @@ class ValidationServiceTest {
     assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     assertThat(result.messages).hasSize(1)
     assertThat(result.messages[0].code).isEqualTo(ValidationCode.SEC236A_SENTENCE_TYPE_INCORRECT)
+  }
+
+  @Test
+  fun `Validate future dated adjustments`() {
+    val result = validationService.validate(
+      PrisonApiSourceData(
+        listOf(validEdsSentence), validPrisoner,
+        BookingAndSentenceAdjustments(
+          listOf(
+            BookingAdjustments(active = true, fromDate = LocalDate.now().plusDays(1), type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED, numberOfDays = 5),
+            BookingAdjustments(active = true, fromDate = LocalDate.now().plusDays(1), type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED, numberOfDays = 5),
+            BookingAdjustments(active = true, fromDate = LocalDate.now().plusDays(1), type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE, numberOfDays = 5),
+          ),
+          listOf()
+        ),
+        null
+      )
+    )
+
+    assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.ADJUSTMENT_FUTURE_DATED)
+    assertThat(result.messages[0].arguments).isEqualTo(
+      listOf(
+        "ADDITIONAL_DAYS_AWARDED",
+        "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED",
+        "UNLAWFULLY_AT_LARGE"
+      )
+    )
   }
 
   @Test

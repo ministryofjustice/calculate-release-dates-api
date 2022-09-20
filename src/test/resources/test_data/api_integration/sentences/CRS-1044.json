@@ -1,0 +1,159 @@
+[{
+  "bookingId": 2683391,
+  "sentenceSequence": 1,
+  "lineSequence": 1,
+  "caseSequence": 1,
+  "caseReference": "T20200726",
+  "courtDescription": "Newcastle upon Tyne Crown Court Quayside",
+  "sentenceStatus": "A",
+  "sentenceCategory": "2020",
+  "sentenceCalculationType": "YOI_ORA",
+  "sentenceTypeDescription": "ORA Young Offender Institution",
+  "sentenceDate": "2021-03-12",
+  "terms": [{
+    "years": 0,
+    "months": 3,
+    "weeks": 0,
+    "days": 0,
+    "code": "IMP"
+  }],
+  "offences": [{
+    "offenderChargeId": 6223116,
+    "offenceStartDate": "2020-02-19",
+    "offenceEndDate": "2020-03-08",
+    "offenceCode": "CD98075",
+    "offenceDescription": "Racially / religiously aggravated harassment / alarm / distress by words / writing",
+    "indicators": ["18", "SOR", "RA"]
+  }]
+}, {
+  "bookingId": 2683391,
+  "sentenceSequence": 2,
+  "lineSequence": 2,
+  "caseSequence": 4,
+  "caseReference": "T20207146",
+  "courtDescription": "Newcastle upon Tyne Crown Court Quayside",
+  "sentenceStatus": "A",
+  "sentenceCategory": "2020",
+  "sentenceCalculationType": "YOI_ORA",
+  "sentenceTypeDescription": "ORA Young Offender Institution",
+  "sentenceDate": "2021-03-12",
+  "terms": [{
+    "years": 0,
+    "months": 4,
+    "weeks": 0,
+    "days": 0,
+    "code": "IMP"
+  }],
+  "offences": [{
+    "offenderChargeId": 6223149,
+    "offenceStartDate": "2019-08-08",
+    "offenceCode": "CJ88144",
+    "offenceDescription": "Possess knife blade / sharp pointed article in a public place - Criminal Justice Act 1988",
+    "indicators": ["14", "99"]
+  }]
+}, {
+  "bookingId": 2683391,
+  "sentenceSequence": 3,
+  "lineSequence": 3,
+  "caseSequence": 4,
+  "caseReference": "T20207146",
+  "courtDescription": "Newcastle upon Tyne Crown Court Quayside",
+  "sentenceStatus": "A",
+  "sentenceCategory": "2020",
+  "sentenceCalculationType": "YOI",
+  "sentenceTypeDescription": "Young Offender Institution",
+  "sentenceDate": "2021-03-12",
+  "terms": [{
+    "years": 0,
+    "months": 54,
+    "weeks": 0,
+    "days": 0,
+    "code": "IMP"
+  }],
+  "offences": [{
+    "offenderChargeId": 6223150,
+    "offenceStartDate": "2019-08-08",
+    "offenceCode": "OF61016",
+    "offenceDescription": "Section 18 - wounding with intent",
+    "indicators": ["8", "V", "S15/CJIB", "SCH15/CJIB/L", "SCH19ZA", "SCH17A2", "REA", "PCSC/SDS", "PCSC/SEC250"]
+  }]
+}, {
+  "bookingId": 2683391,
+  "sentenceSequence": 4,
+  "lineSequence": 4,
+  "caseSequence": 4,
+  "caseReference": "T20207146",
+  "courtDescription": "Newcastle upon Tyne Crown Court Quayside",
+  "sentenceStatus": "A",
+  "sentenceCategory": "2020",
+  "sentenceCalculationType": "YOI_ORA",
+  "sentenceTypeDescription": "ORA Young Offender Institution",
+  "sentenceDate": "2021-03-12",
+  "terms": [{
+    "years": 0,
+    "months": 4,
+    "weeks": 0,
+    "days": 0,
+    "code": "IMP"
+  }],
+  "offences": [{
+    "offenderChargeId": 6223151,
+    "offenceStartDate": "2019-08-08",
+    "offenceCode": "CJ88148",
+    "offenceDescription": "Threaten a person with a blade / sharply pointed article in a public place",
+    "indicators": ["14"]
+  }]
+}, {
+  "bookingId": 2683391,
+  "sentenceSequence": 5,
+  "lineSequence": 5,
+  "caseSequence": 3,
+  "caseReference": "T20210049",
+  "courtDescription": "Newcastle upon Tyne Crown Court Quayside",
+  "sentenceStatus": "A",
+  "sentenceCategory": "2020",
+  "sentenceCalculationType": "YOI_ORA",
+  "sentenceTypeDescription": "ORA Young Offender Institution",
+  "sentenceDate": "2021-03-12",
+  "terms": [{
+    "years": 0,
+    "months": 6,
+    "weeks": 0,
+    "days": 0,
+    "code": "IMP"
+  }],
+  "offences": [{
+    "offenderChargeId": 6223121,
+    "offenceStartDate": "2019-07-27",
+    "offenceCode": "TH68037",
+    "offenceDescription": "Burglary other than dwelling - theft",
+    "indicators": ["D", "50"]
+  }]
+}, {
+  "bookingId": 2683391,
+  "sentenceSequence": 6,
+  "consecutiveToSequence": 3,
+  "lineSequence": 6,
+  "caseSequence": 2,
+  "caseReference": "T20210048",
+  "courtDescription": "Newcastle upon Tyne Crown Court Quayside",
+  "sentenceStatus": "A",
+  "sentenceCategory": "2020",
+  "sentenceCalculationType": "YOI_ORA",
+  "sentenceTypeDescription": "ORA Young Offender Institution",
+  "sentenceDate": "2021-03-12",
+  "terms": [{
+    "years": 0,
+    "months": 6,
+    "weeks": 0,
+    "days": 0,
+    "code": "IMP"
+  }],
+  "offences": [{
+    "offenderChargeId": 6223119,
+    "offenceStartDate": "2020-12-14",
+    "offenceCode": "CJ88144",
+    "offenceDescription": "Possess knife blade / sharp pointed article in a public place - Criminal Justice Act 1988",
+    "indicators": ["14", "99"]
+  }]
+}]
