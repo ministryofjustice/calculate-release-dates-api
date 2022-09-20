@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_18M_LT_4Y
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.TUSED_LICENCE_PERIOD_LT_1Y
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -25,9 +26,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -267,6 +265,24 @@ class CalculationIntTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `Run validation on future dated adjustments`() {
+    val validationMessages: ValidationMessages = webTestClient.post()
+      .uri("/calculation/CRS-1044/validate")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ValidationMessages::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(validationMessages.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(validationMessages.messages).hasSize(1)
+    assertThat(validationMessages.messages[0].code).isEqualTo(ValidationCode.ADJUSTMENT_FUTURE_DATED)
+    assertThat(validationMessages.messages[0].arguments).isEqualTo(listOf("RESTORATION_OF_ADDITIONAL_DAYS_AWARDED"))
+  }
+
+  @Test
   fun `Run calculation where SDS+ is consecutive to SDS`() {
     val calculatedReleaseDates: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/$SDS_PLUS_CONSECUTIVE_TO_SDS")
@@ -308,7 +324,7 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(validationMessages.messages[9]).matches { it.code == ValidationCode.REMAND_FROM_TO_DATES_REQUIRED && it.sentenceSequence == null }
     assertThat(validationMessages.messages[10]).matches {
       it.code == ValidationCode.ADJUSTMENT_FUTURE_DATED && it.sentenceSequence == null && it.arguments.containsAll(
-        listOf(RESTORED_ADDITIONAL_DAYS_AWARDED.name, ADDITIONAL_DAYS_AWARDED.name, UNLAWFULLY_AT_LARGE.name)
+        listOf(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED.name, AdjustmentType.ADDITIONAL_DAYS_AWARDED.name, AdjustmentType.UNLAWFULLY_AT_LARGE.name)
       )
     }
     assertThat(validationMessages.messages[11]).matches { it.code == ValidationCode.REMAND_OVERLAPS_WITH_REMAND && it.sentenceSequence == null }

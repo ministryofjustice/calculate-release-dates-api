@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.transform
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.Period
@@ -106,7 +107,7 @@ class ValidationService(
       BOOKING_ADJUSTMENTS_TO_VALIDATE.contains(it.type) && it.fromDate.isAfter(LocalDate.now())
     }.map { it.type }.distinct()
     if (invalidAdjustmentTypes.isNotEmpty()) {
-      return ValidationMessage("Adjustment should not be future dated.", ValidationCode.ADJUSTMENT_FUTURE_DATED, arguments = invalidAdjustmentTypes.map { it.name })
+      return ValidationMessage("Adjustment should not be future dated.", ValidationCode.ADJUSTMENT_FUTURE_DATED, arguments = invalidAdjustmentTypes.map { transform(it)!!.name })
     }
     return null
   }
