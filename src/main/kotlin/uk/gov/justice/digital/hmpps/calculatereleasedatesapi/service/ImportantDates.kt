@@ -11,4 +11,5 @@ object ImportantDates {
   val PCSC_COMMENCEMENT_DATE = LocalDate.of(2022, 6, 28)
   val EDS18_SENTENCE_TYPES_START_DATE = LocalDate.of(2020, 12, 1)
   val LASPO_AR_SENTENCE_TYPES_END_DATE = LocalDate.of(2015, 4, 13)
+  val A_FINE_TEN_MILLION_FULL_RELEASE_DATE = LocalDate.of(2015, 6, 1)
 }

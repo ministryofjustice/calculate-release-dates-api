@@ -107,6 +107,10 @@ class CalculationTransactionalServiceTest {
     ),
     null
   )
+  @Test
+  fun testy() {
+    `Test Example`("custom-examples", "crs-1032-afine-ac3", null)
+  }
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)

@@ -1,0 +1,42 @@
+{
+  "offender":{
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences":[
+    {
+      "offence":{
+        "committedAt":"2019-04-29"
+      },
+      "duration":{
+        "durationElements":{
+          "YEARS": 12
+        }
+      },
+      "sentencedAt":"2019-04-30"
+    },
+    {
+      "type":"AFineSentence",
+      "offence":{
+        "committedAt":"2020-03-19"
+      },
+      "duration":{
+        "durationElements":{
+          "DAYS": 7
+        }
+      },
+      "sentencedAt":"2020-03-20",
+      "fineAmount": 190
+    }
+  ],
+  "adjustments":{
+    "REMAND":[
+      {
+        "appliesToSentencesFrom":"2019-04-30",
+        "numberOfDays":116,
+        "fromDate":"2019-01-04",
+        "toDate":"2019-04-29"
+      }
+    ]
+  }
+}

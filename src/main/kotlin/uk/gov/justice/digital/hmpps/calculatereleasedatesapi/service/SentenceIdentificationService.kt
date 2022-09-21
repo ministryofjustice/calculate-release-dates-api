@@ -12,6 +12,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.AFINE_ARD_AT_FULL_TERM
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.AFINE_ARD_AT_HALFWAY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
@@ -19,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
@@ -26,11 +29,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.A_FINE_TEN_MILLION_FULL_RELEASE_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_PLUS_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import java.math.BigDecimal
 import java.time.temporal.ChronoUnit
 
 @Service
@@ -50,6 +55,9 @@ class SentenceIdentificationService {
       is StandardDeterminateSentence, is SingleTermSentence -> {
         identifyStandardDeterminate(sentence, offender)
       }
+      is AFineSentence -> {
+        identifyAFineSentence(sentence)
+      }
     }
 
     if (sentence.recallType != null) {
@@ -57,6 +65,20 @@ class SentenceIdentificationService {
       sentence.releaseDateTypes += PRRD
     }
   }
+
+  private fun identifyAFineSentence(sentence: AFineSentence) {
+    sentence.releaseDateTypes = listOf(
+      SED,
+      ARD
+    )
+    if (sentence.fineAmount != null && sentence.fineAmount >= TEN_MILLION &&
+      sentence.sentencedAt.isAfterOrEqualTo(A_FINE_TEN_MILLION_FULL_RELEASE_DATE)) {
+      sentence.identificationTrack = AFINE_ARD_AT_FULL_TERM
+    } else {
+      sentence.identificationTrack = AFINE_ARD_AT_HALFWAY
+    }
+  }
+
   private fun identifyConsecutiveSentence(sentence: ConsecutiveSentence, offender: Offender) {
     if (sentence.hasAnyEdsOrSopcSentence()) {
       if (sentence.hasSopcSentence() || sentence.hasDiscretionaryRelease()) {
@@ -298,5 +320,6 @@ class SentenceIdentificationService {
     private const val FOUR = 4L
     private const val SEVEN = 7L
     private const val TWELVE = 12L
+    private val TEN_MILLION = BigDecimal("10000000")
   }
 }
