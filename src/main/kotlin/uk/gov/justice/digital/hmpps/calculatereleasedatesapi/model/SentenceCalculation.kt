@@ -57,6 +57,10 @@ data class SentenceCalculation(
     return getAdustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
   }
 
+  fun getTotalAddedDaysAfter(after: LocalDate): Int {
+    return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = after)
+  }
+
   val calculatedFixedTermRecallAddedDays: Int get() {
     return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = returnToCustodyDate)
   }
