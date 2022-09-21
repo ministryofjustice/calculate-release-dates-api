@@ -198,8 +198,8 @@ class SentenceAdjustedCalculationService {
       sentenceCalculation.calculatedTotalAddedDays.minus(sentenceCalculation.calculatedTotalDeductedDays)
     val immediateRelease = sentenceCalculation.sentence.sentencedAt == sentenceCalculation.adjustedDeterminateReleaseDate
     if (immediateRelease) {
-      //There may still be adjustments to consider here. If the immediate release occured and then there was a recall,
-      //Any UAL after the recall will need to be added.
+      // There may still be adjustments to consider here. If the immediate release occured and then there was a recall,
+      // Any UAL after the recall will need to be added.
       val adjustedDaysAfterRelease = sentenceCalculation.getTotalAddedDaysAfter(sentenceCalculation.sentence.sentencedAt)
       sentenceCalculation.topUpSupervisionDate = sentenceCalculation.sentence.sentencedAt
         .plusDays(adjustedDaysAfterRelease.toLong())
