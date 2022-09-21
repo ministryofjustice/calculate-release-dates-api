@@ -196,13 +196,18 @@ class SentenceAdjustedCalculationService {
   private fun calculateTUSED(sentenceCalculation: SentenceCalculation) {
     val adjustedDays =
       sentenceCalculation.calculatedTotalAddedDays.minus(sentenceCalculation.calculatedTotalDeductedDays)
-    val immediateRelease = sentenceCalculation.sentence.sentencedAt == sentenceCalculation.releaseDate
+    val immediateRelease = sentenceCalculation.sentence.sentencedAt == sentenceCalculation.adjustedDeterminateReleaseDate
     if (immediateRelease) {
+      // There may still be adjustments to consider here. If the immediate release occured and then there was a recall,
+      // Any UAL after the recall will need to be added.
+      val adjustedDaysAfterRelease = sentenceCalculation.getTotalAddedDaysAfter(sentenceCalculation.sentence.sentencedAt.plusDays(1))
       sentenceCalculation.topUpSupervisionDate = sentenceCalculation.sentence.sentencedAt
-        .plus(TWELVE, MONTHS)
+        .plusDays(adjustedDaysAfterRelease.toLong())
+        .plusMonths(TWELVE)
     } else {
       sentenceCalculation.topUpSupervisionDate = sentenceCalculation.unadjustedDeterminateReleaseDate
-        .plusDays(adjustedDays.toLong()).plus(TWELVE, MONTHS)
+        .plusDays(adjustedDays.toLong())
+        .plusMonths(TWELVE)
     }
     sentenceCalculation.breakdownByReleaseDateType[TUSED] =
       ReleaseDateCalculationBreakdown(
