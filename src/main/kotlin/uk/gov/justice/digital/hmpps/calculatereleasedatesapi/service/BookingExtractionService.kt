@@ -250,6 +250,7 @@ class BookingExtractionService(
     sentences: List<CalculableSentence>,
     latestAdjustedReleaseDate: LocalDate
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
+    // For now we can't calculate HDCED if there is a consecutive sentence with EDS or SOPC sentences
     if (sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
       val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() }, SentenceCalculation::releaseDate)
       if (latestNonRecallRelease?.sentenceCalculation?.homeDetentionCurfewEligibilityDate != null) {
