@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
@@ -62,5 +64,13 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .block()
 
     log.info("Writing release dates to NOMIS finished")
+  }
+  fun getOffenderFinePayments(bookingId: Long): List<OffenderFinePayment> {
+    log.info("Requesting offender fine payments for bookingId $bookingId")
+    return webClient.get()
+      .uri("api/offender-fine-payment/booking/$bookingId")
+      .retrieve()
+      .bodyToMono(typeReference<List<OffenderFinePayment>>())
+      .block()!!
   }
 }

@@ -45,6 +45,9 @@ data class SentenceCalculation(
   }
 
   val calculatedTotalDeductedDays: Int get() {
+    if (sentence is AFineSentence && sentence.offence.isCivilOffence()) {
+      return 0
+    }
     val adjustmentTypes: Array<AdjustmentType> = if (!sentence.isRecall()) {
       arrayOf(REMAND, TAGGED_BAIL)
     } else {
@@ -62,6 +65,9 @@ data class SentenceCalculation(
   }
 
   val calculatedTotalAwardedDays: Int get() {
+    if (sentence is AFineSentence) {
+      return 0
+    }
     return max(
       0,
       getAdjustmentDuringSentence(ADDITIONAL_DAYS_AWARDED) -

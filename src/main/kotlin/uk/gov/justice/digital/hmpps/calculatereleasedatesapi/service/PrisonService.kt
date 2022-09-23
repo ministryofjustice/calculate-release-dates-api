@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -35,7 +37,12 @@ class PrisonService(
     if (bookingHasFixedTermRecall) {
       returnToCustodyDate = prisonApiClient.getReturnToCustodyDate(prisonerDetails.bookingId)
     }
-    return PrisonApiSourceData(sentenceAndOffences, prisonerDetails, bookingAndSentenceAdjustments, returnToCustodyDate)
+    val bookingHasAFine = sentenceAndOffences.any { SentenceCalculationType.from(it.sentenceCalculationType)?.sentenceClazz == AFineSentence::class.java }
+    var offenderFinePayments: List<OffenderFinePayment> = listOf()
+    if (bookingHasAFine) {
+      offenderFinePayments = getOffenderFinePayments(prisonerDetails.bookingId)
+    }
+    return PrisonApiSourceData(sentenceAndOffences, prisonerDetails, bookingAndSentenceAdjustments, offenderFinePayments, returnToCustodyDate)
   }
 
   private fun getInactivePrisonApiSourceData(prisonerDetails: PrisonerDetails): PrisonApiSourceData {
@@ -46,7 +53,12 @@ class PrisonService(
     if (bookingHasFixedTermRecall) {
       returnToCustodyDate = prisonApiClient.getReturnToCustodyDate(prisonerDetails.bookingId)
     }
-    return PrisonApiSourceData(sentenceAndOffences, prisonerDetails, bookingAndSentenceAdjustments, returnToCustodyDate)
+    val bookingHasAFine = sentenceAndOffences.any { SentenceCalculationType.from(it.sentenceCalculationType)?.sentenceClazz == AFineSentence::class.java }
+    var offenderFinePayments: List<OffenderFinePayment> = listOf()
+    if (bookingHasAFine) {
+      offenderFinePayments = prisonApiClient.getOffenderFinePayments(prisonerDetails.bookingId)
+    }
+    return PrisonApiSourceData(sentenceAndOffences, prisonerDetails, bookingAndSentenceAdjustments, offenderFinePayments, returnToCustodyDate)
   }
 
   fun getOffenderDetail(prisonerId: String): PrisonerDetails {
@@ -64,6 +76,10 @@ class PrisonService(
   fun getSentencesAndOffences(bookingId: Long, filterActive: Boolean = true): List<SentenceAndOffences> {
     return prisonApiClient.getSentencesAndOffences(bookingId)
       .filter { !filterActive || it.sentenceStatus == "A" }
+  }
+
+  fun getOffenderFinePayments(bookingId: Long): List<OffenderFinePayment> {
+    return prisonApiClient.getOffenderFinePayments(bookingId)
   }
 
   fun postReleaseDates(bookingId: Long, updateOffenderDates: UpdateOffenderDates) {

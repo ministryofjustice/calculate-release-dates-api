@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.oauth2.jwt.Jwt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -76,7 +77,7 @@ class CalculationTransactionalServiceTest {
     sentencesExtractionService
   )
   private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
-  private val validationService = ValidationService(sentencesExtractionService)
+  private val validationService = ValidationService(FeatureToggles(true), sentencesExtractionService)
 
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
@@ -105,11 +106,12 @@ class CalculationTransactionalServiceTest {
     BookingAndSentenceAdjustments(
       emptyList(), emptyList()
     ),
+    listOf(),
     null
   )
   @Test
   fun testy() {
-    `Test Example`("custom-examples", "crs-1032-afine-ac3", null)
+    `Test Example`("custom-examples", "crs-1032-afine-ac7", null)
   }
 
   @ParameterizedTest

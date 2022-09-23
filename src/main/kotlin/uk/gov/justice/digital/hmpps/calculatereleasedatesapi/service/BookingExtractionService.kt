@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -263,10 +264,11 @@ class BookingExtractionService(
           SentenceCalculation::homeDetentionCurfewEligibilityDate
         )
         val latestSopcOrEdsRelease = extractionService.mostRecentOrNull(sentences.filter { it.hasAnyEdsOrSopcSentence() }, SentenceCalculation::releaseDate)
+        val latestAFineRelease = extractionService.mostRecentOrNull(sentences.filterIsInstance<AFineSentence>(), SentenceCalculation::releaseDate)
         if (hdcedSentence != null) {
-          if (latestSopcOrEdsRelease != null && hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(
-              latestSopcOrEdsRelease
-            )
+          if (latestSopcOrEdsRelease != null &&
+            hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(latestSopcOrEdsRelease) &&
+            (latestAFineRelease == null || latestSopcOrEdsRelease.isAfter(latestAFineRelease))
           ) {
             if (latestAdjustedReleaseDate.isAfter(latestSopcOrEdsRelease)) {
               return latestSopcOrEdsRelease to ReleaseDateCalculationBreakdown(
@@ -276,6 +278,13 @@ class BookingExtractionService(
                 adjustedDays = ChronoUnit.DAYS.between(latestSopcOrEdsRelease, hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!).toInt()
               )
             }
+          } else if (latestAFineRelease != null &&  hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(latestAFineRelease)) {
+            return latestAFineRelease to ReleaseDateCalculationBreakdown(
+              rules = setOf(CalculationRule.HDCED_ADJUSTED_TO_AFINE_RELEASE),
+              releaseDate = latestAFineRelease,
+              unadjustedDate = hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
+              adjustedDays = ChronoUnit.DAYS.between(latestAFineRelease, hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!).toInt()
+            )
           } else {
             return hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
           }
@@ -360,8 +369,10 @@ class BookingExtractionService(
         }
       }
     }
+    val hasLicence = sentences.any() {it.sentenceCalculation.licenceExpiryDate != null && it.sentenceCalculation.licenceExpiryDate!!.isAfterOrEqualTo(latestReleaseDate)}
+
     return ConcurrentOraAndNonOraDetails(
-      latestReleaseIsConditional || !latestSentenceExpiryIsSED,
+      hasLicence,
       canHaveLicenseExpiry = true
     )
   }

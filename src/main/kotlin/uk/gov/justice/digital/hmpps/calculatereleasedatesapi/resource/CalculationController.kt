@@ -265,9 +265,10 @@ class CalculationController(
     val prisonerDetails = calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId)
     val adjustments = calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
     val returnToCustodyDate = calculationTransactionalService.findReturnToCustodyDateFromCalculation(calculationRequestId)
+    val offenderFinePayments = calculationTransactionalService.findOffenderFinePaymentsFromCalculation(calculationRequestId)
     val calculation = calculationTransactionalService.findCalculationResults(calculationRequestId)
     val userInput = calculationTransactionalService.findUserInput(calculationRequestId)
-    val sourceData = PrisonApiSourceData(sentencesAndOffences, prisonerDetails, adjustments, returnToCustodyDate)
+    val sourceData = PrisonApiSourceData(sentencesAndOffences, prisonerDetails, adjustments, offenderFinePayments, returnToCustodyDate)
 
     return calculationTransactionalService.calculateWithBreakdown(bookingService.getBooking(sourceData, userInput), calculation)
   }
@@ -300,9 +301,10 @@ class CalculationController(
     val prisonerDetails = calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId)
     val adjustments = calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
     val returnToCustodyDate = calculationTransactionalService.findReturnToCustodyDateFromCalculation(calculationRequestId)
+    val offenderFinePayments = calculationTransactionalService.findOffenderFinePaymentsFromCalculation(calculationRequestId)
     val calculation = calculationTransactionalService.findCalculationResults(calculationRequestId)
     val userInput = calculationTransactionalService.findUserInput(calculationRequestId)
-    val sourceData = PrisonApiSourceData(sentencesAndOffences, prisonerDetails, adjustments, returnToCustodyDate)
+    val sourceData = PrisonApiSourceData(sentencesAndOffences, prisonerDetails, adjustments, offenderFinePayments, returnToCustodyDate)
 
     return calculationTransactionalService.calculateWithDiagram(bookingService.getBooking(sourceData, userInput), calculation)
   }
