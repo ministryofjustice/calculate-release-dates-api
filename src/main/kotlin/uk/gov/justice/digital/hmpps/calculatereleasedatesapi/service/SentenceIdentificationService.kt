@@ -72,7 +72,8 @@ class SentenceIdentificationService {
       ARD
     )
     if (sentence.fineAmount != null && sentence.fineAmount >= TEN_MILLION &&
-      sentence.sentencedAt.isAfterOrEqualTo(A_FINE_TEN_MILLION_FULL_RELEASE_DATE)) {
+      sentence.sentencedAt.isAfterOrEqualTo(A_FINE_TEN_MILLION_FULL_RELEASE_DATE)
+    ) {
       sentence.identificationTrack = AFINE_ARD_AT_FULL_TERM
     } else {
       sentence.identificationTrack = AFINE_ARD_AT_HALFWAY

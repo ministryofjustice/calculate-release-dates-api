@@ -142,7 +142,10 @@ class BookingServiceTest {
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
             duration = FIVE_YEAR_DURATION,
-            offence = Offence(committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = true),
+            offence = Offence(
+              committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = true,
+              offenceCode = offenceCode
+            ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
             consecutiveSentenceUUIDs = mutableListOf(
               UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
@@ -193,7 +196,10 @@ class BookingServiceTest {
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
             duration = FIVE_YEAR_DURATION,
-            offence = Offence(committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = true),
+            offence = Offence(
+              committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = true,
+              offenceCode = offenceCode
+            ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
             consecutiveSentenceUUIDs = mutableListOf(
               UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
@@ -244,7 +250,10 @@ class BookingServiceTest {
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
             duration = FIVE_YEAR_DURATION,
-            offence = Offence(committedAt = FIRST_JAN_2015, isPcscSdsPlus = true),
+            offence = Offence(
+              committedAt = FIRST_JAN_2015, isPcscSdsPlus = true,
+              offenceCode = offenceCode
+            ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
             consecutiveSentenceUUIDs = mutableListOf(
               UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
@@ -295,7 +304,10 @@ class BookingServiceTest {
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
             duration = FIVE_YEAR_DURATION,
-            offence = Offence(committedAt = FIRST_JAN_2015, isPcscSec250 = true),
+            offence = Offence(
+              committedAt = FIRST_JAN_2015, isPcscSec250 = true,
+              offenceCode = offenceCode
+            ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
             consecutiveSentenceUUIDs = mutableListOf(
               UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
@@ -340,13 +352,16 @@ class BookingServiceTest {
         returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
         offender = Offender(
           dateOfBirth = DOB,
-          reference = prisonerId,
+          reference = prisonerId
         ),
         sentences = mutableListOf(
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
             duration = FIVE_YEAR_DURATION,
-            offence = Offence(committedAt = FIRST_JAN_2015, isPcscSds = true),
+            offence = Offence(
+              committedAt = FIRST_JAN_2015, isPcscSds = true,
+              offenceCode = offenceCode
+            ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
             consecutiveSentenceUUIDs = mutableListOf(
               UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())

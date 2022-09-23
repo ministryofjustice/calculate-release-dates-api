@@ -262,11 +262,11 @@ class BookingExtractionService(
           earliestSentenceDate,
           latestUnadjustedExpiryDate
         )
-         if (effectiveSentenceLength.years < 4) {
+        if (effectiveSentenceLength.years < 4) {
           val hdcedSentence = extractionService.mostRecentSentenceOrNull(
-              sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
-              SentenceCalculation::homeDetentionCurfewEligibilityDate
-                    )
+            sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
+            SentenceCalculation::homeDetentionCurfewEligibilityDate
+          )
           val latestSopcOrEdsRelease = extractionService.mostRecentOrNull(sentences.filter { it.hasAnyEdsOrSopcSentence() }, SentenceCalculation::releaseDate)
           val latestAFineRelease = extractionService.mostRecentOrNull(sentences.filterIsInstance<AFineSentence>(), SentenceCalculation::releaseDate)
           if (hdcedSentence != null) {
@@ -285,7 +285,7 @@ class BookingExtractionService(
                   ).toInt()
                 )
               }
-            } else if (latestAFineRelease != null &&  hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(latestAFineRelease)) {
+            } else if (latestAFineRelease != null && hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(latestAFineRelease)) {
               return latestAFineRelease to ReleaseDateCalculationBreakdown(
                 rules = setOf(CalculationRule.HDCED_ADJUSTED_TO_AFINE_RELEASE),
                 releaseDate = latestAFineRelease,
@@ -377,7 +377,7 @@ class BookingExtractionService(
         }
       }
     }
-    val hasLicence = sentences.any() {it.sentenceCalculation.licenceExpiryDate != null && it.sentenceCalculation.licenceExpiryDate!!.isAfterOrEqualTo(latestReleaseDate)}
+    val hasLicence = sentences.any() { it.sentenceCalculation.licenceExpiryDate != null && it.sentenceCalculation.licenceExpiryDate!!.isAfterOrEqualTo(latestReleaseDate) }
 
     return ConcurrentOraAndNonOraDetails(
       hasLicence,

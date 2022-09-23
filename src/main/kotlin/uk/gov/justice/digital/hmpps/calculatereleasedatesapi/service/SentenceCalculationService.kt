@@ -140,7 +140,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
   }
   private fun getCustodialDuration(sentence: CalculableSentence): Duration {
     return when (sentence) {
-      is StandardDeterminateSentence-> {
+      is StandardDeterminateSentence -> {
         sentence.duration
       }
       is AFineSentence -> {

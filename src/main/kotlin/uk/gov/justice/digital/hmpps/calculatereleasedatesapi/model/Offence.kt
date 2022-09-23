@@ -18,7 +18,9 @@ data class Offence(
   }
 
   companion object {
-    val CIVIL_OFFENCE_CODES = listOf("ZZ01004", "ZZ01005", "ZZ01001", "ZZ01003", "ZZ01002", "ZZ01008", "ZZ01010",
-            "XX00000-016N")
+    val CIVIL_OFFENCE_CODES = listOf(
+      "ZZ01004", "ZZ01005", "ZZ01001", "ZZ01003", "ZZ01002", "ZZ01008", "ZZ01010",
+      "XX00000-016N"
+    )
   }
 }
