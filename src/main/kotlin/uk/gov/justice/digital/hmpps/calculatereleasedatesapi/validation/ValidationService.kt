@@ -313,10 +313,12 @@ class ValidationService(
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedSentences: List<SentenceCalculationType> = SentenceCalculationType.values()
       .filter { (it.sentenceClazz == AFineSentence::class.java && this.featureToggles.afine) || it.sentenceClazz == SopcSentence::class.java || it.sentenceClazz == ExtendedDeterminateSentence::class.java || it.sentenceClazz == StandardDeterminateSentence::class.java }
+    val supportedCategories = listOf("2003", "2020")
     val validationMessages = sentencesAndOffences.filter {
-      !supportedSentences.contains(SentenceCalculationType.from(it.sentenceCalculationType))
+      !supportedSentences.contains(SentenceCalculationType.from(it.sentenceCalculationType)) ||
+      !supportedCategories.contains(it.sentenceCategory)
     }
-      .map { ValidationMessage("Unsupported sentence type ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceTypeDescription)) }.toMutableList()
+      .map { ValidationMessage("Unsupported sentence type ${it.sentenceCategory} ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceCategory, it.sentenceTypeDescription)) }.toMutableList()
     return validationMessages.toList()
   }
 
