@@ -316,7 +316,7 @@ class ValidationService(
     val supportedCategories = listOf("2003", "2020")
     val validationMessages = sentencesAndOffences.filter {
       !supportedSentences.contains(SentenceCalculationType.from(it.sentenceCalculationType)) ||
-      !supportedCategories.contains(it.sentenceCategory)
+        !supportedCategories.contains(it.sentenceCategory)
     }
       .map { ValidationMessage("Unsupported sentence type ${it.sentenceCategory} ${it.sentenceTypeDescription}", ValidationCode.UNSUPPORTED_SENTENCE_TYPE, it.sentenceSequence, listOf(it.sentenceCategory, it.sentenceTypeDescription)) }.toMutableList()
     return validationMessages.toList()

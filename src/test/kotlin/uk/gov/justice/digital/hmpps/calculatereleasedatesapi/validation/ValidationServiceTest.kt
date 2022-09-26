@@ -477,9 +477,11 @@ class ValidationServiceTest {
 
   @Test
   fun `Test SDS sentence unsupported category 1991`() {
-    val sentences = listOf(validSdsSentence.copy(
-      sentenceCategory = "1991"
-    ))
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceCategory = "1991"
+      )
+    )
     val result = ValidationService(FeatureToggles(false), SentencesExtractionService()).validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
