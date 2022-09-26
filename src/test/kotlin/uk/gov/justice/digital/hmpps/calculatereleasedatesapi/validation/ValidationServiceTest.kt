@@ -30,23 +30,22 @@ class ValidationServiceTest {
       indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR)
     ),
   )
-  private val validEdsSentence = SentenceAndOffences(
+  private val validSdsSentence = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 7,
     lineSequence = 2,
     caseSequence = 1,
     sentenceDate = FIRST_MAY_2018,
     terms = listOf(
-      SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
-      SentenceTerms(2, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
+      SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
     ),
-    sentenceCalculationType = SentenceCalculationType.LASPO_DR.name,
+    sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+    sentenceCategory = "2003",
     sentenceStatus = "a",
-    sentenceCategory = "a",
-    sentenceTypeDescription = "a",
+    sentenceTypeDescription = "This is a sentence type",
     offences = listOf(),
   )
-  private val validSopcSentence = validEdsSentence.copy(
+  private val validSopcSentence = validSdsSentence.copy(
     terms = listOf(
       SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
       SentenceTerms(1, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
@@ -54,14 +53,15 @@ class ValidationServiceTest {
     sentenceCalculationType = SentenceCalculationType.SOPC21.name,
     sentenceDate = FIRST_MAY_2021
   )
-  private val validSdsSentence = validEdsSentence.copy(
+  private val validEdsSentence = validSdsSentence.copy(
+    sentenceDate = FIRST_MAY_2021,
     terms = listOf(
-      SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
+      SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+      SentenceTerms(2, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
     ),
-    sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-    sentenceDate = FIRST_MAY_2021
+    sentenceCalculationType = SentenceCalculationType.LASPO_DR.name,
   )
-  private val validAFineSentence = validEdsSentence.copy(
+  private val validAFineSentence = validSdsSentence.copy(
     terms = listOf(
       SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
     ),
@@ -472,6 +472,22 @@ class ValidationServiceTest {
     assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
     assertThat(result.messages).hasSize(1)
     assertThat(result.messages[0].code).isEqualTo(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)
+    assertThat(result.messages[0].arguments).isEqualTo(listOf("2003", "This is a sentence type"))
+  }
+
+  @Test
+  fun `Test SDS sentence unsupported category 1991`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceCategory = "1991"
+      )
+    )
+    val result = ValidationService(FeatureToggles(false), SentencesExtractionService()).validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+
+    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)
+    assertThat(result.messages[0].arguments).isEqualTo(listOf("1991", "This is a sentence type"))
   }
   private companion object {
     val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
