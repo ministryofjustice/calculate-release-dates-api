@@ -405,7 +405,7 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(errorResponse.userMessage).isEqualTo(
       """
       The data for this prisoner is unsupported
-      Sentence 1 is invalid: Unsupported sentence type This sentence is unsupported
+      Sentence 1 is invalid: Unsupported sentence type 2003 This sentence is unsupported
       """.trimIndent()
     )
   }
