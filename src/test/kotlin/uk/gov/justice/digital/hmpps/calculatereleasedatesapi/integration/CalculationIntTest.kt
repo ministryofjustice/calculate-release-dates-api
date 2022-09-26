@@ -13,11 +13,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_18M_LT_4Y
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.TUSED_LICENCE_PERIOD_LT_1Y
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
@@ -806,6 +808,41 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(calculation.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
   }
 
+  @Test
+  fun `Run calculation on A FINE sentence`() {
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/AFINE")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[ARD]).isEqualTo(
+      LocalDate.of(2029, 6, 4)
+    )
+    assertThat(calculation.dates[SED]).isEqualTo(
+      LocalDate.of(2029, 6, 4)
+    )
+  }
+  @Test
+  fun `Run validation on on prisoner with fine payment`() {
+    val validationMessages: ValidationMessages = webTestClient.post()
+      .uri("/calculation/PAYMENTS/validate")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ValidationMessages::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(validationMessages.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(validationMessages.messages).hasSize(1)
+    assertThat(validationMessages.messages[0]).matches { it.code == ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS }
+  }
   companion object {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"

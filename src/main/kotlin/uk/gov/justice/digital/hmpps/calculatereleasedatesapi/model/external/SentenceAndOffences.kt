@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
+import java.math.BigDecimal
 import java.time.LocalDate
 
 data class SentenceAndOffences(
@@ -16,5 +17,6 @@ data class SentenceAndOffences(
   val terms: List<SentenceTerms> = emptyList(),
   val offences: List<OffenderOffence> = emptyList(),
   val caseReference: String? = null,
-  val courtDescription: String? = null
+  val courtDescription: String? = null,
+  val fineAmount: BigDecimal? = null
 )

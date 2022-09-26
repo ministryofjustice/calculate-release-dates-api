@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
@@ -41,12 +42,16 @@ enum class SentenceCalculationType(
   SDOPCU18(sentenceClazz = SopcSentence::class.java),
   SOPC18(sentenceClazz = SopcSentence::class.java),
   SOPC21(sentenceClazz = SopcSentence::class.java),
-  SEC236A(sentenceClazz = SopcSentence::class.java);
+  SEC236A(sentenceClazz = SopcSentence::class.java),
+  AFINE(sentenceClazz = AFineSentence::class.java);
 
   companion object {
     fun from(sentenceCalculationType: String): SentenceCalculationType? {
       if (sentenceCalculationType == "14FTR_ORA") {
         return _14FTR_ORA
+      }
+      if (sentenceCalculationType == "A/FINE") {
+        return AFINE
       }
       return try {
         valueOf(sentenceCalculationType)

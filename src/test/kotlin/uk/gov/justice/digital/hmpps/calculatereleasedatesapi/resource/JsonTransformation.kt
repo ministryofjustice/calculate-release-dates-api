@@ -62,10 +62,12 @@ class JsonTransformation {
     return getAllJsonFromDir("api_integration/returntocustody")
   }
 
+  fun getAllOffenderFinePaymentsJson(): Map<String, String> {
+    return getAllJsonFromDir("api_integration/finepayments")
+  }
   fun getJsonTest(fileName: String, calculationType: String): String {
     return getResourceAsText("/test_data/$calculationType/$fileName")
   }
-
   fun getAllJsonFromDir(fileName: String): Map<String, String> {
     val dir = File(object {}.javaClass.getResource("/test_data/$fileName").file)
     if (dir.isDirectory) {

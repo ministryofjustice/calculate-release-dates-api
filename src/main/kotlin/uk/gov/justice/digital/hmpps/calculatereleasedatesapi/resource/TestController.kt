@@ -56,6 +56,7 @@ class TestController(
       BookingAndSentenceAdjustments(
         emptyList(), emptyList()
       ),
+      listOf(),
       null
     )
     return calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, null)

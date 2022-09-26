@@ -4,5 +4,6 @@ data class PrisonApiSourceData(
   val sentenceAndOffences: List<SentenceAndOffences>,
   val prisonerDetails: PrisonerDetails,
   val bookingAndSentenceAdjustments: BookingAndSentenceAdjustments,
+  val offenderFinePayments: List<OffenderFinePayment> = listOf(),
   val returnToCustodyDate: ReturnToCustodyDate?
 )

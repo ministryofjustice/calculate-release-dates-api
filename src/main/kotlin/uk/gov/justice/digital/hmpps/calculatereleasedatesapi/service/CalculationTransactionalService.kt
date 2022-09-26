@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceDiagram
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -150,6 +151,14 @@ class CalculationTransactionalService(
     return prisonApiDataMapper.mapReturnToCustodyDate(calculationRequest)
   }
 
+  @Transactional(readOnly = true)
+  fun findOffenderFinePaymentsFromCalculation(calculationRequestId: Long): List<OffenderFinePayment> {
+    val calculationRequest = getCalculationRequest(calculationRequestId)
+    if (calculationRequest.offenderFinePayments == null) {
+      return listOf()
+    }
+    return prisonApiDataMapper.mapOffenderFinePayment(calculationRequest)
+  }
   private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest {
     return calculationRequestRepository.findById(calculationRequestId).orElseThrow {
       EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId ")
