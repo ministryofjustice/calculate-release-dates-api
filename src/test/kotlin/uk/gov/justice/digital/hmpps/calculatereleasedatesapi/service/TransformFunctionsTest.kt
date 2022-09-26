@@ -81,7 +81,7 @@ class TransformFunctionsTest {
         StandardDeterminateSentence(
           sentencedAt = FIRST_JAN_2015,
           duration = FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION,
-          offence = Offence(committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = false),
+          offence = Offence(committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = false, offenceCode = "RR1"),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(),
           lineSequence = lineSequence,
@@ -91,7 +91,7 @@ class TransformFunctionsTest {
         StandardDeterminateSentence(
           sentencedAt = FIRST_JAN_2015,
           duration = FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION,
-          offence = Offence(committedAt = SECOND_JAN_2015, isScheduleFifteenMaximumLife = true),
+          offence = Offence(committedAt = SECOND_JAN_2015, isScheduleFifteenMaximumLife = true, offenceCode = "RR2"),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(),
           lineSequence = lineSequence,
@@ -138,7 +138,7 @@ class TransformFunctionsTest {
         StandardDeterminateSentence(
           sentencedAt = FIRST_JAN_2015,
           duration = FIVE_YEAR_DURATION,
-          offence = Offence(committedAt = SECOND_JAN_2015),
+          offence = Offence(committedAt = SECOND_JAN_2015, offenceCode = "RR1"),
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())),
           lineSequence = lineSequence,

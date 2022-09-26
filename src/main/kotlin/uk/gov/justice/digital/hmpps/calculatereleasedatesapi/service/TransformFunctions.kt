@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
@@ -94,6 +95,7 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
       }
       Offence(
         committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
+        offenceCode = offendersOffence.offenceCode,
         isScheduleFifteenMaximumLife = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.ORIGINAL,
         isPcscSds = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.FOUR_TO_UNDER_SEVEN,
         isPcscSec250 = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.SECTION_250,
@@ -102,6 +104,7 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
     } else {
       Offence(
         committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
+        offenceCode = offendersOffence.offenceCode,
         isScheduleFifteenMaximumLife = offendersOffence.isScheduleFifteenMaximumLife,
         isPcscSds = offendersOffence.isPcscSds,
         isPcscSec250 = offendersOffence.isPcscSec250,
@@ -129,6 +132,19 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
         caseReference = sentence.caseReference,
         recallType = sentenceCalculationType.recallType,
         section250 = sentenceCalculationType == SentenceCalculationType.SEC250 || sentenceCalculationType == SentenceCalculationType.SEC250_ORA
+      )
+    } else if (sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
+      AFineSentence(
+        sentencedAt = sentence.sentenceDate,
+        duration = transform(sentence.terms[0]),
+        offence = offence,
+        identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+        consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+        caseSequence = sentence.caseSequence,
+        lineSequence = sentence.lineSequence,
+        caseReference = sentence.caseReference,
+        recallType = sentenceCalculationType.recallType,
+        fineAmount = sentence.fineAmount
       )
     } else {
       val imprisonmentTerm = sentence.terms.first { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
@@ -302,6 +318,7 @@ fun transform(
     sentenceAndOffences = objectToJson(sourceData.sentenceAndOffences, objectMapper),
     prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
     adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments, objectMapper),
+    offenderFinePayments = objectToJson(sourceData.offenderFinePayments, objectMapper),
     returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
     calculationRequestUserInputs = transform(calculationUserInputs, sourceData),
     breakdownHtml = calculationFragments?.breakdownHtml

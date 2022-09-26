@@ -39,6 +39,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
@@ -48,6 +49,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.Calculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import java.math.BigDecimal
 import java.time.LocalDate
 
 @ExtendWith(SpringExtension::class)
@@ -85,7 +87,8 @@ class CalculationControllerTest {
   private val sentences: List<SentenceAndOffences> = emptyList()
   private val prisonerDetails = PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
   private val adjustments = BookingAndSentenceAdjustments(emptyList(), emptyList())
-  private val sourceData = PrisonApiSourceData(sentences, prisonerDetails, adjustments, null)
+  private val offenderFineFinePayment = listOf(OffenderFinePayment(bookingId = 1, paymentDate = LocalDate.of(1, 2, 3), paymentAmount = BigDecimal("10000.88")))
+  private val sourceData = PrisonApiSourceData(sentences, prisonerDetails, adjustments, offenderFineFinePayment, null)
   private val calculationFragments = CalculationFragments("<p>breakdown</p>")
 
   @BeforeEach
@@ -260,6 +263,7 @@ class CalculationControllerTest {
     whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(calculation)
     whenever(calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)).thenReturn(sentences)
     whenever(calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId)).thenReturn(prisonerDetails)
+    whenever(calculationTransactionalService.findOffenderFinePaymentsFromCalculation(calculationRequestId)).thenReturn(offenderFineFinePayment)
     whenever(calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)).thenReturn(adjustments)
     whenever(calculationTransactionalService.findUserInput(calculationRequestId)).thenReturn(userInput)
     whenever(bookingService.getBooking(sourceData, userInput)).thenReturn(booking)

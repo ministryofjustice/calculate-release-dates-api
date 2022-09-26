@@ -2,11 +2,13 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.AdjustmentIsAfterReleaseDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CustodialPeriodExtinguishedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
@@ -34,6 +36,7 @@ import java.time.Period
 
 @Service
 class ValidationService(
+  private val featureToggles: FeatureToggles,
   private val extractionService: SentencesExtractionService
 ) {
 
@@ -50,6 +53,11 @@ class ValidationService(
     val unsupportedValidationMessages = validateSupportedSentences(sortedSentences)
     if (unsupportedValidationMessages.isNotEmpty()) {
       return ValidationMessages(ValidationType.UNSUPPORTED, unsupportedValidationMessages)
+    }
+
+    val unsupportedFineValidationMessages = validateFineSentenceSupported(sourceData)
+    if (unsupportedFineValidationMessages != null) {
+      return ValidationMessages(ValidationType.UNSUPPORTED, listOf(unsupportedFineValidationMessages))
     }
 
     val validationMessages = validateSentences(sortedSentences)
@@ -168,10 +176,10 @@ class ValidationService(
   }
   private fun validateDuration(sentencesAndOffence: SentenceAndOffences): List<ValidationMessage> {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
-    if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java) {
-      return validateSingleTermDuration(sentencesAndOffence)
+    return if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java || sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
+      validateSingleTermDuration(sentencesAndOffence)
     } else {
-      return validateImprisonmentAndLicenceTermDuration(sentencesAndOffence)
+      validateImprisonmentAndLicenceTermDuration(sentencesAndOffence)
     }
   }
 
@@ -304,7 +312,7 @@ class ValidationService(
   }
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedSentences: List<SentenceCalculationType> = SentenceCalculationType.values()
-      .filter { it.sentenceClazz == SopcSentence::class.java || it.sentenceClazz == ExtendedDeterminateSentence::class.java || it.sentenceClazz == StandardDeterminateSentence::class.java }
+      .filter { (it.sentenceClazz == AFineSentence::class.java && this.featureToggles.afine) || it.sentenceClazz == SopcSentence::class.java || it.sentenceClazz == ExtendedDeterminateSentence::class.java || it.sentenceClazz == StandardDeterminateSentence::class.java }
     val validationMessages = sentencesAndOffences.filter {
       !supportedSentences.contains(SentenceCalculationType.from(it.sentenceCalculationType))
     }
@@ -312,6 +320,22 @@ class ValidationService(
     return validationMessages.toList()
   }
 
+  private fun validateFineSentenceSupported(prisonApiSourceData: PrisonApiSourceData): ValidationMessage? {
+    val fineSentences = prisonApiSourceData.sentenceAndOffences.filter { SentenceCalculationType.from(it.sentenceCalculationType)?.sentenceClazz == AFineSentence::class.java }
+    if (fineSentences.isNotEmpty()) {
+      if (prisonApiSourceData.offenderFinePayments.isNotEmpty()) {
+        return ValidationMessage("A/FINEs with offender fine payments not supported", ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS)
+      }
+      if (fineSentences.any { it.consecutiveToSequence != null }) {
+        return ValidationMessage("A/FINEs not supported consecutive to anything else", ValidationCode.A_FINE_SENTENCE_CONSECUTIVE_TO)
+      }
+      val sequenceToSentenceMap = prisonApiSourceData.sentenceAndOffences.associateBy { it.sentenceSequence }
+      if (prisonApiSourceData.sentenceAndOffences.any { it.consecutiveToSequence != null && fineSentences.contains(sequenceToSentenceMap[(it.consecutiveToSequence)]) }) {
+        return ValidationMessage("A/FINEs not supported consecutive from anything else", ValidationCode.A_FINE_SENTENCE_CONSECUTIVE)
+      }
+    }
+    return null
+  }
   private fun validateOffenceDateAfterSentenceDate(
     sentencesAndOffence: SentenceAndOffences
   ): ValidationMessage? {
