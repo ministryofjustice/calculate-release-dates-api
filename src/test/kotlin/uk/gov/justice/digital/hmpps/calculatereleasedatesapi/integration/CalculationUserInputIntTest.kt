@@ -47,7 +47,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
-      .returnResult().responseBody
+      .returnResult().responseBody!!
 
     // Halfway
     assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2028, 1, 10))
@@ -107,7 +107,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
-      .returnResult().responseBody
+      .returnResult().responseBody!!
 
     // Halfway
     assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2030, 1, 9))
@@ -128,7 +128,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
       .expectBody(CalculationUserQuestions::class.java)
-      .returnResult().responseBody
+      .returnResult().responseBody!!
 
     // Halfway
     assertThat(response.sentenceQuestions.size).isEqualTo(1)

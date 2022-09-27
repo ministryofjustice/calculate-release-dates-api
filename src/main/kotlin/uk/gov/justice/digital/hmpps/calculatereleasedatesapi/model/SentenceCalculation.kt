@@ -245,7 +245,7 @@ data class SentenceCalculation(
       "${homeDetentionCurfewEligibilityDate?.format(formatter)}\n" +
 
       "Effective $expiryDateType\t:\t${expiryDate?.format(formatter)}\n" +
-      "Effective $releaseDateType\t:\t${releaseDate?.format(formatter)}\n" +
+      "Effective $releaseDateType\t:\t${releaseDate.format(formatter)}\n" +
       "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +
       "${topUpSupervisionDate?.format(formatter)}\n"
   }
