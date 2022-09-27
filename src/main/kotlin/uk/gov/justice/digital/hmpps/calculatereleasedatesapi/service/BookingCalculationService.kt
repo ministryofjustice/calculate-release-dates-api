@@ -33,7 +33,7 @@ class BookingCalculationService(
 
   fun createSingleTermSentences(booking: Booking): Booking {
     if (booking.sentences.size > 1 &&
-      booking.sentences.all { it.identificationTrack == SDS_BEFORE_CJA_LASPO && it is AbstractSentence && it.consecutiveSentenceUUIDs.isEmpty() } &&
+      booking.sentences.all { it.identificationTrack == SDS_BEFORE_CJA_LASPO && it.consecutiveSentenceUUIDs.isEmpty() } &&
       booking.sentences.minOf { it.sentencedAt } != booking.sentences.maxOf { it.sentencedAt } &&
       booking.sentences.all { !it.isRecall() }
     ) {
@@ -46,9 +46,8 @@ class BookingCalculationService(
   }
 
   fun createConsecutiveSentences(booking: Booking): Booking {
-    val (baseSentences, consecutiveSentences) = booking.sentences.map { it as AbstractSentence }.partition { it.consecutiveSentenceUUIDs.isEmpty() }
+    val (baseSentences, consecutiveSentences) = booking.sentences.partition { it.consecutiveSentenceUUIDs.isEmpty() }
     val sentencesByPrevious = consecutiveSentences.groupBy {
-      it as AbstractSentence
       it.consecutiveSentenceUUIDs.first()
     }
 

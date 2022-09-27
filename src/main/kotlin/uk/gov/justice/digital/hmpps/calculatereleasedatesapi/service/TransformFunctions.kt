@@ -415,7 +415,7 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
     }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence })),
     consecutiveSentence = if (booking.consecutiveSentences.isNotEmpty()) {
       if (booking.consecutiveSentences.size == 1) {
-        val consecutiveSentence = booking.consecutiveSentences.filter { it is ConsecutiveSentence }[0] as ConsecutiveSentence
+        val consecutiveSentence = booking.consecutiveSentences[0]
         ConsecutiveSentenceBreakdown(
           consecutiveSentence.sentencedAt,
           consecutiveSentence.getCombinedDuration().toString(),
