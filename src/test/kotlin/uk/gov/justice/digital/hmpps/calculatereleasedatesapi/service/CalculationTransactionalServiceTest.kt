@@ -61,11 +61,10 @@ import javax.persistence.EntityNotFoundException
 
 class CalculationTransactionalServiceTest {
   private val jsonTransformation = JsonTransformation()
-  private val featureToggles = FeatureToggles(true)
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService()
   private val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
   private val sentencesExtractionService = SentencesExtractionService()
-  private val sentenceIdentificationService = SentenceIdentificationService(featureToggles)
+  private val sentenceIdentificationService = SentenceIdentificationService()
   private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
     sentenceIdentificationService
@@ -78,7 +77,7 @@ class CalculationTransactionalServiceTest {
     sentencesExtractionService
   )
   private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
-  private val validationService = ValidationService(featureToggles, sentencesExtractionService)
+  private val validationService = ValidationService(FeatureToggles(true), sentencesExtractionService)
 
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
@@ -107,9 +106,9 @@ class CalculationTransactionalServiceTest {
     BookingAndSentenceAdjustments(
       emptyList(), emptyList()
     ),
+    listOf(),
     null
   )
-
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
   fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {
@@ -421,7 +420,7 @@ class CalculationTransactionalServiceTest {
         "{\"offender\":{\"reference\":\"A1234AJ\",\"dateOfBirth\":\"1980-01-01\",\"isActiveSexOffender\":false}," +
           "\"sentences\":[{\"type\":\"StandardSentence\",\"offence\":{\"committedAt\":\"2021-02-03\"," +
           "\"isScheduleFifteen\":false,\"isScheduleFifteenMaximumLife\":false,\"isPcscSds\":false,\"isPcscSec250\":false," +
-          "\"isPcscSdsPlus\":false},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}}," +
+          "\"isPcscSdsPlus\":false,\"offenceCode\":null},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}}," +
           "\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\"," +
           "\"consecutiveSentenceUUIDs\":[],\"caseSequence\":1,\"lineSequence\":2,\"caseReference\":null," +
           "\"recallType\":null,\"section250\":false}],\"adjustments\":{},\"returnToCustodyDate\":null," +

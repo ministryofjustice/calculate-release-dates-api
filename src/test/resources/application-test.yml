@@ -63,4 +63,4 @@ domain-events-sns:
   provider: localstack
 
 feature-toggles:
-  sopc: true
+  afine: true

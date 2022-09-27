@@ -45,6 +45,9 @@ data class SentenceCalculation(
   }
 
   val calculatedTotalDeductedDays: Int get() {
+    if (sentence is AFineSentence && sentence.offence.isCivilOffence()) {
+      return 0
+    }
     val adjustmentTypes: Array<AdjustmentType> = if (!sentence.isRecall()) {
       arrayOf(REMAND, TAGGED_BAIL)
     } else {
@@ -57,11 +60,18 @@ data class SentenceCalculation(
     return getAdustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
   }
 
+  fun getTotalAddedDaysAfter(after: LocalDate): Int {
+    return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = after)
+  }
+
   val calculatedFixedTermRecallAddedDays: Int get() {
     return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = returnToCustodyDate)
   }
 
   val calculatedTotalAwardedDays: Int get() {
+    if (sentence is AFineSentence) {
+      return 0
+    }
     return max(
       0,
       getAdjustmentDuringSentence(ADDITIONAL_DAYS_AWARDED) -

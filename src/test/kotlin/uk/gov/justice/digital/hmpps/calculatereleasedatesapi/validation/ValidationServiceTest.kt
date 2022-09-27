@@ -3,7 +3,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -12,12 +15,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
+import java.math.BigDecimal
 import java.time.LocalDate
 
 class ValidationServiceTest {
 
-  private val featureToggles = FeatureToggles(sopc = true)
-  private val validationService = ValidationService(featureToggles, SentencesExtractionService())
+  private val validationService = ValidationService(FeatureToggles(true), SentencesExtractionService())
   private val offences = listOf(
     OffenderOffence(
       offenderChargeId = 1L,
@@ -27,23 +30,22 @@ class ValidationServiceTest {
       indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR)
     ),
   )
-  private val validEdsSentence = SentenceAndOffences(
+  private val validSdsSentence = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 7,
     lineSequence = 2,
     caseSequence = 1,
     sentenceDate = FIRST_MAY_2018,
     terms = listOf(
-      SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
-      SentenceTerms(2, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
+      SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
     ),
-    sentenceCalculationType = SentenceCalculationType.LASPO_DR.name,
+    sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+    sentenceCategory = "2003",
     sentenceStatus = "a",
-    sentenceCategory = "a",
-    sentenceTypeDescription = "a",
+    sentenceTypeDescription = "This is a sentence type",
     offences = listOf(),
   )
-  private val validSopcSentence = validEdsSentence.copy(
+  private val validSopcSentence = validSdsSentence.copy(
     terms = listOf(
       SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
       SentenceTerms(1, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
@@ -51,12 +53,32 @@ class ValidationServiceTest {
     sentenceCalculationType = SentenceCalculationType.SOPC21.name,
     sentenceDate = FIRST_MAY_2021
   )
+  private val validEdsSentence = validSdsSentence.copy(
+    sentenceDate = FIRST_MAY_2021,
+    terms = listOf(
+      SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+      SentenceTerms(2, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
+    ),
+    sentenceCalculationType = SentenceCalculationType.LASPO_DR.name,
+  )
+  private val validAFineSentence = validSdsSentence.copy(
+    terms = listOf(
+      SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
+    ),
+    sentenceCalculationType = SentenceCalculationType.AFINE.name,
+    sentenceDate = FIRST_MAY_2021
+  )
   private val validPrisoner = PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
   private val validAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList())
 
   @Test
   fun `Test EDS valid sentence should pass`() {
-    val result = validationService.validate(PrisonApiSourceData(listOf(validEdsSentence), validPrisoner, validAdjustments, null))
+    val result = validationService.validate(
+      PrisonApiSourceData(
+        listOf(validEdsSentence), validPrisoner, validAdjustments, listOf(),
+        null
+      )
+    )
 
     assertThat(result.type).isEqualTo(ValidationType.VALID)
     assertThat(result.messages).hasSize(0)
@@ -69,7 +91,7 @@ class ValidationServiceTest {
         SentenceTerms(2, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
       ),
     )
-    val result = validationService.validate(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, null))
+    val result = validationService.validate(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     assertThat(result.messages).hasSize(1)
@@ -84,7 +106,7 @@ class ValidationServiceTest {
         SentenceTerms(2, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
       ),
     )
-    val result = validationService.validate(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, null))
+    val result = validationService.validate(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     assertThat(result.messages).hasSize(1)
@@ -98,7 +120,7 @@ class ValidationServiceTest {
         SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
       ),
     )
-    val result = validationService.validate(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, null))
+    val result = validationService.validate(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     assertThat(result.messages).hasSize(1)
@@ -121,7 +143,7 @@ class ValidationServiceTest {
         ),
       )
     )
-    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     assertThat(result.messages).hasSize(2)
@@ -145,7 +167,7 @@ class ValidationServiceTest {
         ),
       )
     )
-    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.VALID)
   }
@@ -160,7 +182,7 @@ class ValidationServiceTest {
         ),
       )
     )
-    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     assertThat(result.messages).hasSize(1)
@@ -199,7 +221,7 @@ class ValidationServiceTest {
         sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.plusDays(1)
       ),
     )
-    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     assertThat(result.messages).hasSize(3)
@@ -224,7 +246,7 @@ class ValidationServiceTest {
         sentenceDate = ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE.minusDays(1)
       )
     )
-    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     assertThat(result.messages).hasSize(1)
@@ -249,28 +271,16 @@ class ValidationServiceTest {
         ),
       )
     )
-    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     assertThat(result.messages).hasSize(2)
     assertThat(result.messages[0].code).isEqualTo(ValidationCode.MORE_THAN_ONE_IMPRISONMENT_TERM)
     assertThat(result.messages[1].code).isEqualTo(ValidationCode.MORE_THAN_ONE_LICENCE_TERM)
   }
-
-  @Test
-  fun `Test SOPC sentences should be unsupported if feature toggle disabled`() {
-    val featureToggles = FeatureToggles(sopc = false)
-    val validationService = ValidationService(featureToggles, SentencesExtractionService())
-    val sentences = listOf(validSopcSentence)
-    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
-
-    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
-    assertThat(result.messages).hasSize(1)
-    assertThat(result.messages[0].code).isEqualTo(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)
-  }
   @Test
   fun `Test SOPC valid sentence should pass`() {
-    val result = validationService.validate(PrisonApiSourceData(listOf(validSopcSentence), validPrisoner, validAdjustments, null))
+    val result = validationService.validate(PrisonApiSourceData(listOf(validSopcSentence), validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.VALID)
     assertThat(result.messages).hasSize(0)
@@ -296,7 +306,7 @@ class ValidationServiceTest {
         sentenceDate = ImportantDates.SEC_91_END_DATE
       ),
     )
-    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     assertThat(result.messages).hasSize(2)
@@ -315,11 +325,41 @@ class ValidationServiceTest {
         sentenceDate = ImportantDates.SEC_91_END_DATE.minusDays(1)
       ),
     )
-    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     assertThat(result.messages).hasSize(1)
     assertThat(result.messages[0].code).isEqualTo(ValidationCode.SEC236A_SENTENCE_TYPE_INCORRECT)
+  }
+
+  @Test
+  fun `Validate future dated adjustments`() {
+    val result = validationService.validate(
+      PrisonApiSourceData(
+        listOf(validEdsSentence), validPrisoner,
+        BookingAndSentenceAdjustments(
+          listOf(
+            BookingAdjustments(active = true, fromDate = LocalDate.now().plusDays(1), type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED, numberOfDays = 5),
+            BookingAdjustments(active = true, fromDate = LocalDate.now().plusDays(1), type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED, numberOfDays = 5),
+            BookingAdjustments(active = true, fromDate = LocalDate.now().plusDays(1), type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE, numberOfDays = 5),
+          ),
+          listOf()
+        ),
+        listOf(),
+        null
+      )
+    )
+
+    assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.ADJUSTMENT_FUTURE_DATED)
+    assertThat(result.messages[0].arguments).isEqualTo(
+      listOf(
+        "ADDITIONAL_DAYS_AWARDED",
+        "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED",
+        "UNLAWFULLY_AT_LARGE"
+      )
+    )
   }
 
   @Test
@@ -350,7 +390,7 @@ class ValidationServiceTest {
         ),
       )
     )
-    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, null))
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
     assertThat(result.messages).hasSize(2)
@@ -358,6 +398,97 @@ class ValidationServiceTest {
     assertThat(result.messages[1].code).isEqualTo(ValidationCode.SOPC_LICENCE_TERM_NOT_12_MONTHS)
   }
 
+  @Test
+  fun `Test SDS sentence is valid`() {
+    val sentences = listOf(validSdsSentence)
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+
+    assertThat(result.type).isEqualTo(ValidationType.VALID)
+  }
+  @Test
+  fun `Test A FINE sentence is valid`() {
+    val sentences = listOf(validAFineSentence)
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+
+    assertThat(result.type).isEqualTo(ValidationType.VALID)
+  }
+
+  @Test
+  fun `Test A FINE sentence with payments is unsupported`() {
+    val sentences = listOf(validAFineSentence)
+    val result = validationService.validate(
+      PrisonApiSourceData(
+        sentences, validPrisoner, validAdjustments,
+        listOf(OffenderFinePayment(1, LocalDate.now(), BigDecimal.ONE)), null
+      )
+    )
+
+    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS)
+  }
+
+  @Test
+  fun `Test A FINE sentence consecutive to unsupported`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceSequence = 1
+      ),
+      validAFineSentence.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1
+      )
+    )
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+
+    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE_TO)
+  }
+
+  @Test
+  fun `Test A FINE sentence consecutive from unsupported`() {
+    val sentences = listOf(
+      validAFineSentence.copy(
+        sentenceSequence = 1
+      ),
+      validSdsSentence.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1
+      )
+    )
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+
+    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE)
+  }
+
+  @Test
+  fun `Test A FINE unsupported with feature toggle off`() {
+    val sentences = listOf(validAFineSentence)
+    val result = ValidationService(FeatureToggles(false), SentencesExtractionService()).validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+
+    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)
+    assertThat(result.messages[0].arguments).isEqualTo(listOf("2003", "This is a sentence type"))
+  }
+
+  @Test
+  fun `Test SDS sentence unsupported category 1991`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceCategory = "1991"
+      )
+    )
+    val result = ValidationService(FeatureToggles(false), SentencesExtractionService()).validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+
+    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)
+    assertThat(result.messages[0].arguments).isEqualTo(listOf("1991", "This is a sentence type"))
+  }
   private companion object {
     val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     val FIRST_MAY_2020: LocalDate = LocalDate.of(2020, 5, 1)

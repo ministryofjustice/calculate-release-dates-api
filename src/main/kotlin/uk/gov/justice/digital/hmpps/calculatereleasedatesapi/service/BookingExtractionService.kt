@@ -18,13 +18,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
@@ -222,25 +222,10 @@ class BookingExtractionService(
           sentences.filter { !it.isRecall() && it.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null },
           SentenceCalculation::releaseDate
         )
-        val latestSdsRelease = extractionService.mostRecentOrNull(
-          sentences.filter { !it.isRecall() && it is StandardDeterminateSentence },
-          SentenceCalculation::releaseDate
-        )
-        val latestEdsOrSopcReleaseRelease = extractionService.mostRecentOrNull(
-          sentences.filter { !it.isRecall() && (it is ExtendedDeterminateSentence || it is SopcSentence) },
-          SentenceCalculation::releaseDate
-        )
-        if (latestSdsRelease != null && latestEdsOrSopcReleaseRelease != null && latestSdsRelease.isAfterOrEqualTo(latestEdsOrSopcReleaseRelease)) {
+        if (latestNonPedRelease != null && latestNonPedRelease.isAfterOrEqualTo(mostRecentSentenceByAdjustedDeterminateReleaseDate.sentenceCalculation.releaseDate)) {
           // SDS release is after PED, so no PED required.
         } else {
-          if (latestSdsRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestSdsRelease)) {
-            dates[PED] = latestSdsRelease
-            breakdownByReleaseDateType[PED] = ReleaseDateCalculationBreakdown(
-              rules = setOf(CalculationRule.PED_EQUAL_TO_LATEST_SDS_RELEASE),
-              releaseDate = dates[PED]!!,
-              unadjustedDate = latestExtendedDeterminateParoleEligibilityDate
-            )
-          } else if (latestNonPedRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestNonPedRelease)) {
+          if (latestNonPedRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestNonPedRelease)) {
             dates[PED] = latestNonPedRelease
             breakdownByReleaseDateType[PED] = ReleaseDateCalculationBreakdown(
               rules = setOf(CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_RELEASE),
@@ -266,20 +251,51 @@ class BookingExtractionService(
     sentences: List<CalculableSentence>,
     latestAdjustedReleaseDate: LocalDate
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
-    if (sentences.any { !it.isRecall() } && sentences.all { !it.hasAnyEdsOrSopcSentence() }) {
-      val earliestSentenceDate = sentences.filter { !it.isRecall() }.minOf { it.sentencedAt }
-      val latestUnadjustedExpiryDate = extractionService.mostRecent(sentences.filter { !it.isRecall() }, SentenceCalculation::unadjustedExpiryDate)
-      val effectiveSentenceLength = getEffectiveSentenceLength(
-        earliestSentenceDate,
-        latestUnadjustedExpiryDate
-      )
-      if (effectiveSentenceLength.years < 4) {
-        val hdcedSentence = extractionService.mostRecentSentenceOrNull(
-          sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
-          SentenceCalculation::homeDetentionCurfewEligibilityDate
+    // For now we can't calculate HDCED if there is a consecutive sentence with EDS or SOPC sentences
+    if (sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
+      val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() }, SentenceCalculation::releaseDate)
+      if (latestNonRecallRelease?.sentenceCalculation?.homeDetentionCurfewEligibilityDate != null) {
+        val earliestSentenceDate = sentences.filter { !it.isRecall() }.minOf { it.sentencedAt }
+        val latestUnadjustedExpiryDate =
+          extractionService.mostRecent(sentences.filter { !it.isRecall() }, SentenceCalculation::unadjustedExpiryDate)
+        val effectiveSentenceLength = getEffectiveSentenceLength(
+          earliestSentenceDate,
+          latestUnadjustedExpiryDate
         )
-        if (hdcedSentence != null) {
-          return hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
+        if (effectiveSentenceLength.years < 4) {
+          val hdcedSentence = extractionService.mostRecentSentenceOrNull(
+            sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
+            SentenceCalculation::homeDetentionCurfewEligibilityDate
+          )
+          val latestSopcOrEdsRelease = extractionService.mostRecentOrNull(sentences.filter { it.hasAnyEdsOrSopcSentence() }, SentenceCalculation::releaseDate)
+          val latestAFineRelease = extractionService.mostRecentOrNull(sentences.filterIsInstance<AFineSentence>(), SentenceCalculation::releaseDate)
+          if (hdcedSentence != null) {
+            if (latestSopcOrEdsRelease != null &&
+              hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(latestSopcOrEdsRelease) &&
+              (latestAFineRelease == null || latestSopcOrEdsRelease.isAfter(latestAFineRelease))
+            ) {
+              if (latestAdjustedReleaseDate.isAfter(latestSopcOrEdsRelease)) {
+                return latestSopcOrEdsRelease to ReleaseDateCalculationBreakdown(
+                  rules = setOf(CalculationRule.HDCED_ADJUSTED_TO_SOPC_OR_EDS_RELEASE),
+                  releaseDate = latestSopcOrEdsRelease,
+                  unadjustedDate = hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
+                  adjustedDays = ChronoUnit.DAYS.between(
+                    latestSopcOrEdsRelease,
+                    hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!
+                  ).toInt()
+                )
+              }
+            } else if (latestAFineRelease != null && hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(latestAFineRelease)) {
+              return latestAFineRelease to ReleaseDateCalculationBreakdown(
+                rules = setOf(CalculationRule.HDCED_ADJUSTED_TO_AFINE_RELEASE),
+                releaseDate = latestAFineRelease,
+                unadjustedDate = hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
+                adjustedDays = ChronoUnit.DAYS.between(latestAFineRelease, hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!).toInt()
+              )
+            } else {
+              return hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
+            }
+          }
         }
       }
     }
@@ -361,8 +377,10 @@ class BookingExtractionService(
         }
       }
     }
+    val hasLicence = sentences.any() { it.sentenceCalculation.licenceExpiryDate != null && it.sentenceCalculation.licenceExpiryDate!!.isAfterOrEqualTo(latestReleaseDate) }
+
     return ConcurrentOraAndNonOraDetails(
-      latestReleaseIsConditional || !latestSentenceExpiryIsSED,
+      hasLicence,
       canHaveLicenseExpiry = true
     )
   }

@@ -13,7 +13,7 @@ spec:
             - name: data-extractor-analytics
               image: ministryofjustice/data-engineering-data-extractor:v1
               imagePullPolicy: Always
-              args: ["extract_psql_all_tables_to_jsonl.sh && transfer_local_to_s3.sh"]
+              args: ["extract_psql_all_tables_to_csv.sh && transfer_local_to_s3.sh"]
               env:
                 - name: PGHOST
                   valueFrom:

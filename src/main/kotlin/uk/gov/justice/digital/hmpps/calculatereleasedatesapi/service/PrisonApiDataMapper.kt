@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiDataVersions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -33,5 +34,9 @@ class PrisonApiDataMapper(private val objectMapper: ObjectMapper) {
 
   fun mapReturnToCustodyDate(calculationRequest: CalculationRequest): ReturnToCustodyDate {
     return objectMapper.convertValue(calculationRequest.returnToCustodyDate, ReturnToCustodyDate::class.java)
+  }
+  fun mapOffenderFinePayment(calculationRequest: CalculationRequest): List<OffenderFinePayment> {
+    val reader = objectMapper.readerFor(object : TypeReference<List<OffenderFinePayment>>() {})
+    return reader.readValue(calculationRequest.offenderFinePayments)
   }
 }

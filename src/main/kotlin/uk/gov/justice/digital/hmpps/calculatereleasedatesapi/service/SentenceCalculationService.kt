@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
@@ -107,6 +108,9 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       is StandardDeterminateSentence -> {
         sentence.duration
       }
+      is AFineSentence -> {
+        sentence.duration
+      }
       is ExtendedDeterminateSentence -> {
         sentence.combinedDuration()
       }
@@ -124,6 +128,9 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
   private fun getCustodialDuration(sentence: CalculableSentence): Duration {
     return when (sentence) {
       is StandardDeterminateSentence -> {
+        sentence.duration
+      }
+      is AFineSentence -> {
         sentence.duration
       }
       is ExtendedDeterminateSentence -> {
@@ -224,6 +231,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS,
       SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY, -> 1.toDouble()
       SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE -> 2 / 3.toDouble()
+      SentenceIdentificationTrack.AFINE_ARD_AT_FULL_TERM -> 1.toDouble()
       else -> 1 / 2.toDouble()
     }
   }
