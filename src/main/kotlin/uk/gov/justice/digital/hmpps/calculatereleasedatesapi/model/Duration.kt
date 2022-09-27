@@ -125,7 +125,7 @@ data class Duration(
   }
   @JsonIgnore
   fun getDayAndWeekPart(): Duration {
-    return  Duration(
+    return Duration(
       mapOf(
         WEEKS to this.durationElements.getOrDefault(WEEKS, 0),
         DAYS to this.durationElements.getOrDefault(DAYS, 0L)
