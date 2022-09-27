@@ -34,7 +34,7 @@ interface CalculableSentence {
     val releaseDate = if (getReleaseDateType() === ReleaseDateType.PED && this is StandardDeterminateSentence) {
       sentenceCalculation.nonParoleDate!!
     } else {
-      sentenceCalculation.releaseDate!!
+      sentenceCalculation.releaseDate
     }
     val releaseDateBeforeAda = releaseDate.minusDays(sentenceCalculation.calculatedTotalAwardedDays.toLong())
 

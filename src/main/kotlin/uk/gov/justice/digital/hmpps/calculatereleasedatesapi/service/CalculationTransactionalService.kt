@@ -54,7 +54,7 @@ class CalculationTransactionalService(
         transform(booking, getCurrentAuthentication().principal, calculationStatus, sourceData, objectMapper, calculationUserInputs, calculationFragments)
       )
 
-    val (workingBooking, calculationResult) = calculationService.calculateReleaseDates(booking)
+    val calculationResult = calculationService.calculateReleaseDates(booking).second
 
     calculationResult.dates.forEach {
       calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))

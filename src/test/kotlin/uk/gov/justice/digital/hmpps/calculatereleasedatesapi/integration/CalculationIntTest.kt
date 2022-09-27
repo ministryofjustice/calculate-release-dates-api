@@ -51,56 +51,42 @@ class CalculationIntTest : IntegrationTestBase() {
   fun `Run calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
     val result = createPreliminaryCalculation(PRISONER_ID)
 
-    if (result != null) {
-      val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
-        .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
+    val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
+      .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
 
-      assertThat(result).isNotNull
-      assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
-      assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
-      assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
-      assertThat(result.dates[HDCED]).isEqualTo(LocalDate.of(2015, 8, 25))
-      assertThat(result.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
-      assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID)
-      assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText())
-        .isEqualTo("2015-03-17")
-    }
+    assertThat(result).isNotNull
+    assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
+    assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
+    assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
+    assertThat(result.dates[HDCED]).isEqualTo(LocalDate.of(2015, 8, 25))
+    assertThat(result.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
+    assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID)
+    assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText())
+      .isEqualTo("2015-03-17")
   }
 
   @Test
   fun `Confirm a calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
 
-    val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
-    var result: CalculatedReleaseDates? = null
-    var calculationRequest: CalculationRequest? = null
-    if (resultCalculation != null) {
-      result = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId, PRISONER_ID)
-      calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
-        .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
-    }
+    val prelim = createPreliminaryCalculation(PRISONER_ID)
+    val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId, PRISONER_ID)
+    val calculationRequest: CalculationRequest = calculationRequestRepository.findById(confirmed.calculationRequestId)
+      .orElseThrow { EntityNotFoundException("No calculation request exists for id ${confirmed.calculationRequestId}") }
 
-    assertThat(result).isNotNull
-    if (result != null) {
-      assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
-      assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
-      assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
-    }
+    assertThat(confirmed.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
+    assertThat(confirmed.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
+    assertThat(confirmed.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
 
-    assertThat(calculationRequest).isNotNull
-    if (calculationRequest != null) {
-      assertThat(calculationRequest.calculationStatus).isEqualTo("CONFIRMED")
-      assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID)
-      assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText()).isEqualTo("2015-03-17")
-    }
+    assertThat(calculationRequest.calculationStatus).isEqualTo("CONFIRMED")
+    assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID)
+    assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText()).isEqualTo("2015-03-17")
   }
 
   @Test
   fun `Get the results for a confirmed calculation`() {
 
     val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
-    if (resultCalculation != null) {
-      createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId, PRISONER_ID)
-    }
+    createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId, PRISONER_ID)
 
     val result = webTestClient.get()
       .uri("/calculation/results/$PRISONER_ID/$BOOKING_ID")
@@ -147,7 +133,7 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(req).isNotNull
   }
 
-  private fun createPreliminaryCalculation(prisonerid: String) = webTestClient.post()
+  private fun createPreliminaryCalculation(prisonerid: String): CalculatedReleaseDates = webTestClient.post()
     .uri("/calculation/$prisonerid")
     .accept(MediaType.APPLICATION_JSON)
     .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -218,19 +204,17 @@ class CalculationIntTest : IntegrationTestBase() {
   fun `Run calculation for a sex offender (check HDCED not set - based on example 13 from the unit tests)`() {
     val result = createPreliminaryCalculation(PRISONER_ID_SEX_OFFENDER)
 
-    if (result != null) {
-      val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
-        .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
+    val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
+      .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
 
-      assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
-      assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
-      assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
-      assertThat(result.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
-      assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID_SEX_OFFENDER)
-      assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText())
-        .isEqualTo("2015-03-17")
-      assert(!result.dates.containsKey(HDCED))
-    }
+    assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
+    assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
+    assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
+    assertThat(result.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
+    assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID_SEX_OFFENDER)
+    assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText())
+      .isEqualTo("2015-03-17")
+    assert(!result.dates.containsKey(HDCED))
   }
 
   @Test
@@ -850,13 +834,11 @@ class CalculationIntTest : IntegrationTestBase() {
     val BOOKING_ID = PRISONER_ID.hashCode().toLong()
     val BOOKING_ERROR_ID = PRISONER_ERROR_ID.hashCode().toLong()
     const val BOOKING_ID_DOESNT_EXIST = 92929988L
-    const val REMAND_OVERLAPS_WITH_REMAND_PRISONER_ID = "REM-REM"
     const val REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID = "REM-SEN"
     const val SDS_PLUS_CONSECUTIVE_TO_SDS = "SDS-CON"
     const val VALIDATION_PRISONER_ID = "VALIDATION"
     const val UNSUPPORTED_SENTENCE_PRISONER_ID = "UNSUPP_SENT"
     const val UNSUPPORTED_PRISONER_PRISONER_ID = "UNSUPP_PRIS"
-    const val PARALLEL_PRISONER_ID = "PARALLEL"
     const val INACTIVE_PRISONER_ID = "INACTIVE"
   }
 }

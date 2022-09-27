@@ -434,9 +434,8 @@ class CalculationController(
     calculationRequestId: Long
   ): ReturnToCustodyDate {
     log.info("Request received to get return to custody date from $calculationRequestId calculation")
-    val returnToCustodyDate = calculationTransactionalService.findReturnToCustodyDateFromCalculation(calculationRequestId)
+    return calculationTransactionalService.findReturnToCustodyDateFromCalculation(calculationRequestId)
       ?: throw EntityNotFoundException("No return to custody date exists for calculationRequestId $calculationRequestId ")
-    return returnToCustodyDate!!
   }
 
   @GetMapping(value = ["/calculation-user-input/{calculationRequestId}"])
