@@ -50,6 +50,8 @@ jobs:
           command: ./gradlew -Pdocs generateOpenApiDocs
       - run:
           command: mkdir ~/docs
+      - run:
+          command: cp build/openapi.json ~/docs
       - save_cache:
           paths:
             - ~/.gradle
@@ -59,7 +61,7 @@ jobs:
       - persist_to_workspace:
           root: ~/docs
           paths:
-            - build/openapi.json
+            - openapi.json
 
   lint-api-docs:
     executor:
