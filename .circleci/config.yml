@@ -55,7 +55,7 @@ jobs:
       - store_artifacts:
           path: build/openapi.json
       - persist_to_workspace:
-          root: ~/docs
+          root: .
           paths:
             - build/openapi.json
 
@@ -66,12 +66,12 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/docs
+          at: .
       # Create a folder for results to live in
       - run: "[ -d lint-results ] || mkdir lint-results"
       - run:
           name: Run Spectral Lint
-          command: npx @stoplight/spectral-cli lint /docs/openapi.json
+          command: npx @stoplight/spectral-cli lint openapi.json
             -o lint-results/junit.xml
             -f junit
       - store_test_results:
@@ -102,14 +102,14 @@ workflows:
   version: 2
   build-test-and-deploy:
     jobs:
-      - validate:
-          filters:
-            tags:
-              ignore: /.*/
-      - integration-test:
-          filters:
-            tags:
-              ignore: /.*/
+#      - validate:
+#          filters:
+#            tags:
+#              ignore: /.*/
+#      - integration-test:
+#          filters:
+#            tags:
+#              ignore: /.*/
       - generate-api-docs:
            filters:
              tags:
