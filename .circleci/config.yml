@@ -47,11 +47,11 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          command: ./gradlew -Pdocs generateOpenApiDocs
-      - run:
           command: mkdir ~/docs
       - run:
-          command: cp build/openapi.json ~/docs
+          command: ./gradlew -Pdocs generateOpenApiDocs -PoutputDir=~/docs
+#      - run:
+#          command: cp build/openapi.json ~/docs
       - save_cache:
           paths:
             - ~/.gradle
@@ -73,16 +73,11 @@ jobs:
           at: ~/docs
       # Create a folder for results to live in
       - run: "[ -d lint-results ] || mkdir lint-results"
-      - run: "cat ~/docs/openapi.json"
-      - run: "cat .spectral.yml"
       - run:
           name: Run Spectral Lint
           command: npx @stoplight/spectral-cli lint ~/docs/openapi.json
             -o lint-results/junit.xml
             -f junit
-            -v
-      - store_artifacts:
-          path: lint-results
       - store_test_results:
           path: lint-results
 
