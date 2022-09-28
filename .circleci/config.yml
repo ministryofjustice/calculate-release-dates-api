@@ -10,6 +10,9 @@ parameters:
   releases-slack-channel:
     type: string
     default: farsight-alerts
+  node-version:
+    type: string
+    default: 16.15-browsers
 
 jobs:
   validate:
@@ -51,6 +54,28 @@ jobs:
           key: gradle-{{ checksum "build.gradle.kts" }}
       - store_artifacts:
           path: build/openapi.json
+      - persist_to_workspace:
+          root: ~/docs
+          paths:
+            - build/openapi.json
+
+  lint-api-docs:
+    executor:
+      name: hmpps/node
+      tag: << pipeline.parameters.node-version >>
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/docs
+      # Create a folder for results to live in
+      - run: "[ -d lint-results ] || mkdir lint-results"
+      - run:
+          name: Run Spectral Lint
+          command: npx @stoplight/spectral-cli lint /docs/openapi.json
+            -o lint-results/junit.xml
+            -f junit
+      - store_test_results:
+          path: lint-results
 
   integration-test:
     executor:
@@ -85,10 +110,16 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-      -  generate-api-docs:
+      - generate-api-docs:
            filters:
              tags:
                ignore: /.*/
+      - lint-api-docs:
+           filters:
+             tags:
+               ignore: /.*/
+           requires:
+             - generate-api-docs
       - hmpps/helm_lint:
           name: helm_lint
       - hmpps/build_docker:
