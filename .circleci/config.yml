@@ -6,7 +6,7 @@ orbs:
 parameters:
   alerts-slack-channel:
     type: string
-    default: farsight-alerts
+    default: farsight-alertsq
   releases-slack-channel:
     type: string
     default: farsight-alerts
@@ -33,10 +33,29 @@ jobs:
       - store_artifacts:
           path: build/reports/tests
 
+  generate-api-docs:
+    executor:
+      name: hmpps/java
+      tag: "18.0"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle.kts" }}
+            - gradle-
+      - run:
+          command: ./gradlew -Pdocs generateOpenApiDocs
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle.kts" }}
+      - store_artifacts:
+          path: build/openapi.yml
+
   integration-test:
     executor:
       name: hmpps/java
-      tag: "17.0"
+      tag: "18.0"
     steps:
       - checkout
       - restore_cache:
@@ -66,6 +85,10 @@ workflows:
           filters:
             tags:
               ignore: /.*/
+      -  generate-api-docs:
+           filters:
+             tags:
+               ignore: /.*/
       - hmpps/helm_lint:
           name: helm_lint
       - hmpps/build_docker:

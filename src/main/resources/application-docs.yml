@@ -1,0 +1,63 @@
+spring:
+
+  config:
+    use-legacy-processing: true
+
+  profiles:
+    include: stdout
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: classpath:local-public-key.pub
+
+  datasource:
+    url: 'jdbc:h2:mem:release-dates-db;MODE=PostgreSQL;INIT=create domain if not exists jsonb as json'
+    username: create_vary
+    password: dummy
+
+  flyway:
+    locations: classpath:/migration/h2,classpath:/migration/common
+    url: ${spring.datasource.url}
+    user: create_vary
+    password: dummy
+
+  h2:
+    console:
+      enabled: true
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  sql:
+    init:
+      continue-on-error: true
+
+
+management.endpoint:
+  health.cache.time-to-live: 0
+  info.cache.time-to-live: 0
+
+# Wiremock auth server
+hmpps:
+  auth:
+    url: http://localhost:8090/auth
+
+# Wiremock prison-api
+prison:
+  api:
+    url: http://localhost:8332
+
+bank-holiday:
+  api:
+    url: http://localhost:8333
+
+domain-events-sns:
+  provider: localstack
+
+feature-toggles:
+  afine: true
