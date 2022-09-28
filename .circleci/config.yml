@@ -75,6 +75,8 @@ jobs:
             -o lint-results/junit.xml
             -f junit
             -v
+      - store_artifacts:
+          path: lint-results
       - store_test_results:
           path: lint-results
 
