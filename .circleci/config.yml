@@ -6,7 +6,7 @@ orbs:
 parameters:
   alerts-slack-channel:
     type: string
-    default: farsight-alertsq
+    default: farsight-alerts
   releases-slack-channel:
     type: string
     default: farsight-alerts
