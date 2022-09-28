@@ -50,7 +50,7 @@ jobs:
             - ~/.gradle
           key: gradle-{{ checksum "build.gradle.kts" }}
       - store_artifacts:
-          path: build/openapi.yml
+          path: build/openapi.json
 
   integration-test:
     executor:
