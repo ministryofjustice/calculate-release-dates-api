@@ -47,17 +47,15 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          command: mkdir ~/docs
-      - run:
           command: ./gradlew -Pdocs generateOpenApiDocs -PoutputDir=~/docs
-#      - run:
-#          command: cp build/openapi.json ~/docs
+      - run:
+          command: mv build/docs ~/
       - save_cache:
           paths:
             - ~/.gradle
           key: gradle-{{ checksum "build.gradle.kts" }}
       - store_artifacts:
-          path: build/openapi.json
+          path: ~/docs/openapi.json
       - persist_to_workspace:
           root: ~/docs
           paths:
