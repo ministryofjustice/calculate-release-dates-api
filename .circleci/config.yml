@@ -69,6 +69,8 @@ jobs:
           at: .
       # Create a folder for results to live in
       - run: "[ -d lint-results ] || mkdir lint-results"
+      - run: "cat ./openapi.json"
+      - run: "cat .spectral.yml"
       - run:
           name: Run Spectral Lint
           command: npx @stoplight/spectral-cli lint ./openapi.json
