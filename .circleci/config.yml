@@ -77,7 +77,7 @@ jobs:
       - run: "cat .spectral.yml"
       - run:
           name: Run Spectral Lint
-          command: npx @stoplight/spectral-cli lint ./openapi.json
+          command: npx @stoplight/spectral-cli lint ~/docs/openapi.json
             -o lint-results/junit.xml
             -f junit
             -v
