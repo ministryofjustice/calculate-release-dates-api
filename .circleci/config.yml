@@ -47,7 +47,7 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          command: ./gradlew -Pdocs generateOpenApiDocs -PoutputDir=~/docs
+          command: ./gradlew -Pdocs generateOpenApiDocs
       - run:
           command: mv build/docs ~/
       - save_cache:
