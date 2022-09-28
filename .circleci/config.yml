@@ -55,7 +55,7 @@ jobs:
       - store_artifacts:
           path: build/openapi.json
       - persist_to_workspace:
-          root: .
+          root: ~/docs
           paths:
             - build/openapi.json
 
@@ -66,10 +66,10 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: .
+          at: ~/docs
       # Create a folder for results to live in
       - run: "[ -d lint-results ] || mkdir lint-results"
-      - run: "cat ./openapi.json"
+      - run: "cat ~/docs/openapi.json"
       - run: "cat .spectral.yml"
       - run:
           name: Run Spectral Lint
