@@ -252,7 +252,7 @@ class BookingExtractionService(
     mostRecentSentencesByReleaseDate: List<CalculableSentence>
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
     val latestAdjustedReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
-    val mostRecentReleaseIsPrrd = mostRecentSentencesByReleaseDate.any {it.releaseDateTypes.contains(PRRD)}
+    val mostRecentReleaseIsPrrd = mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.contains(PRRD) }
     // For now we can't calculate HDCED if there is a consecutive sentence with EDS or SOPC sentences
     if (!mostRecentReleaseIsPrrd && sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
       val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() }, SentenceCalculation::releaseDate)
