@@ -132,7 +132,7 @@ class BookingExtractionService(
     val latestHDCEDAndBreakdown =
       extractManyHomeDetentionCurfewEligibilityDate(
         sentences,
-        latestReleaseDate
+        mostRecentSentencesByReleaseDate
       )
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
@@ -249,10 +249,12 @@ class BookingExtractionService(
 
   private fun extractManyHomeDetentionCurfewEligibilityDate(
     sentences: List<CalculableSentence>,
-    latestAdjustedReleaseDate: LocalDate
+    mostRecentSentencesByReleaseDate: List<CalculableSentence>
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
+    val latestAdjustedReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
+    val mostRecentReleaseIsPrrd = mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.contains(PRRD) }
     // For now we can't calculate HDCED if there is a consecutive sentence with EDS or SOPC sentences
-    if (sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
+    if (!mostRecentReleaseIsPrrd && sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
       val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() }, SentenceCalculation::releaseDate)
       if (latestNonRecallRelease?.sentenceCalculation?.homeDetentionCurfewEligibilityDate != null) {
         val earliestSentenceDate = sentences.filter { !it.isRecall() }.minOf { it.sentencedAt }
