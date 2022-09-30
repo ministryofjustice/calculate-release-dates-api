@@ -476,13 +476,25 @@ class ValidationServiceTest {
   }
 
   @Test
+  fun `Test A FINE invalid without fine amount`() {
+    val sentences = listOf(validAFineSentence.copy(
+      fineAmount = null
+    ))
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+
+    assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
+    assertThat(result.messages).hasSize(1)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.A_FINE_SENTENCE_MISSING_FINE_AMOUNT)
+  }
+
+  @Test
   fun `Test SDS sentence unsupported category 1991`() {
     val sentences = listOf(
       validSdsSentence.copy(
         sentenceCategory = "1991"
       )
     )
-    val result = ValidationService(FeatureToggles(false), SentencesExtractionService()).validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
     assertThat(result.messages).hasSize(1)

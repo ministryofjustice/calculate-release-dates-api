@@ -132,8 +132,19 @@ class ValidationService(
       validateWithoutOffenceDate(it),
       validateOffenceDateAfterSentenceDate(it),
       validateOffenceRangeDateAfterSentenceDate(it),
-    ) + validateDuration(it) + listOfNotNull(validateThatSec91SentenceTypeCorrectlyApplied(it), validateEdsSentenceTypesCorrectlyApplied(it), validateSopcSentenceTypesCorrectlyApplied(it))
+    ) + validateDuration(it) + listOfNotNull(validateThatSec91SentenceTypeCorrectlyApplied(it), validateEdsSentenceTypesCorrectlyApplied(it), validateSopcSentenceTypesCorrectlyApplied(it), validateFineAmount(it))
   }
+
+  private fun validateFineAmount(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
+    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
+    if (sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
+      if (sentencesAndOffence.fineAmount == null) {
+        return ValidationMessage("A fine sentence is missing fine amount", ValidationCode.A_FINE_SENTENCE_MISSING_FINE_AMOUNT, sentencesAndOffence.sentenceSequence)
+      }
+    }
+    return null
+  }
+
   private fun validateThatSec91SentenceTypeCorrectlyApplied(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
 
