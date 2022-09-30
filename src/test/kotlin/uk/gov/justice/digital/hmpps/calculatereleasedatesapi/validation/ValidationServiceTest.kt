@@ -66,7 +66,8 @@ class ValidationServiceTest {
       SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
     ),
     sentenceCalculationType = SentenceCalculationType.AFINE.name,
-    sentenceDate = FIRST_MAY_2021
+    sentenceDate = FIRST_MAY_2021,
+    fineAmount = BigDecimal("100")
   )
   private val validPrisoner = PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
   private val validAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList())
