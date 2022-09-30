@@ -6,7 +6,7 @@ data class ValidationMessages(
 ) {
 
   fun toErrorString(): String {
-    return "The data for this prisoner is ${if (type == ValidationType.UNSUPPORTED) "unsupported" else "invalid" }\n" +
+    return "The data for this prisoner is ${if (type == ValidationType.UNSUPPORTED_SENTENCE) "unsupported" else "invalid" }\n" +
       messages.joinToString(separator = "\n") { "${if (it.sentenceSequence != null) "Sentence ${it.sentenceSequence} is invalid: " else ""}${it.message}" }
   }
 }

@@ -328,7 +328,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectBody(ValidationMessages::class.java)
       .returnResult().responseBody!!
 
-    assertThat(validationMessages.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(validationMessages.type).isEqualTo(ValidationType.UNSUPPORTED_SENTENCE)
     assertThat(validationMessages.messages).hasSize(1)
     assertThat(validationMessages.messages[0]).matches { it.code == ValidationCode.UNSUPPORTED_SENTENCE_TYPE && it.sentenceSequence == 1 }
   }
@@ -755,7 +755,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectBody(ValidationMessages::class.java)
       .returnResult().responseBody!!
 
-    assertThat(validationMessages.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(validationMessages.type).isEqualTo(ValidationType.UNSUPPORTED_PRISONER)
     assertThat(validationMessages.messages).hasSize(1)
     assertThat(validationMessages.messages[0]).matches { it.code == ValidationCode.PRISONER_SUBJECT_TO_PTD }
   }
@@ -823,7 +823,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectBody(ValidationMessages::class.java)
       .returnResult().responseBody!!
 
-    assertThat(validationMessages.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(validationMessages.type).isEqualTo(ValidationType.UNSUPPORTED_CALCULATION)
     assertThat(validationMessages.messages).hasSize(1)
     assertThat(validationMessages.messages[0]).matches { it.code == ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS }
   }
