@@ -423,7 +423,7 @@ class ValidationServiceTest {
       )
     )
 
-    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED_CALCULATION)
     assertThat(result.messages).hasSize(1)
     assertThat(result.messages[0].code).isEqualTo(ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS)
   }
@@ -441,7 +441,7 @@ class ValidationServiceTest {
     )
     val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
-    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED_CALCULATION)
     assertThat(result.messages).hasSize(1)
     assertThat(result.messages[0].code).isEqualTo(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE_TO)
   }
@@ -459,9 +459,28 @@ class ValidationServiceTest {
     )
     val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
-    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED_CALCULATION)
     assertThat(result.messages).hasSize(1)
     assertThat(result.messages[0].code).isEqualTo(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE)
+  }
+
+  @Test
+  fun `Test A FINE sentence multiple unsupported`() {
+    val sentences = listOf(
+      validAFineSentence.copy(
+        sentenceSequence = 1
+      ),
+      validSdsSentence.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1
+      )
+    )
+    val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(OffenderFinePayment(1, LocalDate.now(), BigDecimal.ONE)), null))
+
+    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED_CALCULATION)
+    assertThat(result.messages).hasSize(2)
+    assertThat(result.messages[0].code).isEqualTo(ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS)
+    assertThat(result.messages[1].code).isEqualTo(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE)
   }
 
   @Test
@@ -469,7 +488,7 @@ class ValidationServiceTest {
     val sentences = listOf(validAFineSentence)
     val result = ValidationService(FeatureToggles(false), SentencesExtractionService()).validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
-    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED_SENTENCE)
     assertThat(result.messages).hasSize(1)
     assertThat(result.messages[0].code).isEqualTo(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)
     assertThat(result.messages[0].arguments).isEqualTo(listOf("2003", "This is a sentence type"))
@@ -484,7 +503,7 @@ class ValidationServiceTest {
     )
     val result = ValidationService(FeatureToggles(false), SentencesExtractionService()).validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
-    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED)
+    assertThat(result.type).isEqualTo(ValidationType.UNSUPPORTED_SENTENCE)
     assertThat(result.messages).hasSize(1)
     assertThat(result.messages[0].code).isEqualTo(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)
     assertThat(result.messages[0].arguments).isEqualTo(listOf("1991", "This is a sentence type"))

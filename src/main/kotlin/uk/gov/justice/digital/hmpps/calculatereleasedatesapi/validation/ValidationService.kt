@@ -47,17 +47,17 @@ class ValidationService(
 
     val validateOffender = validateOffenderSupported(sourceData.prisonerDetails)
     if (validateOffender.isNotEmpty()) {
-      return ValidationMessages(ValidationType.UNSUPPORTED, validateOffender)
+      return ValidationMessages(ValidationType.UNSUPPORTED_PRISONER, validateOffender)
     }
 
     val unsupportedValidationMessages = validateSupportedSentences(sortedSentences)
     if (unsupportedValidationMessages.isNotEmpty()) {
-      return ValidationMessages(ValidationType.UNSUPPORTED, unsupportedValidationMessages)
+      return ValidationMessages(ValidationType.UNSUPPORTED_SENTENCE, unsupportedValidationMessages)
     }
 
     val unsupportedFineValidationMessages = validateFineSentenceSupported(sourceData)
-    if (unsupportedFineValidationMessages != null) {
-      return ValidationMessages(ValidationType.UNSUPPORTED, listOf(unsupportedFineValidationMessages))
+    if (unsupportedFineValidationMessages.isNotEmpty()) {
+      return ValidationMessages(ValidationType.UNSUPPORTED_CALCULATION, unsupportedFineValidationMessages)
     }
 
     val validationMessages = validateSentences(sortedSentences)
@@ -322,21 +322,22 @@ class ValidationService(
     return validationMessages.toList()
   }
 
-  private fun validateFineSentenceSupported(prisonApiSourceData: PrisonApiSourceData): ValidationMessage? {
+  private fun validateFineSentenceSupported(prisonApiSourceData: PrisonApiSourceData): List<ValidationMessage> {
+    val validationMessages = mutableListOf<ValidationMessage>()
     val fineSentences = prisonApiSourceData.sentenceAndOffences.filter { SentenceCalculationType.from(it.sentenceCalculationType)?.sentenceClazz == AFineSentence::class.java }
     if (fineSentences.isNotEmpty()) {
       if (prisonApiSourceData.offenderFinePayments.isNotEmpty()) {
-        return ValidationMessage("A/FINEs with offender fine payments not supported", ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS)
+        validationMessages.add(ValidationMessage("A/FINEs with offender fine payments not supported", ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS))
       }
       if (fineSentences.any { it.consecutiveToSequence != null }) {
-        return ValidationMessage("A/FINEs not supported consecutive to anything else", ValidationCode.A_FINE_SENTENCE_CONSECUTIVE_TO)
+        validationMessages.add(ValidationMessage("A/FINEs not supported consecutive to anything else", ValidationCode.A_FINE_SENTENCE_CONSECUTIVE_TO))
       }
       val sequenceToSentenceMap = prisonApiSourceData.sentenceAndOffences.associateBy { it.sentenceSequence }
       if (prisonApiSourceData.sentenceAndOffences.any { it.consecutiveToSequence != null && fineSentences.contains(sequenceToSentenceMap[(it.consecutiveToSequence)]) }) {
-        return ValidationMessage("A/FINEs not supported consecutive from anything else", ValidationCode.A_FINE_SENTENCE_CONSECUTIVE)
+        validationMessages.add(ValidationMessage("A/FINEs not supported consecutive from anything else", ValidationCode.A_FINE_SENTENCE_CONSECUTIVE))
       }
     }
-    return null
+    return validationMessages
   }
   private fun validateOffenceDateAfterSentenceDate(
     sentencesAndOffence: SentenceAndOffences
