@@ -477,9 +477,11 @@ class ValidationServiceTest {
 
   @Test
   fun `Test A FINE invalid without fine amount`() {
-    val sentences = listOf(validAFineSentence.copy(
-      fineAmount = null
-    ))
+    val sentences = listOf(
+      validAFineSentence.copy(
+        fineAmount = null
+      )
+    )
     val result = validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result.type).isEqualTo(ValidationType.VALIDATION)
