@@ -1,5 +1,6 @@
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.5.1-beta"
+  id("org.springdoc.openapi-gradle-plugin") version "1.4.0"
   kotlin("plugin.spring") version "1.7.10"
   kotlin("plugin.jpa") version "1.7.10"
   id("jacoco")
@@ -85,6 +86,10 @@ dependencies {
   testImplementation("io.projectreactor:reactor-test")
   testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
   testImplementation("com.h2database:h2")
+
+  if (project.hasProperty("docs")) {
+    implementation("com.h2database:h2")
+  }
 }
 repositories {
   mavenCentral()
@@ -107,4 +112,10 @@ java {
 
 dependencyCheck {
   suppressionFiles.add("$rootDir/dependencyCheck/suppression.xml")
+}
+
+openApi {
+  outputDir.set(file("$buildDir/docs"))
+  outputFileName.set("openapi.json")
+  customBootRun.args.set(listOf("--spring.profiles.active=dev,localstack,docs"))
 }
