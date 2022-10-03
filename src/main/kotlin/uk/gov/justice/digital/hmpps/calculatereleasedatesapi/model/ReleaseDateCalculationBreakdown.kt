@@ -1,12 +1,17 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Schema
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import java.time.LocalDate
 
 @Schema(description = "Calculation breakdown details for a release date type")
 data class ReleaseDateCalculationBreakdown(
-  @Schema(description = "Calculation rules used to determine this calculation.", example = "[HDCED_LT_18_MONTHS]")
+  @ArraySchema(
+    arraySchema = Schema(
+      description = "Calculation rules used to determine this calculation.", example = "[\"HDCED_GE_12W_LT_18M\"]"
+    )
+  )
   val rules: Set<CalculationRule> = emptySet(),
   @Schema(description = "Adjustments details associated that are specifically added as part of a rule")
   val rulesWithExtraAdjustments: Map<CalculationRule, AdjustmentDuration> = emptyMap(),
