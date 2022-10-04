@@ -1,0 +1,15 @@
+spring:
+
+  datasource:
+    url: 'jdbc:h2:mem:release-dates-db;MODE=PostgreSQL;INIT=create domain if not exists jsonb as json'
+    username: create_vary
+    password: dummy
+
+  flyway:
+    enabled: false
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
