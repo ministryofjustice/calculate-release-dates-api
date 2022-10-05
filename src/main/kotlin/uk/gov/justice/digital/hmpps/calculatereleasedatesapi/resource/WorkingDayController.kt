@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.format.annotation.DateTimeFormat
@@ -21,6 +21,7 @@ import java.time.LocalDate
 
 @RestController
 @RequestMapping("/working-day", produces = [MediaType.APPLICATION_JSON_VALUE])
+@Tag(name = "working-day-controller", description = "Operations working days/bank holidays")
 class WorkingDayController(
   private val workingDayService: WorkingDayService
 ) {
@@ -30,14 +31,11 @@ class WorkingDayController(
   @ResponseBody
   @Operation(
     summary = "Find the next working day from a given date",
-    description = "Finds the next working day, adjusting for weekends and bank holidays",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
+    description = "Finds the next working day, adjusting for weekends and bank holidays"
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns next working day"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
     ]
@@ -57,14 +55,11 @@ class WorkingDayController(
   @ResponseBody
   @Operation(
     summary = "Find the previous working day from a given date",
-    description = "Finds the previous working day, adjusting for weekends and bank holidays",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
+    description = "Finds the previous working day, adjusting for weekends and bank holidays"
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns previous working day"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
     ]

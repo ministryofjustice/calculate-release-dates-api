@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
@@ -25,6 +25,7 @@ import javax.validation.constraints.NotEmpty
 
 @RestController
 @RequestMapping("/test", produces = [MediaType.APPLICATION_JSON_VALUE])
+@Tag(name = "test-controller", description = "Operations involving testing calculations")
 class TestController(
   private val calculationTransactionalService: CalculationTransactionalService,
 ) {
@@ -37,14 +38,11 @@ class TestController(
   @Operation(
     summary = "Calculate release dates based on a prisoners booking data",
     description = "This endpoint will calculate release dates based on a prisoners booking data " +
-      "(e.g. sentences and adjustments)",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
+      "(e.g. sentences and adjustments)"
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Test calculation completed and release dates returned"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
     ]

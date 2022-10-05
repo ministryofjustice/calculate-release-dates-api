@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -46,6 +46,7 @@ import javax.persistence.EntityNotFoundException
 
 @RestController
 @RequestMapping("/calculation", produces = [MediaType.APPLICATION_JSON_VALUE])
+@Tag(name = "calculation-controller", description = "Operations involving a calculation")
 class CalculationController(
   private val bookingService: BookingService,
   private val prisonService: PrisonService,
@@ -60,14 +61,11 @@ class CalculationController(
   @Operation(
     summary = "Calculate release dates for a prisoner - preliminary calculation, this does not publish to NOMIS",
     description = "This endpoint will calculate release dates based on a prisoners latest booking - this is a " +
-      "PRELIMINARY calculation that will not be published to NOMIS",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
+      "PRELIMINARY calculation that will not be published to NOMIS"
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns calculated dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
     ]
@@ -97,13 +95,10 @@ class CalculationController(
     summary = "Calculate release dates for a prisoner - test calculation, this does not publish to NOMIS",
     description = "This endpoint will calculate release dates based on a prisoners latest booking, this can include" +
       "inactive bookings of historic prisoners. Endpoint is used to test calculations against NOMIS.",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns calculated dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
     ]
@@ -132,13 +127,10 @@ class CalculationController(
   @Operation(
     summary = "Calculate release dates and persist the results for a prisoners latest booking",
     description = "This endpoint will calculate release dates based on a prisoners latest booking ",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns calculated dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(
@@ -186,13 +178,10 @@ class CalculationController(
   @Operation(
     summary = "Get confirmed release dates for a prisoner's specific booking",
     description = "This endpoint will return the confirmed release dates based on a prisoners booking",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns calculated dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(responseCode = "404", description = "No confirmed calculation exists for this prisoner and booking")
@@ -216,13 +205,10 @@ class CalculationController(
   @Operation(
     summary = "Get release dates for a calculationRequestId",
     description = "This endpoint will return the release dates based on a calculationRequestId",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns calculated dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
@@ -243,13 +229,10 @@ class CalculationController(
   @Operation(
     summary = "Get breakdown for a calculationRequestId",
     description = "This endpoint will return the breakdown based on a calculationRequestId",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns breakdown of calculated dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
@@ -279,13 +262,10 @@ class CalculationController(
   @Operation(
     summary = "Get data to build a sentence diagram",
     description = "This endpoint will return the data required for a sentence diagram for the given calculationRequestId",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns diagram data of calculation dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
@@ -315,13 +295,11 @@ class CalculationController(
     summary = "Validates that the data for the given prisoner in NOMIS can be used to calculate a release date",
     description = "This endpoint will validate that the data for the given prisoner in NOMIS can be supported by the " +
       "calculate release dates engine",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns validation errors"),
+      ApiResponse(responseCode = "204", description = "Validation passes"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
     ]
@@ -362,13 +340,10 @@ class CalculationController(
   @Operation(
     summary = "Get sentences and offences for a calculationRequestId",
     description = "This endpoint will return the sentences and offences based on a calculationRequestId",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns sentences and offences"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
@@ -389,13 +364,10 @@ class CalculationController(
   @Operation(
     summary = "Get prisoner details for a calculationRequestId",
     description = "This endpoint will return the prisoner details based on a calculationRequestId",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns prisoner details"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
@@ -416,13 +388,10 @@ class CalculationController(
   @Operation(
     summary = "Get return to custody date for a calculationRequestId",
     description = "This endpoint will return the return to custody date based on a calculationRequestId",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns return to custody"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
@@ -444,13 +413,10 @@ class CalculationController(
   @Operation(
     summary = "Get user input for a calculationRequestId",
     description = "This endpoint will return the user input based on a calculationRequestId",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns calculation inputs"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
@@ -472,13 +438,10 @@ class CalculationController(
   @Operation(
     summary = "Get adjustments for a calculationRequestId",
     description = "This endpoint will return the adjustments based on a calculationRequestId",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns adjustments"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
@@ -500,13 +463,10 @@ class CalculationController(
     summary = "Return which sentences and offences may be considered for different calculation rules",
     description = "This endpoint will return which sentences and offences may be considered for different calculation rules." +
       "We will have to ask the user for clarification if any of the rules apply beacuse we cannot trust input data from NOMIS",
-    security = [
-      SecurityRequirement(name = "SYSTEM_USER"),
-      SecurityRequirement(name = "RELEASE_DATES_CALCULATOR")
-    ],
   )
   @ApiResponses(
     value = [
+      ApiResponse(responseCode = "200", description = "Returns questions for a calculation"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
     ]
