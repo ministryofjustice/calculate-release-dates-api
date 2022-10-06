@@ -49,7 +49,7 @@
     },
     "PED":{
       "rules":[
-        "PED_EQUAL_TO_LATEST_NON_PED_RELEASE"
+        "PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE"
       ],
       "rulesWithExtraAdjustments":{
 

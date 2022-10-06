@@ -218,17 +218,18 @@ class BookingExtractionService(
     if (latestExtendedDeterminateParoleEligibilityDate != null) {
       val mostRecentReleaseSentenceHasParoleDate = mostRecentSentenceByAdjustedDeterminateReleaseDate.sentenceCalculation.extendedDeterminateParoleEligibilityDate
       if (mostRecentReleaseSentenceHasParoleDate != null) {
-        val latestNonPedRelease = extractionService.mostRecentOrNull(
+        val latestNonPedReleaseSentence = extractionService.mostRecentSentenceOrNull(
           sentences.filter { !it.isRecall() && it.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null },
           SentenceCalculation::releaseDate
         )
+        val latestNonPedRelease = latestNonPedReleaseSentence?.sentenceCalculation?.releaseDate
         if (latestNonPedRelease != null && latestNonPedRelease.isAfterOrEqualTo(mostRecentSentenceByAdjustedDeterminateReleaseDate.sentenceCalculation.releaseDate)) {
           // SDS release is after PED, so no PED required.
         } else {
           if (latestNonPedRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestNonPedRelease)) {
             dates[PED] = latestNonPedRelease
             breakdownByReleaseDateType[PED] = ReleaseDateCalculationBreakdown(
-              rules = setOf(CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_RELEASE),
+              rules = setOf(if (latestNonPedReleaseSentence.releaseDateTypes.contains(ARD)) CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_ACTUAL_RELEASE else CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE),
               releaseDate = dates[PED]!!,
               unadjustedDate = latestExtendedDeterminateParoleEligibilityDate
             )
@@ -269,33 +270,25 @@ class BookingExtractionService(
             sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
             SentenceCalculation::homeDetentionCurfewEligibilityDate
           )
-          val latestSopcOrEdsRelease = extractionService.mostRecentOrNull(sentences.filter { it.hasAnyEdsOrSopcSentence() }, SentenceCalculation::releaseDate)
-          val latestAFineRelease = extractionService.mostRecentOrNull(sentences.filter { it is AFineSentence && !it.sentenceCalculation.isImmediateRelease() }, SentenceCalculation::releaseDate)
+          val latestSopcOrEdsRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it.hasAnyEdsOrSopcSentence() && !it.sentenceCalculation.isImmediateRelease()}, SentenceCalculation::releaseDate)
+          val latestAFineRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it is AFineSentence && !it.sentenceCalculation.isImmediateRelease() }, SentenceCalculation::releaseDate)
+          val latestSdsArdRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it.releaseDateTypes.contains(ARD) && !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.homeDetentionCurfewEligibilityDate == null }, SentenceCalculation::releaseDate)
+          val latestConcurrentReleaseSentence = listOfNotNull(latestSopcOrEdsRelease, latestAFineRelease, latestSdsArdRelease).maxByOrNull { it.sentenceCalculation.releaseDate }
+          val latestConcurrentRelease = latestConcurrentReleaseSentence?.sentenceCalculation?.releaseDate
           if (hdcedSentence != null) {
-            if (latestSopcOrEdsRelease != null &&
-              hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(latestSopcOrEdsRelease) &&
-              (latestAFineRelease == null || latestSopcOrEdsRelease.isAfter(latestAFineRelease))
-            ) {
-              if (latestAdjustedReleaseDate.isAfter(latestSopcOrEdsRelease)) {
-                return latestSopcOrEdsRelease to ReleaseDateCalculationBreakdown(
-                  rules = setOf(CalculationRule.HDCED_ADJUSTED_TO_SOPC_OR_EDS_RELEASE),
-                  releaseDate = latestSopcOrEdsRelease,
-                  unadjustedDate = hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
-                  adjustedDays = ChronoUnit.DAYS.between(
-                    latestSopcOrEdsRelease,
-                    hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!
-                  ).toInt()
-                )
-              }
-            } else if (latestAFineRelease != null && hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(latestAFineRelease)) {
-              return latestAFineRelease to ReleaseDateCalculationBreakdown(
-                rules = setOf(CalculationRule.HDCED_ADJUSTED_TO_AFINE_RELEASE),
-                releaseDate = latestAFineRelease,
+            return if (latestConcurrentRelease != null && hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(latestConcurrentRelease)) {
+              latestConcurrentRelease to ReleaseDateCalculationBreakdown(
+                rules = setOf(if (latestConcurrentReleaseSentence.releaseDateTypes.contains(ARD)) CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE else CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE),
+                releaseDate = latestConcurrentRelease,
                 unadjustedDate = hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
-                adjustedDays = ChronoUnit.DAYS.between(latestAFineRelease, hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!).toInt()
+                adjustedDays = ChronoUnit.DAYS.between(
+                        latestConcurrentRelease,
+                        hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!
+                ).toInt()
               )
+
             } else {
-              return hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
+              hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
             }
           }
         }
