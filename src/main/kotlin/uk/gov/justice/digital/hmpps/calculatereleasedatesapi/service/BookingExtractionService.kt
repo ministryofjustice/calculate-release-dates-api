@@ -270,7 +270,7 @@ class BookingExtractionService(
             sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
             SentenceCalculation::homeDetentionCurfewEligibilityDate
           )
-          val latestSopcOrEdsRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it.hasAnyEdsOrSopcSentence() && !it.sentenceCalculation.isImmediateRelease()}, SentenceCalculation::releaseDate)
+          val latestSopcOrEdsRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it.hasAnyEdsOrSopcSentence() && !it.sentenceCalculation.isImmediateRelease() }, SentenceCalculation::releaseDate)
           val latestAFineRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it is AFineSentence && !it.sentenceCalculation.isImmediateRelease() }, SentenceCalculation::releaseDate)
           val latestSdsArdRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it.releaseDateTypes.contains(ARD) && !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.homeDetentionCurfewEligibilityDate == null }, SentenceCalculation::releaseDate)
           val latestConcurrentReleaseSentence = listOfNotNull(latestSopcOrEdsRelease, latestAFineRelease, latestSdsArdRelease).maxByOrNull { it.sentenceCalculation.releaseDate }
@@ -282,11 +282,10 @@ class BookingExtractionService(
                 releaseDate = latestConcurrentRelease,
                 unadjustedDate = hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
                 adjustedDays = ChronoUnit.DAYS.between(
-                        latestConcurrentRelease,
-                        hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!
+                  latestConcurrentRelease,
+                  hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!
                 ).toInt()
               )
-
             } else {
               hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
             }
