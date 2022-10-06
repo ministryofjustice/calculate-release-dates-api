@@ -1,0 +1,53 @@
+{
+  "concurrentSentences": [
+    {
+      "sentencedAt": "2021-05-15",
+      "sentenceLength": "3 years 3 months",
+      "sentenceLengthDays": 1188,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2024-08-14",
+          "adjusted": "2024-08-14",
+          "daysFromSentenceStart": 1188,
+          "adjustedByDays": 0
+        },
+        "CRD": {
+          "unadjusted": "2022-12-29",
+          "adjusted": "2022-12-29",
+          "daysFromSentenceStart": 594,
+          "adjustedByDays": 0
+        }
+      },
+      "lineSequence": 0,
+      "caseSequence": 0,
+      "caseReference": null
+    }
+  ],
+  "consecutiveSentence": null,
+  "breakdownByReleaseDateType": {
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2024-08-14",
+      "unadjustedDate": "2024-08-14"
+    },
+    "CRD": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2022-12-29",
+      "unadjustedDate": "2022-12-29"
+    },
+    "HDCED": {
+      "rules": [
+        "HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE"
+      ],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -24,
+      "releaseDate": "2022-09-10",
+      "unadjustedDate": "2022-08-17"
+    }
+  },
+  "otherDates": {}
+}
