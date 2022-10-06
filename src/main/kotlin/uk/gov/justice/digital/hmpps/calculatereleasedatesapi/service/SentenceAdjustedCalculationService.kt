@@ -111,7 +111,6 @@ class SentenceAdjustedCalculationService {
     )
 
   private fun getBreakdownForReleaseDate(sentenceCalculation: SentenceCalculation): ReleaseDateCalculationBreakdown {
-    val immediateRelease = sentenceCalculation.sentence.sentencedAt == sentenceCalculation.releaseDate
     val daysBetween = DAYS.between(
       sentenceCalculation.unadjustedDeterminateReleaseDate,
       sentenceCalculation.adjustedDeterminateReleaseDate
@@ -120,7 +119,7 @@ class SentenceAdjustedCalculationService {
     return ReleaseDateCalculationBreakdown(
       releaseDate = sentenceCalculation.adjustedDeterminateReleaseDate,
       unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
-      rules = if (immediateRelease) setOf(IMMEDIATE_RELEASE) else emptySet(),
+      rules = if (sentenceCalculation.isImmediateRelease()) setOf(IMMEDIATE_RELEASE) else emptySet(),
       adjustedDays = daysBetween,
       rulesWithExtraAdjustments = if (sentenceCalculation.calculatedUnusedReleaseAda != 0) mapOf(
         CalculationRule.UNUSED_ADA to AdjustmentDuration(
@@ -196,8 +195,7 @@ class SentenceAdjustedCalculationService {
   private fun calculateTUSED(sentenceCalculation: SentenceCalculation) {
     val adjustedDays =
       sentenceCalculation.calculatedTotalAddedDays.minus(sentenceCalculation.calculatedTotalDeductedDays)
-    val immediateRelease = sentenceCalculation.sentence.sentencedAt == sentenceCalculation.adjustedDeterminateReleaseDate
-    if (immediateRelease) {
+    if (sentenceCalculation.isImmediateRelease()) {
       // There may still be adjustments to consider here. If the immediate release occured and then there was a recall,
       // Any UAL after the recall will need to be added.
       val adjustedDaysAfterRelease = sentenceCalculation.getTotalAddedDaysAfter(sentenceCalculation.sentence.sentencedAt.plusDays(1))
@@ -211,7 +209,7 @@ class SentenceAdjustedCalculationService {
     }
     sentenceCalculation.breakdownByReleaseDateType[TUSED] =
       ReleaseDateCalculationBreakdown(
-        rules = setOf(TUSED_LICENCE_PERIOD_LT_1Y) + if (immediateRelease) setOf(IMMEDIATE_RELEASE) else emptySet(),
+        rules = setOf(TUSED_LICENCE_PERIOD_LT_1Y) + if (sentenceCalculation.isImmediateRelease()) setOf(IMMEDIATE_RELEASE) else emptySet(),
         rulesWithExtraAdjustments = mapOf(
           TUSED_LICENCE_PERIOD_LT_1Y to AdjustmentDuration(
             TWELVE.toInt(),

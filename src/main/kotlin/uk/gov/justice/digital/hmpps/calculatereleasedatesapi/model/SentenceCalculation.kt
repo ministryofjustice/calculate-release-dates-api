@@ -44,6 +44,10 @@ data class SentenceCalculation(
     return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = releaseDateWithoutAwarded, adjustmentsAfter = adjustmentsAfter)
   }
 
+  fun isImmediateRelease(): Boolean {
+    return sentence.sentencedAt == adjustedDeterminateReleaseDate
+  }
+
   val calculatedTotalDeductedDays: Int get() {
     if (sentence is AFineSentence && sentence.offence.isCivilOffence()) {
       return 0
