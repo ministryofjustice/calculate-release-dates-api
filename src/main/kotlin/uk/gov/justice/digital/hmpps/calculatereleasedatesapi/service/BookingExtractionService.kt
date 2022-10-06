@@ -270,7 +270,7 @@ class BookingExtractionService(
             SentenceCalculation::homeDetentionCurfewEligibilityDate
           )
           val latestSopcOrEdsRelease = extractionService.mostRecentOrNull(sentences.filter { it.hasAnyEdsOrSopcSentence() }, SentenceCalculation::releaseDate)
-          val latestAFineRelease = extractionService.mostRecentOrNull(sentences.filterIsInstance<AFineSentence>(), SentenceCalculation::releaseDate)
+          val latestAFineRelease = extractionService.mostRecentOrNull(sentences.filter { it is AFineSentence && !it.sentenceCalculation.isImmediateRelease() }, SentenceCalculation::releaseDate)
           if (hdcedSentence != null) {
             if (latestSopcOrEdsRelease != null &&
               hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(latestSopcOrEdsRelease) &&
