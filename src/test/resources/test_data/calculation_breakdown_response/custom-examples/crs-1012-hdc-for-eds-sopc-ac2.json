@@ -55,7 +55,7 @@
     },
     "HDCED": {
       "rules": [
-        "HDCED_ADJUSTED_TO_SOPC_OR_EDS_RELEASE"
+        "HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE"
       ],
       "rulesWithExtraAdjustments": {},
       "adjustedDays": -56,

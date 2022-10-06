@@ -1,0 +1,30 @@
+{
+  "concurrentSentences": [],
+  "consecutiveSentence": null,
+  "breakdownByReleaseDateType": {
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2023-09-10",
+      "unadjustedDate": "2023-09-10"
+    },
+    "CRD": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2022-09-10",
+      "unadjustedDate": "2022-09-10"
+    },
+    "PED": {
+      "rules": [
+        "PED_EQUAL_TO_LATEST_NON_PED_ACTUAL_RELEASE"
+      ],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2021-05-12",
+      "unadjustedDate": "2021-05-11"
+    }
+  },
+  "otherDates": {}
+}
