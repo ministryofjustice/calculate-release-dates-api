@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@5.2
+  hmpps: ministryofjustice/hmpps@6.0
 
 parameters:
   alerts-slack-channel:
@@ -105,12 +105,11 @@ workflows:
           slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
-# currently disabled as no support for jdk 18 or kotlin 1.7
-#      - hmpps/veracode_pipeline_scan:
-#          slack_channel: << pipeline.parameters.alerts-slack-channel >>
-#          context:
-#            - veracode-credentials
-#            - hmpps-common-vars
+      - hmpps/veracode_pipeline_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          context:
+            - veracode-credentials
+            - hmpps-common-vars
   security-weekly:
     triggers:
       - schedule:
