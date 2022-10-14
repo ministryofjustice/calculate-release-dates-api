@@ -55,14 +55,14 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.20")
 
   // Three Ten Date Calculations
-  implementation("org.threeten:threeten-extra:1.7.0")
+  implementation("org.threeten:threeten-extra:1.7.1")
 
   // Database dependencies
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.5.0")
 
   implementation("io.arrow-kt:arrow-core:1.1.2")
-  implementation("com.vladmihalcea:hibernate-types-52:2.16.2")
+  implementation("com.vladmihalcea:hibernate-types-52:2.19.2")
 
   // OpenAPI
   implementation("org.springdoc:springdoc-openapi-ui:1.6.11")
@@ -81,10 +81,10 @@ dependencies {
   testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.35.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.0.33")
-  testImplementation("org.mockito:mockito-inline:4.6.1")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.3")
+  testImplementation("org.mockito:mockito-inline:4.8.0")
   testImplementation("io.projectreactor:reactor-test")
-  testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
   testImplementation("com.h2database:h2")
 
   if (project.hasProperty("docs")) {
