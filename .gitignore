@@ -72,6 +72,3 @@ ecr.repo
 
 #Mac System Files
 .DS_Store
-
-# DPS gradle generated trivy ignore file
-.trivyignore
