@@ -13,7 +13,7 @@ This service requires a postgresql database.
 
 # Building the project
 Tools required:
-* JDK v16+
+* JDK v18+
 * Kotlin
 * docker
 * docker-compose
@@ -62,3 +62,11 @@ that is seeded with data specific to each test suite.
 # OWASP Dependency Checking scanning
 
 `$ ./gradlew dependencyCheckAnalyze`
+
+# Running the service locally using run-local.sh
+This will run the service locally. It starts the database runs manage-offences-api via a bash script. It connects to the dev versions of prison-api and hmpps-auth
+Run the following commands from the root directory of the project:
+1. docker-compose -f docker-compose-test.yml pull
+2. docker-compose -f docker-compose-test.yml up --no-start
+3. docker-compose -f docker-compose-test.yml start hmpps-auth calculate-release-dates-db prison-api
+4. ./run-local.sh

@@ -20,9 +20,8 @@ export DB_NAME=calculate_release_dates
 export DB_USER=calculate-release-dates
 export DB_PASS=calculate-release-dates
 
-# Provide URLs to other local container-based dependent services
-# Match with ports defined in docker-compose.yml
-export HMPPS_AUTH_URL=http://localhost:9090/auth
+# Provide URLs to other dependent services. Derv services used here (can be local if you set uo the dependent services locally)
+export HMPPS_AUTH_URL=https://sign-in-dev.hmpps.service.justice.gov.uk/auth
 
 # Make the connection without specifying the sslmode=verify-full requirement
 export SPRING_DATASOURCE_URL='jdbc:postgresql://${DB_SERVER}/${DB_NAME}'
