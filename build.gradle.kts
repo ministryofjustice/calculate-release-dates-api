@@ -37,6 +37,8 @@ tasks.named("check") {
   )
 }
 
+val awsSdkVersion = "1.12.285"
+
 dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -70,10 +72,19 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-kotlin:1.6.11")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.1.0")
-  implementation("com.amazonaws:aws-java-sdk-sns:1.12.239")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
-  implementation("org.springframework:spring-jms")
+  implementation("org.springframework:spring-jms:5.3.22")
   implementation("com.google.code.gson:gson:2.9.0")
+
+  // AWS
+  implementation("com.amazonaws:aws-java-sdk-s3:$awsSdkVersion")
+  implementation("com.amazonaws:aws-java-sdk-cloudformation:$awsSdkVersion")
+  implementation("com.amazonaws:aws-java-sdk-core:$awsSdkVersion")
+  implementation("com.amazonaws:aws-java-sdk-ec2:$awsSdkVersion")
+  implementation("com.amazonaws:aws-java-sdk-kms:$awsSdkVersion")
+  implementation("com.amazonaws:aws-java-sdk-sns:$awsSdkVersion")
+  implementation("com.amazonaws:aws-java-sdk-sqs:$awsSdkVersion")
+  implementation("com.amazonaws:jmespath-java:$awsSdkVersion")
 
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
@@ -83,7 +94,6 @@ dependencies {
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.35.0")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.3")
   testImplementation("org.mockito:mockito-inline:4.8.0")
-  testImplementation("io.projectreactor:reactor-test")
   testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
   testImplementation("com.h2database:h2")
 
