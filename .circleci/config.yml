@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@6.0
+  hmpps: ministryofjustice/hmpps@6.2
 
 parameters:
   alerts-slack-channel:
@@ -61,6 +61,7 @@ workflows:
             - validate
             - build_docker
             - helm_lint
+          helm_timeout: 5m
 #      - request-preprod-approval:
 #          type: approval
 #          requires:
@@ -73,6 +74,7 @@ workflows:
 #            - hmpps-template-kotlin-preprod
 #          requires:
 #            - request-preprod-approval
+#          helm_timeout: 5m
 #      - request-prod-approval:
 #          type: approval
 #          requires:
@@ -87,6 +89,7 @@ workflows:
 #            - hmpps-template-kotlin-prod
 #          requires:
 #            - request-prod-approval
+#          helm_timeout: 5m
 
   security:
     triggers:
