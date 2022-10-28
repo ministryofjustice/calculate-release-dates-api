@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
 import java.time.LocalDate
 
-data class SentenceAdjustments(
+data class SentenceAdjustment(
   val sentenceSequence: Int,
   val active: Boolean,
   val fromDate: LocalDate? = null,

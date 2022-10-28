@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
 import java.time.LocalDate
 
-data class BookingAdjustments(
+data class BookingAdjustment(
   val active: Boolean,
   val fromDate: LocalDate,
   val toDate: LocalDate? = null,

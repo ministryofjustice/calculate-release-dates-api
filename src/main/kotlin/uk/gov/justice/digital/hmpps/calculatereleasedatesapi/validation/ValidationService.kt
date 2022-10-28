@@ -15,17 +15,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.LAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.SPECIAL_REMISSION
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.UNLAWFULLY_AT_LARGE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -133,7 +133,7 @@ class ValidationService(
     return validationMessages
   }
 
-  private fun validateSupportedAdjustments(adjustments: List<BookingAdjustments>): List<ValidationMessage> {
+  private fun validateSupportedAdjustments(adjustments: List<BookingAdjustment>): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
     if (adjustments.any { it.type == LAWFULLY_AT_LARGE }) messages.add(ValidationMessage(UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE))
     if (adjustments.any { it.type == SPECIAL_REMISSION }) messages.add(ValidationMessage(UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION))
@@ -158,7 +158,7 @@ class ValidationService(
     return emptyList()
   }
 
-  private fun validateBookingAdjustment(bookingAdjustments: List<BookingAdjustments>): ValidationMessage? {
+  private fun validateBookingAdjustment(bookingAdjustments: List<BookingAdjustment>): ValidationMessage? {
     val invalidAdjustmentTypes = bookingAdjustments.filter {
       BOOKING_ADJUSTMENTS_TO_VALIDATE.contains(it.type) && it.fromDate.isAfter(LocalDate.now())
     }.map { it.type }.distinct()
@@ -168,7 +168,7 @@ class ValidationService(
     return null
   }
 
-  private fun validateSentenceAdjustment(sentenceAdjustment: SentenceAdjustments): ValidationMessage? {
+  private fun validateSentenceAdjustment(sentenceAdjustment: SentenceAdjustment): ValidationMessage? {
     if (sentenceAdjustment.type == SentenceAdjustmentType.REMAND && (sentenceAdjustment.fromDate == null || sentenceAdjustment.toDate == null)) {
       return ValidationMessage(REMAND_FROM_TO_DATES_REQUIRED)
     }
