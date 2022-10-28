@@ -19,16 +19,16 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -79,9 +79,9 @@ class BookingServiceTest {
     sentenceTypeDescription = "28 day fixed term recall",
     offences = offences,
   )
-  val bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(
+  val bookingAndSentenceAdjustment = BookingAndSentenceAdjustments(
     bookingAdjustments = listOf(
-      BookingAdjustments(
+      BookingAdjustment(
         active = true,
         numberOfDays = 5,
         type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE,
@@ -90,7 +90,7 @@ class BookingServiceTest {
       )
     ),
     sentenceAdjustments = listOf(
-      SentenceAdjustments(
+      SentenceAdjustment(
         active = true,
         sentenceSequence = sequence,
         numberOfDays = 6,
@@ -99,7 +99,7 @@ class BookingServiceTest {
         toDate = FIRST_JAN_2015.minusDays(1)
 
       ),
-      SentenceAdjustments(
+      SentenceAdjustment(
         active = true,
         sentenceSequence = sequence,
         numberOfDays = 22,
@@ -116,7 +116,7 @@ class BookingServiceTest {
   )
   val returnToCustodyDate = ReturnToCustodyDate(bookingId, LocalDate.of(2022, 3, 15))
   private val offenderFineFinePayment = listOf(OffenderFinePayment(bookingId = 1, paymentDate = LocalDate.of(1, 2, 3), paymentAmount = BigDecimal("10000.88")))
-  val sourceData = PrisonApiSourceData(listOf(sentenceAndOffences), prisonerDetails, bookingAndSentenceAdjustments, offenderFineFinePayment, returnToCustodyDate)
+  val sourceData = PrisonApiSourceData(listOf(sentenceAndOffences), prisonerDetails, bookingAndSentenceAdjustment, offenderFineFinePayment, returnToCustodyDate)
 
   @BeforeEach
   fun reset() {

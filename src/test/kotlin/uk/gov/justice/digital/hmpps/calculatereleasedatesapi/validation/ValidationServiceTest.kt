@@ -3,10 +3,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.LAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.SPECIAL_REMISSION
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
@@ -66,9 +66,9 @@ class ValidationServiceTest {
   )
   private val validPrisoner = PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
   private val validAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList())
-  private val lawfullyAtLargeBookingAdjustments = BookingAndSentenceAdjustments(
+  private val lawfullyAtLargeBookingAdjustment = BookingAndSentenceAdjustments(
     listOf(
-      BookingAdjustments(
+      BookingAdjustment(
         active = true,
         fromDate = LocalDate.of(2020, 1, 1),
         numberOfDays = 2,
@@ -77,9 +77,9 @@ class ValidationServiceTest {
     ),
     emptyList()
   )
-  private val specialRemissionBookingAdjustments = BookingAndSentenceAdjustments(
+  private val specialRemissionBookingAdjustment = BookingAndSentenceAdjustments(
     listOf(
-      BookingAdjustments(
+      BookingAdjustment(
         active = true,
         fromDate = LocalDate.of(2020, 1, 1),
         numberOfDays = 2,
@@ -359,9 +359,9 @@ class ValidationServiceTest {
         listOf(validEdsSentence), validPrisoner,
         BookingAndSentenceAdjustments(
           listOf(
-            BookingAdjustments(active = true, fromDate = LocalDate.now().plusDays(1), type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED, numberOfDays = 5),
-            BookingAdjustments(active = true, fromDate = LocalDate.now().plusDays(1), type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED, numberOfDays = 5),
-            BookingAdjustments(active = true, fromDate = LocalDate.now().plusDays(1), type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE, numberOfDays = 5),
+            BookingAdjustment(active = true, fromDate = LocalDate.now().plusDays(1), type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED, numberOfDays = 5),
+            BookingAdjustment(active = true, fromDate = LocalDate.now().plusDays(1), type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED, numberOfDays = 5),
+            BookingAdjustment(active = true, fromDate = LocalDate.now().plusDays(1), type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE, numberOfDays = 5),
           ),
           listOf()
         ),
@@ -550,7 +550,7 @@ class ValidationServiceTest {
       PrisonApiSourceData(
         sentenceAndOffences = listOf(validSdsSentence),
         prisonerDetails = validPrisoner,
-        bookingAndSentenceAdjustments = lawfullyAtLargeBookingAdjustments,
+        bookingAndSentenceAdjustments = lawfullyAtLargeBookingAdjustment,
         returnToCustodyDate = null,
       )
     )
@@ -569,7 +569,7 @@ class ValidationServiceTest {
       PrisonApiSourceData(
         sentenceAndOffences = listOf(validSdsSentence),
         prisonerDetails = validPrisoner,
-        bookingAndSentenceAdjustments = specialRemissionBookingAdjustments,
+        bookingAndSentenceAdjustments = specialRemissionBookingAdjustment,
         returnToCustodyDate = null,
       )
     )

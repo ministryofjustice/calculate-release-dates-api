@@ -67,8 +67,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Offe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -248,7 +248,7 @@ fun transform(
   return adjustments
 }
 
-private fun findSentenceForAdjustment(adjustment: SentenceAdjustments, sentencesAndOffences: List<SentenceAndOffences>): SentenceAndOffences? {
+private fun findSentenceForAdjustment(adjustment: SentenceAdjustment, sentencesAndOffences: List<SentenceAndOffences>): SentenceAndOffences? {
   val sentence = sentencesAndOffences.find { adjustment.sentenceSequence == it.sentenceSequence }
   if (sentence == null) {
     return null
