@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
+import io.swagger.v3.oas.annotations.media.Schema
+
 data class ValidationMessages(
+  @Schema(description = "Indicates the result of the validation, VALID means there are no errors")
   val type: ValidationType,
   val messages: List<ValidationMessage> = listOf()
 ) {

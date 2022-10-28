@@ -7,9 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -42,6 +40,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessages
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.VALIDATION
 import javax.persistence.EntityNotFoundException
 
 @RestController
@@ -298,40 +297,33 @@ class CalculationController(
   )
   @ApiResponses(
     value = [
-      ApiResponse(responseCode = "200", description = "Returns validation errors"),
-      ApiResponse(responseCode = "204", description = "Validation passes"),
+      ApiResponse(responseCode = "200", description = "Validation job has run successfully, the response indicates if there are any errors"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
     ]
   )
-
   fun validate(
     @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
     @PathVariable("prisonerId")
     prisonerId: String,
     @RequestBody
     calculationUserInputs: CalculationUserInputs?
-  ): ResponseEntity<ValidationMessages?> {
-    log.info("Request received to validate $prisonerId")
+  ): ValidationMessages {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
-    var validationMessages = validationService.validate(sourceData)
+    val validationMessages = validationService.validate(sourceData)
     if (validationMessages.type == ValidationType.VALID) {
       try {
         val booking = bookingService.getBooking(sourceData, calculationUserInputs)
         calculationService.calculateReleaseDates(booking)
       } catch (validationException: CrdCalculationValidationException) {
-        validationMessages = ValidationMessages(
-          ValidationType.VALIDATION,
-          listOf(ValidationMessage(validationException.message, validationException.validation, arguments = validationException.arguments))
+        return ValidationMessages(
+          VALIDATION,
+          listOf(ValidationMessage(validationException.validation, arguments = validationException.arguments))
         )
       }
     }
 
-    return if (validationMessages.type == ValidationType.VALID) {
-      ResponseEntity(HttpStatus.NO_CONTENT)
-    } else {
-      ResponseEntity(validationMessages, HttpStatus.OK)
-    }
+    return validationMessages
   }
 
   @GetMapping(value = ["/sentence-and-offences/{calculationRequestId}"])

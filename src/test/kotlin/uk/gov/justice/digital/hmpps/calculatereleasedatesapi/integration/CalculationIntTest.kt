@@ -335,12 +335,16 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run validation on valid data`() {
-    webTestClient.post()
+    val res = webTestClient.post()
       .uri("/calculation/$PRISONER_ID/validate")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
-      .expectStatus().isNoContent
+      .expectStatus().isOk
+      .expectBody(ValidationMessages::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(res.type).isEqualTo(ValidationType.VALID)
   }
 
   @Test
