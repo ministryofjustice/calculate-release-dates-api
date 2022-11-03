@@ -6,7 +6,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 
 @Service
 class BookingService(
@@ -17,9 +16,11 @@ class BookingService(
     val prisonerDetails = prisonApiSourceData.prisonerDetails
     val sentenceAndOffences = prisonApiSourceData.sentenceAndOffences
     val bookingAndSentenceAdjustments = prisonApiSourceData.bookingAndSentenceAdjustments
-    val validation = validationService.validate(prisonApiSourceData)
-    if (validation.type != ValidationType.VALID) {
-      throw ValidationException(validation.toErrorString())
+    val validationMessages = validationService.validate(prisonApiSourceData)
+    if (validationMessages.isNotEmpty()) {
+      var message = "The validation has failed with errors:"
+      validationMessages.forEach { message += "\n    " + it.message }
+      throw ValidationException(message)
     }
     val offender = transform(prisonerDetails)
     val adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences)
