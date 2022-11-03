@@ -37,10 +37,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.Calculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessages
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.VALIDATION
 import javax.persistence.EntityNotFoundException
 
 @RestController
@@ -308,18 +305,15 @@ class CalculationController(
     prisonerId: String,
     @RequestBody
     calculationUserInputs: CalculationUserInputs?
-  ): ValidationMessages {
+  ): List<ValidationMessage> {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
     val validationMessages = validationService.validate(sourceData)
-    if (validationMessages.type == ValidationType.VALID) {
+    if (validationMessages.isEmpty()) {
       try {
         val booking = bookingService.getBooking(sourceData, calculationUserInputs)
         calculationService.calculateReleaseDates(booking)
       } catch (validationException: CrdCalculationValidationException) {
-        return ValidationMessages(
-          VALIDATION,
-          listOf(ValidationMessage(validationException.validation, arguments = validationException.arguments))
-        )
+        return listOf(ValidationMessage(validationException.validation))
       }
     }
 
