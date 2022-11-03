@@ -24,7 +24,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAut
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
@@ -448,7 +447,7 @@ class CalculationTransactionalServiceTest {
       calculationRequestId = CALCULATION_REQUEST_ID,
       bookingId = BOOKING_ID,
       prisonerId = PRISONER_ID,
-      calculationStatus = CalculationStatus.CONFIRMED
+      calculationStatus = CONFIRMED
     )
 
     val UPDATE_OFFENDER_DATES = UpdateOffenderDates(

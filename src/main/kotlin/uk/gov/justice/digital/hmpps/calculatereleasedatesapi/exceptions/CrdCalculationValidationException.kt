@@ -6,5 +6,4 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 open class CrdCalculationValidationException(
   override var message: String,
   var validation: ValidationCode,
-  var arguments: List<String> = listOf()
 ) : CrdWebException(message, HttpStatus.UNPROCESSABLE_ENTITY, validation.name)

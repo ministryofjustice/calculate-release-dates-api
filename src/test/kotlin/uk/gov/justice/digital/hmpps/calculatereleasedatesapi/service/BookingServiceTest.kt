@@ -32,9 +32,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessages
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
@@ -126,7 +124,7 @@ class BookingServiceTest {
   @Test
   @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId`() {
-    whenever(validationService.validate(sourceData)).thenReturn(ValidationMessages(ValidationType.VALID))
+    whenever(validationService.validate(sourceData)).thenReturn(emptyList())
 
     val result = bookingService.getBooking(sourceData, null)
 
@@ -180,7 +178,7 @@ class BookingServiceTest {
   @Test
   @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input`() {
-    whenever(validationService.validate(sourceData)).thenReturn(ValidationMessages(ValidationType.VALID))
+    whenever(validationService.validate(sourceData)).thenReturn(emptyList())
 
     val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.ORIGINAL, true))))
 
@@ -234,7 +232,7 @@ class BookingServiceTest {
   @Test
   @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input of UPDATED`() {
-    whenever(validationService.validate(sourceData)).thenReturn(ValidationMessages(ValidationType.VALID))
+    whenever(validationService.validate(sourceData)).thenReturn(emptyList())
 
     val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.UPDATED, true))))
 
@@ -288,7 +286,7 @@ class BookingServiceTest {
   @Test
   @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input of SECTION 250`() {
-    whenever(validationService.validate(sourceData)).thenReturn(ValidationMessages(ValidationType.VALID))
+    whenever(validationService.validate(sourceData)).thenReturn(emptyList())
 
     val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.SECTION_250, true))))
 
@@ -342,7 +340,7 @@ class BookingServiceTest {
   @Test
   @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input of FOUR_TO_UNDER_SEVEN`() {
-    whenever(validationService.validate(sourceData)).thenReturn(ValidationMessages(ValidationType.VALID))
+    whenever(validationService.validate(sourceData)).thenReturn(emptyList())
 
     val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.FOUR_TO_UNDER_SEVEN, true))))
 
