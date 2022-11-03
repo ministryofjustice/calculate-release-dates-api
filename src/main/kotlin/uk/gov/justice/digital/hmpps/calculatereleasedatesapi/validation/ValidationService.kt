@@ -132,7 +132,8 @@ class ValidationService(
   }
 
   private fun validateAdjustments(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
-    val validationMessages = adjustments.sentenceAdjustments.mapNotNull { validateSentenceAdjustment(it) }.toMutableList()
+    val validationMessages =
+      adjustments.sentenceAdjustments.mapNotNull { validateSentenceAdjustment(it) }.toMutableList()
     validationMessages.addAll(validateBookingAdjustment(adjustments.bookingAdjustments))
     validationMessages += validateRemandOverlappingRemand(adjustments)
     return validationMessages
@@ -140,13 +141,22 @@ class ValidationService(
 
   private fun validateSupportedAdjustments(adjustments: List<BookingAdjustment>): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
-    if (adjustments.any { it.type == LAWFULLY_AT_LARGE }) messages.add(ValidationMessage(UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE))
-    if (adjustments.any { it.type == SPECIAL_REMISSION }) messages.add(ValidationMessage(UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION))
+    if (adjustments.any { it.type == LAWFULLY_AT_LARGE }) messages.add(
+      ValidationMessage(
+        UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE
+      )
+    )
+    if (adjustments.any { it.type == SPECIAL_REMISSION }) messages.add(
+      ValidationMessage(
+        UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION
+      )
+    )
     return messages
   }
 
   private fun validateRemandOverlappingRemand(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
-    val remandPeriods = adjustments.sentenceAdjustments.filter { it.type == SentenceAdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
+    val remandPeriods =
+      adjustments.sentenceAdjustments.filter { it.type == SentenceAdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
 
@@ -182,7 +192,12 @@ class ValidationService(
       validateWithoutOffenceDate(it),
       validateOffenceDateAfterSentenceDate(it),
       validateOffenceRangeDateAfterSentenceDate(it),
-    ) + validateDuration(it) + listOfNotNull(validateThatSec91SentenceTypeCorrectlyApplied(it), validateEdsSentenceTypesCorrectlyApplied(it), validateSopcSentenceTypesCorrectlyApplied(it), validateFineAmount(it))
+    ) + validateDuration(it) + listOfNotNull(
+      validateThatSec91SentenceTypeCorrectlyApplied(it),
+      validateEdsSentenceTypesCorrectlyApplied(it),
+      validateSopcSentenceTypesCorrectlyApplied(it),
+      validateFineAmount(it)
+    )
   }
 
   private fun validateFineAmount(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
@@ -209,7 +224,10 @@ class ValidationService(
   private fun validateEdsSentenceTypesCorrectlyApplied(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
 
-    if (listOf(SentenceCalculationType.EDS18, SentenceCalculationType.EDS21, SentenceCalculationType.EDSU18).contains(sentenceCalculationType)) {
+    if (listOf(SentenceCalculationType.EDS18, SentenceCalculationType.EDS21, SentenceCalculationType.EDSU18).contains(
+        sentenceCalculationType
+      )
+    ) {
       if (sentencesAndOffence.sentenceDate.isBefore(ImportantDates.EDS18_SENTENCE_TYPES_START_DATE)) {
         return ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, getCaseSeqAndLineSeq(sentencesAndOffence))
       }
@@ -235,6 +253,7 @@ class ValidationService(
     }
     return null
   }
+
   private fun validateDuration(sentencesAndOffence: SentenceAndOffences): List<ValidationMessage> {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
     return if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java || sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
@@ -268,13 +287,19 @@ class ValidationService(
 
     val imprisonmentTerms = sentencesAndOffence.terms.filter { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
     if (imprisonmentTerms.isEmpty()) {
-      validationMessages.add(ValidationMessage(SENTENCE_HAS_NO_IMPRISONMENT_TERM,
-        getCaseSeqAndLineSeq(sentencesAndOffence)
-      ))
+      validationMessages.add(
+        ValidationMessage(
+          SENTENCE_HAS_NO_IMPRISONMENT_TERM,
+          getCaseSeqAndLineSeq(sentencesAndOffence)
+        )
+      )
     } else if (imprisonmentTerms.size > 1) {
-      validationMessages.add(ValidationMessage(MORE_THAN_ONE_IMPRISONMENT_TERM,
-        getCaseSeqAndLineSeq(sentencesAndOffence)
-      ))
+      validationMessages.add(
+        ValidationMessage(
+          MORE_THAN_ONE_IMPRISONMENT_TERM,
+          getCaseSeqAndLineSeq(sentencesAndOffence)
+        )
+      )
     } else {
       val emptyTerm = imprisonmentTerms[0].days == 0 &&
         imprisonmentTerms[0].weeks == 0 &&
@@ -302,9 +327,12 @@ class ValidationService(
         if (endOfDuration.isBefore(endOfOneYear)) {
           validationMessages.add(ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR))
         } else if (endOfDuration.isAfter(endOfEightYears)) {
-          validationMessages.add(ValidationMessage(EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS,
-            getCaseSeqAndLineSeq(sentencesAndOffence)
-          ))
+          validationMessages.add(
+            ValidationMessage(
+              EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS,
+              getCaseSeqAndLineSeq(sentencesAndOffence)
+            )
+          )
         }
       } else if (sentenceCalculationType.sentenceClazz == SopcSentence::class.java) {
         val duration =
@@ -312,9 +340,12 @@ class ValidationService(
         val endOfDuration = sentencesAndOffence.sentenceDate.plus(duration)
         val endOfOneYear = sentencesAndOffence.sentenceDate.plusYears(1)
         if (endOfDuration != endOfOneYear) {
-          validationMessages.add(ValidationMessage(SOPC_LICENCE_TERM_NOT_12_MONTHS,
-            getCaseSeqAndLineSeq(sentencesAndOffence)
-          ))
+          validationMessages.add(
+            ValidationMessage(
+              SOPC_LICENCE_TERM_NOT_12_MONTHS,
+              getCaseSeqAndLineSeq(sentencesAndOffence)
+            )
+          )
         }
       }
     }
@@ -323,7 +354,8 @@ class ValidationService(
   }
 
   private fun validateOffenceRangeDateAfterSentenceDate(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
-    val invalid = sentencesAndOffence.offences.any { it.offenceEndDate != null && it.offenceEndDate > sentencesAndOffence.sentenceDate }
+    val invalid =
+      sentencesAndOffence.offences.any { it.offenceEndDate != null && it.offenceEndDate > sentencesAndOffence.sentenceDate }
     if (invalid) {
       return ValidationMessage(OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE, getCaseSeqAndLineSeq(sentencesAndOffence))
     }
@@ -355,6 +387,7 @@ class ValidationService(
     }
     return emptyList()
   }
+
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedSentences: List<SentenceCalculationType> = SentenceCalculationType.values()
       .filter { (it.sentenceClazz == AFineSentence::class.java && this.featureToggles.afine) || it.sentenceClazz == SopcSentence::class.java || it.sentenceClazz == ExtendedDeterminateSentence::class.java || it.sentenceClazz == StandardDeterminateSentence::class.java }
@@ -363,13 +396,15 @@ class ValidationService(
       !supportedSentences.contains(SentenceCalculationType.from(it.sentenceCalculationType)) ||
         !supportedCategories.contains(it.sentenceCategory)
     }
-      .map { ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf(it.sentenceCategory, it.sentenceTypeDescription)) }.toMutableList()
+      .map { ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf(it.sentenceCategory, it.sentenceTypeDescription)) }
+      .toMutableList()
     return validationMessages.toList()
   }
 
   private fun validateFineSentenceSupported(prisonApiSourceData: PrisonApiSourceData): List<ValidationMessage> {
     val validationMessages = mutableListOf<ValidationMessage>()
-    val fineSentences = prisonApiSourceData.sentenceAndOffences.filter { SentenceCalculationType.from(it.sentenceCalculationType)?.sentenceClazz == AFineSentence::class.java }
+    val fineSentences =
+      prisonApiSourceData.sentenceAndOffences.filter { SentenceCalculationType.from(it.sentenceCalculationType)?.sentenceClazz == AFineSentence::class.java }
     if (fineSentences.isNotEmpty()) {
       if (prisonApiSourceData.offenderFinePayments.isNotEmpty()) {
         validationMessages.add(ValidationMessage(A_FINE_SENTENCE_WITH_PAYMENTS))
@@ -378,24 +413,26 @@ class ValidationService(
         validationMessages.add(ValidationMessage(A_FINE_SENTENCE_CONSECUTIVE_TO))
       }
       val sequenceToSentenceMap = prisonApiSourceData.sentenceAndOffences.associateBy { it.sentenceSequence }
-      if (prisonApiSourceData.sentenceAndOffences.any { it.consecutiveToSequence != null && fineSentences.contains(sequenceToSentenceMap[(it.consecutiveToSequence)]) }) {
+      if (prisonApiSourceData.sentenceAndOffences.any {
+        it.consecutiveToSequence != null && fineSentences.contains(sequenceToSentenceMap[(it.consecutiveToSequence)])
+      }
+      ) {
         validationMessages.add(ValidationMessage(A_FINE_SENTENCE_CONSECUTIVE))
       }
     }
     return validationMessages
   }
+
   private fun validateOffenceDateAfterSentenceDate(
     sentencesAndOffence: SentenceAndOffences
   ): ValidationMessage? {
-    val invalid = sentencesAndOffence.offences.any { it.offenceStartDate != null && it.offenceStartDate > sentencesAndOffence.sentenceDate }
+    val invalid =
+      sentencesAndOffence.offences.any { it.offenceStartDate != null && it.offenceStartDate > sentencesAndOffence.sentenceDate }
     if (invalid) {
       return ValidationMessage(OFFENCE_DATE_AFTER_SENTENCE_START_DATE, getCaseSeqAndLineSeq(sentencesAndOffence))
     }
     return null
   }
-
-  private fun getCaseSeqAndLineSeq(sentencesAndOffence: SentenceAndOffences) =
-    listOf(sentencesAndOffence.caseSequence.toString(), sentencesAndOffence.lineSequence.toString())
 
   /*
     Run the validation that can only happen after calculations. I.e. validate that adjustments happen before release date
@@ -415,7 +452,8 @@ class ValidationService(
     val uals = booking.adjustments.getOrEmptyList(AdjustmentType.UNLAWFULLY_AT_LARGE).toSet()
     val adjustments = adas + radas + uals
 
-    val adjustmentsAfterRelease = adjustments.filter { it.appliesToSentencesFrom.isAfter(latestReleaseDatePreAddedDays) }.toSet()
+    val adjustmentsAfterRelease =
+      adjustments.filter { it.appliesToSentencesFrom.isAfter(latestReleaseDatePreAddedDays) }.toSet()
     if (adjustmentsAfterRelease.isNotEmpty()) {
       val anyAda = adjustmentsAfterRelease.intersect(adas).isNotEmpty()
       val anyRada = adjustmentsAfterRelease.intersect(radas).isNotEmpty()
@@ -424,7 +462,10 @@ class ValidationService(
       if (anyAda)
         throw AdjustmentIsAfterReleaseDateException(ADJUSTMENT_AFTER_RELEASE_ADA.message, ADJUSTMENT_AFTER_RELEASE_ADA)
       if (anyRada)
-        throw AdjustmentIsAfterReleaseDateException(ADJUSTMENT_AFTER_RELEASE_RADA.message, ADJUSTMENT_AFTER_RELEASE_RADA)
+        throw AdjustmentIsAfterReleaseDateException(
+          ADJUSTMENT_AFTER_RELEASE_RADA.message,
+          ADJUSTMENT_AFTER_RELEASE_RADA
+        )
       if (anyUal)
         throw AdjustmentIsAfterReleaseDateException(ADJUSTMENT_AFTER_RELEASE_UAL.message, ADJUSTMENT_AFTER_RELEASE_UAL)
     }
@@ -434,7 +475,8 @@ class ValidationService(
     val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
-      val sentenceRanges = booking.getAllExtractableSentences().map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.adjustedDeterminateReleaseDate) }
+      val sentenceRanges = booking.getAllExtractableSentences()
+        .map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.adjustedDeterminateReleaseDate) }
 
       val allRanges = (remandRanges + sentenceRanges).sortedBy { it.start }
       var totalRange: LocalDateRange? = null
@@ -473,20 +515,32 @@ class ValidationService(
         determinateSentences, SentenceCalculation::adjustedUncappedDeterminateReleaseDate
       )
       if (earliestSentenceDate.minusDays(1).isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate)) {
-        val hasRemand = latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND) != 0
-        val hasTaggedBail = latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.TAGGED_BAIL) != 0
+        val hasRemand =
+          latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND) != 0
+        val hasTaggedBail =
+          latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.TAGGED_BAIL) != 0
         if (hasRemand) {
-          throw CustodialPeriodExtinguishedException(CUSTODIAL_PERIOD_EXTINGUISHED_REMAND.message, CUSTODIAL_PERIOD_EXTINGUISHED_REMAND)
+          throw CustodialPeriodExtinguishedException(
+            CUSTODIAL_PERIOD_EXTINGUISHED_REMAND.message,
+            CUSTODIAL_PERIOD_EXTINGUISHED_REMAND
+          )
         }
         if (hasTaggedBail) {
-          throw CustodialPeriodExtinguishedException(CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL.message, CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL)
+          throw CustodialPeriodExtinguishedException(
+            CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL.message,
+            CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL
+          )
         }
       }
     }
   }
 
+  private fun getCaseSeqAndLineSeq(sentencesAndOffence: SentenceAndOffences) =
+    listOf(sentencesAndOffence.caseSequence.toString(), sentencesAndOffence.lineSequence.toString())
+
   companion object {
-    private val BOOKING_ADJUSTMENTS_TO_VALIDATE = listOf(ADDITIONAL_DAYS_AWARDED, UNLAWFULLY_AT_LARGE, RESTORED_ADDITIONAL_DAYS_AWARDED)
+    private val BOOKING_ADJUSTMENTS_TO_VALIDATE =
+      listOf(ADDITIONAL_DAYS_AWARDED, UNLAWFULLY_AT_LARGE, RESTORED_ADDITIONAL_DAYS_AWARDED)
     private val ADJUSTMENT_FUTURE_DATED_MAP = mapOf(
       ADDITIONAL_DAYS_AWARDED to ADJUSTMENT_FUTURE_DATED_ADA,
       UNLAWFULLY_AT_LARGE to ADJUSTMENT_FUTURE_DATED_UAL,
