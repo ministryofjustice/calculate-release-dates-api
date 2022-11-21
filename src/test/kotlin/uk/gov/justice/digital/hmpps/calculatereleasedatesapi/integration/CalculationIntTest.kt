@@ -866,12 +866,12 @@ class CalculationIntTest : IntegrationTestBase() {
     private const val ERROR_MESSAGE_STRING = """The validation has failed with errors:
     The offence date for court case 1 count 1 must be before the sentence date.
     The offence date range for court case 1 count 2 must be before the sentence date.
-    The calculation must include an offence date for court case 2 count 1.
+    Court case 2 count 1 must include an offence date.
     Court case 2 count 1 must include an imprisonment term greater than zero.
     Court case 2 count 2 must only have one term in NOMIS.
     The sentence type for court case 2 count 4 is invalid for the sentence date entered.
     The sentence type for court case 2 count 4 is invalid for the sentence date entered.
-    There are multiple sentences that are consecutive to court case 2 count 2. A sentence should only have one other sentence consecutive to it.
+    Court case 2 count 2 has multiple sentences that have been made consecutive to it. A sentence should only have one other sentence consecutive to it.
     Remand periods must have a from and to date.
     Remand periods must have a from and to date.
     The from date for Additional days awarded (ADA) should be the date of the adjudication hearing.

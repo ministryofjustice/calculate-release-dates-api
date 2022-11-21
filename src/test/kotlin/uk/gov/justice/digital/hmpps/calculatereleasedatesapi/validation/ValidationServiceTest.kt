@@ -202,8 +202,8 @@ class ValidationServiceTest {
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR),
-        ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR)
+        ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, arguments = listOf("1", "2")),
+        ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, arguments = listOf("1", "2"))
       )
     )
   }
