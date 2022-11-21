@@ -325,7 +325,7 @@ class ValidationService(
         val endOfEightYears = sentencesAndOffence.sentenceDate.plusYears(8)
 
         if (endOfDuration.isBefore(endOfOneYear)) {
-          validationMessages.add(ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR))
+          validationMessages.add(ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, getCaseSeqAndLineSeq(sentencesAndOffence)))
         } else if (endOfDuration.isAfter(endOfEightYears)) {
           validationMessages.add(
             ValidationMessage(
