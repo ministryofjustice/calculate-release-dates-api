@@ -138,7 +138,7 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubGetReturnToCustody(bookingId: Long, json: String): StubMapping =
     stubFor(
-      get("/api/bookings/$bookingId/return-to-custody")
+      get("/api/bookings/$bookingId/fixed-term-recall")
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
