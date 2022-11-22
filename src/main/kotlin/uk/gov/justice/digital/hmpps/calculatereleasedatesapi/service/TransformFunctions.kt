@@ -63,10 +63,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
@@ -566,3 +568,9 @@ fun transform(booking: Booking): SentenceDiagram {
     rows = adjustmentRows + sentenceRows
   )
 }
+
+fun transform(fixedTermRecallDetails: FixedTermRecallDetails): ReturnToCustodyDate =
+  ReturnToCustodyDate(
+    bookingId = fixedTermRecallDetails.bookingId,
+    returnToCustodyDate = fixedTermRecallDetails.returnToCustodyDate,
+  )

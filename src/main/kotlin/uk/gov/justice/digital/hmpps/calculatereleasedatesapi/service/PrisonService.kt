@@ -35,7 +35,8 @@ class PrisonService(
     val bookingHasFixedTermRecall = sentenceAndOffences.any { SentenceCalculationType.from(it.sentenceCalculationType)?.recallType?.isFixedTermRecall == true }
     var returnToCustodyDate: ReturnToCustodyDate? = null
     if (bookingHasFixedTermRecall) {
-      returnToCustodyDate = prisonApiClient.getReturnToCustodyDate(prisonerDetails.bookingId)
+      // TODO look into replacing ReturnToCustodyDate object with FixedTermRecallDetails
+      returnToCustodyDate = transform(prisonApiClient.getFixedTermRecallDetails(prisonerDetails.bookingId))
     }
     val bookingHasAFine = sentenceAndOffences.any { SentenceCalculationType.from(it.sentenceCalculationType)?.sentenceClazz == AFineSentence::class.java }
     var offenderFinePayments: List<OffenderFinePayment> = listOf()
@@ -51,7 +52,8 @@ class PrisonService(
     val bookingHasFixedTermRecall = sentenceAndOffences.any { SentenceCalculationType.from(it.sentenceCalculationType)?.recallType?.isFixedTermRecall == true }
     var returnToCustodyDate: ReturnToCustodyDate? = null
     if (bookingHasFixedTermRecall) {
-      returnToCustodyDate = prisonApiClient.getReturnToCustodyDate(prisonerDetails.bookingId)
+      // TODO look into replacing ReturnToCustodyDate object with FixedTermRecallDetails
+      returnToCustodyDate = transform(prisonApiClient.getFixedTermRecallDetails(prisonerDetails.bookingId))
     }
     val bookingHasAFine = sentenceAndOffences.any { SentenceCalculationType.from(it.sentenceCalculationType)?.sentenceClazz == AFineSentence::class.java }
     var offenderFinePayments: List<OffenderFinePayment> = listOf()
