@@ -6,9 +6,9 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 
@@ -44,12 +44,12 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .block()!!
   }
 
-  fun getReturnToCustodyDate(bookingId: Long): ReturnToCustodyDate {
-    log.info("Requesting return to custody date for bookingId $bookingId")
+  fun getFixedTermRecallDetails(bookingId: Long): FixedTermRecallDetails {
+    log.info("Requesting return to fixed term recall details for bookingId $bookingId")
     return webClient.get()
-      .uri("/api/bookings/$bookingId/return-to-custody")
+      .uri("/api/bookings/$bookingId/fixed-term-recall")
       .retrieve()
-      .bodyToMono(typeReference<ReturnToCustodyDate>())
+      .bodyToMono(typeReference<FixedTermRecallDetails>())
       .block()!!
   }
 
