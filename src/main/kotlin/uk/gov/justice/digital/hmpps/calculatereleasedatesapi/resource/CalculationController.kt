@@ -240,8 +240,7 @@ class CalculationController(
     calculationRequestId: Long,
   ): CalculationBreakdown {
     log.info("Request received return calculation breakdown for calculationRequestId {}", calculationRequestId)
-    val a = bookingService.getCalculationBreakdown(calculationRequestId)
-    return a
+    return bookingService.getCalculationBreakdown(calculationRequestId)
   }
 
   @GetMapping(value = ["/diagram/{calculationRequestId}"])
