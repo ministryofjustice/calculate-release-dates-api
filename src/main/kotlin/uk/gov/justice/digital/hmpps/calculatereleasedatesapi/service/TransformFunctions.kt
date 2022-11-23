@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.vladmihalcea.hibernate.type.json.internal.JacksonUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
@@ -320,24 +321,27 @@ fun transform(
     adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments, objectMapper),
     offenderFinePayments = objectToJson(sourceData.offenderFinePayments, objectMapper),
     returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
-    calculationRequestUserInputs = transform(calculationUserInputs, sourceData),
+    calculationRequestUserInput = transform(calculationUserInputs, sourceData),
     breakdownHtml = calculationFragments?.breakdownHtml
   )
 }
 
-fun transform(calculationUserInputs: CalculationUserInputs?, sourceData: PrisonApiSourceData): List<CalculationRequestUserInput> {
+fun transform(calculationUserInputs: CalculationUserInputs?, sourceData: PrisonApiSourceData): CalculationRequestUserInput? {
   if (calculationUserInputs == null) {
-    return emptyList()
+    return null
   }
-  return calculationUserInputs.sentenceCalculationUserInputs.map {
-    CalculationRequestUserInput(
-      sentenceSequence = it.sentenceSequence,
-      offenceCode = it.offenceCode,
-      type = it.userInputType,
-      userChoice = it.userChoice,
-      nomisMatches = sourceData.sentenceAndOffences.any { sentence -> sentence.sentenceSequence == it.sentenceSequence && sentence.offences.any { offence -> offence.offenceCode == it.offenceCode && offenceMatchesChoice(offence, it.userInputType, it.userChoice) } }
-    )
-  }
+  return CalculationRequestUserInput(
+    calculateErsed = calculationUserInputs.calculateErsed,
+    calculationRequestSentenceUserInputs = calculationUserInputs.sentenceCalculationUserInputs.map {
+      CalculationRequestSentenceUserInput(
+        sentenceSequence = it.sentenceSequence,
+        offenceCode = it.offenceCode,
+        type = it.userInputType,
+        userChoice = it.userChoice,
+        nomisMatches = sourceData.sentenceAndOffences.any { sentence -> sentence.sentenceSequence == it.sentenceSequence && sentence.offences.any { offence -> offence.offenceCode == it.offenceCode && offenceMatchesChoice(offence, it.userInputType, it.userChoice) } }
+      )
+    }
+  )
 }
 
 fun offenceMatchesChoice(offence: OffenderOffence, userInputType: UserInputType, userChoice: Boolean): Boolean {
@@ -349,12 +353,13 @@ fun offenceMatchesChoice(offence: OffenderOffence, userInputType: UserInputType,
   }
 }
 
-fun transform(calculationRequestUserInputs: List<CalculationRequestUserInput>): CalculationUserInputs? {
-  if (calculationRequestUserInputs.isEmpty()) {
+fun transform(calculationRequestUserInput: CalculationRequestUserInput?): CalculationUserInputs? {
+  if (calculationRequestUserInput == null) {
     return null
   }
   return CalculationUserInputs(
-    calculationRequestUserInputs.map {
+    calculateErsed = calculationRequestUserInput.calculateErsed,
+    sentenceCalculationUserInputs = calculationRequestUserInput.calculationRequestSentenceUserInputs.map {
       CalculationSentenceUserInput(
         sentenceSequence = it.sentenceSequence,
         offenceCode = it.offenceCode,

@@ -28,7 +28,8 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
   @Transactional(readOnly = true)
   fun `Use a user input that differs from NOMIS and check its persisted through prelim, confirmed and view`() {
     val userInput = CalculationUserInputs(
-      listOf(
+      calculateErsed = true,
+      sentenceCalculationUserInputs = listOf(
         CalculationSentenceUserInput(
           sentenceSequence = 1,
           offenceCode = "SX03014",
@@ -79,16 +80,19 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
     assertThat(userInputResponse).isEqualTo(userInput)
 
     val dbRequest = calculationRequestRepository.findById(confirmResponse.calculationRequestId).get()
-    assertThat(dbRequest.calculationRequestUserInputs).isNotEmpty
-    assertThat(dbRequest.calculationRequestUserInputs[0].nomisMatches).isFalse
-    assertThat(dbRequest.calculationRequestUserInputs[0].userChoice).isFalse
+    assertThat(dbRequest.calculationRequestUserInput).isNotNull
+    assertThat(dbRequest.calculationRequestUserInput!!.calculateErsed).isTrue
+    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs).isNotEmpty
+    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].nomisMatches).isFalse
+    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].userChoice).isFalse
   }
 
   @Test
   @Transactional(readOnly = true)
   fun `Use a user input that is the same as NOMIS`() {
     val userInput = CalculationUserInputs(
-      listOf(
+      calculateErsed = false,
+      sentenceCalculationUserInputs = listOf(
         CalculationSentenceUserInput(
           sentenceSequence = 1,
           offenceCode = "SX03014",
@@ -113,9 +117,12 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
     assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2030, 1, 9))
 
     val dbRequest = calculationRequestRepository.findById(prelimResponse.calculationRequestId).get()
-    assertThat(dbRequest.calculationRequestUserInputs).isNotEmpty
-    assertThat(dbRequest.calculationRequestUserInputs[0].nomisMatches).isTrue
-    assertThat(dbRequest.calculationRequestUserInputs[0].userChoice).isTrue
+
+    assertThat(dbRequest.calculationRequestUserInput).isNotNull
+    assertThat(dbRequest.calculationRequestUserInput!!.calculateErsed).isFalse
+    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs).isNotEmpty
+    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].nomisMatches).isTrue
+    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].userChoice).isTrue
   }
 
   @Test

@@ -19,6 +19,7 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.OneToMany
+import javax.persistence.OneToOne
 import javax.persistence.Table
 import javax.validation.constraints.NotNull
 
@@ -91,12 +92,12 @@ data class CalculationRequest(
   @Fetch(FetchMode.JOIN)
   val calculationOutcomes: List<CalculationOutcome> = ArrayList(),
 
-  @OneToMany(mappedBy = "calculationRequest", cascade = [CascadeType.ALL])
-  val calculationRequestUserInputs: List<CalculationRequestUserInput> = ArrayList()
+  @OneToOne(mappedBy = "calculationRequest", cascade = [CascadeType.ALL])
+  val calculationRequestUserInput: CalculationRequestUserInput? = null
 ) {
 
   init {
-    calculationRequestUserInputs.forEach { it.calculationRequest = this }
+    calculationRequestUserInput?.calculationRequest = this
   }
 
   @Override
