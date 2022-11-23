@@ -13,7 +13,7 @@ CREATE TABLE calculation_request_user_input
 
 
 INSERT INTO calculation_request_user_input(calculation_request_id)
-SELECT calculation_request_id FROM calculation_request_sentence_user_input;
+SELECT DISTINCT calculation_request_id FROM calculation_request_sentence_user_input;
 
 ALTER TABLE calculation_request_sentence_user_input ADD COLUMN calculation_request_user_input_id integer NOT NULL references calculation_request_user_input (id);
 
