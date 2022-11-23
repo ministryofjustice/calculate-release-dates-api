@@ -250,7 +250,6 @@ class CalculationControllerTest {
   fun `Test GET of calculation breakdown by calculationRequestId`() {
     val calculationRequestId = 9995L
     val breakdown = CalculationBreakdown(listOf(), null)
-0
     whenever(bookingService.getCalculationBreakdown(calculationRequestId)).thenReturn(breakdown)
 
     val result = mvc.perform(get("/calculation/breakdown/$calculationRequestId").accept(APPLICATION_JSON))

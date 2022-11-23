@@ -6,9 +6,6 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.whenever
-import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
@@ -415,7 +412,6 @@ class BookingServiceTest {
     whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(calculation)
     whenever(calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)).thenReturn(sentences)
     whenever(calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId)).thenReturn(prisonerDetails)
-    whenever(calculationTransactionalService.findOffenderFinePaymentsFromCalculation(calculationRequestId)).thenReturn(offenderFineFinePayment) // TODO
     whenever(calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)).thenReturn(adjustments)
     whenever(calculationTransactionalService.findUserInput(calculationRequestId)).thenReturn(userInput)
     whenever(calculationTransactionalService.calculateWithBreakdown(booking, calculation)).thenReturn(breakdown)

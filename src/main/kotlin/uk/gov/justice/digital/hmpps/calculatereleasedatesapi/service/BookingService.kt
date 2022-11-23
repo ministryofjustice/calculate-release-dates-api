@@ -18,7 +18,12 @@ class BookingService(
     val prisonerDetails = prisonApiSourceData.prisonerDetails
     val sentenceAndOffences = prisonApiSourceData.sentenceAndOffences
     val bookingAndSentenceAdjustments = prisonApiSourceData.bookingAndSentenceAdjustments
-    validate(prisonApiSourceData)
+    val validationMessages = validationService.validate(prisonApiSourceData)
+    if (validationMessages.isNotEmpty()) {
+      var message = "The validation has failed with errors:"
+      validationMessages.forEach { message += "\n    " + it.message }
+      throw ValidationException(message)
+    }
     val offender = transform(prisonerDetails)
     val adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences)
     val sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) }.flatten()
@@ -35,44 +40,19 @@ class BookingService(
   fun getCalculationBreakdown(
     calculationRequestId: Long
   ): CalculationBreakdown {
-    val sourceData = getSourceData(calculationRequestId)
-    val booking = getBookingForBreakdown(
-      sourceData,
-      calculationRequestId,
-      calculationTransactionalService.findUserInput(calculationRequestId)
-    )
+    val calculationUserInputs = calculationTransactionalService.findUserInput(calculationRequestId)
+    val prisonerDetails = calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId)
+    val sentenceAndOffences = calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)
+    val bookingAndSentenceAdjustments = calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
+    val returnToCustodyDate = calculationTransactionalService.findReturnToCustodyDateFromCalculation(calculationRequestId)
     val calculation = calculationTransactionalService.findCalculationResults(calculationRequestId)
+    val booking = Booking(
+      offender = transform(prisonerDetails),
+      sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) }.flatten(),
+      adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
+      bookingId = prisonerDetails.bookingId,
+      returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate
+    )
     return calculationTransactionalService.calculateWithBreakdown(booking, calculation)
-  }
-
-  private fun getBookingForBreakdown(
-    sourceData: PrisonApiSourceData,
-    calculationRequestId: Long,
-    calculationUserInputs: CalculationUserInputs?,
-  ): Booking = Booking(
-      offender = transform(sourceData.prisonerDetails),
-      sentences = sourceData.sentenceAndOffences.map { transform(it, calculationUserInputs) }.flatten(),
-      adjustments = transform(sourceData.bookingAndSentenceAdjustments, sourceData.sentenceAndOffences),
-      bookingId = sourceData.prisonerDetails.bookingId,
-      returnToCustodyDate = calculationTransactionalService.findReturnToCustodyDateFromCalculation(calculationRequestId)?.returnToCustodyDate
-    )
-
-  private fun getSourceData(calculationRequestId: Long): PrisonApiSourceData =
-    PrisonApiSourceData(
-      sentenceAndOffences = calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId),
-      prisonerDetails = calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId),
-      bookingAndSentenceAdjustments = calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(
-        calculationRequestId
-      ),
-      returnToCustodyDate = calculationTransactionalService.findReturnToCustodyDateFromCalculation(calculationRequestId),
-    )
-
-  private fun validate(prisonApiSourceData: PrisonApiSourceData) {
-    val validationMessages = validationService.validate(prisonApiSourceData)
-    if (validationMessages.isNotEmpty()) {
-      var message = "The validation has failed with errors:"
-      validationMessages.forEach { message += "\n    " + it.message }
-      throw ValidationException(message)
-    }
   }
 }
