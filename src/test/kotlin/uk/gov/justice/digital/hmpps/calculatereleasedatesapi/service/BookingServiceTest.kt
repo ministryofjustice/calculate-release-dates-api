@@ -43,7 +43,8 @@ import java.util.UUID
 
 class BookingServiceTest {
   private val validationService = mock<ValidationService>()
-  private val bookingService = BookingService(validationService)
+  private val calculationTransactionalService = mock<CalculationTransactionalService>()
+  private val bookingService = BookingService(validationService, calculationTransactionalService)
 
   val prisonerId = "A123456A"
   val sequence = 153

@@ -240,16 +240,8 @@ class CalculationController(
     calculationRequestId: Long,
   ): CalculationBreakdown {
     log.info("Request received return calculation breakdown for calculationRequestId {}", calculationRequestId)
-    val sentencesAndOffences = calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)
-    val prisonerDetails = calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId)
-    val adjustments = calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
-    val returnToCustodyDate = calculationTransactionalService.findReturnToCustodyDateFromCalculation(calculationRequestId)
-    val offenderFinePayments = calculationTransactionalService.findOffenderFinePaymentsFromCalculation(calculationRequestId)
-    val calculation = calculationTransactionalService.findCalculationResults(calculationRequestId)
-    val userInput = calculationTransactionalService.findUserInput(calculationRequestId)
-    val sourceData = PrisonApiSourceData(sentencesAndOffences, prisonerDetails, adjustments, offenderFinePayments, returnToCustodyDate)
-
-    return calculationTransactionalService.calculateWithBreakdown(bookingService.getBooking(sourceData, userInput), calculation)
+    val a = bookingService.getCalculationBreakdown(calculationRequestId)
+    return a
   }
 
   @GetMapping(value = ["/diagram/{calculationRequestId}"])
