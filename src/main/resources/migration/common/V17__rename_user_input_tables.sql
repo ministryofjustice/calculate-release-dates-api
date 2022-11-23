@@ -26,3 +26,6 @@ UPDATE calculation_request_sentence_user_input sentence_user_input
 SET sentence_user_input.calculation_request_user_input_id = user_input.id
 FROM calculation_request_user_input user_input
 WHERE sentence_user_input.calculation_request_id = sentence_user_input.calculation_request_id;
+
+-- We no longer need the calculation_request_id on the old table. However it won't be dropped until migration is successful.
+ALTER TABLE calculation_request_sentence_user_input ALTER COLUMN calculation_request_id DROP NOT NULL;
