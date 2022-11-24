@@ -19,13 +19,15 @@ INSERT INTO calculation_request_user_input(calculation_request_id)
 SELECT DISTINCT calculation_request_id FROM calculation_request_sentence_user_input;
 
 -- Add column to link the sentence user inputs to new table.
-ALTER TABLE calculation_request_sentence_user_input ADD COLUMN calculation_request_user_input_id integer NOT NULL references calculation_request_user_input (id);
+ALTER TABLE calculation_request_sentence_user_input ADD COLUMN calculation_request_user_input_id integer references calculation_request_user_input (id);
 
 -- Set the new column to match data from old table to new up.
 UPDATE calculation_request_sentence_user_input sentence_user_input
 SET sentence_user_input.calculation_request_user_input_id = (select user_input.id
 FROM calculation_request_user_input user_input
 WHERE sentence_user_input.calculation_request_id = user_input.calculation_request_id);
+
+ALTER TABLE calculation_request_sentence_user_input ALTER COLUMN calculation_request_user_input_id SET NOT NULL;
 
 -- We no longer need the calculation_request_id on the old table. However it won't be dropped until migration is successful.
 ALTER TABLE calculation_request_sentence_user_input ALTER COLUMN calculation_request_id DROP NOT NULL;
