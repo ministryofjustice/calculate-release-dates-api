@@ -112,7 +112,7 @@ class CalculationTransactionalService(
   @Transactional(readOnly = true)
   fun findUserInput(calculationRequestId: Long): CalculationUserInputs? {
     val calculationRequest = getCalculationRequest(calculationRequestId)
-    return transform(calculationRequest.calculationRequestUserInputs)
+    return transform(calculationRequest.calculationRequestUserInput)
   }
 
   @Transactional(readOnly = true)
