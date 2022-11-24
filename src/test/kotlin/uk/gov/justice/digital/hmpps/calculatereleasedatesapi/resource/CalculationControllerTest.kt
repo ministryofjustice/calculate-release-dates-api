@@ -248,26 +248,9 @@ class CalculationControllerTest {
 
   @Test
   fun `Test GET of calculation breakdown by calculationRequestId`() {
-    val prisonerId = "A1234AB"
     val calculationRequestId = 9995L
-    val bookingId = 9995L
-    val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
-    val booking = Booking(offender, mutableListOf(), Adjustments(), null, bookingId)
     val breakdown = CalculationBreakdown(listOf(), null)
-    val calculation = CalculatedReleaseDates(
-      calculationRequestId = 9991L, dates = mapOf(), calculationStatus = PRELIMINARY,
-      bookingId = bookingId, prisonerId = prisonerId
-    )
-    val userInput = CalculationUserInputs(listOf(CalculationSentenceUserInput(1, "ABC", UserInputType.ORIGINAL, true)))
-
-    whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(calculation)
-    whenever(calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)).thenReturn(sentences)
-    whenever(calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId)).thenReturn(prisonerDetails)
-    whenever(calculationTransactionalService.findOffenderFinePaymentsFromCalculation(calculationRequestId)).thenReturn(offenderFineFinePayment)
-    whenever(calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)).thenReturn(adjustments)
-    whenever(calculationTransactionalService.findUserInput(calculationRequestId)).thenReturn(userInput)
-    whenever(bookingService.getBooking(sourceData, userInput)).thenReturn(booking)
-    whenever(calculationTransactionalService.calculateWithBreakdown(booking, calculation)).thenReturn(breakdown)
+    whenever(bookingService.getCalculationBreakdown(calculationRequestId)).thenReturn(breakdown)
 
     val result = mvc.perform(get("/calculation/breakdown/$calculationRequestId").accept(APPLICATION_JSON))
       .andExpect(status().isOk)
