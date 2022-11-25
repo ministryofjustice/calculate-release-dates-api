@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.DPRRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ETD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
@@ -475,6 +476,7 @@ fun transform(calculation: CalculatedReleaseDates) =
     paroleEligibilityDate = calculation.dates[PED],
     postRecallReleaseDate = calculation.dates[PRRD],
     topupSupervisionExpiryDate = calculation.dates[TUSED],
+    earlyRemovalSchemeEligibilityDate = calculation.dates[ERSED],
     effectiveSentenceEndDate = calculation.dates[ESED],
     sentenceLength = String.format(
       "%02d/%02d/%02d",

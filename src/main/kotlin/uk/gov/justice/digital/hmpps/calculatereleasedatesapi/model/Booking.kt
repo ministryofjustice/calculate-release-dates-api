@@ -9,6 +9,7 @@ data class Booking(
   val adjustments: Adjustments = Adjustments(),
   val returnToCustodyDate: LocalDate? = null,
   val bookingId: Long = -1L,
+  val calculateErsed: Boolean = false
 ) {
   @JsonIgnore
   @Transient

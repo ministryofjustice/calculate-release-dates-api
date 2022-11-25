@@ -29,7 +29,8 @@ data class SentenceCalculation(
   var adjustmentsBefore: LocalDate,
   var adjustmentsAfter: LocalDate? = null,
   val returnToCustodyDate: LocalDate? = null,
-  val numberOfDaysToParoleEligibilityDate: Long? = null
+  val numberOfDaysToParoleEligibilityDate: Long? = null,
+  val numberOfDaysToErsed: Int? = null
 ) {
 
   fun getAdjustmentBeforeSentence(vararg adjustmentTypes: AdjustmentType): Int {
@@ -170,6 +171,18 @@ data class SentenceCalculation(
       .minusDays(calculatedTotalDeductedDays.toLong())
       .plusDays(calculatedTotalAwardedDays.toLong())
   }
+
+  val earlyReleaseSchemeEligibilityDate: LocalDate? get() {
+    if (numberOfDaysToErsed == null) {
+      return null
+    }
+    return sentence.sentencedAt
+      .plusDays(numberOfDaysToErsed.toLong())
+      .plusDays(calculatedTotalAddedDays.toLong())
+      .minusDays(calculatedTotalDeductedDays.toLong())
+      .plusDays(calculatedTotalAwardedDays.toLong())
+  }
+
 
   // Licence Expiry Date (LED)
   var numberOfDaysToLicenceExpiryDate: Long = 0

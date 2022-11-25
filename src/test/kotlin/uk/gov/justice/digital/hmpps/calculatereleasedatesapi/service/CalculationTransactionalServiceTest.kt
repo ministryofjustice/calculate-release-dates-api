@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
@@ -108,6 +109,11 @@ class CalculationTransactionalServiceTest {
     listOf(),
     null
   )
+
+  @Test
+  fun blah() {
+    `Test Example`("custom-examples", "crs-1059-single-ersed-ac3", null)
+  }
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
@@ -309,6 +315,7 @@ class CalculationTransactionalServiceTest {
         dates = mutableMapOf(
           CRD to CALCULATION_OUTCOME_CRD.outcomeDate,
           SED to THIRD_FEB_2021,
+          ERSED to FIFTH_APRIL_2021,
           ESED to ESED_DATE
         ),
         effectiveSentenceLength = Period.of(6, 2, 3)
@@ -321,6 +328,7 @@ class CalculationTransactionalServiceTest {
         keyDates = OffenderKeyDates(
           conditionalReleaseDate = THIRD_FEB_2021,
           sentenceExpiryDate = THIRD_FEB_2021,
+          earlyRemovalSchemeEligibilityDate = FIFTH_APRIL_2021,
           effectiveSentenceEndDate = ESED_DATE,
           sentenceLength = "06/02/03"
         )
@@ -400,6 +408,7 @@ class CalculationTransactionalServiceTest {
       .build()
     private val CALCULATION_REFERENCE: UUID = UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5")
     private val THIRD_FEB_2021 = LocalDate.of(2021, 2, 3)
+    private val FIFTH_APRIL_2021 = LocalDate.of(2021, 4, 5)
     private val CALCULATION_OUTCOME_CRD = CalculationOutcome(
       calculationDateType = CRD.name,
       outcomeDate = THIRD_FEB_2021,
@@ -417,7 +426,7 @@ class CalculationTransactionalServiceTest {
 
     val INPUT_DATA: JsonNode =
       JacksonUtil.toJsonNode(
-        "{\"offender\":{\"reference\":\"A1234AJ\",\"dateOfBirth\":\"1980-01-01\",\"isActiveSexOffender\":false}," +
+        "{\"calculateErsed\": false, \"offender\":{\"reference\":\"A1234AJ\",\"dateOfBirth\":\"1980-01-01\",\"isActiveSexOffender\":false}," +
           "\"sentences\":[{\"type\":\"StandardSentence\",\"offence\":{\"committedAt\":\"2021-02-03\"," +
           "\"isScheduleFifteen\":false,\"isScheduleFifteenMaximumLife\":false,\"isPcscSds\":false,\"isPcscSec250\":false," +
           "\"isPcscSdsPlus\":false,\"offenceCode\":null},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}}," +
