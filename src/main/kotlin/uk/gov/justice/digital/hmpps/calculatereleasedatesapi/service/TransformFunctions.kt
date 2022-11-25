@@ -335,7 +335,7 @@ fun transform(calculationUserInputs: CalculationUserInputs?, sourceData: PrisonA
   }
   return CalculationRequestUserInput(
     calculateErsed = calculationUserInputs.calculateErsed,
-    calculationRequestSentenceUserInputs = calculationUserInputs.sentenceCalculationUserInputs.map {
+    calculationRequestSentenceUserInputs = if (calculationUserInputs.sentenceCalculationUserInputs == null) listOf() else calculationUserInputs.sentenceCalculationUserInputs.map {
       CalculationRequestSentenceUserInput(
         sentenceSequence = it.sentenceSequence,
         offenceCode = it.offenceCode,
@@ -356,9 +356,9 @@ fun offenceMatchesChoice(offence: OffenderOffence, userInputType: UserInputType,
   }
 }
 
-fun transform(calculationRequestUserInput: CalculationRequestUserInput?): CalculationUserInputs? {
+fun transform(calculationRequestUserInput: CalculationRequestUserInput?): CalculationUserInputs {
   if (calculationRequestUserInput == null) {
-    return null
+    return CalculationUserInputs()
   }
   return CalculationUserInputs(
     calculateErsed = calculationRequestUserInput.calculateErsed,

@@ -115,7 +115,7 @@ class CalculationControllerTest {
       bookingId = bookingId, prisonerId = prisonerId
     )
     whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(sourceData)
-    whenever(bookingService.getBooking(sourceData, null)).thenReturn(booking)
+    whenever(bookingService.getBooking(sourceData, CalculationUserInputs())).thenReturn(booking)
     whenever(calculationTransactionalService.calculate(booking, PRELIMINARY, sourceData, null)).thenReturn(calculatedReleaseDates)
 
     val result = mvc.perform(post("/calculation/$prisonerId").accept(APPLICATION_JSON))
@@ -169,10 +169,10 @@ class CalculationControllerTest {
       calculationRequestId = 9991L, dates = mapOf(), calculationStatus = PRELIMINARY,
       bookingId = bookingId, prisonerId = prisonerId
     )
-    whenever(calculationTransactionalService.findUserInput(calculationRequestId)).thenReturn(null)
+    whenever(calculationTransactionalService.findUserInput(calculationRequestId)).thenReturn(CalculationUserInputs())
     whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(sourceData)
-    whenever(bookingService.getBooking(sourceData, null)).thenReturn(booking)
-    whenever(calculationTransactionalService.calculate(booking, CONFIRMED, sourceData, null, calculationFragments)).thenReturn(calculatedReleaseDates)
+    whenever(bookingService.getBooking(sourceData, CalculationUserInputs())).thenReturn(booking)
+    whenever(calculationTransactionalService.calculate(booking, CONFIRMED, sourceData, CalculationUserInputs(), calculationFragments)).thenReturn(calculatedReleaseDates)
 
     val result = mvc.perform(
       post("/calculation/$prisonerId/confirm/$calculationRequestId")
@@ -185,7 +185,7 @@ class CalculationControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
-    verify(calculationTransactionalService, times(1)).calculate(booking, CONFIRMED, sourceData, null, calculationFragments)
+    verify(calculationTransactionalService, times(1)).calculate(booking, CONFIRMED, sourceData, CalculationUserInputs(), calculationFragments)
     verify(calculationTransactionalService, times(1)).writeToNomisAndPublishEvent(prisonerId, booking, calculatedReleaseDates)
   }
 
@@ -201,10 +201,10 @@ class CalculationControllerTest {
       calculationRequestId = 9991L, dates = mapOf(), calculationStatus = PRELIMINARY,
       bookingId = bookingId, prisonerId = prisonerId
     )
-    whenever(calculationTransactionalService.findUserInput(calculationRequestId)).thenReturn(null)
+    whenever(calculationTransactionalService.findUserInput(calculationRequestId)).thenReturn(CalculationUserInputs())
     whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(sourceData)
-    whenever(bookingService.getBooking(sourceData, null)).thenReturn(booking)
-    whenever(calculationTransactionalService.calculate(booking, CONFIRMED, sourceData, null)).thenReturn(calculatedReleaseDates)
+    whenever(bookingService.getBooking(sourceData, CalculationUserInputs())).thenReturn(booking)
+    whenever(calculationTransactionalService.calculate(booking, CONFIRMED, sourceData, CalculationUserInputs())).thenReturn(calculatedReleaseDates)
     whenever(calculationTransactionalService.validateConfirmationRequest(any(), any())).then {
       throw PreconditionFailedException(
         "The booking data used for the preliminary calculation has changed"
