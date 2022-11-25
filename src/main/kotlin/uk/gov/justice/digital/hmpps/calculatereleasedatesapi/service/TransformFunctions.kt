@@ -93,7 +93,7 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
   // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
   // treated as a separate sentence
   return sentence.offences.map { offendersOffence ->
-    val offence = if (calculationUserInputs != null) {
+    val offence = if (calculationUserInputs?.sentenceCalculationUserInputs != null) {
       val matchingSentenceInput = calculationUserInputs.sentenceCalculationUserInputs.find {
         it.sentenceSequence == sentence.sentenceSequence && it.offenceCode == offendersOffence.offenceCode
       }
