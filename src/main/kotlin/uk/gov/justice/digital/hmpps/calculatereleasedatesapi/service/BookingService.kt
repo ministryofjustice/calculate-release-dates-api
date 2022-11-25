@@ -33,7 +33,8 @@ class BookingService(
       sentences = sentences,
       adjustments = adjustments,
       bookingId = prisonerDetails.bookingId,
-      returnToCustodyDate = prisonApiSourceData.returnToCustodyDate?.returnToCustodyDate
+      returnToCustodyDate = prisonApiSourceData.returnToCustodyDate?.returnToCustodyDate,
+      calculateErsed = calculationUserInputs?.calculateErsed ?: false
     )
   }
 
@@ -51,7 +52,8 @@ class BookingService(
       sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) }.flatten(),
       adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
       bookingId = prisonerDetails.bookingId,
-      returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate
+      returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,
+      calculateErsed = calculationUserInputs?.calculateErsed ?: false
     )
     return calculationTransactionalService.calculateWithBreakdown(booking, calculation)
   }
