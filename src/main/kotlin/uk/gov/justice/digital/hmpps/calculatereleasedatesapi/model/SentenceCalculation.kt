@@ -183,7 +183,6 @@ data class SentenceCalculation(
       .plusDays(calculatedTotalAwardedDays.toLong())
   }
 
-
   // Licence Expiry Date (LED)
   var numberOfDaysToLicenceExpiryDate: Long = 0
   private var _licenceExpiryDate: LocalDate? = null

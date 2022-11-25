@@ -215,7 +215,6 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
     }
     var numberOfDaysToErsed: Int? = null
 
-
     if (booking.calculateErsed) {
       if (sentence.identificationTrack.calculateErsedFromHalfway()) {
         numberOfDaysToErsed = calculateErsedFromHalfway(sentence, numberOfDaysToReleaseDate, numberOfDaysToParoleEligibilityDate)
@@ -244,7 +243,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
     val days = custodialDuration.getLengthInDays(sentence.sentencedAt)
     if (days >= 1097) {
       val ersed = sentence.sentencedAt
-        .plusDays(ceil(days.toDouble().times( 2 / 3.toDouble())).toLong())
+        .plusDays(ceil(days.toDouble().times(2 / 3.toDouble())).toLong())
         .minusDays(1)
         .minusYears(1)
       return DAYS.between(sentence.sentencedAt, ersed).toInt()

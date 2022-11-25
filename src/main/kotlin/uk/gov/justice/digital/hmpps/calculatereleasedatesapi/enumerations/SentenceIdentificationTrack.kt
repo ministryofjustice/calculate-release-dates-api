@@ -21,5 +21,3 @@ enum class SentenceIdentificationTrack {
     return listOf(SDS_TWO_THIRDS_RELEASE, EDS_AUTOMATIC_RELEASE, EDS_DISCRETIONARY_RELEASE, SOPC_PED_AT_TWO_THIRDS).contains(this)
   }
 }
-
-
