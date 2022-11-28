@@ -75,7 +75,7 @@ class CalculationController(
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
-    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    val booking = bookingService.getBooking(sourceData, calculationUserInputs ?: CalculationUserInputs())
     try {
       return calculationTransactionalService.calculate(booking, PRELIMINARY, sourceData, calculationUserInputs)
     } catch (error: Exception) {
@@ -108,7 +108,7 @@ class CalculationController(
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
     val sourceData = prisonService.getPrisonApiSourceDataIncludingInactive(prisonerId)
-    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    val booking = bookingService.getBooking(sourceData, calculationUserInputs ?: CalculationUserInputs())
     try {
       return calculationTransactionalService.calculate(booking, TEST, sourceData, calculationUserInputs)
     } catch (error: Exception) {
@@ -301,7 +301,7 @@ class CalculationController(
     val validationMessages = validationService.validate(sourceData)
     if (validationMessages.isEmpty()) {
       try {
-        val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+        val booking = bookingService.getBooking(sourceData, calculationUserInputs ?: CalculationUserInputs())
         calculationService.calculateReleaseDates(booking)
       } catch (validationException: CrdCalculationValidationException) {
         return listOf(ValidationMessage(validationException.validation))

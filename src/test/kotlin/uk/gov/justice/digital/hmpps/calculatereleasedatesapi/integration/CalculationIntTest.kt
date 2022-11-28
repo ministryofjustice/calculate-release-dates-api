@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
@@ -734,7 +735,8 @@ class CalculationIntTest : IntegrationTestBase() {
   @Test
   fun `Run calculation on a PCSC section 250`() {
     val userInput = CalculationUserInputs(
-      listOf(
+      calculateErsed = true,
+      sentenceCalculationUserInputs = listOf(
         CalculationSentenceUserInput(
           sentenceSequence = 1,
           offenceCode = "SX03013A",
@@ -757,6 +759,9 @@ class CalculationIntTest : IntegrationTestBase() {
 
     assertThat(calculation.dates[CRD]).isEqualTo(
       LocalDate.of(2027, 2, 26)
+    )
+    assertThat(calculation.dates[ERSED]).isEqualTo(
+      LocalDate.of(2026, 2, 26)
     )
   }
 

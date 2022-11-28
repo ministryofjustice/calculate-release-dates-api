@@ -130,7 +130,7 @@ class BookingServiceTest {
   fun `A booking object is generated correctly when requesting a booking for a prisonerId`() {
     whenever(validationService.validate(sourceData)).thenReturn(emptyList())
 
-    val result = bookingService.getBooking(sourceData, null)
+    val result = bookingService.getBooking(sourceData, CalculationUserInputs())
 
     assertThat(result).isEqualTo(
       Booking(

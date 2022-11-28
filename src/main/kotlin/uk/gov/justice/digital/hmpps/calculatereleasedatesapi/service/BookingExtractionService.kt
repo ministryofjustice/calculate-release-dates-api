@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
@@ -85,6 +86,10 @@ class BookingExtractionService(
 
     if (sentenceCalculation.extendedDeterminateParoleEligibilityDate != null) {
       dates[PED] = sentenceCalculation.extendedDeterminateParoleEligibilityDate!!
+    }
+
+    if (sentenceCalculation.earlyReleaseSchemeEligibilityDate != null) {
+      dates[ERSED] = sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
     }
 
     dates[ESED] = sentenceCalculation.unadjustedExpiryDate

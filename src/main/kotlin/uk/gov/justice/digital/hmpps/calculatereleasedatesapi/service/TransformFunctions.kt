@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.DPRRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ETD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
@@ -92,7 +93,7 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
   // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
   // treated as a separate sentence
   return sentence.offences.map { offendersOffence ->
-    val offence = if (calculationUserInputs != null) {
+    val offence = if (calculationUserInputs?.sentenceCalculationUserInputs != null) {
       val matchingSentenceInput = calculationUserInputs.sentenceCalculationUserInputs.find {
         it.sentenceSequence == sentence.sentenceSequence && it.offenceCode == offendersOffence.offenceCode
       }
@@ -334,7 +335,7 @@ fun transform(calculationUserInputs: CalculationUserInputs?, sourceData: PrisonA
   }
   return CalculationRequestUserInput(
     calculateErsed = calculationUserInputs.calculateErsed,
-    calculationRequestSentenceUserInputs = calculationUserInputs.sentenceCalculationUserInputs.map {
+    calculationRequestSentenceUserInputs = if (calculationUserInputs.sentenceCalculationUserInputs == null) listOf() else calculationUserInputs.sentenceCalculationUserInputs.map {
       CalculationRequestSentenceUserInput(
         sentenceSequence = it.sentenceSequence,
         offenceCode = it.offenceCode,
@@ -355,9 +356,9 @@ fun offenceMatchesChoice(offence: OffenderOffence, userInputType: UserInputType,
   }
 }
 
-fun transform(calculationRequestUserInput: CalculationRequestUserInput?): CalculationUserInputs? {
+fun transform(calculationRequestUserInput: CalculationRequestUserInput?): CalculationUserInputs {
   if (calculationRequestUserInput == null) {
-    return null
+    return CalculationUserInputs()
   }
   return CalculationUserInputs(
     calculateErsed = calculationRequestUserInput.calculateErsed,
@@ -475,6 +476,7 @@ fun transform(calculation: CalculatedReleaseDates) =
     paroleEligibilityDate = calculation.dates[PED],
     postRecallReleaseDate = calculation.dates[PRRD],
     topupSupervisionExpiryDate = calculation.dates[TUSED],
+    earlyRemovalSchemeEligibilityDate = calculation.dates[ERSED],
     effectiveSentenceEndDate = calculation.dates[ESED],
     sentenceLength = String.format(
       "%02d/%02d/%02d",
