@@ -71,7 +71,8 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       daysToExpiry,
       daysToRelease.toDouble(),
       daysToRelease,
-      numberOfDaysToParoleEligibilityDate
+      numberOfDaysToParoleEligibilityDate,
+      null
     )
   }
 
@@ -152,7 +153,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
     val release = if (sentence is ConsecutiveSentence) {
       getConsecutiveRelease(sentence)
     } else {
-      getSingleSentenceRelease(sentence)
+      getSingleSentenceRelease(sentence, booking)
     }
     val unadjustedExpiryDate =
       sentence.sentencedAt
@@ -192,12 +193,14 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       booking.adjustments,
       sentence.sentencedAt,
       returnToCustodyDate = booking.returnToCustodyDate,
-      numberOfDaysToParoleEligibilityDate = release.numberOfDaysToParoleEligibilityDate
+      numberOfDaysToParoleEligibilityDate = release.numberOfDaysToParoleEligibilityDate,
+      numberOfDaysToErsed = release.numberOfDaysToErsed
     )
   }
 
   private fun getSingleSentenceRelease(
-    sentence: CalculableSentence
+    sentence: CalculableSentence,
+    booking: Booking
   ): ReleaseDateCalculation {
     var numberOfDaysToParoleEligibilityDate: Long? = null
     val releaseDateMultiplier = determineReleaseDateMultiplier(sentence.identificationTrack)
@@ -210,11 +213,22 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       numberOfDaysToParoleEligibilityDate =
         ceil(numberOfDaysToReleaseDate.toDouble().times(pedMultiplier)).toLong()
     }
+    var numberOfDaysToErsed: Int? = null
+
+    if (booking.calculateErsed) {
+      if (sentence.identificationTrack.calculateErsedFromHalfway()) {
+        numberOfDaysToErsed = calculateErsedFromHalfway(sentence, numberOfDaysToReleaseDate, numberOfDaysToParoleEligibilityDate)
+      }
+      if (sentence.identificationTrack.calculateErsedFromTwoThirds()) {
+        numberOfDaysToErsed = calculateErsedFromTwoThirds(sentence, numberOfDaysToReleaseDate, numberOfDaysToParoleEligibilityDate)
+      }
+    }
     return ReleaseDateCalculation(
       sentence.getLengthInDays(),
       numberOfDaysToReleaseDateDouble,
       numberOfDaysToReleaseDate,
-      numberOfDaysToParoleEligibilityDate
+      numberOfDaysToParoleEligibilityDate,
+      numberOfDaysToErsed
     )
   }
 
@@ -222,6 +236,34 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
     return booking.returnToCustodyDate!!
       .plusDays(days.toLong())
       .minusDays(1)
+  }
+
+  fun calculateErsedFromTwoThirds(sentence: CalculableSentence, numberOfDaysToReleaseDate: Int, numberOfDaysToParoleEligibilityDate: Long?): Int {
+    val custodialDuration = getCustodialDuration(sentence)
+    val days = custodialDuration.getLengthInDays(sentence.sentencedAt)
+    if (days >= 1097) {
+      val ersed = sentence.sentencedAt
+        .plusDays(ceil(days.toDouble().times(2 / 3.toDouble())).toLong())
+        .minusDays(1)
+        .minusYears(1)
+      return DAYS.between(sentence.sentencedAt, ersed).toInt()
+    } else {
+      return ceil(days.toDouble() / 3).toInt()
+    }
+  }
+
+  fun calculateErsedFromHalfway(sentence: CalculableSentence, numberOfDaysToReleaseDate: Int, numberOfDaysToParoleEligibilityDate: Long?): Int {
+    val custodialDuration = getCustodialDuration(sentence)
+    val days = custodialDuration.getLengthInDays(sentence.sentencedAt)
+    if (days >= 1463) {
+      val ersed = sentence.sentencedAt
+        .plusDays(ceil(days.toDouble() / 2).toLong())
+        .minusDays(1)
+        .minusYears(1)
+      return DAYS.between(sentence.sentencedAt, ersed).toInt()
+    } else {
+      return ceil(days.toDouble() / 4).toInt()
+    }
   }
 
   private fun determineReleaseDateMultiplier(identification: SentenceIdentificationTrack): Double {
@@ -248,6 +290,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
     val numberOfDaysToSentenceExpiryDate: Int,
     val numberOfDaysToDeterminateReleaseDateDouble: Double,
     val numberOfDaysToDeterminateReleaseDate: Int,
-    val numberOfDaysToParoleEligibilityDate: Long?
+    val numberOfDaysToParoleEligibilityDate: Long?,
+    val numberOfDaysToErsed: Int?
   )
 }
