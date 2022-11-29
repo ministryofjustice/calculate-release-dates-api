@@ -25,9 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserQuestions
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceDiagram
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
@@ -243,38 +241,6 @@ class CalculationController(
     return bookingService.getCalculationBreakdown(calculationRequestId)
   }
 
-  @GetMapping(value = ["/diagram/{calculationRequestId}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
-  @ResponseBody
-  @Operation(
-    summary = "Get data to build a sentence diagram",
-    description = "This endpoint will return the data required for a sentence diagram for the given calculationRequestId",
-  )
-  @ApiResponses(
-    value = [
-      ApiResponse(responseCode = "200", description = "Returns diagram data of calculation dates"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
-    ]
-  )
-  fun getSentenceDiagram(
-    @Parameter(required = true, example = "123456", description = "The calculationRequestId of the diagram")
-    @PathVariable("calculationRequestId")
-    calculationRequestId: Long,
-  ): SentenceDiagram {
-    log.info("Request received return calculation breakdown for calculationRequestId {}", calculationRequestId)
-    val sentencesAndOffences = calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)
-    val prisonerDetails = calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId)
-    val adjustments = calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
-    val returnToCustodyDate = calculationTransactionalService.findReturnToCustodyDateFromCalculation(calculationRequestId)
-    val offenderFinePayments = calculationTransactionalService.findOffenderFinePaymentsFromCalculation(calculationRequestId)
-    val calculation = calculationTransactionalService.findCalculationResults(calculationRequestId)
-    val userInput = calculationTransactionalService.findUserInput(calculationRequestId)
-    val sourceData = PrisonApiSourceData(sentencesAndOffences, prisonerDetails, adjustments, offenderFinePayments, returnToCustodyDate)
-
-    return calculationTransactionalService.calculateWithDiagram(bookingService.getBooking(sourceData, userInput), calculation)
-  }
   @PostMapping(value = ["/{prisonerId}/validate"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
