@@ -180,17 +180,4 @@ class CalculationControllerTest {
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
     verify(calculationTransactionalService, times(1)).findCalculationResults(calculationRequestId)
   }
-
-  @Test
-  fun `Test GET of user inputs by calculationRequestId returns 404 if not found`() {
-    val calculationRequestId = 9995L
-
-    whenever(calculationTransactionalService.findUserInput(calculationRequestId)).thenReturn(null)
-
-    mvc.perform(get("/calculation/calculation-user-input/$calculationRequestId").accept(APPLICATION_JSON))
-      .andExpect(status().isNotFound)
-      .andExpect(content().contentType(APPLICATION_JSON))
-
-    verify(calculationTransactionalService, times(1)).findUserInput(calculationRequestId)
-  }
 }

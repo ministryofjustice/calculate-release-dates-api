@@ -47,7 +47,7 @@ class ValidationController(
     @RequestBody
     calculationUserInputs: CalculationUserInputs?
   ): List<ValidationMessage> {
-    return calculationTransactionalService.fullValidation(prisonerId, calculationUserInputs?: CalculationUserInputs())
+    return calculationTransactionalService.fullValidation(prisonerId, calculationUserInputs ?: CalculationUserInputs())
   }
 
   companion object {
