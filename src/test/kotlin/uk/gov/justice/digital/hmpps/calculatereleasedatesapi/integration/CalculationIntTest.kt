@@ -376,7 +376,6 @@ class CalculationIntTest : IntegrationTestBase() {
     )
   }
 
-
   @Test
   fun `Run calculation on pre prod bug where adjustments are applied to wrong sentences CRS-829 AC-1`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()
@@ -532,8 +531,6 @@ class CalculationIntTest : IntegrationTestBase() {
       LocalDate.of(2026, 2, 26)
     )
   }
-
-
   @Test
   fun `Run calculation on a test of historic inactive released prisoner`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()

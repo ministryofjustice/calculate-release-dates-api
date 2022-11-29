@@ -85,7 +85,7 @@ class CalculationController(
     calculationUserInputs: CalculationUserInputs?
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
-    return calculationTransactionalService.calculate(prisonerId, calculationUserInputs?: CalculationUserInputs(), false)
+    return calculationTransactionalService.calculate(prisonerId, calculationUserInputs ?: CalculationUserInputs(), false)
   }
 
   @PostMapping(value = ["/confirm/{calculationRequestId}"])
