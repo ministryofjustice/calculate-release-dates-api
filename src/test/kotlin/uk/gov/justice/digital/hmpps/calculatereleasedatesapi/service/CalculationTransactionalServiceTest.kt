@@ -38,7 +38,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceDiagram
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
@@ -167,37 +166,6 @@ class CalculationTransactionalServiceTest {
     assertEquals(
       jsonTransformation.loadCalculationBreakdown("$exampleType/$exampleNumber"),
       calculationBreakdown
-    )
-  }
-  @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/sentence-diagram-examples.csv"], numLinesToSkip = 1)
-  fun `Test Sentence Diagram`(exampleType: String, exampleNumber: String, error: String?) {
-    log.info("Testing example $exampleType/$exampleNumber")
-    SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
-    )
-    val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val calculation = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
-
-    val sentenceDiagram: SentenceDiagram
-    try {
-      sentenceDiagram = calculationTransactionalService.calculateWithDiagram(booking, CalculatedReleaseDates(calculation.dates, -1, -1, "", PRELIMINARY))
-    } catch (e: Exception) {
-      if (!error.isNullOrEmpty()) {
-        assertEquals(error, e.javaClass.simpleName)
-        return
-      } else {
-        throw e
-      }
-    }
-    log.info(
-      "Example $exampleType/$exampleNumber outcome SentenceDiagram: {}",
-      TestUtil.objectMapper().writeValueAsString(sentenceDiagram)
-    )
-
-    assertEquals(
-      jsonTransformation.loadSentenceDiagram("$exampleType/$exampleNumber"),
-      sentenceDiagram
     )
   }
 

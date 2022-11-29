@@ -20,7 +20,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceDiagram
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
@@ -76,15 +75,6 @@ class CalculationTransactionalService(
     val (workingBooking, bookingCalculation) = calculationService.calculateReleaseDates(booking)
     if (bookingCalculation.dates == previousCalculationResults.dates) {
       return transform(workingBooking, bookingCalculation.breakdownByReleaseDateType, bookingCalculation.otherDates)
-    } else {
-      throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")
-    }
-  }
-  @Transactional(readOnly = true)
-  fun calculateWithDiagram(booking: Booking, previousCalculationResults: CalculatedReleaseDates): SentenceDiagram {
-    val (workingBooking, bookingCalculation) = calculationService.calculateReleaseDates(booking)
-    if (bookingCalculation.dates == previousCalculationResults.dates) {
-      return transform(workingBooking)
     } else {
       throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")
     }
