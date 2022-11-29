@@ -5,7 +5,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -33,7 +32,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_OVERLAPS_WITH_SENTENCE
 import java.time.LocalDate
 import javax.persistence.EntityNotFoundException
 
@@ -595,26 +593,7 @@ class CalculationIntTest : IntegrationTestBase() {
     val BOOKING_ID = PRISONER_ID.hashCode().toLong()
     val BOOKING_ERROR_ID = PRISONER_ERROR_ID.hashCode().toLong()
     const val BOOKING_ID_DOESNT_EXIST = 92929988L
-    const val REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID = "REM-SEN"
     const val SDS_PLUS_CONSECUTIVE_TO_SDS = "SDS-CON"
-    const val VALIDATION_PRISONER_ID = "VALIDATION"
-    const val UNSUPPORTED_SENTENCE_PRISONER_ID = "UNSUPP_SENT"
     const val INACTIVE_PRISONER_ID = "INACTIVE"
-    private const val ERROR_MESSAGE_STRING = """The validation has failed with errors:
-    The offence date for court case 1 count 1 must be before the sentence date.
-    The offence date range for court case 1 count 2 must be before the sentence date.
-    Court case 2 count 1 must include an offence date.
-    Court case 2 count 1 must include an imprisonment term greater than zero.
-    Court case 2 count 2 must only have one term in NOMIS.
-    The sentence type for court case 2 count 4 is invalid for the sentence date entered.
-    The sentence type for court case 2 count 4 is invalid for the sentence date entered.
-    Court case 2 count 2 has multiple sentences that have been made consecutive to it. A sentence should only have one other sentence consecutive to it.
-    Remand periods must have a from and to date.
-    Remand periods must have a from and to date.
-    The from date for Additional days awarded (ADA) should be the date of the adjudication hearing.
-    The from date for Restored additional days awarded (RADA) must be the date the additional days were remitted.
-    The from date for Unlawfully at Large (UAL) must be the first day the prisoner was deemed UAL.
-    Remand time can only be added once, it can cannot overlap with other remand dates.
-"""
   }
 }

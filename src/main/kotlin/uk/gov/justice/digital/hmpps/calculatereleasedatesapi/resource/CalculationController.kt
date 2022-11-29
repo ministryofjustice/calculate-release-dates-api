@@ -290,7 +290,6 @@ class CalculationController(
   ): CalculationUserInputs {
     log.info("Request received to get user input from $calculationRequestId calculation")
     return calculationTransactionalService.findUserInput(calculationRequestId)
-      ?: throw EntityNotFoundException("No user inputs for calculationRequestId $calculationRequestId ")
   }
 
   @GetMapping(value = ["/adjustments/{calculationRequestId}"])
