@@ -16,10 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.TEST
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdCalculationValidationException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
@@ -29,25 +25,16 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import javax.persistence.EntityNotFoundException
 
 @RestController
 @RequestMapping("/calculation", produces = [MediaType.APPLICATION_JSON_VALUE])
 @Tag(name = "calculation-controller", description = "Operations involving a calculation")
 class CalculationController(
-  private val bookingService: BookingService,
-  private val prisonService: PrisonService,
   private val calculationTransactionalService: CalculationTransactionalService,
-  private val calculationService: CalculationService,
-  private val validationService: ValidationService,
-  private val calculationUserQuestionService: CalculationUserQuestionService
+  private val calculationUserQuestionService: CalculationUserQuestionService,
 ) {
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -72,14 +59,7 @@ class CalculationController(
     calculationUserInputs: CalculationUserInputs?
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
-    val booking = bookingService.getBooking(sourceData, calculationUserInputs ?: CalculationUserInputs())
-    try {
-      return calculationTransactionalService.calculate(booking, PRELIMINARY, sourceData, calculationUserInputs)
-    } catch (error: Exception) {
-      calculationTransactionalService.recordError(booking, sourceData, calculationUserInputs, error)
-      throw error
-    }
+    return calculationTransactionalService.calculate(prisonerId, calculationUserInputs ?: CalculationUserInputs())
   }
 
   @PostMapping(value = ["/{prisonerId}/test"])
@@ -105,17 +85,10 @@ class CalculationController(
     calculationUserInputs: CalculationUserInputs?
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
-    val sourceData = prisonService.getPrisonApiSourceDataIncludingInactive(prisonerId)
-    val booking = bookingService.getBooking(sourceData, calculationUserInputs ?: CalculationUserInputs())
-    try {
-      return calculationTransactionalService.calculate(booking, TEST, sourceData, calculationUserInputs)
-    } catch (error: Exception) {
-      calculationTransactionalService.recordError(booking, sourceData, calculationUserInputs, error)
-      throw error
-    }
+    return calculationTransactionalService.calculate(prisonerId, calculationUserInputs?: CalculationUserInputs(), false)
   }
 
-  @PostMapping(value = ["/{prisonerId}/confirm/{calculationRequestId}"])
+  @PostMapping(value = ["/confirm/{calculationRequestId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
   @Operation(
@@ -138,32 +111,13 @@ class CalculationController(
     ]
   )
   fun confirmCalculation(
-    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
-    @PathVariable("prisonerId")
-    prisonerId: String,
-    @Parameter(
-      required = true,
-      example = "1234567",
-      description = "The calculation request ID of the calculation to be confirmed"
-    )
     @PathVariable("calculationRequestId")
     calculationRequestId: Long,
     @RequestBody
     calculationFragments: CalculationFragments
   ): CalculatedReleaseDates {
-    log.info("Request received to confirm release dates calculation for $prisonerId")
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
-    val userInput = calculationTransactionalService.findUserInput(calculationRequestId)
-    val booking = bookingService.getBooking(sourceData, userInput)
-    calculationTransactionalService.validateConfirmationRequest(calculationRequestId, booking)
-    try {
-      val calculation = calculationTransactionalService.calculate(booking, CONFIRMED, sourceData, userInput, calculationFragments)
-      calculationTransactionalService.writeToNomisAndPublishEvent(prisonerId, booking, calculation)
-      return calculation
-    } catch (error: Exception) {
-      calculationTransactionalService.recordError(booking, sourceData, userInput, error)
-      throw error
-    }
+    log.info("Request received to confirm release dates calculation for $calculationRequestId")
+    return calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, calculationFragments)
   }
 
   @GetMapping(value = ["/results/{prisonerId}/{bookingId}"])
@@ -238,43 +192,7 @@ class CalculationController(
     calculationRequestId: Long,
   ): CalculationBreakdown {
     log.info("Request received return calculation breakdown for calculationRequestId {}", calculationRequestId)
-    return bookingService.getCalculationBreakdown(calculationRequestId)
-  }
-
-  @PostMapping(value = ["/{prisonerId}/validate"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
-  @ResponseBody
-  @Operation(
-    summary = "Validates that the data for the given prisoner in NOMIS can be used to calculate a release date",
-    description = "This endpoint will validate that the data for the given prisoner in NOMIS can be supported by the " +
-      "calculate release dates engine",
-  )
-  @ApiResponses(
-    value = [
-      ApiResponse(responseCode = "200", description = "Validation job has run successfully, the response indicates if there are any errors"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
-    ]
-  )
-  fun validate(
-    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
-    @PathVariable("prisonerId")
-    prisonerId: String,
-    @RequestBody
-    calculationUserInputs: CalculationUserInputs?
-  ): List<ValidationMessage> {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
-    val validationMessages = validationService.validate(sourceData)
-    if (validationMessages.isEmpty()) {
-      try {
-        val booking = bookingService.getBooking(sourceData, calculationUserInputs ?: CalculationUserInputs())
-        calculationService.calculateReleaseDates(booking)
-      } catch (validationException: CrdCalculationValidationException) {
-        return listOf(ValidationMessage(validationException.validation))
-      }
-    }
-
-    return validationMessages
+    return calculationTransactionalService.getCalculationBreakdown(calculationRequestId)
   }
 
   @GetMapping(value = ["/sentence-and-offences/{calculationRequestId}"])
@@ -420,9 +338,7 @@ class CalculationController(
     prisonerId: String,
   ): CalculationUserQuestions {
     log.info("Request received to get sentences which require user input $prisonerId")
-    val prisonerDetails = prisonService.getOffenderDetail(prisonerId)
-    val sentenceAndOffences = prisonService.getSentencesAndOffences(prisonerDetails.bookingId)
-    return calculationUserQuestionService.getQuestionsForSentences(prisonerDetails, sentenceAndOffences)
+    return calculationUserQuestionService.getQuestionsForSentences(prisonerId)
   }
 
   companion object {
