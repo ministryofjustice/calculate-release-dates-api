@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.math.ceil
 import kotlin.math.max
 
 data class SentenceCalculation(
@@ -25,12 +26,13 @@ data class SentenceCalculation(
   val unadjustedDeterminateReleaseDate: LocalDate,
   val numberOfDaysToPostRecallReleaseDate: Int?,
   val unadjustedPostRecallReleaseDate: LocalDate?,
+  val calculateErsed: Boolean,
   val adjustments: Adjustments,
   var adjustmentsBefore: LocalDate,
   var adjustmentsAfter: LocalDate? = null,
   val returnToCustodyDate: LocalDate? = null,
   val numberOfDaysToParoleEligibilityDate: Long? = null,
-  val numberOfDaysToErsed: Int? = null
+
 ) {
 
   fun getAdjustmentBeforeSentence(vararg adjustmentTypes: AdjustmentType): Int {
@@ -173,16 +175,46 @@ data class SentenceCalculation(
   }
 
   val earlyReleaseSchemeEligibilityDate: LocalDate? get() {
-    if (numberOfDaysToErsed == null) {
-      return null
+    if (calculateErsed) {
+      if (sentence.identificationTrack.calculateErsedFromHalfway()) {
+        return calculateErsedFromHalfway()
+      }
+      if (sentence.identificationTrack.calculateErsedFromTwoThirds()) {
+        return calculateErsedFromTwoThirds()
+      }
     }
-    return sentence.sentencedAt
-      .plusDays(numberOfDaysToErsed.toLong())
-      .plusDays(calculatedTotalAddedDays.toLong())
-      .minusDays(calculatedTotalDeductedDays.toLong())
-      .plusDays(calculatedTotalAwardedDays.toLong())
+    return null
   }
 
+  private fun calculateErsedFromTwoThirds(): LocalDate {
+    val custodialDuration = sentence.custodialDuration()
+    val days = custodialDuration.getLengthInDays(sentence.sentencedAt)
+    return if (days >= 1097) {
+      val release = if (extendedDeterminateParoleEligibilityDate != null) extendedDeterminateParoleEligibilityDate!! else releaseDate
+      release.minusYears(1)
+    } else {
+      sentence.sentencedAt
+        .plusDays(ceil(days.toDouble() / 3).toLong())
+        .plusDays(calculatedTotalAddedDays.toLong())
+        .minusDays(calculatedTotalDeductedDays.toLong())
+        .plusDays(calculatedTotalAwardedDays.toLong())
+    }
+  }
+
+  private fun calculateErsedFromHalfway(): LocalDate {
+    val custodialDuration = sentence.custodialDuration()
+    val days = custodialDuration.getLengthInDays(sentence.sentencedAt)
+    return if (days >= 1463) {
+      val release = if (extendedDeterminateParoleEligibilityDate != null) extendedDeterminateParoleEligibilityDate!! else releaseDate
+      release.minusYears(1)
+    } else {
+      sentence.sentencedAt
+        .plusDays(ceil(days.toDouble() / 4).toLong())
+        .plusDays(calculatedTotalAddedDays.toLong())
+        .minusDays(calculatedTotalDeductedDays.toLong())
+        .plusDays(calculatedTotalAwardedDays.toLong())
+    }
+  }
   // Licence Expiry Date (LED)
   var numberOfDaysToLicenceExpiryDate: Long = 0
   private var _licenceExpiryDate: LocalDate? = null
