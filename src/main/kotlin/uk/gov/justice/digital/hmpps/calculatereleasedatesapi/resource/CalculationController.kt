@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.TEST
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.ValidationException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
@@ -86,6 +87,12 @@ class CalculationController(
     calculationUserInputs: CalculationUserInputs?
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
+    val validationMessages = calculationTransactionalService.fullValidation(prisonerId, calculationUserInputs ?: CalculationUserInputs())
+    if (validationMessages.isNotEmpty()) {
+      var message = "The validation has failed with errors:"
+      validationMessages.forEach { message += "\n    " + it.message }
+      throw ValidationException(message)
+    }
     return calculationTransactionalService.calculate(prisonerId, calculationUserInputs ?: CalculationUserInputs(), false, TEST)
   }
 
