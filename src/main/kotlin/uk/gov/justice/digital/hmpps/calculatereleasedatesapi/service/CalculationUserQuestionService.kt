@@ -25,7 +25,9 @@ import java.time.Period
 import java.util.EnumSet
 
 @Service
-class CalculationUserQuestionService {
+class CalculationUserQuestionService(
+  private val prisonService: PrisonService,
+) {
   val postPcscCalcTypes: Map<UserInputType, EnumSet<SentenceCalculationType>> = mapOf(
     ORIGINAL to EnumSet.of(
       ADIMP, YOI,
@@ -45,7 +47,9 @@ class CalculationUserQuestionService {
     ),
   )
 
-  fun getQuestionsForSentences(prisonerDetails: PrisonerDetails, sentencesAndOffences: List<SentenceAndOffences>): CalculationUserQuestions {
+  fun getQuestionsForSentences(prisonerId: String): CalculationUserQuestions {
+    val prisonerDetails = prisonService.getOffenderDetail(prisonerId)
+    val sentencesAndOffences = prisonService.getSentencesAndOffences(prisonerDetails.bookingId)
     return CalculationUserQuestions(
       sentenceQuestions = sentencesAndOffences.mapNotNull {
         val sentenceCalculationType = SentenceCalculationType.from(it.sentenceCalculationType)
@@ -112,7 +116,8 @@ class CalculationUserQuestionService {
   }
 
   private fun endOfSentence(sentence: SentenceAndOffences): LocalDate {
-    val duration = Period.of(sentence.terms[0].years, sentence.terms[0].months, sentence.terms[0].weeks * 7 + sentence.terms[0].days)
+    val duration =
+      Period.of(sentence.terms[0].years, sentence.terms[0].months, sentence.terms[0].weeks * 7 + sentence.terms[0].days)
     return sentence.sentenceDate.plus(duration)
   }
 }

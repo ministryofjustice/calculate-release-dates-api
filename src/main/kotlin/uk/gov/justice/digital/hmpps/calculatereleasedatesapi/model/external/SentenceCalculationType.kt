@@ -12,7 +12,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeter
 
 enum class SentenceCalculationType(
   val recallType: RecallType? = null,
-  val sentenceClazz: Class<out AbstractSentence> = StandardDeterminateSentence::class.java
+  val sentenceClazz: Class<out AbstractSentence> = StandardDeterminateSentence::class.java,
+  val primaryName: String? = null,
+  val isFixedTermRecall: Boolean = false,
 ) {
   ADIMP,
   ADIMP_ORA,
@@ -27,13 +29,13 @@ enum class SentenceCalculationType(
   LR_YOI_ORA(STANDARD_RECALL),
   LR_SEC91_ORA(STANDARD_RECALL),
   LRSEC250_ORA(STANDARD_RECALL),
-  _14FTR_ORA(FIXED_TERM_RECALL_14),
-  FTR(FIXED_TERM_RECALL_28),
-  FTR_ORA(FIXED_TERM_RECALL_28),
-  FTR_SCH15(FIXED_TERM_RECALL_28),
-  FTRSCH15_ORA(FIXED_TERM_RECALL_28),
-  FTRSCH18(FIXED_TERM_RECALL_28),
-  FTRSCH18_ORA(FIXED_TERM_RECALL_28),
+  _14FTR_ORA(recallType = FIXED_TERM_RECALL_14, primaryName = "14FTR_ORA", isFixedTermRecall = true),
+  FTR(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
+  FTR_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
+  FTR_SCH15(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
+  FTRSCH15_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
+  FTRSCH18(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
+  FTRSCH18_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
   LASPO_AR(sentenceClazz = ExtendedDeterminateSentence::class.java),
   LASPO_DR(sentenceClazz = ExtendedDeterminateSentence::class.java),
   EDS18(sentenceClazz = ExtendedDeterminateSentence::class.java),
@@ -43,21 +45,18 @@ enum class SentenceCalculationType(
   SOPC18(sentenceClazz = SopcSentence::class.java),
   SOPC21(sentenceClazz = SopcSentence::class.java),
   SEC236A(sentenceClazz = SopcSentence::class.java),
-  AFINE(sentenceClazz = AFineSentence::class.java);
+  AFINE(sentenceClazz = AFineSentence::class.java, primaryName = "A/FINE");
 
   companion object {
-    fun from(sentenceCalculationType: String): SentenceCalculationType? {
-      if (sentenceCalculationType == "14FTR_ORA") {
-        return _14FTR_ORA
-      }
-      if (sentenceCalculationType == "A/FINE") {
-        return AFINE
-      }
-      return try {
-        valueOf(sentenceCalculationType)
+    fun from(sentenceCalculationType: String): SentenceCalculationType =
+      values().firstOrNull { it.primaryName == sentenceCalculationType } ?: valueOf(sentenceCalculationType)
+
+    fun isSupported(sentenceCalculationType: String): Boolean =
+      try {
+        from(sentenceCalculationType)
+        true
       } catch (error: IllegalArgumentException) {
-        null
+        false
       }
-    }
   }
 }

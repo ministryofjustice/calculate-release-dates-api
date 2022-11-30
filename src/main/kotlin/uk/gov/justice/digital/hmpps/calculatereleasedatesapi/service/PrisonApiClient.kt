@@ -18,7 +18,7 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
   private val log = LoggerFactory.getLogger(this::class.java)
 
   fun getOffenderDetail(prisonerId: String): PrisonerDetails {
-    log.info("Requesting details for prisoner $prisonerId") // TODO remove this logging - only used for test purposes
+    log.info("Requesting details for prisoner $prisonerId")
     return webClient.get()
       .uri("/api/offenders/$prisonerId")
       .retrieve()

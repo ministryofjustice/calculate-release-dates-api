@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.LAWFULLY_AT_LARGE
@@ -43,7 +42,7 @@ import java.time.LocalDate
 
 class ValidationServiceTest {
 
-  private val validationService = ValidationService(FeatureToggles(true), SentencesExtractionService())
+  private val validationService = ValidationService(SentencesExtractionService())
   private val validSdsSentence = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 7,
@@ -110,7 +109,7 @@ class ValidationServiceTest {
 
   @Test
   fun `Test EDS valid sentence should pass`() {
-    val result = validationService.validate(
+    val result = validationService.validateSourceData(
       PrisonApiSourceData(
         listOf(validEdsSentence), validPrisoner, validAdjustments, listOf(),
         null
@@ -128,7 +127,7 @@ class ValidationServiceTest {
       ),
     )
     val result =
-      validationService.validate(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEqualTo(
       listOf(
@@ -149,7 +148,7 @@ class ValidationServiceTest {
       ),
     )
     val result =
-      validationService.validate(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEqualTo(
       listOf(
@@ -169,7 +168,7 @@ class ValidationServiceTest {
       ),
     )
     val result =
-      validationService.validate(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEqualTo(
       listOf(
@@ -198,7 +197,7 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEqualTo(
       listOf(
@@ -225,7 +224,7 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEmpty()
   }
@@ -241,7 +240,7 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).hasSize(1)
     assertThat(result[0].code).isEqualTo(EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS)
@@ -286,7 +285,7 @@ class ValidationServiceTest {
       ),
     )
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEqualTo(
       listOf(
@@ -314,7 +313,7 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEqualTo(
       listOf(
@@ -342,7 +341,7 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEqualTo(
       listOf(
@@ -354,7 +353,7 @@ class ValidationServiceTest {
 
   @Test
   fun `Test SOPC valid sentence should pass`() {
-    val result = validationService.validate(
+    val result = validationService.validateSourceData(
       PrisonApiSourceData(
         listOf(validSopcSentence),
         validPrisoner,
@@ -388,7 +387,7 @@ class ValidationServiceTest {
       ),
     )
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEqualTo(
       listOf(
@@ -411,7 +410,7 @@ class ValidationServiceTest {
       ),
     )
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEqualTo(
       listOf(
@@ -422,7 +421,7 @@ class ValidationServiceTest {
 
   @Test
   fun `Validate future dated adjustments`() {
-    val result = validationService.validate(
+    val result = validationService.validateSourceData(
       PrisonApiSourceData(
         listOf(validEdsSentence), validPrisoner,
         BookingAndSentenceAdjustments(
@@ -491,7 +490,7 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEqualTo(
       listOf(
@@ -505,7 +504,7 @@ class ValidationServiceTest {
   fun `Test SDS sentence is valid`() {
     val sentences = listOf(validSdsSentence)
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEmpty()
   }
@@ -514,7 +513,7 @@ class ValidationServiceTest {
   fun `Test A FINE sentence is valid`() {
     val sentences = listOf(validAFineSentence)
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEmpty()
   }
@@ -522,7 +521,7 @@ class ValidationServiceTest {
   @Test
   fun `Test A FINE sentence with payments is unsupported`() {
     val sentences = listOf(validAFineSentence)
-    val result = validationService.validate(
+    val result = validationService.validateSourceData(
       PrisonApiSourceData(
         sentences, validPrisoner, validAdjustments,
         listOf(OffenderFinePayment(1, LocalDate.now(), BigDecimal.ONE)), null
@@ -548,7 +547,7 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEqualTo(
       listOf(
@@ -569,7 +568,7 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEqualTo(
       listOf(
@@ -589,7 +588,7 @@ class ValidationServiceTest {
         consecutiveToSequence = 1
       )
     )
-    val result = validationService.validate(
+    val result = validationService.validateSourceData(
       PrisonApiSourceData(
         sentences,
         validPrisoner,
@@ -608,26 +607,6 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test A FINE unsupported with feature toggle off`() {
-    val sentences = listOf(validAFineSentence)
-    val result = ValidationService(FeatureToggles(false), SentencesExtractionService()).validate(
-      PrisonApiSourceData(
-        sentences,
-        validPrisoner,
-        validAdjustments,
-        listOf(),
-        null
-      )
-    )
-
-    assertThat(result).isEqualTo(
-      listOf(
-        ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This is a sentence type")),
-      )
-    )
-  }
-
-  @Test
   fun `Test A FINE invalid without fine amount`() {
     val sentences = listOf(
       validAFineSentence.copy(
@@ -635,7 +614,7 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEqualTo(
       listOf(
@@ -652,7 +631,7 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validate(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
 
     assertThat(result).isEqualTo(
       listOf(
@@ -663,7 +642,7 @@ class ValidationServiceTest {
 
   @Test
   fun `Test Lawfully at Large adjustments at a booking level cause validation errors`() {
-    val result = validationService.validate(
+    val result = validationService.validateSourceData(
       PrisonApiSourceData(
         sentenceAndOffences = listOf(validSdsSentence),
         prisonerDetails = validPrisoner,
@@ -679,7 +658,7 @@ class ValidationServiceTest {
 
   @Test
   fun `Test Special Remission adjustments at a booking level cause validation errors`() {
-    val result = validationService.validate(
+    val result = validationService.validateSourceData(
       PrisonApiSourceData(
         sentenceAndOffences = listOf(validSdsSentence),
         prisonerDetails = validPrisoner,

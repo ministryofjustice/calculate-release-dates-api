@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito.reset
-import org.mockito.kotlin.any
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -26,31 +25,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-import java.math.BigDecimal
-import java.time.LocalDate
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
@@ -59,21 +43,8 @@ import java.time.LocalDate
 @ContextConfiguration(classes = [CalculationController::class])
 @WebAppConfiguration
 class CalculationControllerTest {
-
-  @MockBean
-  private lateinit var bookingService: BookingService
-
   @MockBean
   private lateinit var calculationTransactionalService: CalculationTransactionalService
-
-  @MockBean
-  private lateinit var validationService: ValidationService
-
-  @MockBean
-  private lateinit var prisonService: PrisonService
-
-  @MockBean
-  private lateinit var calculationService: CalculationService
 
   @MockBean
   private lateinit var calculationUserQuestionService: CalculationUserQuestionService
@@ -84,20 +55,14 @@ class CalculationControllerTest {
   @Autowired
   private lateinit var mapper: ObjectMapper
 
-  private val sentences: List<SentenceAndOffences> = emptyList()
-  private val prisonerDetails = PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
-  private val adjustments = BookingAndSentenceAdjustments(emptyList(), emptyList())
-  private val offenderFineFinePayment = listOf(OffenderFinePayment(bookingId = 1, paymentDate = LocalDate.of(1, 2, 3), paymentAmount = BigDecimal("10000.88")))
-  private val sourceData = PrisonApiSourceData(sentences, prisonerDetails, adjustments, offenderFineFinePayment, null)
   private val calculationFragments = CalculationFragments("<p>breakdown</p>")
 
   @BeforeEach
   fun reset() {
-    reset(bookingService)
     reset(calculationTransactionalService)
 
     mvc = MockMvcBuilders
-      .standaloneSetup(CalculationController(bookingService, prisonService, calculationTransactionalService, calculationService, validationService, calculationUserQuestionService))
+      .standaloneSetup(CalculationController(calculationTransactionalService, calculationUserQuestionService))
       .setControllerAdvice(ControllerAdvice())
       .build()
   }
@@ -106,17 +71,12 @@ class CalculationControllerTest {
   fun `Test POST of a PRELIMINARY calculation`() {
     val prisonerId = "A1234AB"
     val bookingId = 9995L
-    val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
-
-    val booking = Booking(offender, mutableListOf(), Adjustments(), null, bookingId)
 
     val calculatedReleaseDates = CalculatedReleaseDates(
       calculationRequestId = 9991L, dates = mapOf(), calculationStatus = PRELIMINARY,
       bookingId = bookingId, prisonerId = prisonerId
     )
-    whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(sourceData)
-    whenever(bookingService.getBooking(sourceData, CalculationUserInputs())).thenReturn(booking)
-    whenever(calculationTransactionalService.calculate(booking, PRELIMINARY, sourceData, null)).thenReturn(calculatedReleaseDates)
+    whenever(calculationTransactionalService.calculate(prisonerId, CalculationUserInputs())).thenReturn(calculatedReleaseDates)
 
     val result = mvc.perform(post("/calculation/$prisonerId").accept(APPLICATION_JSON))
       .andExpect(status().isOk)
@@ -124,24 +84,19 @@ class CalculationControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
-    verify(calculationTransactionalService, times(1)).calculate(booking, PRELIMINARY, sourceData, null)
+    verify(calculationTransactionalService, times(1)).calculate(prisonerId, CalculationUserInputs())
   }
 
   @Test
   fun `Test POST of a PRELIMINARY calculation with user input`() {
     val prisonerId = "A1234AB"
     val bookingId = 9995L
-    val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
-
-    val booking = Booking(offender, mutableListOf(), Adjustments(), null, bookingId)
     val userInput = CalculationUserInputs(listOf(CalculationSentenceUserInput(1, "ABC", UserInputType.ORIGINAL, true)))
     val calculatedReleaseDates = CalculatedReleaseDates(
       calculationRequestId = 9991L, dates = mapOf(), calculationStatus = PRELIMINARY,
       bookingId = bookingId, prisonerId = prisonerId
     )
-    whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(sourceData)
-    whenever(bookingService.getBooking(sourceData, userInput)).thenReturn(booking)
-    whenever(calculationTransactionalService.calculate(booking, PRELIMINARY, sourceData, userInput)).thenReturn(calculatedReleaseDates)
+    whenever(calculationTransactionalService.calculate(prisonerId, userInput)).thenReturn(calculatedReleaseDates)
 
     val result = mvc.perform(
       post("/calculation/$prisonerId")
@@ -154,7 +109,7 @@ class CalculationControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
-    verify(calculationTransactionalService, times(1)).calculate(booking, PRELIMINARY, sourceData, userInput)
+    verify(calculationTransactionalService, times(1)).calculate(prisonerId, userInput)
   }
 
   @Test
@@ -162,20 +117,15 @@ class CalculationControllerTest {
     val prisonerId = "A1234AB"
     val calculationRequestId = 12345L
     val bookingId = 9995L
-    val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
-    val booking = Booking(offender, mutableListOf(), Adjustments(), null, bookingId,)
 
     val calculatedReleaseDates = CalculatedReleaseDates(
       calculationRequestId = 9991L, dates = mapOf(), calculationStatus = PRELIMINARY,
       bookingId = bookingId, prisonerId = prisonerId
     )
-    whenever(calculationTransactionalService.findUserInput(calculationRequestId)).thenReturn(CalculationUserInputs())
-    whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(sourceData)
-    whenever(bookingService.getBooking(sourceData, CalculationUserInputs())).thenReturn(booking)
-    whenever(calculationTransactionalService.calculate(booking, CONFIRMED, sourceData, CalculationUserInputs(), calculationFragments)).thenReturn(calculatedReleaseDates)
+    whenever(calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, calculationFragments)).thenReturn(calculatedReleaseDates)
 
     val result = mvc.perform(
-      post("/calculation/$prisonerId/confirm/$calculationRequestId")
+      post("/calculation/confirm/$calculationRequestId")
         .accept(APPLICATION_JSON)
         .content(mapper.writeValueAsString(calculationFragments))
         .contentType(APPLICATION_JSON)
@@ -185,34 +135,21 @@ class CalculationControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
-    verify(calculationTransactionalService, times(1)).calculate(booking, CONFIRMED, sourceData, CalculationUserInputs(), calculationFragments)
-    verify(calculationTransactionalService, times(1)).writeToNomisAndPublishEvent(prisonerId, booking, calculatedReleaseDates)
+    verify(calculationTransactionalService, times(1)).validateAndConfirmCalculation(calculationRequestId, calculationFragments)
   }
 
   @Test
   fun `Test POST to confirm a calculation when the data has changed since the PRELIM calc - results in exception`() {
-    val prisonerId = "A1234AB"
     val calculationRequestId = 12345L
-    val bookingId = 9995L
-    val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
-    val booking = Booking(offender, mutableListOf(), Adjustments(), null, bookingId)
 
-    val calculatedReleaseDates = CalculatedReleaseDates(
-      calculationRequestId = 9991L, dates = mapOf(), calculationStatus = PRELIMINARY,
-      bookingId = bookingId, prisonerId = prisonerId
-    )
-    whenever(calculationTransactionalService.findUserInput(calculationRequestId)).thenReturn(CalculationUserInputs())
-    whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(sourceData)
-    whenever(bookingService.getBooking(sourceData, CalculationUserInputs())).thenReturn(booking)
-    whenever(calculationTransactionalService.calculate(booking, CONFIRMED, sourceData, CalculationUserInputs())).thenReturn(calculatedReleaseDates)
-    whenever(calculationTransactionalService.validateConfirmationRequest(any(), any())).then {
+    whenever(calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, calculationFragments)).then {
       throw PreconditionFailedException(
         "The booking data used for the preliminary calculation has changed"
       )
     }
 
     val result = mvc.perform(
-      post("/calculation/$prisonerId/confirm/$calculationRequestId")
+      post("/calculation/confirm/$calculationRequestId")
         .accept(APPLICATION_JSON)
         .content(mapper.writeValueAsString(calculationFragments))
         .contentType(APPLICATION_JSON)
@@ -222,8 +159,7 @@ class CalculationControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).contains(
-      "The booking data used for the preliminary calculation has " +
-        "changed"
+      "The booking data used for the preliminary calculation has changed"
     )
   }
 
@@ -250,7 +186,7 @@ class CalculationControllerTest {
   fun `Test GET of calculation breakdown by calculationRequestId`() {
     val calculationRequestId = 9995L
     val breakdown = CalculationBreakdown(listOf(), null)
-    whenever(bookingService.getCalculationBreakdown(calculationRequestId)).thenReturn(breakdown)
+    whenever(calculationTransactionalService.getCalculationBreakdown(calculationRequestId)).thenReturn(breakdown)
 
     val result = mvc.perform(get("/calculation/breakdown/$calculationRequestId").accept(APPLICATION_JSON))
       .andExpect(status().isOk)
@@ -258,18 +194,5 @@ class CalculationControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(breakdown))
-  }
-
-  @Test
-  fun `Test GET of user inputs by calculationRequestId returns 404 if not found`() {
-    val calculationRequestId = 9995L
-
-    whenever(calculationTransactionalService.findUserInput(calculationRequestId)).thenReturn(null)
-
-    mvc.perform(get("/calculation/calculation-user-input/$calculationRequestId").accept(APPLICATION_JSON))
-      .andExpect(status().isNotFound)
-      .andExpect(content().contentType(APPLICATION_JSON))
-
-    verify(calculationTransactionalService, times(1)).findUserInput(calculationRequestId)
   }
 }
