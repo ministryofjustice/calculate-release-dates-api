@@ -87,7 +87,7 @@ class CalculationController(
     calculationUserInputs: CalculationUserInputs?
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
-    val validationMessages = calculationTransactionalService.fullValidation(prisonerId, calculationUserInputs ?: CalculationUserInputs())
+    val validationMessages = calculationTransactionalService.fullValidation(prisonerId, calculationUserInputs ?: CalculationUserInputs(), false)
     if (validationMessages.isNotEmpty()) {
       var message = "The validation has failed with errors:"
       validationMessages.forEach { message += "\n    " + it.message }

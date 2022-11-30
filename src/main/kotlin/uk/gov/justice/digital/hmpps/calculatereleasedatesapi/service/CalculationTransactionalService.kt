@@ -58,9 +58,11 @@ class CalculationTransactionalService(
    * 2. Validate the transformation of the raw Booking (NOMIS offence data transformed into a Booking object)
    * 3. Run the calculation and catch any errors thrown by the calculation algorithm
    * 4. Validate the post calculation Booking (The Booking is transformed during the calculation). e.g. Consecutive sentences (aggregates)
+   *
+   * activeDataOnly is only used by the test 1000 calcs functionality
    */
-  fun fullValidation(prisonerId: String, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
+  fun fullValidation(prisonerId: String, calculationUserInputs: CalculationUserInputs, activeDataOnly: Boolean = true): List<ValidationMessage> {
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
     var messages = validationService.validateSourceData(sourceData) // Validation stage 1 of 4
     if (messages.isNotEmpty()) return messages
 
