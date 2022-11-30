@@ -46,7 +46,7 @@ class PrisonService(
     if (!bookingHasFixedTermRecall) return Pair(null, null)
     val ftrDetails = prisonApiClient.getFixedTermRecallDetails(bookingId)
     val returnToCustodyDate = transform(ftrDetails)
-    return Pair(ftrDetails, returnToCustodyDate)
+    return ftrDetails to returnToCustodyDate
   }
 
   fun getOffenderDetail(prisonerId: String): PrisonerDetails {

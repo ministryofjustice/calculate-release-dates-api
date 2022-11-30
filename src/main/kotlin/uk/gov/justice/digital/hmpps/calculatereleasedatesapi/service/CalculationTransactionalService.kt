@@ -77,11 +77,11 @@ class CalculationTransactionalService(
 
   //  The activeDataOnly flag is only used by a test endpoint (1000 calcs test, which is used to test historic data)
   @Transactional
-  fun calculate(prisonerId: String, calculationUserInputs: CalculationUserInputs, activeDataOnly: Boolean = true): CalculatedReleaseDates {
+  fun calculate(prisonerId: String, calculationUserInputs: CalculationUserInputs, activeDataOnly: Boolean = true, calculationType: CalculationStatus = PRELIMINARY): CalculatedReleaseDates {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     try {
-      return calculate(booking, PRELIMINARY, sourceData, calculationUserInputs)
+      return calculate(booking, calculationType, sourceData, calculationUserInputs)
     } catch (error: Exception) {
       recordError(booking, sourceData, calculationUserInputs, error)
       throw error
