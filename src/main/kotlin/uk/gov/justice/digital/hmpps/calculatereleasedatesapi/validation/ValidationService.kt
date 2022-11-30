@@ -3,9 +3,9 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.AdjustmentIsAfterReleaseDateException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdCalculationValidationException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CustodialPeriodExtinguishedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
@@ -13,6 +13,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -23,12 +25,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.SPECIAL_REMISSION
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType._14FTR_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
@@ -48,6 +53,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_14_DAYS_AGGREGATE_GE_12_MONTHS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_14_DAYS_SENTENCE_GE_12_MONTHS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_28_DAYS_SENTENCE_LT_12_MONTHS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.LASPO_AR_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.MORE_THAN_ONE_IMPRISONMENT_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.MORE_THAN_ONE_LICENCE_TERM
@@ -72,14 +83,18 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ZERO_IMPRISONMENT_TERM
 import java.time.LocalDate
 import java.time.Period
+import java.time.temporal.ChronoUnit
+import java.time.temporal.ChronoUnit.MONTHS
 
 @Service
 class ValidationService(
-  private val featureToggles: FeatureToggles,
-  private val extractionService: SentencesExtractionService
+  private val extractionService: SentencesExtractionService,
 ) {
+  fun validateBookingBeforeCalculation(booking: Booking): List<ValidationMessage> {
+    return validateFixedTermRecall(booking)
+  }
 
-  fun validate(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+  fun validateSourceData(sourceData: PrisonApiSourceData): List<ValidationMessage> {
     val sentencesAndOffences = sourceData.sentenceAndOffences
     val adjustments = sourceData.bookingAndSentenceAdjustments
     val sortedSentences = sentencesAndOffences.sortedWith(this::sortByCaseNumberAndLineSequence)
@@ -101,11 +116,118 @@ class ValidationService(
 
     val validationMessages = validateSentences(sortedSentences)
     validationMessages += validateAdjustments(adjustments)
+    validationMessages += validateFixedTermRecall(sourceData)
     if (validationMessages.isNotEmpty()) {
       return validationMessages
     }
 
     return emptyList()
+  }
+
+  private fun validateFixedTermRecall(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+
+    val sentencesAndOffences = sourceData.sentenceAndOffences
+    val ftrDetails = sourceData.fixedTermRecallDetails ?: return emptyList()
+    val (recallLength, has14DayFTRSentence, has28DayFTRSentence) = getFtrValidationDetails(
+      ftrDetails, sentencesAndOffences
+    )
+
+    // AC1
+    if (has14DayFTRSentence && has28DayFTRSentence) {
+      return listOf(ValidationMessage(FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER))
+    }
+
+    // AC2
+    if (has14DayFTRSentence && recallLength == 28) {
+      return listOf(ValidationMessage(FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28))
+    }
+
+    // AC4
+    if (has28DayFTRSentence && recallLength == 14) {
+      return listOf(ValidationMessage(FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14))
+    }
+    return emptyList()
+  }
+
+  private fun validateFixedTermRecall(booking: Booking): List<ValidationMessage> {
+    val ftrDetails = booking.fixedTermRecallDetails ?: return emptyList()
+    val ftrSentences = booking.sentences.filter {
+      it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28
+    }
+    val recallLength = ftrDetails.recallLength
+
+    val ftrSentenceGreaterThan12Months = ftrSentences.any { it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS) }
+    val ftrSentenceLessThan12Months = ftrSentences.any { it.durationIsLessThan(TWELVE, MONTHS) }
+    // AC6
+    if (ftrSentenceGreaterThan12Months && recallLength == 14) {
+      return listOf(ValidationMessage(FTR_14_DAYS_SENTENCE_GE_12_MONTHS))
+    }
+
+    // AC8
+    if (ftrSentenceLessThan12Months && recallLength == 28) {
+      return listOf(ValidationMessage(FTR_28_DAYS_SENTENCE_LT_12_MONTHS))
+    }
+
+    // AC14 UNNECCESSArry same as AC8
+    // AC16 UNNECCESSArry same as AC6
+
+    return emptyList()
+  }
+
+  private fun validateFixedTermRecallAfterCalc(booking: Booking) {
+    val ftrDetails = booking.fixedTermRecallDetails ?: return
+    val recallLength = ftrDetails.recallLength
+
+    // AC10 consecutiveSentences is populated during calculation, so move this to after calc
+    booking.consecutiveSentences.forEach {
+      if (it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28) {
+        if (recallLength == 14 && durationIsGreaterThanOrEqualTo(
+            it.getCombinedDuration().getLengthInDays(it.sentencedAt), it.sentencedAt, TWELVE, MONTHS
+          )
+        ) {
+          throw CrdCalculationValidationException(
+            FTR_14_DAYS_AGGREGATE_GE_12_MONTHS.message, FTR_14_DAYS_AGGREGATE_GE_12_MONTHS
+          )
+        }
+      }
+    }
+
+    // AC12
+    booking.consecutiveSentences.forEach {
+      if (it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28) {
+        if (recallLength == 28 && durationIsLessThan(
+            it.getCombinedDuration().getLengthInDays(it.sentencedAt), it.sentencedAt, TWELVE, MONTHS
+          )
+        ) {
+          throw CrdCalculationValidationException(
+            FTR_14_DAYS_AGGREGATE_GE_12_MONTHS.message, FTR_14_DAYS_AGGREGATE_GE_12_MONTHS
+          )
+        }
+      }
+    }
+
+    // AC18 SAMEAS AC12
+    // AC20 SAMEAS AC10
+  }
+
+  fun durationIsGreaterThanOrEqualTo(lengthInDays: Int, sentencedAt: LocalDate, length: Long, period: ChronoUnit): Boolean {
+    return (lengthInDays >= ChronoUnit.DAYS.between(sentencedAt, sentencedAt.plus(length, period)))
+  }
+
+  fun durationIsLessThan(lengthInDays: Int, sentencedAt: LocalDate, length: Long, period: ChronoUnit): Boolean {
+    return (lengthInDays < ChronoUnit.DAYS.between(sentencedAt, sentencedAt.plus(length, period)))
+  }
+
+  private fun getFtrValidationDetails(
+    ftrDetails: FixedTermRecallDetails,
+    sentencesAndOffences: List<SentenceAndOffences>,
+  ): Triple<Int, Boolean, Boolean> {
+    val recallLength = ftrDetails.recallLength
+    val bookingsSentenceTypes = sentencesAndOffences.map { from(it.sentenceCalculationType) }
+    val has14DayFTRSentence = bookingsSentenceTypes.any { it == _14FTR_ORA }
+    val has28DayFTRSentence = SentenceCalculationType.values()
+      .any { it.isFixedTermRecall && it != _14FTR_ORA && bookingsSentenceTypes.contains(it) }
+    return Triple(recallLength, has14DayFTRSentence, has28DayFTRSentence)
   }
 
   private fun validateUnsupportedCalculation(sourceData: PrisonApiSourceData): List<ValidationMessage> {
@@ -123,12 +245,10 @@ class ValidationService(
   private fun validateConsecutiveSentenceUnique(sentences: List<SentenceAndOffences>): List<ValidationMessage> {
     val consecutiveSentences = sentences.filter { it.consecutiveToSequence != null }
     val sentencesGroupedByConsecutiveTo = consecutiveSentences.groupBy { it.consecutiveToSequence }
-    return sentencesGroupedByConsecutiveTo.entries
-      .filter { it.value.size > 1 }
-      .map { entry ->
-        val consecutiveToSentence = sentences.first { it.sentenceSequence == entry.key }
-        ValidationMessage(MULTIPLE_SENTENCES_CONSECUTIVE_TO, getCaseSeqAndLineSeq(consecutiveToSentence))
-      }
+    return sentencesGroupedByConsecutiveTo.entries.filter { it.value.size > 1 }.map { entry ->
+      val consecutiveToSentence = sentences.first { it.sentenceSequence == entry.key }
+      ValidationMessage(MULTIPLE_SENTENCES_CONSECUTIVE_TO, getCaseSeqAndLineSeq(consecutiveToSentence))
+    }
   }
 
   private fun validateAdjustments(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
@@ -174,11 +294,8 @@ class ValidationService(
   }
 
   private fun validateBookingAdjustment(bookingAdjustments: List<BookingAdjustment>): List<ValidationMessage> =
-    bookingAdjustments
-      .filter { BOOKING_ADJUSTMENTS_TO_VALIDATE.contains(it.type) && it.fromDate.isAfter(LocalDate.now()) }
-      .map { it.type }
-      .distinct()
-      .map { ValidationMessage(ADJUSTMENT_FUTURE_DATED_MAP[it]!!) }
+    bookingAdjustments.filter { BOOKING_ADJUSTMENTS_TO_VALIDATE.contains(it.type) && it.fromDate.isAfter(LocalDate.now()) }
+      .map { it.type }.distinct().map { ValidationMessage(ADJUSTMENT_FUTURE_DATED_MAP[it]!!) }
 
   private fun validateSentenceAdjustment(sentenceAdjustment: SentenceAdjustment): ValidationMessage? {
     if (sentenceAdjustment.type == SentenceAdjustmentType.REMAND && (sentenceAdjustment.fromDate == null || sentenceAdjustment.toDate == null)) {
@@ -201,7 +318,7 @@ class ValidationService(
   }
 
   private fun validateFineAmount(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
-    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
+    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
     if (sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
       if (sentencesAndOffence.fineAmount == null) {
         return ValidationMessage(A_FINE_SENTENCE_MISSING_FINE_AMOUNT, getCaseSeqAndLineSeq(sentencesAndOffence))
@@ -211,7 +328,7 @@ class ValidationService(
   }
 
   private fun validateThatSec91SentenceTypeCorrectlyApplied(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
-    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
+    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
 
     if (sentenceCalculationType == SentenceCalculationType.SEC91_03 || sentenceCalculationType == SentenceCalculationType.SEC91_03_ORA) {
       if (sentencesAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.SEC_91_END_DATE)) {
@@ -222,7 +339,7 @@ class ValidationService(
   }
 
   private fun validateEdsSentenceTypesCorrectlyApplied(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
-    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
+    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
 
     if (listOf(SentenceCalculationType.EDS18, SentenceCalculationType.EDS21, SentenceCalculationType.EDSU18).contains(
         sentenceCalculationType
@@ -240,7 +357,7 @@ class ValidationService(
   }
 
   private fun validateSopcSentenceTypesCorrectlyApplied(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
-    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
+    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
 
     if (listOf(SentenceCalculationType.SOPC18, SentenceCalculationType.SOPC21).contains(sentenceCalculationType)) {
       if (sentencesAndOffence.sentenceDate.isBefore(ImportantDates.SEC_91_END_DATE)) {
@@ -255,7 +372,7 @@ class ValidationService(
   }
 
   private fun validateDuration(sentencesAndOffence: SentenceAndOffences): List<ValidationMessage> {
-    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
+    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
     return if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java || sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
       validateSingleTermDuration(sentencesAndOffence)
     } else {
@@ -270,10 +387,7 @@ class ValidationService(
       validationMessages.add(ValidationMessage(SENTENCE_HAS_MULTIPLE_TERMS, getCaseSeqAndLineSeq(sentencesAndOffence)))
     } else {
       val emptyImprisonmentTerm =
-        sentencesAndOffence.terms[0].days == 0 &&
-          sentencesAndOffence.terms[0].weeks == 0 &&
-          sentencesAndOffence.terms[0].months == 0 &&
-          sentencesAndOffence.terms[0].years == 0
+        sentencesAndOffence.terms[0].days == 0 && sentencesAndOffence.terms[0].weeks == 0 && sentencesAndOffence.terms[0].months == 0 && sentencesAndOffence.terms[0].years == 0
 
       if (emptyImprisonmentTerm) {
         validationMessages.add(ValidationMessage(ZERO_IMPRISONMENT_TERM, getCaseSeqAndLineSeq(sentencesAndOffence)))
@@ -289,22 +403,18 @@ class ValidationService(
     if (imprisonmentTerms.isEmpty()) {
       validationMessages.add(
         ValidationMessage(
-          SENTENCE_HAS_NO_IMPRISONMENT_TERM,
-          getCaseSeqAndLineSeq(sentencesAndOffence)
+          SENTENCE_HAS_NO_IMPRISONMENT_TERM, getCaseSeqAndLineSeq(sentencesAndOffence)
         )
       )
     } else if (imprisonmentTerms.size > 1) {
       validationMessages.add(
         ValidationMessage(
-          MORE_THAN_ONE_IMPRISONMENT_TERM,
-          getCaseSeqAndLineSeq(sentencesAndOffence)
+          MORE_THAN_ONE_IMPRISONMENT_TERM, getCaseSeqAndLineSeq(sentencesAndOffence)
         )
       )
     } else {
-      val emptyTerm = imprisonmentTerms[0].days == 0 &&
-        imprisonmentTerms[0].weeks == 0 &&
-        imprisonmentTerms[0].months == 0 &&
-        imprisonmentTerms[0].years == 0
+      val emptyTerm =
+        imprisonmentTerms[0].days == 0 && imprisonmentTerms[0].weeks == 0 && imprisonmentTerms[0].months == 0 && imprisonmentTerms[0].years == 0
       if (emptyTerm) {
         validationMessages.add(ValidationMessage(ZERO_IMPRISONMENT_TERM, getCaseSeqAndLineSeq(sentencesAndOffence)))
       }
@@ -316,7 +426,7 @@ class ValidationService(
     } else if (licenceTerms.size > 1) {
       validationMessages.add(ValidationMessage(MORE_THAN_ONE_LICENCE_TERM, getCaseSeqAndLineSeq(sentencesAndOffence)))
     } else {
-      val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)!!
+      val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
       if (sentenceCalculationType.sentenceClazz == ExtendedDeterminateSentence::class.java) {
         val duration =
           Period.of(licenceTerms[0].years, licenceTerms[0].months, licenceTerms[0].weeks * 7 + licenceTerms[0].days)
@@ -325,12 +435,15 @@ class ValidationService(
         val endOfEightYears = sentencesAndOffence.sentenceDate.plusYears(8)
 
         if (endOfDuration.isBefore(endOfOneYear)) {
-          validationMessages.add(ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, getCaseSeqAndLineSeq(sentencesAndOffence)))
+          validationMessages.add(
+            ValidationMessage(
+              EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, getCaseSeqAndLineSeq(sentencesAndOffence)
+            )
+          )
         } else if (endOfDuration.isAfter(endOfEightYears)) {
           validationMessages.add(
             ValidationMessage(
-              EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS,
-              getCaseSeqAndLineSeq(sentencesAndOffence)
+              EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS, getCaseSeqAndLineSeq(sentencesAndOffence)
             )
           )
         }
@@ -342,8 +455,7 @@ class ValidationService(
         if (endOfDuration != endOfOneYear) {
           validationMessages.add(
             ValidationMessage(
-              SOPC_LICENCE_TERM_NOT_12_MONTHS,
-              getCaseSeqAndLineSeq(sentencesAndOffence)
+              SOPC_LICENCE_TERM_NOT_12_MONTHS, getCaseSeqAndLineSeq(sentencesAndOffence)
             )
           )
         }
@@ -378,8 +490,7 @@ class ValidationService(
 
   private fun validateOffenderSupported(prisonerDetails: PrisonerDetails): List<ValidationMessage> {
     val hasPtdAlert = prisonerDetails.activeAlerts().any {
-      it.alertCode == "PTD" &&
-        it.alertType == "O"
+      it.alertCode == "PTD" && it.alertType == "O"
     }
 
     if (hasPtdAlert) {
@@ -389,14 +500,10 @@ class ValidationService(
   }
 
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
-    val supportedSentences: List<SentenceCalculationType> = SentenceCalculationType.values()
-      .filter { (it.sentenceClazz == AFineSentence::class.java && this.featureToggles.afine) || it.sentenceClazz == SopcSentence::class.java || it.sentenceClazz == ExtendedDeterminateSentence::class.java || it.sentenceClazz == StandardDeterminateSentence::class.java }
     val supportedCategories = listOf("2003", "2020")
     val validationMessages = sentencesAndOffences.filter {
-      !supportedSentences.contains(SentenceCalculationType.from(it.sentenceCalculationType)) ||
-        !supportedCategories.contains(it.sentenceCategory)
-    }
-      .map { ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf(it.sentenceCategory, it.sentenceTypeDescription)) }
+      !SentenceCalculationType.isSupported(it.sentenceCalculationType) || !supportedCategories.contains(it.sentenceCategory)
+    }.map { ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf(it.sentenceCategory, it.sentenceTypeDescription)) }
       .toMutableList()
     return validationMessages.toList()
   }
@@ -404,7 +511,7 @@ class ValidationService(
   private fun validateFineSentenceSupported(prisonApiSourceData: PrisonApiSourceData): List<ValidationMessage> {
     val validationMessages = mutableListOf<ValidationMessage>()
     val fineSentences =
-      prisonApiSourceData.sentenceAndOffences.filter { SentenceCalculationType.from(it.sentenceCalculationType)?.sentenceClazz == AFineSentence::class.java }
+      prisonApiSourceData.sentenceAndOffences.filter { SentenceCalculationType.from(it.sentenceCalculationType).sentenceClazz == AFineSentence::class.java }
     if (fineSentences.isNotEmpty()) {
       if (prisonApiSourceData.offenderFinePayments.isNotEmpty()) {
         validationMessages.add(ValidationMessage(A_FINE_SENTENCE_WITH_PAYMENTS))
@@ -437,10 +544,11 @@ class ValidationService(
   /*
     Run the validation that can only happen after calculations. I.e. validate that adjustments happen before release date
    */
-  fun validateAfterCalculation(workingBooking: Booking) {
+  fun validateBookingAfterCalculation(workingBooking: Booking) {
     workingBooking.sentenceGroups.forEach { validateSentenceHasNotBeenExtinguished(it) }
     validateRemandOverlappingSentences(workingBooking)
     validateAdditionAdjustmentsInsideLatestReleaseDate(workingBooking)
+    validateFixedTermRecallAfterCalc(workingBooking)
   }
 
   private fun validateAdditionAdjustmentsInsideLatestReleaseDate(booking: Booking) {
@@ -459,15 +567,15 @@ class ValidationService(
       val anyRada = adjustmentsAfterRelease.intersect(radas).isNotEmpty()
       val anyUal = adjustmentsAfterRelease.intersect(uals).isNotEmpty()
 
-      if (anyAda)
-        throw AdjustmentIsAfterReleaseDateException(ADJUSTMENT_AFTER_RELEASE_ADA.message, ADJUSTMENT_AFTER_RELEASE_ADA)
-      if (anyRada)
-        throw AdjustmentIsAfterReleaseDateException(
-          ADJUSTMENT_AFTER_RELEASE_RADA.message,
-          ADJUSTMENT_AFTER_RELEASE_RADA
-        )
-      if (anyUal)
-        throw AdjustmentIsAfterReleaseDateException(ADJUSTMENT_AFTER_RELEASE_UAL.message, ADJUSTMENT_AFTER_RELEASE_UAL)
+      if (anyAda) throw AdjustmentIsAfterReleaseDateException(
+        ADJUSTMENT_AFTER_RELEASE_ADA.message, ADJUSTMENT_AFTER_RELEASE_ADA
+      )
+      if (anyRada) throw AdjustmentIsAfterReleaseDateException(
+        ADJUSTMENT_AFTER_RELEASE_RADA.message, ADJUSTMENT_AFTER_RELEASE_RADA
+      )
+      if (anyUal) throw AdjustmentIsAfterReleaseDateException(
+        ADJUSTMENT_AFTER_RELEASE_UAL.message, ADJUSTMENT_AFTER_RELEASE_UAL
+      )
     }
   }
 
@@ -487,9 +595,7 @@ class ValidationService(
         val isRemand = remandRanges.any { sentenceRange -> sentenceRange === it }
         if (totalRange == null && previousRangeIsRemand == null) {
           totalRange = it
-        } else if (it.isConnected(totalRange) &&
-          (previousRangeIsRemand!! || isRemand)
-        ) {
+        } else if (it.isConnected(totalRange) && (previousRangeIsRemand!! || isRemand)) {
           // Remand overlaps
           if (previousRangeIsRemand!! && isRemand) {
             val args = listOf(previousRange!!.toString(), it.toString())
@@ -514,21 +620,21 @@ class ValidationService(
       val latestReleaseDateSentence = extractionService.mostRecentSentence(
         determinateSentences, SentenceCalculation::adjustedUncappedDeterminateReleaseDate
       )
-      if (earliestSentenceDate.minusDays(1).isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate)) {
+      if (earliestSentenceDate.minusDays(1)
+        .isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate)
+      ) {
         val hasRemand =
           latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND) != 0
         val hasTaggedBail =
           latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.TAGGED_BAIL) != 0
         if (hasRemand) {
           throw CustodialPeriodExtinguishedException(
-            CUSTODIAL_PERIOD_EXTINGUISHED_REMAND.message,
-            CUSTODIAL_PERIOD_EXTINGUISHED_REMAND
+            CUSTODIAL_PERIOD_EXTINGUISHED_REMAND.message, CUSTODIAL_PERIOD_EXTINGUISHED_REMAND
           )
         }
         if (hasTaggedBail) {
           throw CustodialPeriodExtinguishedException(
-            CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL.message,
-            CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL
+            CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL.message, CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL
           )
         }
       }
@@ -546,6 +652,7 @@ class ValidationService(
       UNLAWFULLY_AT_LARGE to ADJUSTMENT_FUTURE_DATED_UAL,
       RESTORED_ADDITIONAL_DAYS_AWARDED to ADJUSTMENT_FUTURE_DATED_RADA
     )
+    private const val TWELVE = 12L
     private val log = LoggerFactory.getLogger(this::class.java)
   }
 }

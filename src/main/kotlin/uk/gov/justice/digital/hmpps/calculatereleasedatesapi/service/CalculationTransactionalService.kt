@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.ERROR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdCalculationValidationException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PrisonApiDataNotFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -29,6 +30,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import javax.persistence.EntityNotFoundException
 
 @Service
@@ -39,18 +42,119 @@ class CalculationTransactionalService(
   private val prisonService: PrisonService,
   private val domainEventPublisher: DomainEventPublisher,
   private val prisonApiDataMapper: PrisonApiDataMapper,
-  private val calculationService: CalculationService
+  private val calculationService: CalculationService,
+  private val bookingService: BookingService,
+  private val validationService: ValidationService,
 ) {
 
   fun getCurrentAuthentication(): AuthAwareAuthenticationToken =
     SecurityContextHolder.getContext().authentication as AuthAwareAuthenticationToken?
       ?: throw IllegalStateException("User is not authenticated")
 
+  /*
+   * There are 4 stages of full validation:
+   * 1. validate user input data and the raw sentence and offence data from NOMIS
+   * 2. Validate the transformation of the raw Booking (NOMIS offence data transformed into a Booking object)
+   * 3. Run the calculation and catch any errors thrown by the calculation algorithm
+   * 4. Validate the post calculation Booking (The Booking is transformed during the calculation). e.g. Consecutive sentences (aggregates)
+   *
+   * activeDataOnly is only used by the test 1000 calcs functionality
+   */
+  fun fullValidation(prisonerId: String, calculationUserInputs: CalculationUserInputs, activeDataOnly: Boolean = true): List<ValidationMessage> {
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
+    var messages = validationService.validateSourceData(sourceData) // Validation stage 1 of 4
+    if (messages.isNotEmpty()) return messages
+
+    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    messages = validationService.validateBookingBeforeCalculation(booking) // Validation stage 2 of 4
+    if (messages.isNotEmpty()) return messages
+    try {
+      val bookingAfterCalculation = calculationService.calculate(booking) // Validation stage 3 of 4
+      validationService.validateBookingAfterCalculation(bookingAfterCalculation) // Validation stage 4 of 4
+    } catch (validationException: CrdCalculationValidationException) {
+      return listOf(ValidationMessage(validationException.validation))
+    }
+    return messages
+  }
+
+  //  The activeDataOnly flag is only used by a test endpoint (1000 calcs test, which is used to test historic data)
   @Transactional
-  fun calculate(booking: Booking, calculationStatus: CalculationStatus, sourceData: PrisonApiSourceData, calculationUserInputs: CalculationUserInputs?, calculationFragments: CalculationFragments? = null): CalculatedReleaseDates {
+  fun calculate(prisonerId: String, calculationUserInputs: CalculationUserInputs, activeDataOnly: Boolean = true, calculationType: CalculationStatus = PRELIMINARY): CalculatedReleaseDates {
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
+    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    try {
+      return calculate(booking, calculationType, sourceData, calculationUserInputs)
+    } catch (error: Exception) {
+      recordError(booking, sourceData, calculationUserInputs, error)
+      throw error
+    }
+  }
+
+  @Transactional
+  fun validateAndConfirmCalculation(
+    calculationRequestId: Long,
+    calculationFragments: CalculationFragments,
+  ): CalculatedReleaseDates {
+    val calculationRequest =
+      calculationRequestRepository.findByIdAndCalculationStatus(
+        calculationRequestId,
+        PRELIMINARY.name
+      ).orElseThrow {
+        EntityNotFoundException("No preliminary calculation exists for calculationRequestId $calculationRequestId")
+      }
+    val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId)
+    val userInput = transform(calculationRequest.calculationRequestUserInput)
+    val booking = bookingService.getBooking(sourceData, userInput)
+
+    if (calculationRequest.inputData.hashCode() != objectToJson(booking, objectMapper).hashCode()) {
+      throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
+    }
+
+    if (validationService.validateSourceData(sourceData).isNotEmpty()) {
+      throw PreconditionFailedException("The booking now fails validation")
+    }
+
+    return confirmCalculation(calculationRequest.prisonerId, calculationFragments, sourceData, booking, userInput)
+  }
+
+  private fun confirmCalculation(
+    prisonerId: String,
+    calculationFragments: CalculationFragments,
+    sourceData: PrisonApiSourceData,
+    booking: Booking,
+    userInput: CalculationUserInputs?
+  ): CalculatedReleaseDates {
+    try {
+      val calculation =
+        calculate(booking, CONFIRMED, sourceData, userInput, calculationFragments)
+      writeToNomisAndPublishEvent(prisonerId, booking, calculation)
+      return calculation
+    } catch (error: Exception) {
+      recordError(booking, sourceData, userInput, error)
+      throw error
+    }
+  }
+
+  // TODO Only called privately but is used by tests. Could be marked private if tests are refactored
+  @Transactional
+  fun calculate(
+    booking: Booking,
+    calculationStatus: CalculationStatus,
+    sourceData: PrisonApiSourceData,
+    calculationUserInputs: CalculationUserInputs?,
+    calculationFragments: CalculationFragments? = null
+  ): CalculatedReleaseDates {
     val calculationRequest =
       calculationRequestRepository.save(
-        transform(booking, getCurrentAuthentication().principal, calculationStatus, sourceData, objectMapper, calculationUserInputs, calculationFragments)
+        transform(
+          booking,
+          getCurrentAuthentication().principal,
+          calculationStatus,
+          sourceData,
+          objectMapper,
+          calculationUserInputs,
+          calculationFragments
+        )
       )
 
     val calculationResult = calculationService.calculateReleaseDates(booking).second
@@ -71,7 +175,10 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun calculateWithBreakdown(booking: Booking, previousCalculationResults: CalculatedReleaseDates): CalculationBreakdown {
+  fun calculateWithBreakdown(
+    booking: Booking,
+    previousCalculationResults: CalculatedReleaseDates
+  ): CalculationBreakdown {
     val (workingBooking, bookingCalculation) = calculationService.calculateReleaseDates(booking)
     if (bookingCalculation.dates == previousCalculationResults.dates) {
       return transform(workingBooking, bookingCalculation.breakdownByReleaseDateType, bookingCalculation.otherDates)
@@ -149,34 +256,10 @@ class CalculationTransactionalService(
     }
     return prisonApiDataMapper.mapOffenderFinePayment(calculationRequest)
   }
+
   private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest {
     return calculationRequestRepository.findById(calculationRequestId).orElseThrow {
       EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId ")
-    }
-  }
-
-  @Transactional(readOnly = true)
-  fun getBooking(calculationRequestId: Long): Booking {
-    val calculationRequest =
-      calculationRequestRepository.findById(calculationRequestId).orElseThrow {
-        EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId ")
-      }
-
-    return objectMapper.treeToValue(calculationRequest.inputData, Booking::class.java)
-  }
-
-  @Transactional(readOnly = true)
-  fun validateConfirmationRequest(calculationRequestId: Long, booking: Booking) {
-    val calculationRequest =
-      calculationRequestRepository.findByIdAndCalculationStatus(
-        calculationRequestId,
-        PRELIMINARY.name
-      ).orElseThrow {
-        EntityNotFoundException("No preliminary calculation exists for calculationRequestId $calculationRequestId")
-      }
-
-    if (calculationRequest.inputData.hashCode() != objectToJson(booking, objectMapper).hashCode()) {
-      throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
     }
   }
 
@@ -212,10 +295,36 @@ class CalculationTransactionalService(
   }
 
   @Transactional
-  fun recordError(booking: Booking, sourceData: PrisonApiSourceData, calculationUserInputs: CalculationUserInputs?, error: Exception) {
+  fun recordError(
+    booking: Booking,
+    sourceData: PrisonApiSourceData,
+    calculationUserInputs: CalculationUserInputs?,
+    error: Exception
+  ) {
     calculationRequestRepository.save(
       transform(booking, getCurrentAuthentication().principal, ERROR, sourceData, objectMapper, calculationUserInputs)
     )
+  }
+
+  @Transactional(readOnly = true)
+  fun getCalculationBreakdown(
+    calculationRequestId: Long
+  ): CalculationBreakdown {
+    val calculationUserInputs = findUserInput(calculationRequestId)
+    val prisonerDetails = findPrisonerDetailsFromCalculation(calculationRequestId)
+    val sentenceAndOffences = findSentenceAndOffencesFromCalculation(calculationRequestId)
+    val bookingAndSentenceAdjustments = findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
+    val returnToCustodyDate = findReturnToCustodyDateFromCalculation(calculationRequestId)
+    val calculation = findCalculationResults(calculationRequestId)
+    val booking = Booking(
+      offender = transform(prisonerDetails),
+      sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) }.flatten(),
+      adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
+      bookingId = prisonerDetails.bookingId,
+      returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,
+      calculateErsed = calculationUserInputs.calculateErsed
+    )
+    return calculateWithBreakdown(booking, calculation)
   }
 
   companion object {

@@ -54,7 +54,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
     assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2028, 1, 10))
 
     val confirmResponse = webTestClient.post()
-      .uri("/calculation/USERINPUT/confirm/${prelimResponse.calculationRequestId}")
+      .uri("/calculation/confirm/${prelimResponse.calculationRequestId}")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))

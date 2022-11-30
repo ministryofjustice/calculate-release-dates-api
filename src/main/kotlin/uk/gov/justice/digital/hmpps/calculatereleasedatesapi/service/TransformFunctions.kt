@@ -123,7 +123,7 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
     else
       listOf()
 
-    val sentenceCalculationType = SentenceCalculationType.from(sentence.sentenceCalculationType)!!
+    val sentenceCalculationType = SentenceCalculationType.from(sentence.sentenceCalculationType)
     if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java) {
       StandardDeterminateSentence(
         sentencedAt = sentence.sentenceDate,
@@ -257,14 +257,14 @@ private fun findSentenceForAdjustment(adjustment: SentenceAdjustment, sentencesA
   if (sentence == null) {
     return null
   } else {
-    val recallType = SentenceCalculationType.from(sentence.sentenceCalculationType)!!.recallType
+    val recallType = SentenceCalculationType.from(sentence.sentenceCalculationType).recallType
     if (listOf(
         SentenceAdjustmentType.REMAND,
         SentenceAdjustmentType.TAGGED_BAIL
       ).contains(adjustment.type) && recallType != null
     ) {
       val firstDeterminate = sentencesAndOffences.sortedBy { it.sentenceDate }
-        .find { SentenceCalculationType.from(it.sentenceCalculationType)!!.recallType == null }
+        .find { SentenceCalculationType.from(it.sentenceCalculationType).recallType == null }
       if (firstDeterminate != null) {
         return firstDeterminate
       }
@@ -275,7 +275,7 @@ private fun findSentenceForAdjustment(adjustment: SentenceAdjustment, sentencesA
       ).contains(adjustment.type) && recallType == null
     ) {
       val firstRecall = sentencesAndOffences.sortedBy { it.sentenceDate }
-        .find { SentenceCalculationType.from(it.sentenceCalculationType)!!.recallType != null }
+        .find { SentenceCalculationType.from(it.sentenceCalculationType).recallType != null }
       if (firstRecall != null) {
         return firstRecall
       }

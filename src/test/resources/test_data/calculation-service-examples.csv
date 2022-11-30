@@ -22,7 +22,6 @@ psi-examples,28,
 psi-examples,29,
 psi-examples,30,
 psi-examples,31,
-psi-examples,31-error,CustodialPeriodExtinguishedException
 psi-examples,32,
 psi-examples,33,
 psi-examples,33_S15,
@@ -64,8 +63,6 @@ custom-examples,crs-680-pre-prod-1,
 custom-examples,crs-680-pre-prod-2,
 custom-examples,crs-680-concurrent-sentences-same-date,
 custom-examples,crs-680-concurrent-sentences-different-date,
-custom-examples,crs-644-remand-overlapping-remand,RemandPeriodOverlapsWithRemandException
-custom-examples,crs-644-remand-overlapping-sentence,RemandPeriodOverlapsWithSentenceException
 custom-examples,crs-685-tagged-bail-single-sentence,
 custom-examples,crs-685-tagged-bail-concurrent-same-date-sentences,
 custom-examples,crs-685-tagged-bail-concurrent-different-date-sentences,
@@ -135,12 +132,6 @@ custom-examples,crs-816-ac3,
 custom-examples,crs-816-ac4,
 custom-examples,crs-816-extra-ac,
 custom-examples,crs-822-tagged-bail-recall-bug,
-custom-examples,crs-657-concurrent-different-date,CustodialPeriodExtinguishedException
-custom-examples,crs-657-concurrent-same-date,CustodialPeriodExtinguishedException
-custom-examples,crs-657-consecutive,CustodialPeriodExtinguishedException
-custom-examples,crs-657-consecutive-conc-different-date,CustodialPeriodExtinguishedException
-custom-examples,crs-657-consecutive-conc-same-date,CustodialPeriodExtinguishedException
-custom-examples,crs-657-single-sentence,CustodialPeriodExtinguishedException
 custom-examples,crs-824-hdced-prrd-ac1,
 custom-examples,crs-824-hdced-prrd-ac2,
 custom-examples,crs-824-hdced-prrd-ac3,

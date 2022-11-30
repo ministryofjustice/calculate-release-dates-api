@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.vladmihalcea.hibernate.type.json.internal.JacksonUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
@@ -21,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.oauth2.jwt.Jwt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
@@ -35,6 +34,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -76,7 +77,6 @@ class CalculationTransactionalServiceTest {
     sentencesExtractionService
   )
   private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
-  private val validationService = ValidationService(FeatureToggles(true), sentencesExtractionService)
 
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
@@ -86,8 +86,9 @@ class CalculationTransactionalServiceTest {
     bookingCalculationService,
     bookingExtractionService,
     bookingTimelineService,
-    validationService
   )
+  private val bookingService = mock<BookingService>()
+  private val validationService = mock<ValidationService>()
 
   private val calculationTransactionalService =
     CalculationTransactionalService(
@@ -97,7 +98,9 @@ class CalculationTransactionalServiceTest {
       prisonService,
       domainEventPublisher,
       prisonApiDataMapper,
-      calculationService
+      calculationService,
+      bookingService,
+      validationService,
     )
 
   private val fakeSourceData = PrisonApiSourceData(
@@ -197,9 +200,11 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES
       )
     )
+    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(fakeSourceData)
+    whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
 
     val exception = assertThrows<PreconditionFailedException> {
-      calculationTransactionalService.validateConfirmationRequest(CALCULATION_REQUEST_ID, BOOKING)
+      calculationTransactionalService.validateAndConfirmCalculation(CALCULATION_REQUEST_ID, CalculationFragments(""))
     }
     assertThat(exception)
       .isInstanceOf(PreconditionFailedException::class.java)
@@ -214,9 +219,11 @@ class CalculationTransactionalServiceTest {
         PRELIMINARY.name
       )
     ).thenReturn(Optional.empty())
+    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(fakeSourceData)
+    whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
 
     val exception = assertThrows<EntityNotFoundException> {
-      calculationTransactionalService.validateConfirmationRequest(CALCULATION_REQUEST_ID, BOOKING)
+      calculationTransactionalService.validateAndConfirmCalculation(CALCULATION_REQUEST_ID, CalculationFragments(""))
     }
     assertThat(exception)
       .isInstanceOf(EntityNotFoundException::class.java)
@@ -225,35 +232,15 @@ class CalculationTransactionalServiceTest {
 
   @Test
   fun `Test validation succeeds if the PRELIMINARY calculation matches the one being confirmed`() {
-    whenever(
-      calculationRequestRepository.findByIdAndCalculationStatus(
-        CALCULATION_REQUEST_ID,
-        PRELIMINARY.name
-      )
-    ).thenReturn(
-      Optional.of(
-        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)
-      )
-    )
+    SecurityContextHolder.setContext(SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())))
+    whenever(calculationRequestRepository.findByIdAndCalculationStatus(CALCULATION_REQUEST_ID, PRELIMINARY.name))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(fakeSourceData)
+    whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
 
-    assertDoesNotThrow { calculationTransactionalService.validateConfirmationRequest(CALCULATION_REQUEST_ID, BOOKING) }
-  }
-
-  @Test
-  fun `Test can find booking from a calculation request id`() {
-    whenever(
-      calculationRequestRepository.findById(
-        CALCULATION_REQUEST_ID
-      )
-    ).thenReturn(
-      Optional.of(
-        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)
-      )
-    )
-
-    val booking = calculationTransactionalService.getBooking(CALCULATION_REQUEST_ID)
-
-    assertThat(booking).isNotNull
+    assertDoesNotThrow { calculationTransactionalService.validateAndConfirmCalculation(CALCULATION_REQUEST_ID, CalculationFragments("")) }
   }
 
   @Test
@@ -395,7 +382,7 @@ class CalculationTransactionalServiceTest {
           "\"isPcscSdsPlus\":false,\"offenceCode\":null},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}}," +
           "\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\"," +
           "\"consecutiveSentenceUUIDs\":[],\"caseSequence\":1,\"lineSequence\":2,\"caseReference\":null," +
-          "\"recallType\":null,\"section250\":false}],\"adjustments\":{},\"returnToCustodyDate\":null," +
+          "\"recallType\":null,\"section250\":false}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
           "\"bookingId\":12345}"
       )
 
@@ -445,6 +432,6 @@ class CalculationTransactionalServiceTest {
       lineSequence = 2
     )
 
-    val BOOKING = Booking(OFFENDER, listOf(StandardSENTENCE), Adjustments(), null, BOOKING_ID)
+    val BOOKING = Booking(OFFENDER, listOf(StandardSENTENCE), Adjustments(), null, null, BOOKING_ID)
   }
 }
