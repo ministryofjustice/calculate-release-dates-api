@@ -249,6 +249,13 @@ class BookingExtractionService(
       }
     }
 
+    val latestEarlyReleaseSchemeEligibilityDate = extractionService.mostRecentOrNull(sentences, SentenceCalculation::earlyReleaseSchemeEligibilityDate)
+    val latestArdRelease = extractionService.mostRecentOrNull(sentences.filter { it.releaseDateTypes.contains(ARD) }, SentenceCalculation::releaseDate)
+    val ardIsRelease = latestArdRelease == latestReleaseDate
+    if (latestEarlyReleaseSchemeEligibilityDate != null && !ardIsRelease) {
+      dates[ERSED] = if (latestArdRelease != null && latestEarlyReleaseSchemeEligibilityDate.isBefore(latestArdRelease)) latestArdRelease else latestEarlyReleaseSchemeEligibilityDate
+    }
+
     dates[ESED] = latestUnadjustedExpiryDate
     return CalculationResult(dates.toMap(), breakdownByReleaseDateType.toMap(), otherDates.toMap(), effectiveSentenceLength)
   }
