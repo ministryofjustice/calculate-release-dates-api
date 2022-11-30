@@ -391,32 +391,6 @@ class BookingServiceTest {
       )
     )
   }
-//
-//  @Test
-//  fun `Test GET of calculation breakdown by calculationRequestId`() {
-//    val sentences: List<SentenceAndOffences> = emptyList()
-//    val adjustments = BookingAndSentenceAdjustments(emptyList(), emptyList())
-//    val calculationRequestId = 9995L
-//    val offender = Offender(prisonerId, LocalDate.of(1980, 1, 1))
-//    val booking = Booking(offender, mutableListOf(), Adjustments(), null, null, bookingId)
-//    val breakdown = CalculationBreakdown(listOf(), null)
-//    val calculation = CalculatedReleaseDates(
-//      calculationRequestId = 9991L, dates = mapOf(), calculationStatus = PRELIMINARY,
-//      bookingId = bookingId, prisonerId = prisonerId
-//    )
-//    val userInput = CalculationUserInputs(listOf(CalculationSentenceUserInput(1, "ABC", UserInputType.ORIGINAL, true)))
-//
-//    whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(calculation)
-//    whenever(calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)).thenReturn(sentences)
-//    whenever(calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId)).thenReturn(prisonerDetails)
-//    whenever(calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)).thenReturn(adjustments)
-//    whenever(calculationTransactionalService.findUserInput(calculationRequestId)).thenReturn(userInput)
-//    whenever(calculationTransactionalService.calculateWithBreakdown(booking, calculation)).thenReturn(breakdown)
-//
-//    val result = bookingService.getCalculationBreakdown(calculationRequestId)
-//
-//    assertThat(result).isEqualTo(breakdown)
-//  }
 
   private companion object {
     val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
