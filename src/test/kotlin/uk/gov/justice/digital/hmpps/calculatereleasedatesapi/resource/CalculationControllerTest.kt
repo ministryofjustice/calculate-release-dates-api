@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAd
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
@@ -179,5 +180,19 @@ class CalculationControllerTest {
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
     verify(calculationTransactionalService, times(1)).findCalculationResults(calculationRequestId)
+  }
+
+  @Test
+  fun `Test GET of calculation breakdown by calculationRequestId`() {
+    val calculationRequestId = 9995L
+    val breakdown = CalculationBreakdown(listOf(), null)
+    whenever(calculationTransactionalService.getCalculationBreakdown(calculationRequestId)).thenReturn(breakdown)
+
+    val result = mvc.perform(get("/calculation/breakdown/$calculationRequestId").accept(APPLICATION_JSON))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(breakdown))
   }
 }
