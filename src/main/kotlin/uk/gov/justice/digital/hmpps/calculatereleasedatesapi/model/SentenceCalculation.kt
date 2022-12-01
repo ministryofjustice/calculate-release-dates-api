@@ -189,8 +189,8 @@ data class SentenceCalculation(
   private fun calculateErsedFromTwoThirds(): LocalDate {
     val custodialDuration = sentence.custodialDuration()
     val days = custodialDuration.getLengthInDays(sentence.sentencedAt)
-    return if (days >= 1097) {
-      val release = if (extendedDeterminateParoleEligibilityDate != null) extendedDeterminateParoleEligibilityDate!! else releaseDate
+    return if (days >= RELEASE_AT_TWO_THIRDS_ERSED_DAYS) {
+      val release = extendedDeterminateParoleEligibilityDate ?: releaseDate
       release.minusYears(1)
     } else {
       sentence.sentencedAt
@@ -204,8 +204,8 @@ data class SentenceCalculation(
   private fun calculateErsedFromHalfway(): LocalDate {
     val custodialDuration = sentence.custodialDuration()
     val days = custodialDuration.getLengthInDays(sentence.sentencedAt)
-    return if (days >= 1463) {
-      val release = if (extendedDeterminateParoleEligibilityDate != null) extendedDeterminateParoleEligibilityDate!! else releaseDate
+    return if (days >= RELEASE_AT_HALFWAY_ERSED_DAYS) {
+      val release = extendedDeterminateParoleEligibilityDate ?: releaseDate
       release.minusYears(1)
     } else {
       sentence.sentencedAt
@@ -296,5 +296,10 @@ data class SentenceCalculation(
       "Effective $releaseDateType\t:\t${releaseDate.format(formatter)}\n" +
       "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +
       "${topUpSupervisionDate?.format(formatter)}\n"
+  }
+
+  companion object {
+    const val RELEASE_AT_HALFWAY_ERSED_DAYS = 1463
+    const val RELEASE_AT_TWO_THIRDS_ERSED_DAYS = 1097
   }
 }

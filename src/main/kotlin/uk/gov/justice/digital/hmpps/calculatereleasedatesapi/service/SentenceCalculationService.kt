@@ -105,7 +105,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
     val release = if (sentence is ConsecutiveSentence) {
       getConsecutiveRelease(sentence)
     } else {
-      getSingleSentenceRelease(sentence, booking)
+      getSingleSentenceRelease(sentence)
     }
     val unadjustedExpiryDate =
       sentence.sentencedAt
@@ -151,8 +151,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
   }
 
   private fun getSingleSentenceRelease(
-    sentence: CalculableSentence,
-    booking: Booking
+    sentence: CalculableSentence
   ): ReleaseDateCalculation {
     var numberOfDaysToParoleEligibilityDate: Long? = null
     val releaseDateMultiplier = determineReleaseDateMultiplier(sentence.identificationTrack)

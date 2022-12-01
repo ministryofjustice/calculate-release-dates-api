@@ -129,7 +129,7 @@ interface CalculableSentence {
         this.combinedDuration()
       }
       else -> {
-        throw UnknownError("Unknown sentence in consecutive sentence")
+        throw UnknownError("Unknown sentence")
       }
     }
   }
@@ -152,7 +152,7 @@ interface CalculableSentence {
         this.combinedDuration()
       }
       else -> {
-        throw UnknownError("Uknown sentence")
+        throw UnknownError("Unknown sentence")
       }
     }
   }
