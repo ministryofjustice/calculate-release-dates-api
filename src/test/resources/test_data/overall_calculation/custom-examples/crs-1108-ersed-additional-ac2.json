@@ -1,0 +1,30 @@
+{
+  "calculateErsed": true,
+  "offender":{
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2021-02-26"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 6
+        }
+      },
+      "sentencedAt": "2021-08-24"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2021-08-24",
+        "numberOfDays": 176,
+        "fromDate": "2021-03-01",
+        "toDate": "2021-08-23"
+      }
+    ]
+  }
+}

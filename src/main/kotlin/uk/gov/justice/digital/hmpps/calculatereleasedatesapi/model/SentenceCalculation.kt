@@ -175,6 +175,15 @@ data class SentenceCalculation(
   }
 
   val earlyReleaseSchemeEligibilityDate: LocalDate? get() {
+    val ersed = calculateErsed()
+    return if (ersed != null && ersed.isBefore(sentence.sentencedAt)) {
+      sentence.sentencedAt
+    } else {
+      ersed
+    }
+  }
+
+  private fun calculateErsed(): LocalDate? {
     if (calculateErsed) {
       if (sentence.identificationTrack.calculateErsedFromHalfway()) {
         return calculateErsedFromHalfway()
