@@ -60,9 +60,9 @@ class CalculationTransactionalService(
    */
   fun fullValidation(prisonerId: String, calculationUserInputs: CalculationUserInputs, activeDataOnly: Boolean = true): List<ValidationMessage> {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
-    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
-    var messages = validationService.validateBeforeCalculation(sourceData, booking) // Validation stage 1 of 3
+    var messages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs) // Validation stage 1 of 3
     if (messages.isNotEmpty()) return messages
+    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     try {
       // TODO Doesn't look like this calculate call actually throws any CrdCalculationValidationException, so this whole try catch block can be removed
       val bookingAfterCalculation = calculationService.calculate(booking) // Validation stage 2 of 3
@@ -106,7 +106,7 @@ class CalculationTransactionalService(
       throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
     }
 
-    if (validationService.validateBeforeCalculation(sourceData, booking).isNotEmpty()) {
+    if (validationService.validateBeforeCalculation(sourceData, userInput).isNotEmpty()) {
       throw PreconditionFailedException("The booking now fails validation")
     }
 

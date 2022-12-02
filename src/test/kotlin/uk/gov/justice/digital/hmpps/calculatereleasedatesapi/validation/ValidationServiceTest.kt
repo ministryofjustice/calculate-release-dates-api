@@ -1,12 +1,18 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -24,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Retu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA
@@ -58,7 +65,8 @@ import java.util.UUID
 
 class ValidationServiceTest {
 
-  private val validationService = ValidationService(SentencesExtractionService())
+  private val bookingService = mock<BookingService>()
+  private val validationService = ValidationService(SentencesExtractionService(), bookingService)
   private val validSdsSentence = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 7,
@@ -123,6 +131,12 @@ class ValidationServiceTest {
     emptyList()
   )
 
+  @BeforeEach
+  fun beforeEach() {
+    Mockito.reset(bookingService)
+    whenever(bookingService.getBooking(any(), any())).thenReturn(BOOKING)
+  }
+
   @Test
   fun `Test EDS valid sentence should pass`() {
     val result = validationService.validateBeforeCalculation(
@@ -130,7 +144,7 @@ class ValidationServiceTest {
         listOf(validEdsSentence), validPrisoner, validAdjustments, listOf(),
         null
       ),
-      booking
+      userInputs
     )
 
     assertThat(result).hasSize(0)
@@ -146,7 +160,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEqualTo(
@@ -170,7 +184,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEqualTo(
@@ -193,7 +207,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEqualTo(
@@ -225,7 +239,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEqualTo(
@@ -255,7 +269,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEmpty()
@@ -274,7 +288,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).hasSize(1)
@@ -322,7 +336,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEqualTo(
@@ -353,7 +367,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEqualTo(
@@ -384,7 +398,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEqualTo(
@@ -405,7 +419,7 @@ class ValidationServiceTest {
         listOf(),
         null
       ),
-      booking
+      userInputs
     )
 
     assertThat(result).hasSize(0)
@@ -434,7 +448,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEqualTo(
@@ -460,7 +474,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEqualTo(
@@ -501,7 +515,7 @@ class ValidationServiceTest {
         listOf(),
         null
       ),
-      booking
+      userInputs
     )
 
     assertThat(result).isEqualTo(
@@ -544,7 +558,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEqualTo(
@@ -561,7 +575,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEmpty()
@@ -573,7 +587,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEmpty()
@@ -587,7 +601,7 @@ class ValidationServiceTest {
         sentences, validPrisoner, validAdjustments,
         listOf(OffenderFinePayment(1, LocalDate.now(), BigDecimal.ONE)), null
       ),
-      booking
+      userInputs
     )
 
     assertThat(result).isEqualTo(
@@ -611,7 +625,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEqualTo(
@@ -635,7 +649,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEqualTo(
@@ -664,7 +678,7 @@ class ValidationServiceTest {
         listOf(OffenderFinePayment(1, LocalDate.now(), BigDecimal.ONE)),
         null
       ),
-      booking
+      userInputs
     )
 
     assertThat(result).isEqualTo(
@@ -685,7 +699,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        userInputs
       )
 
     assertThat(result).isEqualTo(
@@ -705,7 +719,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
-        booking
+        CalculationUserInputs()
       )
 
     assertThat(result).isEqualTo(
@@ -724,7 +738,7 @@ class ValidationServiceTest {
         bookingAndSentenceAdjustments = lawfullyAtLargeBookingAdjustment,
         returnToCustodyDate = null,
       ),
-      booking
+      userInputs
     )
 
     assertThat(result).isEqualTo(
@@ -741,7 +755,7 @@ class ValidationServiceTest {
         bookingAndSentenceAdjustments = specialRemissionBookingAdjustment,
         returnToCustodyDate = null,
       ),
-      booking
+      CalculationUserInputs()
     )
 
     assertThat(result).isEqualTo(
@@ -766,7 +780,8 @@ class ValidationServiceTest {
     const val consecutiveTo = 99
     const val offenceCode = "RR1"
     val returnToCustodyDate = ReturnToCustodyDate(bookingId, LocalDate.of(2022, 3, 15))
-    private val booking = Booking(
+    private val userInputs = CalculationUserInputs()
+    private val BOOKING = Booking(
       bookingId = 123456,
       returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
       offender = Offender(
