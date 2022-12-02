@@ -299,7 +299,7 @@ data class SentenceCalculation(
   }
 
   companion object {
-    //These numbers are the point at which the calculated ERSED would be greater than a year before the release.
+    // These numbers are the point at which the calculated ERSED would be greater than a year before the release.
     const val RELEASE_AT_HALFWAY_ERSED_DAYS = 1463
     const val RELEASE_AT_TWO_THIRDS_ERSED_DAYS = 1097
   }
