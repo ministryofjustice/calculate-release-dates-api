@@ -22,7 +22,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -52,25 +51,22 @@ class CalculationTransactionalService(
       ?: throw IllegalStateException("User is not authenticated")
 
   /*
-   * There are 4 stages of full validation:
-   * 1. validate user input data and the raw sentence and offence data from NOMIS
-   * 2. Validate the transformation of the raw Booking (NOMIS offence data transformed into a Booking object)
-   * 3. Run the calculation and catch any errors thrown by the calculation algorithm
-   * 4. Validate the post calculation Booking (The Booking is transformed during the calculation). e.g. Consecutive sentences (aggregates)
+   * There are 3 stages of full validation:
+   * 1. validate user input data, the raw sentence and offence data from NOMIS and the raw Booking (NOMIS offence data transformed into a Booking object)
+   * 2. Run the calculation and catch any errors thrown by the calculation algorithm
+   * 3. Validate the post calculation Booking (The Booking is transformed during the calculation). e.g. Consecutive sentences (aggregates)
    *
    * activeDataOnly is only used by the test 1000 calcs functionality
    */
   fun fullValidation(prisonerId: String, calculationUserInputs: CalculationUserInputs, activeDataOnly: Boolean = true): List<ValidationMessage> {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
-    var messages = validationService.validateSourceData(sourceData) // Validation stage 1 of 4
+    var messages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs) // Validation stage 1 of 3
     if (messages.isNotEmpty()) return messages
-
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
-    messages = validationService.validateBookingBeforeCalculation(booking) // Validation stage 2 of 4
-    if (messages.isNotEmpty()) return messages
     try {
-      val bookingAfterCalculation = calculationService.calculate(booking) // Validation stage 3 of 4
-      validationService.validateBookingAfterCalculation(bookingAfterCalculation) // Validation stage 4 of 4
+      // TODO Doesn't look like this calculate call actually throws any CrdCalculationValidationException, so this whole try catch block can be removed
+      val bookingAfterCalculation = calculationService.calculate(booking) // Validation stage 2 of 3
+      messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation) // Validation stage 3 of 3
     } catch (validationException: CrdCalculationValidationException) {
       return listOf(ValidationMessage(validationException.validation))
     }
@@ -110,7 +106,7 @@ class CalculationTransactionalService(
       throw PreconditionFailedException("The booking data used for the preliminary calculation has changed")
     }
 
-    if (validationService.validateSourceData(sourceData).isNotEmpty()) {
+    if (validationService.validateBeforeCalculation(sourceData, userInput).isNotEmpty()) {
       throw PreconditionFailedException("The booking now fails validation")
     }
 
@@ -246,15 +242,6 @@ class CalculationTransactionalService(
       return null
     }
     return prisonApiDataMapper.mapReturnToCustodyDate(calculationRequest)
-  }
-
-  @Transactional(readOnly = true)
-  fun findOffenderFinePaymentsFromCalculation(calculationRequestId: Long): List<OffenderFinePayment> {
-    val calculationRequest = getCalculationRequest(calculationRequestId)
-    if (calculationRequest.offenderFinePayments == null) {
-      return listOf()
-    }
-    return prisonApiDataMapper.mapOffenderFinePayment(calculationRequest)
   }
 
   private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest {

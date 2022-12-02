@@ -1,9 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA
@@ -26,9 +24,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 
 class ValidationIntTest : IntegrationTestBase() {
-  @Autowired
-  lateinit var objectMapper: ObjectMapper
-
   @Test
   fun `Run calculation where remand periods overlap with a sentence period`() {
     runValidationAndCheckMessages(
