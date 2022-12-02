@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_SERVED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
@@ -47,7 +46,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentencePart
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DateBreakdown
@@ -56,10 +54,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceDiagram
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceDiagramRow
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceDiagramRowSection
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
@@ -510,70 +504,6 @@ private fun extractDates(sentence: CalculableSentence): Map<ReleaseDateType, Dat
   )
 
   return dates
-}
-
-fun transform(booking: Booking): SentenceDiagram {
-  val orderedAdjustmentTypes = listOf(REMAND, RECALL_REMAND, TAGGED_BAIL, RECALL_TAGGED_BAIL, UNLAWFULLY_AT_LARGE, ADDITIONAL_DAYS_SERVED)
-  val adjustmentRows = orderedAdjustmentTypes.map {
-    booking.adjustments.getOrEmptyList(it).mapNotNull { adjustment ->
-      if ((adjustment.fromDate != null && adjustment.toDate != null) || it == ADDITIONAL_DAYS_SERVED) {
-        val start: LocalDate
-        val end: LocalDate
-        if (it == ADDITIONAL_DAYS_SERVED) {
-          start = adjustment.appliesToSentencesFrom
-          end = adjustment.appliesToSentencesFrom.plusDays(adjustment.numberOfDays.toLong())
-        } else {
-          start = adjustment.fromDate!!
-          end = adjustment.toDate!!
-        }
-        SentenceDiagramRow("${it.text} ${adjustment.numberOfDays} days", listOf(SentenceDiagramRowSection(start, end, null)))
-      } else {
-        null
-      }
-    }
-  }.flatten()
-  val sentenceRows = booking.getAllExtractableSentences()
-    .map {
-      when (it) {
-        is AbstractSentence -> {
-          SentenceDiagramRow(
-            "Court case ${it.caseSequence} sentence ${it.lineSequence}",
-            listOf(
-              SentenceDiagramRowSection(start = it.sentencedAt, end = it.sentenceCalculation.releaseDate, description = "Release date"),
-              SentenceDiagramRowSection(start = it.sentenceCalculation.releaseDate, end = it.sentenceCalculation.expiryDate!!, description = "Expiry date")
-            )
-          )
-        }
-        is SingleTermSentence -> {
-          SentenceDiagramRow(
-            "Single term sentence",
-            listOf(
-              SentenceDiagramRowSection(start = it.sentencedAt, end = it.sentenceCalculation.releaseDate, description = "Release date"),
-              SentenceDiagramRowSection(start = it.sentenceCalculation.releaseDate, end = it.sentenceCalculation.expiryDate!!, description = "Expiry date")
-            )
-          )
-        }
-        is ConsecutiveSentence -> {
-          val nameOfSentence = it.orderedSentences.joinToString { sentence ->
-            (sentence as AbstractSentence)
-            "Court case ${sentence.caseSequence} sentence ${sentence.lineSequence}"
-          }
-          SentenceDiagramRow(
-            "Consecutive sentence $nameOfSentence",
-            listOf(
-              SentenceDiagramRowSection(start = it.sentencedAt, end = it.sentenceCalculation.releaseDate, description = "Release date"),
-              SentenceDiagramRowSection(start = it.sentenceCalculation.releaseDate, end = it.sentenceCalculation.expiryDate!!, description = "Expiry date")
-            )
-          )
-        }
-        else -> {
-          throw UnsupportedCalculationBreakdown("unsupported")
-        }
-      }
-    }
-  return SentenceDiagram(
-    rows = adjustmentRows + sentenceRows
-  )
 }
 
 fun transform(fixedTermRecallDetails: FixedTermRecallDetails): ReturnToCustodyDate =

@@ -2,6 +2,16 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.LAWFULLY_AT_LARGE
@@ -10,6 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -39,6 +50,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ZERO_IMPRISONMENT_TERM
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit.DAYS
+import java.time.temporal.ChronoUnit.MONTHS
+import java.time.temporal.ChronoUnit.WEEKS
+import java.time.temporal.ChronoUnit.YEARS
+import java.util.UUID
 
 class ValidationServiceTest {
 
@@ -109,11 +125,12 @@ class ValidationServiceTest {
 
   @Test
   fun `Test EDS valid sentence should pass`() {
-    val result = validationService.validateSourceData(
+    val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
         listOf(validEdsSentence), validPrisoner, validAdjustments, listOf(),
         null
-      )
+      ),
+      booking
     )
 
     assertThat(result).hasSize(0)
@@ -127,7 +144,10 @@ class ValidationServiceTest {
       ),
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEqualTo(
       listOf(
@@ -148,7 +168,10 @@ class ValidationServiceTest {
       ),
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEqualTo(
       listOf(
@@ -168,7 +191,10 @@ class ValidationServiceTest {
       ),
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(listOf(sentence), validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEqualTo(
       listOf(
@@ -197,7 +223,10 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEqualTo(
       listOf(
@@ -224,7 +253,10 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEmpty()
   }
@@ -240,7 +272,10 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).hasSize(1)
     assertThat(result[0].code).isEqualTo(EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS)
@@ -285,7 +320,10 @@ class ValidationServiceTest {
       ),
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEqualTo(
       listOf(
@@ -313,7 +351,10 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEqualTo(
       listOf(
@@ -341,7 +382,10 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEqualTo(
       listOf(
@@ -353,14 +397,15 @@ class ValidationServiceTest {
 
   @Test
   fun `Test SOPC valid sentence should pass`() {
-    val result = validationService.validateSourceData(
+    val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
         listOf(validSopcSentence),
         validPrisoner,
         validAdjustments,
         listOf(),
         null
-      )
+      ),
+      booking
     )
 
     assertThat(result).hasSize(0)
@@ -387,7 +432,10 @@ class ValidationServiceTest {
       ),
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEqualTo(
       listOf(
@@ -410,7 +458,10 @@ class ValidationServiceTest {
       ),
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEqualTo(
       listOf(
@@ -421,7 +472,7 @@ class ValidationServiceTest {
 
   @Test
   fun `Validate future dated adjustments`() {
-    val result = validationService.validateSourceData(
+    val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
         listOf(validEdsSentence), validPrisoner,
         BookingAndSentenceAdjustments(
@@ -449,7 +500,8 @@ class ValidationServiceTest {
         ),
         listOf(),
         null
-      )
+      ),
+      booking
     )
 
     assertThat(result).isEqualTo(
@@ -490,7 +542,10 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEqualTo(
       listOf(
@@ -504,7 +559,10 @@ class ValidationServiceTest {
   fun `Test SDS sentence is valid`() {
     val sentences = listOf(validSdsSentence)
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEmpty()
   }
@@ -513,7 +571,10 @@ class ValidationServiceTest {
   fun `Test A FINE sentence is valid`() {
     val sentences = listOf(validAFineSentence)
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEmpty()
   }
@@ -521,11 +582,12 @@ class ValidationServiceTest {
   @Test
   fun `Test A FINE sentence with payments is unsupported`() {
     val sentences = listOf(validAFineSentence)
-    val result = validationService.validateSourceData(
+    val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
         sentences, validPrisoner, validAdjustments,
         listOf(OffenderFinePayment(1, LocalDate.now(), BigDecimal.ONE)), null
-      )
+      ),
+      booking
     )
 
     assertThat(result).isEqualTo(
@@ -547,7 +609,10 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEqualTo(
       listOf(
@@ -568,7 +633,10 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEqualTo(
       listOf(
@@ -588,14 +656,15 @@ class ValidationServiceTest {
         consecutiveToSequence = 1
       )
     )
-    val result = validationService.validateSourceData(
+    val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
         sentences,
         validPrisoner,
         validAdjustments,
         listOf(OffenderFinePayment(1, LocalDate.now(), BigDecimal.ONE)),
         null
-      )
+      ),
+      booking
     )
 
     assertThat(result).isEqualTo(
@@ -614,7 +683,10 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEqualTo(
       listOf(
@@ -631,7 +703,10 @@ class ValidationServiceTest {
       )
     )
     val result =
-      validationService.validateSourceData(PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null))
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, validPrisoner, validAdjustments, listOf(), null),
+        booking
+      )
 
     assertThat(result).isEqualTo(
       listOf(
@@ -642,13 +717,14 @@ class ValidationServiceTest {
 
   @Test
   fun `Test Lawfully at Large adjustments at a booking level cause validation errors`() {
-    val result = validationService.validateSourceData(
+    val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
         sentenceAndOffences = listOf(validSdsSentence),
         prisonerDetails = validPrisoner,
         bookingAndSentenceAdjustments = lawfullyAtLargeBookingAdjustment,
         returnToCustodyDate = null,
-      )
+      ),
+      booking
     )
 
     assertThat(result).isEqualTo(
@@ -658,13 +734,14 @@ class ValidationServiceTest {
 
   @Test
   fun `Test Special Remission adjustments at a booking level cause validation errors`() {
-    val result = validationService.validateSourceData(
+    val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
         sentenceAndOffences = listOf(validSdsSentence),
         prisonerDetails = validPrisoner,
         bookingAndSentenceAdjustments = specialRemissionBookingAdjustment,
         returnToCustodyDate = null,
-      )
+      ),
+      booking
     )
 
     assertThat(result).isEqualTo(
@@ -677,5 +754,60 @@ class ValidationServiceTest {
     val FIRST_MAY_2021: LocalDate = LocalDate.of(2021, 5, 1)
     private const val LINE_SEQ = 2
     private const val CASE_SEQ = 1
+    val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
+    val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
+    val DOB: LocalDate = LocalDate.of(1980, 1, 1)
+
+    const val prisonerId = "A123456A"
+    const val sequence = 153
+    const val lineSequence = 154
+    const val caseSequence = 155
+    const val bookingId = 123456L
+    const val consecutiveTo = 99
+    const val offenceCode = "RR1"
+    val returnToCustodyDate = ReturnToCustodyDate(bookingId, LocalDate.of(2022, 3, 15))
+    private val booking = Booking(
+      bookingId = 123456,
+      returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
+      offender = Offender(
+        dateOfBirth = DOB,
+        reference = prisonerId,
+      ),
+      sentences = mutableListOf(
+        StandardDeterminateSentence(
+          sentencedAt = FIRST_JAN_2015,
+          duration = FIVE_YEAR_DURATION,
+          offence = Offence(
+            committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = true,
+            offenceCode = offenceCode
+          ),
+          identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
+          consecutiveSentenceUUIDs = mutableListOf(
+            UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
+          ),
+          lineSequence = lineSequence,
+          caseSequence = caseSequence,
+          recallType = FIXED_TERM_RECALL_28
+        )
+      ),
+      adjustments = Adjustments(
+        mutableMapOf(
+          UNLAWFULLY_AT_LARGE to mutableListOf(
+            Adjustment(
+              appliesToSentencesFrom = FIRST_JAN_2015.minusDays(6),
+              numberOfDays = 5, fromDate = FIRST_JAN_2015.minusDays(6),
+              toDate = FIRST_JAN_2015.minusDays(1)
+            )
+          ),
+          REMAND to mutableListOf(
+            Adjustment(
+              appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 6,
+              fromDate = FIRST_JAN_2015.minusDays(7),
+              toDate = FIRST_JAN_2015.minusDays(1)
+            )
+          )
+        )
+      )
+    )
   }
 }

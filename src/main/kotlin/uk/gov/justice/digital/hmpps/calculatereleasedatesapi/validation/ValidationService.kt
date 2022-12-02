@@ -4,11 +4,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.AdjustmentIsAfterReleaseDateException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdCalculationValidationException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CustodialPeriodExtinguishedException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithRemandException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.RemandPeriodOverlapsWithSentenceException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
@@ -55,10 +50,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_14_DAYS_AGGREGATE_GE_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_14_DAYS_SENTENCE_GE_12_MONTHS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_28_DAYS_AGGREGATE_LT_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_28_DAYS_SENTENCE_LT_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_TYPE_14_DAYS_SENTENCE_GE_12_MONTHS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_TYPE_28_DAYS_SENTENCE_LT_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.LASPO_AR_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.MORE_THAN_ONE_IMPRISONMENT_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.MORE_THAN_ONE_LICENCE_TERM
@@ -83,18 +83,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ZERO_IMPRISONMENT_TERM
 import java.time.LocalDate
 import java.time.Period
-import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.MONTHS
 
 @Service
 class ValidationService(
   private val extractionService: SentencesExtractionService,
 ) {
-  fun validateBookingBeforeCalculation(booking: Booking): List<ValidationMessage> {
-    return validateFixedTermRecall(booking)
-  }
-
-  fun validateSourceData(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+  fun validateBeforeCalculation(sourceData: PrisonApiSourceData, booking: Booking): List<ValidationMessage> {
+    log.info("Pre-calculation validation of source data: $sourceData and pre-calc booking $booking")
     val sentencesAndOffences = sourceData.sentenceAndOffences
     val adjustments = sourceData.bookingAndSentenceAdjustments
     val sortedSentences = sentencesAndOffences.sortedWith(this::sortByCaseNumberAndLineSequence)
@@ -117,11 +113,25 @@ class ValidationService(
     val validationMessages = validateSentences(sortedSentences)
     validationMessages += validateAdjustments(adjustments)
     validationMessages += validateFixedTermRecall(sourceData)
+    validationMessages += validateFixedTermRecall(booking)
     if (validationMessages.isNotEmpty()) {
       return validationMessages
     }
 
     return emptyList()
+  }
+
+  /*
+    Run the validation that can only happen after calculations. e.g. validate that adjustments happen before release date
+   */
+  fun validateBookingAfterCalculation(booking: Booking): List<ValidationMessage> {
+    log.info("Validating booking after calculation: $booking")
+    val messages = mutableListOf<ValidationMessage>()
+    booking.sentenceGroups.forEach { messages += validateSentenceHasNotBeenExtinguished(it) }
+    messages += validateRemandOverlappingSentences(booking)
+    messages += validateAdditionAdjustmentsInsideLatestReleaseDate(booking)
+    messages += validateFixedTermRecallAfterCalc(booking)
+    return messages
   }
 
   private fun validateFixedTermRecall(sourceData: PrisonApiSourceData): List<ValidationMessage> {
@@ -131,91 +141,94 @@ class ValidationService(
     val (recallLength, has14DayFTRSentence, has28DayFTRSentence) = getFtrValidationDetails(
       ftrDetails, sentencesAndOffences
     )
+    val validationMessages = mutableListOf<ValidationMessage>()
 
-    // AC1
     if (has14DayFTRSentence && has28DayFTRSentence) {
-      return listOf(ValidationMessage(FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER))
+      validationMessages += ValidationMessage(FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER)
     }
 
-    // AC2
     if (has14DayFTRSentence && recallLength == 28) {
-      return listOf(ValidationMessage(FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28))
+      validationMessages += ValidationMessage(FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28)
     }
 
-    // AC4
     if (has28DayFTRSentence && recallLength == 14) {
-      return listOf(ValidationMessage(FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14))
+      validationMessages += ValidationMessage(FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14)
     }
-    return emptyList()
+    return validationMessages
   }
 
   private fun validateFixedTermRecall(booking: Booking): List<ValidationMessage> {
     val ftrDetails = booking.fixedTermRecallDetails ?: return emptyList()
+    val validationMessages = mutableListOf<ValidationMessage>()
     val ftrSentences = booking.sentences.filter {
       it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28
     }
+    val (ftr28Sentences, ftr14Sentences) = ftrSentences.partition { it.recallType == FIXED_TERM_RECALL_28 }
+
+    val ftrSentencesUuids = ftrSentences.map { it.identifier }
     val recallLength = ftrDetails.recallLength
 
-    val ftrSentenceGreaterThan12Months = ftrSentences.any { it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS) }
-    val ftrSentenceLessThan12Months = ftrSentences.any { it.durationIsLessThan(TWELVE, MONTHS) }
-    // AC6
-    if (ftrSentenceGreaterThan12Months && recallLength == 14) {
-      return listOf(ValidationMessage(FTR_14_DAYS_SENTENCE_GE_12_MONTHS))
+    val maxFtrSentence = ftrSentences.maxBy { it.getLengthInDays() }
+    val maxFtrSentenceIsGreaterThan12Months = maxFtrSentence.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS)
+    val maxFtrSentenceIsLessThan12Months = maxFtrSentence.durationIsLessThan(TWELVE, MONTHS)
+    val ftrSentenceExistsInConsecutiveChain = ftrSentences.any { it.consecutiveSentenceUUIDs.isNotEmpty() } ||
+      booking.sentences.any {
+        it.consecutiveSentenceUUIDs.toSet().intersect(ftrSentencesUuids.toSet()).isNotEmpty()
+      }
+
+    if (maxFtrSentenceIsGreaterThan12Months && recallLength == 14) {
+      validationMessages += ValidationMessage(FTR_14_DAYS_SENTENCE_GE_12_MONTHS)
     }
 
-    // AC8
-    if (ftrSentenceLessThan12Months && recallLength == 28) {
-      return listOf(ValidationMessage(FTR_28_DAYS_SENTENCE_LT_12_MONTHS))
+    if (maxFtrSentenceIsLessThan12Months && recallLength == 28 && !ftrSentenceExistsInConsecutiveChain) {
+      validationMessages += ValidationMessage(FTR_28_DAYS_SENTENCE_LT_12_MONTHS)
     }
 
-    // AC14 UNNECCESSArry same as AC8
-    // AC16 UNNECCESSArry same as AC6
+    if (ftr28Sentences.any { it.durationIsLessThan(TWELVE, MONTHS) } && !ftrSentenceExistsInConsecutiveChain) {
+      validationMessages += ValidationMessage(FTR_TYPE_28_DAYS_SENTENCE_LT_12_MONTHS)
+    }
 
-    return emptyList()
+    if (ftr14Sentences.any { it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS) }) {
+      validationMessages += ValidationMessage(FTR_TYPE_14_DAYS_SENTENCE_GE_12_MONTHS)
+    }
+
+    return validationMessages
   }
 
-  private fun validateFixedTermRecallAfterCalc(booking: Booking) {
-    val ftrDetails = booking.fixedTermRecallDetails ?: return
+  private fun validateFixedTermRecallAfterCalc(booking: Booking): List<ValidationMessage> {
+    val messages = mutableListOf<ValidationMessage>()
+    val ftrDetails = booking.fixedTermRecallDetails ?: return messages
     val recallLength = ftrDetails.recallLength
 
-    // AC10 consecutiveSentences is populated during calculation, so move this to after calc
+    // AC10
     booking.consecutiveSentences.forEach {
       if (it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28) {
-        if (recallLength == 14 && durationIsGreaterThanOrEqualTo(
-            it.getCombinedDuration().getLengthInDays(it.sentencedAt), it.sentencedAt, TWELVE, MONTHS
-          )
-        ) {
-          throw CrdCalculationValidationException(
-            FTR_14_DAYS_AGGREGATE_GE_12_MONTHS.message, FTR_14_DAYS_AGGREGATE_GE_12_MONTHS
-          )
-        }
+        if (recallLength == 14 && it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS))
+          messages += ValidationMessage(FTR_14_DAYS_AGGREGATE_GE_12_MONTHS)
       }
     }
 
     // AC12
     booking.consecutiveSentences.forEach {
       if (it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28) {
-        if (recallLength == 28 && durationIsLessThan(
-            it.getCombinedDuration().getLengthInDays(it.sentencedAt), it.sentencedAt, TWELVE, MONTHS
-          )
-        ) {
-          throw CrdCalculationValidationException(
-            FTR_14_DAYS_AGGREGATE_GE_12_MONTHS.message, FTR_14_DAYS_AGGREGATE_GE_12_MONTHS
-          )
-        }
+        if (recallLength == 28 && it.durationIsLessThan(TWELVE, MONTHS)) messages += ValidationMessage(
+          FTR_28_DAYS_AGGREGATE_LT_12_MONTHS
+        )
       }
     }
 
-    // AC18 SAMEAS AC12
-    // AC20 SAMEAS AC10
-  }
+    // AC18
+    booking.consecutiveSentences.forEach {
+      if (it.recallType == FIXED_TERM_RECALL_28 && it.durationIsLessThan(TWELVE, MONTHS))
+        messages += ValidationMessage(FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS)
+    }
 
-  fun durationIsGreaterThanOrEqualTo(lengthInDays: Int, sentencedAt: LocalDate, length: Long, period: ChronoUnit): Boolean {
-    return (lengthInDays >= ChronoUnit.DAYS.between(sentencedAt, sentencedAt.plus(length, period)))
-  }
-
-  fun durationIsLessThan(lengthInDays: Int, sentencedAt: LocalDate, length: Long, period: ChronoUnit): Boolean {
-    return (lengthInDays < ChronoUnit.DAYS.between(sentencedAt, sentencedAt.plus(length, period)))
+    // AC20
+    booking.consecutiveSentences.forEach {
+      if (it.recallType == FIXED_TERM_RECALL_14 && it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS))
+        messages += ValidationMessage(FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS)
+    }
+    return messages
   }
 
   private fun getFtrValidationDetails(
@@ -541,17 +554,8 @@ class ValidationService(
     return null
   }
 
-  /*
-    Run the validation that can only happen after calculations. I.e. validate that adjustments happen before release date
-   */
-  fun validateBookingAfterCalculation(workingBooking: Booking) {
-    workingBooking.sentenceGroups.forEach { validateSentenceHasNotBeenExtinguished(it) }
-    validateRemandOverlappingSentences(workingBooking)
-    validateAdditionAdjustmentsInsideLatestReleaseDate(workingBooking)
-    validateFixedTermRecallAfterCalc(workingBooking)
-  }
-
-  private fun validateAdditionAdjustmentsInsideLatestReleaseDate(booking: Booking) {
+  private fun validateAdditionAdjustmentsInsideLatestReleaseDate(booking: Booking): List<ValidationMessage> {
+    val messages = mutableListOf<ValidationMessage>()
     val sentences = booking.getAllExtractableSentences()
     val latestReleaseDatePreAddedDays = sentences.maxOf { it.sentenceCalculation.releaseDateWithoutAdditions }
 
@@ -567,19 +571,14 @@ class ValidationService(
       val anyRada = adjustmentsAfterRelease.intersect(radas).isNotEmpty()
       val anyUal = adjustmentsAfterRelease.intersect(uals).isNotEmpty()
 
-      if (anyAda) throw AdjustmentIsAfterReleaseDateException(
-        ADJUSTMENT_AFTER_RELEASE_ADA.message, ADJUSTMENT_AFTER_RELEASE_ADA
-      )
-      if (anyRada) throw AdjustmentIsAfterReleaseDateException(
-        ADJUSTMENT_AFTER_RELEASE_RADA.message, ADJUSTMENT_AFTER_RELEASE_RADA
-      )
-      if (anyUal) throw AdjustmentIsAfterReleaseDateException(
-        ADJUSTMENT_AFTER_RELEASE_UAL.message, ADJUSTMENT_AFTER_RELEASE_UAL
-      )
+      if (anyAda) messages += ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)
+      if (anyRada) messages += ValidationMessage(ADJUSTMENT_AFTER_RELEASE_RADA)
+      if (anyUal) messages += ValidationMessage(ADJUSTMENT_AFTER_RELEASE_UAL)
     }
+    return messages
   }
 
-  private fun validateRemandOverlappingSentences(booking: Booking) {
+  private fun validateRemandOverlappingSentences(booking: Booking): List<ValidationMessage> {
     val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
@@ -599,10 +598,10 @@ class ValidationService(
           // Remand overlaps
           if (previousRangeIsRemand!! && isRemand) {
             val args = listOf(previousRange!!.toString(), it.toString())
-            log.error(String.format("Remand of range %s overlaps with remand of range %s", *args.toTypedArray()))
-            throw RemandPeriodOverlapsWithRemandException(REMAND_OVERLAPS_WITH_REMAND.message)
+            log.warn(String.format("Remand of range %s overlaps with remand of range %s", *args.toTypedArray()))
+            return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_REMAND))
           } else {
-            throw RemandPeriodOverlapsWithSentenceException(REMAND_OVERLAPS_WITH_SENTENCE.message)
+            return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_SENTENCE))
           }
         } else if (it.end.isAfter(totalRange!!.end)) {
           totalRange = LocalDateRange.of(totalRange!!.start, it.end)
@@ -611,9 +610,11 @@ class ValidationService(
         previousRange = it
       }
     }
+    return emptyList()
   }
 
-  private fun validateSentenceHasNotBeenExtinguished(sentences: List<CalculableSentence>) {
+  private fun validateSentenceHasNotBeenExtinguished(sentences: List<CalculableSentence>): List<ValidationMessage> {
+    val messages = mutableListOf<ValidationMessage>()
     val determinateSentences = sentences.filter { !it.isRecall() }
     if (determinateSentences.isNotEmpty()) {
       val earliestSentenceDate = determinateSentences.minOf { it.sentencedAt }
@@ -627,18 +628,12 @@ class ValidationService(
           latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND) != 0
         val hasTaggedBail =
           latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.TAGGED_BAIL) != 0
-        if (hasRemand) {
-          throw CustodialPeriodExtinguishedException(
-            CUSTODIAL_PERIOD_EXTINGUISHED_REMAND.message, CUSTODIAL_PERIOD_EXTINGUISHED_REMAND
-          )
-        }
-        if (hasTaggedBail) {
-          throw CustodialPeriodExtinguishedException(
-            CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL.message, CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL
-          )
-        }
+        if (hasRemand) messages += ValidationMessage(CUSTODIAL_PERIOD_EXTINGUISHED_REMAND)
+
+        if (hasTaggedBail) messages += ValidationMessage(CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL)
       }
     }
+    return messages
   }
 
   private fun getCaseSeqAndLineSeq(sentencesAndOffence: SentenceAndOffences) =
