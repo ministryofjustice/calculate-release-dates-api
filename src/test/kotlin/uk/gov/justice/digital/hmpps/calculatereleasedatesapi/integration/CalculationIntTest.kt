@@ -129,32 +129,6 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(req).isNotNull
   }
 
-  private fun createPreliminaryCalculation(prisonerid: String): CalculatedReleaseDates = webTestClient.post()
-    .uri("/calculation/$prisonerid")
-    .accept(MediaType.APPLICATION_JSON)
-    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-    .exchange()
-    .expectStatus().isOk
-    .expectHeader().contentType(MediaType.APPLICATION_JSON)
-    .expectBody(CalculatedReleaseDates::class.java)
-    .returnResult().responseBody
-
-  private fun createConfirmCalculationForPrisoner(
-    calculationRequestId: Long
-  ): CalculatedReleaseDates {
-    return webTestClient.post()
-      .uri("/calculation/confirm/$calculationRequestId")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(objectMapper.writeValueAsString(CalculationFragments("<p>BREAKDOWN</p>")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculatedReleaseDates::class.java)
-      .returnResult().responseBody!!
-  }
-
   @Test
   fun `Attempt to get the results for a confirmed calculation where no confirmed calculation exists`() {
     webTestClient.get()
@@ -355,7 +329,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[PRRD]).isEqualTo(
-      LocalDate.of(2022, 3, 14)
+      LocalDate.of(2022, 1, 31)
     )
   }
 
@@ -581,6 +555,32 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(calculation.dates[SED]).isEqualTo(
       LocalDate.of(2029, 6, 4)
     )
+  }
+
+  private fun createPreliminaryCalculation(prisonerid: String): CalculatedReleaseDates = webTestClient.post()
+    .uri("/calculation/$prisonerid")
+    .accept(MediaType.APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(CalculatedReleaseDates::class.java)
+    .returnResult().responseBody
+
+  private fun createConfirmCalculationForPrisoner(
+    calculationRequestId: Long
+  ): CalculatedReleaseDates {
+    return webTestClient.post()
+      .uri("/calculation/confirm/$calculationRequestId")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(CalculationFragments("<p>BREAKDOWN</p>")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
   }
 
   companion object {
