@@ -169,14 +169,13 @@ class ValidationService(
     val recallLength = ftrDetails.recallLength
 
     val maxFtrSentence = ftrSentences.maxBy { it.getLengthInDays() }
-    val maxFtrSentenceIsGreaterThan12Months = maxFtrSentence.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS)
     val maxFtrSentenceIsLessThan12Months = maxFtrSentence.durationIsLessThan(TWELVE, MONTHS)
     val ftrSentenceExistsInConsecutiveChain = ftrSentences.any { it.consecutiveSentenceUUIDs.isNotEmpty() } ||
       booking.sentences.any {
         it.consecutiveSentenceUUIDs.toSet().intersect(ftrSentencesUuids.toSet()).isNotEmpty()
       }
 
-    if (maxFtrSentenceIsGreaterThan12Months && recallLength == 14) {
+    if (!maxFtrSentenceIsLessThan12Months && recallLength == 14) {
       validationMessages += ValidationMessage(FTR_14_DAYS_SENTENCE_GE_12_MONTHS)
     }
 
@@ -184,7 +183,7 @@ class ValidationService(
       validationMessages += ValidationMessage(FTR_28_DAYS_SENTENCE_LT_12_MONTHS)
     }
 
-    if (ftr28Sentences.any { it.durationIsLessThan(TWELVE, MONTHS) } && !ftrSentenceExistsInConsecutiveChain) {
+    if (ftr28Sentences.isNotEmpty() && maxFtrSentenceIsLessThan12Months && !ftrSentenceExistsInConsecutiveChain) {
       validationMessages += ValidationMessage(FTR_TYPE_28_DAYS_SENTENCE_LT_12_MONTHS)
     }
 
