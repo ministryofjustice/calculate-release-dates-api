@@ -110,5 +110,51 @@ interface CalculableSentence {
       ReleaseDateType.ARD
   }
 
+  @JsonIgnore
+  fun totalDuration(): Duration {
+    return when (this) {
+      is StandardDeterminateSentence -> {
+        this.duration
+      }
+      is AFineSentence -> {
+        this.duration
+      }
+      is ExtendedDeterminateSentence -> {
+        this.combinedDuration()
+      }
+      is SopcSentence -> {
+        this.combinedDuration()
+      }
+      is SingleTermSentence -> {
+        this.combinedDuration()
+      }
+      else -> {
+        throw UnknownError("Unknown sentence")
+      }
+    }
+  }
+  @JsonIgnore
+  fun custodialDuration(): Duration {
+    return when (this) {
+      is StandardDeterminateSentence -> {
+        this.duration
+      }
+      is AFineSentence -> {
+        this.duration
+      }
+      is ExtendedDeterminateSentence -> {
+        this.custodialDuration
+      }
+      is SopcSentence -> {
+        this.custodialDuration
+      }
+      is SingleTermSentence -> {
+        this.combinedDuration()
+      }
+      else -> {
+        throw UnknownError("Unknown sentence")
+      }
+    }
+  }
   fun buildString(): String
 }

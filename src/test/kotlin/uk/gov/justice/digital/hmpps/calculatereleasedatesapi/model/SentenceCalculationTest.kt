@@ -28,6 +28,7 @@ internal class SentenceCalculationTest {
       date,
       1,
       date,
+      false,
       Adjustments(
         mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(numberOfDays = 1, appliesToSentencesFrom = date)))
       ),

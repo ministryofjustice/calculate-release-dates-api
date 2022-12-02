@@ -1,0 +1,37 @@
+{
+  "calculateErsed": true,
+  "offender":{
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "type": "ExtendedDeterminateSentence",
+      "offence": {
+        "committedAt": "2019-09-03"
+      },
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 6
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "automaticRelease": false,
+      "sentencedAt": "2020-10-06"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2020-10-06",
+        "numberOfDays": 397,
+        "fromDate": "2019-09-05",
+        "toDate": "2020-10-05"
+      }
+    ]
+  }
+}
