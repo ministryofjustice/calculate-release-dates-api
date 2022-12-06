@@ -9,7 +9,10 @@ parameters:
     default: farsight-alerts
   releases-slack-channel:
     type: string
-    default: dps-releases
+    default: farsight-alerts
+  node-version:
+    type: string
+    default: 16.15-browsers
 
 jobs:
   validate:
