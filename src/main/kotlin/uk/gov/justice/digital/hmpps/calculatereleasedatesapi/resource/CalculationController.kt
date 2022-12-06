@@ -75,23 +75,26 @@ class CalculationController(
     ]
   )
   fun testCalculation(
-    @Parameter(
-      required = true,
-      example = "A1234AB",
-      description = "The prisoners ID (aka nomsId)"
-    ) @PathVariable("prisonerId") prisonerId: String, @RequestBody calculationUserInputs: CalculationUserInputs?
+    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
+    @PathVariable("prisonerId")
+    prisonerId: String,
+    @RequestBody
+    calculationUserInputs: CalculationUserInputs?
   ): CalculationResults {
     log.info("Request received to calculate release dates for $prisonerId")
     val validationMessages = calculationTransactionalService.fullValidation(
-      prisonerId, calculationUserInputs
-        ?: CalculationUserInputs(), false
+      prisonerId,
+      calculationUserInputs ?: CalculationUserInputs(),
+      false
     )
 
     return if (validationMessages.isNotEmpty()) CalculationResults(validationMessages = validationMessages)
     else CalculationResults(
       calculationTransactionalService.calculate(
-        prisonerId, calculationUserInputs
-          ?: CalculationUserInputs(), false, TEST
+        prisonerId,
+        calculationUserInputs ?: CalculationUserInputs(),
+        false,
+        TEST
       )
     )
   }
