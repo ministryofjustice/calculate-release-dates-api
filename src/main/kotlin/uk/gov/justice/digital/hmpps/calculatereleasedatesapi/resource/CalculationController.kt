@@ -9,7 +9,13 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.TEST
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.*
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -68,13 +74,7 @@ class CalculationController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
     ]
   )
-  fun testCalculation(
-    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
-    @PathVariable("prisonerId")
-    prisonerId: String,
-    @RequestBody
-    calculationUserInputs: CalculationUserInputs?
-  ): CalculationResults {
+  fun testCalculation(@Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)") @PathVariable("prisonerId") prisonerId: String, @RequestBody calculationUserInputs: CalculationUserInputs?): CalculationResults {
     log.info("Request received to calculate release dates for $prisonerId")
     val validationMessages = calculationTransactionalService.fullValidation(prisonerId, calculationUserInputs
       ?: CalculationUserInputs(), false)
