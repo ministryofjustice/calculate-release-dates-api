@@ -13,7 +13,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.ERROR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdCalculationValidationException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PrisonApiDataNotFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -52,9 +51,10 @@ class CalculationTransactionalService(
 
   /*
    * There are 3 stages of full validation:
-   * 1. validate user input data, the raw sentence and offence data from NOMIS and the raw Booking (NOMIS offence data transformed into a Booking object)
-   * 2. Run the calculation and catch any errors thrown by the calculation algorithm
-   * 3. Validate the post calculation Booking (The Booking is transformed during the calculation). e.g. Consecutive sentences (aggregates)
+   * 1. validate user input data, the raw sentence and offence data from NOMIS
+   * 2. validate the raw Booking (NOMIS offence data transformed into a Booking object)
+   * 3. Run the calculation and catch any errors thrown by the calculation algorithm
+   * 4. Validate the post calculation Booking (The Booking is transformed during the calculation). e.g. Consecutive sentences (aggregates)
    *
    * activeDataOnly is only used by the test 1000 calcs functionality
    */
@@ -62,14 +62,12 @@ class CalculationTransactionalService(
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
     var messages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs) // Validation stage 1 of 3
     if (messages.isNotEmpty()) return messages
+    // getBooking relies on the previous validation stage to have succeeded
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
-    try {
-      // TODO Doesn't look like this calculate call actually throws any CrdCalculationValidationException, so this whole try catch block can be removed
-      val bookingAfterCalculation = calculationService.calculate(booking) // Validation stage 2 of 3
-      messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation) // Validation stage 3 of 3
-    } catch (validationException: CrdCalculationValidationException) {
-      return listOf(ValidationMessage(validationException.validation))
-    }
+    messages = validationService.validateBeforeCalculation(booking) // Validation stage 2 of 4
+    if (messages.isNotEmpty()) return messages
+    val bookingAfterCalculation = calculationService.calculate(booking) // Validation stage 3 of 4
+    messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation) // Validation stage 4 of 4
     return messages
   }
 

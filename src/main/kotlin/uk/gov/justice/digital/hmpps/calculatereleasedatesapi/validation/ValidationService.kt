@@ -31,7 +31,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType._14FTR_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
@@ -90,7 +89,6 @@ import java.time.temporal.ChronoUnit.MONTHS
 @Service
 class ValidationService(
   private val extractionService: SentencesExtractionService,
-  private val bookingService: BookingService,
 ) {
   fun validateBeforeCalculation(sourceData: PrisonApiSourceData, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
     log.info("Pre-calculation validation of source data: $sourceData")
@@ -116,13 +114,7 @@ class ValidationService(
     val validationMessages = validateSentences(sortedSentences)
     validationMessages += validateAdjustments(adjustments)
     validationMessages += validateFixedTermRecall(sourceData)
-    if (validationMessages.isNotEmpty()) {
-      return validationMessages
-    }
-
-    // getBooking relies on some previous validation to have succeeded, therefore this stage only runs if no previous errors
-    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
-    return validateFixedTermRecall(booking)
+    return validationMessages
   }
 
   /*
@@ -139,26 +131,20 @@ class ValidationService(
   }
 
   private fun validateFixedTermRecall(sourceData: PrisonApiSourceData): List<ValidationMessage> {
-
     val sentencesAndOffences = sourceData.sentenceAndOffences
     val ftrDetails = sourceData.fixedTermRecallDetails ?: return emptyList()
     val (recallLength, has14DayFTRSentence, has28DayFTRSentence) = getFtrValidationDetails(
       ftrDetails, sentencesAndOffences
     )
-    val validationMessages = mutableListOf<ValidationMessage>()
 
-    if (has14DayFTRSentence && has28DayFTRSentence) {
-      validationMessages += ValidationMessage(FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER)
-    }
+    if (has14DayFTRSentence && has28DayFTRSentence) return listOf(ValidationMessage(FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER))
+    if (has14DayFTRSentence && recallLength == 28) return listOf(ValidationMessage(FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28))
+    if (has28DayFTRSentence && recallLength == 14) return listOf(ValidationMessage(FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14))
+    return emptyList()
+  }
 
-    if (has14DayFTRSentence && recallLength == 28) {
-      validationMessages += ValidationMessage(FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28)
-    }
-
-    if (has28DayFTRSentence && recallLength == 14) {
-      validationMessages += ValidationMessage(FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14)
-    }
-    return validationMessages
+  fun validateBeforeCalculation(booking: Booking): List<ValidationMessage> {
+    return validateFixedTermRecall(booking)
   }
 
   private fun validateFixedTermRecall(booking: Booking): List<ValidationMessage> {
@@ -203,7 +189,6 @@ class ValidationService(
     val ftrDetails = booking.fixedTermRecallDetails ?: return messages
     val recallLength = ftrDetails.recallLength
 
-    // AC10
     booking.consecutiveSentences.forEach {
       if (it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28) {
         if (recallLength == 14 && it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS))
@@ -211,7 +196,6 @@ class ValidationService(
       }
     }
 
-    // AC12
     booking.consecutiveSentences.forEach {
       if (it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28) {
         if (recallLength == 28 && it.durationIsLessThan(TWELVE, MONTHS)) messages += ValidationMessage(
@@ -220,13 +204,11 @@ class ValidationService(
       }
     }
 
-    // AC18
     booking.consecutiveSentences.forEach {
       if (it.recallType == FIXED_TERM_RECALL_28 && it.durationIsLessThan(TWELVE, MONTHS))
         messages += ValidationMessage(FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS)
     }
 
-    // AC20
     booking.consecutiveSentences.forEach {
       if (it.recallType == FIXED_TERM_RECALL_14 && it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS))
         messages += ValidationMessage(FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS)
