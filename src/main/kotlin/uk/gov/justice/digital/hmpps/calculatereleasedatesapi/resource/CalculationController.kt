@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.TEST
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.ValidationException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserQuestions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -85,15 +85,23 @@ class CalculationController(
     prisonerId: String,
     @RequestBody
     calculationUserInputs: CalculationUserInputs?
-  ): CalculatedReleaseDates {
+  ): CalculationResults {
     log.info("Request received to calculate release dates for $prisonerId")
-    val validationMessages = calculationTransactionalService.fullValidation(prisonerId, calculationUserInputs ?: CalculationUserInputs(), false)
-    if (validationMessages.isNotEmpty()) {
-      var message = "The validation has failed with errors:"
-      validationMessages.forEach { message += "\n    " + it.message }
-      throw ValidationException(message)
-    }
-    return calculationTransactionalService.calculate(prisonerId, calculationUserInputs ?: CalculationUserInputs(), false, TEST)
+    val validationMessages = calculationTransactionalService.fullValidation(
+      prisonerId,
+      calculationUserInputs ?: CalculationUserInputs(),
+      false
+    )
+
+    return if (validationMessages.isNotEmpty()) CalculationResults(validationMessages = validationMessages)
+    else CalculationResults(
+      calculationTransactionalService.calculate(
+        prisonerId,
+        calculationUserInputs ?: CalculationUserInputs(),
+        false,
+        TEST
+      )
+    )
   }
 
   @PostMapping(value = ["/confirm/{calculationRequestId}"])

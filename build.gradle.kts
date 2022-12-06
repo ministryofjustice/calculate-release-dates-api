@@ -10,25 +10,6 @@ configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
 }
 
-val integrationTest = task<Test>("integrationTest") {
-  description = "Integration tests"
-  group = "verification"
-  shouldRunAfter("test")
-}
-
-tasks.named<Test>("integrationTest") {
-  useJUnitPlatform()
-  filter {
-    includeTestsMatching("*.integration.*")
-  }
-}
-
-tasks.named<Test>("test") {
-  filter {
-    excludeTestsMatching("*.integration.*")
-  }
-}
-
 tasks.named("check") {
   setDependsOn(
     dependsOn.filterNot {
