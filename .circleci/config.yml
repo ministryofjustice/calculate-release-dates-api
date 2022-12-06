@@ -9,10 +9,7 @@ parameters:
     default: farsight-alerts
   releases-slack-channel:
     type: string
-    default: farsight-alerts
-  node-version:
-    type: string
-    default: 16.15-browsers
+    default: dps-releases
 
 jobs:
   validate:
@@ -26,71 +23,7 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          command: ./gradlew -Dorg.gradle.jvmargs="--illegal-access=permit" -Dkotlin.daemon.jvm.options="--illegal-access=permit" check
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: gradle-{{ checksum "build.gradle.kts" }}
-      - store_test_results:
-          path: build/test-results
-      - store_artifacts:
-          path: build/reports/tests
-
-  generate-api-docs:
-    executor:
-      name: hmpps/java
-      tag: "18.0"
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle.kts" }}
-            - gradle-
-      - run:
-          command: ./gradlew -Pdocs generateOpenApiDocs
-      - run:
-          command: mv build/docs ~/
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: gradle-{{ checksum "build.gradle.kts" }}
-      - store_artifacts:
-          path: ~/docs/openapi.json
-      - persist_to_workspace:
-          root: ~/docs
-          paths:
-            - openapi.json
-
-  lint-api-docs:
-    executor:
-      name: hmpps/node
-      tag: << pipeline.parameters.node-version >>
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/docs
-      # Create a folder for results to live in
-      - run: "[ -d lint-results ] || mkdir lint-results"
-      - run:
-          name: Run Spectral Lint
-          command: npx @stoplight/spectral-cli lint ~/docs/openapi.json
-            -o lint-results/junit.xml
-            -f junit
-      - store_test_results:
-          path: lint-results
-
-  integration-test:
-    executor:
-      name: hmpps/java
-      tag: "18.0"
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle.kts" }}
-            - gradle-
-      - run:
-          command: ./gradlew -Dorg.gradle.jvmargs="--illegal-access=permit" -Dkotlin.daemon.jvm.options="--illegal-access=permit" integrationTest
+          command: ./gradlew check
       - save_cache:
           paths:
             - ~/.gradle
@@ -108,20 +41,6 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-      - integration-test:
-          filters:
-            tags:
-              ignore: /.*/
-      - generate-api-docs:
-           filters:
-             tags:
-               ignore: /.*/
-      - lint-api-docs:
-           filters:
-             tags:
-               ignore: /.*/
-           requires:
-             - generate-api-docs
       - hmpps/helm_lint:
           name: helm_lint
       - hmpps/build_docker:
@@ -140,7 +59,6 @@ workflows:
                 - main
           requires:
             - validate
-            - integration-test
             - build_docker
             - helm_lint
       - request-preprod-approval:

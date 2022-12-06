@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
@@ -21,9 +21,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
@@ -507,34 +509,34 @@ class CalculationIntTest : IntegrationTestBase() {
   }
   @Test
   fun `Run calculation on a test of historic inactive released prisoner`() {
-    val calculation: CalculatedReleaseDates = webTestClient.post()
+    val calculation: CalculationResults = webTestClient.post()
       .uri("/calculation/OUT_CALC/test")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculatedReleaseDates::class.java)
+      .expectBody(CalculationResults::class.java)
       .returnResult().responseBody!!
 
-    assertThat(calculation.dates[CRD]).isEqualTo(
+    assertThat(calculation.calculatedReleaseDates!!.dates[CRD]).isEqualTo(
       LocalDate.of(2021, 12, 29)
     )
   }
 
   @Test
   fun `Run calculation on a test of prisoner`() {
-    val calculation: CalculatedReleaseDates = webTestClient.post()
+    val calculation: CalculationResults = webTestClient.post()
       .uri("/calculation/default/test")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculatedReleaseDates::class.java)
+      .expectBody(CalculationResults::class.java)
       .returnResult().responseBody!!
 
-    assertThat(calculation.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
+    assertThat(calculation.calculatedReleaseDates!!.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
   }
 
   @Test
