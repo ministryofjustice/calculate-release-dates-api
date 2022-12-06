@@ -74,14 +74,26 @@ class CalculationController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
     ]
   )
-  fun testCalculation(@Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)") @PathVariable("prisonerId") prisonerId: String, @RequestBody calculationUserInputs: CalculationUserInputs?): CalculationResults {
+  fun testCalculation(
+    @Parameter(
+      required = true,
+      example = "A1234AB",
+      description = "The prisoners ID (aka nomsId)"
+    ) @PathVariable("prisonerId") prisonerId: String, @RequestBody calculationUserInputs: CalculationUserInputs?
+  ): CalculationResults {
     log.info("Request received to calculate release dates for $prisonerId")
-    val validationMessages = calculationTransactionalService.fullValidation(prisonerId, calculationUserInputs
-      ?: CalculationUserInputs(), false)
+    val validationMessages = calculationTransactionalService.fullValidation(
+      prisonerId, calculationUserInputs
+        ?: CalculationUserInputs(), false
+    )
 
     return if (validationMessages.isNotEmpty()) CalculationResults(validationMessages = validationMessages)
-    else CalculationResults(calculationTransactionalService.calculate(prisonerId, calculationUserInputs
-      ?: CalculationUserInputs(), false, TEST))
+    else CalculationResults(
+      calculationTransactionalService.calculate(
+        prisonerId, calculationUserInputs
+          ?: CalculationUserInputs(), false, TEST
+      )
+    )
   }
 
   @PostMapping(value = ["/confirm/{calculationRequestId}"])
