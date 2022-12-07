@@ -75,4 +75,11 @@ class SingleTermSentence(
       secondStandardSentence.sentenceCalculation.expiryDate
     }
   }
+
+  override fun calculateErsedFromHalfway(): Boolean {
+    return identificationTrack.calculateErsedFromHalfway()
+  }
+  override fun calculateErsedFromTwoThirds(): Boolean {
+    return identificationTrack.calculateErsedFromTwoThirds()
+  }
 }

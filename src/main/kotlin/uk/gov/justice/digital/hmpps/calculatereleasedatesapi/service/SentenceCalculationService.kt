@@ -93,12 +93,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
   }
 
   private fun getDaysInGroup(sentences: List<CalculableSentence>, sentenceStartDate: LocalDate, durationSupplier: (sentence: CalculableSentence) -> Duration): Int {
-    val durations = ConsecutiveSentenceAggregator(sentences.map(durationSupplier)).aggregate()
-    var date = sentenceStartDate
-    durations.forEach {
-      date = date.plusDays(it.getLengthInDays(date).toLong())
-    }
-    return DAYS.between(sentenceStartDate, date).toInt()
+    return ConsecutiveSentenceAggregator(sentences.map(durationSupplier)).calculateDays(sentenceStartDate)
   }
 
   private fun getSentenceCalculation(booking: Booking, sentence: CalculableSentence): SentenceCalculation {
