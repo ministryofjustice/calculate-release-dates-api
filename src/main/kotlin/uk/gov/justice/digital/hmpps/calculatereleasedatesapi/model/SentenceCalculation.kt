@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ConsecutiveSentenceAggregator
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.ceil
@@ -185,10 +186,10 @@ data class SentenceCalculation(
 
   private fun calculateErsed(): LocalDate? {
     if (calculateErsed) {
-      if (sentence.identificationTrack.calculateErsedFromHalfway()) {
+      if (sentence.calculateErsedFromHalfway()) {
         return calculateErsedFromHalfway()
       }
-      if (sentence.identificationTrack.calculateErsedFromTwoThirds()) {
+      if (sentence.calculateErsedFromTwoThirds()) {
         return calculateErsedFromTwoThirds()
       }
     }
@@ -196,8 +197,12 @@ data class SentenceCalculation(
   }
 
   private fun calculateErsedFromTwoThirds(): LocalDate {
-    val custodialDuration = sentence.custodialDuration()
-    val days = custodialDuration.getLengthInDays(sentence.sentencedAt)
+    val days = if (sentence is ConsecutiveSentence) {
+      ConsecutiveSentenceAggregator((sentence as ConsecutiveSentence).orderedSentences.map { it.custodialDuration() }).calculateDays(sentence.sentencedAt)
+    } else {
+      val custodialDuration = sentence.custodialDuration()
+      custodialDuration.getLengthInDays(sentence.sentencedAt)
+    }
     return if (days >= RELEASE_AT_TWO_THIRDS_ERSED_DAYS) {
       val release = extendedDeterminateParoleEligibilityDate ?: releaseDate
       release.minusYears(1)
@@ -211,8 +216,12 @@ data class SentenceCalculation(
   }
 
   private fun calculateErsedFromHalfway(): LocalDate {
-    val custodialDuration = sentence.custodialDuration()
-    val days = custodialDuration.getLengthInDays(sentence.sentencedAt)
+    val days = if (sentence is ConsecutiveSentence) {
+      ConsecutiveSentenceAggregator((sentence as ConsecutiveSentence).orderedSentences.map { it.custodialDuration() }).calculateDays(sentence.sentencedAt)
+    } else {
+      val custodialDuration = sentence.custodialDuration()
+      custodialDuration.getLengthInDays(sentence.sentencedAt)
+    }
     return if (days >= RELEASE_AT_HALFWAY_ERSED_DAYS) {
       val release = extendedDeterminateParoleEligibilityDate ?: releaseDate
       release.minusYears(1)

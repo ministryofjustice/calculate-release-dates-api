@@ -1,0 +1,56 @@
+{
+  "calculateErsed": true,
+  "offender":{
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences":[
+    {
+      "offence":{
+        "committedAt":"2018-07-19",
+        "isScheduleFifteenMaximumLife": true
+      },
+      "duration":{
+        "durationElements":{
+          "YEARS": 7
+        }
+      },
+      "sentencedAt": "2022-05-06",
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+    },
+    {
+      "offence":{
+        "committedAt":"2018-07-19"
+      },
+      "duration":{
+        "durationElements":{
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2022-05-06",
+      "consecutiveSentenceUUIDs": ["5dfde034-b7d7-4c54-a86c-67d42a1fd669"]
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "numberOfDays": 14,
+        "appliesToSentencesFrom": "2022-05-06",
+        "fromDate": "2020-08-19",
+        "toDate": "2020-09-01"
+      },
+      {
+        "numberOfDays": 330,
+        "appliesToSentencesFrom": "2022-05-06",
+        "fromDate": "2021-06-10",
+        "toDate": "2022-05-05"
+      }
+    ],
+    "TAGGED_BAIL": [
+      {
+        "numberOfDays": 143,
+        "appliesToSentencesFrom": "2022-05-06"
+      }
+    ]
+  }
+}

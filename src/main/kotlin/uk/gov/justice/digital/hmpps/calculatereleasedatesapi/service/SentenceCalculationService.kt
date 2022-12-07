@@ -13,7 +13,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit.DAYS
 import kotlin.math.ceil
 
 @Service
@@ -93,12 +92,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
   }
 
   private fun getDaysInGroup(sentences: List<CalculableSentence>, sentenceStartDate: LocalDate, durationSupplier: (sentence: CalculableSentence) -> Duration): Int {
-    val durations = ConsecutiveSentenceAggregator(sentences.map(durationSupplier)).aggregate()
-    var date = sentenceStartDate
-    durations.forEach {
-      date = date.plusDays(it.getLengthInDays(date).toLong())
-    }
-    return DAYS.between(sentenceStartDate, date).toInt()
+    return ConsecutiveSentenceAggregator(sentences.map(durationSupplier)).calculateDays(sentenceStartDate)
   }
 
   private fun getSentenceCalculation(booking: Booking, sentence: CalculableSentence): SentenceCalculation {

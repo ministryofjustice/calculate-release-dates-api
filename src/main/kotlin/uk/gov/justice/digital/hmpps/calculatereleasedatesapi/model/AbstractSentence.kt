@@ -46,4 +46,11 @@ abstract class AbstractSentence(
   @JsonIgnore
   @Transient
   override lateinit var releaseDateTypes: List<ReleaseDateType>
+
+  override fun calculateErsedFromHalfway(): Boolean {
+    return identificationTrack.calculateErsedFromHalfway()
+  }
+  override fun calculateErsedFromTwoThirds(): Boolean {
+    return identificationTrack.calculateErsedFromTwoThirds()
+  }
 }

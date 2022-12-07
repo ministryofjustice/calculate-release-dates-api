@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 /**
  * This class will aggregate the durations of consecutive sentences. This helps to calculate the length of the aggregate sentence.
@@ -20,6 +22,15 @@ data class ConsecutiveSentenceAggregator(val durations: List<Duration>) {
     }
     aggregated.add(workingDuration!!)
     return aggregated
+  }
+
+  fun calculateDays(startDate: LocalDate): Int {
+    val durations = aggregate()
+    var date = startDate
+    durations.forEach {
+      date = date.plusDays(it.getLengthInDays(date).toLong())
+    }
+    return ChronoUnit.DAYS.between(startDate, date).toInt()
   }
 
   private fun handleUnits(it: Duration, workingDuration: Duration?, aggregated: MutableList<Duration>, checkUnits: (Duration) -> Boolean, getUnits: (Duration) -> Duration): Duration? {

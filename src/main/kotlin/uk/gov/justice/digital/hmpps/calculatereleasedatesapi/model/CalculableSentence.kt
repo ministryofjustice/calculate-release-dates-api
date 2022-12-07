@@ -156,5 +156,8 @@ interface CalculableSentence {
       }
     }
   }
+
+  fun calculateErsedFromHalfway(): Boolean
+  fun calculateErsedFromTwoThirds(): Boolean
   fun buildString(): String
 }
