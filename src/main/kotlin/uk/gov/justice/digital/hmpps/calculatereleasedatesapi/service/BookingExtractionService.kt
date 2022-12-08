@@ -250,10 +250,10 @@ class BookingExtractionService(
     }
 
     val latestEarlyReleaseSchemeEligibilityDate = extractionService.mostRecentOrNull(sentences, SentenceCalculation::earlyReleaseSchemeEligibilityDate)
-    val latestArdRelease = extractionService.mostRecentOrNull(sentences.filter { it.releaseDateTypes.contains(ARD) }, SentenceCalculation::releaseDate)
-    val ardIsRelease = latestArdRelease == latestReleaseDate
-    if (latestEarlyReleaseSchemeEligibilityDate != null && !ardIsRelease) {
-      dates[ERSED] = if (latestArdRelease != null && latestEarlyReleaseSchemeEligibilityDate.isBefore(latestArdRelease)) latestArdRelease else latestEarlyReleaseSchemeEligibilityDate
+    val latestAFineRelease = extractionService.mostRecentOrNull(sentences.filterIsInstance<AFineSentence>(), SentenceCalculation::releaseDate)
+    val afineIsRelease = latestAFineRelease == latestReleaseDate
+    if (latestEarlyReleaseSchemeEligibilityDate != null && !afineIsRelease) {
+      dates[ERSED] = if (latestAFineRelease != null && latestEarlyReleaseSchemeEligibilityDate.isBefore(latestAFineRelease)) latestAFineRelease else latestEarlyReleaseSchemeEligibilityDate
     }
 
     dates[ESED] = latestUnadjustedExpiryDate
