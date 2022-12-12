@@ -1,4 +1,5 @@
 {
+  "calculateErsed": true,
   "offender": {
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
