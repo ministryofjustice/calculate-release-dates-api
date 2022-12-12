@@ -61,6 +61,3 @@ bank-holiday:
 
 domain-events-sns:
   provider: localstack
-
-feature-toggles:
-  afine: true
