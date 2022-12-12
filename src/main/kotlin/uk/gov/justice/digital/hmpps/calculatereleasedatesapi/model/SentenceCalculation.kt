@@ -185,7 +185,7 @@ data class SentenceCalculation(
   }
 
   private fun calculateErsed(): LocalDate? {
-    if (calculateErsed) {
+    if (calculateErsed && !sentence.isRecall()) {
       if (sentence.calculateErsedFromHalfway()) {
         return calculateErsedFromHalfway()
       }
