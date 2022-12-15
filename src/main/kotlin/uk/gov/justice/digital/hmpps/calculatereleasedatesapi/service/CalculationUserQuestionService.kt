@@ -51,7 +51,9 @@ class CalculationUserQuestionService(
     val prisonerDetails = prisonService.getOffenderDetail(prisonerId)
     val sentencesAndOffences = prisonService.getSentencesAndOffences(prisonerDetails.bookingId)
     return CalculationUserQuestions(
-      sentenceQuestions = sentencesAndOffences.mapNotNull {
+      sentenceQuestions = sentencesAndOffences
+        .filter { SentenceCalculationType.isSupported(it.sentenceCalculationType) }
+        .mapNotNull {
         val sentenceCalculationType = SentenceCalculationType.from(it.sentenceCalculationType)
         val overEighteenOnSentenceDate = overEighteenOnSentenceDate(prisonerDetails, it)
         val fourToUnderSeven = fourToUnderSeven(it)

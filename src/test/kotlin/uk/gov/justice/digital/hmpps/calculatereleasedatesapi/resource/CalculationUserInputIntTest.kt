@@ -142,4 +142,19 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
     assertThat(response.sentenceQuestions.size).isEqualTo(1)
     assertThat(response.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.ORIGINAL)
   }
+  @Test
+  fun `Service will return which sentences may fall under SDS+ and with an unknown sentence type`() {
+    val response = webTestClient.get()
+      .uri("/calculation/UNSUPP_SENT/user-questions")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculationUserQuestions::class.java)
+      .returnResult().responseBody!!
+
+    // Halfway
+    assertThat(response.sentenceQuestions.size).isEqualTo(0)
+  }
 }
