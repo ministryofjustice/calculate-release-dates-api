@@ -52,7 +52,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       if (it.isNotEmpty()) {
         val releaseStartDate = if (notionalCrd != null) notionalCrd!!.plusDays(1) else sentence.sentencedAt
         val daysInThisCustodialDuration = getDaysInGroup(it, releaseStartDate) { it.custodialDuration() }
-        if (it == sentencesWithPed) {
+        if (it == sentencesWithPed && !sentence.isRecall()) {
           numberOfDaysToParoleEligibilityDate = calculateConsecutivePed(it, daysToRelease, releaseStartDate)
         }
         val multiplier = determineReleaseDateMultiplier(it[0].identificationTrack)
@@ -62,6 +62,10 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
           .minusDays(1)
         daysToRelease += daysToReleaseInThisGroup.toInt()
       }
+    }
+
+    if (sentence.isRecall()) {
+      numberOfDaysToParoleEligibilityDate = null
     }
 
     return ReleaseDateCalculation(
