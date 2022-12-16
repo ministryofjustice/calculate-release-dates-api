@@ -51,7 +51,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
-    // Halfway
+    // Release at halfway (different to how it would be calculated with NOMIS inputs.)
     assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2028, 1, 10))
 
     val confirmResponse = webTestClient.post()
@@ -114,7 +114,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
-    // Halfway
+    // Two thirds release (Same as NOMIS)
     assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2030, 1, 9))
 
     val dbRequest = calculationRequestRepository.findById(prelimResponse.calculationRequestId).get()
@@ -138,8 +138,21 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .expectBody(CalculationUserQuestions::class.java)
       .returnResult().responseBody!!
 
-    // Halfway
     assertThat(response.sentenceQuestions.size).isEqualTo(1)
     assertThat(response.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.ORIGINAL)
+  }
+  @Test
+  fun `Service will return which sentences may fall under SDS+ and with an unknown sentence type`() {
+    val response = webTestClient.get()
+      .uri("/calculation/UNSUPP_SENT/user-questions")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculationUserQuestions::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(response.sentenceQuestions.size).isEqualTo(0)
   }
 }
