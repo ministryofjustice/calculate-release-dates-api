@@ -356,7 +356,7 @@ fun transform(calculationRequestUserInput: CalculationRequestUserInput?): Calcul
   }
   return CalculationUserInputs(
     calculateErsed = calculationRequestUserInput.calculateErsed,
-    sentenceCalculationUserInputs = calculationRequestUserInput.calculationRequestSentenceUserInputs.map {
+    sentenceCalculationUserInputs = if (calculationRequestUserInput.calculationRequestSentenceUserInputs.isEmpty()) null else calculationRequestUserInput.calculationRequestSentenceUserInputs.map {
       CalculationSentenceUserInput(
         sentenceSequence = it.sentenceSequence,
         offenceCode = it.offenceCode,
