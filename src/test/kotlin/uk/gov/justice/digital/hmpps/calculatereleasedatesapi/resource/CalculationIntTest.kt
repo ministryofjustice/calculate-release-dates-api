@@ -579,6 +579,31 @@ class CalculationIntTest : IntegrationTestBase() {
     )
   }
 
+  @Test
+  fun `User doesnt select any sdsplus sentences`() {
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/SDSPERR")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    webTestClient.post()
+      .uri("/calculation/confirm/${calculation.calculationRequestId}")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(CalculationFragments("<p>BREAKDOWN</p>")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+  }
+
   private fun createPreliminaryCalculation(prisonerid: String): CalculatedReleaseDates = webTestClient.post()
     .uri("/calculation/$prisonerid")
     .accept(MediaType.APPLICATION_JSON)
