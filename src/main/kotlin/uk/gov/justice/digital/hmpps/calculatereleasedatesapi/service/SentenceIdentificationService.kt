@@ -157,11 +157,18 @@ class SentenceIdentificationService {
   }
 
   private fun identifySopcSentence(sentence: SopcSentence) {
-    sentence.releaseDateTypes = listOf(
-      SLED,
-      CRD,
-      PED
-    )
+    if (sentence.isRecall()) {
+      sentence.releaseDateTypes = listOf(
+        SLED,
+        PRRD
+      )
+    } else {
+      sentence.releaseDateTypes = listOf(
+        SLED,
+        CRD,
+        PED
+      )
+    }
     if (sentence.sdopcu18 || sentence.sentencedAt.isAfterOrEqualTo(PCSC_COMMENCEMENT_DATE)) {
       sentence.identificationTrack = SOPC_PED_AT_TWO_THIRDS
     } else {
@@ -169,19 +176,27 @@ class SentenceIdentificationService {
     }
   }
   private fun identifyExtendedDeterminate(sentence: ExtendedDeterminateSentence) {
-    if (sentence.automaticRelease) {
+    if (sentence.isRecall()) {
       sentence.identificationTrack = EDS_AUTOMATIC_RELEASE
       sentence.releaseDateTypes = listOf(
         SLED,
-        CRD
+        PRRD
       )
     } else {
-      sentence.identificationTrack = EDS_DISCRETIONARY_RELEASE
-      sentence.releaseDateTypes = listOf(
-        SLED,
-        CRD,
-        PED
-      )
+      if (sentence.automaticRelease) {
+        sentence.identificationTrack = EDS_AUTOMATIC_RELEASE
+        sentence.releaseDateTypes = listOf(
+          SLED,
+          CRD
+        )
+      } else {
+        sentence.identificationTrack = EDS_DISCRETIONARY_RELEASE
+        sentence.releaseDateTypes = listOf(
+          SLED,
+          CRD,
+          PED
+        )
+      }
     }
   }
 

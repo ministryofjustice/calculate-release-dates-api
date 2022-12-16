@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.context.annotation.Profile
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
@@ -80,7 +81,7 @@ import java.util.UUID
 
 @Profile("tests")
 class ValidationServiceTest {
-  private var validationService = ValidationService(SentencesExtractionService())
+  private var validationService = ValidationService(SentencesExtractionService(), FeatureToggles())
   private val validSdsSentence = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 7,
@@ -119,6 +120,12 @@ class ValidationServiceTest {
     sentenceCalculationType = SentenceCalculationType.AFINE.name,
     sentenceDate = FIRST_MAY_2021,
     fineAmount = BigDecimal("100")
+  )
+  private val validEdsRecallSentence = validEdsSentence.copy(
+    sentenceCalculationType = SentenceCalculationType.LR_LASPO_DR.name,
+  )
+  private val validSopcRecallSentence = validSopcSentence.copy(
+    sentenceCalculationType = SentenceCalculationType.LR_SOPC21.name,
   )
   private val lawfullyAtLargeBookingAdjustment = BookingAndSentenceAdjustments(
     listOf(
@@ -769,6 +776,47 @@ class ValidationServiceTest {
     )
   }
 
+  @Test
+  fun `Test EDS recalls unsupported if feature toggle off`() {
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(listOf(validEdsRecallSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+      CalculationUserInputs()
+    )
+
+    assertThat(result).isEqualTo(
+      listOf(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This is a sentence type"))),
+    )
+  }
+
+  @Test
+  fun `Test EDS recalls supported if feature toggle on`() {
+    val result = ValidationService(SentencesExtractionService(), FeatureToggles(true)).validateBeforeCalculation(
+      PrisonApiSourceData(listOf(validEdsRecallSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+      CalculationUserInputs()
+    )
+
+    assertThat(result).isEmpty()
+  }
+  @Test
+  fun `Test SOPC recalls unsupported if feature toggle off`() {
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(listOf(validSopcRecallSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+      CalculationUserInputs()
+    )
+
+    assertThat(result).isEqualTo(
+      listOf(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This is a sentence type")))
+    )
+  }
+  @Test
+  fun `Test SOPC recalls supported if feature toggle on`() {
+    val result = ValidationService(SentencesExtractionService(), FeatureToggles(true)).validateBeforeCalculation(
+      PrisonApiSourceData(listOf(validSopcRecallSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+      CalculationUserInputs()
+    )
+
+    assertThat(result).isEmpty()
+  }
   @Test
   fun `Test FTR validation precalc`() {
     val result = validationService.validateBeforeCalculation(

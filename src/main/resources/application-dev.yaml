@@ -30,3 +30,6 @@ system:
   client:
     id: calculate-release-dates-admin
     secret: client_secret
+
+feature-toggles:
+  sopcedsrecalls: true

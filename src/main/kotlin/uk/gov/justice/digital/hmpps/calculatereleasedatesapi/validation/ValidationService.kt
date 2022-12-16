@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -89,6 +90,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 @Service
 class ValidationService(
   private val extractionService: SentencesExtractionService,
+  private val featureToggles: FeatureToggles
 ) {
   fun validateBeforeCalculation(sourceData: PrisonApiSourceData, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
     log.info("Pre-calculation validation of source data: $sourceData")
@@ -500,8 +502,14 @@ class ValidationService(
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedCategories = listOf("2003", "2020")
     val validationMessages = sentencesAndOffences.filter {
-      !SentenceCalculationType.isSupported(it.sentenceCalculationType) || !supportedCategories.contains(it.sentenceCategory)
-    }.map { ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf(it.sentenceCategory, it.sentenceTypeDescription)) }
+      if (SentenceCalculationType.isSupported(it.sentenceCalculationType) && supportedCategories.contains(it.sentenceCategory)) {
+        val type = from(it.sentenceCalculationType)
+        !featureToggles.sopcedsrecalls && type.recallType != null && (type.sentenceClazz == ExtendedDeterminateSentence::class.java || type.sentenceClazz == SopcSentence::class.java)
+      } else {
+        true
+      }
+    }
+      .map { ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf(it.sentenceCategory, it.sentenceTypeDescription)) }
       .toMutableList()
     return validationMessages.toList()
   }

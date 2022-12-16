@@ -559,6 +559,26 @@ class CalculationIntTest : IntegrationTestBase() {
     )
   }
 
+  @Test
+  fun `Run calculation on EDS recall sentence`() {
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/EDSRECALL")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[PRRD]).isEqualTo(
+      LocalDate.of(2024, 4, 1)
+    )
+    assertThat(calculation.dates[SLED]).isEqualTo(
+      LocalDate.of(2024, 4, 1)
+    )
+  }
+
   private fun createPreliminaryCalculation(prisonerid: String): CalculatedReleaseDates = webTestClient.post()
     .uri("/calculation/$prisonerid")
     .accept(MediaType.APPLICATION_JSON)

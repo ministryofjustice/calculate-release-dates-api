@@ -45,7 +45,15 @@ enum class SentenceCalculationType(
   SOPC18(sentenceClazz = SopcSentence::class.java),
   SOPC21(sentenceClazz = SopcSentence::class.java),
   SEC236A(sentenceClazz = SopcSentence::class.java),
-  AFINE(sentenceClazz = AFineSentence::class.java, primaryName = "A/FINE");
+  AFINE(sentenceClazz = AFineSentence::class.java, primaryName = "A/FINE"),
+  LR_EDS18(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
+  LR_EDS21(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
+  LR_EDSU18(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
+  LR_LASPO_AR(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
+  LR_LASPO_DR(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
+  LR_SEC236A(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
+  LR_SOPC18(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
+  LR_SOPC21(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java);
 
   companion object {
     fun from(sentenceCalculationType: String): SentenceCalculationType =
