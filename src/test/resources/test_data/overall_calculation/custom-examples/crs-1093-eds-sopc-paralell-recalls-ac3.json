@@ -1,0 +1,57 @@
+{
+  "calculateErsed": true,
+  "offender":{
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences":[
+    {
+      "type":"SopcSentence",
+      "offence":{
+        "committedAt":"2015-01-09"
+      },
+      "custodialDuration":{
+        "durationElements":{
+          "YEARS": 5
+        }
+      },
+      "extensionDuration":{
+        "durationElements":{
+          "YEARS": 1
+        }
+      },
+      "automaticRelease":false,
+      "sentencedAt":"2018-09-26",
+      "recallType": "STANDARD_RECALL"
+    },
+    {
+      "type":"SopcSentence",
+      "offence":{
+        "committedAt":"2015-01-09"
+      },
+      "custodialDuration":{
+        "durationElements":{
+          "YEARS": 3,
+          "MONTHS": 4
+        }
+      },
+      "extensionDuration":{
+        "durationElements":{
+          "YEARS": 1
+        }
+      },
+      "automaticRelease":false,
+      "sentencedAt":"2021-03-04"
+    }
+  ],
+  "adjustments": {
+    "RECALL_REMAND": [
+      {
+        "appliesToSentencesFrom": "2018-09-26",
+        "numberOfDays": 84,
+        "fromDate": "2018-07-04",
+        "toDate": "2018-09-25"
+      }
+    ]
+  }
+}
