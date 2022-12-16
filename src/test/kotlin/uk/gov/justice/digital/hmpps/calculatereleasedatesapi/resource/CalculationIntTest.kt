@@ -591,7 +591,6 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
-
     webTestClient.post()
       .uri("/calculation/confirm/${calculation.calculationRequestId}")
       .accept(MediaType.APPLICATION_JSON)
@@ -603,7 +602,6 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
-
   }
   private fun createPreliminaryCalculation(prisonerid: String): CalculatedReleaseDates = webTestClient.post()
     .uri("/calculation/$prisonerid")
