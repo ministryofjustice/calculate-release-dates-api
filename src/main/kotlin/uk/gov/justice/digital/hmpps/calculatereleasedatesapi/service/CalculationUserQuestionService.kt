@@ -51,39 +51,41 @@ class CalculationUserQuestionService(
     val prisonerDetails = prisonService.getOffenderDetail(prisonerId)
     val sentencesAndOffences = prisonService.getSentencesAndOffences(prisonerDetails.bookingId)
     return CalculationUserQuestions(
-      sentenceQuestions = sentencesAndOffences.mapNotNull {
-        val sentenceCalculationType = SentenceCalculationType.from(it.sentenceCalculationType)
-        val overEighteenOnSentenceDate = overEighteenOnSentenceDate(prisonerDetails, it)
-        val fourToUnderSeven = fourToUnderSeven(it)
-        val sevenYearsOrMore = sevenYearsOrMore(it)
+      sentenceQuestions = sentencesAndOffences
+        .filter { SentenceCalculationType.isSupported(it.sentenceCalculationType) }
+        .mapNotNull {
+          val sentenceCalculationType = SentenceCalculationType.from(it.sentenceCalculationType)
+          val overEighteenOnSentenceDate = overEighteenOnSentenceDate(prisonerDetails, it)
+          val fourToUnderSeven = fourToUnderSeven(it)
+          val sevenYearsOrMore = sevenYearsOrMore(it)
 
-        val sentencedAfterPcsc = sentencedAfterPcsc(it)
-        val sentencedWithinOriginalSdsPlusWindow = sentencedWithinOriginalSdsPlusWindow(it)
+          val sentencedAfterPcsc = sentencedAfterPcsc(it)
+          val sentencedWithinOriginalSdsPlusWindow = sentencedWithinOriginalSdsPlusWindow(it)
 
-        var question: CalculationSentenceQuestion? = null
-        if (sentencedWithinOriginalSdsPlusWindow) {
-          val matchingSentenceType = postPcscCalcTypes[ORIGINAL]!!.contains(sentenceCalculationType)
-          if (matchingSentenceType && sevenYearsOrMore && overEighteenOnSentenceDate) {
-            question = CalculationSentenceQuestion(it.sentenceSequence, ORIGINAL)
-          }
-        } else if (sentencedAfterPcsc) {
-          if (fourToUnderSeven) {
-            val matchingSentenceType = postPcscCalcTypes[FOUR_TO_UNDER_SEVEN]!!.contains(sentenceCalculationType)
-            if (matchingSentenceType && overEighteenOnSentenceDate) {
-              question = CalculationSentenceQuestion(it.sentenceSequence, FOUR_TO_UNDER_SEVEN)
+          var question: CalculationSentenceQuestion? = null
+          if (sentencedWithinOriginalSdsPlusWindow) {
+            val matchingSentenceType = postPcscCalcTypes[ORIGINAL]!!.contains(sentenceCalculationType)
+            if (matchingSentenceType && sevenYearsOrMore && overEighteenOnSentenceDate) {
+              question = CalculationSentenceQuestion(it.sentenceSequence, ORIGINAL)
             }
-          } else if (sevenYearsOrMore) {
-            val isUpdatedSentenceType = postPcscCalcTypes[UPDATED]!!.contains(sentenceCalculationType)
-            val isSection250SentenceType = postPcscCalcTypes[SECTION_250]!!.contains(sentenceCalculationType)
-            if (isUpdatedSentenceType && overEighteenOnSentenceDate) {
-              question = CalculationSentenceQuestion(it.sentenceSequence, UPDATED)
-            } else if (isSection250SentenceType) {
-              question = CalculationSentenceQuestion(it.sentenceSequence, SECTION_250)
+          } else if (sentencedAfterPcsc) {
+            if (fourToUnderSeven) {
+              val matchingSentenceType = postPcscCalcTypes[FOUR_TO_UNDER_SEVEN]!!.contains(sentenceCalculationType)
+              if (matchingSentenceType && overEighteenOnSentenceDate) {
+                question = CalculationSentenceQuestion(it.sentenceSequence, FOUR_TO_UNDER_SEVEN)
+              }
+            } else if (sevenYearsOrMore) {
+              val isUpdatedSentenceType = postPcscCalcTypes[UPDATED]!!.contains(sentenceCalculationType)
+              val isSection250SentenceType = postPcscCalcTypes[SECTION_250]!!.contains(sentenceCalculationType)
+              if (isUpdatedSentenceType && overEighteenOnSentenceDate) {
+                question = CalculationSentenceQuestion(it.sentenceSequence, UPDATED)
+              } else if (isSection250SentenceType) {
+                question = CalculationSentenceQuestion(it.sentenceSequence, SECTION_250)
+              }
             }
           }
+          question
         }
-        question
-      }
     )
   }
 
