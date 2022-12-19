@@ -31,6 +31,6 @@ class CacheConfiguration {
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val BANK_HOLIDAYS_CACHE_NAME: String = "bankHolidays"
-    const val TTL_HOURS: Long = 1
+    const val TTL_HOURS: Long = 8
   }
 }
