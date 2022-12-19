@@ -93,12 +93,12 @@ jacoco {
 
 kotlin {
   jvmToolchain {
-    this.languageVersion.set(JavaLanguageVersion.of("18"))
+    this.languageVersion.set(JavaLanguageVersion.of("19"))
   }
 }
 
 java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(18))
+  toolchain.languageVersion.set(JavaLanguageVersion.of(19))
 }
 
 dependencyCheck {
