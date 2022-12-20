@@ -1,8 +1,8 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.5.4"
-  id("org.springdoc.openapi-gradle-plugin") version "1.4.0"
-  kotlin("plugin.spring") version "1.7.10"
-  kotlin("plugin.jpa") version "1.7.10"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.7.4"
+  id("org.springdoc.openapi-gradle-plugin") version "1.6.0"
+  kotlin("plugin.spring") version "1.7.22"
+  kotlin("plugin.jpa") version "1.7.22"
   id("jacoco")
 }
 
@@ -21,6 +21,7 @@ tasks.named("check") {
 val awsSdkVersion = "1.12.285"
 
 dependencies {
+
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
   // Spring boot dependencies
@@ -32,7 +33,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-actuator")
 
   // GOVUK Notify:
-  implementation("uk.gov.service.notify:notifications-java-client:3.17.3-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:3.19.0-RELEASE")
 
   // Enable kotlin reflect
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.20")
@@ -42,20 +43,20 @@ dependencies {
 
   // Database dependencies
   runtimeOnly("org.flywaydb:flyway-core")
-  runtimeOnly("org.postgresql:postgresql:42.5.0")
+  runtimeOnly("org.postgresql:postgresql:42.5.1")
 
   implementation("io.arrow-kt:arrow-core:1.1.2")
-  implementation("com.vladmihalcea:hibernate-types-52:2.19.2")
+  implementation("com.vladmihalcea:hibernate-types-52:2.20.0")
 
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.11")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.11")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.11")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.13")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.13")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:1.1.0")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
   implementation("org.springframework:spring-jms:5.3.22")
-  implementation("com.google.code.gson:gson:2.9.0")
+  implementation("com.google.code.gson:gson:2.10")
 
   // AWS
   implementation("com.amazonaws:aws-java-sdk-s3:$awsSdkVersion")
@@ -70,10 +71,10 @@ dependencies {
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
+  testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.35.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.3")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.36.0")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.8")
   testImplementation("org.mockito:mockito-inline:4.8.0")
   testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
   testImplementation("com.h2database:h2")
@@ -99,6 +100,14 @@ kotlin {
 
 java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(19))
+}
+
+tasks {
+  withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+      jvmTarget = "18"
+    }
+  }
 }
 
 dependencyCheck {
