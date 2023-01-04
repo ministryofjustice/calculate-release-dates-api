@@ -113,7 +113,7 @@ class BookingServiceTest {
   @Test
   @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId`() {
-    val result = bookingService.getBooking(sourceData, CalculationUserInputs())
+    val result = bookingService.getBooking(sourceData, CalculationUserInputs(useOffenceIndicators = true))
 
     assertThat(result).isEqualTo(
       Booking(

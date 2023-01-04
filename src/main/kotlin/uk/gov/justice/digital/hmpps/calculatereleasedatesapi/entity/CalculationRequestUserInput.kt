@@ -26,6 +26,9 @@ data class CalculationRequestUserInput(
   @NotNull
   var calculateErsed: Boolean = false,
 
+  @NotNull
+  var useOffenceIndicators: Boolean = false,
+
   @OneToMany(mappedBy = "calculationRequestUserInput", cascade = [CascadeType.ALL])
   val calculationRequestSentenceUserInputs: List<CalculationRequestSentenceUserInput> = ArrayList()
 

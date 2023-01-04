@@ -193,10 +193,15 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run calculation where SDS+ is consecutive to SDS`() {
+    val userInput = CalculationUserInputs(
+      useOffenceIndicators = true
+    )
     val calculatedReleaseDates: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/$SDS_PLUS_CONSECUTIVE_TO_SDS")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(objectMapper.writeValueAsString(userInput))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -394,10 +399,15 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run calculation on CRS-872 a consecutive sentence having multiple offences, some schedule 15 attracting life, some not`() {
+    val userInput = CalculationUserInputs(
+      useOffenceIndicators = true
+    )
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-872")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(objectMapper.writeValueAsString(userInput))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
