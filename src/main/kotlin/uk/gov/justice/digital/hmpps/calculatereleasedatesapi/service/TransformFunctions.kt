@@ -87,8 +87,17 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
   // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
   // treated as a separate sentence
   return sentence.offences.map { offendersOffence ->
-    val offence = if (calculationUserInputs?.sentenceCalculationUserInputs != null) {
-      val matchingSentenceInput = calculationUserInputs.sentenceCalculationUserInputs.find {
+    val offence = if (calculationUserInputs?.useOffenceIndicators == true) {
+      Offence(
+        committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
+        offenceCode = offendersOffence.offenceCode,
+        isScheduleFifteenMaximumLife = offendersOffence.isScheduleFifteenMaximumLife,
+        isPcscSds = offendersOffence.isPcscSds,
+        isPcscSec250 = offendersOffence.isPcscSec250,
+        isPcscSdsPlus = offendersOffence.isPcscSdsPlus,
+      )
+    } else {
+      val matchingSentenceInput = calculationUserInputs?.sentenceCalculationUserInputs?.find {
         it.sentenceSequence == sentence.sentenceSequence && it.offenceCode == offendersOffence.offenceCode
       }
       Offence(
@@ -98,15 +107,6 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
         isPcscSds = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.FOUR_TO_UNDER_SEVEN,
         isPcscSec250 = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.SECTION_250,
         isPcscSdsPlus = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.UPDATED,
-      )
-    } else {
-      Offence(
-        committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
-        offenceCode = offendersOffence.offenceCode,
-        isScheduleFifteenMaximumLife = offendersOffence.isScheduleFifteenMaximumLife,
-        isPcscSds = offendersOffence.isPcscSds,
-        isPcscSec250 = offendersOffence.isPcscSec250,
-        isPcscSdsPlus = offendersOffence.isPcscSdsPlus,
       )
     }
 
@@ -329,7 +329,8 @@ fun transform(calculationUserInputs: CalculationUserInputs?, sourceData: PrisonA
   }
   return CalculationRequestUserInput(
     calculateErsed = calculationUserInputs.calculateErsed,
-    calculationRequestSentenceUserInputs = if (calculationUserInputs.sentenceCalculationUserInputs == null) listOf() else calculationUserInputs.sentenceCalculationUserInputs.map {
+    useOffenceIndicators = calculationUserInputs.useOffenceIndicators,
+    calculationRequestSentenceUserInputs = calculationUserInputs.sentenceCalculationUserInputs.map {
       CalculationRequestSentenceUserInput(
         sentenceSequence = it.sentenceSequence,
         offenceCode = it.offenceCode,
@@ -356,7 +357,8 @@ fun transform(calculationRequestUserInput: CalculationRequestUserInput?): Calcul
   }
   return CalculationUserInputs(
     calculateErsed = calculationRequestUserInput.calculateErsed,
-    sentenceCalculationUserInputs = if (calculationRequestUserInput.calculationRequestSentenceUserInputs.isEmpty()) null else calculationRequestUserInput.calculationRequestSentenceUserInputs.map {
+    useOffenceIndicators = calculationRequestUserInput.useOffenceIndicators,
+    sentenceCalculationUserInputs = calculationRequestUserInput.calculationRequestSentenceUserInputs.map {
       CalculationSentenceUserInput(
         sentenceSequence = it.sentenceSequence,
         offenceCode = it.offenceCode,

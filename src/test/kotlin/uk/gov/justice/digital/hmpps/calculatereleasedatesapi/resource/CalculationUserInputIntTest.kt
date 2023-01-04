@@ -30,6 +30,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
   fun `Use a user input that differs from NOMIS and check its persisted through prelim, confirmed and view`() {
     val userInput = CalculationUserInputs(
       calculateErsed = true,
+      useOffenceIndicators = false,
       sentenceCalculationUserInputs = listOf(
         CalculationSentenceUserInput(
           sentenceSequence = 1,
@@ -83,6 +84,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
     val dbRequest = calculationRequestRepository.findById(confirmResponse.calculationRequestId).get()
     assertThat(dbRequest.calculationRequestUserInput).isNotNull
     assertThat(dbRequest.calculationRequestUserInput!!.calculateErsed).isTrue
+    assertThat(dbRequest.calculationRequestUserInput!!.useOffenceIndicators).isFalse
     assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs).isNotEmpty
     assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].nomisMatches).isFalse
     assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].userChoice).isFalse
@@ -93,6 +95,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
   fun `Use a user input that is the same as NOMIS`() {
     val userInput = CalculationUserInputs(
       calculateErsed = false,
+      useOffenceIndicators = false,
       sentenceCalculationUserInputs = listOf(
         CalculationSentenceUserInput(
           sentenceSequence = 1,
@@ -121,9 +124,40 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
 
     assertThat(dbRequest.calculationRequestUserInput).isNotNull
     assertThat(dbRequest.calculationRequestUserInput!!.calculateErsed).isFalse
+    assertThat(dbRequest.calculationRequestUserInput!!.useOffenceIndicators).isFalse
     assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs).isNotEmpty
     assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].nomisMatches).isTrue
     assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].userChoice).isTrue
+  }
+
+  @Test
+  @Transactional(readOnly = true)
+  fun `Use NOMIS markers rather than user input`() {
+    val userInput = CalculationUserInputs(
+      calculateErsed = false,
+      useOffenceIndicators = true
+    )
+    val prelimResponse = webTestClient.post()
+      .uri("/calculation/USERINPUT")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(userInput))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    // Two thirds release (Same as NOMIS)
+    assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2030, 1, 9))
+
+    val dbRequest = calculationRequestRepository.findById(prelimResponse.calculationRequestId).get()
+
+    assertThat(dbRequest.calculationRequestUserInput).isNotNull
+    assertThat(dbRequest.calculationRequestUserInput!!.calculateErsed).isFalse
+    assertThat(dbRequest.calculationRequestUserInput!!.useOffenceIndicators).isTrue
+    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs).isEmpty()
   }
 
   @Test
