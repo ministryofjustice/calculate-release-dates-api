@@ -9,7 +9,7 @@ import java.time.LocalDate
 
 @Service
 class WorkingDayService(
-  private val bankHolidayApiClient: BankHolidayApiClient
+  private val bankHolidayService: BankHolidayService
 ) {
   fun nextWorkingDay(date: LocalDate): WorkingDay {
     return iterateOverNonWorkingDays(date) { it.plusDays(1) }
@@ -23,7 +23,7 @@ class WorkingDayService(
     var adjustedForWeekend = false
     var adjustedForBankHoliday = false
     log.info("Fetching bank holidays data")
-    val bankHolidays = bankHolidayApiClient.getBankHolidays()
+    val bankHolidays = bankHolidayService.getBankHolidays()
       .englandAndWales
       .events
       .map { it.date }
