@@ -13,13 +13,12 @@ import org.springframework.web.reactive.function.client.WebClient
 class WebClientConfiguration(
   @Value("\${prison.api.url}") private val prisonApiUri: String,
   @Value("\${hmpps.auth.url}") private val oauthApiUrl: String,
-  @Value("\${bank-holiday.api.url:https://www.gov.uk}") private val bankHolidayApiUrl: String,
-  private val webClientBuilder: WebClient.Builder,
+  @Value("\${bank-holiday.api.url:https://www.gov.uk}") private val bankHolidayApiUrl: String
 ) {
 
   @Bean
   fun prisonApiWebClient(): WebClient {
-    return webClientBuilder
+    return WebClient.builder()
       .baseUrl(prisonApiUri)
       .filter(addAuthHeaderFilterFunction())
       .build()
@@ -36,16 +35,16 @@ class WebClientConfiguration(
 
   @Bean
   fun prisonApiHealthWebClient(): WebClient {
-    return webClientBuilder.baseUrl(prisonApiUri).build()
+    return WebClient.builder().baseUrl(prisonApiUri).build()
   }
 
   @Bean
   fun oauthApiHealthWebClient(): WebClient {
-    return webClientBuilder.baseUrl(oauthApiUrl).build()
+    return WebClient.builder().baseUrl(oauthApiUrl).build()
   }
 
   @Bean
   fun bankHolidayApiWebClient(): WebClient {
-    return webClientBuilder.baseUrl(bankHolidayApiUrl).build()
+    return WebClient.builder().baseUrl(bankHolidayApiUrl).build()
   }
 }

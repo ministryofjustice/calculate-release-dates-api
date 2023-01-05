@@ -14,13 +14,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Regi
 import java.time.LocalDate
 
 class WorkingDayServiceTest {
-  private val bankHolidayApiClient = mock<BankHolidayApiClient>()
-  private val workingDayService = WorkingDayService(bankHolidayApiClient)
+  private val bankHolidayService = mock<BankHolidayService>()
+  private val workingDayService = WorkingDayService(bankHolidayService)
 
   @BeforeEach
   fun reset() {
-    reset(bankHolidayApiClient)
-    whenever(bankHolidayApiClient.getBankHolidays()).thenReturn(
+    reset(bankHolidayService)
+    whenever(bankHolidayService.getBankHolidays()).thenReturn(
       BankHolidays(
         RegionBankHolidays(
           "England and Wales",
