@@ -29,28 +29,72 @@ data class SentenceCalculation(
   val unadjustedPostRecallReleaseDate: LocalDate?,
   val calculateErsed: Boolean,
   val adjustments: Adjustments,
-  var adjustmentsBefore: LocalDate,
+  //This is the date of the latest release of a sentence that runs concurrently to this.
+  var latestConcurrentRelease: LocalDate = sentence.sentencedAt,
+  //This is the date of the latest determinate release of a sentence that runs concurrently to this.
+  var latestConcurrentDeterminateRelease: LocalDate = sentence.sentencedAt,
   var adjustmentsAfter: LocalDate? = null,
   val returnToCustodyDate: LocalDate? = null,
   val numberOfDaysToParoleEligibilityDate: Long? = null,
 
-) {
+  ) {
 
   fun getAdjustmentBeforeSentence(vararg adjustmentTypes: AdjustmentType): Int {
-    return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = adjustmentsAfter)
+    return adjustments.getOrZero(
+      *adjustmentTypes,
+      adjustmentsBefore = latestConcurrentRelease,
+      adjustmentsAfter = adjustmentsAfter
+    )
+  }
+
+  fun getDeterminateAdjustmentBeforeSentence(vararg adjustmentTypes: AdjustmentType): Int {
+    return adjustments.getOrZero(
+      *adjustmentTypes,
+      adjustmentsBefore = latestConcurrentDeterminateRelease,
+      adjustmentsAfter = adjustmentsAfter
+    )
+  }
+
+  fun getDeterminateAdustmentsAfterSentenceAtDate(vararg adjustmentTypes: AdjustmentType): Int {
+    return adjustments.getOrZero(
+      *adjustmentTypes,
+      adjustmentsBefore = latestConcurrentDeterminateRelease,
+      adjustmentsAfter = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1)
+    )
   }
 
   fun getAdustmentsAfterSentenceAtDate(vararg adjustmentTypes: AdjustmentType): Int {
-    return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1))
+    return adjustments.getOrZero(
+      *adjustmentTypes,
+      adjustmentsBefore = latestConcurrentRelease,
+      adjustmentsAfter = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1)
+    )
   }
 
   fun getAdjustmentDuringSentence(vararg adjustmentTypes: AdjustmentType): Int {
-    return adjustments.getOrZero(*adjustmentTypes, adjustmentsBefore = releaseDateWithoutAwarded, adjustmentsAfter = adjustmentsAfter)
+    return adjustments.getOrZero(
+      *adjustmentTypes,
+      adjustmentsBefore = releaseDateWithoutAwarded,
+      adjustmentsAfter = adjustmentsAfter
+    )
   }
 
   fun isImmediateRelease(): Boolean {
     return sentence.sentencedAt == adjustedDeterminateReleaseDate
   }
+
+  val calculatedDeterminateTotalDeductedDays: Int
+    get() {
+      if (sentence is AFineSentence && sentence.offence.isCivilOffence()) {
+        return 0
+      }
+      val adjustmentTypes: Array<AdjustmentType> = if (!sentence.isRecall()) {
+        arrayOf(REMAND, TAGGED_BAIL)
+      } else {
+        arrayOf(RECALL_REMAND, RECALL_TAGGED_BAIL)
+      }
+      return getDeterminateAdjustmentBeforeSentence(*adjustmentTypes)
+    }
 
   val calculatedTotalDeductedDays: Int get() {
     if (sentence is AFineSentence && sentence.offence.isCivilOffence()) {
@@ -64,16 +108,20 @@ data class SentenceCalculation(
     return getAdjustmentBeforeSentence(*adjustmentTypes)
   }
 
+  val calculatedDeterminateTotalAddedDays: Int get() {
+    return getDeterminateAdustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
+  }
+
   val calculatedTotalAddedDays: Int get() {
     return getAdustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
   }
 
   fun getTotalAddedDaysAfter(after: LocalDate): Int {
-    return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = after)
+    return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = latestConcurrentRelease, adjustmentsAfter = after)
   }
 
   val calculatedFixedTermRecallAddedDays: Int get() {
-    return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = adjustmentsBefore, adjustmentsAfter = returnToCustodyDate)
+    return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = latestConcurrentRelease, adjustmentsAfter = returnToCustodyDate)
   }
 
   val calculatedTotalAwardedDays: Int get() {
@@ -114,9 +162,9 @@ data class SentenceCalculation(
 
   val releaseDateWithoutAwarded: LocalDate get() {
     return unadjustedDeterminateReleaseDate.minusDays(
-      calculatedTotalDeductedDays.toLong()
+      calculatedDeterminateTotalDeductedDays.toLong()
     ).plusDays(
-      calculatedTotalAddedDays.toLong()
+      calculatedDeterminateTotalAddedDays.toLong()
     )
   }
 

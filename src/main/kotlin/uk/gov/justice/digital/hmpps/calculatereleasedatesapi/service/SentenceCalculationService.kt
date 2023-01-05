@@ -142,7 +142,6 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       unadjustedPostRecallReleaseDate,
       booking.calculateErsed,
       booking.adjustments,
-      sentence.sentencedAt,
       returnToCustodyDate = booking.returnToCustodyDate,
       numberOfDaysToParoleEligibilityDate = release.numberOfDaysToParoleEligibilityDate
     )
