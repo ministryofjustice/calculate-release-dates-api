@@ -29,15 +29,15 @@ data class SentenceCalculation(
   val unadjustedPostRecallReleaseDate: LocalDate?,
   val calculateErsed: Boolean,
   val adjustments: Adjustments,
-  //This is the date of the latest release of a sentence that runs concurrently to this.
+  // This is the date of the latest release of a sentence that runs concurrently to this.
   var latestConcurrentRelease: LocalDate = sentence.sentencedAt,
-  //This is the date of the latest determinate release of a sentence that runs concurrently to this.
+  // This is the date of the latest determinate release of a sentence that runs concurrently to this.
   var latestConcurrentDeterminateRelease: LocalDate = sentence.sentencedAt,
   var adjustmentsAfter: LocalDate? = null,
   val returnToCustodyDate: LocalDate? = null,
   val numberOfDaysToParoleEligibilityDate: Long? = null,
 
-  ) {
+) {
 
   fun getAdjustmentBeforeSentence(vararg adjustmentTypes: AdjustmentType): Int {
     return adjustments.getOrZero(
