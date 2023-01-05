@@ -11,7 +11,7 @@ class BankHolidayCacheSchedule(
 ) {
 
   // Every 5 mins from 03:00 till 03:59 Monday to Friday.
-  @Scheduled(cron = "0 */5 3 * * MON-FRI")
+  @Scheduled(cron = "\${random.int[0,59]} */5 3 * * MON-FRI")
   fun refreshCache() {
     log.info("Schedule starting to refresh bank holiday cache")
     bankHolidayService.refreshCache()

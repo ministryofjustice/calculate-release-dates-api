@@ -11,6 +11,12 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.transaction.Transactional
 
+/**
+ * This service fetching and caching bank holiday data.
+ *
+ * The data is cached in the database, there is a single row in the table used to keep track of the data and when
+ * it was cached. A schedule will run overnight to update the cache.
+ */
 @Service
 class BankHolidayService(
   private val bankHolidayApiClient: BankHolidayApiClient,
