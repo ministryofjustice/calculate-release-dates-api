@@ -55,7 +55,7 @@ data class SentenceCalculation(
     )
   }
 
-  fun getDeterminateAdustmentsAfterSentenceAtDate(vararg adjustmentTypes: AdjustmentType): Int {
+  fun getDeterminateAdjustmentsAfterSentenceAtDate(vararg adjustmentTypes: AdjustmentType): Int {
     return adjustments.getOrZero(
       *adjustmentTypes,
       adjustmentsBefore = latestConcurrentDeterminateRelease,
