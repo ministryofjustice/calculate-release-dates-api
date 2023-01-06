@@ -41,7 +41,8 @@ class BookingTimelineService(
     )
 
     sortedSentences.forEach {
-      it.sentenceCalculation.adjustmentsBefore = Collections.max(listOf(timelineTracker.timelineRange.end, it.sentencedAt))
+      it.sentenceCalculation.latestConcurrentRelease = Collections.max(listOf(timelineTracker.timelineRange.end, it.sentencedAt))
+      it.sentenceCalculation.latestConcurrentDeterminateRelease = if (!it.isRecall()) it.sentenceCalculation.latestConcurrentRelease else if (timelineTracker.currentSentenceGroup.isEmpty()) it.sentenceCalculation.adjustedDeterminateReleaseDate else timelineTracker.currentSentenceGroup.maxOf { sentence -> sentence.sentenceCalculation.adjustedDeterminateReleaseDate }
       it.sentenceCalculation.adjustmentsAfter = timelineTracker.previousReleaseDateReached
       val itRange = it.getRangeOfSentenceBeforeAwardedDays()
       if (isThisSentenceTheFirstOfSentencesParallelToRecall(timelineTracker, it)) {
@@ -96,7 +97,7 @@ class BookingTimelineService(
     timelineTracker.currentSentenceGroup = mutableListOf()
     timelineTracker.currentSentenceGroup.add(it)
     timelineTracker.previousReleaseDateReached = it.sentencedAt.minusDays(1)
-    it.sentenceCalculation.adjustmentsBefore = it.sentencedAt
+    it.sentenceCalculation.latestConcurrentRelease = it.sentencedAt
     it.sentenceCalculation.adjustmentsAfter = timelineTracker.previousReleaseDateReached
     if (itRange.end.isAfter(timelineTracker.timelineRange.end)) {
       timelineTracker.timelineRange = LocalDateRange.of(timelineTracker.timelineRange.start, itRange.end)
@@ -141,7 +142,8 @@ class BookingTimelineService(
 
   private fun shareAdjustmentsThroughSentenceGroup(timelineTracker: TimelineTracker, booking: Booking) {
     timelineTracker.currentSentenceGroup.forEach {
-      it.sentenceCalculation.adjustmentsBefore = timelineTracker.timelineRange.end
+      it.sentenceCalculation.latestConcurrentRelease = timelineTracker.timelineRange.end
+      it.sentenceCalculation.latestConcurrentDeterminateRelease = if (!it.isRecall()) it.sentenceCalculation.latestConcurrentRelease else if (timelineTracker.currentSentenceGroup.isEmpty()) it.sentenceCalculation.adjustedDeterminateReleaseDate else timelineTracker.currentSentenceGroup.maxOf { sentence -> sentence.sentenceCalculation.adjustedDeterminateReleaseDate }
       readjustDates(it, booking)
     }
   }
