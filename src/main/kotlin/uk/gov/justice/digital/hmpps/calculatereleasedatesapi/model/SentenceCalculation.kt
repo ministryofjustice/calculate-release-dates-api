@@ -113,7 +113,7 @@ data class SentenceCalculation(
   }
 
   val calculatedTotalAddedDays: Int get() {
-    return getAdustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
+    return getAdjustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
   }
 
   fun getTotalAddedDaysAfter(after: LocalDate): Int {
