@@ -1,0 +1,2 @@
+-- We no longer need the calculation_request_id, this was only kept in case of failure in V17__rename_user_input_tables.sql
+ALTER TABLE calculation_request_sentence_user_input DROP COLUMN calculation_request_id;
