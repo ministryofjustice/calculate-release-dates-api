@@ -11,10 +11,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ConsecutiveSentenceAggregator
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 import kotlin.math.max
 
@@ -224,15 +226,19 @@ data class SentenceCalculation(
   }
 
   val earlyReleaseSchemeEligibilityDate: LocalDate? get() {
+    return earlyReleaseSchemeEligibilityDateBreakdown?.releaseDate
+  }
+
+  val earlyReleaseSchemeEligibilityDateBreakdown: ReleaseDateCalculationBreakdown? get() {
     val ersed = calculateErsed()
-    return if (ersed != null && ersed.isBefore(sentence.sentencedAt)) {
-      sentence.sentencedAt
+    return if (ersed != null && ersed.releaseDate.isBefore(sentence.sentencedAt)) {
+      ReleaseDateCalculationBreakdown(releaseDate = sentence.sentencedAt)
     } else {
       ersed
     }
   }
 
-  private fun calculateErsed(): LocalDate? {
+  private fun calculateErsed(): ReleaseDateCalculationBreakdown? {
     if (calculateErsed && !sentence.isRecall()) {
       if (sentence.calculateErsedFromHalfway()) {
         return calculateErsedFromHalfway()
@@ -244,7 +250,7 @@ data class SentenceCalculation(
     return null
   }
 
-  private fun calculateErsedFromTwoThirds(): LocalDate {
+  private fun calculateErsedFromTwoThirds(): ReleaseDateCalculationBreakdown {
     val days = if (sentence is ConsecutiveSentence) {
       ConsecutiveSentenceAggregator((sentence as ConsecutiveSentence).orderedSentences.map { it.custodialDuration() }).calculateDays(sentence.sentencedAt)
     } else {
@@ -253,17 +259,35 @@ data class SentenceCalculation(
     }
     return if (days >= RELEASE_AT_TWO_THIRDS_ERSED_DAYS) {
       val release = extendedDeterminateParoleEligibilityDate ?: releaseDate
-      release.minusYears(1)
+      val ersed = release.minusYears(1)
+      ReleaseDateCalculationBreakdown(
+        rules = setOf(CalculationRule.ERSED_ONE_YEAR),
+        releaseDate = ersed,
+        unadjustedDate = release,
+        adjustedDays = ChronoUnit.DAYS.between(
+          unadjustedDeterminateReleaseDate,
+          adjustedDeterminateReleaseDate
+        ).toInt(),
+        rulesWithExtraAdjustments = mapOf(CalculationRule.ERSED_ONE_YEAR to AdjustmentDuration(12, ChronoUnit.MONTHS))
+      )
     } else {
-      sentence.sentencedAt
-        .plusDays(ceil(days.toDouble() / 3).toLong())
+      val unadjustedErsed =
+        sentence.sentencedAt
+          .plusDays(ceil(days.toDouble() / 3).toLong())
+      val ersed = unadjustedErsed
         .plusDays(calculatedTotalAddedDays.toLong())
         .minusDays(calculatedTotalDeductedDays.toLong())
         .plusDays(calculatedTotalAwardedDays.toLong())
+      ReleaseDateCalculationBreakdown(
+        rules = setOf(CalculationRule.ERSED_TWO_THIRDS),
+        releaseDate = ersed,
+        unadjustedDate = unadjustedErsed,
+        adjustedDays = ChronoUnit.DAYS.between(unadjustedErsed, ersed).toInt()
+      )
     }
   }
 
-  private fun calculateErsedFromHalfway(): LocalDate {
+  private fun calculateErsedFromHalfway(): ReleaseDateCalculationBreakdown {
     val days = if (sentence is ConsecutiveSentence) {
       ConsecutiveSentenceAggregator((sentence as ConsecutiveSentence).orderedSentences.map { it.custodialDuration() }).calculateDays(sentence.sentencedAt)
     } else {
@@ -272,13 +296,31 @@ data class SentenceCalculation(
     }
     return if (days >= RELEASE_AT_HALFWAY_ERSED_DAYS) {
       val release = extendedDeterminateParoleEligibilityDate ?: releaseDate
-      release.minusYears(1)
+      val ersed = release.minusYears(1)
+      ReleaseDateCalculationBreakdown(
+        rules = setOf(CalculationRule.ERSED_ONE_YEAR),
+        releaseDate = ersed,
+        unadjustedDate = release,
+        adjustedDays = ChronoUnit.DAYS.between(
+          unadjustedDeterminateReleaseDate,
+          adjustedDeterminateReleaseDate
+        ).toInt(),
+        rulesWithExtraAdjustments = mapOf(CalculationRule.ERSED_ONE_YEAR to AdjustmentDuration(12, ChronoUnit.MONTHS))
+      )
     } else {
-      sentence.sentencedAt
-        .plusDays(ceil(days.toDouble() / 4).toLong())
+      val unadjustedErsed =
+        sentence.sentencedAt
+          .plusDays(ceil(days.toDouble() / 4).toLong())
+      val ersed = unadjustedErsed
         .plusDays(calculatedTotalAddedDays.toLong())
         .minusDays(calculatedTotalDeductedDays.toLong())
         .plusDays(calculatedTotalAwardedDays.toLong())
+      ReleaseDateCalculationBreakdown(
+        rules = setOf(CalculationRule.ERSED_HALFWAY),
+        releaseDate = ersed,
+        unadjustedDate = unadjustedErsed,
+        adjustedDays = ChronoUnit.DAYS.between(unadjustedErsed, ersed).toInt()
+      )
     }
   }
   // Licence Expiry Date (LED)
