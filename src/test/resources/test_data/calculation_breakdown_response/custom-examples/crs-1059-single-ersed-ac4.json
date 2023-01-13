@@ -1,0 +1,30 @@
+{
+  "concurrentSentences": [],
+  "consecutiveSentence": null,
+  "breakdownByReleaseDateType": {
+    "CRD": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2024-07-18",
+      "unadjustedDate": "2024-07-18"
+    },
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2028-07-18",
+      "unadjustedDate": "2028-07-18"
+    },
+    "ERSED": {
+      "rules": [
+        "ERSED_TWO_THIRDS"
+      ],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2023-03-20",
+      "unadjustedDate": "2023-03-20"
+    }
+  },
+  "otherDates": {}
+}
