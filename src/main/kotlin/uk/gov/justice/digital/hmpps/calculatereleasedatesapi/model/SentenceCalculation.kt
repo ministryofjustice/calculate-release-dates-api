@@ -268,7 +268,7 @@ data class SentenceCalculation(
           unadjustedDeterminateReleaseDate,
           adjustedDeterminateReleaseDate
         ).toInt(),
-        rulesWithExtraAdjustments = mapOf(CalculationRule.ERSED_ONE_YEAR to AdjustmentDuration(12, ChronoUnit.MONTHS))
+        rulesWithExtraAdjustments = mapOf(CalculationRule.ERSED_ONE_YEAR to AdjustmentDuration(-12, ChronoUnit.MONTHS))
       )
     } else {
       val unadjustedErsed =
@@ -305,7 +305,7 @@ data class SentenceCalculation(
           unadjustedDeterminateReleaseDate,
           adjustedDeterminateReleaseDate
         ).toInt(),
-        rulesWithExtraAdjustments = mapOf(CalculationRule.ERSED_ONE_YEAR to AdjustmentDuration(12, ChronoUnit.MONTHS))
+        rulesWithExtraAdjustments = mapOf(CalculationRule.ERSED_ONE_YEAR to AdjustmentDuration(-12, ChronoUnit.MONTHS))
       )
     } else {
       val unadjustedErsed =

@@ -53,7 +53,7 @@
       ],
       "rulesWithExtraAdjustments":{
         "ERSED_ONE_YEAR":{
-          "adjustmentValue":12,
+          "adjustmentValue":-12,
           "type":"MONTHS"
         }
       },
