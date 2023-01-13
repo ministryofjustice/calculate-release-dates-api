@@ -249,11 +249,21 @@ class BookingExtractionService(
       }
     }
 
-    val latestEarlyReleaseSchemeEligibilityDate = extractionService.mostRecentOrNull(sentences, SentenceCalculation::earlyReleaseSchemeEligibilityDate)
+    val latestEarlyReleaseSchemeEligibilitySentence = extractionService.mostRecentSentenceOrNull(sentences, SentenceCalculation::earlyReleaseSchemeEligibilityDate)
     val latestAFineRelease = extractionService.mostRecentOrNull(sentences.filterIsInstance<AFineSentence>(), SentenceCalculation::releaseDate)
     val afineIsRelease = latestAFineRelease == latestReleaseDate
-    if (latestEarlyReleaseSchemeEligibilityDate != null && !afineIsRelease) {
-      dates[ERSED] = if (latestAFineRelease != null && latestEarlyReleaseSchemeEligibilityDate.isBefore(latestAFineRelease)) latestAFineRelease else latestEarlyReleaseSchemeEligibilityDate
+    if (latestEarlyReleaseSchemeEligibilitySentence != null && !afineIsRelease) {
+      if (latestAFineRelease != null && latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!.isBefore(latestAFineRelease)) {
+        breakdownByReleaseDateType[ERSED] = ReleaseDateCalculationBreakdown(
+          rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM),
+          releaseDate = latestAFineRelease,
+          unadjustedDate = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
+        )
+        dates[ERSED] = latestAFineRelease
+      } else {
+        breakdownByReleaseDateType[ERSED] = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.breakdownByReleaseDateType[ERSED]!!
+        dates[ERSED] = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
+      }
     }
 
     dates[ESED] = latestUnadjustedExpiryDate

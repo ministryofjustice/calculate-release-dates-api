@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.TUSED_LICENCE_PERIOD_LT_1Y
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
@@ -43,6 +44,10 @@ class SentenceAdjustedCalculationService {
     // Other adjustments need to be included in the sentence calculation here
     setCrdOrArdDetails(sentence, sentenceCalculation)
     setSedOrSledDetails(sentence, sentenceCalculation)
+
+    if (sentenceCalculation.earlyReleaseSchemeEligibilityDate != null) {
+      sentenceCalculation.breakdownByReleaseDateType[ERSED] = sentenceCalculation.earlyReleaseSchemeEligibilityDateBreakdown!!
+    }
 
     // PSI 03/2015: P53: The license period is one of at least 12 month.
     // Hence, there is no requirement for a TUSED

@@ -1,0 +1,68 @@
+{
+  "concurrentSentences":[
+    {
+      "sentencedAt":"2022-04-29",
+      "sentenceLength":"4 years 6 months",
+      "sentenceLengthDays":1644,
+      "dates":{
+        "SLED":{
+          "unadjusted":"2026-10-28",
+          "adjusted":"2026-10-28",
+          "daysFromSentenceStart":1644,
+          "adjustedByDays":0
+        },
+        "CRD":{
+          "unadjusted":"2024-07-28",
+          "adjusted":"2024-07-28",
+          "daysFromSentenceStart":822,
+          "adjustedByDays":0
+        }
+      },
+      "lineSequence":0,
+      "caseSequence":0,
+      "caseReference":null
+    }
+  ],
+  "consecutiveSentence":null,
+  "breakdownByReleaseDateType":{
+    "CRD":{
+      "rules":[
+
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":0,
+      "releaseDate":"2024-07-28",
+      "unadjustedDate":"2024-07-28"
+    },
+    "SLED":{
+      "rules":[
+
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":0,
+      "releaseDate":"2026-10-28",
+      "unadjustedDate":"2026-10-28"
+    },
+    "ERSED":{
+      "rules":[
+        "ERSED_ONE_YEAR"
+      ],
+      "rulesWithExtraAdjustments":{
+        "ERSED_ONE_YEAR":{
+          "adjustmentValue":12,
+          "type":"MONTHS"
+        }
+      },
+      "adjustedDays":0,
+      "releaseDate":"2023-07-28",
+      "unadjustedDate":"2024-07-28"
+    }
+  },
+  "otherDates":{
+
+  }
+}
