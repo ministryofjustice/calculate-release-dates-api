@@ -232,7 +232,7 @@ data class SentenceCalculation(
   val earlyReleaseSchemeEligibilityDateBreakdown: ReleaseDateCalculationBreakdown? get() {
     val ersed = calculateErsed()
     return if (ersed != null && ersed.releaseDate.isBefore(sentence.sentencedAt)) {
-      ReleaseDateCalculationBreakdown(releaseDate = sentence.sentencedAt, rules = setOf(CalculationRule.ERSED_BEFORE_SENTENCE_DATE))
+      ReleaseDateCalculationBreakdown(releaseDate = sentence.sentencedAt, unadjustedDate = sentence.sentencedAt, rules = setOf(CalculationRule.ERSED_BEFORE_SENTENCE_DATE))
     } else {
       ersed
     }
