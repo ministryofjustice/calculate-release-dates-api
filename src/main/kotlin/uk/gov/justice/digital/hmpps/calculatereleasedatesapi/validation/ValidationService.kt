@@ -502,12 +502,7 @@ class ValidationService(
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedCategories = listOf("2003", "2020")
     val validationMessages = sentencesAndOffences.filter {
-      if (SentenceCalculationType.isSupported(it.sentenceCalculationType) && supportedCategories.contains(it.sentenceCategory)) {
-        val type = from(it.sentenceCalculationType)
-        !featureToggles.sopcedsrecalls && type.recallType != null && (type.sentenceClazz == ExtendedDeterminateSentence::class.java || type.sentenceClazz == SopcSentence::class.java)
-      } else {
-        true
-      }
+      !(SentenceCalculationType.isSupported(it.sentenceCalculationType) && supportedCategories.contains(it.sentenceCategory))
     }
       .map { ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf(it.sentenceCategory, it.sentenceTypeDescription)) }
       .toMutableList()
