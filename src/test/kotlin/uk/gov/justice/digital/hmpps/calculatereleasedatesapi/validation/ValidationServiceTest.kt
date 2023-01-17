@@ -777,20 +777,8 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test EDS recalls unsupported if feature toggle off`() {
+  fun `Test EDS recalls supported`() {
     val result = validationService.validateBeforeCalculation(
-      PrisonApiSourceData(listOf(validEdsRecallSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-      CalculationUserInputs()
-    )
-
-    assertThat(result).isEqualTo(
-      listOf(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This is a sentence type"))),
-    )
-  }
-
-  @Test
-  fun `Test EDS recalls supported if feature toggle on`() {
-    val result = ValidationService(SentencesExtractionService(), FeatureToggles(true)).validateBeforeCalculation(
       PrisonApiSourceData(listOf(validEdsRecallSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
       CalculationUserInputs()
     )
@@ -798,19 +786,8 @@ class ValidationServiceTest {
     assertThat(result).isEmpty()
   }
   @Test
-  fun `Test SOPC recalls unsupported if feature toggle off`() {
+  fun `Test SOPC recalls supported`() {
     val result = validationService.validateBeforeCalculation(
-      PrisonApiSourceData(listOf(validSopcRecallSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-      CalculationUserInputs()
-    )
-
-    assertThat(result).isEqualTo(
-      listOf(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This is a sentence type")))
-    )
-  }
-  @Test
-  fun `Test SOPC recalls supported if feature toggle on`() {
-    val result = ValidationService(SentencesExtractionService(), FeatureToggles(true)).validateBeforeCalculation(
       PrisonApiSourceData(listOf(validSopcRecallSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
       CalculationUserInputs()
     )
