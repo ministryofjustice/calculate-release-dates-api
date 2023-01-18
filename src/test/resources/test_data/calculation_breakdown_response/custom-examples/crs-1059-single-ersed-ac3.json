@@ -1,0 +1,47 @@
+{
+  "concurrentSentences":[
+
+  ],
+  "consecutiveSentence":null,
+  "breakdownByReleaseDateType":{
+    "CRD":{
+      "rules":[
+
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":-95,
+      "releaseDate":"2029-07-09",
+      "unadjustedDate":"2029-10-12"
+    },
+    "SLED":{
+      "rules":[
+
+      ],
+      "rulesWithExtraAdjustments":{
+
+      },
+      "adjustedDays":-95,
+      "releaseDate":"2030-07-09",
+      "unadjustedDate":"2030-10-12"
+    },
+    "ERSED":{
+      "rules":[
+        "ERSED_ONE_YEAR"
+      ],
+      "rulesWithExtraAdjustments":{
+        "ERSED_ONE_YEAR":{
+          "adjustmentValue":-12,
+          "type":"MONTHS"
+        }
+      },
+      "adjustedDays":-95,
+      "releaseDate":"2026-03-10",
+      "unadjustedDate":"2027-06-13"
+    }
+  },
+  "otherDates":{
+
+  }
+}
