@@ -212,14 +212,21 @@ data class SentenceCalculation(
   var numberOfDaysToNonParoleDate: Long = 0
   var nonParoleDate: LocalDate? = null
 
-  // Parole Eligibility Date (PED). This is only used for EDS, for SDS the PED is the release date.
-  val extendedDeterminateParoleEligibilityDate: LocalDate? get() {
+  private val unadjustedExtendedDeterminateParoleEligibilityDate: LocalDate? get() {
     if (numberOfDaysToParoleEligibilityDate == null) {
       return null
     }
     return sentence.sentencedAt
       .plusDays(numberOfDaysToParoleEligibilityDate)
       .minusDays(1)
+  }
+
+  // Parole Eligibility Date (PED). This is only used for EDS, for SDS the PED is the release date.
+  val extendedDeterminateParoleEligibilityDate: LocalDate? get() {
+    if (unadjustedExtendedDeterminateParoleEligibilityDate == null) {
+      return null
+    }
+    return unadjustedExtendedDeterminateParoleEligibilityDate!!
       .plusDays(calculatedTotalAddedDays.toLong())
       .minusDays(calculatedTotalDeductedDays.toLong())
       .plusDays(calculatedTotalAwardedDays.toLong())
@@ -263,7 +270,7 @@ data class SentenceCalculation(
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.ERSED_ONE_YEAR),
         releaseDate = ersed,
-        unadjustedDate = release,
+        unadjustedDate = unadjustedExtendedDeterminateParoleEligibilityDate ?: unadjustedDeterminateReleaseDate,
         adjustedDays = ChronoUnit.DAYS.between(
           unadjustedDeterminateReleaseDate,
           adjustedDeterminateReleaseDate
@@ -300,7 +307,7 @@ data class SentenceCalculation(
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.ERSED_ONE_YEAR),
         releaseDate = ersed,
-        unadjustedDate = release,
+        unadjustedDate = unadjustedExtendedDeterminateParoleEligibilityDate ?: unadjustedDeterminateReleaseDate,
         adjustedDays = ChronoUnit.DAYS.between(
           unadjustedDeterminateReleaseDate,
           adjustedDeterminateReleaseDate
