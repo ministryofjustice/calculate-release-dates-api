@@ -53,7 +53,9 @@ enum class SentenceCalculationType(
   LR_LASPO_DR(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
   LR_SEC236A(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
   LR_SOPC18(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
-  LR_SOPC21(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java);
+  LR_SOPC21(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
+  DTO,
+  DTO_ORA;
 
   companion object {
     fun from(sentenceCalculationType: String): SentenceCalculationType =
