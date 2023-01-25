@@ -81,7 +81,7 @@ import java.util.UUID
 
 @Profile("tests")
 class ValidationServiceTest {
-  private var validationService = ValidationService(SentencesExtractionService(), FeatureToggles())
+  private var validationService = ValidationService(SentencesExtractionService(), FeatureToggles(dto = true))
   private val validSdsSentence = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 7,
@@ -1011,6 +1011,206 @@ class ValidationServiceTest {
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS)))
+      }
+    }
+    @Nested
+    @DisplayName("DTO Recall validation tests")
+    inner class DTORecallValidationTests {
+      @Test
+      fun `Test DTO with SEC104 returns validation message`() {
+        val sentenceAndOffences = SentenceAndOffences(
+          bookingId = 1L,
+          sentenceSequence = 7,
+          lineSequence = LINE_SEQ,
+          caseSequence = CASE_SEQ,
+          sentenceDate = FIRST_MAY_2018,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE)
+          ),
+          sentenceCalculationType = SentenceCalculationType.DTO.name,
+          sentenceCategory = "2003",
+          sentenceStatus = "a",
+          sentenceTypeDescription = "This is a sentence type",
+          offences = listOf(),
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+      }
+      @Test
+      fun `Test DTO with SEC105 returns validation message`() {
+        val sentenceAndOffences = SentenceAndOffences(
+          bookingId = 1L,
+          sentenceSequence = 7,
+          lineSequence = LINE_SEQ,
+          caseSequence = CASE_SEQ,
+          sentenceDate = FIRST_MAY_2018,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE)
+          ),
+          sentenceCalculationType = SentenceCalculationType.DTO.name,
+          sentenceCategory = "2003",
+          sentenceStatus = "a",
+          sentenceTypeDescription = "This is a sentence type",
+          offences = listOf(),
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+      }
+      @Test
+      fun `Test DTO with Imprisonment term code returns no validation message`() {
+        val sentenceAndOffences = SentenceAndOffences(
+          bookingId = 1L,
+          sentenceSequence = 7,
+          lineSequence = LINE_SEQ,
+          caseSequence = CASE_SEQ,
+          sentenceDate = FIRST_MAY_2018,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
+          ),
+          sentenceCalculationType = SentenceCalculationType.DTO.name,
+          sentenceCategory = "2003",
+          sentenceStatus = "a",
+          sentenceTypeDescription = "This is a sentence type",
+          offences = listOf(),
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).isEmpty()
+      }
+      @Test
+      fun `Test DTO_ORA with SEC104 returns validation message`() {
+        val sentenceAndOffences = SentenceAndOffences(
+          bookingId = 1L,
+          sentenceSequence = 7,
+          lineSequence = LINE_SEQ,
+          caseSequence = CASE_SEQ,
+          sentenceDate = FIRST_MAY_2018,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE)
+          ),
+          sentenceCalculationType = SentenceCalculationType.DTO_ORA.name,
+          sentenceCategory = "2003",
+          sentenceStatus = "a",
+          sentenceTypeDescription = "This is a sentence type",
+          offences = listOf(),
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+      }
+      @Test
+      fun `Test DTO_ORA with SEC105 returns validation message`() {
+        val sentenceAndOffences = SentenceAndOffences(
+          bookingId = 1L,
+          sentenceSequence = 7,
+          lineSequence = LINE_SEQ,
+          caseSequence = CASE_SEQ,
+          sentenceDate = FIRST_MAY_2018,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE)
+          ),
+          sentenceCalculationType = SentenceCalculationType.DTO_ORA.name,
+          sentenceCategory = "2003",
+          sentenceStatus = "a",
+          sentenceTypeDescription = "This is a sentence type",
+          offences = listOf(),
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+      }
+      @Test
+      fun `Test DTO_ORA with Imprisonment term code returns no validation message`() {
+        val sentenceAndOffences = SentenceAndOffences(
+          bookingId = 1L,
+          sentenceSequence = 7,
+          lineSequence = LINE_SEQ,
+          caseSequence = CASE_SEQ,
+          sentenceDate = FIRST_MAY_2018,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
+          ),
+          sentenceCalculationType = SentenceCalculationType.DTO_ORA.name,
+          sentenceCategory = "2003",
+          sentenceStatus = "a",
+          sentenceTypeDescription = "This is a sentence type",
+          offences = listOf(),
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).isEmpty()
+      }
+      @Test
+      fun `Test non-DTO with SEC104 doesn't return DTO Recall validation message`() {
+        val sentenceAndOffences = SentenceAndOffences(
+          bookingId = 1L,
+          sentenceSequence = 7,
+          lineSequence = LINE_SEQ,
+          caseSequence = CASE_SEQ,
+          sentenceDate = FIRST_MAY_2018,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE)
+          ),
+          sentenceCalculationType = SentenceCalculationType.SDOPCU18.name,
+          sentenceCategory = "2003",
+          sentenceStatus = "a",
+          sentenceTypeDescription = "This is a sentence type",
+          offences = listOf(),
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).doesNotContain(ValidationMessage(ValidationCode.DTO_RECALL))
       }
     }
   }
