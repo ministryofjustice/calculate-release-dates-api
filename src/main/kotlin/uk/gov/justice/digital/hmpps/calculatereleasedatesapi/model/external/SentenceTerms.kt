@@ -10,5 +10,7 @@ data class SentenceTerms(
   companion object {
     const val LICENCE_TERM_CODE = "LIC"
     const val IMPRISONMENT_TERM_CODE = "IMP"
+    const val BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE = "SEC104"
+    const val BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE = "SEC105"
   }
 }
