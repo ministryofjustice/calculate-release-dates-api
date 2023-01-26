@@ -22,6 +22,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   A_FINE_SENTENCE_WITH_PAYMENTS("Any of the fine amount for a default term has been paid.", UNSUPPORTED_CALCULATION),
   CUSTODIAL_PERIOD_EXTINGUISHED_REMAND("The release date cannot be before the sentence date. Go back to NOMIS and reduce the amount of remand entered"),
   CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL("The release date cannot be before the sentence date. Go back to NOMIS and reduce the amount of tagged bail entered"),
+  DTO_RECALL("DTO Holding Message"),
   EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT("The sentence type for court case %s count %s is invalid for the sentence date entered."),
   EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR("Court case %s count %s must have a licence term of at least one year."),
   EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS("Court case %s count %s must have a licence term that does not exceed 8 years."),

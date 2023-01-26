@@ -30,6 +30,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.DTO
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.DTO_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType._14FTR_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
@@ -116,6 +118,7 @@ class ValidationService(
     val validationMessages = validateSentences(sortedSentences)
     validationMessages += validateAdjustments(adjustments)
     validationMessages += validateFixedTermRecall(sourceData)
+    validationMessages += validateDtoIsNotRecall(sourceData)
     return validationMessages
   }
 
@@ -506,6 +509,25 @@ class ValidationService(
     }
       .map { ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf(it.sentenceCategory, it.sentenceTypeDescription)) }
       .toMutableList()
+    return validationMessages.toList()
+  }
+
+  private fun validateDtoIsNotRecall(prisonApiSourceData: PrisonApiSourceData): List<ValidationMessage> {
+    val validationMessages = mutableListOf<ValidationMessage>()
+    prisonApiSourceData.sentenceAndOffences.forEach() {
+
+      val sentenceCalculationType = SentenceCalculationType.from(it.sentenceCalculationType)
+      val hasRecall = it.terms.any { terms ->
+        terms.code == SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE || terms.code == SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE
+      }
+      val hasDto = sentenceCalculationType == DTO || sentenceCalculationType == DTO_ORA
+      if (featureToggles.dto && hasDto && hasRecall) {
+        validationMessages.add(ValidationMessage(ValidationCode.DTO_RECALL))
+      }
+      if (!featureToggles.dto && hasDto) {
+        validationMessages.add(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf(it.sentenceCategory, it.sentenceTypeDescription)))
+      }
+    }
     return validationMessages.toList()
   }
 

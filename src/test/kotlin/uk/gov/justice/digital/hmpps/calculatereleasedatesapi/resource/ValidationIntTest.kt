@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE
@@ -56,7 +57,8 @@ class ValidationIntTest : IntegrationTestBase() {
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_ADA),
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_RADA),
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_UAL),
-        ValidationMessage(code = REMAND_OVERLAPS_WITH_REMAND)
+        ValidationMessage(code = REMAND_OVERLAPS_WITH_REMAND),
+        ValidationMessage(code = DTO_RECALL),
       )
     )
   }

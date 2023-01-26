@@ -63,4 +63,4 @@ domain-events-sns:
   provider: localstack
 
 feature-toggles:
-  dto: false
+  dto: true
