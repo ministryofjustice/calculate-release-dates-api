@@ -513,20 +513,22 @@ class ValidationService(
   }
 
   private fun validateDtoIsNotRecall(prisonApiSourceData: PrisonApiSourceData): List<ValidationMessage> {
-    if (featureToggles.dto) {
-      val hasDtoRecall = prisonApiSourceData.sentenceAndOffences.any {
-        val sentenceCalculationType = SentenceCalculationType.from(it.sentenceCalculationType)
-        val hasRecall = it.terms.any { terms ->
-          terms.code == SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE || terms.code == SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE
-        }
-        (sentenceCalculationType == DTO || sentenceCalculationType == DTO_ORA) && hasRecall
+    val validationMessages = mutableListOf<ValidationMessage>()
+    prisonApiSourceData.sentenceAndOffences.forEach() {
+
+      val sentenceCalculationType = SentenceCalculationType.from(it.sentenceCalculationType)
+      val hasRecall = it.terms.any { terms ->
+        terms.code == SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE || terms.code == SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE
       }
-      if (hasDtoRecall) {
-        return listOf(ValidationMessage(ValidationCode.DTO_RECALL))
+      val hasDto = sentenceCalculationType == DTO || sentenceCalculationType == DTO_ORA
+      if (featureToggles.dto && hasDto && hasRecall) {
+        validationMessages.add(ValidationMessage(ValidationCode.DTO_RECALL))
+      }
+      if (!featureToggles.dto && hasDto) {
+        validationMessages.add(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf(it.sentenceCategory, it.sentenceTypeDescription)))
       }
     }
-
-    return emptyList()
+    return validationMessages.toList()
   }
 
   private fun validateFineSentenceSupported(prisonApiSourceData: PrisonApiSourceData): List<ValidationMessage> {

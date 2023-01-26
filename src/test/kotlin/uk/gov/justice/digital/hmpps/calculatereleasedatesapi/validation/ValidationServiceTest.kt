@@ -1017,7 +1017,7 @@ class ValidationServiceTest {
     @DisplayName("DTO Recall validation tests")
     inner class DTORecallValidationTests {
       @Test
-      fun `Test DTO with SEC104 returns validation message`() {
+      fun `Test DTO with breach of supervision requirements returns validation message`() {
 
         val sentenceAndOffences = validSdsSentence.copy(
           sentenceCalculationType = SentenceCalculationType.DTO.name,
@@ -1037,7 +1037,7 @@ class ValidationServiceTest {
         assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
       }
       @Test
-      fun `Test DTO with SEC105 returns validation message`() {
+      fun `Test DTO with breach due to imprisonable offence returns validation message`() {
         val sentenceAndOffences = validSdsSentence.copy(
           sentenceCalculationType = SentenceCalculationType.DTO.name,
           terms = listOf(
@@ -1076,7 +1076,7 @@ class ValidationServiceTest {
         assertThat(result).isEmpty()
       }
       @Test
-      fun `Test DTO_ORA with SEC104 returns validation message`() {
+      fun `Test DTO_ORA with breach of supervision requirements returns validation message`() {
         val sentenceAndOffences = validSdsSentence.copy(
           sentenceCalculationType = SentenceCalculationType.DTO_ORA.name,
           terms = listOf(
@@ -1095,7 +1095,7 @@ class ValidationServiceTest {
         assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
       }
       @Test
-      fun `Test DTO_ORA with SEC105 returns validation message`() {
+      fun `Test DTO_ORA with breach due to imprisonable offence returns validation message`() {
         val sentenceAndOffences = validSdsSentence.copy(
           sentenceCalculationType = SentenceCalculationType.DTO_ORA.name,
           terms = listOf(
@@ -1133,7 +1133,7 @@ class ValidationServiceTest {
         assertThat(result).isEmpty()
       }
       @Test
-      fun `Test non-DTO with SEC104 doesn't return DTO Recall validation message`() {
+      fun `Test non-DTO with breach of supervision requirements doesn't return DTO Recall validation message`() {
         val sentenceAndOffences = validSdsSentence.copy(
           terms = listOf(
             SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE)
@@ -1149,6 +1149,26 @@ class ValidationServiceTest {
           USER_INPUTS
         )
         assertThat(result).doesNotContain(ValidationMessage(ValidationCode.DTO_RECALL))
+      }
+      @Test
+      fun `Test feature toggle off returns unsupported sentence type`() {
+        val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(dto = false))
+        val sentenceAndOffences = validSdsSentence.copy(
+          sentenceCalculationType = SentenceCalculationType.DTO_ORA.name,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE)
+          )
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).containsExactly(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This is a sentence type")))
       }
     }
   }
