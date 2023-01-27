@@ -31,7 +31,7 @@ interface CalculableSentence {
     When we're walking the timeline of the sentence, we want to use the NPD date rather than PED, otherwise we
     could falsely state that there is a gap in the booking timeline if the prisoner wasn't released at the PED.
     */
-    val releaseDate = if (getReleaseDateType() === ReleaseDateType.PED && this is StandardDeterminateSentence) {
+    val releaseDate = if (getReleaseDateType(false) === ReleaseDateType.PED && this is StandardDeterminateSentence) {
       sentenceCalculation.nonParoleDate!!
     } else {
       sentenceCalculation.releaseDate
@@ -102,10 +102,10 @@ interface CalculableSentence {
   fun hasAnyEdsOrSopcSentence(): Boolean
 
   @JsonIgnore
-  fun getReleaseDateType(): ReleaseDateType {
+  fun getReleaseDateType(underEighteenAtTimeOfRelease: Boolean): ReleaseDateType {
     return if (isRecall())
       ReleaseDateType.PRRD else if (releaseDateTypes.contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null)
-      ReleaseDateType.PED else if (sentenceCalculation.isReleaseDateConditional)
+      ReleaseDateType.PED else if (sentenceCalculation.isReleaseDateConditional && !underEighteenAtTimeOfRelease)
       ReleaseDateType.CRD else
       ReleaseDateType.ARD
   }

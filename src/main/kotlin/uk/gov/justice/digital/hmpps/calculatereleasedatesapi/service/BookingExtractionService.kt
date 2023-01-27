@@ -53,14 +53,16 @@ class BookingExtractionService(
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val sentence = booking.getAllExtractableSentences()[0]
     val sentenceCalculation = sentence.sentenceCalculation
+    val underEighteenAtTimeOfRelease = booking.offender.getAgeOnDate(sentenceCalculation.releaseDate) < INT_EIGHTEEN
+    val lessThanTwelveMonths = sentence.durationIsLessThan(12, ChronoUnit.MONTHS)
 
-    if (sentence.releaseDateTypes.contains(SLED)) {
+    if (sentence.releaseDateTypes.contains(SLED) && !(underEighteenAtTimeOfRelease && lessThanTwelveMonths)) {
       dates[SLED] = sentenceCalculation.expiryDate!!
     } else {
       dates[SED] = sentenceCalculation.expiryDate!!
     }
 
-    dates[sentence.getReleaseDateType()] = sentenceCalculation.releaseDate
+    dates[sentence.getReleaseDateType(underEighteenAtTimeOfRelease && lessThanTwelveMonths)] = sentenceCalculation.releaseDate
 
     if (sentenceCalculation.licenceExpiryDate != null &&
       sentence.releaseDateTypes.contains(LED)
@@ -409,5 +411,6 @@ class BookingExtractionService(
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     private const val FOUR = 4L
+    private const val INT_EIGHTEEN = 18
   }
 }
