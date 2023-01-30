@@ -15,12 +15,11 @@
       },
       "sentencedAt": "2021-08-27",
       "section250": true,
-      "sentenceType": "SEC250",
-      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+      "sentenceType": "SEC250"
     },
     {
       "offence": {
-        "committedAt": "2021-07-30"
+        "committedAt": "2021-11-17"
       },
       "duration": {
         "durationElements": {
@@ -29,8 +28,7 @@
       },
       "sentencedAt": "2021-11-17",
       "section250": true,
-      "sentenceType": "SEC250",
-      "consecutiveSentenceUUIDs": ["cb304745-d781-47d3-b931-4baa31551fc5"]
+      "sentenceType": "SEC250"
     }
   ],
   "adjustments": {

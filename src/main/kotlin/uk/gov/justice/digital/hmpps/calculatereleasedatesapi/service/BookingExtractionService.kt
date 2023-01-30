@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqual
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
+import java.time.temporal.ChronoUnit.MONTHS
 
 @Service
 class BookingExtractionService(
@@ -54,7 +55,7 @@ class BookingExtractionService(
     val sentence = booking.getAllExtractableSentences()[0]
     val sentenceCalculation = sentence.sentenceCalculation
     val underEighteenAtTimeOfRelease = booking.offender.getAgeOnDate(sentenceCalculation.releaseDate) < INT_EIGHTEEN
-    val lessThanTwelveMonths = sentence.durationIsLessThan(12, ChronoUnit.MONTHS)
+    val lessThanTwelveMonths = sentence.durationIsLessThan(12, MONTHS)
 
     if (sentence.releaseDateTypes.contains(SLED) && !(underEighteenAtTimeOfRelease && lessThanTwelveMonths)) {
       dates[SLED] = sentenceCalculation.expiryDate!!
@@ -160,10 +161,13 @@ class BookingExtractionService(
       sentences, SentenceCalculation::notionalConditionalReleaseDate
     )
 
-    if (latestExpiryDate == latestLicenseExpiryDate && mostRecentSentenceByExpiryDate.releaseDateTypes.contains(SLED)) {
+    val concurrentSentencesLessThan12MonthsLessThan18AtRelease = sentences.all { it.durationIsLessThan(12, MONTHS) } && effectiveSentenceLength.months < 12 && booking.offender.getAgeOnDate(mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate) < INT_EIGHTEEN
+    if (latestExpiryDate == latestLicenseExpiryDate && mostRecentSentenceByExpiryDate.releaseDateTypes.contains(SLED) && !concurrentSentencesLessThan12MonthsLessThan18AtRelease) {
       dates[SLED] = latestExpiryDate
       breakdownByReleaseDateType[SLED] =
         mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SLED]!!
+    } else if (concurrentSentencesLessThan12MonthsLessThan18AtRelease) {
+      dates[SED] = latestExpiryDate
     } else {
       dates[SED] = latestExpiryDate
       breakdownByReleaseDateType[SED] =
@@ -185,13 +189,17 @@ class BookingExtractionService(
     }
     if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
       val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }
-      if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
+      if (concurrentOraAndNonOraDetails.isReleaseDateConditional && !concurrentSentencesLessThan12MonthsLessThan18AtRelease) {
         dates[CRD] = latestReleaseDate
         // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
+        val underEighteenAtRelease = booking.offender.getAgeOnDate(mostRecentSentenceByReleaseDate.sentenceCalculation.releaseDate) < INT_EIGHTEEN
+        val effectiveSentenceLessThanTwelveMonths = effectiveSentenceLength.months < 12
         val releaseDateType =
           if (mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType.containsKey(CRD)) CRD else ARD
         breakdownByReleaseDateType[CRD] =
           mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]!!
+      } else if (concurrentSentencesLessThan12MonthsLessThan18AtRelease) {
+        dates[ARD] = latestReleaseDate
       } else {
         dates[ARD] = latestReleaseDate
         breakdownByReleaseDateType[ARD] =
@@ -364,7 +372,7 @@ class BookingExtractionService(
     val latestSentenceExpiryIsSED = latestExpiryTypes.contains(SED)
 
     val hasOraSentences = sentences.any { (it is StandardDeterminateSentence) && it.isOraSentence() }
-    val hasNonOraSentencesOfLessThan12Months = sentences.any { (it is StandardDeterminateSentence) && !it.isOraSentence() && it.durationIsLessThan(12, ChronoUnit.MONTHS) }
+    val hasNonOraSentencesOfLessThan12Months = sentences.any { (it is StandardDeterminateSentence) && !it.isOraSentence() && it.durationIsLessThan(12, MONTHS) }
     val mostRecentSentenceWithASed = extractionService.mostRecentSentenceOrNull(
       sentences, SentenceCalculation::expiryDate
     ) { it.releaseDateTypes.contains(SED) }
