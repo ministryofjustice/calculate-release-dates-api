@@ -166,13 +166,11 @@ class BookingExtractionService(
       dates[SLED] = latestExpiryDate
       breakdownByReleaseDateType[SLED] =
         mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SLED]!!
-    } else if (concurrentSentencesLessThan12MonthsLessThan18AtRelease) {
-      dates[SED] = latestExpiryDate
     } else {
       dates[SED] = latestExpiryDate
       breakdownByReleaseDateType[SED] =
-        mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
-      if (latestLicenseExpiryDate != null && concurrentOraAndNonOraDetails.canHaveLicenseExpiry && latestLicenseExpiryDate.isAfterOrEqualTo(latestReleaseDate)) {
+        if (mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED] != null) mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!! else mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SLED]!!
+      if (!concurrentSentencesLessThan12MonthsLessThan18AtRelease && latestLicenseExpiryDate != null && concurrentOraAndNonOraDetails.canHaveLicenseExpiry && latestLicenseExpiryDate.isAfterOrEqualTo(latestReleaseDate)) {
         dates[LED] = latestLicenseExpiryDate
         if (latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(LED)) {
           breakdownByReleaseDateType[LED] =
