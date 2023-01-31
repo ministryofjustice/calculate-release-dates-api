@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.util.UUID
@@ -45,7 +44,7 @@ abstract class AbstractSentence(
 
   @JsonIgnore
   @Transient
-  override lateinit var releaseDateTypes: List<ReleaseDateType>
+  override lateinit var releaseDateTypes: ReleaseDateTypes
 
   override fun calculateErsedFromHalfway(): Boolean {
     return identificationTrack.calculateErsedFromHalfway()

@@ -499,7 +499,7 @@ private fun extractDates(sentence: CalculableSentence): Map<ReleaseDateType, Dat
       sentenceCalculation.numberOfDaysToSentenceExpiryDate.toLong()
     )
   }
-  dates[sentence.getReleaseDateType(false)] = DateBreakdown(
+  dates[sentence.getReleaseDateType()] = DateBreakdown(
     sentenceCalculation.unadjustedDeterminateReleaseDate,
     sentenceCalculation.adjustedDeterminateReleaseDate,
     sentenceCalculation.numberOfDaysToDeterminateReleaseDate.toLong()

@@ -335,7 +335,7 @@ data class SentenceCalculation(
   private var _licenceExpiryDate: LocalDate? = null
   var licenceExpiryDate: LocalDate?
     get() {
-      return if (sentence.releaseDateTypes.contains(ReleaseDateType.SLED)) {
+      return if (sentence.releaseDateTypes.initialTypes().contains(ReleaseDateType.SLED)) {
         expiryDate
       } else {
         _licenceExpiryDate
@@ -373,7 +373,7 @@ data class SentenceCalculation(
   }
 
   val expiryDate: LocalDate? get() {
-    if (sentence.releaseDateTypes.contains(ReleaseDateType.SLED) || sentence.releaseDateTypes.contains(ReleaseDateType.SED)) {
+    if (sentence.releaseDateTypes.initialTypes().contains(ReleaseDateType.SLED) || sentence.releaseDateTypes.initialTypes().contains(ReleaseDateType.SED)) {
       return adjustedExpiryDate
     }
     return null
@@ -381,7 +381,7 @@ data class SentenceCalculation(
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
 
-  fun buildString(releaseDateTypes: List<ReleaseDateType>): String {
+  fun buildString(releaseDateTypes: ReleaseDateTypes): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val expiryDateType = if (releaseDateTypes.contains(ReleaseDateType.SLED)) "SLED" else "SED"
     val releaseDateType = if (releaseDateTypes.contains(ReleaseDateType.ARD)) "ARD"

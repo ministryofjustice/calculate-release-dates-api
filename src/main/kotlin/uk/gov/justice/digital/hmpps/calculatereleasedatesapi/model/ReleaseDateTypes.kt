@@ -1,0 +1,40 @@
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
+
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import java.time.temporal.ChronoUnit.MONTHS
+
+class ReleaseDateTypes(
+  private val intialTypes: List<ReleaseDateType>,
+  private val sentence: CalculableSentence,
+  private val offender: Offender
+) {
+
+  fun getReleaseDateTypes(): List<ReleaseDateType> {
+    val underEighteenAtTimeOfRelease = offender.getAgeOnDate(sentence.sentenceCalculation.releaseDate) < INT_EIGHTEEN
+    val lessThanTwelveMonths = sentence.durationIsLessThan(12, MONTHS)
+    return if (underEighteenAtTimeOfRelease && lessThanTwelveMonths) {
+      val dates = intialTypes.toMutableList()
+      dates -= ReleaseDateType.SLED
+      dates -= ReleaseDateType.CRD
+      dates += ReleaseDateType.SED
+      dates += ReleaseDateType.ARD
+      dates
+    } else {
+      intialTypes
+    }
+  }
+  fun underEighteen(): Boolean {
+    return offender.getAgeOnDate(sentence.sentenceCalculation.releaseDate) < INT_EIGHTEEN
+  }
+  fun contains(releaseDateType: ReleaseDateType): Boolean {
+    return getReleaseDateTypes().contains(releaseDateType)
+  }
+
+  fun initialTypes(): List<ReleaseDateType> {
+    return this.intialTypes
+  }
+
+  companion object {
+    private const val INT_EIGHTEEN = 18
+  }
+}

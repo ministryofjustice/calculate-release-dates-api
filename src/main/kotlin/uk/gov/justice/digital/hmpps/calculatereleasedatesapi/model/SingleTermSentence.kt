@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -29,7 +28,7 @@ class SingleTermSentence(
   override lateinit var identificationTrack: SentenceIdentificationTrack
 
   @JsonIgnore
-  override lateinit var releaseDateTypes: List<ReleaseDateType>
+  override lateinit var releaseDateTypes: ReleaseDateTypes
 
   override fun buildString(): String {
     return "SingleTermSentence\t:\t\n" +
