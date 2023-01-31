@@ -39,9 +39,9 @@ generic-service:
       DB_USER: "database_username"
       DB_PASS: "database_password"
     hmpps-domain-events-topic:
-      DOMAIN_EVENTS_SNS_AWS_ACCESS_KEY_ID: "access_key_id"
-      DOMAIN_EVENTS_SNS_AWS_SECRET_ACCESS_KEY: "secret_access_key"
-      DOMAIN_EVENTS_SNS_TOPIC_ARN: "topic_arn"
+      HMPPS_SQS_TOPICS_HMPPSEVENTTOPIC_ACCESS_KEY_ID: "access_key_id"
+      HMPPS_SQS_TOPICS_HMPPSEVENTTOPIC_SECRET_ACCESS_KEY: "secret_access_key"
+      HMPPS_SQS_TOPICS_HMPPSEVENTTOPIC_ARN: "topic_arn"
 
   allowlist:
     office: "217.33.148.210/32"
