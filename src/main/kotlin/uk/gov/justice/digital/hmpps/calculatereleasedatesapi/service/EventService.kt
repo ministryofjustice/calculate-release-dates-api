@@ -22,7 +22,7 @@ class EventService(
   }
 
   fun publishReleaseDatesChangedEvent(prisonerId: String, bookingId: Long) {
-    val event = OffenceUpdatedDomainEvent(additionalInformation = (CalculateReleaseDatesAdditionalInformation(prisonerId, bookingId)))
+    val event = ReleaseDateChangedEvent(additionalInformation = (CalculateReleaseDatesAdditionalInformation(prisonerId, bookingId)))
     domainTopic.snsClient.publish(
       PublishRequest(domainTopic.arn, mapper.writeValueAsString(event))
         .addMessageAttributesEntry("eventType", MessageAttributeValue().withDataType("String").withStringValue(event.eventType))
@@ -49,7 +49,7 @@ abstract class CalculateReleaseDatesDomainEvent {
   abstract var description: String
 }
 
-class OffenceUpdatedDomainEvent(
+class ReleaseDateChangedEvent(
   override val eventType: String = "calculate-release-dates.prisoner.changed",
   override var description: String = "Prisoners release dates have been re-calculated",
   override val additionalInformation: CalculateReleaseDatesAdditionalInformation,
