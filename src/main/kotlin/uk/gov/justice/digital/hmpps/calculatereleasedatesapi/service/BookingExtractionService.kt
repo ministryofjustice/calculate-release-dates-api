@@ -190,8 +190,6 @@ class BookingExtractionService(
       if (concurrentOraAndNonOraDetails.isReleaseDateConditional && !concurrentSentencesLessThan12MonthsLessThan18AtRelease) {
         dates[CRD] = latestReleaseDate
         // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
-        val underEighteenAtRelease = booking.offender.getAgeOnDate(mostRecentSentenceByReleaseDate.sentenceCalculation.releaseDate) < INT_EIGHTEEN
-        val effectiveSentenceLessThanTwelveMonths = effectiveSentenceLength.months < 12
         val releaseDateType =
           if (mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType.containsKey(CRD)) CRD else ARD
         breakdownByReleaseDateType[CRD] =
