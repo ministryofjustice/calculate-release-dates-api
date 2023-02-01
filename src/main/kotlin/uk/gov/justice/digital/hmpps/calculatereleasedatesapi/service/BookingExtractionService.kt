@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqual
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
+import java.time.temporal.ChronoUnit.MONTHS
 
 @Service
 class BookingExtractionService(
@@ -55,15 +56,15 @@ class BookingExtractionService(
     val sentenceCalculation = sentence.sentenceCalculation
 
     if (sentence.releaseDateTypes.contains(SLED)) {
-      dates[SLED] = sentenceCalculation.expiryDate!!
+      dates[SLED] = sentenceCalculation.expiryDate
     } else {
-      dates[SED] = sentenceCalculation.expiryDate!!
+      dates[SED] = sentenceCalculation.expiryDate
     }
 
     dates[sentence.getReleaseDateType()] = sentenceCalculation.releaseDate
 
     if (sentenceCalculation.licenceExpiryDate != null &&
-      sentence.releaseDateTypes.contains(LED)
+      sentence.releaseDateTypes.getReleaseDateTypes().contains(LED)
     ) {
       dates[LED] = sentenceCalculation.licenceExpiryDate!!
     }
@@ -116,7 +117,7 @@ class BookingExtractionService(
       extractionService.mostRecentSentence(sentences, SentenceCalculation::expiryDate)
 
     val latestReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
-    val latestExpiryDate = mostRecentSentenceByExpiryDate.sentenceCalculation.expiryDate!!
+    val latestExpiryDate = mostRecentSentenceByExpiryDate.sentenceCalculation.expiryDate
 
     val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(
       sentences, SentenceCalculation::unadjustedExpiryDate
@@ -151,21 +152,20 @@ class BookingExtractionService(
     )
 
     val concurrentOraAndNonOraDetails = extractConcurrentOraAndNonOraDetails(
-      mostRecentSentenceByAdjustedDeterminateReleaseDate.releaseDateTypes, mostRecentSentenceByExpiryDate.releaseDateTypes, latestReleaseDate, sentences, effectiveSentenceLength
+      mostRecentSentenceByAdjustedDeterminateReleaseDate.releaseDateTypes.getReleaseDateTypes(), mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes(), latestReleaseDate, sentences, effectiveSentenceLength
     )
 
     val latestNotionalConditionalReleaseDate: LocalDate? = extractionService.mostRecentOrNull(
       sentences, SentenceCalculation::notionalConditionalReleaseDate
     )
 
-    if (latestExpiryDate == latestLicenseExpiryDate && mostRecentSentenceByExpiryDate.releaseDateTypes.contains(SLED)) {
+    if (latestExpiryDate == latestLicenseExpiryDate && mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes().contains(SLED)) {
       dates[SLED] = latestExpiryDate
       breakdownByReleaseDateType[SLED] =
         mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SLED]!!
     } else {
       dates[SED] = latestExpiryDate
-      breakdownByReleaseDateType[SED] =
-        mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
+      breakdownByReleaseDateType[SED] = mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
       if (latestLicenseExpiryDate != null && concurrentOraAndNonOraDetails.canHaveLicenseExpiry && latestLicenseExpiryDate.isAfterOrEqualTo(latestReleaseDate)) {
         dates[LED] = latestLicenseExpiryDate
         if (latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(LED)) {
@@ -192,8 +192,7 @@ class BookingExtractionService(
           mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]!!
       } else {
         dates[ARD] = latestReleaseDate
-        breakdownByReleaseDateType[ARD] =
-          mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
+        breakdownByReleaseDateType[ARD] = mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
       }
     }
 
@@ -234,7 +233,7 @@ class BookingExtractionService(
           if (latestNonPedRelease != null && latestExtendedDeterminateParoleEligibilityDate.isBefore(latestNonPedRelease)) {
             dates[PED] = latestNonPedRelease
             breakdownByReleaseDateType[PED] = ReleaseDateCalculationBreakdown(
-              rules = setOf(if (latestNonPedReleaseSentence.releaseDateTypes.contains(ARD)) CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_ACTUAL_RELEASE else CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE),
+              rules = setOf(if (latestNonPedReleaseSentence.releaseDateTypes.getReleaseDateTypes().contains(ARD)) CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_ACTUAL_RELEASE else CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE),
               releaseDate = dates[PED]!!,
               unadjustedDate = latestExtendedDeterminateParoleEligibilityDate
             )
@@ -275,7 +274,7 @@ class BookingExtractionService(
     mostRecentSentencesByReleaseDate: List<CalculableSentence>
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
     val latestAdjustedReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
-    val mostRecentReleaseIsPrrd = mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.contains(PRRD) }
+    val mostRecentReleaseIsPrrd = mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.getReleaseDateTypes().contains(PRRD) }
     // For now we can't calculate HDCED if there is a consecutive sentence with EDS or SOPC sentences
     if (!mostRecentReleaseIsPrrd && sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
       val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() }, SentenceCalculation::releaseDate)
@@ -362,7 +361,7 @@ class BookingExtractionService(
     val latestSentenceExpiryIsSED = latestExpiryTypes.contains(SED)
 
     val hasOraSentences = sentences.any { (it is StandardDeterminateSentence) && it.isOraSentence() }
-    val hasNonOraSentencesOfLessThan12Months = sentences.any { (it is StandardDeterminateSentence) && !it.isOraSentence() && it.durationIsLessThan(12, ChronoUnit.MONTHS) }
+    val hasNonOraSentencesOfLessThan12Months = sentences.any { (it is StandardDeterminateSentence) && !it.isOraSentence() && it.durationIsLessThan(12, MONTHS) }
     val mostRecentSentenceWithASed = extractionService.mostRecentSentenceOrNull(
       sentences, SentenceCalculation::expiryDate
     ) { it.releaseDateTypes.contains(SED) }
@@ -409,5 +408,6 @@ class BookingExtractionService(
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     private const val FOUR = 4L
+    private const val INT_EIGHTEEN = 18
   }
 }
