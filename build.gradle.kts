@@ -58,6 +58,9 @@ dependencies {
   implementation("org.springframework:spring-jms:5.3.22")
   implementation("com.google.code.gson:gson:2.10")
 
+  // SQS
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.2.0")
+
   // AWS
   implementation("com.amazonaws:aws-java-sdk-s3:$awsSdkVersion")
   implementation("com.amazonaws:aws-java-sdk-cloudformation:$awsSdkVersion")
