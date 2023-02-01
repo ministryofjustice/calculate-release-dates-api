@@ -38,11 +38,11 @@ class CalculationTransactionalService(
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
   private val objectMapper: ObjectMapper,
   private val prisonService: PrisonService,
-  private val domainEventPublisher: DomainEventPublisher,
   private val prisonApiDataMapper: PrisonApiDataMapper,
   private val calculationService: CalculationService,
   private val bookingService: BookingService,
   private val validationService: ValidationService,
+  private val eventService: EventService,
 ) {
 
   fun getCurrentAuthentication(): AuthAwareAuthenticationToken =
@@ -267,14 +267,12 @@ class CalculationTransactionalService(
           "and bookingId ${booking.bookingId}"
       )
     }
-    try {
-      domainEventPublisher.publishReleaseDateChange(prisonerId, booking.bookingId)
-    } catch (ex: Exception) {
-      // This doesn't constitute a failure at the moment because we are writing back to NOMIS using a POST endpoint.
-      // Eventually the event will be used to write back to NOMIS and then this will need refactoring
-      log.info(
-        "Publishing the release date change to the domain event topic failed for prisonerId $prisonerId " +
-          "and bookingId ${booking.bookingId}"
+    runCatching {
+      eventService.publishReleaseDatesChangedEvent(prisonerId, booking.bookingId)
+    }.onFailure { error ->
+      log.error(
+        "Failed to send release-dates-changed-event for prisoner ID $prisonerId",
+        error
       )
     }
   }
