@@ -156,7 +156,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
     val numberOfDaysToReleaseDateDouble =
       custodialDuration.getLengthInDays(sentence.sentencedAt).times(releaseDateMultiplier)
     val numberOfDaysToReleaseDate: Int = ceil(numberOfDaysToReleaseDateDouble).toInt()
-    if (sentence.releaseDateTypes.initialTypes().contains(PED) && (sentence is ExtendedDeterminateSentence || sentence is SopcSentence)) {
+    if (sentence.releaseDateTypes.getReleaseDateTypes().contains(PED) && (sentence is ExtendedDeterminateSentence || sentence is SopcSentence)) {
       val pedMultiplier = determinePedMultiplier(sentence.identificationTrack)
       numberOfDaysToParoleEligibilityDate =
         ceil(numberOfDaysToReleaseDate.toDouble().times(pedMultiplier)).toLong()

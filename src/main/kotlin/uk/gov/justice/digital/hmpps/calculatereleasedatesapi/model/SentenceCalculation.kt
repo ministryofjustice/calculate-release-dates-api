@@ -202,7 +202,7 @@ data class SentenceCalculation(
         val fixedTermRecallRelease = unadjustedPostRecallReleaseDate?.plusDays(
           calculatedFixedTermRecallAddedDays.toLong()
         )
-        return minOf(fixedTermRecallRelease!!, expiryDate!!)
+        return minOf(fixedTermRecallRelease!!, expiryDate)
       }
     }
     return null
@@ -335,7 +335,7 @@ data class SentenceCalculation(
   private var _licenceExpiryDate: LocalDate? = null
   var licenceExpiryDate: LocalDate?
     get() {
-      return if (sentence.releaseDateTypes.initialTypes().contains(ReleaseDateType.SLED)) {
+      return if (sentence.releaseDateTypes.getReleaseDateTypes().contains(ReleaseDateType.SLED)) {
         expiryDate
       } else {
         _licenceExpiryDate
@@ -372,11 +372,8 @@ data class SentenceCalculation(
     }
   }
 
-  val expiryDate: LocalDate? get() {
-    if (sentence.releaseDateTypes.initialTypes().contains(ReleaseDateType.SLED) || sentence.releaseDateTypes.initialTypes().contains(ReleaseDateType.SED)) {
-      return adjustedExpiryDate
-    }
-    return null
+  val expiryDate: LocalDate get() {
+    return adjustedExpiryDate
   }
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
@@ -407,7 +404,7 @@ data class SentenceCalculation(
       "Home Detention Curfew Eligibility Date (HDCED)\t:\t" +
       "${homeDetentionCurfewEligibilityDate?.format(formatter)}\n" +
 
-      "Effective $expiryDateType\t:\t${expiryDate?.format(formatter)}\n" +
+      "Effective $expiryDateType\t:\t${expiryDate.format(formatter)}\n" +
       "Effective $releaseDateType\t:\t${releaseDate.format(formatter)}\n" +
       "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +
       "${topUpSupervisionDate?.format(formatter)}\n"

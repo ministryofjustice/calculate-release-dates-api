@@ -31,6 +31,10 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
       sentenceCalculation.buildString(releaseDateTypes)
   }
 
+  override fun isCalculationInitialised(): Boolean {
+    return this::sentenceCalculation.isInitialized
+  }
+
   fun getCombinedDuration(): Duration {
     return this.orderedSentences.map {
       when (it) {

@@ -10,28 +10,23 @@ class ReleaseDateTypes(
 ) {
 
   fun getReleaseDateTypes(): List<ReleaseDateType> {
-    val underEighteenAtTimeOfRelease = offender.getAgeOnDate(sentence.sentenceCalculation.releaseDate) < INT_EIGHTEEN
-    val lessThanTwelveMonths = sentence.durationIsLessThan(12, MONTHS)
-    return if (underEighteenAtTimeOfRelease && lessThanTwelveMonths) {
-      val dates = intialTypes.toMutableList()
-      dates -= ReleaseDateType.SLED
-      dates -= ReleaseDateType.CRD
-      dates += ReleaseDateType.SED
-      dates += ReleaseDateType.ARD
-      dates
-    } else {
-      intialTypes
+    if (sentence.isCalculationInitialised()) {
+      val underEighteenAtTimeOfRelease = offender.getAgeOnDate(sentence.sentenceCalculation.releaseDate) < INT_EIGHTEEN
+      val lessThanTwelveMonths = sentence.durationIsLessThan(12, MONTHS)
+      if (underEighteenAtTimeOfRelease && lessThanTwelveMonths) {
+        val dates = intialTypes.toMutableList()
+        dates -= ReleaseDateType.SLED
+        dates -= ReleaseDateType.CRD
+        dates += ReleaseDateType.SED
+        dates += ReleaseDateType.ARD
+        return dates
+      }
     }
-  }
-  fun underEighteen(): Boolean {
-    return offender.getAgeOnDate(sentence.sentenceCalculation.releaseDate) < INT_EIGHTEEN
-  }
-  fun contains(releaseDateType: ReleaseDateType): Boolean {
-    return getReleaseDateTypes().contains(releaseDateType)
+    return intialTypes
   }
 
-  fun initialTypes(): List<ReleaseDateType> {
-    return this.intialTypes
+  fun contains(releaseDateType: ReleaseDateType): Boolean {
+    return getReleaseDateTypes().contains(releaseDateType)
   }
 
   companion object {

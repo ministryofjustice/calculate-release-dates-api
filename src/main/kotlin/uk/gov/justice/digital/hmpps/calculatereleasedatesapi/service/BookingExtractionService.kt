@@ -56,9 +56,9 @@ class BookingExtractionService(
     val sentenceCalculation = sentence.sentenceCalculation
 
     if (sentence.releaseDateTypes.contains(SLED)) {
-      dates[SLED] = sentenceCalculation.expiryDate!!
+      dates[SLED] = sentenceCalculation.expiryDate
     } else {
-      dates[SED] = sentenceCalculation.expiryDate!!
+      dates[SED] = sentenceCalculation.expiryDate
     }
 
     dates[sentence.getReleaseDateType()] = sentenceCalculation.releaseDate
@@ -117,7 +117,7 @@ class BookingExtractionService(
       extractionService.mostRecentSentence(sentences, SentenceCalculation::expiryDate)
 
     val latestReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
-    val latestExpiryDate = mostRecentSentenceByExpiryDate.sentenceCalculation.expiryDate!!
+    val latestExpiryDate = mostRecentSentenceByExpiryDate.sentenceCalculation.expiryDate
 
     val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(
       sentences, SentenceCalculation::unadjustedExpiryDate
@@ -165,8 +165,7 @@ class BookingExtractionService(
         mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SLED]!!
     } else {
       dates[SED] = latestExpiryDate
-      breakdownByReleaseDateType[SED] =
-        if (mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED] != null) mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!! else mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SLED]!!
+      breakdownByReleaseDateType[SED] = mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
       if (latestLicenseExpiryDate != null && concurrentOraAndNonOraDetails.canHaveLicenseExpiry && latestLicenseExpiryDate.isAfterOrEqualTo(latestReleaseDate)) {
         dates[LED] = latestLicenseExpiryDate
         if (latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(LED)) {
@@ -193,8 +192,7 @@ class BookingExtractionService(
           mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]!!
       } else {
         dates[ARD] = latestReleaseDate
-        breakdownByReleaseDateType[ARD] =
-          if (mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD] != null) mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!! else mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[CRD]!!
+        breakdownByReleaseDateType[ARD] = mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
       }
     }
 
