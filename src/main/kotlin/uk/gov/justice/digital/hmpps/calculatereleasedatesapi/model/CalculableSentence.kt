@@ -18,7 +18,7 @@ import kotlin.math.roundToLong
  * 3. Extract, extract the final booking release dates from all the calculable sentences.
  */
 interface CalculableSentence {
-  var releaseDateTypes: List<ReleaseDateType>
+  var releaseDateTypes: ReleaseDateTypes
   var sentenceCalculation: SentenceCalculation
   val recallType: RecallType?
   val sentencedAt: LocalDate
@@ -104,7 +104,7 @@ interface CalculableSentence {
   @JsonIgnore
   fun getReleaseDateType(): ReleaseDateType {
     return if (isRecall())
-      ReleaseDateType.PRRD else if (releaseDateTypes.contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null)
+      ReleaseDateType.PRRD else if (releaseDateTypes.getReleaseDateTypes().contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null)
       ReleaseDateType.PED else if (sentenceCalculation.isReleaseDateConditional)
       ReleaseDateType.CRD else
       ReleaseDateType.ARD
@@ -160,4 +160,6 @@ interface CalculableSentence {
   fun calculateErsedFromHalfway(): Boolean
   fun calculateErsedFromTwoThirds(): Boolean
   fun buildString(): String
+  @JsonIgnore
+  fun isCalculationInitialised(): Boolean
 }

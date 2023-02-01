@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.lang.UnsupportedOperationException
 import java.time.LocalDate
@@ -22,7 +21,7 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
   override lateinit var identificationTrack: SentenceIdentificationTrack
 
   @JsonIgnore
-  override lateinit var releaseDateTypes: List<ReleaseDateType>
+  override lateinit var releaseDateTypes: ReleaseDateTypes
 
   override fun buildString(): String {
     return "StandardDeterminateConsecutiveSentence\t:\t\n" +
@@ -30,6 +29,10 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
       "Sentence Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
       sentenceCalculation.buildString(releaseDateTypes)
+  }
+
+  override fun isCalculationInitialised(): Boolean {
+    return this::sentenceCalculation.isInitialized
   }
 
   fun getCombinedDuration(): Duration {
