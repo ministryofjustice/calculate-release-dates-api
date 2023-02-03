@@ -37,8 +37,7 @@ data class SentenceCalculation(
   var latestConcurrentDeterminateRelease: LocalDate = sentence.sentencedAt,
   var adjustmentsAfter: LocalDate? = null,
   val returnToCustodyDate: LocalDate? = null,
-  val numberOfDaysToParoleEligibilityDate: Long? = null,
-
+  val numberOfDaysToParoleEligibilityDate: Long? = null
 ) {
 
   fun getAdjustmentBeforeSentence(vararg adjustmentTypes: AdjustmentType): Int {
@@ -353,6 +352,9 @@ data class SentenceCalculation(
   // Notional Conditional Release Date (NCRD)
   var numberOfDaysToNotionalConditionalReleaseDate: Long = 0
   var notionalConditionalReleaseDate: LocalDate? = null
+
+  var earlyTransferDate: LocalDate? = null
+  var latestTransferDate: LocalDate? = null
 
   val releaseDate: LocalDate get() {
     return if (sentence.isRecall()) {

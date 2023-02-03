@@ -106,7 +106,8 @@ interface CalculableSentence {
     return if (isRecall())
       ReleaseDateType.PRRD else if (releaseDateTypes.getReleaseDateTypes().contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null)
       ReleaseDateType.PED else if (sentenceCalculation.isReleaseDateConditional)
-      ReleaseDateType.CRD else
+      ReleaseDateType.CRD else if (releaseDateTypes.contains(ReleaseDateType.MTD))
+      ReleaseDateType.MTD else
       ReleaseDateType.ARD
   }
 
@@ -150,6 +151,9 @@ interface CalculableSentence {
       }
       is SingleTermSentence -> {
         this.combinedDuration()
+      }
+      is DetentionAndTrainingOrderSentence -> {
+        this.duration
       }
       else -> {
         throw UnknownError("Unknown sentence")

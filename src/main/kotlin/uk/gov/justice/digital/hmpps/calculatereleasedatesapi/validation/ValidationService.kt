@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
@@ -376,7 +377,10 @@ class ValidationService(
 
   private fun validateDuration(sentencesAndOffence: SentenceAndOffences): List<ValidationMessage> {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
-    return if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java || sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
+    return if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java ||
+      sentenceCalculationType.sentenceClazz == AFineSentence::class.java ||
+      sentenceCalculationType.sentenceClazz == DetentionAndTrainingOrderSentence::class.java
+    ) {
       validateSingleTermDuration(sentencesAndOffence)
     } else {
       validateImprisonmentAndLicenceTermDuration(sentencesAndOffence)
