@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.IMMEDIATE_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.LED_CONSEC_ORA_AND_NON_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.TUSED_LICENCE_PERIOD_LT_1Y
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
@@ -35,10 +36,10 @@ import kotlin.math.max
 
 @Service
 class SentenceAdjustedCalculationService {
-    /*
-      This function calculates dates after adjustments have been decided.
-      It can be run many times to recalculate dates. It needs to be run if there is a change to adjustments.
-     */
+  /*
+    This function calculates dates after adjustments have been decided.
+    It can be run many times to recalculate dates. It needs to be run if there is a change to adjustments.
+   */
   fun calculateDatesFromAdjustments(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
     val sentenceCalculation: SentenceCalculation = sentence.sentenceCalculation
     // Other adjustments need to be included in the sentence calculation here
@@ -57,6 +58,22 @@ class SentenceAdjustedCalculationService {
     ) {
       if (booking.offender.getAgeOnDate(sentence.sentenceCalculation.releaseDateWithoutAwarded) >= 18) {
         calculateTUSED(sentenceCalculation)
+      }
+    }
+
+    if (sentence.releaseDateTypes.contains(ReleaseDateType.ETD)) {
+      if (sentence.durationIsGreaterThan(8, MONTHS) && sentence.durationIsLessThan(18, MONTHS)) {
+        sentenceCalculation.earlyTransferDate = sentenceCalculation.releaseDate.minusMonths(1)
+      } else if (sentence.durationIsGreaterThanOrEqualTo(18, MONTHS) && sentence.durationIsLessThanEqualTo(24, MONTHS)) {
+        sentenceCalculation.earlyTransferDate = sentenceCalculation.releaseDate.minusMonths(2)
+      }
+    }
+
+    if (sentence.releaseDateTypes.contains(ReleaseDateType.LTD)) {
+      if (sentence.durationIsGreaterThan(8, MONTHS) && sentence.durationIsLessThan(18, MONTHS)) {
+        sentenceCalculation.latestTransferDate = sentenceCalculation.releaseDate.plusMonths(1)
+      } else if (sentence.durationIsGreaterThanOrEqualTo(18, MONTHS) && sentence.durationIsLessThanEqualTo(24, MONTHS)) {
+        sentenceCalculation.latestTransferDate = sentenceCalculation.releaseDate.plusMonths(2)
       }
     }
 

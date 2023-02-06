@@ -9,8 +9,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ETD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
@@ -93,6 +95,13 @@ class BookingExtractionService(
       dates[ERSED] = sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
     }
 
+    if (sentenceCalculation.earlyTransferDate != null) {
+      dates[ETD] = sentenceCalculation.earlyTransferDate!!
+    }
+
+    if (sentenceCalculation.latestTransferDate != null) {
+      dates[LTD] = sentenceCalculation.latestTransferDate!!
+    }
     dates[ESED] = sentenceCalculation.unadjustedExpiryDate
 
     return CalculationResult(
