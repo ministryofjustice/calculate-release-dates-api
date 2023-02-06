@@ -1,0 +1,24 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2004-08-30"
+  },
+  "sentences": [
+    {
+      "type": "DetentionAndTrainingOrderSentence",
+      "offence": {
+        "committedAt": "2022-06-21"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 18
+        }
+      },
+      "sentencedAt": "2021-05-23",
+      "sentenceType": "DTO_ORA",
+      "isDto": true
+    }
+  ],
+  "adjustments": {
+  }
+}

@@ -21,7 +21,8 @@ import java.util.UUID
   JsonSubTypes.Type(value = StandardDeterminateSentence::class, name = "StandardSentence"),
   JsonSubTypes.Type(value = ExtendedDeterminateSentence::class, name = "ExtendedDeterminateSentence"),
   JsonSubTypes.Type(value = SopcSentence::class, name = "SopcSentence"),
-  JsonSubTypes.Type(value = AFineSentence::class, name = "AFineSentence")
+  JsonSubTypes.Type(value = AFineSentence::class, name = "AFineSentence"),
+  JsonSubTypes.Type(value = DetentionAndTrainingOrderSentence::class, name = "DetentionAndTrainingOrderSentence")
 )
 abstract class AbstractSentence(
   override val offence: Offence,
