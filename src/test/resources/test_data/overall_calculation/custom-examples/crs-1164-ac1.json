@@ -1,0 +1,36 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2004-09-30"
+  },
+  "sentences": [
+    {
+      "type": "DetentionAndTrainingOrderSentence",
+      "offence": {
+        "committedAt": "2019-02-07"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 15
+        }
+      },
+      "sentencedAt": "2019-03-07",
+      "sentenceType": "DTO_ORA"
+    },
+    {
+      "type": "DetentionAndTrainingOrderSentence",
+      "offence": {
+        "committedAt": "2019-02-07"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 12
+        }
+      },
+      "sentencedAt": "2019-03-07",
+      "sentenceType": "DTO_ORA"
+    }
+  ],
+  "adjustments": {
+  }
+}

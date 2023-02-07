@@ -152,6 +152,9 @@ interface CalculableSentence {
       is SingleTermSentence -> {
         this.combinedDuration()
       }
+      is DtoSingleTermSentence -> {
+        this.combinedDuration()
+      }
       is DetentionAndTrainingOrderSentence -> {
         this.duration
       }

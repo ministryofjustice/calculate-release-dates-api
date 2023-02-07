@@ -19,7 +19,7 @@ data class Booking(
 
   @JsonIgnore
   @Transient
-  var singleTermSentence: SingleTermSentence? = null
+  var singleTermSentence: SingleTermed? = null
 
   @JsonIgnore
   @Transient
