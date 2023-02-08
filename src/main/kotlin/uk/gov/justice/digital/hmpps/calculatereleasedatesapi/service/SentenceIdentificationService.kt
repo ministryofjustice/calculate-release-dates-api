@@ -87,9 +87,9 @@ class SentenceIdentificationService {
   private fun identifyDtoSentence(sentence: CalculableSentence): List<ReleaseDateType> {
     if (sentence.sentencedAt.isBefore(PCSC_COMMENCEMENT_DATE)) {
       sentence.identificationTrack = DTO_BEFORE_PCSC
-      } else {
+    } else {
       sentence.identificationTrack = DTO_AFTER_PCSC
-      }
+    }
     return listOf(
       SLED,
       MTD,

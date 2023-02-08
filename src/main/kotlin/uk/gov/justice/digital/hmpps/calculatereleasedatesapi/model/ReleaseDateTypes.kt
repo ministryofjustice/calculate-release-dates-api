@@ -13,7 +13,7 @@ class ReleaseDateTypes(
     if (sentence.isCalculationInitialised()) {
       val underEighteenAtTimeOfRelease = offender.getAgeOnDate(sentence.sentenceCalculation.releaseDate) < INT_EIGHTEEN
       val lessThanTwelveMonths = sentence.durationIsLessThan(12, MONTHS)
-      if (underEighteenAtTimeOfRelease && lessThanTwelveMonths) {
+      if (underEighteenAtTimeOfRelease && lessThanTwelveMonths && sentence !is DetentionAndTrainingOrderSentence) {
         val dates = intialTypes.toMutableList()
         dates -= ReleaseDateType.SLED
         dates -= ReleaseDateType.CRD

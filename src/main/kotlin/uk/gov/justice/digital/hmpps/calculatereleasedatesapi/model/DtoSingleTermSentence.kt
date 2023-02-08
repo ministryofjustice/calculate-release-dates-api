@@ -1,14 +1,15 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.joda.time.Days
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-class DtoSingleTermSentence(override val sentencedAt: LocalDate,
-                            override val offence: Offence,
-                            override val standardSentences: List<AbstractSentence>) : SingleTermed {
+class DtoSingleTermSentence(
+  override val sentencedAt: LocalDate,
+  override val offence: Offence,
+  override val standardSentences: List<AbstractSentence>
+) : SingleTermed {
   constructor(standardSentences: List<AbstractSentence>) :
     this(
       standardSentences.minOf(AbstractSentence::sentencedAt),

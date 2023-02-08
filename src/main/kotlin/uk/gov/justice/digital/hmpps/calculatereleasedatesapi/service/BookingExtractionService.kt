@@ -192,7 +192,7 @@ class BookingExtractionService(
     if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
       dates[PRRD] = latestReleaseDate
     }
-    if (booking.sentences.all { it is DetentionAndTrainingOrderSentence}) {
+    if (booking.sentences.all { it is DetentionAndTrainingOrderSentence }) {
       dates[MTD] = latestReleaseDate
       if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(ETD)) {
         if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
