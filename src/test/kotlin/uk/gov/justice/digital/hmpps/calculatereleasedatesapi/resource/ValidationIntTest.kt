@@ -35,6 +35,11 @@ class ValidationIntTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `Run validation for DTO`() {
+    runValidationAndCheckMessages("CRS-1184", emptyList())
+  }
+
+  @Test
   fun `Run validation on future dated adjustments`() {
     runValidationAndCheckMessages("CRS-1044", listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_RADA)))
   }
