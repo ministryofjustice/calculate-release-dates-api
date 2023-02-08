@@ -145,56 +145,54 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
         recallType = sentenceCalculationType.recallType,
         fineAmount = sentence.fineAmount
       )
+    } else if (sentenceCalculationType.sentenceClazz == DetentionAndTrainingOrderSentence::class.java) {
+      DetentionAndTrainingOrderSentence(
+        sentencedAt = sentence.sentenceDate,
+        duration = transform(sentence.terms[0]),
+        offence = offence,
+        identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+        consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+        caseSequence = sentence.caseSequence,
+        lineSequence = sentence.lineSequence,
+        caseReference = sentence.caseReference,
+        recallType = sentenceCalculationType.recallType,
+        isDto = sentenceCalculationType == SentenceCalculationType.DTO || sentenceCalculationType == SentenceCalculationType.DTO_ORA
+      )
     } else {
       val imprisonmentTerm = sentence.terms.first { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
-      if (sentenceCalculationType.sentenceClazz == DetentionAndTrainingOrderSentence::class.java) {
-        DetentionAndTrainingOrderSentence(
-          sentencedAt = sentence.sentenceDate,
-          duration = transform(sentence.terms[0]),
-          offence = offence,
-          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-          caseSequence = sentence.caseSequence,
-          lineSequence = sentence.lineSequence,
-          caseReference = sentence.caseReference,
-          recallType = sentenceCalculationType.recallType,
-          isDto = sentenceCalculationType == SentenceCalculationType.DTO || sentenceCalculationType == SentenceCalculationType.DTO_ORA
-        )
-      } else {
-        val licenseTerm = sentence.terms.first { it.code == SentenceTerms.LICENCE_TERM_CODE }
+      val licenseTerm = sentence.terms.first { it.code == SentenceTerms.LICENCE_TERM_CODE }
 
-        when (sentenceCalculationType.sentenceClazz) {
-          ExtendedDeterminateSentence::class.java -> {
-            ExtendedDeterminateSentence(
-              sentencedAt = sentence.sentenceDate,
-              custodialDuration = transform(imprisonmentTerm),
-              extensionDuration = transform(licenseTerm),
-              automaticRelease = sentenceCalculationType == SentenceCalculationType.LASPO_AR,
-              offence = offence,
-              identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-              consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-              caseSequence = sentence.caseSequence,
-              lineSequence = sentence.lineSequence,
-              caseReference = sentence.caseReference,
-              recallType = sentenceCalculationType.recallType
-            )
-          }
+      when (sentenceCalculationType.sentenceClazz) {
+        ExtendedDeterminateSentence::class.java -> {
+          ExtendedDeterminateSentence(
+            sentencedAt = sentence.sentenceDate,
+            custodialDuration = transform(imprisonmentTerm),
+            extensionDuration = transform(licenseTerm),
+            automaticRelease = sentenceCalculationType == SentenceCalculationType.LASPO_AR,
+            offence = offence,
+            identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+            consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+            caseSequence = sentence.caseSequence,
+            lineSequence = sentence.lineSequence,
+            caseReference = sentence.caseReference,
+            recallType = sentenceCalculationType.recallType
+          )
+        }
 
-          else -> {
-            SopcSentence(
-              sentencedAt = sentence.sentenceDate,
-              custodialDuration = transform(imprisonmentTerm),
-              extensionDuration = transform(licenseTerm),
-              sdopcu18 = sentenceCalculationType == SentenceCalculationType.SDOPCU18,
-              offence = offence,
-              identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-              consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-              caseSequence = sentence.caseSequence,
-              lineSequence = sentence.lineSequence,
-              caseReference = sentence.caseReference,
-              recallType = sentenceCalculationType.recallType
-            )
-          }
+        else -> {
+          SopcSentence(
+            sentencedAt = sentence.sentenceDate,
+            custodialDuration = transform(imprisonmentTerm),
+            extensionDuration = transform(licenseTerm),
+            sdopcu18 = sentenceCalculationType == SentenceCalculationType.SDOPCU18,
+            offence = offence,
+            identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+            consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+            caseSequence = sentence.caseSequence,
+            lineSequence = sentence.lineSequence,
+            caseReference = sentence.caseReference,
+            recallType = sentenceCalculationType.recallType
+          )
         }
       }
     }
