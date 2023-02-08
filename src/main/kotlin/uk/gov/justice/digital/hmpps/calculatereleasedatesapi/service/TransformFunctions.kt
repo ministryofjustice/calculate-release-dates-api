@@ -160,7 +160,6 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
           recallType = sentenceCalculationType.recallType,
           isDto = sentenceCalculationType == SentenceCalculationType.DTO || sentenceCalculationType == SentenceCalculationType.DTO_ORA
         )
-
       } else {
         val licenseTerm = sentence.terms.first { it.code == SentenceTerms.LICENCE_TERM_CODE }
 
