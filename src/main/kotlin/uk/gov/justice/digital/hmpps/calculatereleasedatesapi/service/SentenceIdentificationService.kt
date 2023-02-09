@@ -72,6 +72,7 @@ class SentenceIdentificationService {
       is AFineSentence -> {
         releaseDateTypes.addAll(identifyAFineSentence(sentence))
       }
+
       is DetentionAndTrainingOrderSentence, is DtoSingleTermSentence -> {
         releaseDateTypes.addAll(identifyDtoSentence(sentence))
       }
@@ -140,6 +141,16 @@ class SentenceIdentificationService {
             CRD
           )
         )
+      } else if (sentence.isMadeUpOfOnlyDtos()) {
+        releaseDateTypes.addAll(
+          listOf(
+            SLED,
+            MTD,
+            ETD,
+            LTD,
+            TUSED
+          )
+        )
       } else if (sentence.isMadeUpOfBeforeAndAfterCjaLaspoSentences()) {
         // This consecutive sentence is made up of pre and post laspo date sentences. (Old and new style)
         val hasScheduleFifteen = sentence.orderedSentences.any() { it.offence.isScheduleFifteen }
@@ -193,16 +204,16 @@ class SentenceIdentificationService {
         releaseDateTypes += TUSED
       }
 
-      if (doesHdcedDateApply(sentence, offender)) {
+      if (doesHdcedDateApply(sentence, offender, sentence.isMadeUpOfOnlyDtos())) {
         releaseDateTypes += HDCED
       }
     }
     return releaseDateTypes
   }
 
-  private fun doesHdcedDateApply(sentence: CalculableSentence, offender: Offender): Boolean {
+  private fun doesHdcedDateApply(sentence: CalculableSentence, offender: Offender, isMadeUpOfOnlyDtos: Boolean): Boolean {
     return sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.WEEKS) &&
-      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS) && !offender.isActiveSexOffender
+      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS) && !offender.isActiveSexOffender && !isMadeUpOfOnlyDtos
   }
 
   private fun identifySopcSentence(sentence: SopcSentence): List<ReleaseDateType> {
@@ -280,7 +291,7 @@ class SentenceIdentificationService {
       releaseDateTypes += TUSED
     }
 
-    if (doesHdcedDateApply(sentence, offender)) {
+    if (doesHdcedDateApply(sentence, offender, false)) {
       releaseDateTypes += HDCED
     }
     return releaseDateTypes

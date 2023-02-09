@@ -47,6 +47,9 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
         is SopcSentence -> {
           it.combinedDuration()
         }
+        is DetentionAndTrainingOrderSentence -> {
+          it.duration
+        }
         else -> {
           throw UnsupportedOperationException("Unknown type of sentence in a consecutive sentence ${it.javaClass}")
         }
@@ -154,5 +157,9 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
   }
   override fun calculateErsedFromTwoThirds(): Boolean {
     return orderedSentences.any { it.identificationTrack.calculateErsedFromTwoThirds() }
+  }
+
+  fun isMadeUpOfOnlyDtos(): Boolean {
+    return orderedSentences.all { it is DetentionAndTrainingOrderSentence }
   }
 }
