@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.lang.UnsupportedOperationException
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : CalculableSentence {
   override val sentencedAt: LocalDate = orderedSentences.minOf(CalculableSentence::sentencedAt)
@@ -58,8 +59,16 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
   }
   override fun getLengthInDays(): Int {
     val duration = getCombinedDuration()
+    if (isMadeUpOfOnlyDtos() && isMoreThanTwoYears(duration)) {
+      val map: MutableMap<ChronoUnit, Long> = mutableMapOf()
+      map[ChronoUnit.MONTHS] = 24
+      return Duration(map.toMap()).getLengthInDays(sentencedAt)
+    }
     return duration.getLengthInDays(sentencedAt)
   }
+
+  private fun isMoreThanTwoYears(duration: Duration) =
+    duration.getLengthInDays(sentencedAt) > ChronoUnit.DAYS.between(this.sentencedAt, this.sentencedAt.plus(24, ChronoUnit.MONTHS))
 
   override fun hasAnyEdsOrSopcSentence(): Boolean {
     return hasExtendedSentence() || hasSopcSentence()
