@@ -3,12 +3,14 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.DTO_BEFORE_PCSC
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DtoSingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import java.util.UUID
 
 @Service
@@ -33,11 +35,15 @@ class BookingCalculationService(
 
   fun createSingleTermSentences(booking: Booking): Booking {
     if (booking.sentences.size > 1 &&
-      booking.sentences.all { it.identificationTrack == SDS_BEFORE_CJA_LASPO && it.consecutiveSentenceUUIDs.isEmpty() } &&
+      booking.sentences.all { (it.identificationTrack == SDS_BEFORE_CJA_LASPO || it.identificationTrack == DTO_BEFORE_PCSC) && it.consecutiveSentenceUUIDs.isEmpty() } &&
       booking.sentences.minOf { it.sentencedAt } != booking.sentences.maxOf { it.sentencedAt } &&
       booking.sentences.all { !it.isRecall() }
     ) {
-      booking.singleTermSentence = SingleTermSentence(booking.sentences.map { it as StandardDeterminateSentence })
+      if (booking.sentences.any { it is DetentionAndTrainingOrderSentence }) {
+        booking.singleTermSentence = DtoSingleTermSentence(booking.sentences)
+      } else {
+        booking.singleTermSentence = SingleTermSentence(booking.sentences)
+      }
       sentenceIdentificationService.identify(booking.singleTermSentence!!, booking.offender)
       sentenceCalculationService.calculate(booking.singleTermSentence!!, booking)
       log.info(booking.singleTermSentence!!.buildString())

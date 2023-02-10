@@ -8,12 +8,12 @@ import java.time.temporal.ChronoUnit
 class SingleTermSentence(
   override val sentencedAt: LocalDate,
   override val offence: Offence,
-  val standardSentences: List<StandardDeterminateSentence>
-) : CalculableSentence {
-  constructor(standardSentences: List<StandardDeterminateSentence>) :
+  override val standardSentences: List<AbstractSentence>
+) : SingleTermed {
+  constructor(standardSentences: List<AbstractSentence>) :
     this(
-      standardSentences.minOf(StandardDeterminateSentence::sentencedAt),
-      standardSentences.map(StandardDeterminateSentence::offence).minByOrNull(Offence::committedAt)!!,
+      standardSentences.minOf(AbstractSentence::sentencedAt),
+      standardSentences.map(AbstractSentence::offence).minByOrNull(Offence::committedAt)!!,
       standardSentences
     )
 
@@ -60,7 +60,7 @@ class SingleTermSentence(
     return false
   }
 
-  private fun earliestSentencedAt(firstStandardSentence: StandardDeterminateSentence, secondStandardSentence: StandardDeterminateSentence): LocalDate {
+  private fun earliestSentencedAt(firstStandardSentence: AbstractSentence, secondStandardSentence: AbstractSentence): LocalDate {
     return if (firstStandardSentence.sentencedAt.isBefore(secondStandardSentence.sentencedAt)) {
       firstStandardSentence.sentencedAt
     } else {
@@ -68,7 +68,7 @@ class SingleTermSentence(
     }
   }
 
-  private fun latestExpiryDate(firstStandardSentence: StandardDeterminateSentence, secondStandardSentence: StandardDeterminateSentence): LocalDate? {
+  private fun latestExpiryDate(firstStandardSentence: AbstractSentence, secondStandardSentence: AbstractSentence): LocalDate? {
     return if (
       firstStandardSentence.sentenceCalculation.expiryDate.isAfter(secondStandardSentence.sentenceCalculation.expiryDate)
     ) {
