@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.AFINE_ARD_AT_FULL_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.AFINE_ARD_AT_HALFWAY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.DTO_AFTER_PCSC
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.DTO_BEFORE_PCSC
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
@@ -30,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DtoSingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
@@ -70,7 +72,8 @@ class SentenceIdentificationService {
       is AFineSentence -> {
         releaseDateTypes.addAll(identifyAFineSentence(sentence))
       }
-      is DetentionAndTrainingOrderSentence -> {
+
+      is DetentionAndTrainingOrderSentence, is DtoSingleTermSentence -> {
         releaseDateTypes.addAll(identifyDtoSentence(sentence))
       }
     }
@@ -82,8 +85,12 @@ class SentenceIdentificationService {
     sentence.releaseDateTypes = ReleaseDateTypes(releaseDateTypes.toList(), sentence, offender)
   }
 
-  private fun identifyDtoSentence(sentence: DetentionAndTrainingOrderSentence): List<ReleaseDateType> {
-    sentence.identificationTrack = DTO_AFTER_PCSC
+  private fun identifyDtoSentence(sentence: CalculableSentence): List<ReleaseDateType> {
+    if (sentence.sentencedAt.isBefore(PCSC_COMMENCEMENT_DATE)) {
+      sentence.identificationTrack = DTO_BEFORE_PCSC
+    } else {
+      sentence.identificationTrack = DTO_AFTER_PCSC
+    }
     return listOf(
       SLED,
       MTD,
@@ -132,6 +139,16 @@ class SentenceIdentificationService {
           listOf(
             SLED,
             CRD
+          )
+        )
+      } else if (sentence.isMadeUpOfOnlyDtos()) {
+        releaseDateTypes.addAll(
+          listOf(
+            SLED,
+            MTD,
+            ETD,
+            LTD,
+            TUSED
           )
         )
       } else if (sentence.isMadeUpOfBeforeAndAfterCjaLaspoSentences()) {
@@ -187,16 +204,16 @@ class SentenceIdentificationService {
         releaseDateTypes += TUSED
       }
 
-      if (doesHdcedDateApply(sentence, offender)) {
+      if (doesHdcedDateApply(sentence, offender, sentence.isMadeUpOfOnlyDtos())) {
         releaseDateTypes += HDCED
       }
     }
     return releaseDateTypes
   }
 
-  private fun doesHdcedDateApply(sentence: CalculableSentence, offender: Offender): Boolean {
+  private fun doesHdcedDateApply(sentence: CalculableSentence, offender: Offender, isMadeUpOfOnlyDtos: Boolean): Boolean {
     return sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.WEEKS) &&
-      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS) && !offender.isActiveSexOffender
+      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS) && !offender.isActiveSexOffender && !isMadeUpOfOnlyDtos
   }
 
   private fun identifySopcSentence(sentence: SopcSentence): List<ReleaseDateType> {
@@ -274,7 +291,7 @@ class SentenceIdentificationService {
       releaseDateTypes += TUSED
     }
 
-    if (doesHdcedDateApply(sentence, offender)) {
+    if (doesHdcedDateApply(sentence, offender, false)) {
       releaseDateTypes += HDCED
     }
     return releaseDateTypes

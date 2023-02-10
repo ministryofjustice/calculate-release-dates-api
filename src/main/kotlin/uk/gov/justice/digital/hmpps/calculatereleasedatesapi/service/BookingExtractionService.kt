@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LTD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.MTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
@@ -26,6 +27,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -190,7 +192,16 @@ class BookingExtractionService(
     if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
       dates[PRRD] = latestReleaseDate
     }
-    if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
+    if (booking.sentences.all { it is DetentionAndTrainingOrderSentence }) {
+      dates[MTD] = latestReleaseDate
+      if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(ETD)) {
+        calculateEtd(mostRecentSentenceByExpiryDate, dates)
+      }
+
+      if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(LTD)) {
+        calculateLtd(mostRecentSentenceByExpiryDate, dates)
+      }
+    } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
       val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }
       if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
         dates[CRD] = latestReleaseDate
@@ -276,6 +287,22 @@ class BookingExtractionService(
 
     dates[ESED] = latestUnadjustedExpiryDate
     return CalculationResult(dates.toMap(), breakdownByReleaseDateType.toMap(), otherDates.toMap(), effectiveSentenceLength)
+  }
+
+  private fun calculateLtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
+    if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
+      dates[LTD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.plusMonths(1)
+    } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
+      dates[LTD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.plusMonths(2)
+    }
+  }
+
+  private fun calculateEtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
+    if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
+      dates[ETD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.minusMonths(1)
+    } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
+      dates[ETD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.minusMonths(2)
+    }
   }
 
   private fun extractManyHomeDetentionCurfewEligibilityDate(

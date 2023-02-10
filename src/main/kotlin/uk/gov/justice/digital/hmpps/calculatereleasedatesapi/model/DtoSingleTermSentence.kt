@@ -5,7 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-class SingleTermSentence(
+class DtoSingleTermSentence(
   override val sentencedAt: LocalDate,
   override val offence: Offence,
   override val standardSentences: List<AbstractSentence>
@@ -31,7 +31,7 @@ class SingleTermSentence(
   override lateinit var releaseDateTypes: ReleaseDateTypes
 
   override fun buildString(): String {
-    return "SingleTermSentence\t:\t\n" +
+    return "DtoSingleTermSentence\t:\t\n" +
       "Number of sentences\t:\t${standardSentences.size}\n" +
       "Sentence Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
@@ -49,7 +49,15 @@ class SingleTermSentence(
       earliestSentencedAt(firstSentence, secondSentence),
       latestExpiryDate(firstSentence, secondSentence)?.plusDays(1L)
     )
-    return Duration(durationElements)
+    val duration = Duration(durationElements)
+    if (duration.getEndDate(firstSentence.sentencedAt).isAfter(earliestSentencedAt(firstSentence, secondSentence).plusYears(2))) {
+      durationElements[ChronoUnit.DAYS] = ChronoUnit.DAYS.between(
+        earliestSentencedAt(firstSentence, secondSentence),
+        earliestSentencedAt(firstSentence, secondSentence).plusYears(2)
+      )
+      return Duration(durationElements)
+    }
+    return duration
   }
 
   override fun getLengthInDays(): Int {
