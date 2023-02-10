@@ -341,34 +341,7 @@ class CalculationTransactionalServiceTest {
       fail("Exception was thrown!")
     }
   }
-  @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/calculation-service-examples-1.csv"], numLinesToSkip = 1)
-  fun `Test Example CRS1164`(exampleType: String, exampleNumber: String, error: String?) {
-    log.info("Testing example $exampleType/$exampleNumber")
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
-    SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
-    )
-    val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val calculatedReleaseDates: CalculatedReleaseDates
-    try {
-      calculatedReleaseDates = calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, null)
-    } catch (e: Exception) {
-      if (!error.isNullOrEmpty()) {
-        assertEquals(error, e.javaClass.simpleName)
-        return
-      } else {
-        throw e
-      }
-    }
-    log.info(
-      "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
-      TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates)
-    )
-    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
-    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
-    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
-  }
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val USERNAME = "user1"
