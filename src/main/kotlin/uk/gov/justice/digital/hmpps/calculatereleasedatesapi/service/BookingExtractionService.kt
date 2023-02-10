@@ -195,19 +195,11 @@ class BookingExtractionService(
     if (booking.sentences.all { it is DetentionAndTrainingOrderSentence }) {
       dates[MTD] = latestReleaseDate
       if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(ETD)) {
-        if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
-          dates[ETD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.minusMonths(1)
-        } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
-          dates[ETD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.minusMonths(2)
-        }
+        calculateEtd(mostRecentSentenceByExpiryDate, dates)
       }
 
       if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(LTD)) {
-        if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
-          dates[LTD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.plusMonths(1)
-        } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
-          dates[LTD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.plusMonths(2)
-        }
+        calculateLtd(mostRecentSentenceByExpiryDate, dates)
       }
     } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
       val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }
@@ -295,6 +287,22 @@ class BookingExtractionService(
 
     dates[ESED] = latestUnadjustedExpiryDate
     return CalculationResult(dates.toMap(), breakdownByReleaseDateType.toMap(), otherDates.toMap(), effectiveSentenceLength)
+  }
+
+  private fun calculateLtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
+    if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
+      dates[LTD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.plusMonths(1)
+    } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
+      dates[LTD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.plusMonths(2)
+    }
+  }
+
+  private fun calculateEtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
+    if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
+      dates[ETD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.minusMonths(1)
+    } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
+      dates[ETD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.minusMonths(2)
+    }
   }
 
   private fun extractManyHomeDetentionCurfewEligibilityDate(
