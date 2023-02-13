@@ -38,9 +38,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_UAL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL
@@ -131,7 +128,6 @@ class ValidationService(
     val messages = mutableListOf<ValidationMessage>()
     booking.sentenceGroups.forEach { messages += validateSentenceHasNotBeenExtinguished(it) }
     messages += validateRemandOverlappingSentences(booking)
-    messages += validateAdditionAdjustmentsInsideLatestReleaseDate(booking)
     messages += validateFixedTermRecallAfterCalc(booking)
     return messages
   }
@@ -298,8 +294,10 @@ class ValidationService(
   }
 
   private fun validateBookingAdjustment(bookingAdjustments: List<BookingAdjustment>): List<ValidationMessage> =
-    bookingAdjustments.filter { BOOKING_ADJUSTMENTS_TO_VALIDATE.contains(it.type) && it.fromDate.isAfter(LocalDate.now()) }
-      .map { it.type }.distinct().map { ValidationMessage(ADJUSTMENT_FUTURE_DATED_MAP[it]!!) }
+    bookingAdjustments.filter {
+      val dateToValidate = if (it.type == UNLAWFULLY_AT_LARGE && it.toDate != null) it.toDate else it.fromDate
+      BOOKING_ADJUSTMENTS_TO_VALIDATE.contains(it.type) && dateToValidate.isAfter(LocalDate.now())
+    }.map { it.type }.distinct().map { ValidationMessage(ADJUSTMENT_FUTURE_DATED_MAP[it]!!) }
 
   private fun validateSentenceAdjustment(sentenceAdjustment: SentenceAdjustment): ValidationMessage? {
     if (sentenceAdjustment.type == SentenceAdjustmentType.REMAND && (sentenceAdjustment.fromDate == null || sentenceAdjustment.toDate == null)) {
@@ -566,29 +564,6 @@ class ValidationService(
       return ValidationMessage(OFFENCE_DATE_AFTER_SENTENCE_START_DATE, getCaseSeqAndLineSeq(sentencesAndOffence))
     }
     return null
-  }
-
-  private fun validateAdditionAdjustmentsInsideLatestReleaseDate(booking: Booking): List<ValidationMessage> {
-    val sentences = booking.getAllExtractableSentences()
-    val latestReleaseDatePreAddedDays = sentences.maxOf { it.sentenceCalculation.releaseDateWithoutAdditions }
-
-    val adas = booking.adjustments.getOrEmptyList(AdjustmentType.ADDITIONAL_DAYS_AWARDED).toSet()
-    val radas = booking.adjustments.getOrEmptyList(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED).toSet()
-    val uals = booking.adjustments.getOrEmptyList(AdjustmentType.UNLAWFULLY_AT_LARGE).toSet()
-    val adjustments = adas + radas + uals
-
-    val adjustmentsAfterRelease =
-      adjustments.filter { it.appliesToSentencesFrom.isAfter(latestReleaseDatePreAddedDays) }.toSet()
-    if (adjustmentsAfterRelease.isNotEmpty()) {
-      val anyAda = adjustmentsAfterRelease.intersect(adas).isNotEmpty()
-      val anyRada = adjustmentsAfterRelease.intersect(radas).isNotEmpty()
-      val anyUal = adjustmentsAfterRelease.intersect(uals).isNotEmpty()
-
-      if (anyAda) return listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA))
-      if (anyRada) return listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_RADA))
-      if (anyUal) return listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_UAL))
-    }
-    return emptyList()
   }
 
   private fun validateRemandOverlappingSentences(booking: Booking): List<ValidationMessage> {

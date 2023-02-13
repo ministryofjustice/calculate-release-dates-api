@@ -1,0 +1,236 @@
+[
+  {
+    "bookingId": 1,
+    "sentenceSequence": 1,
+    "lineSequence": 1,
+    "caseSequence": 1,
+    "caseReference": "1",
+    "courtDescription": "ABC",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "LR_ORA",
+    "sentenceTypeDescription": "ORA Licence Recall",
+    "sentenceDate": "2022-08-05",
+    "terms": [
+      {
+        "years": 0,
+        "months": 0,
+        "weeks": 12,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2021-12-25",
+        "offenceCode": "1",
+        "offenceDescription": "AVC",
+        "indicators": [
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 2,
+    "consecutiveToSequence": 1,
+    "lineSequence": 2,
+    "caseSequence": 1,
+    "caseReference": "1",
+    "courtDescription": "1",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "LR_ORA",
+    "sentenceTypeDescription": "ORA Licence Recall",
+    "sentenceDate": "2022-08-05",
+    "terms": [
+      {
+        "years": 0,
+        "months": 0,
+        "weeks": 6,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2022-08-04",
+        "offenceCode": "1",
+        "offenceDescription": "1",
+        "indicators": [
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 3,
+    "consecutiveToSequence": 2,
+    "lineSequence": 3,
+    "caseSequence": 1,
+    "caseReference": "1",
+    "courtDescription": "1",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "LR_ORA",
+    "sentenceTypeDescription": "ORA Licence Recall",
+    "sentenceDate": "2022-08-05",
+    "terms": [
+      {
+        "years": 0,
+        "months": 0,
+        "weeks": 6,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2022-01-10",
+        "offenceCode": "1",
+        "offenceDescription": "1",
+        "indicators": [
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 4,
+    "lineSequence": 4,
+    "caseSequence": 1,
+    "caseReference": "1",
+    "courtDescription": "1",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "LR_ORA",
+    "sentenceTypeDescription": "ORA Licence Recall",
+    "sentenceDate": "2022-08-05",
+    "terms": [
+      {
+        "years": 0,
+        "months": 0,
+        "weeks": 12,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2021-12-25",
+        "offenceCode": "1",
+        "offenceDescription": "1",
+        "indicators": [
+          "62"
+        ]
+      },
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2021-11-10",
+        "offenceCode": "1",
+        "offenceDescription": "1",
+        "indicators": [
+          "D",
+          "50"
+        ]
+      },
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2021-12-18",
+        "offenceCode": "1",
+        "offenceDescription": "1",
+        "indicators": [
+          "D",
+          "50"
+        ]
+      },
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2021-12-24",
+        "offenceCode": "1",
+        "offenceDescription": "1",
+        "indicators": [
+          "99",
+          "90"
+        ]
+      },
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2021-12-09",
+        "offenceCode": "1",
+        "offenceDescription": "1",
+        "indicators": [
+          "D",
+          "50"
+        ]
+      },
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2021-12-13",
+        "offenceCode": "1",
+        "offenceDescription": "1",
+        "indicators": [
+          "D",
+          "50"
+        ]
+      },
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2021-12-14",
+        "offenceCode": "1",
+        "offenceDescription": "1",
+        "indicators": [
+          "D",
+          "50"
+        ]
+      },
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2022-02-02",
+        "offenceCode": "1",
+        "offenceDescription": "1",
+        "indicators": [
+          "95"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 5,
+    "lineSequence": 5,
+    "caseSequence": 1,
+    "caseReference": "1",
+    "courtDescription": "1",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "LR_ORA",
+    "sentenceTypeDescription": "ORA Licence Recall",
+    "sentenceDate": "2022-08-05",
+    "terms": [
+      {
+        "years": 0,
+        "months": 0,
+        "weeks": 6,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2022-01-12",
+        "offenceCode": "1",
+        "offenceDescription": "1",
+        "indicators": [
+          "D",
+          "50"
+        ]
+      }
+    ]
+  }
+]
