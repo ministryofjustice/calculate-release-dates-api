@@ -1182,7 +1182,7 @@ class ValidationServiceTest {
             BookingAdjustment(
               active = true,
               fromDate = LocalDate.now().minusDays(10),
-              toDate =  LocalDate.now().plusDays(10),
+              toDate = LocalDate.now().plusDays(10),
               numberOfDays = 20,
               type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE
             )
@@ -1202,7 +1202,6 @@ class ValidationServiceTest {
         assertThat(result).isEqualTo(
           listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_UAL))
         )
-
       }
       @Test
       fun `Test UAL with only from date`() {
@@ -1211,7 +1210,7 @@ class ValidationServiceTest {
             BookingAdjustment(
               active = true,
               fromDate = LocalDate.now().plusDays(10),
-              toDate =  null,
+              toDate = null,
               numberOfDays = 20,
               type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE
             )
@@ -1239,7 +1238,7 @@ class ValidationServiceTest {
             BookingAdjustment(
               active = true,
               fromDate = LocalDate.now().plusDays(10),
-              toDate =  null,
+              toDate = null,
               numberOfDays = 20,
               type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
             )
@@ -1267,7 +1266,7 @@ class ValidationServiceTest {
             BookingAdjustment(
               active = true,
               fromDate = LocalDate.now().plusDays(10),
-              toDate =  null,
+              toDate = null,
               numberOfDays = 20,
               type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
             )
@@ -1287,7 +1286,6 @@ class ValidationServiceTest {
         assertThat(result).isEqualTo(
           listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_RADA))
         )
-
       }
     }
   }
