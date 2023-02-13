@@ -1171,6 +1171,125 @@ class ValidationServiceTest {
         assertThat(result).containsExactly(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This is a sentence type")))
       }
     }
+
+    @Nested
+    @DisplayName("Future dated validation")
+    inner class FutureDatedAdjustmentValidation {
+      @Test
+      fun `Test UAL with from and to date`() {
+        val adjustment = BookingAndSentenceAdjustments(
+          listOf(
+            BookingAdjustment(
+              active = true,
+              fromDate = LocalDate.now().minusDays(10),
+              toDate =  LocalDate.now().plusDays(10),
+              numberOfDays = 20,
+              type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE
+            )
+          ),
+          emptyList()
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(validSdsSentence),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = adjustment,
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+
+        assertThat(result).isEqualTo(
+          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_UAL))
+        )
+
+      }
+      @Test
+      fun `Test UAL with only from date`() {
+        val adjustment = BookingAndSentenceAdjustments(
+          listOf(
+            BookingAdjustment(
+              active = true,
+              fromDate = LocalDate.now().plusDays(10),
+              toDate =  null,
+              numberOfDays = 20,
+              type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE
+            )
+          ),
+          emptyList()
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(validSdsSentence),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = adjustment,
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+
+        assertThat(result).isEqualTo(
+          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_UAL))
+        )
+      }
+      @Test
+      fun `Test ADA`() {
+        val adjustment = BookingAndSentenceAdjustments(
+          listOf(
+            BookingAdjustment(
+              active = true,
+              fromDate = LocalDate.now().plusDays(10),
+              toDate =  null,
+              numberOfDays = 20,
+              type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
+            )
+          ),
+          emptyList()
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(validSdsSentence),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = adjustment,
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+
+        assertThat(result).isEqualTo(
+          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_ADA))
+        )
+      }
+      @Test
+      fun `Test RADA`() {
+        val adjustment = BookingAndSentenceAdjustments(
+          listOf(
+            BookingAdjustment(
+              active = true,
+              fromDate = LocalDate.now().plusDays(10),
+              toDate =  null,
+              numberOfDays = 20,
+              type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
+            )
+          ),
+          emptyList()
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(validSdsSentence),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = adjustment,
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+
+        assertThat(result).isEqualTo(
+          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_RADA))
+        )
+
+      }
+    }
   }
 
   fun createConsecutiveSentences(booking: Booking): Booking {
