@@ -192,7 +192,7 @@ class BookingExtractionService(
     if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
       dates[PRRD] = latestReleaseDate
     }
-    if (booking.sentences.all { it is DetentionAndTrainingOrderSentence }) {
+    if (booking.sentences.any { it is DetentionAndTrainingOrderSentence }) {
       dates[MTD] = latestReleaseDate
       if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(ETD)) {
         calculateEtd(mostRecentSentenceByExpiryDate, dates)
@@ -200,6 +200,10 @@ class BookingExtractionService(
 
       if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(LTD)) {
         calculateLtd(mostRecentSentenceByExpiryDate, dates)
+      }
+      if (sentences.size > 1 && !sentences.any { it is ConsecutiveSentence } && !sentences.all { it is DetentionAndTrainingOrderSentence }) {
+        val firstNonDtoSentence = sentences.first { it !is DetentionAndTrainingOrderSentence }
+        dates[ARD] = firstNonDtoSentence.sentenceCalculation.releaseDate
       }
     } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
       val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }
@@ -313,7 +317,7 @@ class BookingExtractionService(
     val mostRecentReleaseIsPrrd = mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.getReleaseDateTypes().contains(PRRD) }
     // For now we can't calculate HDCED if there is a consecutive sentence with EDS or SOPC sentences
     if (!mostRecentReleaseIsPrrd && sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
-      val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() }, SentenceCalculation::releaseDate)
+      val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() && it !is DetentionAndTrainingOrderSentence }, SentenceCalculation::releaseDate)
       if (latestNonRecallRelease?.sentenceCalculation?.homeDetentionCurfewEligibilityDate != null) {
         val earliestSentenceDate = sentences.filter { !it.isRecall() }.minOf { it.sentencedAt }
         val latestUnadjustedExpiryDate =

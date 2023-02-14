@@ -84,6 +84,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SOPC_LICENCE_TERM_NOT_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SENTENCE_TYPE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ZERO_IMPRISONMENT_TERM
 import java.time.LocalDate
@@ -518,19 +519,30 @@ class ValidationService(
 
   private fun validateDtoIsNotRecall(prisonApiSourceData: PrisonApiSourceData): List<ValidationMessage> {
     val validationMessages = mutableListOf<ValidationMessage>()
+    var bookingHasDto = false
+    var bookingHasRecall = false
     prisonApiSourceData.sentenceAndOffences.forEach() {
 
       val sentenceCalculationType = SentenceCalculationType.from(it.sentenceCalculationType)
-      val hasRecall = it.terms.any { terms ->
+      val hasDtoRecall = it.terms.any { terms ->
         terms.code == SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE || terms.code == SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE
       }
       val hasDto = sentenceCalculationType == DTO || sentenceCalculationType == DTO_ORA
-      if (featureToggles.dto && hasDto && hasRecall) {
+      if (hasDto) {
+        bookingHasDto = true
+      }
+      if (sentenceCalculationType.recallType != null) {
+        bookingHasRecall = true
+      }
+      if (featureToggles.dto && hasDto && hasDtoRecall) {
         validationMessages.add(ValidationMessage(ValidationCode.DTO_RECALL))
       }
       if (!featureToggles.dto && hasDto) {
         validationMessages.add(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf(it.sentenceCategory, it.sentenceTypeDescription)))
       }
+    }
+    if (bookingHasDto && bookingHasRecall) {
+      validationMessages.add(ValidationMessage(UNSUPPORTED_CALCULATION_DTO_WITH_RECALL))
     }
     return validationMessages.toList()
   }
