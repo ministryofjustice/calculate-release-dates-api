@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL
@@ -103,6 +104,20 @@ class ValidationIntTest : IntegrationTestBase() {
   @Test
   fun `Run validation on on prisoner with fine payment`() {
     runValidationAndCheckMessages("PAYMENTS", listOf(ValidationMessage(A_FINE_SENTENCE_WITH_PAYMENTS)))
+  }
+
+  @Test
+  fun `Run validation on adjustment after release date 1`() {
+    runValidationAndCheckMessages("CRS-796-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
+  }
+
+  @Test
+  fun `Run validation on adjustment after release date 2`() {
+    runValidationAndCheckMessages("CRS-796-2", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
+  }
+  @Test
+  fun `Run validation on adjustment after release with a term`() {
+    runValidationAndCheckMessages("CRS-1191-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
   }
 
   private fun runValidationAndCheckMessages(prisonerId: String, messages: List<ValidationMessage>) {
