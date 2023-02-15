@@ -1,0 +1,69 @@
+[
+  {
+    "bookingId": 1204968,
+    "sentenceSequence": 1,
+    "lineSequence": 1,
+    "caseSequence": 1,
+    "courtDescription": "Wolverhampton Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
+    "sentenceDate": "2022-01-19",
+    "terms": [
+      {
+        "years": 0,
+        "months": 0,
+        "weeks": 0,
+        "days": 60,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3933790,
+        "offenceStartDate": "2021-12-18",
+        "offenceCode": "TH68013",
+        "offenceDescription": "Theft of motor vehicle",
+        "indicators": [
+          "D",
+          "50",
+          "51"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1204968,
+    "sentenceSequence": 2,
+    "lineSequence": 2,
+    "caseSequence": 1,
+    "courtDescription": "Wolverhampton Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "A/FINE",
+    "sentenceTypeDescription": "Imprisonment in Default of Fine",
+    "sentenceDate": "2022-01-19",
+    "terms": [
+      {
+        "years": 0,
+        "months": 0,
+        "weeks": 0,
+        "days": 80,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3933791,
+        "offenceStartDate": "2021-12-19",
+        "offenceCode": "RT88333",
+        "offenceDescription": "Drive whilst disqualified",
+        "indicators": [
+          "101"
+        ]
+      }
+    ],
+    "fineAmount": 50
+  }
+]
