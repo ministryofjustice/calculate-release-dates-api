@@ -9,7 +9,7 @@ class DtoSingleTermSentence(
   override val sentencedAt: LocalDate,
   override val offence: Offence,
   override val standardSentences: List<AbstractSentence>
-) : SingleTermed {
+) : SingleTermed, Term {
   constructor(standardSentences: List<AbstractSentence>) :
     this(
       standardSentences.minOf(AbstractSentence::sentencedAt),
