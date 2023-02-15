@@ -632,7 +632,8 @@ class ValidationService(
 
   private fun validateAdditionAdjustmentsInsideLatestReleaseDate(booking: Booking): List<ValidationMessage> {
     val sentences = booking.getAllExtractableSentences()
-    val latestReleaseDatePreAddedDays = sentences.filter { it !is Term }.maxOf { it.sentenceCalculation.releaseDateWithoutAdditions }
+    val latestReleaseDatePreAddedDays = sentences.filter { it !is Term }.maxOfOrNull { it.sentenceCalculation.releaseDateWithoutAdditions }
+      ?: return emptyList()
 
     val adas = booking.adjustments.getOrEmptyList(AdjustmentType.ADDITIONAL_DAYS_AWARDED).toSet()
     val radas = booking.adjustments.getOrEmptyList(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED).toSet()
