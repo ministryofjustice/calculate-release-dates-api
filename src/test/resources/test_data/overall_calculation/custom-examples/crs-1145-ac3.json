@@ -36,13 +36,13 @@
   "adjustments": {
     "REMAND": [
       {
-        "appliesToSentencesFrom": "2020-01-20",
+        "appliesToSentencesFrom": "2021-10-14",
         "numberOfDays": 373,
         "fromDate": "2020-01-22",
         "toDate": "2021-01-28"
       },
       {
-        "appliesToSentencesFrom": "2020-01-20",
+        "appliesToSentencesFrom": "2021-10-14",
         "numberOfDays": 38,
         "fromDate": "2021-03-30",
         "toDate": "2021-05-06"

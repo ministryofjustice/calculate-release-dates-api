@@ -12,8 +12,7 @@ data class DetentionAndTrainingOrderSentence(
   override val caseSequence: Int? = null,
   override val lineSequence: Int? = null,
   override val caseReference: String? = null,
-  override val recallType: RecallType? = null,
-  val isDto: Boolean = false
+  override val recallType: RecallType? = null
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType) {
 
   override fun getLengthInDays(): Int {

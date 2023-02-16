@@ -194,16 +194,16 @@ class BookingExtractionService(
     }
     if (booking.sentences.any { it is DetentionAndTrainingOrderSentence }) {
       dates[MTD] = latestReleaseDate
-      if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(ETD)) {
-        calculateEtd(mostRecentSentenceByExpiryDate, dates)
-      }
-
-      if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(LTD)) {
-        calculateLtd(mostRecentSentenceByExpiryDate, dates)
-      }
+      calculateWhenAllDtos(mostRecentSentenceByExpiryDate, dates)
       if (sentences.size > 1 && !sentences.any { it is ConsecutiveSentence } && !sentences.all { it is DetentionAndTrainingOrderSentence }) {
         val firstNonDtoSentence = sentences.first { it !is DetentionAndTrainingOrderSentence }
-        dates[ARD] = firstNonDtoSentence.sentenceCalculation.releaseDate
+        val firstDtoSentence = sentences.first { it is DetentionAndTrainingOrderSentence }
+        val type = if (firstNonDtoSentence.releaseDateTypes.contains(CRD)) CRD else ARD
+        dates[type] = firstNonDtoSentence.sentenceCalculation.releaseDate
+        dates[MTD] = if (type == CRD) firstDtoSentence.sentenceCalculation.unadjustedDeterminateReleaseDate else latestReleaseDate
+        val releaseDateToUse = if (type == ARD) latestReleaseDate else firstDtoSentence.sentenceCalculation.unadjustedDeterminateReleaseDate
+        calculateLtd(firstDtoSentence, dates, releaseDateToUse)
+        calculateEtd(firstDtoSentence, dates, releaseDateToUse)
       }
     } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
       val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }
@@ -293,19 +293,29 @@ class BookingExtractionService(
     return CalculationResult(dates.toMap(), breakdownByReleaseDateType.toMap(), otherDates.toMap(), effectiveSentenceLength)
   }
 
-  private fun calculateLtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
-    if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
-      dates[LTD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.plusMonths(1)
-    } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
-      dates[LTD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.plusMonths(2)
+  private fun calculateWhenAllDtos(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
+    if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(ETD)) {
+      calculateEtd(mostRecentSentenceByExpiryDate, dates, mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate)
+    }
+
+    if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(LTD)) {
+      calculateLtd(mostRecentSentenceByExpiryDate, dates, mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate)
     }
   }
 
-  private fun calculateEtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
+  private fun calculateLtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>, releaseDate: LocalDate) {
     if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
-      dates[ETD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.minusMonths(1)
+      dates[LTD] = releaseDate.plusMonths(1)
     } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
-      dates[ETD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.minusMonths(2)
+      dates[LTD] = releaseDate.plusMonths(2)
+    }
+  }
+
+  private fun calculateEtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>, releaseDate: LocalDate) {
+    if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
+      dates[ETD] = releaseDate.minusMonths(1)
+    } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
+      dates[ETD] = releaseDate.minusMonths(2)
     }
   }
 

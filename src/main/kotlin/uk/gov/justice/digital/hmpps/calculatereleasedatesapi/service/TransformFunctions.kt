@@ -155,8 +155,7 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
         caseSequence = sentence.caseSequence,
         lineSequence = sentence.lineSequence,
         caseReference = sentence.caseReference,
-        recallType = sentenceCalculationType.recallType,
-        isDto = sentenceCalculationType == SentenceCalculationType.DTO || sentenceCalculationType == SentenceCalculationType.DTO_ORA
+        recallType = sentenceCalculationType.recallType
       )
     } else {
       val imprisonmentTerm = sentence.terms.first { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
