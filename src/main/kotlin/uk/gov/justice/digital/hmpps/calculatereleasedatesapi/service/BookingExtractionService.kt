@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -200,10 +201,19 @@ class BookingExtractionService(
         val firstDtoSentence = sentences.first { it is DetentionAndTrainingOrderSentence }
         val type = if (firstNonDtoSentence.releaseDateTypes.contains(CRD)) CRD else ARD
         dates[type] = firstNonDtoSentence.sentenceCalculation.releaseDate
-        dates[MTD] = if (type == CRD) firstDtoSentence.sentenceCalculation.unadjustedDeterminateReleaseDate else latestReleaseDate
+        val midTermDate = if (firstDtoSentence.sentenceCalculation.isImmediateRelease() && firstDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_AFTER_PCSC) {
+          firstDtoSentence.sentencedAt
+        } else if (type == CRD) {
+          firstDtoSentence.sentenceCalculation.unadjustedDeterminateReleaseDate
+        } else {
+          latestReleaseDate
+        }
+        dates[MTD] = midTermDate
         val releaseDateToUse = if (type == ARD) latestReleaseDate else firstDtoSentence.sentenceCalculation.unadjustedDeterminateReleaseDate
-        calculateLtd(firstDtoSentence, dates, releaseDateToUse)
-        calculateEtd(firstDtoSentence, dates, releaseDateToUse)
+        if (sentences.any { it.sentenceCalculation.isImmediateRelease() }) {
+          calculateLtd(firstDtoSentence, dates, releaseDateToUse)
+          calculateEtd(firstDtoSentence, dates, releaseDateToUse)
+        }
       }
     } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
       val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }

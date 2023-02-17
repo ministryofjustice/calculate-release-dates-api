@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.DTO_BEFORE_PCSC
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ConsecutiveSentenceAggregator
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -98,7 +99,7 @@ data class SentenceCalculation(
     }
 
   val calculatedTotalDeductedDays: Int get() {
-    if (sentence is AFineSentence && sentence.offence.isCivilOffence()) {
+    if ((sentence is AFineSentence && sentence.offence.isCivilOffence()) || (sentence is DetentionAndTrainingOrderSentence && sentence.identificationTrack == DTO_BEFORE_PCSC)) {
       return 0
     }
     val adjustmentTypes: Array<AdjustmentType> = if (!sentence.isRecall()) {
