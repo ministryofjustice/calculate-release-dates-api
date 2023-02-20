@@ -51,17 +51,21 @@ class DtoSingleTermSentence(
     )
     val duration = Duration(durationElements)
     if (duration.getEndDate(firstSentence.sentencedAt).isAfter(earliestSentencedAt(firstSentence, secondSentence).plusYears(2))) {
-      durationElements[ChronoUnit.DAYS] = ChronoUnit.DAYS.between(
-        earliestSentencedAt(firstSentence, secondSentence),
-        earliestSentencedAt(firstSentence, secondSentence).plusYears(2)
-      )
-      return Duration(durationElements)
+      return capAtTwoYears(durationElements, firstSentence, secondSentence)
     }
     return duration
   }
 
+  private fun capAtTwoYears(durationElements: MutableMap<ChronoUnit, Long>, firstSentence: AbstractSentence, secondSentence: AbstractSentence): Duration {
+    durationElements[ChronoUnit.DAYS] = ChronoUnit.DAYS.between(
+      earliestSentencedAt(firstSentence, secondSentence),
+      earliestSentencedAt(firstSentence, secondSentence).plusYears(2)
+    )
+    return Duration(durationElements)
+  }
+
   override fun getLengthInDays(): Int {
-    return combinedDuration().getLengthInDays(sentencedAt)
+    return combinedDuration().getLengthInDays(earliestSentencedAt(standardSentences.get(0), standardSentences.get(1)))
   }
 
   override fun hasAnyEdsOrSopcSentence(): Boolean {
@@ -82,7 +86,11 @@ class DtoSingleTermSentence(
     ) {
       firstStandardSentence.sentenceCalculation.expiryDate
     } else {
-      secondStandardSentence.sentenceCalculation.expiryDate
+      if (firstStandardSentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC) {
+        secondStandardSentence.sentenceCalculation.unadjustedExpiryDate
+      } else {
+        secondStandardSentence.sentenceCalculation.adjustedExpiryDate
+      }
     }
   }
 
