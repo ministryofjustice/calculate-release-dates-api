@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.DTO_BEFORE_PCSC
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.DTO_AFTER_PCSC
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -35,7 +35,7 @@ class BookingCalculationService(
 
   fun createSingleTermSentences(booking: Booking): Booking {
     if (booking.sentences.size > 1 &&
-      booking.sentences.all { (it.identificationTrack == SDS_BEFORE_CJA_LASPO || it.identificationTrack == DTO_BEFORE_PCSC) && it.consecutiveSentenceUUIDs.isEmpty() } &&
+      booking.sentences.all { (it.identificationTrack == SDS_BEFORE_CJA_LASPO || it is DetentionAndTrainingOrderSentence || it.identificationTrack == DTO_AFTER_PCSC) && it.consecutiveSentenceUUIDs.isEmpty() } &&
       booking.sentences.minOf { it.sentencedAt } != booking.sentences.maxOf { it.sentencedAt } &&
       booking.sentences.all { !it.isRecall() }
     ) {
