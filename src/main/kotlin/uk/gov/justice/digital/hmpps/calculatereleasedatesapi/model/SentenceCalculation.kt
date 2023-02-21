@@ -85,31 +85,29 @@ data class SentenceCalculation(
     return sentence.sentencedAt == adjustedDeterminateReleaseDate
   }
 
-  val calculatedDeterminateTotalDeductedDays: Int
-    get() {
-      if (sentence is AFineSentence && sentence.offence.isCivilOffence()) {
-        return 0
-      }
-      val adjustmentTypes: Array<AdjustmentType> = if (!sentence.isRecall()) {
-        arrayOf(REMAND, TAGGED_BAIL)
-      } else {
-        arrayOf(RECALL_REMAND, RECALL_TAGGED_BAIL)
-      }
-      return getDeterminateAdjustmentBeforeSentence(*adjustmentTypes)
-    }
-
-  val calculatedTotalDeductedDays: Int get() {
-    if ((sentence is AFineSentence && sentence.offence.isCivilOffence()) || ((sentence is DetentionAndTrainingOrderSentence || sentence is DtoSingleTermSentence) && sentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC)) {
-      return 0
-    }
-    val adjustmentTypes: Array<AdjustmentType> = if (!sentence.isRecall()) {
+  private fun getAdjustmentTypes(): Array<AdjustmentType> {
+    return if (sentence is AFineSentence && sentence.offence.isCivilOffence()) {
+      emptyArray()
+    } else if ((
+      (sentence is DetentionAndTrainingOrderSentence || sentence is DtoSingleTermSentence) &&
+        sentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC
+      )
+    ) {
+      arrayOf(TAGGED_BAIL)
+    } else if (!sentence.isRecall()) {
       arrayOf(REMAND, TAGGED_BAIL)
     } else {
       arrayOf(RECALL_REMAND, RECALL_TAGGED_BAIL)
     }
-    return getAdjustmentBeforeSentence(*adjustmentTypes)
   }
 
+  val calculatedDeterminateTotalDeductedDays: Int get() {
+    return getDeterminateAdjustmentBeforeSentence(*getAdjustmentTypes())
+  }
+
+  val calculatedTotalDeductedDays: Int get() {
+    return getAdjustmentBeforeSentence(*getAdjustmentTypes())
+  }
   val calculatedDeterminateTotalAddedDays: Int get() {
     return getDeterminateAdjustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
   }
