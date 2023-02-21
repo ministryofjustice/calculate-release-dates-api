@@ -86,10 +86,18 @@ class SentenceIdentificationService {
   }
 
   private fun identifyDtoSentence(sentence: CalculableSentence): List<ReleaseDateType> {
-    if (sentence.sentencedAt.isBefore(PCSC_COMMENCEMENT_DATE)) {
-      sentence.identificationTrack = DTO_BEFORE_PCSC
+    if (sentence is DtoSingleTermSentence) {
+      if (sentence.standardSentences.all { it.identificationTrack == DTO_BEFORE_PCSC }) {
+        sentence.identificationTrack = DTO_BEFORE_PCSC
+      } else {
+        sentence.identificationTrack = DTO_AFTER_PCSC
+      }
     } else {
-      sentence.identificationTrack = DTO_AFTER_PCSC
+      if (sentence.sentencedAt.isBefore(PCSC_COMMENCEMENT_DATE)) {
+        sentence.identificationTrack = DTO_BEFORE_PCSC
+      } else {
+        sentence.identificationTrack = DTO_AFTER_PCSC
+      }
     }
     return listOf(
       SLED,

@@ -51,21 +51,17 @@ class DtoSingleTermSentence(
     )
     val duration = Duration(durationElements)
     if (duration.getEndDate(firstSentence.sentencedAt).isAfter(earliestSentencedAt(firstSentence, secondSentence).plusYears(2))) {
-      return capAtTwoYears(durationElements, firstSentence, secondSentence)
+      durationElements[ChronoUnit.DAYS] = ChronoUnit.DAYS.between(
+        earliestSentencedAt(firstSentence, secondSentence),
+        earliestSentencedAt(firstSentence, secondSentence).plusYears(2)
+      )
+      return Duration(durationElements)
     }
     return duration
   }
 
-  private fun capAtTwoYears(durationElements: MutableMap<ChronoUnit, Long>, firstSentence: AbstractSentence, secondSentence: AbstractSentence): Duration {
-    durationElements[ChronoUnit.DAYS] = ChronoUnit.DAYS.between(
-      earliestSentencedAt(firstSentence, secondSentence),
-      earliestSentencedAt(firstSentence, secondSentence).plusYears(2)
-    )
-    return Duration(durationElements)
-  }
-
   override fun getLengthInDays(): Int {
-    return combinedDuration().getLengthInDays(earliestSentencedAt(standardSentences.get(0), standardSentences.get(1)))
+    return combinedDuration().getLengthInDays(sentencedAt)
   }
 
   override fun hasAnyEdsOrSopcSentence(): Boolean {
@@ -82,15 +78,11 @@ class DtoSingleTermSentence(
 
   private fun latestExpiryDate(firstStandardSentence: AbstractSentence, secondStandardSentence: AbstractSentence): LocalDate? {
     return if (
-      firstStandardSentence.sentenceCalculation.expiryDate.isAfter(secondStandardSentence.sentenceCalculation.expiryDate)
+      firstStandardSentence.sentenceCalculation.unadjustedExpiryDate.isAfter(secondStandardSentence.sentenceCalculation.unadjustedExpiryDate)
     ) {
-      firstStandardSentence.sentenceCalculation.expiryDate
+      firstStandardSentence.sentenceCalculation.unadjustedExpiryDate
     } else {
-      if (firstStandardSentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC) {
-        secondStandardSentence.sentenceCalculation.unadjustedExpiryDate
-      } else {
-        secondStandardSentence.sentenceCalculation.adjustedExpiryDate
-      }
+      secondStandardSentence.sentenceCalculation.unadjustedExpiryDate
     }
   }
 
