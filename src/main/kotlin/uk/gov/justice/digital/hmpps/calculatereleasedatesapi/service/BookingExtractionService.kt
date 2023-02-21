@@ -64,7 +64,7 @@ class BookingExtractionService(
     val sentenceCalculation = sentence.sentenceCalculation
 
     if (sentence.releaseDateTypes.contains(SLED)) {
-        dates[SLED] = sentenceCalculation.expiryDate
+      dates[SLED] = sentenceCalculation.expiryDate
     } else {
       dates[SED] = sentenceCalculation.expiryDate
     }

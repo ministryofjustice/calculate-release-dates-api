@@ -377,7 +377,7 @@ data class SentenceCalculation(
 
   val expiryDate: LocalDate get() {
     if (sentence is DtoSingleTermSentence) {
-     return adjustedExpiryDate.minusDays(getAdjustmentBeforeSentence(REMAND).toLong())
+      return adjustedExpiryDate.minusDays(getAdjustmentBeforeSentence(REMAND).toLong())
     } else {
       return adjustedExpiryDate
     }
