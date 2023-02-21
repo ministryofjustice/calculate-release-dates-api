@@ -132,9 +132,6 @@ interface CalculableSentence {
       is DetentionAndTrainingOrderSentence -> {
         this.duration
       }
-      is DtoSingleTermSentence -> {
-        this.combinedDuration()
-      }
       else -> {
         throw UnknownError("Unknown sentence")
       }

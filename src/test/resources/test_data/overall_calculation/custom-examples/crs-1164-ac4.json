@@ -7,7 +7,7 @@
     {
       "type": "DetentionAndTrainingOrderSentence",
       "offence": {
-        "committedAt": "2022-06-07"
+        "committedAt": "2022-07-07"
       },
       "duration": {
         "durationElements": {
@@ -35,9 +35,9 @@
     "REMAND": [
       {
         "numberOfDays": 30,
-        "appliesToSentencesFrom": "2022-08-03",
-        "fromDate": "2022-03-17",
-        "toDate": "2022-04-15"
+        "appliesToSentencesFrom": "2022-07-07",
+        "fromDate": "2022-04-17",
+        "toDate": "2022-05-16"
       }
     ]
   }

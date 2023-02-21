@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
@@ -22,7 +21,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -30,7 +28,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DtoSingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -39,7 +36,6 @@ import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.MONTHS
-import kotlin.math.ceil
 
 @Service
 class BookingExtractionService(
@@ -64,21 +60,12 @@ class BookingExtractionService(
     val sentenceCalculation = sentence.sentenceCalculation
 
     if (sentence.releaseDateTypes.contains(SLED)) {
-      if (sentence is DtoSingleTermSentence) {
-        dates[SLED] = sentenceCalculation.expiryDate.minusDays(sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND).toLong())
-      } else {
-        dates[SLED] = sentenceCalculation.expiryDate
-      }
+      dates[SLED] = sentenceCalculation.expiryDate
     } else {
       dates[SED] = sentenceCalculation.expiryDate
     }
 
-    val releaseDate = if (dtoRemandDoesNotApply(sentence)) {
-      sentence.sentencedAt.plusDays(getRemandForDtoSentence(sentence, sentenceCalculation))
-    } else {
-      sentenceCalculation.releaseDate
-    }
-    dates[sentence.getReleaseDateType()] = releaseDate
+    dates[sentence.getReleaseDateType()] = sentenceCalculation.releaseDate
 
     if (sentenceCalculation.licenceExpiryDate != null &&
       sentence.releaseDateTypes.getReleaseDateTypes().contains(LED)
@@ -91,11 +78,7 @@ class BookingExtractionService(
     }
 
     if (sentenceCalculation.topUpSupervisionDate != null) {
-      if (dtoRemandDoesNotApply(sentence)) {
-        dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!.minusDays(sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND).toLong())
-      } else {
-        dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
-      }
+      dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
     }
 
     if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null) {
@@ -129,12 +112,6 @@ class BookingExtractionService(
       getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedExpiryDate)
     )
   }
-
-  private fun getRemandForDtoSentence(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) =
-    ceil(sentence.totalDuration().getLengthInDays(sentence.sentencedAt).div(2.0)).toLong() - sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND).toLong() - 1
-
-  private fun dtoRemandDoesNotApply(sentence: CalculableSentence) =
-    sentence is DtoSingleTermSentence && sentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC
 
   private fun extractMultiple(booking: Booking): CalculationResult {
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
