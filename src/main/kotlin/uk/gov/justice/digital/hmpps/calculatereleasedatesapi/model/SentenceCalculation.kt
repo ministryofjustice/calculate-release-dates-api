@@ -376,7 +376,11 @@ data class SentenceCalculation(
   }
 
   val expiryDate: LocalDate get() {
-    return adjustedExpiryDate
+    if (sentence is DtoSingleTermSentence) {
+     return adjustedExpiryDate.minusDays(getAdjustmentBeforeSentence(REMAND).toLong())
+    } else {
+      return adjustedExpiryDate
+    }
   }
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false

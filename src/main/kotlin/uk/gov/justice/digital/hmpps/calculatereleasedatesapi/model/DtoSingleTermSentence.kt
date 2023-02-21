@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -87,7 +88,7 @@ class DtoSingleTermSentence(
       firstStandardSentence.sentenceCalculation.expiryDate
     } else {
       if (firstStandardSentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC) {
-        secondStandardSentence.sentenceCalculation.unadjustedExpiryDate
+        secondStandardSentence.sentenceCalculation.adjustedExpiryDate.plusDays(secondStandardSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND).toLong())
       } else {
         secondStandardSentence.sentenceCalculation.adjustedExpiryDate
       }
