@@ -78,11 +78,11 @@ class DtoSingleTermSentence(
 
   private fun latestExpiryDate(firstStandardSentence: AbstractSentence, secondStandardSentence: AbstractSentence): LocalDate? {
     return if (
-      firstStandardSentence.sentenceCalculation.expiryDate.isAfter(secondStandardSentence.sentenceCalculation.expiryDate)
+      firstStandardSentence.sentenceCalculation.unadjustedExpiryDate.isAfter(secondStandardSentence.sentenceCalculation.unadjustedExpiryDate)
     ) {
-      firstStandardSentence.sentenceCalculation.expiryDate
+      firstStandardSentence.sentenceCalculation.unadjustedExpiryDate
     } else {
-      secondStandardSentence.sentenceCalculation.expiryDate
+      secondStandardSentence.sentenceCalculation.unadjustedExpiryDate
     }
   }
 
