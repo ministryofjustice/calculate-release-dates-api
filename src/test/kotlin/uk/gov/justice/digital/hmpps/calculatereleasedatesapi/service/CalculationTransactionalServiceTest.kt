@@ -341,7 +341,6 @@ class CalculationTransactionalServiceTest {
       fail("Exception was thrown!")
     }
   }
-
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val USERNAME = "user1"

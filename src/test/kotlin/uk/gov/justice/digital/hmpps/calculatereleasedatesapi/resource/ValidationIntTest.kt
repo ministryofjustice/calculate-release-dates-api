@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_OVERLAPS_WITH_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SEC_91_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SENTENCE_TYPE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ZERO_IMPRISONMENT_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
@@ -37,6 +38,11 @@ class ValidationIntTest : IntegrationTestBase() {
   @Test
   fun `Run validation for DTO`() {
     runValidationAndCheckMessages("CRS-1184", emptyList())
+  }
+
+  @Test
+  fun `Run validation for DTO concurrent to recall`() {
+    runValidationAndCheckMessages("CRS-1145-AC1", listOf(ValidationMessage(code = UNSUPPORTED_CALCULATION_DTO_WITH_RECALL)))
   }
 
   @Test

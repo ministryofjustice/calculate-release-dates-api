@@ -1,0 +1,50 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2004-10-15"
+  },
+  "sentences": [
+    {
+      "type":"ExtendedDeterminateSentence",
+      "sentenceType": "EDSU18",
+      "offence":{
+        "committedAt":"2021-04-28"
+      },
+      "custodialDuration":{
+        "durationElements":{
+          "YEARS": 2,
+          "MONTHS": 6
+        }
+      },
+      "extensionDuration":{
+        "durationElements":{
+          "YEARS": 2
+        }
+      },
+      "sentencedAt":"2021-12-10"
+    },
+    {
+      "offence": {
+        "committedAt": "2020-01-20"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "sentencedAt": "2022-07-26",
+      "sentenceType": "DTO",
+      "type": "DetentionAndTrainingOrderSentence"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2022-07-26",
+        "numberOfDays": 20,
+        "fromDate": "2021-11-20",
+        "toDate": "2021-12-19"
+      }
+    ]
+  }
+}
