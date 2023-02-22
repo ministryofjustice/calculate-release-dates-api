@@ -98,7 +98,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
   }
 
   private fun getDaysInGroup(sentences: List<CalculableSentence>, sentenceStartDate: LocalDate, durationSupplier: (sentence: CalculableSentence) -> Duration): Int {
-    if (sentences.all { it is DetentionAndTrainingOrderSentence }) {
+    if (sentences.all { it.isDto() }) {
       val days = ConsecutiveSentenceAggregator(sentences.map(durationSupplier)).calculateDays(sentenceStartDate)
       val between = ChronoUnit.DAYS.between(sentenceStartDate, sentenceStartDate.plusMonths(24))
       return if (days >= between) {
