@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -192,14 +193,30 @@ class BookingExtractionService(
     if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
       dates[PRRD] = latestReleaseDate
     }
-    if (booking.sentences.all { it is DetentionAndTrainingOrderSentence }) {
+    if (booking.sentences.any { it is DetentionAndTrainingOrderSentence }) {
       dates[MTD] = latestReleaseDate
-      if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(ETD)) {
-        calculateEtd(mostRecentSentenceByExpiryDate, dates)
-      }
-
-      if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(LTD)) {
-        calculateLtd(mostRecentSentenceByExpiryDate, dates)
+      calculateWhenAllDtos(mostRecentSentenceByExpiryDate, dates)
+      if (sentences.size > 1 && !sentences.any { it is ConsecutiveSentence } && !sentences.all { it is DetentionAndTrainingOrderSentence }) {
+        val firstNonDtoSentence = sentences.first { it !is DetentionAndTrainingOrderSentence }
+        val firstDtoSentence = sentences.first { it is DetentionAndTrainingOrderSentence }
+        val type = if (firstNonDtoSentence.releaseDateTypes.contains(CRD)) CRD else ARD
+        dates[type] = firstNonDtoSentence.sentenceCalculation.releaseDate
+        val midTermDate = if (firstDtoSentence.sentenceCalculation.isImmediateRelease() && firstDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_AFTER_PCSC) {
+          firstDtoSentence.sentencedAt
+        } else if (type == CRD) {
+          if (firstDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC) {
+            firstDtoSentence.sentenceCalculation.unadjustedDeterminateReleaseDate
+          } else {
+            firstDtoSentence.sentenceCalculation.adjustedDeterminateReleaseDate
+          }
+        } else {
+          latestReleaseDate
+        }
+        dates[MTD] = midTermDate
+        if (dates[MTD] != null && !sentences.any { it.sentenceCalculation.isImmediateRelease() }) {
+          calculateLtd(firstDtoSentence, dates)
+          calculateEtd(firstDtoSentence, dates)
+        }
       }
     } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
       val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }
@@ -289,19 +306,29 @@ class BookingExtractionService(
     return CalculationResult(dates.toMap(), breakdownByReleaseDateType.toMap(), otherDates.toMap(), effectiveSentenceLength)
   }
 
+  private fun calculateWhenAllDtos(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
+    if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(ETD)) {
+      calculateEtd(mostRecentSentenceByExpiryDate, dates)
+    }
+
+    if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(LTD)) {
+      calculateLtd(mostRecentSentenceByExpiryDate, dates)
+    }
+  }
+
   private fun calculateLtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
     if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
-      dates[LTD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.plusMonths(1)
+      dates[LTD] = dates[MTD]!!.plusMonths(1)
     } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
-      dates[LTD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.plusMonths(2)
+      dates[LTD] = dates[MTD]!!.plusMonths(2)
     }
   }
 
   private fun calculateEtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
     if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
-      dates[ETD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.minusMonths(1)
+      dates[ETD] = dates[MTD]!!.minusMonths(1)
     } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
-      dates[ETD] = mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate.minusMonths(2)
+      dates[ETD] = dates[MTD]!!.minusMonths(2)
     }
   }
 
@@ -313,7 +340,7 @@ class BookingExtractionService(
     val mostRecentReleaseIsPrrd = mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.getReleaseDateTypes().contains(PRRD) }
     // For now we can't calculate HDCED if there is a consecutive sentence with EDS or SOPC sentences
     if (!mostRecentReleaseIsPrrd && sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
-      val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() }, SentenceCalculation::releaseDate)
+      val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() && it !is DetentionAndTrainingOrderSentence }, SentenceCalculation::releaseDate)
       if (latestNonRecallRelease?.sentenceCalculation?.homeDetentionCurfewEligibilityDate != null) {
         val earliestSentenceDate = sentences.filter { !it.isRecall() }.minOf { it.sentencedAt }
         val latestUnadjustedExpiryDate =
