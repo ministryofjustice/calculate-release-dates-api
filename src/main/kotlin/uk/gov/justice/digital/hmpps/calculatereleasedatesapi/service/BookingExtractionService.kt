@@ -213,7 +213,7 @@ class BookingExtractionService(
           latestReleaseDate
         }
         dates[MTD] = midTermDate
-        if (dates[MTD] != null) {
+        if (dates[MTD] != null && !sentences.any { it.sentenceCalculation.isImmediateRelease() }) {
           calculateLtd(firstDtoSentence, dates)
           calculateEtd(firstDtoSentence, dates)
         }
