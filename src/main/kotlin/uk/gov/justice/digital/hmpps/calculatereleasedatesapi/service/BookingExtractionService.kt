@@ -204,15 +204,18 @@ class BookingExtractionService(
         val midTermDate = if (firstDtoSentence.sentenceCalculation.isImmediateRelease() && firstDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_AFTER_PCSC) {
           firstDtoSentence.sentencedAt
         } else if (type == CRD) {
-          firstDtoSentence.sentenceCalculation.unadjustedDeterminateReleaseDate
+          if (firstDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC) {
+            firstDtoSentence.sentenceCalculation.unadjustedDeterminateReleaseDate
+          } else {
+            firstDtoSentence.sentenceCalculation.adjustedDeterminateReleaseDate
+          }
         } else {
           latestReleaseDate
         }
         dates[MTD] = midTermDate
-        val releaseDateToUse = if (type == ARD) latestReleaseDate else firstDtoSentence.sentenceCalculation.unadjustedDeterminateReleaseDate
-        if (sentences.any { it.sentenceCalculation.isImmediateRelease() }) {
-          calculateLtd(firstDtoSentence, dates, releaseDateToUse)
-          calculateEtd(firstDtoSentence, dates, releaseDateToUse)
+        if (dates[MTD] != null) {
+          calculateLtd(firstDtoSentence, dates)
+          calculateEtd(firstDtoSentence, dates)
         }
       }
     } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
@@ -305,27 +308,27 @@ class BookingExtractionService(
 
   private fun calculateWhenAllDtos(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
     if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(ETD)) {
-      calculateEtd(mostRecentSentenceByExpiryDate, dates, mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate)
+      calculateEtd(mostRecentSentenceByExpiryDate, dates)
     }
 
     if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(LTD)) {
-      calculateLtd(mostRecentSentenceByExpiryDate, dates, mostRecentSentenceByExpiryDate.sentenceCalculation.releaseDate)
+      calculateLtd(mostRecentSentenceByExpiryDate, dates)
     }
   }
 
-  private fun calculateLtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>, releaseDate: LocalDate) {
+  private fun calculateLtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
     if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
-      dates[LTD] = releaseDate.plusMonths(1)
+      dates[LTD] = dates[MTD]!!.plusMonths(1)
     } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
-      dates[LTD] = releaseDate.plusMonths(2)
+      dates[LTD] = dates[MTD]!!.plusMonths(2)
     }
   }
 
-  private fun calculateEtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>, releaseDate: LocalDate) {
+  private fun calculateEtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
     if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
-      dates[ETD] = releaseDate.minusMonths(1)
+      dates[ETD] = dates[MTD]!!.minusMonths(1)
     } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
-      dates[ETD] = releaseDate.minusMonths(2)
+      dates[ETD] = dates[MTD]!!.minusMonths(2)
     }
   }
 
