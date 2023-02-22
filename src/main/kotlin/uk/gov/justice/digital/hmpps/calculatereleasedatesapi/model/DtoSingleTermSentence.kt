@@ -9,7 +9,7 @@ class DtoSingleTermSentence(
   override val sentencedAt: LocalDate,
   override val offence: Offence,
   override val standardSentences: List<AbstractSentence>
-) : SingleTermed {
+) : SingleTermed, Term {
   constructor(standardSentences: List<AbstractSentence>) :
     this(
       standardSentences.minOf(AbstractSentence::sentencedAt),
@@ -78,11 +78,11 @@ class DtoSingleTermSentence(
 
   private fun latestExpiryDate(firstStandardSentence: AbstractSentence, secondStandardSentence: AbstractSentence): LocalDate? {
     return if (
-      firstStandardSentence.sentenceCalculation.expiryDate.isAfter(secondStandardSentence.sentenceCalculation.expiryDate)
+      firstStandardSentence.sentenceCalculation.unadjustedExpiryDate.isAfter(secondStandardSentence.sentenceCalculation.unadjustedExpiryDate)
     ) {
-      firstStandardSentence.sentenceCalculation.expiryDate
+      firstStandardSentence.sentenceCalculation.unadjustedExpiryDate
     } else {
-      secondStandardSentence.sentenceCalculation.expiryDate
+      secondStandardSentence.sentenceCalculation.unadjustedExpiryDate
     }
   }
 

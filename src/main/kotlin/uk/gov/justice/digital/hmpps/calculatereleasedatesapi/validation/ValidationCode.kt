@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 enum class ValidationCode(val message: String, val validationType: ValidationType = VALIDATION) {
   ADJUSTMENT_AFTER_RELEASE_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing."),
   ADJUSTMENT_AFTER_RELEASE_RADA("The from date for Restored additional days awarded (RADA) must be the date the additional days were remitted."),
-  ADJUSTMENT_AFTER_RELEASE_UAL("The from date for Unlawfully at Large (UAL) must be the first day the prisoner was deemed UAL."),
   ADJUSTMENT_FUTURE_DATED_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing."),
   ADJUSTMENT_FUTURE_DATED_RADA("The from date for Restored additional days awarded (RADA) must be the date the additional days were remitted."),
   ADJUSTMENT_FUTURE_DATED_UAL("The from date for Unlawfully at Large (UAL) must be the first day the prisoner was deemed UAL."),

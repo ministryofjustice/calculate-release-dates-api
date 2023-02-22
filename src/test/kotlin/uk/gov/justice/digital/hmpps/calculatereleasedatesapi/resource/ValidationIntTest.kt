@@ -103,16 +103,6 @@ class ValidationIntTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `Run validation on argument after release date 1`() {
-    runValidationAndCheckMessages("CRS-796-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
-  }
-
-  @Test
-  fun `Run validation on argument after release date 2`() {
-    runValidationAndCheckMessages("CRS-796-2", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
-  }
-
-  @Test
   fun `Run validation on unsupported prisoner data`() {
     runValidationAndCheckMessages(UNSUPPORTED_PRISONER_PRISONER_ID, listOf(ValidationMessage(PRISONER_SUBJECT_TO_PTD)))
   }
@@ -120,6 +110,20 @@ class ValidationIntTest : IntegrationTestBase() {
   @Test
   fun `Run validation on on prisoner with fine payment`() {
     runValidationAndCheckMessages("PAYMENTS", listOf(ValidationMessage(A_FINE_SENTENCE_WITH_PAYMENTS)))
+  }
+
+  @Test
+  fun `Run validation on adjustment after release date 1`() {
+    runValidationAndCheckMessages("CRS-796-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
+  }
+
+  @Test
+  fun `Run validation on adjustment after release date 2`() {
+    runValidationAndCheckMessages("CRS-796-2", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
+  }
+  @Test
+  fun `Run validation on adjustment after release with a term`() {
+    runValidationAndCheckMessages("CRS-1191-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
   }
 
   private fun runValidationAndCheckMessages(prisonerId: String, messages: List<ValidationMessage>) {
