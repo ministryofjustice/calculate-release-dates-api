@@ -6,7 +6,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
@@ -98,7 +97,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
   }
 
   private fun getDaysInGroup(sentences: List<CalculableSentence>, sentenceStartDate: LocalDate, durationSupplier: (sentence: CalculableSentence) -> Duration): Int {
-    if (sentences.all { it is DetentionAndTrainingOrderSentence }) {
+    if (sentences.all { it.isDto() }) {
       val days = ConsecutiveSentenceAggregator(sentences.map(durationSupplier)).calculateDays(sentenceStartDate)
       val between = ChronoUnit.DAYS.between(sentenceStartDate, sentenceStartDate.plusMonths(24))
       return if (days >= between) {

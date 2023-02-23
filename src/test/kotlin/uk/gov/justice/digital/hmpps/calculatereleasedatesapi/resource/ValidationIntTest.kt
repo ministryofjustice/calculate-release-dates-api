@@ -69,7 +69,17 @@ class ValidationIntTest : IntegrationTestBase() {
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_RADA),
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_UAL),
         ValidationMessage(code = REMAND_OVERLAPS_WITH_REMAND),
-        ValidationMessage(code = DTO_RECALL),
+      )
+    )
+  }
+
+  @Test
+  fun `Run validation on DTO with unsupported term type`() {
+    runValidationAndCheckMessages(
+      "DTO_NON_IMP",
+      listOf(
+        ValidationMessage(code = DTO_RECALL)
+
       )
     )
   }
@@ -121,6 +131,7 @@ class ValidationIntTest : IntegrationTestBase() {
   fun `Run validation on adjustment after release date 2`() {
     runValidationAndCheckMessages("CRS-796-2", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
   }
+
   @Test
   fun `Run validation on adjustment after release with a term`() {
     runValidationAndCheckMessages("CRS-1191-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))

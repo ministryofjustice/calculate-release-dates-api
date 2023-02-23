@@ -164,7 +164,7 @@ class BookingExtractionService(
     )
 
     val concurrentOraAndNonOraDetails = extractConcurrentOraAndNonOraDetails(
-      mostRecentSentenceByAdjustedDeterminateReleaseDate.releaseDateTypes.getReleaseDateTypes(), mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes(), latestReleaseDate, sentences, effectiveSentenceLength
+      mostRecentSentenceByAdjustedDeterminateReleaseDate.releaseDateTypes.getReleaseDateTypes(), mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes(), latestReleaseDate, sentences, effectiveSentenceLength, booking
     )
 
     val latestNotionalConditionalReleaseDate: LocalDate? = extractionService.mostRecentOrNull(
@@ -194,28 +194,19 @@ class BookingExtractionService(
       dates[PRRD] = latestReleaseDate
     }
     if (booking.sentences.any { it is DetentionAndTrainingOrderSentence }) {
-      dates[MTD] = latestReleaseDate
-      calculateWhenAllDtos(mostRecentSentenceByExpiryDate, dates)
-      if (sentences.size > 1 && !sentences.any { it is ConsecutiveSentence } && !sentences.all { it is DetentionAndTrainingOrderSentence }) {
-        val firstNonDtoSentence = sentences.first { it !is DetentionAndTrainingOrderSentence }
-        val firstDtoSentence = sentences.first { it is DetentionAndTrainingOrderSentence }
-        val type = if (firstNonDtoSentence.releaseDateTypes.contains(CRD)) CRD else ARD
-        dates[type] = firstNonDtoSentence.sentenceCalculation.releaseDate
-        val midTermDate = if (firstDtoSentence.sentenceCalculation.isImmediateRelease() && firstDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_AFTER_PCSC) {
-          firstDtoSentence.sentencedAt
-        } else if (type == CRD) {
-          if (firstDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC) {
-            firstDtoSentence.sentenceCalculation.unadjustedDeterminateReleaseDate
-          } else {
-            firstDtoSentence.sentenceCalculation.adjustedDeterminateReleaseDate
-          }
-        } else {
-          latestReleaseDate
-        }
+      if (booking.sentences.all { it.isDto() }) {
+        dates[MTD] = latestReleaseDate
+        calculateWhenAllDtos(mostRecentSentenceByExpiryDate, dates)
+      } else {
+        val latestNonDtoSentence = sentences.sortedBy { it.sentenceCalculation.releaseDate }.last { !it.isDto() }
+        val latestDtoSentence = sentences.sortedBy { it.sentenceCalculation.releaseDate }.last { it.isDto() }
+        val type = if (concurrentOraAndNonOraDetails.isReleaseDateConditional) CRD else ARD
+        dates[type] = latestNonDtoSentence.sentenceCalculation.releaseDate
+        val midTermDate = calculateMidTermDate(latestDtoSentence, type, latestReleaseDate)
         dates[MTD] = midTermDate
-        if (dates[MTD] != null && !sentences.any { it.sentenceCalculation.isImmediateRelease() }) {
-          calculateLtd(firstDtoSentence, dates)
-          calculateEtd(firstDtoSentence, dates)
+        if (!sentences.any { it.sentenceCalculation.isImmediateRelease() }) {
+          calculateLtd(latestDtoSentence, dates)
+          calculateEtd(latestDtoSentence, dates)
         }
       }
     } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
@@ -306,28 +297,37 @@ class BookingExtractionService(
     return CalculationResult(dates.toMap(), breakdownByReleaseDateType.toMap(), otherDates.toMap(), effectiveSentenceLength)
   }
 
-  private fun calculateWhenAllDtos(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
-    if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(ETD)) {
-      calculateEtd(mostRecentSentenceByExpiryDate, dates)
+  private fun calculateMidTermDate(earliestDtoSentence: CalculableSentence, type: ReleaseDateType, latestReleaseDate: LocalDate) =
+    if (earliestDtoSentence.sentenceCalculation.isImmediateRelease() && earliestDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_AFTER_PCSC) {
+      earliestDtoSentence.sentencedAt
+    } else if (type == CRD) {
+      earliestDtoSentence.sentenceCalculation.adjustedDeterminateReleaseDate
+    } else {
+      latestReleaseDate
     }
 
-    if (mostRecentSentenceByExpiryDate.releaseDateTypes.contains(LTD)) {
-      calculateLtd(mostRecentSentenceByExpiryDate, dates)
+  private fun calculateWhenAllDtos(sentence: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
+    if (sentence.releaseDateTypes.contains(ETD)) {
+      calculateEtd(sentence, dates)
+    }
+
+    if (sentence.releaseDateTypes.contains(LTD)) {
+      calculateLtd(sentence, dates)
     }
   }
 
-  private fun calculateLtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
-    if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
+  private fun calculateLtd(sentence: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
+    if (sentence.durationIsGreaterThan(8, MONTHS) && sentence.durationIsLessThan(18, MONTHS)) {
       dates[LTD] = dates[MTD]!!.plusMonths(1)
-    } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
+    } else if (sentence.durationIsGreaterThanOrEqualTo(18, MONTHS) && sentence.durationIsLessThanEqualTo(24, MONTHS)) {
       dates[LTD] = dates[MTD]!!.plusMonths(2)
     }
   }
 
-  private fun calculateEtd(mostRecentSentenceByExpiryDate: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
-    if (mostRecentSentenceByExpiryDate.durationIsGreaterThan(8, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThan(18, MONTHS)) {
+  private fun calculateEtd(sentence: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
+    if (sentence.durationIsGreaterThan(8, MONTHS) && sentence.durationIsLessThan(18, MONTHS)) {
       dates[ETD] = dates[MTD]!!.minusMonths(1)
-    } else if (mostRecentSentenceByExpiryDate.durationIsGreaterThanOrEqualTo(18, MONTHS) && mostRecentSentenceByExpiryDate.durationIsLessThanEqualTo(24, MONTHS)) {
+    } else if (sentence.durationIsGreaterThanOrEqualTo(18, MONTHS) && sentence.durationIsLessThanEqualTo(24, MONTHS)) {
       dates[ETD] = dates[MTD]!!.minusMonths(2)
     }
   }
@@ -340,7 +340,7 @@ class BookingExtractionService(
     val mostRecentReleaseIsPrrd = mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.getReleaseDateTypes().contains(PRRD) }
     // For now we can't calculate HDCED if there is a consecutive sentence with EDS or SOPC sentences
     if (!mostRecentReleaseIsPrrd && sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
-      val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() && it !is DetentionAndTrainingOrderSentence }, SentenceCalculation::releaseDate)
+      val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() && !it.isDto() }, SentenceCalculation::releaseDate)
       if (latestNonRecallRelease?.sentenceCalculation?.homeDetentionCurfewEligibilityDate != null) {
         val earliestSentenceDate = sentences.filter { !it.isRecall() }.minOf { it.sentencedAt }
         val latestUnadjustedExpiryDate =
@@ -418,7 +418,8 @@ class BookingExtractionService(
     latestExpiryTypes: List<ReleaseDateType>,
     latestReleaseDate: LocalDate,
     sentences: List<CalculableSentence>,
-    effectiveSentenceLength: Period
+    effectiveSentenceLength: Period,
+    booking: Booking
   ): ConcurrentOraAndNonOraDetails {
     val latestReleaseIsConditional = latestReleaseTypes.contains(CRD)
     val latestSentenceExpiryIsSED = latestExpiryTypes.contains(SED)
@@ -457,6 +458,9 @@ class BookingExtractionService(
     }
     val hasLicence = sentences.any() { it.sentenceCalculation.licenceExpiryDate != null && it.sentenceCalculation.licenceExpiryDate!!.isAfterOrEqualTo(latestReleaseDate) }
 
+    if ((sentences.any { it.isDto() } && booking.underEighteenAtEndOfCustodialPeriod())) {
+      return ConcurrentOraAndNonOraDetails(isReleaseDateConditional = false, canHaveLicenseExpiry = true)
+    }
     return ConcurrentOraAndNonOraDetails(
       hasLicence,
       canHaveLicenseExpiry = true

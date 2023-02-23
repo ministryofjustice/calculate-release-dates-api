@@ -1,0 +1,30 @@
+[
+  {
+    "bookingId":1,
+    "sentenceSequence":11,
+    "sentenceStatus":"A",
+    "sentenceCategory":"2003",
+    "sentenceTypeDescription":"Standard Determinate",
+    "terms":[
+      {
+        "years":1,
+        "months":0,
+        "weeks":0,
+        "days":0,
+        "code": "SEC104"
+      }
+    ],
+    "caseSequence":2,
+    "lineSequence":4,
+    "sentenceDate":"2020-12-01",
+    "sentenceCalculationType":"DTO",
+    "offences":[
+      {
+        "offenderChargeId":3932624,
+        "offenceStartDate":"2019-02-03",
+        "offenceDescription":"Rape of a boy under 13 - SOA 2003",
+        "offenceCode":"GBH"
+      }
+    ]
+  }
+]
