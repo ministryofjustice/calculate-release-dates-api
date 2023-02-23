@@ -197,7 +197,6 @@ class BookingExtractionService(
       if (booking.sentences.all { it.isDto() }) {
         dates[MTD] = latestReleaseDate
         calculateWhenAllDtos(mostRecentSentenceByExpiryDate, dates)
-
       } else {
         val latestNonDtoSentence = sentences.sortedBy { it.sentencedAt }.last { !it.isDto() }
         val latestDtoSentence = sentences.sortedBy { it.sentencedAt }.last { it.isDto() }
@@ -210,7 +209,6 @@ class BookingExtractionService(
           calculateEtd(latestDtoSentence, dates)
         }
       }
-
     } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
       val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }
       if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
@@ -342,7 +340,7 @@ class BookingExtractionService(
     val mostRecentReleaseIsPrrd = mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.getReleaseDateTypes().contains(PRRD) }
     // For now we can't calculate HDCED if there is a consecutive sentence with EDS or SOPC sentences
     if (!mostRecentReleaseIsPrrd && sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
-      val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() && !it.isDto()}, SentenceCalculation::releaseDate)
+      val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() && !it.isDto() }, SentenceCalculation::releaseDate)
       if (latestNonRecallRelease?.sentenceCalculation?.homeDetentionCurfewEligibilityDate != null) {
         val earliestSentenceDate = sentences.filter { !it.isRecall() }.minOf { it.sentencedAt }
         val latestUnadjustedExpiryDate =
