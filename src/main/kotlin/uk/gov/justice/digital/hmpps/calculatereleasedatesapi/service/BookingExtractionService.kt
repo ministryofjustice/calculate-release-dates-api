@@ -198,8 +198,8 @@ class BookingExtractionService(
         dates[MTD] = latestReleaseDate
         calculateWhenAllDtos(mostRecentSentenceByExpiryDate, dates)
       } else {
-        val latestNonDtoSentence = sentences.sortedBy { it.sentencedAt }.last { !it.isDto() }
-        val latestDtoSentence = sentences.sortedBy { it.sentencedAt }.last { it.isDto() }
+        val latestNonDtoSentence = sentences.sortedBy { it.sentenceCalculation.releaseDate }.last { !it.isDto() }
+        val latestDtoSentence = sentences.sortedBy { it.sentenceCalculation.releaseDate }.last { it.isDto() }
         val type = if (concurrentOraAndNonOraDetails.isReleaseDateConditional) CRD else ARD
         dates[type] = latestNonDtoSentence.sentenceCalculation.releaseDate
         val midTermDate = calculateMidTermDate(latestDtoSentence, type, latestReleaseDate)
