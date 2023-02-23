@@ -123,7 +123,6 @@ class ValidationService(
     val validationMessages = validateSentences(sortedSentences)
     validationMessages += validateAdjustments(adjustments)
     validationMessages += validateFixedTermRecall(sourceData)
-    validationMessages += validateDtoIsNotRecall(sourceData)
     return validationMessages
   }
 
@@ -245,6 +244,7 @@ class ValidationService(
   private fun validateUnsupportedCalculation(sourceData: PrisonApiSourceData): List<ValidationMessage> {
     val messages = validateFineSentenceSupported(sourceData).toMutableList()
     messages += validateSupportedAdjustments(sourceData.bookingAndSentenceAdjustments.bookingAdjustments)
+    messages += validateDtoIsNotRecall(sourceData)
     return messages
   }
 
@@ -562,7 +562,12 @@ class ValidationService(
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedCategories = listOf("2003", "2020")
     val validationMessages = sentencesAndOffences.filter {
-      !(SentenceCalculationType.isSupported(it.sentenceCalculationType) && supportedCategories.contains(it.sentenceCategory))
+      if (SentenceCalculationType.isSupported(it.sentenceCalculationType) && supportedCategories.contains(it.sentenceCategory)) {
+        val type = from(it.sentenceCalculationType)
+        !featureToggles.dto && type.sentenceClazz == DetentionAndTrainingOrderSentence::class.java
+      } else {
+        true
+      }
     }
       .map {
         ValidationMessage(
@@ -593,19 +598,11 @@ class ValidationService(
       }
       if (featureToggles.dto && hasDto && hasDtoRecall) {
         validationMessages.add(ValidationMessage(ValidationCode.DTO_RECALL))
-      }
-      if (!featureToggles.dto && hasDto) {
-        validationMessages.add(
-          ValidationMessage(
-            UNSUPPORTED_SENTENCE_TYPE,
-            listOf(it.sentenceCategory, it.sentenceTypeDescription)
-          )
-        )
+      } else if (bookingHasDto && bookingHasRecall) {
+        validationMessages.add(ValidationMessage(UNSUPPORTED_CALCULATION_DTO_WITH_RECALL))
       }
     }
-    if (bookingHasDto && bookingHasRecall) {
-      validationMessages.add(ValidationMessage(UNSUPPORTED_CALCULATION_DTO_WITH_RECALL))
-    }
+
     return validationMessages.toList()
   }
 

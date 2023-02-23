@@ -40,4 +40,9 @@ data class Booking(
     }
     return extractableSentences.toList()
   }
+
+  @JsonIgnore
+  val underEighteenAtEndOfCustodialPeriod: () -> Boolean = {
+    sentences.all { offender.getAgeOnDate(it.sentenceCalculation.releaseDate) < 18 }
+  }
 }
