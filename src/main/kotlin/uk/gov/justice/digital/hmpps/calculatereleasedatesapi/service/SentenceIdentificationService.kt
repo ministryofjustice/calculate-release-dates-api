@@ -100,7 +100,7 @@ class SentenceIdentificationService {
       }
     }
     return listOf(
-      SLED,
+      SED,
       MTD,
       ETD,
       LTD,
@@ -152,7 +152,7 @@ class SentenceIdentificationService {
       } else if (sentence.isMadeUpOfOnlyDtos()) {
         releaseDateTypes.addAll(
           listOf(
-            SLED,
+            SED,
             MTD,
             ETD,
             LTD,

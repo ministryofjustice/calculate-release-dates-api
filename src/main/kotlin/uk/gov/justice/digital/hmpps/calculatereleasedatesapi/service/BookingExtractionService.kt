@@ -458,9 +458,15 @@ class BookingExtractionService(
     }
     val hasLicence = sentences.any() { it.sentenceCalculation.licenceExpiryDate != null && it.sentenceCalculation.licenceExpiryDate!!.isAfterOrEqualTo(latestReleaseDate) }
 
-    if ((sentences.any { it.isDto() } && booking.underEighteenAtEndOfCustodialPeriod())) {
-      return ConcurrentOraAndNonOraDetails(isReleaseDateConditional = false, canHaveLicenseExpiry = true)
+    if ((sentences.any { it.isDto() })) {
+      if (booking.underEighteenAtEndOfCustodialPeriod()) {
+        return ConcurrentOraAndNonOraDetails(isReleaseDateConditional = false, canHaveLicenseExpiry = true)
+      }
+      if (sentences.any { !it.isDto() } && !booking.underEighteenAtEndOfCustodialPeriod()) {
+        return ConcurrentOraAndNonOraDetails(isReleaseDateConditional = true, canHaveLicenseExpiry = true)
+      }
     }
+
     return ConcurrentOraAndNonOraDetails(
       hasLicence,
       canHaveLicenseExpiry = true

@@ -565,7 +565,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
-    assertThat(calculation.dates[SLED]).isEqualTo("2022-11-22")
+    assertThat(calculation.dates[SED]).isEqualTo("2022-11-22")
     assertThat(calculation.dates[MTD]).isEqualTo("2022-02-21")
     assertThat(calculation.dates[TUSED]).isEqualTo("2023-02-21")
     assertThat(calculation.dates[ETD]).isEqualTo("2021-12-21")
