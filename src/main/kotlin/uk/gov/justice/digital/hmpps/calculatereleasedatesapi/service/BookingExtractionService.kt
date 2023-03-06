@@ -202,7 +202,7 @@ class BookingExtractionService(
         val latestDtoSentence = sentences.sortedBy { it.sentenceCalculation.releaseDate }.last { it.isDto() }
         val type = if (concurrentOraAndNonOraDetails.isReleaseDateConditional) CRD else ARD
         dates[type] = latestNonDtoSentence.sentenceCalculation.releaseDate
-        val midTermDate = calculateMidTermDate(latestDtoSentence, type, latestReleaseDate)
+        val midTermDate = calculateMidTermDate(latestDtoSentence, type, latestReleaseDate, booking.underEighteenAtEndOfCustodialPeriod())
         dates[MTD] = midTermDate
         if (!sentences.any { it.sentenceCalculation.isImmediateRelease() }) {
           calculateLtd(latestDtoSentence, dates)
@@ -297,10 +297,10 @@ class BookingExtractionService(
     return CalculationResult(dates.toMap(), breakdownByReleaseDateType.toMap(), otherDates.toMap(), effectiveSentenceLength)
   }
 
-  private fun calculateMidTermDate(earliestDtoSentence: CalculableSentence, type: ReleaseDateType, latestReleaseDate: LocalDate) =
+  private fun calculateMidTermDate(earliestDtoSentence: CalculableSentence, type: ReleaseDateType, latestReleaseDate: LocalDate, underEighteenAtEndOfCustodialPeriod: Boolean) =
     if (earliestDtoSentence.sentenceCalculation.isImmediateRelease() && earliestDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_AFTER_PCSC) {
       earliestDtoSentence.sentencedAt
-    } else if (type == CRD) {
+    } else if (type == CRD || underEighteenAtEndOfCustodialPeriod) {
       earliestDtoSentence.sentenceCalculation.adjustedDeterminateReleaseDate
     } else {
       latestReleaseDate
