@@ -1,0 +1,53 @@
+{
+  "calculateErsed": true,
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2002-12-22"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2020-01-20"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 12
+        }
+      },
+      "sentencedAt": "2021-05-07",
+      "isDto": true,
+      "sentenceType": "DTO",
+      "type": "DetentionAndTrainingOrderSentence"
+    },
+    {
+      "offence": {
+        "committedAt": "2020-01-20",
+        "isScheduleFifteenMaximumLife": true
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 90
+        }
+      },
+      "sentencedAt": "2021-10-14",
+      "isDto": false,
+      "sentenceType": "YOI"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2021-10-14",
+        "numberOfDays": 373,
+        "fromDate": "2020-01-22",
+        "toDate": "2021-01-28"
+      },
+      {
+        "appliesToSentencesFrom": "2021-10-14",
+        "numberOfDays": 38,
+        "fromDate": "2021-03-30",
+        "toDate": "2021-05-06"
+      }
+    ]
+  }
+}

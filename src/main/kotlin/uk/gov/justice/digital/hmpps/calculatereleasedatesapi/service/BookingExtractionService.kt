@@ -4,6 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.ERSED_ADJUSTED_TO_MTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
@@ -251,7 +252,7 @@ class BookingExtractionService(
       val mostRecentReleaseSentenceHasParoleDate = mostRecentSentenceByAdjustedDeterminateReleaseDate.sentenceCalculation.extendedDeterminateParoleEligibilityDate
       if (mostRecentReleaseSentenceHasParoleDate != null) {
         val latestNonPedReleaseSentence = extractionService.mostRecentSentenceOrNull(
-          sentences.filter { !it.isRecall() && it.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null },
+          sentences.filter { !it.isRecall() && it.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null && !it.isDto() },
           SentenceCalculation::releaseDate
         )
         val latestNonPedRelease = latestNonPedReleaseSentence?.sentenceCalculation?.releaseDate
@@ -288,13 +289,35 @@ class BookingExtractionService(
         )
         dates[ERSED] = latestAFineRelease
       } else {
-        breakdownByReleaseDateType[ERSED] = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.breakdownByReleaseDateType[ERSED]!!
-        dates[ERSED] = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
+        if (sentences.any { it.isDto() }) {
+          calculateErsedWhereDtoIsPresent(dates, latestEarlyReleaseSchemeEligibilitySentence, breakdownByReleaseDateType)
+        } else {
+          breakdownByReleaseDateType[ERSED] = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.breakdownByReleaseDateType[ERSED]!!
+          dates[ERSED] = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
+        }
       }
     }
 
     dates[ESED] = latestUnadjustedExpiryDate
     return CalculationResult(dates.toMap(), breakdownByReleaseDateType.toMap(), otherDates.toMap(), effectiveSentenceLength)
+  }
+
+  private fun calculateErsedWhereDtoIsPresent(dates: MutableMap<ReleaseDateType, LocalDate>, latestEarlyReleaseSchemeEligibilitySentence: CalculableSentence, breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>) {
+    val releaseDate = dates[CRD] ?: dates[ARD]
+    if (dates[MTD]?.isBefore(releaseDate)!!) {
+      val ersed = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
+      if (dates[MTD]?.isBefore(ersed)!!) {
+        breakdownByReleaseDateType[ERSED] = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.breakdownByReleaseDateType[ERSED]!!
+        dates[ERSED] = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
+      } else {
+        breakdownByReleaseDateType[ERSED] = ReleaseDateCalculationBreakdown(
+          rules = setOf(ERSED_ADJUSTED_TO_MTD),
+          releaseDate = dates[MTD]!!,
+          unadjustedDate = ersed
+        )
+        dates[ERSED] = dates[MTD]!!
+      }
+    }
   }
 
   private fun calculateMidTermDate(earliestDtoSentence: CalculableSentence, type: ReleaseDateType, latestReleaseDate: LocalDate, underEighteenAtEndOfCustodialPeriod: Boolean) =
