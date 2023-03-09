@@ -176,6 +176,17 @@ class BookingExtractionService(
       dates[SLED] = latestExpiryDate
       breakdownByReleaseDateType[SLED] =
         mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SLED]!!
+    } else if (sentences.any { it.isDto() } && !sentences.all { it.isDto() }) {
+      val latestNonDtoSentence = sentences.sortedBy { it.sentenceCalculation.releaseDate }.last { !it.isDto() }
+      val latestDtoSentence = sentences.sortedBy { it.sentenceCalculation.releaseDate }.last { it.isDto() }
+      if (latestNonDtoSentence.sentenceCalculation.expiryDate.equals(latestDtoSentence.sentenceCalculation.expiryDate)) {
+        dates[SLED] = latestExpiryDate
+        breakdownByReleaseDateType[SLED] =
+          mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
+      } else {
+        dates[SED] = latestExpiryDate
+        breakdownByReleaseDateType[SED] = mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
+      }
     } else {
       dates[SED] = latestExpiryDate
       breakdownByReleaseDateType[SED] = mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
@@ -208,6 +219,9 @@ class BookingExtractionService(
         if (!sentences.any { it.sentenceCalculation.isImmediateRelease() }) {
           calculateLtd(latestDtoSentence, dates)
           calculateEtd(latestDtoSentence, dates)
+        }
+        if (latestNonDtoSentence.sentenceCalculation.isReleaseDateConditional && dates[SLED] == null) {
+          dates[LED] = latestNonDtoSentence.sentenceCalculation.licenceExpiryDate!!
         }
       }
     } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
