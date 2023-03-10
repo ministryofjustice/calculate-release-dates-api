@@ -50,6 +50,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_CONSECUTIVE_TO_SENTENCE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS
@@ -126,9 +128,9 @@ class ValidationService(
     return validationMessages
   }
 
-    /*
-      Run the validation that can only happen after calculations. e.g. validate that adjustments happen before release date
-     */
+  /*
+    Run the validation that can only happen after calculations. e.g. validate that adjustments happen before release date
+   */
   fun validateBookingAfterCalculation(booking: Booking): List<ValidationMessage> {
     log.info("Validating booking after calculation: $booking")
     val messages = mutableListOf<ValidationMessage>()
@@ -245,7 +247,26 @@ class ValidationService(
     val messages = validateFineSentenceSupported(sourceData).toMutableList()
     messages += validateSupportedAdjustments(sourceData.bookingAndSentenceAdjustments.bookingAdjustments)
     messages += validateDtoIsNotRecall(sourceData)
+    messages += validateDtoIsNotConsecutiveToSentence(sourceData)
     return messages
+  }
+
+  private fun validateDtoIsNotConsecutiveToSentence(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+    val validationMessages = mutableListOf<ValidationMessage>()
+    val consecutiveSentences = sourceData.sentenceAndOffences.filter { it.consecutiveToSequence != null }
+    val hasDto = sourceData.sentenceAndOffences.firstOrNull {
+      val type = SentenceCalculationType.from(it.sentenceCalculationType)
+      type == DTO || type == DTO_ORA
+    }
+    if (hasDto != null) {
+      if (hasDto.consecutiveToSequence != null) {
+        validationMessages.add(ValidationMessage(code = DTO_CONSECUTIVE_TO_SENTENCE))
+      }
+      if (sourceData.sentenceAndOffences.any { it.consecutiveToSequence == hasDto.sentenceSequence }) {
+        validationMessages.add(ValidationMessage(code = DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT))
+      }
+    }
+    return validationMessages.toList()
   }
 
   private fun validateSentences(sentences: List<SentenceAndOffences>): MutableList<ValidationMessage> {
