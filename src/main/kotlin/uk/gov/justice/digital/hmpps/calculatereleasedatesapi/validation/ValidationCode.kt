@@ -21,7 +21,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   A_FINE_SENTENCE_WITH_PAYMENTS("Any of the fine amount for a default term has been paid.", UNSUPPORTED_CALCULATION),
   CUSTODIAL_PERIOD_EXTINGUISHED_REMAND("The release date cannot be before the sentence date. Go back to NOMIS and reduce the amount of remand entered"),
   CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL("The release date cannot be before the sentence date. Go back to NOMIS and reduce the amount of tagged bail entered"),
-  DTO_RECALL("DTO Holding Message"),
+  DTO_RECALL("A detention and training order has a SEC104 or SEC105 breach term.", UNSUPPORTED_CALCULATION),
   DTO_CONSECUTIVE_TO_SENTENCE("A DTO is consecutive to a sentence type that is not a DTO", UNSUPPORTED_CALCULATION),
   DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT("A sentence type that is not a DTO is consecutive to a DTO", UNSUPPORTED_CALCULATION),
   EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT("The sentence type for court case %s count %s is invalid for the sentence date entered."),
