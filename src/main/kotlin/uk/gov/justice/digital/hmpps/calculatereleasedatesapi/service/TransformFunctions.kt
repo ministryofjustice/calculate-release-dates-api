@@ -243,11 +243,19 @@ fun transform(
     }
   }
   bookingAndSentenceAdjustments.sentenceAdjustments.forEach {
-    val adjustmentType = transform(it.type)
+    var adjustmentType = transform(it.type)
     if (adjustmentType != null) {
       val sentence: SentenceAndOffences? = findSentenceForAdjustment(it, sentencesAndOffences)
       // If sentence is not present it could be that the adjustment is linked to an inactive sentence, which needs filtering out.
       if (sentence != null) {
+        val sentenceCalculationType = SentenceCalculationType.from(sentence.sentenceCalculationType)
+        if (sentenceCalculationType.recallType != null) {
+          if (adjustmentType == REMAND) {
+            adjustmentType = RECALL_REMAND
+          } else if (adjustmentType == TAGGED_BAIL) {
+            adjustmentType = RECALL_TAGGED_BAIL
+          }
+        }
         adjustments.addAdjustment(
           adjustmentType,
           Adjustment(
