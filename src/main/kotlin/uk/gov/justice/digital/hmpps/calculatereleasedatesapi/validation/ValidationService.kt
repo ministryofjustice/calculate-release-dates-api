@@ -256,16 +256,21 @@ class ValidationService(
     sourceData.sentenceAndOffences.forEach {
       val isDto = SentenceCalculationType.from(it.sentenceCalculationType).sentenceClazz == DetentionAndTrainingOrderSentence::class.java
       if (isDto) {
-        if (it.consecutiveToSequence != null) {
+        if (it.consecutiveToSequence != null && sequenceNotDto(it.consecutiveToSequence, sourceData)) {
           validationMessages.add(ValidationMessage(code = DTO_CONSECUTIVE_TO_SENTENCE))
         }
-        if (sourceData.sentenceAndOffences.any { sent -> sent.consecutiveToSequence == it.sentenceSequence }) {
+        if (sourceData.sentenceAndOffences.any { sent -> (sent.consecutiveToSequence == it.sentenceSequence && SentenceCalculationType.from(sent.sentenceCalculationType).sentenceClazz != DetentionAndTrainingOrderSentence::class.java) }) {
           validationMessages.add(ValidationMessage(code = DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT))
         }
       }
     }
 
     return validationMessages.toList()
+  }
+
+  private fun sequenceNotDto(consecutiveSequence: Int, sourceData: PrisonApiSourceData): Boolean {
+    val consecutiveTo = sourceData.sentenceAndOffences.firstOrNull { it.sentenceSequence == consecutiveSequence }
+    return consecutiveTo != null
   }
 
   private fun validateSentences(sentences: List<SentenceAndOffences>): MutableList<ValidationMessage> {
