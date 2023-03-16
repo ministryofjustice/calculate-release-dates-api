@@ -711,6 +711,29 @@ class ValidationServiceTest {
     )
   }
   @Test
+  fun `Test multiple DTO sentence consecutive no error`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceSequence = 1,
+        sentenceCalculationType = "DTO",
+        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+      ),
+      validSdsSentence.copy(
+        sentenceSequence = 3,
+        consecutiveToSequence = 2,
+        sentenceCalculationType = "DTO",
+        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+      )
+    )
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        USER_INPUTS
+      )
+
+    assertThat(result).isEmpty()
+  }
+  @Test
   fun `Test A FINE sentence consecutive to unsupported`() {
     val sentences = listOf(
       validSdsSentence.copy(
