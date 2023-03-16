@@ -253,18 +253,18 @@ class ValidationService(
 
   private fun validateDtoIsNotConsecutiveToSentence(sourceData: PrisonApiSourceData): List<ValidationMessage> {
     val validationMessages = mutableListOf<ValidationMessage>()
-    val hasDto = sourceData.sentenceAndOffences.firstOrNull {
-      val type = SentenceCalculationType.from(it.sentenceCalculationType)
-      type == DTO || type == DTO_ORA
-    }
-    if (hasDto != null) {
-      if (hasDto.consecutiveToSequence != null) {
-        validationMessages.add(ValidationMessage(code = DTO_CONSECUTIVE_TO_SENTENCE))
+    sourceData.sentenceAndOffences.forEach {
+      val isDto = SentenceCalculationType.from(it.sentenceCalculationType).sentenceClazz == DetentionAndTrainingOrderSentence::class.java
+      if (isDto) {
+        if (it.consecutiveToSequence != null) {
+          validationMessages.add(ValidationMessage(code = DTO_CONSECUTIVE_TO_SENTENCE))
+        }
+        if (sourceData.sentenceAndOffences.any { sent -> sent.consecutiveToSequence == it.sentenceSequence }) {
+          validationMessages.add(ValidationMessage(code = DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT))
+        }
       }
-      if (sourceData.sentenceAndOffences.any { it.consecutiveToSequence == hasDto.sentenceSequence }) {
-        validationMessages.add(ValidationMessage(code = DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT))
-      }
     }
+
     return validationMessages.toList()
   }
 
