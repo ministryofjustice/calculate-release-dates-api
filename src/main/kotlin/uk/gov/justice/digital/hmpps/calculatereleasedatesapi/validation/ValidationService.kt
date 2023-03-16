@@ -270,7 +270,7 @@ class ValidationService(
 
   private fun sequenceNotDto(consecutiveSequence: Int, sourceData: PrisonApiSourceData): Boolean {
     val consecutiveTo = sourceData.sentenceAndOffences.firstOrNull { it.sentenceSequence == consecutiveSequence }
-    return consecutiveTo != null
+    return consecutiveTo != null && SentenceCalculationType.from(consecutiveTo.sentenceCalculationType).sentenceClazz != DetentionAndTrainingOrderSentence::class.java
   }
 
   private fun validateSentences(sentences: List<SentenceAndOffences>): MutableList<ValidationMessage> {
