@@ -719,8 +719,8 @@ class ValidationServiceTest {
         terms = listOf(SentenceTerms(years = 1, code = "IMP"))
       ),
       validSdsSentence.copy(
-        sentenceSequence = 3,
-        consecutiveToSequence = 2,
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
         sentenceCalculationType = "DTO",
         terms = listOf(SentenceTerms(years = 1, code = "IMP"))
       )
