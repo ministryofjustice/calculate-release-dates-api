@@ -354,7 +354,7 @@ class BookingExtractionService(
   }
 
   private fun calculateLtd(sentence: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
-    if (sentence.durationIsGreaterThan(8, MONTHS) && sentence.durationIsLessThan(18, MONTHS)) {
+    if (sentence.durationIsGreaterThanOrEqualTo(8, MONTHS) && sentence.durationIsLessThan(18, MONTHS)) {
       dates[LTD] = dates[MTD]!!.plusMonths(1)
     } else if (sentence.durationIsGreaterThanOrEqualTo(18, MONTHS) && sentence.durationIsLessThanEqualTo(24, MONTHS)) {
       dates[LTD] = dates[MTD]!!.plusMonths(2)
@@ -362,7 +362,7 @@ class BookingExtractionService(
   }
 
   private fun calculateEtd(sentence: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
-    if (sentence.durationIsGreaterThan(8, MONTHS) && sentence.durationIsLessThan(18, MONTHS)) {
+    if (sentence.durationIsGreaterThanOrEqualTo(8, MONTHS) && sentence.durationIsLessThan(18, MONTHS)) {
       dates[ETD] = dates[MTD]!!.minusMonths(1)
     } else if (sentence.durationIsGreaterThanOrEqualTo(18, MONTHS) && sentence.durationIsLessThanEqualTo(24, MONTHS)) {
       dates[ETD] = dates[MTD]!!.minusMonths(2)

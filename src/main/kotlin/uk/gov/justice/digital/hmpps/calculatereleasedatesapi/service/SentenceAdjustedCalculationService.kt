@@ -61,16 +61,16 @@ class SentenceAdjustedCalculationService {
       }
     }
 
-    if (sentence.releaseDateTypes.contains(ReleaseDateType.ETD)) {
-      if (sentence.durationIsGreaterThan(8, MONTHS) && sentence.durationIsLessThan(18, MONTHS)) {
+    if (sentence.releaseDateTypes.contains(ReleaseDateType.ETD) && !sentenceCalculation.isImmediateRelease()) {
+      if (sentence.durationIsGreaterThanOrEqualTo(8, MONTHS) && sentence.durationIsLessThan(18, MONTHS)) {
         sentenceCalculation.earlyTransferDate = sentenceCalculation.releaseDate.minusMonths(1)
       } else if (sentence.durationIsGreaterThanOrEqualTo(18, MONTHS) && sentence.durationIsLessThanEqualTo(24, MONTHS)) {
         sentenceCalculation.earlyTransferDate = sentenceCalculation.releaseDate.minusMonths(2)
       }
     }
 
-    if (sentence.releaseDateTypes.contains(ReleaseDateType.LTD)) {
-      if (sentence.durationIsGreaterThan(8, MONTHS) && sentence.durationIsLessThan(18, MONTHS)) {
+    if (sentence.releaseDateTypes.contains(ReleaseDateType.LTD) && !sentenceCalculation.isImmediateRelease()) {
+      if (sentence.durationIsGreaterThanOrEqualTo(8, MONTHS) && sentence.durationIsLessThan(18, MONTHS)) {
         sentenceCalculation.latestTransferDate = sentenceCalculation.releaseDate.plusMonths(1)
       } else if (sentence.durationIsGreaterThanOrEqualTo(18, MONTHS) && sentence.durationIsLessThanEqualTo(24, MONTHS)) {
         sentenceCalculation.latestTransferDate = sentenceCalculation.releaseDate.plusMonths(2)
