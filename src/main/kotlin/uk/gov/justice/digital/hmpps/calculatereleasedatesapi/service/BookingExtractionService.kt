@@ -156,6 +156,11 @@ class BookingExtractionService(
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
       extractManyTopUpSuperVisionDate(sentences, latestLicenseExpiryDate)
+    } else if (isTusedableDtos(booking, effectiveSentenceLength)) {
+      val latestTUSEDSentence = sentences
+        .filter { it.sentenceCalculation.topUpSupervisionDate != null }
+        .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
+      latestTUSEDSentence?.sentenceCalculation?.topUpSupervisionDate!! to latestTUSEDSentence.sentenceCalculation.breakdownByReleaseDateType[TUSED]!!
     } else {
       null
     }
@@ -314,6 +319,10 @@ class BookingExtractionService(
 
     dates[ESED] = latestUnadjustedExpiryDate
     return CalculationResult(dates.toMap(), breakdownByReleaseDateType.toMap(), otherDates.toMap(), effectiveSentenceLength)
+  }
+
+  private fun isTusedableDtos(booking: Booking, effectiveSentenceLength: Period): Boolean {
+    return booking.sentences.all { it.isDto() } && effectiveSentenceLength.months < 24 && !booking.underEighteenAtEndOfCustodialPeriod()
   }
 
   private fun calculateErsedWhereDtoIsPresent(dates: MutableMap<ReleaseDateType, LocalDate>, latestEarlyReleaseSchemeEligibilitySentence: CalculableSentence, breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>) {
