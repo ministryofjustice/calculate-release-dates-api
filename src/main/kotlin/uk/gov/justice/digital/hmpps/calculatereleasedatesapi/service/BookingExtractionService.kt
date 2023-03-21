@@ -343,11 +343,13 @@ class BookingExtractionService(
     }
   }
 
-  private fun calculateMidTermDate(earliestDtoSentence: CalculableSentence, type: ReleaseDateType, latestReleaseDate: LocalDate, underEighteenAtEndOfCustodialPeriod: Boolean) =
-    if (earliestDtoSentence.sentenceCalculation.isImmediateRelease() && earliestDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_AFTER_PCSC) {
-      earliestDtoSentence.sentencedAt
+  private fun calculateMidTermDate(latestDtoSentence: CalculableSentence, type: ReleaseDateType, latestReleaseDate: LocalDate, underEighteenAtEndOfCustodialPeriod: Boolean) =
+    if (latestDtoSentence.sentenceCalculation.isImmediateRelease() && latestDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_AFTER_PCSC) {
+      latestDtoSentence.sentencedAt
+    } else if (type == CRD && latestDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC) {
+      latestDtoSentence.sentenceCalculation.unadjustedDeterminateReleaseDate
     } else if (type == CRD || underEighteenAtEndOfCustodialPeriod) {
-      earliestDtoSentence.sentenceCalculation.adjustedDeterminateReleaseDate
+      latestDtoSentence.sentenceCalculation.adjustedDeterminateReleaseDate
     } else {
       latestReleaseDate
     }

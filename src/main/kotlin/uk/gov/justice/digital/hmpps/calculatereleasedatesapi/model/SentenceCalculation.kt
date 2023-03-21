@@ -88,11 +88,7 @@ data class SentenceCalculation(
   private fun getAdjustmentTypes(): Array<AdjustmentType> {
     return if (sentence is AFineSentence && sentence.offence.isCivilOffence()) {
       emptyArray()
-    } else if ((
-      (sentence is DetentionAndTrainingOrderSentence || sentence is DtoSingleTermSentence) &&
-        sentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC
-      )
-    ) {
+    } else if (sentence.isDto() && sentence.isIdentificationTrackInitialized() && sentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC) {
       arrayOf(TAGGED_BAIL)
     } else if (!sentence.isRecall()) {
       arrayOf(REMAND, TAGGED_BAIL)

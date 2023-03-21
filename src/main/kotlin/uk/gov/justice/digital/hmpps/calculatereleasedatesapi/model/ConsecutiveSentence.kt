@@ -171,4 +171,8 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
   fun isMadeUpOfOnlyDtos(): Boolean {
     return orderedSentences.all { it is DetentionAndTrainingOrderSentence }
   }
+
+  override fun isIdentificationTrackInitialized(): Boolean {
+    return this::identificationTrack.isInitialized
+  }
 }
