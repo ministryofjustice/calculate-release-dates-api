@@ -187,7 +187,8 @@ interface CalculableSentence {
 
   @JsonIgnore
   fun isCalculationInitialised(): Boolean
-
+  @JsonIgnore
+  fun isIdentificationTrackInitialized(): Boolean
   @JsonIgnore
   fun isDto(): Boolean {
     return this is DetentionAndTrainingOrderSentence ||

@@ -150,6 +150,11 @@ class SentenceIdentificationService {
           )
         )
       } else if (sentence.isMadeUpOfOnlyDtos()) {
+        if (sentence.orderedSentences.all { it.identificationTrack == DTO_BEFORE_PCSC }) {
+          sentence.identificationTrack = DTO_BEFORE_PCSC
+        } else {
+          sentence.identificationTrack = DTO_AFTER_PCSC
+        }
         releaseDateTypes.addAll(
           listOf(
             SED,

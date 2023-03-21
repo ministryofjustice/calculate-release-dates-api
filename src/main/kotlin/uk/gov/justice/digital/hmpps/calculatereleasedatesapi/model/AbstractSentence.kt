@@ -56,4 +56,7 @@ abstract class AbstractSentence(
   override fun isCalculationInitialised(): Boolean {
     return this::sentenceCalculation.isInitialized
   }
+  override fun isIdentificationTrackInitialized(): Boolean {
+    return this::identificationTrack.isInitialized
+  }
 }

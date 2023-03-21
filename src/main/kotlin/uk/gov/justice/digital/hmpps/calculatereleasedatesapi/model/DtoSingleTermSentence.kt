@@ -41,6 +41,11 @@ class DtoSingleTermSentence(
   override fun isCalculationInitialised(): Boolean {
     return this::sentenceCalculation.isInitialized
   }
+
+  override fun isIdentificationTrackInitialized(): Boolean {
+    return this::identificationTrack.isInitialized
+  }
+
   fun combinedDuration(): Duration {
     val firstSentence = standardSentences.get(0)
     val secondSentence = standardSentences.get(1)
