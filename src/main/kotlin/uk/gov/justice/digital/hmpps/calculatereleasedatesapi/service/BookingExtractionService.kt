@@ -221,7 +221,7 @@ class BookingExtractionService(
         dates[type] = latestNonDtoSentence.sentenceCalculation.releaseDate
         val midTermDate = calculateMidTermDate(latestDtoSentence, type, latestReleaseDate, booking.underEighteenAtEndOfCustodialPeriod())
         dates[MTD] = midTermDate
-        if (!sentences.any { it.sentenceCalculation.isImmediateRelease() }) {
+        if (!sentences.any { it.sentenceCalculation.isImmediateRelease() && it.isDto() }) {
           calculateLtd(latestDtoSentence, dates)
           calculateEtd(latestDtoSentence, dates)
         }
