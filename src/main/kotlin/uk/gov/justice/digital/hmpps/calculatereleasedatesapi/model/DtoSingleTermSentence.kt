@@ -47,8 +47,9 @@ class DtoSingleTermSentence(
   }
 
   fun combinedDuration(): Duration {
-    val firstSentence = standardSentences.get(0)
-    val secondSentence = standardSentences.get(1)
+    val orderedSentences = standardSentences.sortedWith(compareBy({ it.getLengthInDays() }, { it.sentencedAt }))
+    val firstSentence = orderedSentences.first()
+    val secondSentence = orderedSentences.last()
     val durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()
     durationElements[ChronoUnit.DAYS] = ChronoUnit.DAYS.between(
       earliestSentencedAt(firstSentence, secondSentence),
