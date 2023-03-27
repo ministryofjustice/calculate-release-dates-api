@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 enum class ValidationCode(val message: String, val validationType: ValidationType = VALIDATION) {
   ADJUSTMENT_AFTER_RELEASE_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing."),
   ADJUSTMENT_AFTER_RELEASE_RADA("The from date for Restored additional days awarded (RADA) must be the date the additional days were remitted."),
-  ADJUSTMENT_AFTER_RELEASE_UAL("The from date for Unlawfully at Large (UAL) must be the first day the prisoner was deemed UAL."),
   ADJUSTMENT_FUTURE_DATED_ADA("The from date for Additional days awarded (ADA) should be the date of the adjudication hearing."),
   ADJUSTMENT_FUTURE_DATED_RADA("The from date for Restored additional days awarded (RADA) must be the date the additional days were remitted."),
   ADJUSTMENT_FUTURE_DATED_UAL("The from date for Unlawfully at Large (UAL) must be the first day the prisoner was deemed UAL."),
@@ -22,6 +21,9 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   A_FINE_SENTENCE_WITH_PAYMENTS("Any of the fine amount for a default term has been paid.", UNSUPPORTED_CALCULATION),
   CUSTODIAL_PERIOD_EXTINGUISHED_REMAND("The release date cannot be before the sentence date. Go back to NOMIS and reduce the amount of remand entered"),
   CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL("The release date cannot be before the sentence date. Go back to NOMIS and reduce the amount of tagged bail entered"),
+  DTO_RECALL("A detention and training order has a SEC104 or SEC105 breach term.", UNSUPPORTED_CALCULATION),
+  DTO_CONSECUTIVE_TO_SENTENCE("A DTO is consecutive to a sentence type that is not a DTO", UNSUPPORTED_CALCULATION),
+  DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT("A sentence type that is not a DTO is consecutive to a DTO", UNSUPPORTED_CALCULATION),
   EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT("The sentence type for court case %s count %s is invalid for the sentence date entered."),
   EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR("Court case %s count %s must have a licence term of at least one year."),
   EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS("Court case %s count %s must have a licence term that does not exceed 8 years."),
@@ -64,4 +66,5 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   ),
   UNSUPPORTED_SENTENCE_TYPE("Unsupported sentence type %s %s", UNSUPPORTED_SENTENCE),
   ZERO_IMPRISONMENT_TERM("Court case %s count %s must include an imprisonment term greater than zero."),
+  UNSUPPORTED_CALCULATION_DTO_WITH_RECALL("Unsupported calculation - DTO and recall", UNSUPPORTED_CALCULATION),
 }

@@ -81,7 +81,7 @@ class CalculationTransactionalServiceTest {
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val prisonService = mock<PrisonService>()
-  private val domainEventPublisher = mock<DomainEventPublisher>()
+  private val eventService = mock<EventService>()
   private val calculationService = CalculationService(
     bookingCalculationService,
     bookingExtractionService,
@@ -96,11 +96,11 @@ class CalculationTransactionalServiceTest {
       calculationOutcomeRepository,
       TestUtil.objectMapper(),
       prisonService,
-      domainEventPublisher,
       prisonApiDataMapper,
       calculationService,
       bookingService,
       validationService,
+      eventService,
     )
 
   private val fakeSourceData = PrisonApiSourceData(
@@ -284,7 +284,7 @@ class CalculationTransactionalServiceTest {
         )
       )
     )
-    verify(domainEventPublisher).publishReleaseDateChange(PRISONER_ID, BOOKING_ID)
+    verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
   }
 
   @Test
@@ -332,7 +332,7 @@ class CalculationTransactionalServiceTest {
       )
     )
     whenever(
-      domainEventPublisher.publishReleaseDateChange(PRISONER_ID, BOOKING_ID)
+      eventService.publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
     ).thenThrow(EntityNotFoundException("test ex"))
 
     try {
@@ -341,7 +341,6 @@ class CalculationTransactionalServiceTest {
       fail("Exception was thrown!")
     }
   }
-
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val USERNAME = "user1"

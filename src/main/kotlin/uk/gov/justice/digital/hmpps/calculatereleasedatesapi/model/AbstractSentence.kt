@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.util.UUID
@@ -22,7 +21,8 @@ import java.util.UUID
   JsonSubTypes.Type(value = StandardDeterminateSentence::class, name = "StandardSentence"),
   JsonSubTypes.Type(value = ExtendedDeterminateSentence::class, name = "ExtendedDeterminateSentence"),
   JsonSubTypes.Type(value = SopcSentence::class, name = "SopcSentence"),
-  JsonSubTypes.Type(value = AFineSentence::class, name = "AFineSentence")
+  JsonSubTypes.Type(value = AFineSentence::class, name = "AFineSentence"),
+  JsonSubTypes.Type(value = DetentionAndTrainingOrderSentence::class, name = "DetentionAndTrainingOrderSentence")
 )
 abstract class AbstractSentence(
   override val offence: Offence,
@@ -45,12 +45,18 @@ abstract class AbstractSentence(
 
   @JsonIgnore
   @Transient
-  override lateinit var releaseDateTypes: List<ReleaseDateType>
+  override lateinit var releaseDateTypes: ReleaseDateTypes
 
   override fun calculateErsedFromHalfway(): Boolean {
     return identificationTrack.calculateErsedFromHalfway()
   }
   override fun calculateErsedFromTwoThirds(): Boolean {
     return identificationTrack.calculateErsedFromTwoThirds()
+  }
+  override fun isCalculationInitialised(): Boolean {
+    return this::sentenceCalculation.isInitialized
+  }
+  override fun isIdentificationTrackInitialized(): Boolean {
+    return this::identificationTrack.isInitialized
   }
 }

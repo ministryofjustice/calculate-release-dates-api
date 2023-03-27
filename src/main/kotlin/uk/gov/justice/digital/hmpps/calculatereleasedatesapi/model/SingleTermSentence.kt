@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -9,12 +8,12 @@ import java.time.temporal.ChronoUnit
 class SingleTermSentence(
   override val sentencedAt: LocalDate,
   override val offence: Offence,
-  val standardSentences: List<StandardDeterminateSentence>
-) : CalculableSentence {
-  constructor(standardSentences: List<StandardDeterminateSentence>) :
+  override val standardSentences: List<AbstractSentence>
+) : SingleTermed {
+  constructor(standardSentences: List<AbstractSentence>) :
     this(
-      standardSentences.minOf(StandardDeterminateSentence::sentencedAt),
-      standardSentences.map(StandardDeterminateSentence::offence).minByOrNull(Offence::committedAt)!!,
+      standardSentences.minOf(AbstractSentence::sentencedAt),
+      standardSentences.map(AbstractSentence::offence).minByOrNull(Offence::committedAt)!!,
       standardSentences
     )
 
@@ -29,7 +28,7 @@ class SingleTermSentence(
   override lateinit var identificationTrack: SentenceIdentificationTrack
 
   @JsonIgnore
-  override lateinit var releaseDateTypes: List<ReleaseDateType>
+  override lateinit var releaseDateTypes: ReleaseDateTypes
 
   override fun buildString(): String {
     return "SingleTermSentence\t:\t\n" +
@@ -39,6 +38,13 @@ class SingleTermSentence(
       sentenceCalculation.buildString(releaseDateTypes)
   }
 
+  override fun isCalculationInitialised(): Boolean {
+    return this::sentenceCalculation.isInitialized
+  }
+
+  override fun isIdentificationTrackInitialized(): Boolean {
+    return this::identificationTrack.isInitialized
+  }
   fun combinedDuration(): Duration {
     val firstSentence = standardSentences.get(0)
     val secondSentence = standardSentences.get(1)
@@ -58,7 +64,7 @@ class SingleTermSentence(
     return false
   }
 
-  private fun earliestSentencedAt(firstStandardSentence: StandardDeterminateSentence, secondStandardSentence: StandardDeterminateSentence): LocalDate {
+  private fun earliestSentencedAt(firstStandardSentence: AbstractSentence, secondStandardSentence: AbstractSentence): LocalDate {
     return if (firstStandardSentence.sentencedAt.isBefore(secondStandardSentence.sentencedAt)) {
       firstStandardSentence.sentencedAt
     } else {
@@ -66,9 +72,9 @@ class SingleTermSentence(
     }
   }
 
-  private fun latestExpiryDate(firstStandardSentence: StandardDeterminateSentence, secondStandardSentence: StandardDeterminateSentence): LocalDate? {
+  private fun latestExpiryDate(firstStandardSentence: AbstractSentence, secondStandardSentence: AbstractSentence): LocalDate? {
     return if (
-      firstStandardSentence.sentenceCalculation.expiryDate?.isAfter(secondStandardSentence.sentenceCalculation.expiryDate) == true
+      firstStandardSentence.sentenceCalculation.expiryDate.isAfter(secondStandardSentence.sentenceCalculation.expiryDate)
     ) {
       firstStandardSentence.sentenceCalculation.expiryDate
     } else {

@@ -15,7 +15,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ETD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LTD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.MTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
@@ -34,6 +37,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import java.time.Duration
 import java.time.LocalDate
 import javax.persistence.EntityNotFoundException
 
@@ -193,10 +197,15 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run calculation where SDS+ is consecutive to SDS`() {
+    val userInput = CalculationUserInputs(
+      useOffenceIndicators = true
+    )
     val calculatedReleaseDates: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/$SDS_PLUS_CONSECUTIVE_TO_SDS")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(objectMapper.writeValueAsString(userInput))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -394,10 +403,15 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run calculation on CRS-872 a consecutive sentence having multiple offences, some schedule 15 attracting life, some not`() {
+    val userInput = CalculationUserInputs(
+      useOffenceIndicators = true
+    )
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-872")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(objectMapper.writeValueAsString(userInput))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -539,6 +553,24 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(calculation.calculatedReleaseDates!!.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
   }
 
+  @Test
+  fun `Run calculation on a DTO sentence`() {
+    webTestClient = webTestClient.mutate().responseTimeout(Duration.ofMinutes(5)).build()
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/CRS-1184")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+    assertThat(calculation.dates[SED]).isEqualTo("2022-11-22")
+    assertThat(calculation.dates[MTD]).isEqualTo("2022-02-21")
+    assertThat(calculation.dates[TUSED]).isEqualTo("2023-02-21")
+    assertThat(calculation.dates[ETD]).isEqualTo("2021-12-21")
+    assertThat(calculation.dates[LTD]).isEqualTo("2022-04-21")
+  }
   @Test
   fun `Run calculation on A FINE sentence`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()

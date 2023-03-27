@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE
@@ -20,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_OVERLAPS_WITH_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SEC_91_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SENTENCE_TYPE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ZERO_IMPRISONMENT_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
@@ -31,6 +33,16 @@ class ValidationIntTest : IntegrationTestBase() {
       REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID,
       listOf(ValidationMessage(REMAND_OVERLAPS_WITH_SENTENCE))
     )
+  }
+
+  @Test
+  fun `Run validation for DTO`() {
+    runValidationAndCheckMessages("CRS-1184", emptyList())
+  }
+
+  @Test
+  fun `Run validation for DTO concurrent to recall`() {
+    runValidationAndCheckMessages("CRS-1145-AC1", listOf(ValidationMessage(code = UNSUPPORTED_CALCULATION_DTO_WITH_RECALL)))
   }
 
   @Test
@@ -56,7 +68,18 @@ class ValidationIntTest : IntegrationTestBase() {
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_ADA),
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_RADA),
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_UAL),
-        ValidationMessage(code = REMAND_OVERLAPS_WITH_REMAND)
+        ValidationMessage(code = REMAND_OVERLAPS_WITH_REMAND),
+      )
+    )
+  }
+
+  @Test
+  fun `Run validation on DTO with unsupported term type`() {
+    runValidationAndCheckMessages(
+      "DTO_NON_IMP",
+      listOf(
+        ValidationMessage(code = DTO_RECALL)
+
       )
     )
   }
@@ -90,16 +113,6 @@ class ValidationIntTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `Run validation on argument after release date 1`() {
-    runValidationAndCheckMessages("CRS-796-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
-  }
-
-  @Test
-  fun `Run validation on argument after release date 2`() {
-    runValidationAndCheckMessages("CRS-796-2", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
-  }
-
-  @Test
   fun `Run validation on unsupported prisoner data`() {
     runValidationAndCheckMessages(UNSUPPORTED_PRISONER_PRISONER_ID, listOf(ValidationMessage(PRISONER_SUBJECT_TO_PTD)))
   }
@@ -107,6 +120,21 @@ class ValidationIntTest : IntegrationTestBase() {
   @Test
   fun `Run validation on on prisoner with fine payment`() {
     runValidationAndCheckMessages("PAYMENTS", listOf(ValidationMessage(A_FINE_SENTENCE_WITH_PAYMENTS)))
+  }
+
+  @Test
+  fun `Run validation on adjustment after release date 1`() {
+    runValidationAndCheckMessages("CRS-796-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
+  }
+
+  @Test
+  fun `Run validation on adjustment after release date 2`() {
+    runValidationAndCheckMessages("CRS-796-2", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
+  }
+
+  @Test
+  fun `Run validation on adjustment after release with a term`() {
+    runValidationAndCheckMessages("CRS-1191-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
   }
 
   private fun runValidationAndCheckMessages(prisonerId: String, messages: List<ValidationMessage>) {

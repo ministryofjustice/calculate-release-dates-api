@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -76,7 +77,7 @@ class TransformFunctionsTest {
       caseSequence = caseSequence
     )
 
-    assertThat(transform(request, null)).isEqualTo(
+    assertThat(transform(request, CalculationUserInputs(useOffenceIndicators = true))).isEqualTo(
       listOf(
         StandardDeterminateSentence(
           sentencedAt = FIRST_JAN_2015,
@@ -111,7 +112,7 @@ class TransformFunctionsTest {
     val offences = listOf(
       OffenderOffence(
         offenderChargeId = 1L, offenceStartDate = FIRST_JAN_2015, offenceEndDate = SECOND_JAN_2015,
-        offenceCode = "RR1", offenceDescription = "Littering", indicators = listOf()
+        offenceCode = "RR1", offenceDescription = "Littering", indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR)
       ),
     )
     val request = SentenceAndOffences(

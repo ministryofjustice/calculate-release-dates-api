@@ -1,0 +1,121 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2002-12-12"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2021-01-29"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 4
+        }
+      },
+      "sentencedAt": "2021-01-29",
+      "sentenceType": "DTO_ORA",
+      "type": "DetentionAndTrainingOrderSentence"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-01-29"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 33
+        }
+      },
+      "sentencedAt": "2021-10-14",
+      "sentenceType": "YOI"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-01-29"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 197
+        }
+      },
+      "sentencedAt": "2021-10-14",
+      "sentenceType": "YOI"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-01-29",
+        "isScheduleFifteenMaximumLife": true
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 90
+        }
+      },
+      "sentencedAt": "2021-10-14",
+      "sentenceType": "YOI"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-01-29"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 12
+        }
+      },
+      "sentencedAt": "2021-10-14",
+      "sentenceType": "YOI"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-01-29"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 4
+        }
+      },
+      "sentencedAt": "2021-05-07",
+      "sentenceType": "DTO_ORA",
+      "type": "DetentionAndTrainingOrderSentence"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-01-29"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 12
+        }
+      },
+      "sentencedAt": "2021-05-07",
+      "sentenceType": "DTO_ORA",
+      "type": "DetentionAndTrainingOrderSentence"
+    }
+  ],
+
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2021-10-14",
+        "numberOfDays": 38,
+        "fromDate": "2021-03-30",
+        "toDate": "2021-05-06"
+      },
+      {
+        "appliesToSentencesFrom": "2021-10-14",
+        "numberOfDays": 373,
+        "fromDate": "2020-01-22",
+        "toDate": "2021-01-28"
+      }
+    ],
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "numberOfDays": 12,
+        "appliesToSentencesFrom": "2021-10-14",
+        "fromDate": "2023-03-06",
+        "toDate": "2023-03-17"
+      }
+    ]
+  }
+}

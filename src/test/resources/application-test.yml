@@ -63,4 +63,4 @@ domain-events-sns:
   provider: localstack
 
 feature-toggles:
-  sopcedsrecalls: true
+  dto: true

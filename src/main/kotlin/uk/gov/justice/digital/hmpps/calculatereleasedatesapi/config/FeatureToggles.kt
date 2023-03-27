@@ -4,5 +4,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "feature-toggles")
 data class FeatureToggles(
-  var sopcedsrecalls: Boolean = false
+  var dto: Boolean = false
 )

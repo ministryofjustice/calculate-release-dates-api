@@ -18,7 +18,7 @@ import kotlin.math.roundToLong
  * 3. Extract, extract the final booking release dates from all the calculable sentences.
  */
 interface CalculableSentence {
-  var releaseDateTypes: List<ReleaseDateType>
+  var releaseDateTypes: ReleaseDateTypes
   var sentenceCalculation: SentenceCalculation
   val recallType: RecallType?
   val sentencedAt: LocalDate
@@ -104,9 +104,10 @@ interface CalculableSentence {
   @JsonIgnore
   fun getReleaseDateType(): ReleaseDateType {
     return if (isRecall())
-      ReleaseDateType.PRRD else if (releaseDateTypes.contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null)
+      ReleaseDateType.PRRD else if (releaseDateTypes.getReleaseDateTypes().contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null)
       ReleaseDateType.PED else if (sentenceCalculation.isReleaseDateConditional)
-      ReleaseDateType.CRD else
+      ReleaseDateType.CRD else if (releaseDateTypes.contains(ReleaseDateType.MTD))
+      ReleaseDateType.MTD else
       ReleaseDateType.ARD
   }
 
@@ -116,41 +117,64 @@ interface CalculableSentence {
       is StandardDeterminateSentence -> {
         this.duration
       }
+
       is AFineSentence -> {
         this.duration
       }
+
       is ExtendedDeterminateSentence -> {
         this.combinedDuration()
       }
+
       is SopcSentence -> {
         this.combinedDuration()
       }
+
       is SingleTermSentence -> {
         this.combinedDuration()
       }
+
+      is DetentionAndTrainingOrderSentence -> {
+        this.duration
+      }
+
       else -> {
         throw UnknownError("Unknown sentence")
       }
     }
   }
+
   @JsonIgnore
   fun custodialDuration(): Duration {
     return when (this) {
       is StandardDeterminateSentence -> {
         this.duration
       }
+
       is AFineSentence -> {
         this.duration
       }
+
       is ExtendedDeterminateSentence -> {
         this.custodialDuration
       }
+
       is SopcSentence -> {
         this.custodialDuration
       }
+
       is SingleTermSentence -> {
         this.combinedDuration()
       }
+
+      is DtoSingleTermSentence -> {
+        this.combinedDuration()
+      }
+
+      is DetentionAndTrainingOrderSentence -> {
+        this.duration
+      }
+
       else -> {
         throw UnknownError("Unknown sentence")
       }
@@ -160,4 +184,15 @@ interface CalculableSentence {
   fun calculateErsedFromHalfway(): Boolean
   fun calculateErsedFromTwoThirds(): Boolean
   fun buildString(): String
+
+  @JsonIgnore
+  fun isCalculationInitialised(): Boolean
+  @JsonIgnore
+  fun isIdentificationTrackInitialized(): Boolean
+  @JsonIgnore
+  fun isDto(): Boolean {
+    return this is DetentionAndTrainingOrderSentence ||
+      (this is ConsecutiveSentence && this.orderedSentences.all { it is DetentionAndTrainingOrderSentence }) ||
+      this is DtoSingleTermSentence
+  }
 }

@@ -1,0 +1,33 @@
+{
+  "sentenceAdjustments": [],
+  "bookingAdjustments": [
+    {
+      "type": "UNLAWFULLY_AT_LARGE",
+      "numberOfDays": 18,
+      "fromDate": "2022-09-23",
+      "toDate": "2022-10-10",
+      "active": true
+    },
+    {
+      "type": "UNLAWFULLY_AT_LARGE",
+      "numberOfDays": 3,
+      "fromDate": "2022-11-26",
+      "toDate": "2022-11-28",
+      "active": true
+    },
+    {
+      "type": "UNLAWFULLY_AT_LARGE",
+      "numberOfDays": 18,
+      "fromDate": "2022-12-31",
+      "toDate": "2023-01-17",
+      "active": true
+    },
+    {
+      "type": "UNLAWFULLY_AT_LARGE",
+      "numberOfDays": 3,
+      "fromDate": "2023-02-04",
+      "toDate": "2023-02-06",
+      "active": true
+    }
+  ]
+}

@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 
 @Service
@@ -96,6 +97,15 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
   }
 
   private fun getDaysInGroup(sentences: List<CalculableSentence>, sentenceStartDate: LocalDate, durationSupplier: (sentence: CalculableSentence) -> Duration): Int {
+    if (sentences.all { it.isDto() }) {
+      val days = ConsecutiveSentenceAggregator(sentences.map(durationSupplier)).calculateDays(sentenceStartDate)
+      val between = ChronoUnit.DAYS.between(sentenceStartDate, sentenceStartDate.plusMonths(24))
+      return if (days >= between) {
+        between.toInt()
+      } else {
+        days
+      }
+    }
     return ConsecutiveSentenceAggregator(sentences.map(durationSupplier)).calculateDays(sentenceStartDate)
   }
 
@@ -142,7 +152,6 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       unadjustedPostRecallReleaseDate,
       booking.calculateErsed,
       booking.adjustments,
-      sentence.sentencedAt,
       returnToCustodyDate = booking.returnToCustodyDate,
       numberOfDaysToParoleEligibilityDate = release.numberOfDaysToParoleEligibilityDate
     )
@@ -157,7 +166,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
     val numberOfDaysToReleaseDateDouble =
       custodialDuration.getLengthInDays(sentence.sentencedAt).times(releaseDateMultiplier)
     val numberOfDaysToReleaseDate: Int = ceil(numberOfDaysToReleaseDateDouble).toInt()
-    if (sentence.releaseDateTypes.contains(PED) && (sentence is ExtendedDeterminateSentence || sentence is SopcSentence)) {
+    if (sentence.releaseDateTypes.getReleaseDateTypes().contains(PED) && (sentence is ExtendedDeterminateSentence || sentence is SopcSentence)) {
       val pedMultiplier = determinePedMultiplier(sentence.identificationTrack)
       numberOfDaysToParoleEligibilityDate =
         ceil(numberOfDaysToReleaseDate.toDouble().times(pedMultiplier)).toLong()

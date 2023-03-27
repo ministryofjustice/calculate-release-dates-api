@@ -9,12 +9,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType.LAWFULLY_AT_LARGE
@@ -30,6 +32,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.DTO
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.DTO_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType._14FTR_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
@@ -37,7 +41,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesEx
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_UAL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL
@@ -47,6 +50,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_CONSECUTIVE_TO_SENTENCE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS
@@ -81,6 +86,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SOPC_LICENCE_TERM_NOT_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SENTENCE_TYPE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ZERO_IMPRISONMENT_TERM
 import java.time.LocalDate
@@ -92,7 +98,10 @@ class ValidationService(
   private val extractionService: SentencesExtractionService,
   private val featureToggles: FeatureToggles
 ) {
-  fun validateBeforeCalculation(sourceData: PrisonApiSourceData, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
+  fun validateBeforeCalculation(
+    sourceData: PrisonApiSourceData,
+    calculationUserInputs: CalculationUserInputs
+  ): List<ValidationMessage> {
     log.info("Pre-calculation validation of source data: $sourceData")
     val sentencesAndOffences = sourceData.sentenceAndOffences
     val adjustments = sourceData.bookingAndSentenceAdjustments
@@ -139,7 +148,11 @@ class ValidationService(
       ftrDetails, sentencesAndOffences
     )
 
-    if (has14DayFTRSentence && has28DayFTRSentence) return listOf(ValidationMessage(FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER))
+    if (has14DayFTRSentence && has28DayFTRSentence) return listOf(
+      ValidationMessage(
+        FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER
+      )
+    )
     if (has14DayFTRSentence && recallLength == 28) return listOf(ValidationMessage(FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28))
     if (has28DayFTRSentence && recallLength == 14) return listOf(ValidationMessage(FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14))
     return emptyList()
@@ -233,7 +246,31 @@ class ValidationService(
   private fun validateUnsupportedCalculation(sourceData: PrisonApiSourceData): List<ValidationMessage> {
     val messages = validateFineSentenceSupported(sourceData).toMutableList()
     messages += validateSupportedAdjustments(sourceData.bookingAndSentenceAdjustments.bookingAdjustments)
+    messages += validateDtoIsNotRecall(sourceData)
+    messages += validateDtoIsNotConsecutiveToSentence(sourceData)
     return messages
+  }
+
+  private fun validateDtoIsNotConsecutiveToSentence(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+    val validationMessages = mutableListOf<ValidationMessage>()
+    sourceData.sentenceAndOffences.forEach {
+      val isDto = SentenceCalculationType.from(it.sentenceCalculationType).sentenceClazz == DetentionAndTrainingOrderSentence::class.java
+      if (isDto) {
+        if (it.consecutiveToSequence != null && sequenceNotDto(it.consecutiveToSequence, sourceData)) {
+          validationMessages.add(ValidationMessage(code = DTO_CONSECUTIVE_TO_SENTENCE))
+        }
+        if (sourceData.sentenceAndOffences.any { sent -> (sent.consecutiveToSequence == it.sentenceSequence && SentenceCalculationType.from(sent.sentenceCalculationType).sentenceClazz != DetentionAndTrainingOrderSentence::class.java) }) {
+          validationMessages.add(ValidationMessage(code = DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT))
+        }
+      }
+    }
+
+    return validationMessages.toList()
+  }
+
+  private fun sequenceNotDto(consecutiveSequence: Int, sourceData: PrisonApiSourceData): Boolean {
+    val consecutiveTo = sourceData.sentenceAndOffences.firstOrNull { it.sentenceSequence == consecutiveSequence }
+    return consecutiveTo != null && SentenceCalculationType.from(consecutiveTo.sentenceCalculationType).sentenceClazz != DetentionAndTrainingOrderSentence::class.java
   }
 
   private fun validateSentences(sentences: List<SentenceAndOffences>): MutableList<ValidationMessage> {
@@ -294,8 +331,10 @@ class ValidationService(
   }
 
   private fun validateBookingAdjustment(bookingAdjustments: List<BookingAdjustment>): List<ValidationMessage> =
-    bookingAdjustments.filter { BOOKING_ADJUSTMENTS_TO_VALIDATE.contains(it.type) && it.fromDate.isAfter(LocalDate.now()) }
-      .map { it.type }.distinct().map { ValidationMessage(ADJUSTMENT_FUTURE_DATED_MAP[it]!!) }
+    bookingAdjustments.filter {
+      val dateToValidate = if (it.type == UNLAWFULLY_AT_LARGE && it.toDate != null) it.toDate else it.fromDate
+      BOOKING_ADJUSTMENTS_TO_VALIDATE.contains(it.type) && dateToValidate.isAfter(LocalDate.now())
+    }.map { it.type }.distinct().map { ValidationMessage(ADJUSTMENT_FUTURE_DATED_MAP[it]!!) }
 
   private fun validateSentenceAdjustment(sentenceAdjustment: SentenceAdjustment): ValidationMessage? {
     if (sentenceAdjustment.type == SentenceAdjustmentType.REMAND && (sentenceAdjustment.fromDate == null || sentenceAdjustment.toDate == null)) {
@@ -341,12 +380,19 @@ class ValidationService(
   private fun validateEdsSentenceTypesCorrectlyApplied(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
 
-    if (listOf(SentenceCalculationType.EDS18, SentenceCalculationType.EDS21, SentenceCalculationType.EDSU18).contains(
-        sentenceCalculationType
-      )
+    if (listOf(
+        SentenceCalculationType.EDS18,
+        SentenceCalculationType.EDS21,
+        SentenceCalculationType.EDSU18
+      ).contains(
+          sentenceCalculationType
+        )
     ) {
       if (sentencesAndOffence.sentenceDate.isBefore(ImportantDates.EDS18_SENTENCE_TYPES_START_DATE)) {
-        return ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, getCaseSeqAndLineSeq(sentencesAndOffence))
+        return ValidationMessage(
+          EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
+          getCaseSeqAndLineSeq(sentencesAndOffence)
+        )
       }
     } else if (sentenceCalculationType == SentenceCalculationType.LASPO_AR) {
       if (sentencesAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE)) {
@@ -361,7 +407,10 @@ class ValidationService(
 
     if (listOf(SentenceCalculationType.SOPC18, SentenceCalculationType.SOPC21).contains(sentenceCalculationType)) {
       if (sentencesAndOffence.sentenceDate.isBefore(ImportantDates.SEC_91_END_DATE)) {
-        return ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, getCaseSeqAndLineSeq(sentencesAndOffence))
+        return ValidationMessage(
+          SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT,
+          getCaseSeqAndLineSeq(sentencesAndOffence)
+        )
       }
     } else if (sentenceCalculationType == SentenceCalculationType.SEC236A) {
       if (sentencesAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.SEC_91_END_DATE)) {
@@ -373,7 +422,10 @@ class ValidationService(
 
   private fun validateDuration(sentencesAndOffence: SentenceAndOffences): List<ValidationMessage> {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
-    return if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java || sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
+    return if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java ||
+      sentenceCalculationType.sentenceClazz == AFineSentence::class.java ||
+      sentenceCalculationType.sentenceClazz == DetentionAndTrainingOrderSentence::class.java
+    ) {
       validateSingleTermDuration(sentencesAndOffence)
     } else {
       validateImprisonmentAndLicenceTermDuration(sentencesAndOffence)
@@ -384,13 +436,23 @@ class ValidationService(
     val validationMessages = mutableListOf<ValidationMessage>()
     val hasMultipleTerms = sentencesAndOffence.terms.size > 1
     if (hasMultipleTerms) {
-      validationMessages.add(ValidationMessage(SENTENCE_HAS_MULTIPLE_TERMS, getCaseSeqAndLineSeq(sentencesAndOffence)))
+      validationMessages.add(
+        ValidationMessage(
+          SENTENCE_HAS_MULTIPLE_TERMS,
+          getCaseSeqAndLineSeq(sentencesAndOffence)
+        )
+      )
     } else {
       val emptyImprisonmentTerm =
         sentencesAndOffence.terms[0].days == 0 && sentencesAndOffence.terms[0].weeks == 0 && sentencesAndOffence.terms[0].months == 0 && sentencesAndOffence.terms[0].years == 0
 
       if (emptyImprisonmentTerm) {
-        validationMessages.add(ValidationMessage(ZERO_IMPRISONMENT_TERM, getCaseSeqAndLineSeq(sentencesAndOffence)))
+        validationMessages.add(
+          ValidationMessage(
+            ZERO_IMPRISONMENT_TERM,
+            getCaseSeqAndLineSeq(sentencesAndOffence)
+          )
+        )
       }
     }
     return validationMessages
@@ -416,20 +478,39 @@ class ValidationService(
       val emptyTerm =
         imprisonmentTerms[0].days == 0 && imprisonmentTerms[0].weeks == 0 && imprisonmentTerms[0].months == 0 && imprisonmentTerms[0].years == 0
       if (emptyTerm) {
-        validationMessages.add(ValidationMessage(ZERO_IMPRISONMENT_TERM, getCaseSeqAndLineSeq(sentencesAndOffence)))
+        validationMessages.add(
+          ValidationMessage(
+            ZERO_IMPRISONMENT_TERM,
+            getCaseSeqAndLineSeq(sentencesAndOffence)
+          )
+        )
       }
     }
 
     val licenceTerms = sentencesAndOffence.terms.filter { it.code == SentenceTerms.LICENCE_TERM_CODE }
     if (licenceTerms.isEmpty()) {
-      validationMessages.add(ValidationMessage(SENTENCE_HAS_NO_LICENCE_TERM, getCaseSeqAndLineSeq(sentencesAndOffence)))
+      validationMessages.add(
+        ValidationMessage(
+          SENTENCE_HAS_NO_LICENCE_TERM,
+          getCaseSeqAndLineSeq(sentencesAndOffence)
+        )
+      )
     } else if (licenceTerms.size > 1) {
-      validationMessages.add(ValidationMessage(MORE_THAN_ONE_LICENCE_TERM, getCaseSeqAndLineSeq(sentencesAndOffence)))
+      validationMessages.add(
+        ValidationMessage(
+          MORE_THAN_ONE_LICENCE_TERM,
+          getCaseSeqAndLineSeq(sentencesAndOffence)
+        )
+      )
     } else {
       val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
       if (sentenceCalculationType.sentenceClazz == ExtendedDeterminateSentence::class.java) {
         val duration =
-          Period.of(licenceTerms[0].years, licenceTerms[0].months, licenceTerms[0].weeks * 7 + licenceTerms[0].days)
+          Period.of(
+            licenceTerms[0].years,
+            licenceTerms[0].months,
+            licenceTerms[0].weeks * 7 + licenceTerms[0].days
+          )
         val endOfDuration = sentencesAndOffence.sentenceDate.plus(duration)
         val endOfOneYear = sentencesAndOffence.sentenceDate.plusYears(1)
         val endOfEightYears = sentencesAndOffence.sentenceDate.plusYears(8)
@@ -449,7 +530,11 @@ class ValidationService(
         }
       } else if (sentenceCalculationType.sentenceClazz == SopcSentence::class.java) {
         val duration =
-          Period.of(licenceTerms[0].years, licenceTerms[0].months, licenceTerms[0].weeks * 7 + licenceTerms[0].days)
+          Period.of(
+            licenceTerms[0].years,
+            licenceTerms[0].months,
+            licenceTerms[0].weeks * 7 + licenceTerms[0].days
+          )
         val endOfDuration = sentencesAndOffence.sentenceDate.plus(duration)
         val endOfOneYear = sentencesAndOffence.sentenceDate.plusYears(1)
         if (endOfDuration != endOfOneYear) {
@@ -504,13 +589,45 @@ class ValidationService(
     val validationMessages = sentencesAndOffences.filter {
       if (SentenceCalculationType.isSupported(it.sentenceCalculationType) && supportedCategories.contains(it.sentenceCategory)) {
         val type = from(it.sentenceCalculationType)
-        !featureToggles.sopcedsrecalls && type.recallType != null && (type.sentenceClazz == ExtendedDeterminateSentence::class.java || type.sentenceClazz == SopcSentence::class.java)
+        !featureToggles.dto && type.sentenceClazz == DetentionAndTrainingOrderSentence::class.java
       } else {
         true
       }
     }
-      .map { ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf(it.sentenceCategory, it.sentenceTypeDescription)) }
+      .map {
+        ValidationMessage(
+          UNSUPPORTED_SENTENCE_TYPE,
+          listOf(it.sentenceCategory, it.sentenceTypeDescription)
+        )
+      }
       .toMutableList()
+    return validationMessages.toList()
+  }
+
+  private fun validateDtoIsNotRecall(prisonApiSourceData: PrisonApiSourceData): List<ValidationMessage> {
+    val validationMessages = mutableListOf<ValidationMessage>()
+    var bookingHasDto = false
+    var bookingHasRecall = false
+    prisonApiSourceData.sentenceAndOffences.forEach() {
+
+      val sentenceCalculationType = SentenceCalculationType.from(it.sentenceCalculationType)
+      val hasDtoRecall = it.terms.any { terms ->
+        terms.code == SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE || terms.code == SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE
+      }
+      val hasDto = sentenceCalculationType == DTO || sentenceCalculationType == DTO_ORA
+      if (hasDto) {
+        bookingHasDto = true
+      }
+      if (sentenceCalculationType.recallType != null) {
+        bookingHasRecall = true
+      }
+      if (featureToggles.dto && hasDto && hasDtoRecall) {
+        validationMessages.add(ValidationMessage(ValidationCode.DTO_RECALL))
+      } else if (bookingHasDto && bookingHasRecall) {
+        validationMessages.add(ValidationMessage(UNSUPPORTED_CALCULATION_DTO_WITH_RECALL))
+      }
+    }
+
     return validationMessages.toList()
   }
 
@@ -549,23 +666,21 @@ class ValidationService(
 
   private fun validateAdditionAdjustmentsInsideLatestReleaseDate(booking: Booking): List<ValidationMessage> {
     val sentences = booking.getAllExtractableSentences()
-    val latestReleaseDatePreAddedDays = sentences.maxOf { it.sentenceCalculation.releaseDateWithoutAdditions }
+    val latestReleaseDatePreAddedDays = sentences.filter { it !is Term }.maxOfOrNull { it.sentenceCalculation.releaseDateWithoutAdditions }
+      ?: return emptyList()
 
     val adas = booking.adjustments.getOrEmptyList(AdjustmentType.ADDITIONAL_DAYS_AWARDED).toSet()
     val radas = booking.adjustments.getOrEmptyList(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED).toSet()
-    val uals = booking.adjustments.getOrEmptyList(AdjustmentType.UNLAWFULLY_AT_LARGE).toSet()
-    val adjustments = adas + radas + uals
+    val adjustments = adas + radas
 
     val adjustmentsAfterRelease =
       adjustments.filter { it.appliesToSentencesFrom.isAfter(latestReleaseDatePreAddedDays) }.toSet()
     if (adjustmentsAfterRelease.isNotEmpty()) {
       val anyAda = adjustmentsAfterRelease.intersect(adas).isNotEmpty()
       val anyRada = adjustmentsAfterRelease.intersect(radas).isNotEmpty()
-      val anyUal = adjustmentsAfterRelease.intersect(uals).isNotEmpty()
 
       if (anyAda) return listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA))
       if (anyRada) return listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_RADA))
-      if (anyUal) return listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_UAL))
     }
     return emptyList()
   }
@@ -590,7 +705,12 @@ class ValidationService(
           // Remand overlaps
           if (previousRangeIsRemand!! && isRemand) {
             val args = listOf(previousRange!!.toString(), it.toString())
-            log.warn(String.format("Remand of range %s overlaps with remand of range %s", *args.toTypedArray()))
+            log.warn(
+              String.format(
+                "Remand of range %s overlaps with remand of range %s",
+                *args.toTypedArray()
+              )
+            )
             return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_REMAND))
           } else {
             return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_SENTENCE))

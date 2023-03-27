@@ -1,8 +1,8 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.7.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.3"
   id("org.springdoc.openapi-gradle-plugin") version "1.6.0"
-  kotlin("plugin.spring") version "1.7.22"
-  kotlin("plugin.jpa") version "1.7.22"
+  kotlin("plugin.spring") version "1.8.10"
+  kotlin("plugin.jpa") version "1.8.10"
   id("jacoco")
 }
 
@@ -57,6 +57,9 @@ dependencies {
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
   implementation("org.springframework:spring-jms:5.3.22")
   implementation("com.google.code.gson:gson:2.10")
+
+  // SQS
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.2.0")
 
   // AWS
   implementation("com.amazonaws:aws-java-sdk-s3:$awsSdkVersion")

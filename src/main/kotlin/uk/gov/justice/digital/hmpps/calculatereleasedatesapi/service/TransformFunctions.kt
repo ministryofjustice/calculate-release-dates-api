@@ -49,6 +49,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentencePart
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DateBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
@@ -87,8 +88,17 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
   // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
   // treated as a separate sentence
   return sentence.offences.map { offendersOffence ->
-    val offence = if (calculationUserInputs?.sentenceCalculationUserInputs != null) {
-      val matchingSentenceInput = calculationUserInputs.sentenceCalculationUserInputs.find {
+    val offence = if (calculationUserInputs?.useOffenceIndicators == true) {
+      Offence(
+        committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
+        offenceCode = offendersOffence.offenceCode,
+        isScheduleFifteenMaximumLife = offendersOffence.isScheduleFifteenMaximumLife,
+        isPcscSds = offendersOffence.isPcscSds,
+        isPcscSec250 = offendersOffence.isPcscSec250,
+        isPcscSdsPlus = offendersOffence.isPcscSdsPlus,
+      )
+    } else {
+      val matchingSentenceInput = calculationUserInputs?.sentenceCalculationUserInputs?.find {
         it.sentenceSequence == sentence.sentenceSequence && it.offenceCode == offendersOffence.offenceCode
       }
       Offence(
@@ -98,15 +108,6 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
         isPcscSds = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.FOUR_TO_UNDER_SEVEN,
         isPcscSec250 = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.SECTION_250,
         isPcscSdsPlus = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.UPDATED,
-      )
-    } else {
-      Offence(
-        committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
-        offenceCode = offendersOffence.offenceCode,
-        isScheduleFifteenMaximumLife = offendersOffence.isScheduleFifteenMaximumLife,
-        isPcscSds = offendersOffence.isPcscSds,
-        isPcscSec250 = offendersOffence.isPcscSec250,
-        isPcscSdsPlus = offendersOffence.isPcscSdsPlus,
       )
     }
 
@@ -144,38 +145,54 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
         recallType = sentenceCalculationType.recallType,
         fineAmount = sentence.fineAmount
       )
+    } else if (sentenceCalculationType.sentenceClazz == DetentionAndTrainingOrderSentence::class.java) {
+      DetentionAndTrainingOrderSentence(
+        sentencedAt = sentence.sentenceDate,
+        duration = transform(sentence.terms[0]),
+        offence = offence,
+        identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+        consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+        caseSequence = sentence.caseSequence,
+        lineSequence = sentence.lineSequence,
+        caseReference = sentence.caseReference,
+        recallType = sentenceCalculationType.recallType
+      )
     } else {
       val imprisonmentTerm = sentence.terms.first { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
       val licenseTerm = sentence.terms.first { it.code == SentenceTerms.LICENCE_TERM_CODE }
 
-      if (sentenceCalculationType.sentenceClazz == ExtendedDeterminateSentence::class.java) {
-        ExtendedDeterminateSentence(
-          sentencedAt = sentence.sentenceDate,
-          custodialDuration = transform(imprisonmentTerm),
-          extensionDuration = transform(licenseTerm),
-          automaticRelease = sentenceCalculationType == SentenceCalculationType.LASPO_AR,
-          offence = offence,
-          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-          caseSequence = sentence.caseSequence,
-          lineSequence = sentence.lineSequence,
-          caseReference = sentence.caseReference,
-          recallType = sentenceCalculationType.recallType
-        )
-      } else {
-        SopcSentence(
-          sentencedAt = sentence.sentenceDate,
-          custodialDuration = transform(imprisonmentTerm),
-          extensionDuration = transform(licenseTerm),
-          sdopcu18 = sentenceCalculationType == SentenceCalculationType.SDOPCU18,
-          offence = offence,
-          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-          caseSequence = sentence.caseSequence,
-          lineSequence = sentence.lineSequence,
-          caseReference = sentence.caseReference,
-          recallType = sentenceCalculationType.recallType
-        )
+      when (sentenceCalculationType.sentenceClazz) {
+        ExtendedDeterminateSentence::class.java -> {
+          ExtendedDeterminateSentence(
+            sentencedAt = sentence.sentenceDate,
+            custodialDuration = transform(imprisonmentTerm),
+            extensionDuration = transform(licenseTerm),
+            automaticRelease = sentenceCalculationType == SentenceCalculationType.LASPO_AR,
+            offence = offence,
+            identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+            consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+            caseSequence = sentence.caseSequence,
+            lineSequence = sentence.lineSequence,
+            caseReference = sentence.caseReference,
+            recallType = sentenceCalculationType.recallType
+          )
+        }
+
+        else -> {
+          SopcSentence(
+            sentencedAt = sentence.sentenceDate,
+            custodialDuration = transform(imprisonmentTerm),
+            extensionDuration = transform(licenseTerm),
+            sdopcu18 = sentenceCalculationType == SentenceCalculationType.SDOPCU18,
+            offence = offence,
+            identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+            consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+            caseSequence = sentence.caseSequence,
+            lineSequence = sentence.lineSequence,
+            caseReference = sentence.caseReference,
+            recallType = sentenceCalculationType.recallType
+          )
+        }
       }
     }
   }.toMutableList()
@@ -329,7 +346,8 @@ fun transform(calculationUserInputs: CalculationUserInputs?, sourceData: PrisonA
   }
   return CalculationRequestUserInput(
     calculateErsed = calculationUserInputs.calculateErsed,
-    calculationRequestSentenceUserInputs = if (calculationUserInputs.sentenceCalculationUserInputs == null) listOf() else calculationUserInputs.sentenceCalculationUserInputs.map {
+    useOffenceIndicators = calculationUserInputs.useOffenceIndicators,
+    calculationRequestSentenceUserInputs = calculationUserInputs.sentenceCalculationUserInputs.map {
       CalculationRequestSentenceUserInput(
         sentenceSequence = it.sentenceSequence,
         offenceCode = it.offenceCode,
@@ -356,7 +374,8 @@ fun transform(calculationRequestUserInput: CalculationRequestUserInput?): Calcul
   }
   return CalculationUserInputs(
     calculateErsed = calculationRequestUserInput.calculateErsed,
-    sentenceCalculationUserInputs = if (calculationRequestUserInput.calculationRequestSentenceUserInputs.isEmpty()) null else calculationRequestUserInput.calculationRequestSentenceUserInputs.map {
+    useOffenceIndicators = calculationRequestUserInput.useOffenceIndicators,
+    sentenceCalculationUserInputs = calculationRequestUserInput.calculationRequestSentenceUserInputs.map {
       CalculationSentenceUserInput(
         sentenceSequence = it.sentenceSequence,
         offenceCode = it.offenceCode,

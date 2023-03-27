@@ -1,0 +1,44 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2004-09-30"
+  },
+  "sentences": [
+    {
+      "type": "DetentionAndTrainingOrderSentence",
+      "offence": {
+        "committedAt": "2022-06-07"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 11
+        }
+      },
+      "sentencedAt": "2022-05-17",
+      "sentenceType": "DTO_ORA"
+    },
+    {
+      "type": "DetentionAndTrainingOrderSentence",
+      "offence": {
+        "committedAt": "2022-07-07"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 12
+        }
+      },
+      "sentencedAt": "2022-08-03",
+      "sentenceType": "DTO_ORA"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "numberOfDays": 30,
+        "appliesToSentencesFrom": "2022-08-03",
+        "fromDate": "2022-03-17",
+        "toDate": "2022-04-15"
+      }
+    ]
+  }
+}

@@ -1,10 +1,14 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ETD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LTD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.MTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
@@ -14,6 +18,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.AFINE_ARD_AT_FULL_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.AFINE_ARD_AT_HALFWAY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.DTO_AFTER_PCSC
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.DTO_BEFORE_PCSC
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
@@ -24,8 +30,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DtoSingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -42,35 +51,64 @@ import java.time.temporal.ChronoUnit
 class SentenceIdentificationService {
 
   fun identify(sentence: CalculableSentence, offender: Offender) {
+    val releaseDateTypes = mutableListOf<ReleaseDateType>()
     when (sentence) {
       is ConsecutiveSentence -> {
-        identifyConsecutiveSentence(sentence, offender)
+        releaseDateTypes.addAll(identifyConsecutiveSentence(sentence, offender))
       }
+
       is SopcSentence -> {
-        identifySopcSentence(sentence)
+        releaseDateTypes.addAll(identifySopcSentence(sentence))
       }
+
       is ExtendedDeterminateSentence -> {
-        identifyExtendedDeterminate(sentence)
+        releaseDateTypes.addAll(identifyExtendedDeterminate(sentence))
       }
+
       is StandardDeterminateSentence, is SingleTermSentence -> {
-        identifyStandardDeterminate(sentence, offender)
+        releaseDateTypes.addAll(identifyStandardDeterminate(sentence, offender))
       }
+
       is AFineSentence -> {
-        identifyAFineSentence(sentence)
+        releaseDateTypes.addAll(identifyAFineSentence(sentence))
+      }
+
+      is DetentionAndTrainingOrderSentence, is DtoSingleTermSentence -> {
+        releaseDateTypes.addAll(identifyDtoSentence(sentence))
       }
     }
 
     if (sentence.recallType != null) {
-      sentence.releaseDateTypes -= HDCED
-      sentence.releaseDateTypes += PRRD
+      releaseDateTypes -= HDCED
+      releaseDateTypes += PRRD
     }
+    sentence.releaseDateTypes = ReleaseDateTypes(releaseDateTypes.toList(), sentence, offender)
   }
 
-  private fun identifyAFineSentence(sentence: AFineSentence) {
-    sentence.releaseDateTypes = listOf(
+  private fun identifyDtoSentence(sentence: CalculableSentence): List<ReleaseDateType> {
+    if (sentence is DtoSingleTermSentence) {
+      if (sentence.standardSentences.all { it.identificationTrack == DTO_BEFORE_PCSC }) {
+        sentence.identificationTrack = DTO_BEFORE_PCSC
+      } else {
+        sentence.identificationTrack = DTO_AFTER_PCSC
+      }
+    } else {
+      if (sentence.sentencedAt.isBefore(PCSC_COMMENCEMENT_DATE)) {
+        sentence.identificationTrack = DTO_BEFORE_PCSC
+      } else {
+        sentence.identificationTrack = DTO_AFTER_PCSC
+      }
+    }
+    return listOf(
       SED,
-      ARD
+      MTD,
+      ETD,
+      LTD,
+      TUSED
     )
+  }
+
+  private fun identifyAFineSentence(sentence: AFineSentence): List<ReleaseDateType> {
     if (sentence.fineAmount != null && sentence.fineAmount >= TEN_MILLION &&
       sentence.sentencedAt.isAfterOrEqualTo(A_FINE_TEN_MILLION_FULL_RELEASE_DATE)
     ) {
@@ -78,95 +116,135 @@ class SentenceIdentificationService {
     } else {
       sentence.identificationTrack = AFINE_ARD_AT_HALFWAY
     }
+    return listOf(
+      SED,
+      ARD
+    )
   }
 
-  private fun identifyConsecutiveSentence(sentence: ConsecutiveSentence, offender: Offender) {
+  private fun identifyConsecutiveSentence(sentence: ConsecutiveSentence, offender: Offender): List<ReleaseDateType> {
+    val releaseDateTypes = mutableListOf<ReleaseDateType>()
     if (sentence.hasAnyEdsOrSopcSentence()) {
       if (sentence.hasSopcSentence() || sentence.hasDiscretionaryRelease()) {
-        sentence.releaseDateTypes = listOf(
-          SLED,
-          CRD,
-          PED
+        releaseDateTypes.addAll(
+          listOf(
+            SLED,
+            CRD,
+            PED
+          )
         )
       } else {
-        sentence.releaseDateTypes = listOf(
-          SLED,
-          CRD
+        releaseDateTypes.addAll(
+          listOf(
+            SLED,
+            CRD
+          )
         )
       }
     } else {
       if (sentence.isMadeUpOfOnlySdsTwoThirdsReleaseSentences()) {
-        sentence.releaseDateTypes = listOf(
-          SLED,
-          CRD
+        releaseDateTypes.addAll(
+          listOf(
+            SLED,
+            CRD
+          )
+        )
+      } else if (sentence.isMadeUpOfOnlyDtos()) {
+        if (sentence.orderedSentences.all { it.identificationTrack == DTO_BEFORE_PCSC }) {
+          sentence.identificationTrack = DTO_BEFORE_PCSC
+        } else {
+          sentence.identificationTrack = DTO_AFTER_PCSC
+        }
+        releaseDateTypes.addAll(
+          listOf(
+            SED,
+            MTD,
+            ETD,
+            LTD,
+            TUSED
+          )
         )
       } else if (sentence.isMadeUpOfBeforeAndAfterCjaLaspoSentences()) {
         // This consecutive sentence is made up of pre and post laspo date sentences. (Old and new style)
         val hasScheduleFifteen = sentence.orderedSentences.any() { it.offence.isScheduleFifteen }
         if (hasScheduleFifteen) {
           // PSI example 40
-          sentence.releaseDateTypes = listOf(
-            NCRD,
-            PED,
-            NPD,
-            SLED
+          releaseDateTypes.addAll(
+            listOf(
+              NCRD,
+              PED,
+              NPD,
+              SLED
+            )
           )
         } else {
           // PSI example 39
-          sentence.releaseDateTypes = listOf(
-            SLED,
-            CRD
+          releaseDateTypes.addAll(
+            listOf(
+              SLED,
+              CRD
+            )
           )
         }
       } else if (sentence.isMadeUpOfOnlyAfterCjaLaspoSentences()) {
         if (sentence.hasOraSentences() && sentence.hasNonOraSentences()) {
           // PSI example 25
           if (sentence.durationIsLessThan(12, ChronoUnit.MONTHS)) {
-            sentence.releaseDateTypes = listOf(
-              LED,
-              SED,
-              CRD,
+            releaseDateTypes.addAll(
+              listOf(
+                LED,
+                SED,
+                CRD,
+              )
             )
           } else {
             // PSI example 21
-            sentence.releaseDateTypes = listOf(
-              SLED,
-              CRD
+            releaseDateTypes.addAll(
+              listOf(
+                SLED,
+                CRD
+              )
             )
           }
         } else {
-          afterCJAAndLASPOorSDSPlus(sentence, offender)
+          afterCJAAndLASPOorSDSPlus(sentence, offender, releaseDateTypes)
         }
       } else if (sentence.isMadeUpOfOnlyBeforeCjaLaspoSentences()) {
-        beforeCJAAndLASPO(sentence)
+        beforeCJAAndLASPO(sentence, releaseDateTypes)
       }
 
       if (doesTopUpSentenceExpiryDateApply(sentence, offender)) {
-        sentence.releaseDateTypes += TUSED
+        releaseDateTypes += TUSED
       }
 
-      if (doesHdcedDateApply(sentence, offender)) {
-        sentence.releaseDateTypes += HDCED
+      if (doesHdcedDateApply(sentence, offender, sentence.isMadeUpOfOnlyDtos())) {
+        releaseDateTypes += HDCED
       }
     }
+    return releaseDateTypes
   }
 
-  private fun doesHdcedDateApply(sentence: CalculableSentence, offender: Offender): Boolean {
+  private fun doesHdcedDateApply(sentence: CalculableSentence, offender: Offender, isMadeUpOfOnlyDtos: Boolean): Boolean {
     return sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.WEEKS) &&
-      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS) && !offender.isActiveSexOffender
+      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS) && !offender.isActiveSexOffender && !isMadeUpOfOnlyDtos
   }
 
-  private fun identifySopcSentence(sentence: SopcSentence) {
+  private fun identifySopcSentence(sentence: SopcSentence): List<ReleaseDateType> {
+    val releaseDateTypes = mutableListOf<ReleaseDateType>()
     if (sentence.isRecall()) {
-      sentence.releaseDateTypes = listOf(
-        SLED,
-        PRRD
+      releaseDateTypes.addAll(
+        listOf(
+          SLED,
+          PRRD
+        )
       )
     } else {
-      sentence.releaseDateTypes = listOf(
-        SLED,
-        CRD,
-        PED
+      releaseDateTypes.addAll(
+        listOf(
+          SLED,
+          CRD,
+          PED
+        )
       )
     }
     if (sentence.sdopcu18 || sentence.sentencedAt.isAfterOrEqualTo(PCSC_COMMENCEMENT_DATE)) {
@@ -174,63 +252,75 @@ class SentenceIdentificationService {
     } else {
       sentence.identificationTrack = SOPC_PED_AT_HALFWAY
     }
+    return releaseDateTypes
   }
-  private fun identifyExtendedDeterminate(sentence: ExtendedDeterminateSentence) {
+
+  private fun identifyExtendedDeterminate(sentence: ExtendedDeterminateSentence): List<ReleaseDateType> {
+    val releaseDateTypes = mutableListOf<ReleaseDateType>()
     if (sentence.isRecall()) {
       sentence.identificationTrack = EDS_AUTOMATIC_RELEASE
-      sentence.releaseDateTypes = listOf(
-        SLED,
-        PRRD
+      releaseDateTypes.addAll(
+        listOf(
+          SLED,
+          PRRD
+        )
       )
     } else {
       if (sentence.automaticRelease) {
         sentence.identificationTrack = EDS_AUTOMATIC_RELEASE
-        sentence.releaseDateTypes = listOf(
-          SLED,
-          CRD
+        releaseDateTypes.addAll(
+          listOf(
+            SLED,
+            CRD
+          )
         )
       } else {
         sentence.identificationTrack = EDS_DISCRETIONARY_RELEASE
-        sentence.releaseDateTypes = listOf(
-          SLED,
-          CRD,
-          PED
+        releaseDateTypes.addAll(
+          listOf(
+            SLED,
+            CRD,
+            PED
+          )
         )
       }
     }
+    return releaseDateTypes
   }
 
-  fun identifyStandardDeterminate(sentence: CalculableSentence, offender: Offender) {
-    sentence.releaseDateTypes = listOf()
+  fun identifyStandardDeterminate(sentence: CalculableSentence, offender: Offender): List<ReleaseDateType> {
+    val releaseDateTypes = mutableListOf<ReleaseDateType>()
 
     if (
       sentence.sentencedAt.isBefore(LASPO_DATE) &&
       sentence.offence.committedAt.isBefore(CJA_DATE)
     ) {
-      beforeCJAAndLASPO(sentence)
+      beforeCJAAndLASPO(sentence, releaseDateTypes)
     } else {
-      afterCJAAndLASPOorSDSPlus(sentence, offender)
+      afterCJAAndLASPOorSDSPlus(sentence, offender, releaseDateTypes)
     }
 
     if (doesTopUpSentenceExpiryDateApply(sentence, offender)) {
-      sentence.releaseDateTypes += TUSED
+      releaseDateTypes += TUSED
     }
 
-    if (doesHdcedDateApply(sentence, offender)) {
-      sentence.releaseDateTypes += HDCED
+    if (doesHdcedDateApply(sentence, offender, false)) {
+      releaseDateTypes += HDCED
     }
+    return releaseDateTypes
   }
 
-  private fun afterCJAAndLASPOorSDSPlus(sentence: CalculableSentence, offender: Offender) {
-
+  private fun afterCJAAndLASPOorSDSPlus(sentence: CalculableSentence, offender: Offender, releaseDateTypes: MutableList<ReleaseDateType>) {
     sentence.identificationTrack = SDS_AFTER_CJA_LASPO
 
     if (sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) &&
       sentence.offence.committedAt.isBefore(ImportantDates.ORA_DATE)
     ) {
-      sentence.releaseDateTypes = listOf(
-        ARD,
-        SED
+      releaseDateTypes.addAll(
+        listOf(
+          ARD,
+          SED
+        )
       )
     } else {
 
@@ -259,41 +349,51 @@ class SentenceIdentificationService {
         }
       }
 
-      sentence.releaseDateTypes = listOf(
-        SLED,
-        CRD
+      releaseDateTypes.addAll(
+        listOf(
+          SLED,
+          CRD
+        )
       )
     }
   }
 
-  private fun beforeCJAAndLASPO(sentence: CalculableSentence) {
+  private fun beforeCJAAndLASPO(sentence: CalculableSentence, releaseDateTypes: MutableList<ReleaseDateType>) {
 
     sentence.identificationTrack = SDS_BEFORE_CJA_LASPO
 
     if (sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
       if (sentence.offence.isScheduleFifteen) {
-        sentence.releaseDateTypes = listOf(
-          PED,
-          NPD,
-          LED,
-          SED
+        releaseDateTypes.addAll(
+          listOf(
+            PED,
+            NPD,
+            LED,
+            SED
+          )
         )
       } else {
-        sentence.releaseDateTypes = listOf(
-          CRD,
-          SLED
+        releaseDateTypes.addAll(
+          listOf(
+            CRD,
+            SLED
+          )
         )
       }
     } else if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
-      sentence.releaseDateTypes = listOf(
-        LED,
-        CRD,
-        SED
+      releaseDateTypes.addAll(
+        listOf(
+          LED,
+          CRD,
+          SED
+        )
       )
     } else {
-      sentence.releaseDateTypes = listOf(
-        ARD,
-        SED
+      releaseDateTypes.addAll(
+        listOf(
+          ARD,
+          SED
+        )
       )
     }
   }
@@ -303,9 +403,11 @@ class SentenceIdentificationService {
       is StandardDeterminateSentence -> {
         sentence.isOraSentence()
       }
+
       is ConsecutiveSentence -> {
         sentence.hasOraSentences()
       }
+
       else -> {
         false
       }
@@ -315,9 +417,11 @@ class SentenceIdentificationService {
       is StandardDeterminateSentence -> {
         sentence.identificationTrack == SDS_AFTER_CJA_LASPO
       }
+
       is ConsecutiveSentence -> {
         sentence.isMadeUpOfOnlyAfterCjaLaspoSentences()
       }
+
       else -> {
         false
       }

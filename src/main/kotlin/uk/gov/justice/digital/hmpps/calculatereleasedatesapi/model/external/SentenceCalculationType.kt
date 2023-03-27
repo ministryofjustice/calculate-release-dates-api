@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
@@ -53,7 +54,9 @@ enum class SentenceCalculationType(
   LR_LASPO_DR(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
   LR_SEC236A(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
   LR_SOPC18(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
-  LR_SOPC21(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java);
+  LR_SOPC21(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
+  DTO(sentenceClazz = DetentionAndTrainingOrderSentence::class.java),
+  DTO_ORA(sentenceClazz = DetentionAndTrainingOrderSentence::class.java);
 
   companion object {
     fun from(sentenceCalculationType: String): SentenceCalculationType =

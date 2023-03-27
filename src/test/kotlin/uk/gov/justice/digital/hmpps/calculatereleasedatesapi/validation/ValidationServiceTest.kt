@@ -45,6 +45,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_CONSECUTIVE_TO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_MISSING_FINE_AMOUNT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_CONSECUTIVE_TO_SENTENCE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS
@@ -81,7 +83,7 @@ import java.util.UUID
 
 @Profile("tests")
 class ValidationServiceTest {
-  private var validationService = ValidationService(SentencesExtractionService(), FeatureToggles())
+  private var validationService = ValidationService(SentencesExtractionService(), FeatureToggles(dto = true))
   private val validSdsSentence = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 7,
@@ -625,6 +627,113 @@ class ValidationServiceTest {
   }
 
   @Test
+  fun `Test A DTO sentence consecutive to unsupported`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceSequence = 1
+      ),
+      validSdsSentence.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        sentenceCalculationType = "DTO",
+        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+      )
+    )
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        USER_INPUTS
+      )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(DTO_CONSECUTIVE_TO_SENTENCE),
+      )
+    )
+  }
+
+  @Test
+  fun `Test A DTO sentence consecutive from unsupported`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceSequence = 1,
+        sentenceCalculationType = "DTO",
+        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+      ),
+      validSdsSentence.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1
+      )
+    )
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        USER_INPUTS
+      )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT),
+      )
+    )
+  }
+  @Test
+  fun `Test multiple DTO sentence consecutive to unsupported`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceSequence = 1,
+        sentenceCalculationType = "DTO",
+        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+      ),
+      validSdsSentence.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+
+      ),
+      validSdsSentence.copy(
+        sentenceSequence = 3,
+        consecutiveToSequence = 2,
+        sentenceCalculationType = "DTO",
+        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+      )
+    )
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        USER_INPUTS
+      )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT),
+        ValidationMessage(DTO_CONSECUTIVE_TO_SENTENCE),
+      )
+    )
+  }
+  @Test
+  fun `Test multiple DTO sentence consecutive no error`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceSequence = 1,
+        sentenceCalculationType = "DTO",
+        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+      ),
+      validSdsSentence.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        sentenceCalculationType = "DTO",
+        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+      )
+    )
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        USER_INPUTS
+      )
+
+    assertThat(result).isEmpty()
+  }
+  @Test
   fun `Test A FINE sentence consecutive to unsupported`() {
     val sentences = listOf(
       validSdsSentence.copy(
@@ -777,46 +886,25 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test EDS recalls unsupported if feature toggle off`() {
+  fun `Test EDS recalls supported`() {
     val result = validationService.validateBeforeCalculation(
-      PrisonApiSourceData(listOf(validEdsRecallSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-      CalculationUserInputs()
-    )
-
-    assertThat(result).isEqualTo(
-      listOf(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This is a sentence type"))),
-    )
-  }
-
-  @Test
-  fun `Test EDS recalls supported if feature toggle on`() {
-    val result = ValidationService(SentencesExtractionService(), FeatureToggles(true)).validateBeforeCalculation(
       PrisonApiSourceData(listOf(validEdsRecallSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
       CalculationUserInputs()
     )
 
     assertThat(result).isEmpty()
   }
-  @Test
-  fun `Test SOPC recalls unsupported if feature toggle off`() {
-    val result = validationService.validateBeforeCalculation(
-      PrisonApiSourceData(listOf(validSopcRecallSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-      CalculationUserInputs()
-    )
 
-    assertThat(result).isEqualTo(
-      listOf(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This is a sentence type")))
-    )
-  }
   @Test
-  fun `Test SOPC recalls supported if feature toggle on`() {
-    val result = ValidationService(SentencesExtractionService(), FeatureToggles(true)).validateBeforeCalculation(
+  fun `Test SOPC recalls supported`() {
+    val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(listOf(validSopcRecallSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
       CalculationUserInputs()
     )
 
     assertThat(result).isEmpty()
   }
+
   @Test
   fun `Test FTR validation precalc`() {
     val result = validationService.validateBeforeCalculation(
@@ -1034,6 +1122,292 @@ class ValidationServiceTest {
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS)))
+      }
+    }
+
+    @Nested
+    @DisplayName("DTO Recall validation tests")
+    inner class DTORecallValidationTests {
+      @Test
+      fun `Test DTO with breach of supervision requirements returns validation message`() {
+
+        val sentenceAndOffences = validSdsSentence.copy(
+          sentenceCalculationType = SentenceCalculationType.DTO.name,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE)
+          )
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+      }
+
+      @Test
+      fun `Test DTO with breach due to imprisonable offence returns validation message`() {
+        val sentenceAndOffences = validSdsSentence.copy(
+          sentenceCalculationType = SentenceCalculationType.DTO.name,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE)
+          )
+        )
+
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+      }
+
+      @Test
+      fun `Test DTO with Imprisonment term code returns no validation message`() {
+        val sentenceAndOffences = validSdsSentence.copy(
+          sentenceCalculationType = SentenceCalculationType.DTO.name,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
+          )
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).isEmpty()
+      }
+
+      @Test
+      fun `Test DTO_ORA with breach of supervision requirements returns validation message`() {
+        val sentenceAndOffences = validSdsSentence.copy(
+          sentenceCalculationType = SentenceCalculationType.DTO_ORA.name,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE)
+          )
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+      }
+
+      @Test
+      fun `Test DTO_ORA with breach due to imprisonable offence returns validation message`() {
+        val sentenceAndOffences = validSdsSentence.copy(
+          sentenceCalculationType = SentenceCalculationType.DTO_ORA.name,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE)
+          )
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+      }
+
+      @Test
+      fun `Test DTO_ORA with Imprisonment term code returns no validation message`() {
+        val sentenceAndOffences = validSdsSentence.copy(
+          sentenceCalculationType = SentenceCalculationType.DTO_ORA.name,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
+          )
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).isEmpty()
+      }
+
+      @Test
+      fun `Test non-DTO with breach of supervision requirements doesn't return DTO Recall validation message`() {
+        val sentenceAndOffences = validSdsSentence.copy(
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE)
+          )
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).doesNotContain(ValidationMessage(ValidationCode.DTO_RECALL))
+      }
+
+      @Test
+      fun `Test feature toggle off returns unsupported sentence type`() {
+        val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(dto = false))
+        val sentenceAndOffences = validSdsSentence.copy(
+          sentenceCalculationType = SentenceCalculationType.DTO_ORA.name,
+          terms = listOf(
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE)
+          )
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(sentenceAndOffences),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+        assertThat(result).containsExactly(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This is a sentence type")))
+      }
+    }
+
+    @Nested
+    @DisplayName("Future dated validation")
+    inner class FutureDatedAdjustmentValidation {
+      @Test
+      fun `Test UAL with from and to date`() {
+        val adjustment = BookingAndSentenceAdjustments(
+          listOf(
+            BookingAdjustment(
+              active = true,
+              fromDate = LocalDate.now().minusDays(10),
+              toDate = LocalDate.now().plusDays(10),
+              numberOfDays = 20,
+              type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE
+            )
+          ),
+          emptyList()
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(validSdsSentence),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = adjustment,
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+
+        assertThat(result).isEqualTo(
+          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_UAL))
+        )
+      }
+
+      @Test
+      fun `Test UAL with only from date`() {
+        val adjustment = BookingAndSentenceAdjustments(
+          listOf(
+            BookingAdjustment(
+              active = true,
+              fromDate = LocalDate.now().plusDays(10),
+              toDate = null,
+              numberOfDays = 20,
+              type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE
+            )
+          ),
+          emptyList()
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(validSdsSentence),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = adjustment,
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+
+        assertThat(result).isEqualTo(
+          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_UAL))
+        )
+      }
+
+      @Test
+      fun `Test ADA`() {
+        val adjustment = BookingAndSentenceAdjustments(
+          listOf(
+            BookingAdjustment(
+              active = true,
+              fromDate = LocalDate.now().plusDays(10),
+              toDate = null,
+              numberOfDays = 20,
+              type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
+            )
+          ),
+          emptyList()
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(validSdsSentence),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = adjustment,
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+
+        assertThat(result).isEqualTo(
+          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_ADA))
+        )
+      }
+
+      @Test
+      fun `Test RADA`() {
+        val adjustment = BookingAndSentenceAdjustments(
+          listOf(
+            BookingAdjustment(
+              active = true,
+              fromDate = LocalDate.now().plusDays(10),
+              toDate = null,
+              numberOfDays = 20,
+              type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
+            )
+          ),
+          emptyList()
+        )
+        val result = validationService.validateBeforeCalculation(
+          PrisonApiSourceData(
+            sentenceAndOffences = listOf(validSdsSentence),
+            prisonerDetails = VALID_PRISONER,
+            bookingAndSentenceAdjustments = adjustment,
+            returnToCustodyDate = null,
+          ),
+          USER_INPUTS
+        )
+
+        assertThat(result).isEqualTo(
+          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_RADA))
+        )
       }
     }
   }
