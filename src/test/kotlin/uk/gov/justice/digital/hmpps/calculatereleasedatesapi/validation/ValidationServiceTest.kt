@@ -31,6 +31,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Offe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR
@@ -64,6 +66,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.LASPO_AR_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.MORE_THAN_ONE_IMPRISONMENT_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.MORE_THAN_ONE_LICENCE_TERM
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.PRE_PCSC_DTO_WITH_ADJUSTMENT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SEC236A_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SENTENCE_HAS_NO_LICENCE_TERM
@@ -732,6 +735,97 @@ class ValidationServiceTest {
       )
 
     assertThat(result).isEmpty()
+  }
+
+  @Test
+  fun `Test DTO pre pcsc with remand associated`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceSequence = 1,
+        sentenceCalculationType = "DTO",
+        sentenceDate = LocalDate.of(2021, 2, 1),
+        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+      ),
+      validSdsSentence.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        sentenceCalculationType = "DTO",
+        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+      )
+    )
+    val adjustments = BookingAndSentenceAdjustments(
+      bookingAdjustments = emptyList(),
+      sentenceAdjustments = listOf(
+        SentenceAdjustment(
+          sentenceSequence = 1,
+          active = true,
+          fromDate = LocalDate.of(2021, 1, 30),
+          toDate = LocalDate.of(2021, 1, 31),
+          numberOfDays = 1,
+          type = SentenceAdjustmentType.REMAND
+        )
+      )
+    )
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, VALID_PRISONER, adjustments, listOf(), null),
+        USER_INPUTS
+      )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(PRE_PCSC_DTO_WITH_ADJUSTMENT, listOf("remand"))
+      )
+    )
+  }
+
+  @Test
+  fun `Test DTO pre pcsc with remand and tagged bail associated`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceSequence = 1,
+        sentenceCalculationType = "DTO",
+        sentenceDate = LocalDate.of(2021, 2, 1),
+        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+      ),
+      validSdsSentence.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        sentenceCalculationType = "DTO",
+        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+      )
+    )
+    val adjustments = BookingAndSentenceAdjustments(
+      bookingAdjustments = emptyList(),
+      sentenceAdjustments = listOf(
+        SentenceAdjustment(
+          sentenceSequence = 1,
+          active = true,
+          fromDate = LocalDate.of(2021, 1, 30),
+          toDate = LocalDate.of(2021, 1, 31),
+          numberOfDays = 1,
+          type = SentenceAdjustmentType.REMAND
+        ),
+        SentenceAdjustment(
+          sentenceSequence = 1,
+          active = true,
+          fromDate = LocalDate.of(2021, 1, 30),
+          toDate = LocalDate.of(2021, 1, 31),
+          numberOfDays = 1,
+          type = SentenceAdjustmentType.TAGGED_BAIL
+        )
+      )
+    )
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, VALID_PRISONER, adjustments, listOf(), null),
+        USER_INPUTS
+      )
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(PRE_PCSC_DTO_WITH_ADJUSTMENT, listOf("remand and tagged bail"))
+      )
+    )
   }
   @Test
   fun `Test A FINE sentence consecutive to unsupported`() {
