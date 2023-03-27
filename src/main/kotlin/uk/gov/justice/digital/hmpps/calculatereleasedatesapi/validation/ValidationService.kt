@@ -37,6 +37,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType._14FTR_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA
@@ -73,6 +74,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_MISSING_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.PRE_PCSC_DTO_WITH_ADJUSTMENT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.PRISONER_SUBJECT_TO_PTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_FROM_TO_DATES_REQUIRED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_OVERLAPS_WITH_REMAND
@@ -125,7 +127,27 @@ class ValidationService(
     val validationMessages = validateSentences(sortedSentences)
     validationMessages += validateAdjustments(adjustments)
     validationMessages += validateFixedTermRecall(sourceData)
+    validationMessages += validatePrePcscDtoDoesNotHaveRemandOrTaggedBail(sourceData)
+
     return validationMessages
+  }
+
+  private fun validatePrePcscDtoDoesNotHaveRemandOrTaggedBail(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+    val messages = mutableListOf<ValidationMessage>()
+    val adjustments = mutableSetOf<SentenceAdjustmentType>()
+    sourceData.bookingAndSentenceAdjustments.sentenceAdjustments.forEach { adjustment ->
+      if (adjustment.type == SentenceAdjustmentType.REMAND || adjustment.type == SentenceAdjustmentType.TAGGED_BAIL) {
+        val sentence = sourceData.sentenceAndOffences.first { it.sentenceSequence == adjustment.sentenceSequence }
+        if (SentenceCalculationType.from(sentence.sentenceCalculationType).sentenceClazz == DetentionAndTrainingOrderSentence::class.java && sentence.sentenceDate.isBefore(PCSC_COMMENCEMENT_DATE)) {
+          adjustments.add(adjustment.type)
+        }
+      }
+    }
+    if (adjustments.size > 0) {
+      val adjustmentString = adjustments.joinToString(separator = " and ") { it -> "${it.toString().lowercase()}" }
+      messages.add(ValidationMessage(PRE_PCSC_DTO_WITH_ADJUSTMENT, listOf(adjustmentString.replace("_", " "))))
+    }
+    return messages
   }
 
   /*
