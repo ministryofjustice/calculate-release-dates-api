@@ -67,4 +67,5 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   UNSUPPORTED_SENTENCE_TYPE("Unsupported sentence type %s %s", UNSUPPORTED_SENTENCE),
   ZERO_IMPRISONMENT_TERM("Court case %s count %s must include an imprisonment term greater than zero."),
   UNSUPPORTED_CALCULATION_DTO_WITH_RECALL("Unsupported calculation - DTO and recall", UNSUPPORTED_CALCULATION),
+  PRE_PCSC_DTO_WITH_ADJUSTMENT("If a Detention and training order (DTO) has a sentence date before 28 June 2022, %s cannot be applied."),
 }
