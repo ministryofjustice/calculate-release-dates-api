@@ -47,18 +47,19 @@ class DtoSingleTermSentence(
   }
 
   fun combinedDuration(): Duration {
-    val firstSentence = standardSentences.get(0)
-    val secondSentence = standardSentences.get(1)
+    val sentencesOrderedByLengthThenSentenceDate = standardSentences.sortedWith(compareBy({ it.getLengthInDays() }, { it.sentencedAt }))
+    val longestEarliestSentence = sentencesOrderedByLengthThenSentenceDate.first()
+    val shortestRecentSentence = sentencesOrderedByLengthThenSentenceDate.last()
     val durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()
     durationElements[ChronoUnit.DAYS] = ChronoUnit.DAYS.between(
-      earliestSentencedAt(firstSentence, secondSentence),
-      latestExpiryDate(firstSentence, secondSentence)?.plusDays(1L)
+      earliestSentencedAt(longestEarliestSentence, shortestRecentSentence),
+      latestExpiryDate(longestEarliestSentence, shortestRecentSentence)?.plusDays(1L)
     )
     val duration = Duration(durationElements)
-    if (duration.getEndDate(firstSentence.sentencedAt).isAfter(earliestSentencedAt(firstSentence, secondSentence).plusYears(2))) {
+    if (duration.getEndDate(longestEarliestSentence.sentencedAt).isAfter(earliestSentencedAt(longestEarliestSentence, shortestRecentSentence).plusYears(2))) {
       durationElements[ChronoUnit.DAYS] = ChronoUnit.DAYS.between(
-        earliestSentencedAt(firstSentence, secondSentence),
-        earliestSentencedAt(firstSentence, secondSentence).plusYears(2)
+        earliestSentencedAt(longestEarliestSentence, shortestRecentSentence),
+        earliestSentencedAt(longestEarliestSentence, shortestRecentSentence).plusYears(2)
       )
       return Duration(durationElements)
     }

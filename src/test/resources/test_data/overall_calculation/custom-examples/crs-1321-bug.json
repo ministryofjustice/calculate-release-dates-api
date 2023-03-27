@@ -1,0 +1,97 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2005-05-16"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2023-01-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 10
+        }
+      },
+      "sentencedAt": "2023-01-12",
+      "sentenceType": "DTO_ORA",
+      "type": "DetentionAndTrainingOrderSentence"
+    },
+    {
+      "offence": {
+        "committedAt": "2023-01-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 10
+        }
+      },
+      "sentencedAt": "2023-01-12",
+      "sentenceType": "DTO_ORA",
+      "type": "DetentionAndTrainingOrderSentence"
+    },
+    {
+      "offence": {
+        "committedAt": "2023-01-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 10
+        }
+      },
+      "sentencedAt": "2023-01-12",
+      "sentenceType": "DTO_ORA",
+      "type": "DetentionAndTrainingOrderSentence"
+    },
+    {
+      "offence": {
+        "committedAt": "2023-01-12"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "sentencedAt": "2022-10-07",
+      "sentenceType": "DTO_ORA",
+      "type": "DetentionAndTrainingOrderSentence"
+    },
+    {
+      "offence": {
+        "committedAt": "2023-01-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 18
+        }
+      },
+      "sentencedAt": "2022-10-07",
+      "sentenceType": "DTO_ORA",
+      "type": "DetentionAndTrainingOrderSentence"
+    },
+    {
+      "offence": {
+        "committedAt": "2023-01-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 10
+        }
+      },
+      "sentencedAt": "2022-10-07",
+      "sentenceType": "DTO_ORA",
+      "type": "DetentionAndTrainingOrderSentence"
+    }
+  ],
+
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2023-01-12",
+        "numberOfDays": 114,
+        "fromDate": "2022-06-15",
+        "toDate": "2022-10-06"
+      }
+    ]
+  }
+}
