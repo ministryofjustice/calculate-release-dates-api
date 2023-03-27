@@ -322,7 +322,7 @@ class BookingExtractionService(
   }
 
   private fun isTusedableDtos(booking: Booking, effectiveSentenceLength: Period): Boolean {
-    return booking.sentences.all { it.isDto() } && effectiveSentenceLength.months < 24 && !booking.underEighteenAtEndOfCustodialPeriod()
+    return booking.sentences.all { it.isDto() } && effectiveSentenceLength.toTotalMonths() < 24 && !booking.underEighteenAtEndOfCustodialPeriod()
   }
 
   private fun calculateErsedWhereDtoIsPresent(dates: MutableMap<ReleaseDateType, LocalDate>, latestEarlyReleaseSchemeEligibilitySentence: CalculableSentence, breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>) {

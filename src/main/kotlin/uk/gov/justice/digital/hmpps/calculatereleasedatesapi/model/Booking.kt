@@ -43,6 +43,6 @@ data class Booking(
 
   @JsonIgnore
   val underEighteenAtEndOfCustodialPeriod: () -> Boolean = {
-    sentences.all { offender.getAgeOnDate(it.sentenceCalculation.releaseDate) < 18 }
+    sentences.all { offender.getAgeOnDate(it.sentenceCalculation.releaseDate) < 18 } && consecutiveSentences.all { offender.getAgeOnDate(it.sentenceCalculation.releaseDate) < 18 }
   }
 }
