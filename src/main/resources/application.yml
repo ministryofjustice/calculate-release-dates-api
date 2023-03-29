@@ -128,3 +128,19 @@ domain-events-sns:
 
 feature-toggles:
   dto: ${DTO_FEATURE_TOGGLE}
+
+hdced:
+  envelope:
+    minimum:
+      value: 12
+      unit: WEEKS
+    maximum:
+      value: 4
+      unit: YEARS
+    midPoint:
+      value: 18
+      unit: MONTHS
+  custodialDays:
+    minimum: 14
+  deduction:
+    days: 135

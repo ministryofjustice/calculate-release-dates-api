@@ -82,10 +82,10 @@
     },
     "HDCED": {
       "rules": [
-        "HDCED_GE_18M_LT_4Y"
+        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD"
       ],
       "rulesWithExtraAdjustments": {
-        "HDCED_GE_18M_LT_4Y": {
+        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD": {
           "adjustmentValue": -135,
           "type": "DAYS"
         }
