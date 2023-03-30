@@ -3,10 +3,12 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
+import java.time.temporal.ChronoUnit
 
 class SentenceIdentificationServiceTest {
-
-  private var sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService()
+  private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 18, ChronoUnit.MONTHS, 135)
+  private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
+  private var sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(hdcedCalculator)
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
   private val offenderU18 = jsonTransformation.loadOffender("john_doe_under18")

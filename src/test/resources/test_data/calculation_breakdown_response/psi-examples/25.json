@@ -86,10 +86,10 @@
     },
     "HDCED":{
       "rules":[
-        "HDCED_GE_12W_LT_18M"
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT"
       ],
       "rulesWithExtraAdjustments":{
-        "HDCED_GE_12W_LT_18M":{
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT":{
           "adjustmentValue":76,
           "type":"DAYS"
         }

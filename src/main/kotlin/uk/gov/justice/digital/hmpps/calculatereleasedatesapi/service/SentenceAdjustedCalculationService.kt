@@ -2,9 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_12W_LT_18M
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_18M_LT_4Y
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_MINIMUM_14D
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.IMMEDIATE_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.LED_CONSEC_ORA_AND_NON_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.TUSED_LICENCE_PERIOD_LT_1Y
@@ -27,15 +24,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.max
 
 @Service
-class SentenceAdjustedCalculationService {
+class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator) {
   /*
     This function calculates dates after adjustments have been decided.
     It can be run many times to recalculate dates. It needs to be run if there is a change to adjustments.
@@ -90,7 +85,7 @@ class SentenceAdjustedCalculationService {
     }
 
     if (sentence.releaseDateTypes.contains(HDCED)) {
-      calculateHDCED(sentence, sentenceCalculation)
+      hdcedCalculator.calculateHdced(sentence, sentenceCalculation)
     }
 
     BookingCalculationService.log.info(sentence.buildString())
@@ -285,102 +280,6 @@ class SentenceAdjustedCalculationService {
         .plusDays(sentenceCalculation.numberOfDaysToNonParoleDate)
         .minusDays(ONE)
     }
-  }
-
-  private fun calculateHDCED(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
-    // If adjustments make the CRD before sentence date plus 14 days (i.e. a large REMAND days)
-    // then we don't need a HDCED date.
-    if (sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(sentence.sentencedAt.plusDays(14))) {
-      sentenceCalculation.homeDetentionCurfewEligibilityDate = null
-      return
-    }
-
-    val adjustedDays = sentenceCalculation.calculatedTotalAddedDays
-      .plus(sentenceCalculation.calculatedTotalAwardedDays)
-      .minus(sentenceCalculation.calculatedTotalDeductedDays)
-      .minus(sentenceCalculation.calculatedUnusedReleaseAda)
-
-    // Any sentences < 12W or >= 4Y have been excluded already in the identification service (no HDCED)
-    if (sentence.durationIsLessThan(EIGHTEEN, MONTHS)) {
-      calculateHDCEDLessThanEighteenMonths(sentenceCalculation, sentence, adjustedDays)
-    } else {
-      calculatedHDCEDLessThanFourYears(sentence, adjustedDays, sentenceCalculation)
-    }
-  }
-
-  private fun calculateHDCEDLessThanEighteenMonths(
-    sentenceCalculation: SentenceCalculation,
-    sentence: CalculableSentence,
-    adjustedDays: Int
-  ) {
-    val twentyEightOrMore =
-      max(TWENTY_EIGHT, ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().div(FOUR)).toLong())
-
-    sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = twentyEightOrMore.plus(adjustedDays)
-    sentenceCalculation.homeDetentionCurfewEligibilityDate =
-      sentence.sentencedAt.plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate)
-
-    if (sentence.sentencedAt.plusDays(FOURTEEN)
-      .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewEligibilityDate!!)
-    ) {
-      calculateHDCEDFourteenDays(sentence, sentenceCalculation, HDCED_GE_12W_LT_18M)
-    } else {
-      sentenceCalculation.breakdownByReleaseDateType[HDCED] =
-        ReleaseDateCalculationBreakdown(
-          rules = setOf(HDCED_GE_12W_LT_18M),
-          rulesWithExtraAdjustments = mapOf(HDCED_GE_12W_LT_18M to AdjustmentDuration(twentyEightOrMore.toInt())),
-          adjustedDays = adjustedDays,
-          releaseDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
-          unadjustedDate = sentence.sentencedAt
-        )
-    }
-  }
-
-  private fun calculatedHDCEDLessThanFourYears(
-    sentence: CalculableSentence,
-    adjustedDays: Int,
-    sentenceCalculation: SentenceCalculation
-  ) {
-    sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate =
-      sentenceCalculation.numberOfDaysToDeterminateReleaseDate
-        .minus(ONE_HUNDRED_AND_THIRTY_FIVE).toLong()
-        .plus(adjustedDays)
-    sentenceCalculation.homeDetentionCurfewEligibilityDate = sentence.sentencedAt
-      .plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate)
-
-    if (sentence.sentencedAt.plusDays(FOURTEEN)
-      .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewEligibilityDate!!)
-    ) {
-      calculateHDCEDFourteenDays(sentence, sentenceCalculation, HDCED_GE_18M_LT_4Y)
-    } else {
-      sentenceCalculation.breakdownByReleaseDateType[HDCED] =
-        ReleaseDateCalculationBreakdown(
-          rules = setOf(HDCED_GE_18M_LT_4Y),
-          rulesWithExtraAdjustments = mapOf(HDCED_GE_18M_LT_4Y to AdjustmentDuration(-ONE_HUNDRED_AND_THIRTY_FIVE)),
-          adjustedDays = adjustedDays,
-          releaseDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
-          unadjustedDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!.plusDays(
-            ONE_HUNDRED_AND_THIRTY_FIVE.toLong()
-          )
-        )
-    }
-  }
-
-  private fun calculateHDCEDFourteenDays(
-    sentence: CalculableSentence,
-    sentenceCalculation: SentenceCalculation,
-    parentRule: CalculationRule
-  ) {
-    sentenceCalculation.homeDetentionCurfewEligibilityDate = sentence.sentencedAt.plusDays(FOURTEEN)
-
-    sentenceCalculation.breakdownByReleaseDateType[HDCED] =
-      ReleaseDateCalculationBreakdown(
-        rules = setOf(HDCED_MINIMUM_14D, parentRule),
-        rulesWithExtraAdjustments = mapOf(HDCED_MINIMUM_14D to AdjustmentDuration(FOURTEEN.toInt())),
-        adjustedDays = 0,
-        releaseDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
-        unadjustedDate = sentence.sentencedAt
-      )
   }
 
   companion object {

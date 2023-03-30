@@ -51,6 +51,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.LocalDate
 import java.time.Period
+import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
@@ -61,10 +62,12 @@ import javax.persistence.EntityNotFoundException
 
 class CalculationTransactionalServiceTest {
   private val jsonTransformation = JsonTransformation()
-  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService()
+  private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 18, ChronoUnit.MONTHS, 135)
+  private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
+  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator)
   private val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
   private val sentencesExtractionService = SentencesExtractionService()
-  private val sentenceIdentificationService = SentenceIdentificationService()
+  private val sentenceIdentificationService = SentenceIdentificationService(hdcedCalculator)
   private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
     sentenceIdentificationService
