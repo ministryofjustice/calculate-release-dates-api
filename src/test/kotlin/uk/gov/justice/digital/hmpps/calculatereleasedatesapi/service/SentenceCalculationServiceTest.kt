@@ -9,12 +9,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 class SentenceCalculationServiceTest {
 
-  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService()
+  private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 18, ChronoUnit.MONTHS, 135)
+  private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
+  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator)
   private val sentenceCalculationService: SentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
-  private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService()
+  private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(hdcedCalculator)
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
 

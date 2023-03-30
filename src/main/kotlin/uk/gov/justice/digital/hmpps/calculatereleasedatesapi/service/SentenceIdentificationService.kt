@@ -48,7 +48,7 @@ import java.math.BigDecimal
 import java.time.temporal.ChronoUnit
 
 @Service
-class SentenceIdentificationService {
+class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator) {
 
   fun identify(sentence: CalculableSentence, offender: Offender) {
     val releaseDateTypes = mutableListOf<ReleaseDateType>()
@@ -217,16 +217,11 @@ class SentenceIdentificationService {
         releaseDateTypes += TUSED
       }
 
-      if (doesHdcedDateApply(sentence, offender, sentence.isMadeUpOfOnlyDtos())) {
+      if (hdcedCalculator.doesHdcedDateApply(sentence, offender, sentence.isMadeUpOfOnlyDtos())) {
         releaseDateTypes += HDCED
       }
     }
     return releaseDateTypes
-  }
-
-  private fun doesHdcedDateApply(sentence: CalculableSentence, offender: Offender, isMadeUpOfOnlyDtos: Boolean): Boolean {
-    return sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.WEEKS) &&
-      sentence.durationIsLessThan(FOUR, ChronoUnit.YEARS) && !offender.isActiveSexOffender && !isMadeUpOfOnlyDtos
   }
 
   private fun identifySopcSentence(sentence: SopcSentence): List<ReleaseDateType> {
@@ -304,7 +299,7 @@ class SentenceIdentificationService {
       releaseDateTypes += TUSED
     }
 
-    if (doesHdcedDateApply(sentence, offender, false)) {
+    if (hdcedCalculator.doesHdcedDateApply(sentence, offender, false)) {
       releaseDateTypes += HDCED
     }
     return releaseDateTypes
