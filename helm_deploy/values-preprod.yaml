@@ -6,6 +6,7 @@ generic-service:
 
   ingress:
     host: calculate-release-dates-api-preprod.hmpps.service.justice.gov.uk
+    modsecurity_enabled: true
 
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
