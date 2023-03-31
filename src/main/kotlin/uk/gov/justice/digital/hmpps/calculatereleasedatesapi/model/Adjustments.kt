@@ -22,6 +22,18 @@ data class Adjustments
     }.reduceOrNull { acc, it -> acc + it } ?: 0
   }
 
+  fun getOrZero(vararg adjustmentTypes: AdjustmentType, adjustmentsAfter: LocalDate): Int {
+    return adjustmentTypes.mapNotNull { adjustmentType ->
+      if (adjustments.containsKey(adjustmentType)) {
+        val adjustments = adjustments[adjustmentType]!!
+        val adjustmentDays = adjustments.filter { it.appliesToSentencesFrom.isAfter(adjustmentsAfter) }
+          .map { it.numberOfDays }
+        adjustmentDays.reduceOrNull { acc, it -> acc + it }
+      } else {
+        0
+      }
+    }.reduceOrNull { acc, it -> acc + it } ?: 0
+  }
   fun getOrEmptyList(adjustmentType: AdjustmentType): List<Adjustment> {
     return adjustments.getOrDefault(adjustmentType, listOf())
   }
