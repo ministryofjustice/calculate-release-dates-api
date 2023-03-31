@@ -1,23 +1,35 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito
+import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.mock
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
+@ExtendWith(MockitoExtension::class)
 class SentenceCalculationServiceTest {
 
   private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 18, ChronoUnit.MONTHS, 135)
   private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
-  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator)
+  private val bankHolidayService = mock<BankHolidayService>()
+  private val workingDayService = WorkingDayService(bankHolidayService)
+  private val tusedCalculator = TusedCalculator(workingDayService)
+  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator)
   private val sentenceCalculationService: SentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
-  private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(hdcedCalculator)
+  private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator)
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
 
@@ -74,6 +86,7 @@ class SentenceCalculationServiceTest {
     adjustments[AdjustmentType.REMAND] = mutableListOf(Adjustment(appliesToSentencesFrom = sentence.sentencedAt, numberOfDays = 21))
     val offender = Offender("A1234BC", LocalDate.of(1980, 1, 1))
     val booking = Booking(offender, mutableListOf(sentence), Adjustments(adjustments))
+
     val calculation = sentenceCalculationService.calculate(sentence, booking)
     assertEquals(LocalDate.of(2015, 9, 24), calculation.expiryDate)
     assertEquals(LocalDate.of(2015, 5, 26), calculation.releaseDate)
@@ -94,5 +107,25 @@ class SentenceCalculationServiceTest {
     assertEquals(LocalDate.of(2022, 2, 22), calculation.expiryDate)
     assertEquals(LocalDate.of(2019, 8, 24), calculation.releaseDate)
     assertEquals("[SLED, CRD]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
+  }
+
+  @BeforeEach
+  fun beforeAll() {
+    Mockito.`when`(bankHolidayService.getBankHolidays()).thenReturn(CalculationTransactionalServiceTest.cachedBankHolidays)
+  }
+
+  companion object {
+    val cachedBankHolidays =
+      BankHolidays(
+        RegionBankHolidays(
+          "England and Wales",
+          listOf(
+            BankHoliday("Christmas Day Bank Holiday", LocalDate.of(2021, 12, 27)),
+            BankHoliday("Boxing Day Bank Holiday", LocalDate.of(2021, 12, 28))
+          )
+        ),
+        RegionBankHolidays("Scotland", emptyList()),
+        RegionBankHolidays("Northern Ireland", emptyList()),
+      )
   }
 }

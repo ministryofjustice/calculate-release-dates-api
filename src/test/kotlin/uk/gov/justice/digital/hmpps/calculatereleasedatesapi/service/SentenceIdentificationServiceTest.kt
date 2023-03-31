@@ -2,13 +2,19 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.mock
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import java.time.temporal.ChronoUnit
 
+@ExtendWith(MockitoExtension::class)
 class SentenceIdentificationServiceTest {
   private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 18, ChronoUnit.MONTHS, 135)
   private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
-  private var sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(hdcedCalculator)
+  private val workingDayService = mock<WorkingDayService>()
+  private val tusedCalculator = TusedCalculator(workingDayService)
+  private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator)
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
   private val offenderU18 = jsonTransformation.loadOffender("john_doe_under18")

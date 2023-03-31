@@ -30,7 +30,7 @@ import kotlin.math.ceil
 import kotlin.math.floor
 
 @Service
-class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator) {
+class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, val tusedCalculator: TusedCalculator) {
   /*
     This function calculates dates after adjustments have been decided.
     It can be run many times to recalculate dates. It needs to be run if there is a change to adjustments.
@@ -210,33 +210,8 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator) {
   }
 
   private fun calculateTUSED(sentenceCalculation: SentenceCalculation) {
-    val adjustedDays =
-      sentenceCalculation.calculatedTotalAddedDays.minus(sentenceCalculation.calculatedTotalDeductedDays)
-    if (sentenceCalculation.isImmediateRelease()) {
-      // There may still be adjustments to consider here. If the immediate release occurred and then there was a recall,
-      // Any UAL after the recall will need to be added.
-      val adjustedDaysAfterRelease = sentenceCalculation.getTotalAddedDaysAfter(sentenceCalculation.sentence.sentencedAt)
-      sentenceCalculation.topUpSupervisionDate = sentenceCalculation.sentence.sentencedAt
-        .plusDays(adjustedDaysAfterRelease.toLong())
-        .plusMonths(TWELVE)
-    } else {
-      sentenceCalculation.topUpSupervisionDate = sentenceCalculation.unadjustedDeterminateReleaseDate
-        .plusDays(adjustedDays.toLong())
-        .plusMonths(TWELVE)
-    }
-    sentenceCalculation.breakdownByReleaseDateType[TUSED] =
-      ReleaseDateCalculationBreakdown(
-        rules = setOf(TUSED_LICENCE_PERIOD_LT_1Y) + if (sentenceCalculation.isImmediateRelease()) setOf(IMMEDIATE_RELEASE) else emptySet(),
-        rulesWithExtraAdjustments = mapOf(
-          TUSED_LICENCE_PERIOD_LT_1Y to AdjustmentDuration(
-            TWELVE.toInt(),
-            MONTHS
-          )
-        ),
-        adjustedDays = adjustedDays,
-        releaseDate = sentenceCalculation.topUpSupervisionDate!!,
-        unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
-      )
+    sentenceCalculation.topUpSupervisionDate = tusedCalculator.calculateTused(sentenceCalculation)
+    sentenceCalculation.breakdownByReleaseDateType[TUSED] = tusedCalculator.getCalculationBreakdown(sentenceCalculation)
   }
 
   // If a sentence needs to calculate an NPD, but it is an aggregated sentence made up of "old" and "new" type sentences

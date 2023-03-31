@@ -73,6 +73,15 @@ data class SentenceCalculation(
     )
   }
 
+  fun getAdjustmentsAfterSentenceAtDateBeforeNonWorkingDayAdjustedReleaseDate(vararg adjustmentTypes: AdjustmentType, nonWorkingDayAdjustedDate: LocalDate): Int {
+    return adjustments.getOrZero(
+      *adjustmentTypes,
+      adjustmentsBefore = nonWorkingDayAdjustedDate,
+      adjustmentsAfter = sentence.sentencedAt.plusDays(1),
+    )
+  }
+
+
   fun getAdjustmentDuringSentence(vararg adjustmentTypes: AdjustmentType): Int {
     return adjustments.getOrZero(
       *adjustmentTypes,
