@@ -129,7 +129,7 @@ data class SentenceCalculation(
   }
 
   fun getTotalAddedDaysAfter(after: LocalDate): Int {
-    return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = latestConcurrentRelease, adjustmentsAfter = after)
+    return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsAfter = after)
   }
 
   val calculatedFixedTermRecallAddedDays: Int get() {

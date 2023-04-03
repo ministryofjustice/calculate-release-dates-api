@@ -63,8 +63,8 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
       // Any UAL after the recall will need to be added.
       val adjustedDaysAfterRelease = sentenceCalculation.getTotalAddedDaysAfter(sentenceCalculation.sentence.sentencedAt)
       sentenceCalculation.sentence.sentencedAt
-        .plusDays(adjustedDaysAfterRelease.toLong())
         .plusMonths(TWELVE)
+        .plusDays(adjustedDaysAfterRelease.toLong())
     } else if (sentenceCalculation.sentence.isRecall()) {
       if (ualAfterSentenceDateBeforeAdjustedDate > 0 || ualAfterNonWorkingDayAdjusted > 0) {
         sentenceCalculation.unadjustedDeterminateReleaseDate
