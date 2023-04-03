@@ -6,10 +6,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
+import org.mockito.Mockito
+import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -40,10 +44,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -60,14 +67,18 @@ import java.util.Optional
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
 
+@ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceTest {
   private val jsonTransformation = JsonTransformation()
   private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 18, ChronoUnit.MONTHS, 135)
   private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
-  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator)
+  private val bankHolidayService = mock<BankHolidayService>()
+  private val workingDayService = WorkingDayService(bankHolidayService)
+  private val tusedCalculator = TusedCalculator(workingDayService)
+  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator)
   private val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
   private val sentencesExtractionService = SentencesExtractionService()
-  private val sentenceIdentificationService = SentenceIdentificationService(hdcedCalculator)
+  private val sentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator)
   private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
     sentenceIdentificationService
@@ -77,7 +88,8 @@ class CalculationTransactionalServiceTest {
   )
   private val bookingTimelineService = BookingTimelineService(
     sentenceAdjustedCalculationService,
-    sentencesExtractionService
+    sentencesExtractionService,
+    workingDayService
   )
   private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
 
@@ -344,7 +356,24 @@ class CalculationTransactionalServiceTest {
       fail("Exception was thrown!")
     }
   }
+
+  @BeforeEach
+  fun beforeAll() {
+    Mockito.`when`(bankHolidayService.getBankHolidays()).thenReturn(cachedBankHolidays)
+  }
   companion object {
+    val cachedBankHolidays =
+      BankHolidays(
+        RegionBankHolidays(
+          "England and Wales",
+          listOf(
+            BankHoliday("Christmas Day Bank Holiday", LocalDate.of(2021, 12, 27)),
+            BankHoliday("Boxing Day Bank Holiday", LocalDate.of(2021, 12, 28))
+          )
+        ),
+        RegionBankHolidays("Scotland", emptyList()),
+        RegionBankHolidays("Northern Ireland", emptyList()),
+      )
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val USERNAME = "user1"
     private const val PRISONER_ID = "A1234AJ"
