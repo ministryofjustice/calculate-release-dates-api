@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
@@ -61,11 +60,11 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
         .plusMonths(TWELVE)
         .plusDays(adjustedDaysAfterRelease.toLong())
     } else {
-     sentenceCalculation.unadjustedDeterminateReleaseDate
-       .plusDays(sentenceCalculation.calculatedDeterminateTotalAddedDays.toLong())
-       .minusDays(sentenceCalculation.calculatedDeterminateTotalDeductedDays.toLong())
-       .plusMonths(TWELVE)
-       .plusDays(sentenceCalculation.calculatedTotalAddedDays.minus(sentenceCalculation.calculatedDeterminateTotalAddedDays).toLong())
+      sentenceCalculation.unadjustedDeterminateReleaseDate
+        .plusDays(sentenceCalculation.calculatedDeterminateTotalAddedDays.toLong())
+        .minusDays(sentenceCalculation.calculatedDeterminateTotalDeductedDays.toLong())
+        .plusMonths(TWELVE)
+        .plusDays(sentenceCalculation.calculatedTotalAddedDays.minus(sentenceCalculation.calculatedDeterminateTotalAddedDays).toLong())
     }
   }
 

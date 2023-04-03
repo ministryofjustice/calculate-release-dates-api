@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -15,7 +14,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.MockitoKotlinException
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -358,24 +356,23 @@ class CalculationTransactionalServiceTest {
     }
   }
 
-
   @BeforeEach
   fun beforeAll() {
     Mockito.`when`(bankHolidayService.getBankHolidays()).thenReturn(cachedBankHolidays)
   }
   companion object {
-      val cachedBankHolidays =
-        BankHolidays(
-          RegionBankHolidays(
-            "England and Wales",
-            listOf(
-              BankHoliday("Christmas Day Bank Holiday", LocalDate.of(2021, 12, 27)),
-              BankHoliday("Boxing Day Bank Holiday", LocalDate.of(2021, 12, 28))
-            )
-          ),
-          RegionBankHolidays("Scotland", emptyList()),
-          RegionBankHolidays("Northern Ireland", emptyList()),
-        )
+    val cachedBankHolidays =
+      BankHolidays(
+        RegionBankHolidays(
+          "England and Wales",
+          listOf(
+            BankHoliday("Christmas Day Bank Holiday", LocalDate.of(2021, 12, 27)),
+            BankHoliday("Boxing Day Bank Holiday", LocalDate.of(2021, 12, 28))
+          )
+        ),
+        RegionBankHolidays("Scotland", emptyList()),
+        RegionBankHolidays("Northern Ireland", emptyList()),
+      )
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     const val USERNAME = "user1"
     private const val PRISONER_ID = "A1234AJ"

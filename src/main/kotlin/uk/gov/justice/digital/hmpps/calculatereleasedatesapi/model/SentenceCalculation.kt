@@ -88,7 +88,6 @@ data class SentenceCalculation(
     )
   }
 
-
   fun getAdjustmentDuringSentence(vararg adjustmentTypes: AdjustmentType): Int {
     return adjustments.getOrZero(
       *adjustmentTypes,

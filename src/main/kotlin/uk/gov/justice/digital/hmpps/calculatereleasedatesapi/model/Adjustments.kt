@@ -26,7 +26,7 @@ data class Adjustments
     return adjustmentTypes.mapNotNull { adjustmentType ->
       if (adjustments.containsKey(adjustmentType)) {
         val adjustments = adjustments[adjustmentType]!!
-        val adjustmentDays = adjustments.filter {  it.appliesToSentencesFrom.isAfter(adjustmentsAfter) }
+        val adjustmentDays = adjustments.filter { it.appliesToSentencesFrom.isAfter(adjustmentsAfter) }
           .map { it.numberOfDays }
         adjustmentDays.reduceOrNull { acc, it -> acc + it }
       } else {
