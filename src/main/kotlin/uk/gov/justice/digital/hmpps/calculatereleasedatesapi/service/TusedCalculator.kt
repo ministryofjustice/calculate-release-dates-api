@@ -52,12 +52,7 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
   }
 
   fun calculateTused(sentenceCalculation: SentenceCalculation): LocalDate {
-    val adjustedDays =
-      getAdjustedDays(sentenceCalculation)
-    val previousWorkingDay = workingDayService.previousWorkingDay(sentenceCalculation.unadjustedDeterminateReleaseDate)
 
-    val ualAfterSentenceDateBeforeAdjustedDate = sentenceCalculation.getAdjustmentsAfterSentenceAtDateBeforeNonWorkingDayAdjustedReleaseDate(AdjustmentType.UNLAWFULLY_AT_LARGE, nonWorkingDayAdjustedDate = previousWorkingDay.date)
-    val ualAfterNonWorkingDayAdjusted = sentenceCalculation.getAdjustmentsAfterNonWorkingDayAdjustedReleaseDate(AdjustmentType.UNLAWFULLY_AT_LARGE, nonWorkingDayAdjustedDate = previousWorkingDay.date)
     return if (sentenceCalculation.isImmediateRelease()) {
       // There may still be adjustments to consider here. If the immediate release occurred and then there was a recall,
       // Any UAL after the recall will need to be added.
@@ -65,21 +60,12 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
       sentenceCalculation.sentence.sentencedAt
         .plusMonths(TWELVE)
         .plusDays(adjustedDaysAfterRelease.toLong())
-    } else if (sentenceCalculation.sentence.isRecall()) {
-      if (ualAfterSentenceDateBeforeAdjustedDate > 0 || ualAfterNonWorkingDayAdjusted > 0) {
-        sentenceCalculation.unadjustedDeterminateReleaseDate
-          .minusDays(sentenceCalculation.calculatedTotalDeductedDays.toLong())
-          .plusMonths(TWELVE)
-          .plusDays(sentenceCalculation.calculatedTotalAddedDays.toLong())
-      } else {
-        sentenceCalculation.unadjustedDeterminateReleaseDate
-          .plusDays(adjustedDays.toLong())
-          .plusMonths(TWELVE)
-      }
     } else {
-      sentenceCalculation.unadjustedDeterminateReleaseDate
-        .plusDays(adjustedDays.toLong())
-        .plusMonths(TWELVE)
+     sentenceCalculation.unadjustedDeterminateReleaseDate
+       .plusDays(sentenceCalculation.calculatedDeterminateTotalAddedDays.toLong())
+       .minusDays(sentenceCalculation.calculatedDeterminateTotalDeductedDays.toLong())
+       .plusMonths(TWELVE)
+       .plusDays(sentenceCalculation.calculatedTotalAddedDays.minus(sentenceCalculation.calculatedDeterminateTotalAddedDays).toLong())
     }
   }
 
