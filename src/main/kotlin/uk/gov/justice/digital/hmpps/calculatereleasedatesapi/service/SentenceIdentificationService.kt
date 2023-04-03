@@ -48,7 +48,7 @@ import java.math.BigDecimal
 import java.time.temporal.ChronoUnit
 
 @Service
-class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator) {
+class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tusedCalculator: TusedCalculator) {
 
   fun identify(sentence: CalculableSentence, offender: Offender) {
     val releaseDateTypes = mutableListOf<ReleaseDateType>()
@@ -213,7 +213,7 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator) {
         beforeCJAAndLASPO(sentence, releaseDateTypes)
       }
 
-      if (doesTopUpSentenceExpiryDateApply(sentence, offender)) {
+      if (tusedCalculator.doesTopUpSentenceExpiryDateApply(sentence, offender)) {
         releaseDateTypes += TUSED
       }
 
@@ -295,7 +295,7 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator) {
       afterCJAAndLASPOorSDSPlus(sentence, offender, releaseDateTypes)
     }
 
-    if (doesTopUpSentenceExpiryDateApply(sentence, offender)) {
+    if (tusedCalculator.doesTopUpSentenceExpiryDateApply(sentence, offender)) {
       releaseDateTypes += TUSED
     }
 
@@ -391,41 +391,6 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator) {
         )
       )
     }
-  }
-
-  private fun doesTopUpSentenceExpiryDateApply(sentence: CalculableSentence, offender: Offender): Boolean {
-    val oraCondition = when (sentence) {
-      is StandardDeterminateSentence -> {
-        sentence.isOraSentence()
-      }
-
-      is ConsecutiveSentence -> {
-        sentence.hasOraSentences()
-      }
-
-      else -> {
-        false
-      }
-    }
-
-    val lapsoCondition = when (sentence) {
-      is StandardDeterminateSentence -> {
-        sentence.identificationTrack == SDS_AFTER_CJA_LASPO
-      }
-
-      is ConsecutiveSentence -> {
-        sentence.isMadeUpOfOnlyAfterCjaLaspoSentences()
-      }
-
-      else -> {
-        false
-      }
-    }
-
-    return oraCondition && lapsoCondition &&
-      sentence.durationIsLessThanEqualTo(TWO, ChronoUnit.YEARS) &&
-      sentence.getLengthInDays() > INT_ONE &&
-      offender.getAgeOnDate(sentence.getHalfSentenceDate()) > INT_EIGHTEEN
   }
 
   companion object {

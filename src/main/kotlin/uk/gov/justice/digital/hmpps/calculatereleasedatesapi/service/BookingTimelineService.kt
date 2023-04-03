@@ -21,7 +21,8 @@ import kotlin.math.min
 @Service
 class BookingTimelineService(
   val sentenceAdjustedCalculationService: SentenceAdjustedCalculationService,
-  val extractionService: SentencesExtractionService
+  val extractionService: SentencesExtractionService,
+  val workingDayService: WorkingDayService
 ) {
 
   fun walkTimelineOfBooking(booking: Booking): Booking {
@@ -42,7 +43,7 @@ class BookingTimelineService(
 
     sortedSentences.forEach {
       it.sentenceCalculation.latestConcurrentRelease = Collections.max(listOf(timelineTracker.timelineRange.end, it.sentencedAt))
-      it.sentenceCalculation.latestConcurrentDeterminateRelease = if (!it.isRecall()) it.sentenceCalculation.latestConcurrentRelease else if (timelineTracker.currentSentenceGroup.isEmpty()) it.sentenceCalculation.adjustedDeterminateReleaseDate else timelineTracker.currentSentenceGroup.maxOf { sentence -> sentence.sentenceCalculation.adjustedDeterminateReleaseDate }
+      it.sentenceCalculation.latestConcurrentDeterminateRelease = findLatestConcurrentDeterminateRelease(timelineTracker, it)
       it.sentenceCalculation.adjustmentsAfter = timelineTracker.previousReleaseDateReached
       val itRange = it.getRangeOfSentenceBeforeAwardedDays()
       if (isThisSentenceTheFirstOfSentencesParallelToRecall(timelineTracker, it)) {
@@ -143,9 +144,19 @@ class BookingTimelineService(
   private fun shareAdjustmentsThroughSentenceGroup(timelineTracker: TimelineTracker, booking: Booking) {
     timelineTracker.currentSentenceGroup.forEach {
       it.sentenceCalculation.latestConcurrentRelease = timelineTracker.timelineRange.end
-      it.sentenceCalculation.latestConcurrentDeterminateRelease = if (!it.isRecall()) it.sentenceCalculation.latestConcurrentRelease else if (timelineTracker.currentSentenceGroup.isEmpty()) it.sentenceCalculation.adjustedDeterminateReleaseDate else timelineTracker.currentSentenceGroup.maxOf { sentence -> sentence.sentenceCalculation.adjustedDeterminateReleaseDate }
+      it.sentenceCalculation.latestConcurrentDeterminateRelease = findLatestConcurrentDeterminateRelease(timelineTracker, it)
       readjustDates(it, booking)
     }
+  }
+
+  private fun findLatestConcurrentDeterminateRelease(
+    timelineTracker: TimelineTracker,
+    it: CalculableSentence
+  ): LocalDate {
+    var release =
+      if (!it.isRecall()) it.sentenceCalculation.latestConcurrentRelease else if (timelineTracker.currentSentenceGroup.isEmpty()) it.sentenceCalculation.adjustedDeterminateReleaseDate else timelineTracker.currentSentenceGroup.maxOf { sentence -> sentence.sentenceCalculation.adjustedDeterminateReleaseDate }
+    release = workingDayService.previousWorkingDay(release).date
+    return maxOf(release, it.sentencedAt)
   }
 
   private fun readjustDates(it: CalculableSentence, booking: Booking) {

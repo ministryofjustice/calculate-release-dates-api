@@ -1,0 +1,41 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2004-11-05"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2022-01-04"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 28
+        }
+      },
+      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7",
+      "sentencedAt": "2023-02-20",
+      "sentenceType": "14FTR_ORA",
+      "recallType":"FIXED_TERM_RECALL_14"
+    }
+  ],
+  "adjustments": {
+    "RECALL_REMAND": [
+      {
+        "appliesToSentencesFrom": "2023-02-20",
+        "numberOfDays": 10,
+        "fromDate": "2023-02-10",
+        "toDate": "2023-02-19"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "appliesToSentencesFrom": "2023-03-04",
+        "numberOfDays": 6,
+        "fromDate": "2023-03-04",
+        "toDate": "2023-03-09"
+      }
+    ]
+  },
+  "returnToCustodyDate":"2023-03-10"
+}

@@ -1,0 +1,74 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2004-11-05"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2022-12-31"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 4
+        }
+      },
+      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7",
+      "sentencedAt": "2023-01-06",
+      "sentenceType": "LR_ORA",
+      "recallType":"STANDARD_RECALL"
+    },
+    {
+      "offence": {
+        "committedAt": "2022-10-26"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 4
+        }
+      },
+      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a8",
+      "sentencedAt": "2023-01-06",
+      "sentenceType": "LR_ORA",
+      "recallType":"STANDARD_RECALL",
+      "consecutiveSentenceUUIDs": [
+        "ee91a161-dde2-3a7b-8611-624d255542a7"
+      ]
+    },
+    {
+      "offence": {
+        "committedAt": "2022-11-07"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 4
+        }
+      },
+      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a9",
+      "sentencedAt": "2023-01-06",
+      "sentenceType": "LR_ORA",
+      "recallType":"STANDARD_RECALL",
+      "consecutiveSentenceUUIDs": [
+        "ee91a161-dde2-3a7b-8611-624d255542a8"
+      ]
+    }
+  ],
+  "adjustments": {
+    "RECALL_REMAND": [
+      {
+        "appliesToSentencesFrom": "2023-01-06",
+        "numberOfDays": 4,
+        "fromDate": "2023-01-02",
+        "toDate": "2023-01-05"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "appliesToSentencesFrom": "2023-02-12",
+        "numberOfDays": 19,
+        "fromDate": "2023-02-11",
+        "toDate": "2023-03-01"
+      }
+    ]
+  }
+}
