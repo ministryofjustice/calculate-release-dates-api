@@ -23,6 +23,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserQuestions
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -356,6 +358,30 @@ class CalculationController(
     return calculationUserQuestionService.getQuestionsForSentences(prisonerId)
   }
 
+  @PostMapping(value = ["/relevant-remand/{prisonerId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Calculate a release date at a point in time for the relevant remand tool.",
+    description = "This endpoint calculates the release date of an intersecting sentence, this is needed by the" +
+      "relevant remand tool in order to work out remand periods."
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns calculated dates"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
+    ]
+  )
+  fun relevantRemandCalculation(
+    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
+    @PathVariable("prisonerId")
+    prisonerId: String,
+    @RequestBody
+    relevantRemandCalculationRequest: RelevantRemandCalculationRequest
+  ): RelevantRemandCalculationResult {
+    return calculationTransactionalService.relevantRemandCalculation(prisonerId, relevantRemandCalculationRequest)
+  }
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }

@@ -1,0 +1,15 @@
+{
+  "sentenceAdjustments":[
+    {
+      "sentenceSequence":4,
+      "type":"REMAND",
+      "numberOfDays":31,
+      "fromDate":"2021-01-01",
+      "toDate":"2021-01-31",
+      "active":true
+    }
+  ],
+  "bookingAdjustments":[
+
+  ]
+}
