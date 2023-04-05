@@ -23,7 +23,7 @@ class PrisonService(
     return getPrisonApiSourceData(prisonerDetails, activeOnly)
   }
 
-  private fun getPrisonApiSourceData(prisonerDetails: PrisonerDetails, activeDataOnly: Boolean = true): PrisonApiSourceData {
+  fun getPrisonApiSourceData(prisonerDetails: PrisonerDetails, activeDataOnly: Boolean = true): PrisonApiSourceData {
     val sentenceAndOffences = getSentencesAndOffences(prisonerDetails.bookingId, activeDataOnly)
     val bookingAndSentenceAdjustments = getBookingAndSentenceAdjustments(prisonerDetails.bookingId, activeDataOnly)
     val bookingHasFixedTermRecall = sentenceAndOffences.any { isSupported(it.sentenceCalculationType) && from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
