@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Retu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 import javax.persistence.EntityNotFoundException
 
 @RestController
@@ -39,6 +40,7 @@ import javax.persistence.EntityNotFoundException
 class CalculationController(
   private val calculationTransactionalService: CalculationTransactionalService,
   private val calculationUserQuestionService: CalculationUserQuestionService,
+  private val relevantRemandService: RelevantRemandService
 ) {
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -380,7 +382,7 @@ class CalculationController(
     @RequestBody
     relevantRemandCalculationRequest: RelevantRemandCalculationRequest
   ): RelevantRemandCalculationResult {
-    return calculationTransactionalService.relevantRemandCalculation(prisonerId, relevantRemandCalculationRequest)
+    return relevantRemandService.relevantRemandCalculation(prisonerId, relevantRemandCalculationRequest)
   }
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

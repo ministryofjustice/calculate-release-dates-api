@@ -35,6 +35,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
@@ -49,6 +50,9 @@ class CalculationControllerTest {
   @MockBean
   private lateinit var calculationUserQuestionService: CalculationUserQuestionService
 
+  @MockBean
+  private lateinit var relevantRemandService: RelevantRemandService
+
   @Autowired
   private lateinit var mvc: MockMvc
 
@@ -62,7 +66,7 @@ class CalculationControllerTest {
     reset(calculationTransactionalService)
 
     mvc = MockMvcBuilders
-      .standaloneSetup(CalculationController(calculationTransactionalService, calculationUserQuestionService))
+      .standaloneSetup(CalculationController(calculationTransactionalService, calculationUserQuestionService, relevantRemandService))
       .setControllerAdvice(ControllerAdvice())
       .build()
   }
