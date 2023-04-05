@@ -31,6 +31,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemand
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -634,6 +637,34 @@ class CalculationIntTest : IntegrationTestBase() {
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
+  }
+
+  @Test
+  fun `Run relevant remand calculation`() {
+    val request = RelevantRemandCalculationRequest(
+      listOf(
+        RelevantRemand(
+          from = LocalDate.of(2021, 1, 1),
+          to = LocalDate.of(2021, 1, 31),
+          days = 31,
+          sentenceSequence = 4
+        )
+      ),
+      LocalDate.of(2021, 2, 1)
+    )
+    val calculation: RelevantRemandCalculationResult = webTestClient.post()
+      .uri("/calculation/relevant-remand/RELREM")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(request))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(RelevantRemandCalculationResult::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.releaseDate).isEqualTo(LocalDate.of(2021, 4, 1))
   }
 
   private fun createPreliminaryCalculation(prisonerid: String): CalculatedReleaseDates = webTestClient.post()
