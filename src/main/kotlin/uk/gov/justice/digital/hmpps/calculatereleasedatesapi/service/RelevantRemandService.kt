@@ -29,9 +29,7 @@ class RelevantRemandService(
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     val calculationResult = calculationService.calculateReleaseDates(booking).second
     return RelevantRemandCalculationResult(
-      if (calculationResult.dates[ReleaseDateType.CRD] != null) {calculationResult.dates[ReleaseDateType.CRD]!!}
-      else if (calculationResult.dates[ReleaseDateType.ARD] != null) {calculationResult.dates[ReleaseDateType.ARD]!!}
-      else {calculationResult.dates[ReleaseDateType.PRRD]!!}
+      if (calculationResult.dates[ReleaseDateType.CRD] != null) { calculationResult.dates[ReleaseDateType.CRD]!! } else if (calculationResult.dates[ReleaseDateType.ARD] != null) { calculationResult.dates[ReleaseDateType.ARD]!! } else { calculationResult.dates[ReleaseDateType.PRRD]!! }
     )
   }
 

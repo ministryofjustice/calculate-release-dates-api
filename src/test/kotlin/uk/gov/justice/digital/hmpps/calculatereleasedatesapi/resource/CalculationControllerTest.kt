@@ -82,8 +82,9 @@ class CalculationControllerTest {
     )
     whenever(calculationTransactionalService.calculate(prisonerId, CalculationUserInputs())).thenReturn(calculatedReleaseDates)
 
-    val result = mvc.perform(post("/calculation/$prisonerId")
-      .accept(APPLICATION_JSON)
+    val result = mvc.perform(
+      post("/calculation/$prisonerId")
+        .accept(APPLICATION_JSON)
     )
       .andExpect(status().isOk)
       .andExpect(content().contentType(APPLICATION_JSON))
