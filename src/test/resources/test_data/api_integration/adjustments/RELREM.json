@@ -10,7 +10,7 @@
     },
     {
       "sentenceSequence":4,
-      "type":"RECALL_REMAND",
+      "type":"RECALL_SENTENCE_REMAND",
       "numberOfDays":31,
       "fromDate":"2021-01-01",
       "toDate":"2021-01-31",
