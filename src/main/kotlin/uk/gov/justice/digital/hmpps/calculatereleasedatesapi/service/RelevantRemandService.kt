@@ -22,20 +22,23 @@ class RelevantRemandService(
 ) {
 
   fun relevantRemandCalculation(prisonerId: String, request: RelevantRemandCalculationRequest): RelevantRemandCalculationResult {
-    val prisoner = prisonService.getOffenderDetail(prisonerId)
+    val prisoner = prisonService.getOffenderDetail(prisonerId).copy(
+      bookingId = request.sentence.bookingId
+    )
     val sourceData = filterSentencesAndAdjustmentsForRelevantRemandCalc(prisonService.getPrisonApiSourceData(prisoner, false), request)
     val calculationUserInputs = CalculationUserInputs(useOffenceIndicators = true)
 
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     val calculationResult = calculationService.calculateReleaseDates(booking).second
+    val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.PRRD, ReleaseDateType.MTD)
     return RelevantRemandCalculationResult(
-      if (calculationResult.dates[ReleaseDateType.CRD] != null) { calculationResult.dates[ReleaseDateType.CRD]!! } else if (calculationResult.dates[ReleaseDateType.ARD] != null) { calculationResult.dates[ReleaseDateType.ARD]!! } else { calculationResult.dates[ReleaseDateType.PRRD]!! }
+      calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOf { it.value }
     )
   }
 
   private fun filterSentencesAndAdjustmentsForRelevantRemandCalc(sourceData: PrisonApiSourceData, request: RelevantRemandCalculationRequest): PrisonApiSourceData {
     return sourceData.copy(
-      sentenceAndOffences = sourceData.sentenceAndOffences.filter { it.sentenceDate.isBeforeOrEqualTo(request.sentenceDate) },
+      sentenceAndOffences = sourceData.sentenceAndOffences.filter { it.sentenceDate.isBeforeOrEqualTo(request.sentence.sentenceDate) },
       bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments.copy(
         sentenceAdjustments = sourceData.bookingAndSentenceAdjustments.sentenceAdjustments.filter { !listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.UNUSED_REMAND).contains(it.type) } +
           request.relevantRemands.map {
