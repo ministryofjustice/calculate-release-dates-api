@@ -34,6 +34,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemand
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -644,13 +645,13 @@ class CalculationIntTest : IntegrationTestBase() {
     val request = RelevantRemandCalculationRequest(
       listOf(
         RelevantRemand(
-          from = LocalDate.of(2021, 1, 1),
-          to = LocalDate.of(2021, 1, 31),
-          days = 31,
-          sentenceSequence = 4
+            from = LocalDate.of(2021, 1, 1),
+            to = LocalDate.of(2021, 1, 31),
+            days = 31,
+            sentenceSequence = 4
         )
       ),
-      LocalDate.of(2021, 2, 1)
+      RelevantRemandSentence(sentenceDate = LocalDate.of(2021, 2, 1), bookingId = -1881308831 , sequence = 4)
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREM")

@@ -22,7 +22,9 @@ class RelevantRemandService(
 ) {
 
   fun relevantRemandCalculation(prisonerId: String, request: RelevantRemandCalculationRequest): RelevantRemandCalculationResult {
-    val prisoner = prisonService.getOffenderDetail(prisonerId)
+    val prisoner = prisonService.getOffenderDetail(prisonerId).copy(
+      bookingId = request.sentence.bookingId
+    )
     val sourceData = filterSentencesAndAdjustmentsForRelevantRemandCalc(prisonService.getPrisonApiSourceData(prisoner, false), request)
     val calculationUserInputs = CalculationUserInputs(useOffenceIndicators = true)
 
@@ -35,7 +37,7 @@ class RelevantRemandService(
 
   private fun filterSentencesAndAdjustmentsForRelevantRemandCalc(sourceData: PrisonApiSourceData, request: RelevantRemandCalculationRequest): PrisonApiSourceData {
     return sourceData.copy(
-      sentenceAndOffences = sourceData.sentenceAndOffences.filter { it.sentenceDate.isBeforeOrEqualTo(request.sentenceDate) },
+      sentenceAndOffences = sourceData.sentenceAndOffences.filter { it.sentenceDate.isBeforeOrEqualTo(request.sentence.sentenceDate) },
       bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments.copy(
         sentenceAdjustments = sourceData.bookingAndSentenceAdjustments.sentenceAdjustments.filter { !listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.UNUSED_REMAND).contains(it.type) } +
           request.relevantRemands.map {
