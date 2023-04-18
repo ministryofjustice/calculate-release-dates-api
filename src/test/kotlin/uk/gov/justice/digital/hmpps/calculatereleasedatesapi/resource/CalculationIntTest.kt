@@ -645,13 +645,13 @@ class CalculationIntTest : IntegrationTestBase() {
     val request = RelevantRemandCalculationRequest(
       listOf(
         RelevantRemand(
-            from = LocalDate.of(2021, 1, 1),
-            to = LocalDate.of(2021, 1, 31),
-            days = 31,
-            sentenceSequence = 4
+          from = LocalDate.of(2021, 1, 1),
+          to = LocalDate.of(2021, 1, 31),
+          days = 31,
+          sentenceSequence = 4
         )
       ),
-      RelevantRemandSentence(sentenceDate = LocalDate.of(2021, 2, 1), bookingId = -1881308831 , sequence = 4)
+      RelevantRemandSentence(sentenceDate = LocalDate.of(2021, 2, 1), bookingId = -1881308831, sequence = 4)
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREM")
