@@ -4,7 +4,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
@@ -13,7 +12,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.CalculationController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 
