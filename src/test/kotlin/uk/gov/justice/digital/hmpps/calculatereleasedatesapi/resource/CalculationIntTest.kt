@@ -651,7 +651,7 @@ class CalculationIntTest : IntegrationTestBase() {
           sentenceSequence = 4
         )
       ),
-      RelevantRemandSentence(sentenceDate = LocalDate.of(2021, 2, 1), bookingId = -1881308831, sequence = 4)
+      RelevantRemandSentence(sentenceDate = LocalDate.of(2021, 2, 1), bookingId = "RELREM".hashCode().toLong(), sequence = 4)
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREM")
@@ -666,6 +666,36 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.releaseDate).isEqualTo(LocalDate.of(2021, 4, 1))
+    assertThat(calculation.validationMessages).isEmpty()
+  }
+
+  @Test
+  fun `Run relevant remand calculation which fails validation`() {
+    val request = RelevantRemandCalculationRequest(
+      listOf(
+        RelevantRemand(
+          from = LocalDate.of(2021, 1, 1),
+          to = LocalDate.of(2021, 1, 31),
+          days = 31,
+          sentenceSequence = 4
+        )
+      ),
+      RelevantRemandSentence(sentenceDate = LocalDate.of(2021, 2, 1), bookingId = "RELREMV".hashCode().toLong(), sequence = 4)
+    )
+    val calculation: RelevantRemandCalculationResult = webTestClient.post()
+      .uri("/calculation/relevant-remand/RELREMV")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(request))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(RelevantRemandCalculationResult::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.releaseDate).isNull()
+    assertThat(calculation.validationMessages).singleElement()
   }
 
   private fun createPreliminaryCalculation(prisonerid: String): CalculatedReleaseDates = webTestClient.post()
