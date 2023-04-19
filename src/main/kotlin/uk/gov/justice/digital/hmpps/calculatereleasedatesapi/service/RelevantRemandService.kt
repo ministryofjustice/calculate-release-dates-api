@@ -13,11 +13,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 
 @Service
 class RelevantRemandService(
   private val prisonService: PrisonService,
   private val calculationService: CalculationService,
+  private val validationService: ValidationService,
   private val bookingService: BookingService
 ) {
 
@@ -28,11 +30,24 @@ class RelevantRemandService(
     val sourceData = filterSentencesAndAdjustmentsForRelevantRemandCalc(prisonService.getPrisonApiSourceData(prisoner, false), request)
     val calculationUserInputs = CalculationUserInputs(useOffenceIndicators = true)
 
+    var validationMessages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs)
+    if (validationMessages.isNotEmpty()) {
+      return RelevantRemandCalculationResult(
+        validationMessages = validationMessages
+      )
+    }
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    validationMessages = validationService.validateBeforeCalculation(booking)
+    if (validationMessages.isNotEmpty()) {
+      return RelevantRemandCalculationResult(
+        validationMessages = validationMessages
+      )
+    }
+
     val calculationResult = calculationService.calculateReleaseDates(booking).second
     val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.PRRD, ReleaseDateType.MTD)
     return RelevantRemandCalculationResult(
-      calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOf { it.value }
+      releaseDate = calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOf { it.value }
     )
   }
 
@@ -43,7 +58,7 @@ class RelevantRemandService(
         sentenceAdjustments = sourceData.bookingAndSentenceAdjustments.sentenceAdjustments.filter { !listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.UNUSED_REMAND).contains(it.type) } +
           request.relevantRemands.map {
             val sentence = findSentence(sourceData.sentenceAndOffences, it.sentenceSequence)
-            val adjustmentType: SentenceAdjustmentType = if (sentence != null) {
+            val adjustmentType: SentenceAdjustmentType = if (sentence != null && SentenceCalculationType.isSupported(sentence.sentenceCalculationType)) {
               val sentenceType = SentenceCalculationType.from(sentence.sentenceCalculationType)
               if (sentenceType.recallType != null) {
                 SentenceAdjustmentType.RECALL_SENTENCE_REMAND
