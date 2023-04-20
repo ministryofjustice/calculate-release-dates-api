@@ -10,5 +10,5 @@ data class CalculationBreakdown(
   val consecutiveSentence: ConsecutiveSentenceBreakdown?,
   @Schema(description = "Breakdown details in a map keyed by release date type")
   val breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown> = emptyMap(),
-  val otherDates: Map<ReleaseDateType, LocalDate> = emptyMap()
+  val otherDates: Map<ReleaseDateType, LocalDate> = emptyMap(),
 )

@@ -39,12 +39,15 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       sentencesTwoThirdsWithoutPed.minOfOrNull { sentence.orderedSentences.indexOf(it) }
     val firstIndexOfNonPedHalfway = sentencesHalfwayWithoutPed.minOfOrNull { sentence.orderedSentences.indexOf(it) }
     val sentencesInCalculationOrder =
-      if (firstIndexOfNonPedTwoThirds != null && firstIndexOfNonPedHalfway != null && firstIndexOfNonPedTwoThirds < firstIndexOfNonPedHalfway) listOf(
-        sentencesTwoThirdsWithoutPed,
-        sentencesHalfwayWithoutPed,
-        sentencesWithPed
-      )
-      else listOf(sentencesHalfwayWithoutPed, sentencesTwoThirdsWithoutPed, sentencesWithPed)
+      if (firstIndexOfNonPedTwoThirds != null && firstIndexOfNonPedHalfway != null && firstIndexOfNonPedTwoThirds < firstIndexOfNonPedHalfway) {
+        listOf(
+          sentencesTwoThirdsWithoutPed,
+          sentencesHalfwayWithoutPed,
+          sentencesWithPed,
+        )
+      } else {
+        listOf(sentencesHalfwayWithoutPed, sentencesTwoThirdsWithoutPed, sentencesWithPed)
+      }
 
     var notionalCrd: LocalDate? = null
     var daysToRelease = 0
@@ -73,7 +76,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       daysToExpiry,
       daysToRelease.toDouble(),
       daysToRelease,
-      numberOfDaysToParoleEligibilityDate
+      numberOfDaysToParoleEligibilityDate,
     )
   }
 
@@ -153,12 +156,12 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       booking.calculateErsed,
       booking.adjustments,
       returnToCustodyDate = booking.returnToCustodyDate,
-      numberOfDaysToParoleEligibilityDate = release.numberOfDaysToParoleEligibilityDate
+      numberOfDaysToParoleEligibilityDate = release.numberOfDaysToParoleEligibilityDate,
     )
   }
 
   private fun getSingleSentenceRelease(
-    sentence: CalculableSentence
+    sentence: CalculableSentence,
   ): ReleaseDateCalculation {
     var numberOfDaysToParoleEligibilityDate: Long? = null
     val releaseDateMultiplier = determineReleaseDateMultiplier(sentence.identificationTrack)
@@ -191,7 +194,8 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE -> 2 / 3.toDouble()
       SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE,
       SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS,
-      SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY, -> 1.toDouble()
+      SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY,
+      -> 1.toDouble()
       SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE -> 2 / 3.toDouble()
       SentenceIdentificationTrack.AFINE_ARD_AT_FULL_TERM -> 1.toDouble()
       else -> 1 / 2.toDouble()
@@ -200,7 +204,8 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
   private fun determinePedMultiplier(identification: SentenceIdentificationTrack): Double {
     return when (identification) {
       SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS,
-      SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE, -> 2 / 3.toDouble()
+      SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE,
+      -> 2 / 3.toDouble()
       SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY -> 1 / 2.toDouble()
       else -> throw UnsupportedOperationException("Unknown identification for a PED calculation $identification")
     }
@@ -210,6 +215,6 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
     val numberOfDaysToSentenceExpiryDate: Int,
     val numberOfDaysToDeterminateReleaseDateDouble: Double,
     val numberOfDaysToDeterminateReleaseDate: Int,
-    val numberOfDaysToParoleEligibilityDate: Long?
+    val numberOfDaysToParoleEligibilityDate: Long?,
   )
 }

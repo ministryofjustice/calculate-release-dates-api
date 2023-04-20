@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class BankHolidayCacheSchedule(
-  val bankHolidayService: BankHolidayService
+  val bankHolidayService: BankHolidayService,
 ) {
 
   // Every 5 mins from 03:00 till 03:59 Monday to Friday.

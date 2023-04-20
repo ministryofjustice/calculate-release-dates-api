@@ -40,7 +40,7 @@ import javax.persistence.EntityNotFoundException
 class CalculationController(
   private val calculationTransactionalService: CalculationTransactionalService,
   private val calculationUserQuestionService: CalculationUserQuestionService,
-  private val relevantRemandService: RelevantRemandService
+  private val relevantRemandService: RelevantRemandService,
 ) {
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -48,21 +48,21 @@ class CalculationController(
   @Operation(
     summary = "Calculate release dates for a prisoner - preliminary calculation, this does not publish to NOMIS",
     description = "This endpoint will calculate release dates based on a prisoners latest booking - this is a " +
-      "PRELIMINARY calculation that will not be published to NOMIS"
+      "PRELIMINARY calculation that will not be published to NOMIS",
   )
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "Returns calculated dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
-    ]
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
   )
   fun calculate(
     @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
     @PathVariable("prisonerId")
     prisonerId: String,
     @RequestBody
-    calculationUserInputs: CalculationUserInputs?
+    calculationUserInputs: CalculationUserInputs?,
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
     return calculationTransactionalService.calculate(prisonerId, calculationUserInputs ?: CalculationUserInputs())
@@ -80,32 +80,35 @@ class CalculationController(
     value = [
       ApiResponse(responseCode = "200", description = "Returns calculated dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
-    ]
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
   )
   fun testCalculation(
     @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
     @PathVariable("prisonerId")
     prisonerId: String,
     @RequestBody
-    calculationUserInputs: CalculationUserInputs?
+    calculationUserInputs: CalculationUserInputs?,
   ): CalculationResults {
     log.info("Request received to calculate release dates for $prisonerId")
     val validationMessages = calculationTransactionalService.fullValidation(
       prisonerId,
       calculationUserInputs ?: CalculationUserInputs(),
-      false
+      false,
     )
 
-    return if (validationMessages.isNotEmpty()) CalculationResults(validationMessages = validationMessages)
-    else CalculationResults(
-      calculationTransactionalService.calculate(
-        prisonerId,
-        calculationUserInputs ?: CalculationUserInputs(),
-        false,
-        TEST
+    return if (validationMessages.isNotEmpty()) {
+      CalculationResults(validationMessages = validationMessages)
+    } else {
+      CalculationResults(
+        calculationTransactionalService.calculate(
+          prisonerId,
+          calculationUserInputs ?: CalculationUserInputs(),
+          false,
+          TEST,
+        ),
       )
-    )
+    }
   }
 
   @PostMapping(value = ["/confirm/{calculationRequestId}"])
@@ -122,19 +125,19 @@ class CalculationController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
       ApiResponse(
         responseCode = "404",
-        description = "No calculation exists for the passed calculationRequestId or the write to NOMIS has failed"
+        description = "No calculation exists for the passed calculationRequestId or the write to NOMIS has failed",
       ),
       ApiResponse(
         responseCode = "412",
-        description = "The booking data that was used for the preliminary calculation has changed"
+        description = "The booking data that was used for the preliminary calculation has changed",
       ),
-    ]
+    ],
   )
   fun confirmCalculation(
     @PathVariable("calculationRequestId")
     calculationRequestId: Long,
     @RequestBody
-    calculationFragments: CalculationFragments
+    calculationFragments: CalculationFragments,
   ): CalculatedReleaseDates {
     log.info("Request received to confirm release dates calculation for $calculationRequestId")
     return calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, calculationFragments)
@@ -152,8 +155,8 @@ class CalculationController(
       ApiResponse(responseCode = "200", description = "Returns calculated dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-      ApiResponse(responseCode = "404", description = "No confirmed calculation exists for this prisoner and booking")
-    ]
+      ApiResponse(responseCode = "404", description = "No confirmed calculation exists for this prisoner and booking"),
+    ],
   )
   fun getConfirmedCalculationResults(
     @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
@@ -179,8 +182,8 @@ class CalculationController(
       ApiResponse(responseCode = "200", description = "Returns calculated dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
-    ]
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId"),
+    ],
   )
   fun getCalculationResults(
     @Parameter(required = true, example = "123456", description = "The calculationRequestId of the results")
@@ -203,8 +206,8 @@ class CalculationController(
       ApiResponse(responseCode = "200", description = "Returns breakdown of calculated dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
-    ]
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId"),
+    ],
   )
   fun getCalculationBreakdown(
     @Parameter(required = true, example = "123456", description = "The calculationRequestId of the breakdown")
@@ -227,13 +230,13 @@ class CalculationController(
       ApiResponse(responseCode = "200", description = "Returns sentences and offences"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
-    ]
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId"),
+    ],
   )
   fun getSentencesAndOffence(
     @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
     @PathVariable("calculationRequestId")
-    calculationRequestId: Long
+    calculationRequestId: Long,
   ): List<SentenceAndOffences> {
     log.info("Request received to get sentences and offences from $calculationRequestId calculation")
     return calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)
@@ -251,13 +254,13 @@ class CalculationController(
       ApiResponse(responseCode = "200", description = "Returns prisoner details"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
-    ]
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId"),
+    ],
   )
   fun getPrisonerDetails(
     @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
     @PathVariable("calculationRequestId")
-    calculationRequestId: Long
+    calculationRequestId: Long,
   ): PrisonerDetails {
     log.info("Request received to get prisoner details from $calculationRequestId calculation")
     return calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId)
@@ -275,13 +278,13 @@ class CalculationController(
       ApiResponse(responseCode = "200", description = "Returns return to custody"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
-    ]
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId"),
+    ],
   )
   fun getReturnToCustodyDate(
     @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
     @PathVariable("calculationRequestId")
-    calculationRequestId: Long
+    calculationRequestId: Long,
   ): ReturnToCustodyDate {
     log.info("Request received to get return to custody date from $calculationRequestId calculation")
     return calculationTransactionalService.findReturnToCustodyDateFromCalculation(calculationRequestId)
@@ -300,13 +303,13 @@ class CalculationController(
       ApiResponse(responseCode = "200", description = "Returns calculation inputs"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
-    ]
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId"),
+    ],
   )
   fun getCalculationInput(
     @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
     @PathVariable("calculationRequestId")
-    calculationRequestId: Long
+    calculationRequestId: Long,
   ): CalculationUserInputs {
     log.info("Request received to get user input from $calculationRequestId calculation")
     return calculationTransactionalService.findUserInput(calculationRequestId)
@@ -324,13 +327,13 @@ class CalculationController(
       ApiResponse(responseCode = "200", description = "Returns adjustments"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId")
-    ]
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId"),
+    ],
   )
   fun get(
     @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
     @PathVariable("calculationRequestId")
-    calculationRequestId: Long
+    calculationRequestId: Long,
   ): BookingAndSentenceAdjustments {
     log.info("Request received to get booking and sentence adjustments from $calculationRequestId calculation")
     return calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
@@ -348,8 +351,8 @@ class CalculationController(
     value = [
       ApiResponse(responseCode = "200", description = "Returns questions for a calculation"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
-    ]
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
   )
   fun getCalculationUserQuestions(
     @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
@@ -366,21 +369,21 @@ class CalculationController(
   @Operation(
     summary = "Calculate a release date at a point in time for the relevant remand tool.",
     description = "This endpoint calculates the release date of an intersecting sentence, this is needed by the" +
-      "relevant remand tool in order to work out remand periods."
+      "relevant remand tool in order to work out remand periods.",
   )
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "Returns calculated dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
-    ]
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
   )
   fun relevantRemandCalculation(
     @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
     @PathVariable("prisonerId")
     prisonerId: String,
     @RequestBody
-    relevantRemandCalculationRequest: RelevantRemandCalculationRequest
+    relevantRemandCalculationRequest: RelevantRemandCalculationRequest,
   ): RelevantRemandCalculationResult {
     return relevantRemandService.relevantRemandCalculation(prisonerId, relevantRemandCalculationRequest)
   }

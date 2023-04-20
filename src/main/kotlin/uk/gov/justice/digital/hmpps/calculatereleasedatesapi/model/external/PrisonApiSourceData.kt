@@ -7,5 +7,5 @@ data class PrisonApiSourceData(
   val offenderFinePayments: List<OffenderFinePayment> = listOf(),
   val returnToCustodyDate: ReturnToCustodyDate?,
   // TODO This fixedTermTermRecallDetails variable can replace returnToCustodyDate - to be done as tech debt ticket
-  val fixedTermRecallDetails: FixedTermRecallDetails? = null
+  val fixedTermRecallDetails: FixedTermRecallDetails? = null,
 )

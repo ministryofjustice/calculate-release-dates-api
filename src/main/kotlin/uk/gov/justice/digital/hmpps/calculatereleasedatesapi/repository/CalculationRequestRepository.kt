@@ -10,7 +10,7 @@ interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long>
   fun findFirstByPrisonerIdAndBookingIdAndCalculationStatusOrderByCalculatedAtDesc(
     prisonerId: String,
     bookingId: Long,
-    calculationStatus: String
+    calculationStatus: String,
   ): Optional<CalculationRequest>
 
   fun findByIdAndCalculationStatus(calculationRequestId: Long, calculationStatus: String): Optional<CalculationRequest>

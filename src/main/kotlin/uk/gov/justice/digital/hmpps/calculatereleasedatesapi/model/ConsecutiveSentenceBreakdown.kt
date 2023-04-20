@@ -8,5 +8,5 @@ data class ConsecutiveSentenceBreakdown(
   override val sentenceLength: String,
   override val sentenceLengthDays: Int,
   override val dates: Map<ReleaseDateType, DateBreakdown>,
-  val sentenceParts: List<ConsecutiveSentencePart>
+  val sentenceParts: List<ConsecutiveSentencePart>,
 ) : SentenceBreakdown

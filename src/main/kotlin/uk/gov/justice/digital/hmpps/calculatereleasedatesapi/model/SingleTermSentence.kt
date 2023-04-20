@@ -8,13 +8,13 @@ import java.time.temporal.ChronoUnit
 class SingleTermSentence(
   override val sentencedAt: LocalDate,
   override val offence: Offence,
-  override val standardSentences: List<AbstractSentence>
+  override val standardSentences: List<AbstractSentence>,
 ) : SingleTermed {
   constructor(standardSentences: List<AbstractSentence>) :
     this(
       standardSentences.minOf(AbstractSentence::sentencedAt),
       standardSentences.map(AbstractSentence::offence).minByOrNull(Offence::committedAt)!!,
-      standardSentences
+      standardSentences,
     )
 
   override val recallType: RecallType?
@@ -24,6 +24,7 @@ class SingleTermSentence(
 
   @JsonIgnore
   override lateinit var sentenceCalculation: SentenceCalculation
+
   @JsonIgnore
   override lateinit var identificationTrack: SentenceIdentificationTrack
 
@@ -51,7 +52,7 @@ class SingleTermSentence(
     val durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()
     durationElements[ChronoUnit.DAYS] = ChronoUnit.DAYS.between(
       earliestSentencedAt(firstSentence, secondSentence),
-      latestExpiryDate(firstSentence, secondSentence)?.plusDays(1L)
+      latestExpiryDate(firstSentence, secondSentence)?.plusDays(1L),
     )
     return Duration(durationElements)
   }

@@ -4,5 +4,5 @@ import java.time.LocalDate
 
 data class ReturnToCustodyDate(
   val bookingId: Long,
-  val returnToCustodyDate: LocalDate
+  val returnToCustodyDate: LocalDate,
 )

@@ -10,10 +10,9 @@ internal class SentenceCalculationTest {
 
   @Test
   fun `Test that SentenceCalculation initialises correctly`() {
-
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(
-      mapOf(ChronoUnit.DAYS to 1L)
+      mapOf(ChronoUnit.DAYS to 1L),
     )
     val offence = Offence(LocalDate.of(2020, 1, 1))
     val standardSentence = StandardDeterminateSentence(offence, duration, sentencedAt)
@@ -30,10 +29,10 @@ internal class SentenceCalculationTest {
       date,
       false,
       Adjustments(
-        mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(numberOfDays = 1, appliesToSentencesFrom = date)))
+        mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(numberOfDays = 1, appliesToSentencesFrom = date))),
       ),
       date,
-      date
+      date,
     )
 
     assertEquals(sentenceCalculation.sentence, standardSentence)

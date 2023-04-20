@@ -8,5 +8,5 @@ data class CalculationResult(
   val dates: Map<ReleaseDateType, LocalDate>,
   val breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown> = mapOf(),
   val otherDates: Map<ReleaseDateType, LocalDate> = mapOf(),
-  val effectiveSentenceLength: Period
+  val effectiveSentenceLength: Period,
 )

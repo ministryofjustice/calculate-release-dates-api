@@ -14,5 +14,5 @@ data class CalculatedReleaseDates(
   val calculationFragments: CalculationFragments? = null,
   // TODO. This needs refactoring. The effectiveSentenceLength comes out of the calculation engine, but its not stored.
   // Its required to be sent to NOMIS, but not required for our API.
-  val effectiveSentenceLength: Period? = null
+  val effectiveSentenceLength: Period? = null,
 )

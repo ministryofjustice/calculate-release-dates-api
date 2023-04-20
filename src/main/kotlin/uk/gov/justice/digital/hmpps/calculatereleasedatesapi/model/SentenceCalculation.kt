@@ -38,14 +38,14 @@ data class SentenceCalculation(
   var latestConcurrentDeterminateRelease: LocalDate = sentence.sentencedAt,
   var adjustmentsAfter: LocalDate? = null,
   val returnToCustodyDate: LocalDate? = null,
-  val numberOfDaysToParoleEligibilityDate: Long? = null
+  val numberOfDaysToParoleEligibilityDate: Long? = null,
 ) {
 
   fun getAdjustmentBeforeSentence(vararg adjustmentTypes: AdjustmentType): Int {
     return adjustments.getOrZero(
       *adjustmentTypes,
       adjustmentsBefore = latestConcurrentRelease,
-      adjustmentsAfter = adjustmentsAfter
+      adjustmentsAfter = adjustmentsAfter,
     )
   }
 
@@ -53,7 +53,7 @@ data class SentenceCalculation(
     return adjustments.getOrZero(
       *adjustmentTypes,
       adjustmentsBefore = latestConcurrentDeterminateRelease,
-      adjustmentsAfter = adjustmentsAfter
+      adjustmentsAfter = adjustmentsAfter,
     )
   }
 
@@ -61,7 +61,7 @@ data class SentenceCalculation(
     return adjustments.getOrZero(
       *adjustmentTypes,
       adjustmentsBefore = latestConcurrentDeterminateRelease,
-      adjustmentsAfter = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1)
+      adjustmentsAfter = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1),
     )
   }
 
@@ -69,7 +69,7 @@ data class SentenceCalculation(
     return adjustments.getOrZero(
       *adjustmentTypes,
       adjustmentsBefore = latestConcurrentRelease,
-      adjustmentsAfter = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1)
+      adjustmentsAfter = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1),
     )
   }
 
@@ -77,7 +77,7 @@ data class SentenceCalculation(
     return adjustments.getOrZero(
       *adjustmentTypes,
       adjustmentsBefore = releaseDateWithoutAwarded,
-      adjustmentsAfter = adjustmentsAfter
+      adjustmentsAfter = adjustmentsAfter,
     )
   }
 
@@ -127,7 +127,7 @@ data class SentenceCalculation(
     return max(
       0,
       getAdjustmentDuringSentence(ADDITIONAL_DAYS_AWARDED) -
-        getAdjustmentDuringSentence(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, ADDITIONAL_DAYS_SERVED)
+        getAdjustmentDuringSentence(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, ADDITIONAL_DAYS_SERVED),
 
     )
   }
@@ -150,17 +150,17 @@ data class SentenceCalculation(
   val adjustedExpiryDate: LocalDate get() {
     return unadjustedExpiryDate
       .minusDays(
-        calculatedTotalDeductedDays.toLong()
+        calculatedTotalDeductedDays.toLong(),
       ).plusDays(
-        calculatedTotalAddedDays.toLong()
+        calculatedTotalAddedDays.toLong(),
       )
   }
 
   val releaseDateWithoutAwarded: LocalDate get() {
     return unadjustedDeterminateReleaseDate.minusDays(
-      calculatedDeterminateTotalDeductedDays.toLong()
+      calculatedDeterminateTotalDeductedDays.toLong(),
     ).plusDays(
-      calculatedDeterminateTotalAddedDays.toLong()
+      calculatedDeterminateTotalAddedDays.toLong(),
     )
   }
 
@@ -169,7 +169,7 @@ data class SentenceCalculation(
    */
   val adjustedUncappedDeterminateReleaseDate: LocalDate get() {
     return releaseDateWithoutAwarded.plusDays(
-      calculatedTotalAwardedDays.toLong()
+      calculatedTotalAwardedDays.toLong(),
     )
   }
 
@@ -186,15 +186,15 @@ data class SentenceCalculation(
     if (sentence.isRecall()) {
       if (sentence.recallType == RecallType.STANDARD_RECALL) {
         return unadjustedPostRecallReleaseDate?.minusDays(
-          calculatedTotalDeductedDays.toLong()
+          calculatedTotalDeductedDays.toLong(),
         )?.plusDays(
-          calculatedTotalAddedDays.toLong()
+          calculatedTotalAddedDays.toLong(),
         )
       }
       if (sentence.recallType!!.isFixedTermRecall) {
         // Fixed term recalls only apply adjustments from return to custody date
         val fixedTermRecallRelease = unadjustedPostRecallReleaseDate?.plusDays(
-          calculatedFixedTermRecallAddedDays.toLong()
+          calculatedFixedTermRecallAddedDays.toLong(),
         )
         return minOf(fixedTermRecallRelease!!, expiryDate)
       }
@@ -267,9 +267,9 @@ data class SentenceCalculation(
         unadjustedDate = unadjustedExtendedDeterminateParoleEligibilityDate ?: unadjustedDeterminateReleaseDate,
         adjustedDays = ChronoUnit.DAYS.between(
           unadjustedDeterminateReleaseDate,
-          adjustedDeterminateReleaseDate
+          adjustedDeterminateReleaseDate,
         ).toInt(),
-        rulesWithExtraAdjustments = mapOf(CalculationRule.ERSED_ONE_YEAR to AdjustmentDuration(-12, ChronoUnit.MONTHS))
+        rulesWithExtraAdjustments = mapOf(CalculationRule.ERSED_ONE_YEAR to AdjustmentDuration(-12, ChronoUnit.MONTHS)),
       )
     } else {
       val unadjustedErsed =
@@ -283,7 +283,7 @@ data class SentenceCalculation(
         rules = setOf(CalculationRule.ERSED_TWO_THIRDS),
         releaseDate = ersed,
         unadjustedDate = unadjustedErsed,
-        adjustedDays = ChronoUnit.DAYS.between(unadjustedErsed, ersed).toInt()
+        adjustedDays = ChronoUnit.DAYS.between(unadjustedErsed, ersed).toInt(),
       )
     }
   }
@@ -304,9 +304,9 @@ data class SentenceCalculation(
         unadjustedDate = unadjustedExtendedDeterminateParoleEligibilityDate ?: unadjustedDeterminateReleaseDate,
         adjustedDays = ChronoUnit.DAYS.between(
           unadjustedDeterminateReleaseDate,
-          adjustedDeterminateReleaseDate
+          adjustedDeterminateReleaseDate,
         ).toInt(),
-        rulesWithExtraAdjustments = mapOf(CalculationRule.ERSED_ONE_YEAR to AdjustmentDuration(-12, ChronoUnit.MONTHS))
+        rulesWithExtraAdjustments = mapOf(CalculationRule.ERSED_ONE_YEAR to AdjustmentDuration(-12, ChronoUnit.MONTHS)),
       )
     } else {
       val unadjustedErsed =
@@ -320,10 +320,11 @@ data class SentenceCalculation(
         rules = setOf(CalculationRule.ERSED_HALFWAY),
         releaseDate = ersed,
         unadjustedDate = unadjustedErsed,
-        adjustedDays = ChronoUnit.DAYS.between(unadjustedErsed, ersed).toInt()
+        adjustedDays = ChronoUnit.DAYS.between(unadjustedErsed, ersed).toInt(),
       )
     }
   }
+
   // Licence Expiry Date (LED)
   var numberOfDaysToLicenceExpiryDate: Long = 0
   private var _licenceExpiryDate: LocalDate? = null
@@ -378,9 +379,13 @@ data class SentenceCalculation(
   fun buildString(releaseDateTypes: ReleaseDateTypes): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val expiryDateType = if (releaseDateTypes.contains(ReleaseDateType.SLED)) "SLED" else "SED"
-    val releaseDateType = if (releaseDateTypes.contains(ReleaseDateType.ARD)) "ARD"
-    else if (releaseDateTypes.contains(ReleaseDateType.CRD)) "CRD"
-    else "PED"
+    val releaseDateType = if (releaseDateTypes.contains(ReleaseDateType.ARD)) {
+      "ARD"
+    } else if (releaseDateTypes.contains(ReleaseDateType.CRD)) {
+      "CRD"
+    } else {
+      "PED"
+    }
 
     return "Date of $expiryDateType\t:\t${unadjustedExpiryDate.format(formatter)}\n" +
       "Number of days to $releaseDateType\t:\t${numberOfDaysToDeterminateReleaseDate}\n" +

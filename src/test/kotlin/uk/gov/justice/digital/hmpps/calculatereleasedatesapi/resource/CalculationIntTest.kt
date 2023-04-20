@@ -73,7 +73,6 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Confirm a calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
-
     val prelim = createPreliminaryCalculation(PRISONER_ID)
     val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId)
     val calculationRequest: CalculationRequest = calculationRequestRepository.findById(confirmed.calculationRequestId)
@@ -90,7 +89,6 @@ class CalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Get the results for a confirmed calculation`() {
-
     val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
     createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId)
 
@@ -133,7 +131,9 @@ class CalculationIntTest : IntegrationTestBase() {
 
     val req = calculationRequestRepository
       .findFirstByPrisonerIdAndBookingIdAndCalculationStatusOrderByCalculatedAtDesc(
-        PRISONER_ERROR_ID, BOOKING_ERROR_ID, CalculationStatus.ERROR.name
+        PRISONER_ERROR_ID,
+        BOOKING_ERROR_ID,
+        CalculationStatus.ERROR.name,
       )
 
     assertThat(req).isNotNull
@@ -152,7 +152,7 @@ class CalculationIntTest : IntegrationTestBase() {
         "{\"status\":404,\"errorCode\":null,\"userMessage\":\"Not found: No confirmed calculation exists " +
           "for prisoner default and bookingId 92929988\",\"developerMessage\":\"No confirmed calculation exists for " +
           "prisoner default and bookingId 92929988\"," +
-          "\"moreInfo\":null}"
+          "\"moreInfo\":null}",
       )
   }
 
@@ -202,7 +202,7 @@ class CalculationIntTest : IntegrationTestBase() {
   @Test
   fun `Run calculation where SDS+ is consecutive to SDS`() {
     val userInput = CalculationUserInputs(
-      useOffenceIndicators = true
+      useOffenceIndicators = true,
     )
     val calculatedReleaseDates: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/$SDS_PLUS_CONSECUTIVE_TO_SDS")
@@ -327,7 +327,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[PRRD]).isEqualTo(
-      LocalDate.of(2022, 7, 3)
+      LocalDate.of(2022, 7, 3),
     )
   }
 
@@ -344,7 +344,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[PRRD]).isEqualTo(
-      LocalDate.of(2022, 1, 31)
+      LocalDate.of(2022, 1, 31),
     )
   }
 
@@ -361,7 +361,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[PRRD]).isEqualTo(
-      LocalDate.of(2022, 3, 28)
+      LocalDate.of(2022, 3, 28),
     )
   }
 
@@ -378,10 +378,10 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2025, 8, 28)
+      LocalDate.of(2025, 8, 28),
     )
     assertThat(calculation.dates[SLED]).isEqualTo(
-      LocalDate.of(2029, 3, 28)
+      LocalDate.of(2029, 3, 28),
     )
   }
 
@@ -398,17 +398,17 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2025, 8, 30)
+      LocalDate.of(2025, 8, 30),
     )
     assertThat(calculation.dates[SLED]).isEqualTo(
-      LocalDate.of(2029, 3, 30)
+      LocalDate.of(2029, 3, 30),
     )
   }
 
   @Test
   fun `Run calculation on CRS-872 a consecutive sentence having multiple offences, some schedule 15 attracting life, some not`() {
     val userInput = CalculationUserInputs(
-      useOffenceIndicators = true
+      useOffenceIndicators = true,
     )
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-872")
@@ -423,10 +423,10 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2027, 6, 20)
+      LocalDate.of(2027, 6, 20),
     )
     assertThat(calculation.dates[SLED]).isEqualTo(
-      LocalDate.of(2030, 2, 4)
+      LocalDate.of(2030, 2, 4),
     )
   }
 
@@ -443,13 +443,13 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2020, 4, 14)
+      LocalDate.of(2020, 4, 14),
     )
     assertThat(calculation.dates[PED]).isEqualTo(
-      LocalDate.of(2019, 5, 21)
+      LocalDate.of(2019, 5, 21),
     )
     assertThat(calculation.dates[SLED]).isEqualTo(
-      LocalDate.of(2023, 7, 20)
+      LocalDate.of(2023, 7, 20),
     )
   }
 
@@ -466,13 +466,13 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2032, 6, 16)
+      LocalDate.of(2032, 6, 16),
     )
     assertThat(calculation.dates[PED]).isEqualTo(
-      LocalDate.of(2030, 8, 7)
+      LocalDate.of(2030, 8, 7),
     )
     assertThat(calculation.dates[SLED]).isEqualTo(
-      LocalDate.of(2033, 6, 16)
+      LocalDate.of(2033, 6, 16),
     )
   }
 
@@ -489,7 +489,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2025, 4, 19)
+      LocalDate.of(2025, 4, 19),
     )
   }
 
@@ -502,9 +502,9 @@ class CalculationIntTest : IntegrationTestBase() {
           sentenceSequence = 1,
           offenceCode = "SX03013A",
           userInputType = UserInputType.SECTION_250,
-          userChoice = true
-        )
-      )
+          userChoice = true,
+        ),
+      ),
     )
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/SEC250")
@@ -519,12 +519,13 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2027, 2, 26)
+      LocalDate.of(2027, 2, 26),
     )
     assertThat(calculation.dates[ERSED]).isEqualTo(
-      LocalDate.of(2026, 2, 26)
+      LocalDate.of(2026, 2, 26),
     )
   }
+
   @Test
   fun `Run calculation on a test of historic inactive released prisoner`() {
     val calculation: CalculationResults = webTestClient.post()
@@ -538,7 +539,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.calculatedReleaseDates!!.dates[CRD]).isEqualTo(
-      LocalDate.of(2021, 12, 29)
+      LocalDate.of(2021, 12, 29),
     )
   }
 
@@ -575,6 +576,7 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(calculation.dates[ETD]).isEqualTo("2021-12-21")
     assertThat(calculation.dates[LTD]).isEqualTo("2022-04-21")
   }
+
   @Test
   fun `Run calculation on A FINE sentence`() {
     val calculation: CalculatedReleaseDates = webTestClient.post()
@@ -588,10 +590,10 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[ARD]).isEqualTo(
-      LocalDate.of(2029, 6, 4)
+      LocalDate.of(2029, 6, 4),
     )
     assertThat(calculation.dates[SED]).isEqualTo(
-      LocalDate.of(2029, 6, 4)
+      LocalDate.of(2029, 6, 4),
     )
   }
 
@@ -608,10 +610,10 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[PRRD]).isEqualTo(
-      LocalDate.of(2024, 4, 1)
+      LocalDate.of(2024, 4, 1),
     )
     assertThat(calculation.dates[SLED]).isEqualTo(
-      LocalDate.of(2024, 4, 1)
+      LocalDate.of(2024, 4, 1),
     )
   }
 
@@ -648,10 +650,10 @@ class CalculationIntTest : IntegrationTestBase() {
           from = LocalDate.of(2021, 1, 1),
           to = LocalDate.of(2021, 1, 31),
           days = 31,
-          sentenceSequence = 4
-        )
+          sentenceSequence = 4,
+        ),
       ),
-      RelevantRemandSentence(sentenceDate = LocalDate.of(2021, 2, 1), bookingId = "RELREM".hashCode().toLong(), sequence = 4)
+      RelevantRemandSentence(sentenceDate = LocalDate.of(2021, 2, 1), bookingId = "RELREM".hashCode().toLong(), sequence = 4),
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREM")
@@ -677,10 +679,10 @@ class CalculationIntTest : IntegrationTestBase() {
           from = LocalDate.of(2021, 1, 1),
           to = LocalDate.of(2021, 1, 31),
           days = 31,
-          sentenceSequence = 4
-        )
+          sentenceSequence = 4,
+        ),
       ),
-      RelevantRemandSentence(sentenceDate = LocalDate.of(2021, 2, 1), bookingId = "RELREMV".hashCode().toLong(), sequence = 4)
+      RelevantRemandSentence(sentenceDate = LocalDate.of(2021, 2, 1), bookingId = "RELREMV".hashCode().toLong(), sequence = 4),
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREMV")
@@ -709,7 +711,7 @@ class CalculationIntTest : IntegrationTestBase() {
     .returnResult().responseBody
 
   private fun createConfirmCalculationForPrisoner(
-    calculationRequestId: Long
+    calculationRequestId: Long,
   ): CalculatedReleaseDates {
     return webTestClient.post()
       .uri("/calculation/confirm/$calculationRequestId")

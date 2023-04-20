@@ -98,11 +98,11 @@ import java.time.temporal.ChronoUnit.MONTHS
 @Service
 class ValidationService(
   private val extractionService: SentencesExtractionService,
-  private val featureToggles: FeatureToggles
+  private val featureToggles: FeatureToggles,
 ) {
   fun validateBeforeCalculation(
     sourceData: PrisonApiSourceData,
-    calculationUserInputs: CalculationUserInputs
+    calculationUserInputs: CalculationUserInputs,
   ): List<ValidationMessage> {
     log.info("Pre-calculation validation of source data: $sourceData")
     val sentencesAndOffences = sourceData.sentenceAndOffences
@@ -167,14 +167,17 @@ class ValidationService(
     val sentencesAndOffences = sourceData.sentenceAndOffences
     val ftrDetails = sourceData.fixedTermRecallDetails ?: return emptyList()
     val (recallLength, has14DayFTRSentence, has28DayFTRSentence) = getFtrValidationDetails(
-      ftrDetails, sentencesAndOffences
+      ftrDetails,
+      sentencesAndOffences,
     )
 
-    if (has14DayFTRSentence && has28DayFTRSentence) return listOf(
-      ValidationMessage(
-        FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER
+    if (has14DayFTRSentence && has28DayFTRSentence) {
+      return listOf(
+        ValidationMessage(
+          FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER,
+        ),
       )
-    )
+    }
     if (has14DayFTRSentence && recallLength == 28) return listOf(ValidationMessage(FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28))
     if (has28DayFTRSentence && recallLength == 14) return listOf(ValidationMessage(FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14))
     return emptyList()
@@ -228,27 +231,32 @@ class ValidationService(
 
     booking.consecutiveSentences.forEach {
       if (it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28) {
-        if (recallLength == 14 && it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS))
+        if (recallLength == 14 && it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS)) {
           messages += ValidationMessage(FTR_14_DAYS_AGGREGATE_GE_12_MONTHS)
+        }
       }
     }
 
     booking.consecutiveSentences.forEach {
       if (it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28) {
-        if (recallLength == 28 && it.durationIsLessThan(TWELVE, MONTHS)) messages += ValidationMessage(
-          FTR_28_DAYS_AGGREGATE_LT_12_MONTHS
-        )
+        if (recallLength == 28 && it.durationIsLessThan(TWELVE, MONTHS)) {
+          messages += ValidationMessage(
+            FTR_28_DAYS_AGGREGATE_LT_12_MONTHS,
+          )
+        }
       }
     }
 
     booking.consecutiveSentences.forEach {
-      if (it.recallType == FIXED_TERM_RECALL_28 && it.durationIsLessThan(TWELVE, MONTHS))
+      if (it.recallType == FIXED_TERM_RECALL_28 && it.durationIsLessThan(TWELVE, MONTHS)) {
         messages += ValidationMessage(FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS)
+      }
     }
 
     booking.consecutiveSentences.forEach {
-      if (it.recallType == FIXED_TERM_RECALL_14 && it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS))
+      if (it.recallType == FIXED_TERM_RECALL_14 && it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS)) {
         messages += ValidationMessage(FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS)
+      }
     }
     return messages
   }
@@ -320,16 +328,20 @@ class ValidationService(
 
   private fun validateSupportedAdjustments(adjustments: List<BookingAdjustment>): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
-    if (adjustments.any { it.type == LAWFULLY_AT_LARGE }) messages.add(
-      ValidationMessage(
-        UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE
+    if (adjustments.any { it.type == LAWFULLY_AT_LARGE }) {
+      messages.add(
+        ValidationMessage(
+          UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE,
+        ),
       )
-    )
-    if (adjustments.any { it.type == SPECIAL_REMISSION }) messages.add(
-      ValidationMessage(
-        UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION
+    }
+    if (adjustments.any { it.type == SPECIAL_REMISSION }) {
+      messages.add(
+        ValidationMessage(
+          UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION,
+        ),
       )
-    )
+    }
     return messages
   }
 
@@ -374,7 +386,7 @@ class ValidationService(
       validateThatSec91SentenceTypeCorrectlyApplied(it),
       validateEdsSentenceTypesCorrectlyApplied(it),
       validateSopcSentenceTypesCorrectlyApplied(it),
-      validateFineAmount(it)
+      validateFineAmount(it),
     )
   }
 
@@ -405,15 +417,15 @@ class ValidationService(
     if (listOf(
         SentenceCalculationType.EDS18,
         SentenceCalculationType.EDS21,
-        SentenceCalculationType.EDSU18
+        SentenceCalculationType.EDSU18,
       ).contains(
-          sentenceCalculationType
+          sentenceCalculationType,
         )
     ) {
       if (sentencesAndOffence.sentenceDate.isBefore(ImportantDates.EDS18_SENTENCE_TYPES_START_DATE)) {
         return ValidationMessage(
           EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
-          getCaseSeqAndLineSeq(sentencesAndOffence)
+          getCaseSeqAndLineSeq(sentencesAndOffence),
         )
       }
     } else if (sentenceCalculationType == SentenceCalculationType.LASPO_AR) {
@@ -431,7 +443,7 @@ class ValidationService(
       if (sentencesAndOffence.sentenceDate.isBefore(ImportantDates.SEC_91_END_DATE)) {
         return ValidationMessage(
           SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT,
-          getCaseSeqAndLineSeq(sentencesAndOffence)
+          getCaseSeqAndLineSeq(sentencesAndOffence),
         )
       }
     } else if (sentenceCalculationType == SentenceCalculationType.SEC236A) {
@@ -461,8 +473,8 @@ class ValidationService(
       validationMessages.add(
         ValidationMessage(
           SENTENCE_HAS_MULTIPLE_TERMS,
-          getCaseSeqAndLineSeq(sentencesAndOffence)
-        )
+          getCaseSeqAndLineSeq(sentencesAndOffence),
+        ),
       )
     } else {
       val emptyImprisonmentTerm =
@@ -472,8 +484,8 @@ class ValidationService(
         validationMessages.add(
           ValidationMessage(
             ZERO_IMPRISONMENT_TERM,
-            getCaseSeqAndLineSeq(sentencesAndOffence)
-          )
+            getCaseSeqAndLineSeq(sentencesAndOffence),
+          ),
         )
       }
     }
@@ -487,14 +499,16 @@ class ValidationService(
     if (imprisonmentTerms.isEmpty()) {
       validationMessages.add(
         ValidationMessage(
-          SENTENCE_HAS_NO_IMPRISONMENT_TERM, getCaseSeqAndLineSeq(sentencesAndOffence)
-        )
+          SENTENCE_HAS_NO_IMPRISONMENT_TERM,
+          getCaseSeqAndLineSeq(sentencesAndOffence),
+        ),
       )
     } else if (imprisonmentTerms.size > 1) {
       validationMessages.add(
         ValidationMessage(
-          MORE_THAN_ONE_IMPRISONMENT_TERM, getCaseSeqAndLineSeq(sentencesAndOffence)
-        )
+          MORE_THAN_ONE_IMPRISONMENT_TERM,
+          getCaseSeqAndLineSeq(sentencesAndOffence),
+        ),
       )
     } else {
       val emptyTerm =
@@ -503,8 +517,8 @@ class ValidationService(
         validationMessages.add(
           ValidationMessage(
             ZERO_IMPRISONMENT_TERM,
-            getCaseSeqAndLineSeq(sentencesAndOffence)
-          )
+            getCaseSeqAndLineSeq(sentencesAndOffence),
+          ),
         )
       }
     }
@@ -514,15 +528,15 @@ class ValidationService(
       validationMessages.add(
         ValidationMessage(
           SENTENCE_HAS_NO_LICENCE_TERM,
-          getCaseSeqAndLineSeq(sentencesAndOffence)
-        )
+          getCaseSeqAndLineSeq(sentencesAndOffence),
+        ),
       )
     } else if (licenceTerms.size > 1) {
       validationMessages.add(
         ValidationMessage(
           MORE_THAN_ONE_LICENCE_TERM,
-          getCaseSeqAndLineSeq(sentencesAndOffence)
-        )
+          getCaseSeqAndLineSeq(sentencesAndOffence),
+        ),
       )
     } else {
       val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
@@ -531,7 +545,7 @@ class ValidationService(
           Period.of(
             licenceTerms[0].years,
             licenceTerms[0].months,
-            licenceTerms[0].weeks * 7 + licenceTerms[0].days
+            licenceTerms[0].weeks * 7 + licenceTerms[0].days,
           )
         val endOfDuration = sentencesAndOffence.sentenceDate.plus(duration)
         val endOfOneYear = sentencesAndOffence.sentenceDate.plusYears(1)
@@ -540,14 +554,16 @@ class ValidationService(
         if (endOfDuration.isBefore(endOfOneYear)) {
           validationMessages.add(
             ValidationMessage(
-              EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, getCaseSeqAndLineSeq(sentencesAndOffence)
-            )
+              EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR,
+              getCaseSeqAndLineSeq(sentencesAndOffence),
+            ),
           )
         } else if (endOfDuration.isAfter(endOfEightYears)) {
           validationMessages.add(
             ValidationMessage(
-              EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS, getCaseSeqAndLineSeq(sentencesAndOffence)
-            )
+              EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS,
+              getCaseSeqAndLineSeq(sentencesAndOffence),
+            ),
           )
         }
       } else if (sentenceCalculationType.sentenceClazz == SopcSentence::class.java) {
@@ -555,15 +571,16 @@ class ValidationService(
           Period.of(
             licenceTerms[0].years,
             licenceTerms[0].months,
-            licenceTerms[0].weeks * 7 + licenceTerms[0].days
+            licenceTerms[0].weeks * 7 + licenceTerms[0].days,
           )
         val endOfDuration = sentencesAndOffence.sentenceDate.plus(duration)
         val endOfOneYear = sentencesAndOffence.sentenceDate.plusYears(1)
         if (endOfDuration != endOfOneYear) {
           validationMessages.add(
             ValidationMessage(
-              SOPC_LICENCE_TERM_NOT_12_MONTHS, getCaseSeqAndLineSeq(sentencesAndOffence)
-            )
+              SOPC_LICENCE_TERM_NOT_12_MONTHS,
+              getCaseSeqAndLineSeq(sentencesAndOffence),
+            ),
           )
         }
       }
@@ -619,7 +636,7 @@ class ValidationService(
       .map {
         ValidationMessage(
           UNSUPPORTED_SENTENCE_TYPE,
-          listOf(it.sentenceCategory, it.sentenceTypeDescription)
+          listOf(it.sentenceCategory, it.sentenceTypeDescription),
         )
       }
       .toMutableList()
@@ -631,7 +648,6 @@ class ValidationService(
     var bookingHasDto = false
     var bookingHasRecall = false
     prisonApiSourceData.sentenceAndOffences.forEach() {
-
       val sentenceCalculationType = SentenceCalculationType.from(it.sentenceCalculationType)
       val hasDtoRecall = it.terms.any { terms ->
         terms.code == SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE || terms.code == SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE
@@ -676,7 +692,7 @@ class ValidationService(
   }
 
   private fun validateOffenceDateAfterSentenceDate(
-    sentencesAndOffence: SentenceAndOffences
+    sentencesAndOffence: SentenceAndOffences,
   ): ValidationMessage? {
     val invalid =
       sentencesAndOffence.offences.any { it.offenceStartDate != null && it.offenceStartDate > sentencesAndOffence.sentenceDate }
@@ -730,8 +746,8 @@ class ValidationService(
             log.warn(
               String.format(
                 "Remand of range %s overlaps with remand of range %s",
-                *args.toTypedArray()
-              )
+                *args.toTypedArray(),
+              ),
             )
             return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_REMAND))
           } else {
@@ -753,7 +769,8 @@ class ValidationService(
     if (determinateSentences.isNotEmpty()) {
       val earliestSentenceDate = determinateSentences.minOf { it.sentencedAt }
       val latestReleaseDateSentence = extractionService.mostRecentSentence(
-        determinateSentences, SentenceCalculation::adjustedUncappedDeterminateReleaseDate
+        determinateSentences,
+        SentenceCalculation::adjustedUncappedDeterminateReleaseDate,
       )
       if (earliestSentenceDate.minusDays(1)
         .isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate)
@@ -779,7 +796,7 @@ class ValidationService(
     private val ADJUSTMENT_FUTURE_DATED_MAP = mapOf(
       ADDITIONAL_DAYS_AWARDED to ADJUSTMENT_FUTURE_DATED_ADA,
       UNLAWFULLY_AT_LARGE to ADJUSTMENT_FUTURE_DATED_UAL,
-      RESTORED_ADDITIONAL_DAYS_AWARDED to ADJUSTMENT_FUTURE_DATED_RADA
+      RESTORED_ADDITIONAL_DAYS_AWARDED to ADJUSTMENT_FUTURE_DATED_RADA,
     )
     private const val TWELVE = 12L
     private val log = LoggerFactory.getLogger(this::class.java)

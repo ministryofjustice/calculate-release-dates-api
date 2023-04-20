@@ -15,7 +15,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   A_FINE_SENTENCE_CONSECUTIVE("A sentence is consecutive to a default term.", UNSUPPORTED_CALCULATION),
   A_FINE_SENTENCE_CONSECUTIVE_TO(
     "A default term is consecutive to another default term or sentence.",
-    UNSUPPORTED_CALCULATION
+    UNSUPPORTED_CALCULATION,
   ),
   A_FINE_SENTENCE_MISSING_FINE_AMOUNT("Court case %s count %s must include a fine amount."),
   A_FINE_SENTENCE_WITH_PAYMENTS("Any of the fine amount for a default term has been paid.", UNSUPPORTED_CALCULATION),
@@ -58,11 +58,11 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   SOPC_LICENCE_TERM_NOT_12_MONTHS("Court case %s count %s must include a licence term of 12 months or 1 year."),
   UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE(
     "There is a Lawfully at Large (LAL) adjustment on the associated booking",
-    UNSUPPORTED_CALCULATION
+    UNSUPPORTED_CALCULATION,
   ),
   UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION(
     "There is a Special Remission (SR) adjustment on the associated booking",
-    UNSUPPORTED_CALCULATION
+    UNSUPPORTED_CALCULATION,
   ),
   UNSUPPORTED_SENTENCE_TYPE("Unsupported sentence type %s %s", UNSUPPORTED_SENTENCE),
   ZERO_IMPRISONMENT_TERM("Court case %s count %s must include an imprisonment term greater than zero."),

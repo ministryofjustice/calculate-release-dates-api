@@ -20,12 +20,12 @@ class RelevantRemandService(
   private val prisonService: PrisonService,
   private val calculationService: CalculationService,
   private val validationService: ValidationService,
-  private val bookingService: BookingService
+  private val bookingService: BookingService,
 ) {
 
   fun relevantRemandCalculation(prisonerId: String, request: RelevantRemandCalculationRequest): RelevantRemandCalculationResult {
     val prisoner = prisonService.getOffenderDetail(prisonerId).copy(
-      bookingId = request.sentence.bookingId
+      bookingId = request.sentence.bookingId,
     )
     val sourceData = filterSentencesAndAdjustmentsForRelevantRemandCalc(prisonService.getPrisonApiSourceData(prisoner, false), request)
     val calculationUserInputs = CalculationUserInputs(useOffenceIndicators = true)
@@ -33,21 +33,21 @@ class RelevantRemandService(
     var validationMessages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs)
     if (validationMessages.isNotEmpty()) {
       return RelevantRemandCalculationResult(
-        validationMessages = validationMessages
+        validationMessages = validationMessages,
       )
     }
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     validationMessages = validationService.validateBeforeCalculation(booking)
     if (validationMessages.isNotEmpty()) {
       return RelevantRemandCalculationResult(
-        validationMessages = validationMessages
+        validationMessages = validationMessages,
       )
     }
 
     val calculationResult = calculationService.calculateReleaseDates(booking).second
     val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.PRRD, ReleaseDateType.MTD)
     return RelevantRemandCalculationResult(
-      releaseDate = calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOf { it.value }
+      releaseDate = calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOf { it.value },
     )
   }
 
@@ -69,8 +69,8 @@ class RelevantRemandService(
               SentenceAdjustmentType.REMAND
             }
             SentenceAdjustment(it.sentenceSequence, true, it.from, it.to, it.days, adjustmentType)
-          }
-      )
+          },
+      ),
     )
   }
 

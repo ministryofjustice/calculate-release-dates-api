@@ -24,7 +24,7 @@ import java.time.temporal.ChronoUnit.YEARS
  */
 
 data class Duration(
-  var durationElements: Map<ChronoUnit, Long> = mapOf()
+  var durationElements: Map<ChronoUnit, Long> = mapOf(),
 ) {
 
   // PSI 5.5 Converting a Sentence in to Days
@@ -114,22 +114,24 @@ data class Duration(
   fun hasDaysOrWeeks(): Boolean {
     return this.getDayAndWeekPart().isNotEmpty()
   }
+
   @JsonIgnore
   fun getMonthAndYearPart(): Duration {
     return Duration(
       mapOf(
         MONTHS to this.durationElements.getOrDefault(MONTHS, 0),
-        YEARS to this.durationElements.getOrDefault(YEARS, 0L)
-      ).filter { entry -> entry.value != 0L }
+        YEARS to this.durationElements.getOrDefault(YEARS, 0L),
+      ).filter { entry -> entry.value != 0L },
     )
   }
+
   @JsonIgnore
   fun getDayAndWeekPart(): Duration {
     return Duration(
       mapOf(
         WEEKS to this.durationElements.getOrDefault(WEEKS, 0),
-        DAYS to this.durationElements.getOrDefault(DAYS, 0L)
-      ).filter { entry -> entry.value != 0L }
+        DAYS to this.durationElements.getOrDefault(DAYS, 0L),
+      ).filter { entry -> entry.value != 0L },
     )
   }
 }

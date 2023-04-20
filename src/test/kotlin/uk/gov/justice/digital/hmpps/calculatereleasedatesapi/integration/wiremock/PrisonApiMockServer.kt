@@ -121,8 +121,8 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
           aResponse()
             .withHeader("Content-Type", "application/json")
             .withBody(json)
-            .withStatus(200)
-        )
+            .withStatus(200),
+        ),
     )
 
   fun stubGetSentencesAndOffences(bookingId: Long, json: String): StubMapping =
@@ -132,8 +132,8 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
           aResponse()
             .withHeader("Content-Type", "application/json")
             .withBody(json)
-            .withStatus(200)
-        )
+            .withStatus(200),
+        ),
     )
 
   fun stubGetReturnToCustody(bookingId: Long, json: String): StubMapping =
@@ -143,8 +143,8 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
           aResponse()
             .withHeader("Content-Type", "application/json")
             .withBody(json)
-            .withStatus(200)
-        )
+            .withStatus(200),
+        ),
     )
 
   fun stubGetSentenceAdjustments(bookingId: Long, json: String): StubMapping =
@@ -154,8 +154,8 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
           aResponse()
             .withHeader("Content-Type", "application/json")
             .withBody(json)
-            .withStatus(200)
-        )
+            .withStatus(200),
+        ),
     )
 
   fun stubPostOffenderDates(bookingId: Long): StubMapping =
@@ -164,8 +164,8 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
-            .withStatus(200)
-        )
+            .withStatus(200),
+        ),
     )
 
   fun stubOffenderFinePayments(bookingId: Long, json: String): StubMapping =
@@ -175,7 +175,7 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
           aResponse()
             .withHeader("Content-Type", "application/json")
             .withBody(json)
-            .withStatus(200)
-        )
+            .withStatus(200),
+        ),
     )
 }

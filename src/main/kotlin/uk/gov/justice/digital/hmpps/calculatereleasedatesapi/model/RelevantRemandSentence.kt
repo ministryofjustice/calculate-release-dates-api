@@ -5,5 +5,5 @@ import java.time.LocalDate
 data class RelevantRemandSentence(
   val sequence: Int,
   val sentenceDate: LocalDate,
-  val bookingId: Long
+  val bookingId: Long,
 )

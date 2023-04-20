@@ -6,7 +6,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 class ReleaseDateTypes(
   private val intialTypes: List<ReleaseDateType>,
   private val sentence: CalculableSentence,
-  private val offender: Offender
+  private val offender: Offender,
 ) {
 
   fun getReleaseDateTypes(): List<ReleaseDateType> {
