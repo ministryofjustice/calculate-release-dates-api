@@ -13,7 +13,8 @@ enum class SentenceIdentificationTrack {
   AFINE_ARD_AT_HALFWAY,
   AFINE_ARD_AT_FULL_TERM,
   DTO_BEFORE_PCSC,
-  DTO_AFTER_PCSC;
+  DTO_AFTER_PCSC,
+  ;
 
   fun calculateErsedFromHalfway(): Boolean {
     return listOf(SDS_AFTER_CJA_LASPO, SDS_AFTER_CJA_LASPO, SOPC_PED_AT_HALFWAY).contains(this)

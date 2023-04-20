@@ -32,7 +32,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremoc
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 @Sql(
   "classpath:test_data/reset-base-data.sql",
-  "classpath:test_data/load-base-data.sql"
+  "classpath:test_data/load-base-data.sql",
 )
 @ExtendWith(OAuthExtension::class, PrisonApiExtension::class, BankHolidayApiExtension::class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -48,7 +48,7 @@ class IntegrationTestBase internal constructor() {
 
   internal fun setAuthorisation(
     user: String = "test-client",
-    roles: List<String> = listOf()
+    roles: List<String> = listOf(),
   ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles)
 
   companion object {

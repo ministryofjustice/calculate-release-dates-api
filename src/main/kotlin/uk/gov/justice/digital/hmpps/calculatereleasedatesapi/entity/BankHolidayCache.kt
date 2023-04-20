@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull
 @Entity
 @Table
 @TypeDefs(
-  TypeDef(name = "json", typeClass = JsonType::class)
+  TypeDef(name = "json", typeClass = JsonType::class),
 )
 data class BankHolidayCache(
   @Id

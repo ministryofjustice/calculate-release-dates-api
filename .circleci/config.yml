@@ -12,7 +12,7 @@ parameters:
     default: farsight-alerts
   node-version:
     type: string
-    default: 16.15-browsers
+    default: 19.3-browsers
 
 jobs:
   validate:

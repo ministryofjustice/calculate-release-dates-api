@@ -51,7 +51,6 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
   }
 
   fun calculateTused(sentenceCalculation: SentenceCalculation): LocalDate {
-
     return if (sentenceCalculation.isImmediateRelease()) {
       // There may still be adjustments to consider here. If the immediate release occurred and then there was a recall,
       // Any UAL after the recall will need to be added.
@@ -74,8 +73,8 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
       rulesWithExtraAdjustments = mapOf(
         CalculationRule.TUSED_LICENCE_PERIOD_LT_1Y to AdjustmentDuration(
           TWELVE.toInt(),
-          ChronoUnit.MONTHS
-        )
+          ChronoUnit.MONTHS,
+        ),
       ),
       adjustedDays = getAdjustedDays(sentenceCalculation),
       releaseDate = sentenceCalculation.topUpSupervisionDate!!,

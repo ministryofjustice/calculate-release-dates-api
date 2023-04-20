@@ -30,7 +30,7 @@ enum class SentenceCalculationType(
   LR_YOI_ORA(STANDARD_RECALL),
   LR_SEC91_ORA(STANDARD_RECALL),
   LRSEC250_ORA(STANDARD_RECALL),
-  _14FTR_ORA(recallType = FIXED_TERM_RECALL_14, primaryName = "14FTR_ORA", isFixedTermRecall = true),
+  FTR_14_ORA(recallType = FIXED_TERM_RECALL_14, primaryName = "14FTR_ORA", isFixedTermRecall = true),
   FTR(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
   FTR_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
   FTR_SCH15(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
@@ -56,7 +56,8 @@ enum class SentenceCalculationType(
   LR_SOPC18(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
   LR_SOPC21(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
   DTO(sentenceClazz = DetentionAndTrainingOrderSentence::class.java),
-  DTO_ORA(sentenceClazz = DetentionAndTrainingOrderSentence::class.java);
+  DTO_ORA(sentenceClazz = DetentionAndTrainingOrderSentence::class.java),
+  ;
 
   companion object {
     fun from(sentenceCalculationType: String): SentenceCalculationType =

@@ -46,14 +46,18 @@ class TransformFunctionsTest {
     val caseSequence = 155
     val offences = listOf(
       OffenderOffence(
-        offenderChargeId = 1L, offenceStartDate = FIRST_JAN_2015,
-        offenceCode = "RR1", offenceDescription = "Littering",
-        indicators = listOf("An indicator")
+        offenderChargeId = 1L,
+        offenceStartDate = FIRST_JAN_2015,
+        offenceCode = "RR1",
+        offenceDescription = "Littering",
+        indicators = listOf("An indicator"),
       ),
       OffenderOffence(
-        offenderChargeId = 2L, offenceStartDate = SECOND_JAN_2015,
-        offenceCode = "RR2", offenceDescription = "Jaywalking",
-        indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR)
+        offenderChargeId = 2L,
+        offenceStartDate = SECOND_JAN_2015,
+        offenceCode = "RR2",
+        offenceDescription = "Jaywalking",
+        indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
       ),
     )
     val request = SentenceAndOffences(
@@ -65,8 +69,8 @@ class TransformFunctionsTest {
           years = 5,
           months = 4,
           weeks = 3,
-          days = 2
-        )
+          days = 2,
+        ),
       ),
       sentenceStatus = "IMP",
       sentenceCategory = "CAT",
@@ -74,7 +78,7 @@ class TransformFunctionsTest {
       sentenceTypeDescription = "Standard Determinate",
       offences = offences,
       lineSequence = lineSequence,
-      caseSequence = caseSequence
+      caseSequence = caseSequence,
     )
 
     assertThat(transform(request, CalculationUserInputs(useOffenceIndicators = true))).isEqualTo(
@@ -86,7 +90,7 @@ class TransformFunctionsTest {
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(),
           lineSequence = lineSequence,
-          caseSequence = caseSequence
+          caseSequence = caseSequence,
 
         ),
         StandardDeterminateSentence(
@@ -96,9 +100,9 @@ class TransformFunctionsTest {
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(),
           lineSequence = lineSequence,
-          caseSequence = caseSequence
+          caseSequence = caseSequence,
         ),
-      )
+      ),
     )
   }
 
@@ -111,8 +115,12 @@ class TransformFunctionsTest {
     val consecutiveTo = 99
     val offences = listOf(
       OffenderOffence(
-        offenderChargeId = 1L, offenceStartDate = FIRST_JAN_2015, offenceEndDate = SECOND_JAN_2015,
-        offenceCode = "RR1", offenceDescription = "Littering", indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR)
+        offenderChargeId = 1L,
+        offenceStartDate = FIRST_JAN_2015,
+        offenceEndDate = SECOND_JAN_2015,
+        offenceCode = "RR1",
+        offenceDescription = "Littering",
+        indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
       ),
     )
     val request = SentenceAndOffences(
@@ -122,8 +130,8 @@ class TransformFunctionsTest {
       sentenceDate = FIRST_JAN_2015,
       terms = listOf(
         SentenceTerms(
-          years = 5
-        )
+          years = 5,
+        ),
       ),
       sentenceStatus = "IMP",
       sentenceCategory = "CAT",
@@ -131,7 +139,7 @@ class TransformFunctionsTest {
       sentenceTypeDescription = "Standard Determinate",
       offences = offences,
       lineSequence = lineSequence,
-      caseSequence = caseSequence
+      caseSequence = caseSequence,
     )
 
     assertThat(transform(request, null)).isEqualTo(
@@ -143,9 +151,9 @@ class TransformFunctionsTest {
           identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
           consecutiveSentenceUUIDs = mutableListOf(UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())),
           lineSequence = lineSequence,
-          caseSequence = caseSequence
+          caseSequence = caseSequence,
         ),
-      )
+      ),
     )
   }
 
@@ -162,8 +170,8 @@ class TransformFunctionsTest {
         CALCULATION_REQUEST_ID,
         bookingId = BOOKING_ID,
         prisonerId = PRISONER_ID,
-        calculationStatus = CalculationStatus.PRELIMINARY
-      )
+        calculationStatus = CalculationStatus.PRELIMINARY,
+      ),
     )
   }
 
@@ -173,17 +181,17 @@ class TransformFunctionsTest {
       transform(
         BOOKING_CALCULATION.copy(
           dates = mutableMapOf(CRD to CRD_DATE, SLED to SLED_DATE, ESED to ESED_DATE),
-          effectiveSentenceLength = Period.of(6, 2, 3)
-        )
-      )
+          effectiveSentenceLength = Period.of(6, 2, 3),
+        ),
+      ),
     ).isEqualTo(
       OffenderKeyDates(
         conditionalReleaseDate = CRD_DATE,
         sentenceExpiryDate = SLED_DATE,
         licenceExpiryDate = SLED_DATE,
         effectiveSentenceEndDate = ESED_DATE,
-        sentenceLength = "06/02/03"
-      )
+        sentenceLength = "06/02/03",
+      ),
     )
   }
 
@@ -191,14 +199,14 @@ class TransformFunctionsTest {
   fun `Transform prisoner details - check active sex offender is set`() {
     assertThat(
       transform(
-        PRISONER_DETAILS.copy(alerts = listOf(SEX_OFFENDER_ALERT, RANDOM_ALERT))
-      )
+        PRISONER_DETAILS.copy(alerts = listOf(SEX_OFFENDER_ALERT, RANDOM_ALERT)),
+      ),
     ).isEqualTo(
       Offender(
         reference = PRISONER_ID,
         dateOfBirth = DOB,
         isActiveSexOffender = true,
-      )
+      ),
     )
   }
 
@@ -206,14 +214,14 @@ class TransformFunctionsTest {
   fun `Transform prisoner details - check active sex offender is not set with another type of alert`() {
     assertThat(
       transform(
-        PRISONER_DETAILS.copy(alerts = listOf(RANDOM_ALERT))
-      )
+        PRISONER_DETAILS.copy(alerts = listOf(RANDOM_ALERT)),
+      ),
     ).isEqualTo(
       Offender(
         reference = PRISONER_ID,
         dateOfBirth = DOB,
         isActiveSexOffender = false,
-      )
+      ),
     )
   }
 
@@ -221,14 +229,14 @@ class TransformFunctionsTest {
   fun `Transform prisoner details - check active sex offender is not set with no alerts`() {
     assertThat(
       transform(
-        PRISONER_DETAILS.copy(alerts = listOf(RANDOM_ALERT))
-      )
+        PRISONER_DETAILS.copy(alerts = listOf(RANDOM_ALERT)),
+      ),
     ).isEqualTo(
       Offender(
         reference = PRISONER_ID,
         dateOfBirth = DOB,
         isActiveSexOffender = false,
-      )
+      ),
     )
   }
 
@@ -245,7 +253,7 @@ class TransformFunctionsTest {
       sentenceCalculationType = SentenceCalculationType.LR.name,
       sentenceTypeDescription = "Recall",
       lineSequence = 1,
-      caseSequence = 1
+      caseSequence = 1,
     )
 
     val standardSentence = SentenceAndOffences(
@@ -257,7 +265,7 @@ class TransformFunctionsTest {
       sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       sentenceTypeDescription = "Recall",
       lineSequence = 1,
-      caseSequence = 2
+      caseSequence = 2,
     )
 
     val bookingAndSentenceAdjustment = BookingAndSentenceAdjustments(
@@ -279,7 +287,7 @@ class TransformFunctionsTest {
         BookingAdjustment(active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED),
         BookingAdjustment(active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = BookingAdjustmentType.LAWFULLY_AT_LARGE),
         BookingAdjustment(active = true, fromDate = fromDate, toDate = toDate, numberOfDays = 5, type = BookingAdjustmentType.SPECIAL_REMISSION),
-      )
+      ),
     )
 
     val adjustments = transform(bookingAndSentenceAdjustment, listOf(recallSentence, standardSentence))
@@ -361,14 +369,14 @@ class TransformFunctionsTest {
         CalculationOutcome(
           calculationRequestId = CALCULATION_REQUEST_ID,
           outcomeDate = FIRST_JAN_2015,
-          calculationDateType = "CRD"
+          calculationDateType = "CRD",
         ),
         CalculationOutcome(
           calculationRequestId = CALCULATION_REQUEST_ID,
           outcomeDate = SECOND_JAN_2015,
-          calculationDateType = "SED"
+          calculationDateType = "SED",
         ),
-      )
+      ),
     )
 
     val CRD_DATE: LocalDate = LocalDate.of(2021, 2, 3)
@@ -380,19 +388,19 @@ class TransformFunctionsTest {
       calculationRequestId = CALCULATION_REQUEST_ID,
       bookingId = 1L,
       prisonerId = PRISONER_ID,
-      calculationStatus = CalculationStatus.PRELIMINARY
+      calculationStatus = CalculationStatus.PRELIMINARY,
     )
 
     val SEX_OFFENDER_ALERT = Alert(
       dateCreated = LocalDate.of(2010, 1, 1),
       alertType = "S",
-      alertCode = "SOR"
+      alertCode = "SOR",
     )
 
     val RANDOM_ALERT = Alert(
       dateCreated = LocalDate.of(2010, 1, 1),
       alertType = "X",
-      alertCode = "XXY"
+      alertCode = "XXY",
     )
 
     val PRISONER_DETAILS = PrisonerDetails(
@@ -400,7 +408,7 @@ class TransformFunctionsTest {
       offenderNo = PRISONER_ID,
       dateOfBirth = DOB,
       firstName = "Harry",
-      lastName = "Houdini"
+      lastName = "Houdini",
     )
   }
 }

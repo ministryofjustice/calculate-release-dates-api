@@ -29,7 +29,7 @@ class HealthCheckTest : IntegrationTestBase() {
       .jsonPath("components.healthInfo.details.version").value(
         Consumer<String> {
           assertThat(it).startsWith(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE))
-        }
+        },
       )
   }
 

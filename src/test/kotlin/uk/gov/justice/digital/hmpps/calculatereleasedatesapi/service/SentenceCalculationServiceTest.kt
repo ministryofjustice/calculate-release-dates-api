@@ -121,8 +121,8 @@ class SentenceCalculationServiceTest {
           "England and Wales",
           listOf(
             BankHoliday("Christmas Day Bank Holiday", LocalDate.of(2021, 12, 27)),
-            BankHoliday("Boxing Day Bank Holiday", LocalDate.of(2021, 12, 28))
-          )
+            BankHoliday("Boxing Day Bank Holiday", LocalDate.of(2021, 12, 28)),
+          ),
         ),
         RegionBankHolidays("Scotland", emptyList()),
         RegionBankHolidays("Northern Ireland", emptyList()),

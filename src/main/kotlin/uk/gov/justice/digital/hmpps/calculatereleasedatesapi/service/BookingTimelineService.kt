@@ -22,7 +22,7 @@ import kotlin.math.min
 class BookingTimelineService(
   val sentenceAdjustedCalculationService: SentenceAdjustedCalculationService,
   val extractionService: SentencesExtractionService,
-  val workingDayService: WorkingDayService
+  val workingDayService: WorkingDayService,
 ) {
 
   fun walkTimelineOfBooking(booking: Booking): Booking {
@@ -38,7 +38,7 @@ class BookingTimelineService(
     val timelineTracker = TimelineTracker(
       firstSentence = sortedSentences[0],
       timelineRange = sortedSentences[0].getRangeOfSentenceBeforeAwardedDays(),
-      previousSentence = sortedSentences[0]
+      previousSentence = sortedSentences[0],
     )
 
     sortedSentences.forEach {
@@ -65,8 +65,8 @@ class BookingTimelineService(
           ADDITIONAL_DAYS_SERVED,
           Adjustment(
             numberOfDays = daysAdaServed.toInt(),
-            appliesToSentencesFrom = it.sentencedAt
-          )
+            appliesToSentencesFrom = it.sentencedAt,
+          ),
         )
 
         daysBetween = DAYS.between(timelineTracker.timelineRange.end.plusDays(daysAdaServed), it.sentencedAt)
@@ -114,7 +114,7 @@ class BookingTimelineService(
   private fun capDatesByExpiry(
     expiry: LocalDate,
     sentenceGroups: List<List<CalculableSentence>>,
-    booking: Booking
+    booking: Booking,
   ) {
     val adjustments = sentenceGroups[0][0].sentenceCalculation.adjustments
     sentenceGroups.forEach { group ->
@@ -151,7 +151,7 @@ class BookingTimelineService(
 
   private fun findLatestConcurrentDeterminateRelease(
     timelineTracker: TimelineTracker,
-    it: CalculableSentence
+    it: CalculableSentence,
   ): LocalDate {
     var release =
       if (!it.isRecall()) it.sentenceCalculation.latestConcurrentRelease else if (timelineTracker.currentSentenceGroup.isEmpty()) it.sentenceCalculation.adjustedDeterminateReleaseDate else timelineTracker.currentSentenceGroup.maxOf { sentence -> sentence.sentenceCalculation.adjustedDeterminateReleaseDate }

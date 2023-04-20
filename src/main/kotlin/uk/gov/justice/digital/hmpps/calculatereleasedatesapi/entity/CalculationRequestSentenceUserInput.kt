@@ -32,5 +32,5 @@ data class CalculationRequestSentenceUserInput(
   @NotNull
   var userChoice: Boolean,
   @NotNull
-  var nomisMatches: Boolean
+  var nomisMatches: Boolean,
 )

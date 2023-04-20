@@ -81,15 +81,15 @@ class CalculationTransactionalServiceTest {
   private val sentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator)
   private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
-    sentenceIdentificationService
+    sentenceIdentificationService,
   )
   private val bookingExtractionService = BookingExtractionService(
-    sentencesExtractionService
+    sentencesExtractionService,
   )
   private val bookingTimelineService = BookingTimelineService(
     sentenceAdjustedCalculationService,
     sentencesExtractionService,
-    workingDayService
+    workingDayService,
   )
   private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
 
@@ -119,12 +119,14 @@ class CalculationTransactionalServiceTest {
     )
 
   private val fakeSourceData = PrisonApiSourceData(
-    emptyList(), PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
+    emptyList(),
+    PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
     BookingAndSentenceAdjustments(
-      emptyList(), emptyList()
+      emptyList(),
+      emptyList(),
     ),
     listOf(),
-    null
+    null,
   )
 
   @ParameterizedTest
@@ -133,7 +135,7 @@ class CalculationTransactionalServiceTest {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
     SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())),
     )
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculatedReleaseDates: CalculatedReleaseDates
@@ -149,18 +151,19 @@ class CalculationTransactionalServiceTest {
     }
     log.info(
       "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
-      TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates)
+      TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
     )
     val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
     assertEquals(bookingData.dates, calculatedReleaseDates.dates)
     assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
   }
+
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
   fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String, error: String?) {
     log.info("Testing example $exampleType/$exampleNumber")
     SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())),
     )
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculation = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
@@ -178,12 +181,12 @@ class CalculationTransactionalServiceTest {
     }
     log.info(
       "Example $exampleType/$exampleNumber outcome CalculationBreakdown: {}",
-      TestUtil.objectMapper().writeValueAsString(calculationBreakdown)
+      TestUtil.objectMapper().writeValueAsString(calculationBreakdown),
     )
 
     assertEquals(
       jsonTransformation.loadCalculationBreakdown("$exampleType/$exampleNumber"),
-      calculationBreakdown
+      calculationBreakdown,
     )
   }
 
@@ -191,15 +194,15 @@ class CalculationTransactionalServiceTest {
   fun `Test fetching calculation results by requestId`() {
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
       Optional.of(
-        CALCULATION_REQUEST_WITH_OUTCOMES
-      )
+        CALCULATION_REQUEST_WITH_OUTCOMES,
+      ),
     )
 
     val bookingCalculation = calculationTransactionalService.findCalculationResults(CALCULATION_REQUEST_ID)
 
     assertEquals(
       bookingCalculation,
-      BOOKING_CALCULATION
+      BOOKING_CALCULATION,
     )
   }
 
@@ -208,12 +211,12 @@ class CalculationTransactionalServiceTest {
     whenever(
       calculationRequestRepository.findByIdAndCalculationStatus(
         CALCULATION_REQUEST_ID,
-        PRELIMINARY.name
-      )
+        PRELIMINARY.name,
+      ),
     ).thenReturn(
       Optional.of(
-        CALCULATION_REQUEST_WITH_OUTCOMES
-      )
+        CALCULATION_REQUEST_WITH_OUTCOMES,
+      ),
     )
     whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(fakeSourceData)
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
@@ -231,8 +234,8 @@ class CalculationTransactionalServiceTest {
     whenever(
       calculationRequestRepository.findByIdAndCalculationStatus(
         CALCULATION_REQUEST_ID,
-        PRELIMINARY.name
-      )
+        PRELIMINARY.name,
+      ),
     ).thenReturn(Optional.empty())
     whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(fakeSourceData)
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
@@ -261,16 +264,16 @@ class CalculationTransactionalServiceTest {
   @Test
   fun `Test that write to NOMIS and publishing event succeeds`() {
     SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())),
     )
     whenever(
       calculationRequestRepository.findById(
-        CALCULATION_REQUEST_ID
-      )
+        CALCULATION_REQUEST_ID,
+      ),
     ).thenReturn(
       Optional.of(
-        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)
-      )
+        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA),
+      ),
     )
 
     calculationTransactionalService.writeToNomisAndPublishEvent(
@@ -281,10 +284,10 @@ class CalculationTransactionalServiceTest {
           CRD to CALCULATION_OUTCOME_CRD.outcomeDate,
           SED to THIRD_FEB_2021,
           ERSED to FIFTH_APRIL_2021,
-          ESED to ESED_DATE
+          ESED to ESED_DATE,
         ),
-        effectiveSentenceLength = Period.of(6, 2, 3)
-      )
+        effectiveSentenceLength = Period.of(6, 2, 3),
+      ),
     )
 
     verify(prisonService).postReleaseDates(
@@ -295,9 +298,9 @@ class CalculationTransactionalServiceTest {
           sentenceExpiryDate = THIRD_FEB_2021,
           earlyRemovalSchemeEligibilityDate = FIFTH_APRIL_2021,
           effectiveSentenceEndDate = ESED_DATE,
-          sentenceLength = "06/02/03"
-        )
-      )
+          sentenceLength = "06/02/03",
+        ),
+      ),
     )
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
   }
@@ -305,19 +308,19 @@ class CalculationTransactionalServiceTest {
   @Test
   fun `Test that exception with correct message is thrown if write to NOMIS fails `() {
     SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())),
     )
     whenever(
       calculationRequestRepository.findById(
-        CALCULATION_REQUEST_ID
-      )
+        CALCULATION_REQUEST_ID,
+      ),
     ).thenReturn(
       Optional.of(
-        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)
-      )
+        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA),
+      ),
     )
     whenever(
-      prisonService.postReleaseDates(any(), any())
+      prisonService.postReleaseDates(any(), any()),
     ).thenThrow(EntityNotFoundException("test ex"))
 
     val exception = assertThrows<EntityNotFoundException> {
@@ -328,26 +331,26 @@ class CalculationTransactionalServiceTest {
       .isInstanceOf(EntityNotFoundException::class.java)
       .withFailMessage(
         "Writing release dates to NOMIS failed for prisonerId $PRISONER_ID " +
-          "and bookingId $BOOKING_ID"
+          "and bookingId $BOOKING_ID",
       )
   }
 
   @Test
   fun `Test that if the publishing of an event fails the exception is handled and not propagated`() {
     SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList()))
+      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())),
     )
     whenever(
       calculationRequestRepository.findById(
-        CALCULATION_REQUEST_ID
-      )
+        CALCULATION_REQUEST_ID,
+      ),
     ).thenReturn(
       Optional.of(
-        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)
-      )
+        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA),
+      ),
     )
     whenever(
-      eventService.publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
+      eventService.publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID),
     ).thenThrow(EntityNotFoundException("test ex"))
 
     try {
@@ -368,8 +371,8 @@ class CalculationTransactionalServiceTest {
           "England and Wales",
           listOf(
             BankHoliday("Christmas Day Bank Holiday", LocalDate.of(2021, 12, 27)),
-            BankHoliday("Boxing Day Bank Holiday", LocalDate.of(2021, 12, 28))
-          )
+            BankHoliday("Boxing Day Bank Holiday", LocalDate.of(2021, 12, 28)),
+          ),
         ),
         RegionBankHolidays("Scotland", emptyList()),
         RegionBankHolidays("Northern Ireland", emptyList()),
@@ -393,16 +396,17 @@ class CalculationTransactionalServiceTest {
     private val CALCULATION_OUTCOME_CRD = CalculationOutcome(
       calculationDateType = CRD.name,
       outcomeDate = THIRD_FEB_2021,
-      calculationRequestId = CALCULATION_REQUEST_ID
+      calculationRequestId = CALCULATION_REQUEST_ID,
     )
     private val CALCULATION_OUTCOME_SED = CalculationOutcome(
       calculationDateType = SED.name,
       outcomeDate = THIRD_FEB_2021,
-      calculationRequestId = CALCULATION_REQUEST_ID
+      calculationRequestId = CALCULATION_REQUEST_ID,
     )
     val CALCULATION_REQUEST = CalculationRequest(
-      calculationReference = CALCULATION_REFERENCE, prisonerId = PRISONER_ID,
-      bookingId = BOOKING_ID
+      calculationReference = CALCULATION_REFERENCE,
+      prisonerId = PRISONER_ID,
+      bookingId = BOOKING_ID,
     )
 
     val INPUT_DATA: JsonNode =
@@ -414,12 +418,13 @@ class CalculationTransactionalServiceTest {
           "\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\"," +
           "\"consecutiveSentenceUUIDs\":[],\"caseSequence\":1,\"lineSequence\":2,\"caseReference\":null," +
           "\"recallType\":null,\"section250\":false}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
-          "\"bookingId\":12345}"
+          "\"bookingId\":12345}",
       )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
       id = CALCULATION_REQUEST_ID,
-      calculationReference = CALCULATION_REFERENCE, prisonerId = PRISONER_ID,
+      calculationReference = CALCULATION_REFERENCE,
+      prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID,
       calculationOutcomes = listOf(CALCULATION_OUTCOME_CRD, CALCULATION_OUTCOME_SED),
       calculationStatus = CONFIRMED.name,
@@ -428,7 +433,7 @@ class CalculationTransactionalServiceTest {
           "\"dateOfBirth\":\"1970-03-03\"" + "}," + "\"sentences\":[" +
           "{" + "\"caseSequence\":1," + "\"lineSequence\":2," +
           "\"offence\":{" + "\"committedAt\":\"2013-09-19\"" + "}," + "\"duration\":{" +
-          "\"durationElements\":{" + "\"YEARS\":2" + "}" + "}," + "\"sentencedAt\":\"2013-09-21\"" + "}" + "]" + "}"
+          "\"durationElements\":{" + "\"YEARS\":2" + "}" + "}," + "\"sentencedAt\":\"2013-09-21\"" + "}" + "]" + "}",
       ),
     )
 
@@ -437,7 +442,7 @@ class CalculationTransactionalServiceTest {
       calculationRequestId = CALCULATION_REQUEST_ID,
       bookingId = BOOKING_ID,
       prisonerId = PRISONER_ID,
-      calculationStatus = CONFIRMED
+      calculationStatus = CONFIRMED,
     )
 
     val UPDATE_OFFENDER_DATES = UpdateOffenderDates(
@@ -448,8 +453,8 @@ class CalculationTransactionalServiceTest {
         licenceExpiryDate = THIRD_FEB_2021,
         sentenceExpiryDate = THIRD_FEB_2021,
         effectiveSentenceEndDate = THIRD_FEB_2021,
-        sentenceLength = "11/00/00"
-      )
+        sentenceLength = "11/00/00",
+      ),
     )
 
     private val OFFENDER = Offender(PRISONER_ID, LocalDate.of(1980, 1, 1))
@@ -460,7 +465,7 @@ class CalculationTransactionalServiceTest {
       offence = Offence(committedAt = THIRD_FEB_2021),
       identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa"),
       caseSequence = 1,
-      lineSequence = 2
+      lineSequence = 2,
     )
 
     val BOOKING = Booking(OFFENDER, listOf(StandardSENTENCE), Adjustments(), null, null, BOOKING_ID)

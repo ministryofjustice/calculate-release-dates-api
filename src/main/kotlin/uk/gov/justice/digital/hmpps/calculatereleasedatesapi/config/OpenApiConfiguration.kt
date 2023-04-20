@@ -21,7 +21,7 @@ class OpenApiConfiguration(buildProperties: BuildProperties) {
         .contact(
           Contact()
             .name("HMPPS Digital Studio")
-            .email("feedback@digital.justice.gov.uk")
-        )
+            .email("feedback@digital.justice.gov.uk"),
+        ),
     )
 }

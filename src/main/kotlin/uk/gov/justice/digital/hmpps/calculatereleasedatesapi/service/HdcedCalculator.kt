@@ -26,7 +26,7 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
     @Value("\${hdced.custodialDays.minimum}")val minimumCustodialPeriodDays: Long,
     @Value("\${hdced.envelope.midPoint.value}")val envelopeMidPoint: Long,
     @Value("\${hdced.envelope.midPoint.unit}")val envelopeMidPointUnit: ChronoUnit,
-    @Value("\${hdced.deduction.days}")val deductionDays: Long
+    @Value("\${hdced.deduction.days}")val deductionDays: Long,
   )
 
   fun doesHdcedDateApply(sentence: CalculableSentence, offender: Offender, isMadeUpOfOnlyDtos: Boolean): Boolean {
@@ -58,7 +58,7 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
   private fun calculateHdcedUnderMidpoint(
     sentenceCalculation: SentenceCalculation,
     sentence: CalculableSentence,
-    adjustedDays: Int
+    adjustedDays: Int,
   ) {
     val twentyEightOrMore =
       max(TWENTY_EIGHT, ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().div(FOUR)).toLong())
@@ -78,7 +78,7 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
           rulesWithExtraAdjustments = mapOf(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT to AdjustmentDuration(twentyEightOrMore.toInt())),
           adjustedDays = adjustedDays,
           releaseDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
-          unadjustedDate = sentence.sentencedAt
+          unadjustedDate = sentence.sentencedAt,
         )
     }
   }
@@ -86,7 +86,7 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
   private fun calculateHdcedOverMidpoint(
     sentence: CalculableSentence,
     adjustedDays: Int,
-    sentenceCalculation: SentenceCalculation
+    sentenceCalculation: SentenceCalculation,
   ) {
     sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate =
       sentenceCalculation.numberOfDaysToDeterminateReleaseDate
@@ -107,8 +107,8 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
           adjustedDays = adjustedDays,
           releaseDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
           unadjustedDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!.plusDays(
-            hdcedConfiguration.deductionDays
-          )
+            hdcedConfiguration.deductionDays,
+          ),
         )
     }
   }
@@ -116,7 +116,7 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
   private fun calculateHdcedMinimumCustodialPeriod(
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation,
-    parentRule: CalculationRule
+    parentRule: CalculationRule,
   ) {
     sentenceCalculation.homeDetentionCurfewEligibilityDate = sentence.sentencedAt.plusDays(hdcedConfiguration.minimumCustodialPeriodDays)
 
@@ -126,7 +126,7 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
         rulesWithExtraAdjustments = mapOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD to AdjustmentDuration(hdcedConfiguration.minimumCustodialPeriodDays.toInt())),
         adjustedDays = 0,
         releaseDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
-        unadjustedDate = sentence.sentencedAt
+        unadjustedDate = sentence.sentencedAt,
       )
   }
 

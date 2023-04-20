@@ -28,8 +28,8 @@ class ControllerAdvice {
         ErrorResponse(
           status = HttpStatus.FORBIDDEN.value(),
           userMessage = "Authentication problem. Check token and roles - ${e.message}",
-          developerMessage = e.message
-        )
+          developerMessage = e.message,
+        ),
       )
   }
 
@@ -42,8 +42,8 @@ class ControllerAdvice {
         ErrorResponse(
           status = HttpStatus.UNAUTHORIZED.value(),
           userMessage = "Authentication problem. Check token and roles - ${e.message}",
-          developerMessage = e.message
-        )
+          developerMessage = e.message,
+        ),
       )
   }
 
@@ -56,8 +56,8 @@ class ControllerAdvice {
         ErrorResponse(
           status = e.rawStatusCode,
           userMessage = "Rest client exception ${e.message}",
-          developerMessage = e.message
-        )
+          developerMessage = e.message,
+        ),
       )
   }
 
@@ -70,8 +70,8 @@ class ControllerAdvice {
         ErrorResponse(
           status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
           userMessage = "Rest client exception ${e.message}",
-          developerMessage = e.message
-        )
+          developerMessage = e.message,
+        ),
       )
   }
 
@@ -84,8 +84,8 @@ class ControllerAdvice {
         ErrorResponse(
           status = HttpStatus.NOT_FOUND.value(),
           userMessage = "Not found: ${e.message}",
-          developerMessage = e.message
-        )
+          developerMessage = e.message,
+        ),
       )
   }
 
@@ -98,8 +98,8 @@ class ControllerAdvice {
         ErrorResponse(
           status = HttpStatus.BAD_REQUEST.value(),
           userMessage = "Validation failure: ${e.message}",
-          developerMessage = e.message
-        )
+          developerMessage = e.message,
+        ),
       )
   }
 
@@ -113,8 +113,8 @@ class ControllerAdvice {
           status = e.status,
           errorCode = e.code,
           userMessage = e.message,
-          developerMessage = e.message
-        )
+          developerMessage = e.message,
+        ),
       )
   }
 
@@ -127,8 +127,8 @@ class ControllerAdvice {
         ErrorResponse(
           status = HttpStatus.INTERNAL_SERVER_ERROR,
           userMessage = "Unexpected error: ${e.message}",
-          developerMessage = e.message
-        )
+          developerMessage = e.message,
+        ),
       )
   }
 }
@@ -145,7 +145,7 @@ data class ErrorResponse(
     errorCode: String? = null,
     userMessage: String? = null,
     developerMessage: String? = null,
-    moreInfo: String? = null
+    moreInfo: String? = null,
   ) :
     this(status.value(), errorCode, userMessage, developerMessage, moreInfo)
 }

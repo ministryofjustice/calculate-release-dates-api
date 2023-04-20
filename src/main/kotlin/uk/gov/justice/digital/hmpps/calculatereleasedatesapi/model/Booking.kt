@@ -11,7 +11,7 @@ data class Booking(
   val returnToCustodyDate: LocalDate? = null, // TODO remove and replace with fixedTermRecallDetails
   val fixedTermRecallDetails: FixedTermRecallDetails? = null,
   val bookingId: Long = -1L,
-  val calculateErsed: Boolean = false
+  val calculateErsed: Boolean = false,
 ) {
   @JsonIgnore
   @Transient

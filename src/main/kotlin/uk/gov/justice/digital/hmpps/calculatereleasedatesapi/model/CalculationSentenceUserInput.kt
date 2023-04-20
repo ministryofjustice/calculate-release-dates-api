@@ -4,5 +4,5 @@ data class CalculationSentenceUserInput(
   val sentenceSequence: Int,
   val offenceCode: String,
   val userInputType: UserInputType,
-  val userChoice: Boolean
+  val userChoice: Boolean,
 )

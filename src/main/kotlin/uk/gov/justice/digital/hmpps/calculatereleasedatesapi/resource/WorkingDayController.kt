@@ -23,7 +23,7 @@ import java.time.LocalDate
 @RequestMapping("/working-day", produces = [MediaType.APPLICATION_JSON_VALUE])
 @Tag(name = "working-day-controller", description = "Operations working days/bank holidays")
 class WorkingDayController(
-  private val workingDayService: WorkingDayService
+  private val workingDayService: WorkingDayService,
 ) {
 
   @GetMapping(value = ["/next/{date}"])
@@ -31,14 +31,14 @@ class WorkingDayController(
   @ResponseBody
   @Operation(
     summary = "Find the next working day from a given date",
-    description = "Finds the next working day, adjusting for weekends and bank holidays"
+    description = "Finds the next working day, adjusting for weekends and bank holidays",
   )
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "Returns next working day"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
-    ]
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
   )
   fun nextWorkingDay(
     @Parameter(required = true, example = "2021-10-28", description = "The date to adjust")
@@ -55,14 +55,14 @@ class WorkingDayController(
   @ResponseBody
   @Operation(
     summary = "Find the previous working day from a given date",
-    description = "Finds the previous working day, adjusting for weekends and bank holidays"
+    description = "Finds the previous working day, adjusting for weekends and bank holidays",
   )
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "Returns previous working day"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
-    ]
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
   )
   fun previousWorkingDay(
     @Parameter(required = true, example = "2021-10-28", description = "The date to adjust")

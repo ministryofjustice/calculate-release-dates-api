@@ -43,7 +43,7 @@ class AuthAwareTokenConverter : Converter<Jwt, AbstractAuthenticationToken> {
 class AuthAwareAuthenticationToken(
   jwt: Jwt,
   private val principal: String,
-  authorities: Collection<GrantedAuthority>
+  authorities: Collection<GrantedAuthority>,
 ) : JwtAuthenticationToken(jwt, authorities) {
   override fun getPrincipal(): String {
     return principal

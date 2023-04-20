@@ -23,7 +23,7 @@ class BookingService() {
       bookingId = prisonerDetails.bookingId,
       returnToCustodyDate = prisonApiSourceData.returnToCustodyDate?.returnToCustodyDate,
       fixedTermRecallDetails = prisonApiSourceData.fixedTermRecallDetails,
-      calculateErsed = calculationUserInputs.calculateErsed
+      calculateErsed = calculationUserInputs.calculateErsed,
     )
   }
 }

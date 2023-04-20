@@ -36,7 +36,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType._14FTR_ORA
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
@@ -94,7 +94,7 @@ class ValidationServiceTest {
     caseSequence = CASE_SEQ,
     sentenceDate = FIRST_MAY_2018,
     terms = listOf(
-      SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
+      SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
     ),
     sentenceCalculationType = SentenceCalculationType.ADIMP.name,
     sentenceCategory = "2003",
@@ -108,7 +108,7 @@ class ValidationServiceTest {
       SentenceTerms(1, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
     ),
     sentenceCalculationType = SentenceCalculationType.SOPC21.name,
-    sentenceDate = FIRST_MAY_2021
+    sentenceDate = FIRST_MAY_2021,
   )
   private val validEdsSentence = validSdsSentence.copy(
     sentenceDate = FIRST_MAY_2021,
@@ -120,11 +120,11 @@ class ValidationServiceTest {
   )
   private val validAFineSentence = validSdsSentence.copy(
     terms = listOf(
-      SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
+      SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
     ),
     sentenceCalculationType = SentenceCalculationType.AFINE.name,
     sentenceDate = FIRST_MAY_2021,
-    fineAmount = BigDecimal("100")
+    fineAmount = BigDecimal("100"),
   )
   private val validEdsRecallSentence = validEdsSentence.copy(
     sentenceCalculationType = SentenceCalculationType.LR_LASPO_DR.name,
@@ -138,10 +138,10 @@ class ValidationServiceTest {
         active = true,
         fromDate = LocalDate.of(2020, 1, 1),
         numberOfDays = 2,
-        type = LAWFULLY_AT_LARGE
-      )
+        type = LAWFULLY_AT_LARGE,
+      ),
     ),
-    emptyList()
+    emptyList(),
   )
   private val specialRemissionBookingAdjustment = BookingAndSentenceAdjustments(
     listOf(
@@ -149,20 +149,23 @@ class ValidationServiceTest {
         active = true,
         fromDate = LocalDate.of(2020, 1, 1),
         numberOfDays = 2,
-        type = SPECIAL_REMISSION
-      )
+        type = SPECIAL_REMISSION,
+      ),
     ),
-    emptyList()
+    emptyList(),
   )
 
   @Test
   fun `Test EDS valid sentence should pass`() {
     val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
-        listOf(validEdsSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(),
-        null
+        listOf(validEdsSentence),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
       ),
-      USER_INPUTS
+      USER_INPUTS,
     )
 
     assertThat(result).hasSize(0)
@@ -178,16 +181,16 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(listOf(sentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(
           SENTENCE_HAS_NO_IMPRISONMENT_TERM,
-          listOf(CASE_SEQ.toString(), LINE_SEQ.toString())
-        )
-      )
+          listOf(CASE_SEQ.toString(), LINE_SEQ.toString()),
+        ),
+      ),
     )
   }
 
@@ -202,16 +205,16 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(listOf(sentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(
           ZERO_IMPRISONMENT_TERM,
-          listOf(CASE_SEQ.toString(), LINE_SEQ.toString())
-        )
-      )
+          listOf(CASE_SEQ.toString(), LINE_SEQ.toString()),
+        ),
+      ),
     )
   }
 
@@ -219,22 +222,22 @@ class ValidationServiceTest {
   fun `Test EDS sentences should have license term`() {
     val sentence = validEdsSentence.copy(
       terms = listOf(
-        SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
+        SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
       ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(listOf(sentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(
           SENTENCE_HAS_NO_LICENCE_TERM,
-          listOf(CASE_SEQ.toString(), LINE_SEQ.toString())
-        )
-      )
+          listOf(CASE_SEQ.toString(), LINE_SEQ.toString()),
+        ),
+      ),
     )
   }
 
@@ -244,27 +247,27 @@ class ValidationServiceTest {
       validEdsSentence.copy(
         terms = listOf(
           SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
-          SentenceTerms(0, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE)
+          SentenceTerms(0, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
         ),
       ),
       validEdsSentence.copy(
         terms = listOf(
           SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
-          SentenceTerms(0, 11, 0, 0, SentenceTerms.LICENCE_TERM_CODE)
+          SentenceTerms(0, 11, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
         ),
-      )
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, arguments = listOf("1", "2")),
-        ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, arguments = listOf("1", "2"))
-      )
+        ValidationMessage(EDS_LICENCE_TERM_LESS_THAN_ONE_YEAR, arguments = listOf("1", "2")),
+      ),
     )
   }
 
@@ -274,20 +277,20 @@ class ValidationServiceTest {
       validEdsSentence.copy(
         terms = listOf(
           SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
-          SentenceTerms(0, 11, 5, 0, SentenceTerms.LICENCE_TERM_CODE)
+          SentenceTerms(0, 11, 5, 0, SentenceTerms.LICENCE_TERM_CODE),
         ),
       ),
       validEdsSentence.copy(
         terms = listOf(
           SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
-          SentenceTerms(0, 0, 0, 377, SentenceTerms.LICENCE_TERM_CODE)
+          SentenceTerms(0, 0, 0, 377, SentenceTerms.LICENCE_TERM_CODE),
         ),
-      )
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEmpty()
@@ -299,14 +302,14 @@ class ValidationServiceTest {
       validEdsSentence.copy(
         terms = listOf(
           SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
-          SentenceTerms(8, 0, 0, 1, SentenceTerms.LICENCE_TERM_CODE)
+          SentenceTerms(8, 0, 0, 1, SentenceTerms.LICENCE_TERM_CODE),
         ),
-      )
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).hasSize(1)
@@ -315,7 +318,7 @@ class ValidationServiceTest {
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(EDS_LICENCE_TERM_MORE_THAN_EIGHT_YEARS, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-      )
+      ),
     )
   }
 
@@ -324,37 +327,37 @@ class ValidationServiceTest {
     val sentences = listOf(
       validEdsSentence.copy(
         sentenceCalculationType = SentenceCalculationType.EDS18.name,
-        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1)
+        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1),
       ),
       validEdsSentence.copy(
         sentenceCalculationType = SentenceCalculationType.EDSU18.name,
-        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1)
+        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1),
       ),
       validEdsSentence.copy(
         sentenceCalculationType = SentenceCalculationType.EDS21.name,
-        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1)
+        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1),
       ),
       validEdsSentence.copy(
         sentenceCalculationType = SentenceCalculationType.LASPO_DR.name,
-        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1)
+        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.minusDays(1),
       ),
       validEdsSentence.copy(
         sentenceCalculationType = SentenceCalculationType.EDS18.name,
-        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.plusDays(1)
+        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.plusDays(1),
       ),
       validEdsSentence.copy(
         sentenceCalculationType = SentenceCalculationType.EDSU18.name,
-        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.plusDays(1)
+        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.plusDays(1),
       ),
       validEdsSentence.copy(
         sentenceCalculationType = SentenceCalculationType.EDS21.name,
-        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.plusDays(1)
+        sentenceDate = ImportantDates.EDS18_SENTENCE_TYPES_START_DATE.plusDays(1),
       ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
@@ -362,7 +365,7 @@ class ValidationServiceTest {
         ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
         ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
         ValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-      )
+      ),
     )
   }
 
@@ -371,27 +374,27 @@ class ValidationServiceTest {
     val sentences = listOf(
       validEdsSentence.copy(
         sentenceCalculationType = SentenceCalculationType.LASPO_AR.name,
-        sentenceDate = ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE.plusDays(1)
+        sentenceDate = ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE.plusDays(1),
       ),
       validEdsSentence.copy(
         sentenceCalculationType = SentenceCalculationType.LASPO_DR.name,
-        sentenceDate = ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE.minusDays(1)
+        sentenceDate = ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE.minusDays(1),
       ),
       validEdsSentence.copy(
         sentenceCalculationType = SentenceCalculationType.LASPO_AR.name,
-        sentenceDate = ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE.minusDays(1)
-      )
+        sentenceDate = ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE.minusDays(1),
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(LASPO_AR_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString()))
-      )
+        ValidationMessage(LASPO_AR_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
+      ),
     )
   }
 
@@ -411,19 +414,19 @@ class ValidationServiceTest {
           SentenceTerms(2, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
           SentenceTerms(2, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
         ),
-      )
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(MORE_THAN_ONE_IMPRISONMENT_TERM, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
         ValidationMessage(MORE_THAN_ONE_LICENCE_TERM, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-      )
+      ),
     )
   }
 
@@ -435,9 +438,9 @@ class ValidationServiceTest {
         VALID_PRISONER,
         VALID_ADJUSTMENTS,
         listOf(),
-        null
+        null,
       ),
-      USER_INPUTS
+      USER_INPUTS,
     )
 
     assertThat(result).hasSize(0)
@@ -448,32 +451,32 @@ class ValidationServiceTest {
     val sentences = listOf(
       validSopcSentence.copy(
         sentenceCalculationType = SentenceCalculationType.SOPC18.name,
-        sentenceDate = ImportantDates.SEC_91_END_DATE.minusDays(1)
+        sentenceDate = ImportantDates.SEC_91_END_DATE.minusDays(1),
       ),
       validSopcSentence.copy(
         sentenceCalculationType = SentenceCalculationType.SOPC18.name,
-        sentenceDate = ImportantDates.SEC_91_END_DATE
+        sentenceDate = ImportantDates.SEC_91_END_DATE,
       ),
       validSopcSentence.copy(
         sentenceCalculationType = SentenceCalculationType.SOPC21.name,
-        sentenceDate = ImportantDates.SEC_91_END_DATE.minusDays(1)
+        sentenceDate = ImportantDates.SEC_91_END_DATE.minusDays(1),
       ),
       validSopcSentence.copy(
         sentenceCalculationType = SentenceCalculationType.SOPC21.name,
-        sentenceDate = ImportantDates.SEC_91_END_DATE
+        sentenceDate = ImportantDates.SEC_91_END_DATE,
       ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
         ValidationMessage(SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-      )
+      ),
     )
   }
 
@@ -482,23 +485,23 @@ class ValidationServiceTest {
     val sentences = listOf(
       validSopcSentence.copy(
         sentenceCalculationType = SentenceCalculationType.SEC236A.name,
-        sentenceDate = ImportantDates.SEC_91_END_DATE
+        sentenceDate = ImportantDates.SEC_91_END_DATE,
       ),
       validSopcSentence.copy(
         sentenceCalculationType = SentenceCalculationType.SEC236A.name,
-        sentenceDate = ImportantDates.SEC_91_END_DATE.minusDays(1)
+        sentenceDate = ImportantDates.SEC_91_END_DATE.minusDays(1),
       ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(SEC236A_SENTENCE_TYPE_INCORRECT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-      )
+      ),
     )
   }
 
@@ -506,42 +509,43 @@ class ValidationServiceTest {
   fun `Validate future dated adjustments`() {
     val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
-        listOf(validEdsSentence), VALID_PRISONER,
+        listOf(validEdsSentence),
+        VALID_PRISONER,
         BookingAndSentenceAdjustments(
           listOf(
             BookingAdjustment(
               active = true,
               fromDate = LocalDate.now().plusDays(1),
               type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED,
-              numberOfDays = 5
+              numberOfDays = 5,
             ),
             BookingAdjustment(
               active = true,
               fromDate = LocalDate.now().plusDays(1),
               type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED,
-              numberOfDays = 5
+              numberOfDays = 5,
             ),
             BookingAdjustment(
               active = true,
               fromDate = LocalDate.now().plusDays(1),
               type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE,
-              numberOfDays = 5
+              numberOfDays = 5,
             ),
           ),
-          listOf()
+          listOf(),
         ),
         listOf(),
-        null
+        null,
       ),
-      USER_INPUTS
+      USER_INPUTS,
     )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_ADA),
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_RADA),
-        ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_UAL)
-      )
+        ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_UAL),
+      ),
     )
   }
 
@@ -551,39 +555,39 @@ class ValidationServiceTest {
       validSopcSentence.copy(
         terms = listOf(
           SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
-          SentenceTerms(1, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE)
+          SentenceTerms(1, 0, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
         ),
       ),
       validSopcSentence.copy(
         terms = listOf(
           SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
-          SentenceTerms(0, 12, 0, 0, SentenceTerms.LICENCE_TERM_CODE)
+          SentenceTerms(0, 12, 0, 0, SentenceTerms.LICENCE_TERM_CODE),
         ),
       ),
       validSopcSentence.copy(
         terms = listOf(
           SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
-          SentenceTerms(1, 0, 0, 1, SentenceTerms.LICENCE_TERM_CODE)
+          SentenceTerms(1, 0, 0, 1, SentenceTerms.LICENCE_TERM_CODE),
         ),
       ),
       validSopcSentence.copy(
         terms = listOf(
           SentenceTerms(1, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
-          SentenceTerms(0, 11, 3, 0, SentenceTerms.LICENCE_TERM_CODE)
+          SentenceTerms(0, 11, 3, 0, SentenceTerms.LICENCE_TERM_CODE),
         ),
-      )
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(SOPC_LICENCE_TERM_NOT_12_MONTHS, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
         ValidationMessage(SOPC_LICENCE_TERM_NOT_12_MONTHS, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-      )
+      ),
     )
   }
 
@@ -593,7 +597,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEmpty()
@@ -605,7 +609,7 @@ class ValidationServiceTest {
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEmpty()
@@ -616,16 +620,19 @@ class ValidationServiceTest {
     val sentences = listOf(validAFineSentence)
     val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
-        sentences, VALID_PRISONER, VALID_ADJUSTMENTS,
-        listOf(OffenderFinePayment(1, LocalDate.now(), BigDecimal.ONE)), null
+        sentences,
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(OffenderFinePayment(1, LocalDate.now(), BigDecimal.ONE)),
+        null,
       ),
-      USER_INPUTS
+      USER_INPUTS,
     )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(A_FINE_SENTENCE_WITH_PAYMENTS),
-      )
+      ),
     )
   }
 
@@ -633,25 +640,25 @@ class ValidationServiceTest {
   fun `Test A DTO sentence consecutive to unsupported`() {
     val sentences = listOf(
       validSdsSentence.copy(
-        sentenceSequence = 1
+        sentenceSequence = 1,
       ),
       validSdsSentence.copy(
         sentenceSequence = 2,
         consecutiveToSequence = 1,
         sentenceCalculationType = "DTO",
-        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
-      )
+        terms = listOf(SentenceTerms(years = 1, code = "IMP")),
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(DTO_CONSECUTIVE_TO_SENTENCE),
-      )
+      ),
     )
   }
 
@@ -661,32 +668,33 @@ class ValidationServiceTest {
       validSdsSentence.copy(
         sentenceSequence = 1,
         sentenceCalculationType = "DTO",
-        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+        terms = listOf(SentenceTerms(years = 1, code = "IMP")),
       ),
       validSdsSentence.copy(
         sentenceSequence = 2,
-        consecutiveToSequence = 1
-      )
+        consecutiveToSequence = 1,
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT),
-      )
+      ),
     )
   }
+
   @Test
   fun `Test multiple DTO sentence consecutive to unsupported`() {
     val sentences = listOf(
       validSdsSentence.copy(
         sentenceSequence = 1,
         sentenceCalculationType = "DTO",
-        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+        terms = listOf(SentenceTerms(years = 1, code = "IMP")),
       ),
       validSdsSentence.copy(
         sentenceSequence = 2,
@@ -697,41 +705,42 @@ class ValidationServiceTest {
         sentenceSequence = 3,
         consecutiveToSequence = 2,
         sentenceCalculationType = "DTO",
-        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
-      )
+        terms = listOf(SentenceTerms(years = 1, code = "IMP")),
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT),
         ValidationMessage(DTO_CONSECUTIVE_TO_SENTENCE),
-      )
+      ),
     )
   }
+
   @Test
   fun `Test multiple DTO sentence consecutive no error`() {
     val sentences = listOf(
       validSdsSentence.copy(
         sentenceSequence = 1,
         sentenceCalculationType = "DTO",
-        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+        terms = listOf(SentenceTerms(years = 1, code = "IMP")),
       ),
       validSdsSentence.copy(
         sentenceSequence = 2,
         consecutiveToSequence = 1,
         sentenceCalculationType = "DTO",
-        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
-      )
+        terms = listOf(SentenceTerms(years = 1, code = "IMP")),
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEmpty()
@@ -744,14 +753,14 @@ class ValidationServiceTest {
         sentenceSequence = 1,
         sentenceCalculationType = "DTO",
         sentenceDate = LocalDate.of(2021, 2, 1),
-        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+        terms = listOf(SentenceTerms(years = 1, code = "IMP")),
       ),
       validSdsSentence.copy(
         sentenceSequence = 2,
         consecutiveToSequence = 1,
         sentenceCalculationType = "DTO",
-        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
-      )
+        terms = listOf(SentenceTerms(years = 1, code = "IMP")),
+      ),
     )
     val adjustments = BookingAndSentenceAdjustments(
       bookingAdjustments = emptyList(),
@@ -762,20 +771,20 @@ class ValidationServiceTest {
           fromDate = LocalDate.of(2021, 1, 30),
           toDate = LocalDate.of(2021, 1, 31),
           numberOfDays = 1,
-          type = SentenceAdjustmentType.REMAND
-        )
-      )
+          type = SentenceAdjustmentType.REMAND,
+        ),
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, adjustments, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(PRE_PCSC_DTO_WITH_ADJUSTMENT, listOf("remand"))
-      )
+        ValidationMessage(PRE_PCSC_DTO_WITH_ADJUSTMENT, listOf("remand")),
+      ),
     )
   }
 
@@ -786,14 +795,14 @@ class ValidationServiceTest {
         sentenceSequence = 1,
         sentenceCalculationType = "DTO",
         sentenceDate = LocalDate.of(2021, 2, 1),
-        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
+        terms = listOf(SentenceTerms(years = 1, code = "IMP")),
       ),
       validSdsSentence.copy(
         sentenceSequence = 2,
         consecutiveToSequence = 1,
         sentenceCalculationType = "DTO",
-        terms = listOf(SentenceTerms(years = 1, code = "IMP"))
-      )
+        terms = listOf(SentenceTerms(years = 1, code = "IMP")),
+      ),
     )
     val adjustments = BookingAndSentenceAdjustments(
       bookingAdjustments = emptyList(),
@@ -804,7 +813,7 @@ class ValidationServiceTest {
           fromDate = LocalDate.of(2021, 1, 30),
           toDate = LocalDate.of(2021, 1, 31),
           numberOfDays = 1,
-          type = SentenceAdjustmentType.REMAND
+          type = SentenceAdjustmentType.REMAND,
         ),
         SentenceAdjustment(
           sentenceSequence = 1,
@@ -812,42 +821,43 @@ class ValidationServiceTest {
           fromDate = LocalDate.of(2021, 1, 30),
           toDate = LocalDate.of(2021, 1, 31),
           numberOfDays = 1,
-          type = SentenceAdjustmentType.TAGGED_BAIL
-        )
-      )
+          type = SentenceAdjustmentType.TAGGED_BAIL,
+        ),
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, adjustments, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
     assertThat(result).isEqualTo(
       listOf(
-        ValidationMessage(PRE_PCSC_DTO_WITH_ADJUSTMENT, listOf("remand and tagged bail"))
-      )
+        ValidationMessage(PRE_PCSC_DTO_WITH_ADJUSTMENT, listOf("remand and tagged bail")),
+      ),
     )
   }
+
   @Test
   fun `Test A FINE sentence consecutive to unsupported`() {
     val sentences = listOf(
       validSdsSentence.copy(
-        sentenceSequence = 1
+        sentenceSequence = 1,
       ),
       validAFineSentence.copy(
         sentenceSequence = 2,
-        consecutiveToSequence = 1
-      )
+        consecutiveToSequence = 1,
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(A_FINE_SENTENCE_CONSECUTIVE_TO),
-      )
+      ),
     )
   }
 
@@ -855,23 +865,23 @@ class ValidationServiceTest {
   fun `Test A FINE sentence consecutive from unsupported`() {
     val sentences = listOf(
       validAFineSentence.copy(
-        sentenceSequence = 1
+        sentenceSequence = 1,
       ),
       validSdsSentence.copy(
         sentenceSequence = 2,
-        consecutiveToSequence = 1
-      )
+        consecutiveToSequence = 1,
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(A_FINE_SENTENCE_CONSECUTIVE),
-      )
+      ),
     )
   }
 
@@ -879,12 +889,12 @@ class ValidationServiceTest {
   fun `Test A FINE sentence multiple unsupported`() {
     val sentences = listOf(
       validAFineSentence.copy(
-        sentenceSequence = 1
+        sentenceSequence = 1,
       ),
       validSdsSentence.copy(
         sentenceSequence = 2,
-        consecutiveToSequence = 1
-      )
+        consecutiveToSequence = 1,
+      ),
     )
     val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
@@ -892,16 +902,16 @@ class ValidationServiceTest {
         VALID_PRISONER,
         VALID_ADJUSTMENTS,
         listOf(OffenderFinePayment(1, LocalDate.now(), BigDecimal.ONE)),
-        null
+        null,
       ),
-      USER_INPUTS
+      USER_INPUTS,
     )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(A_FINE_SENTENCE_WITH_PAYMENTS),
         ValidationMessage(A_FINE_SENTENCE_CONSECUTIVE),
-      )
+      ),
     )
   }
 
@@ -909,19 +919,19 @@ class ValidationServiceTest {
   fun `Test A FINE invalid without fine amount`() {
     val sentences = listOf(
       validAFineSentence.copy(
-        fineAmount = null
-      )
+        fineAmount = null,
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        USER_INPUTS
+        USER_INPUTS,
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(A_FINE_SENTENCE_MISSING_FINE_AMOUNT, listOf(CASE_SEQ.toString(), LINE_SEQ.toString())),
-      )
+      ),
     )
   }
 
@@ -929,19 +939,19 @@ class ValidationServiceTest {
   fun `Test SDS sentence unsupported category 1991`() {
     val sentences = listOf(
       validSdsSentence.copy(
-        sentenceCategory = "1991"
-      )
+        sentenceCategory = "1991",
+      ),
     )
     val result =
       validationService.validateBeforeCalculation(
         PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-        CalculationUserInputs()
+        CalculationUserInputs(),
       )
 
     assertThat(result).isEqualTo(
       listOf(
         ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("1991", "This is a sentence type")),
-      )
+      ),
     )
   }
 
@@ -954,11 +964,11 @@ class ValidationServiceTest {
         bookingAndSentenceAdjustments = lawfullyAtLargeBookingAdjustment,
         returnToCustodyDate = null,
       ),
-      USER_INPUTS
+      USER_INPUTS,
     )
 
     assertThat(result).isEqualTo(
-      listOf(ValidationMessage(UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE))
+      listOf(ValidationMessage(UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE)),
     )
   }
 
@@ -971,11 +981,11 @@ class ValidationServiceTest {
         bookingAndSentenceAdjustments = specialRemissionBookingAdjustment,
         returnToCustodyDate = null,
       ),
-      CalculationUserInputs()
+      CalculationUserInputs(),
     )
 
     assertThat(result).isEqualTo(
-      listOf(ValidationMessage(UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION))
+      listOf(ValidationMessage(UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION)),
     )
   }
 
@@ -983,7 +993,7 @@ class ValidationServiceTest {
   fun `Test EDS recalls supported`() {
     val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(listOf(validEdsRecallSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-      CalculationUserInputs()
+      CalculationUserInputs(),
     )
 
     assertThat(result).isEmpty()
@@ -993,7 +1003,7 @@ class ValidationServiceTest {
   fun `Test SOPC recalls supported`() {
     val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(listOf(validSopcRecallSentence), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
-      CalculationUserInputs()
+      CalculationUserInputs(),
     )
 
     assertThat(result).isEmpty()
@@ -1002,7 +1012,8 @@ class ValidationServiceTest {
   @Test
   fun `Test FTR validation precalc`() {
     val result = validationService.validateBeforeCalculation(
-      VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE, FTR_28_DAY_SENTENCE)), USER_INPUTS
+      VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE, FTR_28_DAY_SENTENCE)),
+      USER_INPUTS,
     )
 
     assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER)))
@@ -1011,7 +1022,8 @@ class ValidationServiceTest {
   @Test
   fun `Test 14 day FTR sentence type and 28 day recall`() {
     val result = validationService.validateBeforeCalculation(
-      VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE), fixedTermRecallDetails = FTR_DETAILS_28), USER_INPUTS
+      VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE), fixedTermRecallDetails = FTR_DETAILS_28),
+      USER_INPUTS,
     )
 
     assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28)))
@@ -1020,7 +1032,8 @@ class ValidationServiceTest {
   @Test
   fun `Test 28 day FTR sentence type and 14 day recall`() {
     val result = validationService.validateBeforeCalculation(
-      VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE), fixedTermRecallDetails = FTR_DETAILS_14), USER_INPUTS
+      VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE), fixedTermRecallDetails = FTR_DETAILS_14),
+      USER_INPUTS,
     )
 
     assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14)))
@@ -1031,8 +1044,8 @@ class ValidationServiceTest {
     val result = validationService.validateBeforeCalculation(
       BOOKING.copy(
         fixedTermRecallDetails = FTR_DETAILS_14,
-        sentences = listOf(FTR_SDS_SENTENCE.copy(duration = FIVE_YEAR_DURATION))
-      )
+        sentences = listOf(FTR_SDS_SENTENCE.copy(duration = FIVE_YEAR_DURATION)),
+      ),
     )
 
     assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_14_DAYS_SENTENCE_GE_12_MONTHS)))
@@ -1048,7 +1061,8 @@ class ValidationServiceTest {
       @Test
       fun `Test FTR validation precalc`() {
         val result = validationService.validateBeforeCalculation(
-          VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE, FTR_28_DAY_SENTENCE)), USER_INPUTS
+          VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE, FTR_28_DAY_SENTENCE)),
+          USER_INPUTS,
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER)))
@@ -1057,7 +1071,8 @@ class ValidationServiceTest {
       @Test
       fun `Test 14 day FTR sentence type and 28 day recall`() {
         val result = validationService.validateBeforeCalculation(
-          VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE), fixedTermRecallDetails = FTR_DETAILS_28), USER_INPUTS
+          VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE), fixedTermRecallDetails = FTR_DETAILS_28),
+          USER_INPUTS,
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28)))
@@ -1066,7 +1081,8 @@ class ValidationServiceTest {
       @Test
       fun `Test 28 day FTR sentence type and 14 day recall`() {
         val result = validationService.validateBeforeCalculation(
-          VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE), fixedTermRecallDetails = FTR_DETAILS_14), USER_INPUTS
+          VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE), fixedTermRecallDetails = FTR_DETAILS_14),
+          USER_INPUTS,
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14)))
@@ -1081,8 +1097,8 @@ class ValidationServiceTest {
         val result = validationService.validateBeforeCalculation(
           BOOKING.copy(
             fixedTermRecallDetails = FTR_DETAILS_14,
-            sentences = listOf(FTR_SDS_SENTENCE.copy(duration = FIVE_YEAR_DURATION))
-          )
+            sentences = listOf(FTR_SDS_SENTENCE.copy(duration = FIVE_YEAR_DURATION)),
+          ),
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_14_DAYS_SENTENCE_GE_12_MONTHS)))
@@ -1094,14 +1110,14 @@ class ValidationServiceTest {
           BOOKING.copy(
             fixedTermRecallDetails = FTR_DETAILS_28,
             sentences = listOf(FTR_SDS_SENTENCE.copy(duration = NINE_MONTH_DURATION, identifier = UUID.randomUUID(), consecutiveSentenceUUIDs = emptyList())),
-          )
+          ),
         )
 
         assertThat(result).isEqualTo(
           listOf(
             ValidationMessage(FTR_28_DAYS_SENTENCE_LT_12_MONTHS),
             ValidationMessage(FTR_TYPE_28_DAYS_SENTENCE_LT_12_MONTHS),
-          )
+          ),
         )
       }
 
@@ -1110,8 +1126,8 @@ class ValidationServiceTest {
         val result = validationService.validateBeforeCalculation(
           BOOKING.copy(
             fixedTermRecallDetails = FTR_DETAILS_28,
-            sentences = listOf(FTR_SDS_SENTENCE.copy(duration = NINE_MONTH_DURATION))
-          )
+            sentences = listOf(FTR_SDS_SENTENCE.copy(duration = NINE_MONTH_DURATION)),
+          ),
         )
 
         assertThat(result).isEmpty()
@@ -1123,7 +1139,7 @@ class ValidationServiceTest {
           BOOKING.copy(
             fixedTermRecallDetails = FTR_DETAILS_28,
             sentences = listOf(FTR_SDS_SENTENCE.copy(recallType = FIXED_TERM_RECALL_14, duration = FIVE_YEAR_DURATION)),
-          )
+          ),
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_14_DAYS_SENTENCE_GE_12_MONTHS)))
@@ -1144,12 +1160,12 @@ class ValidationServiceTest {
           fixedTermRecallDetails = FTR_DETAILS_14,
           sentences = listOf(
             consecutiveSentenceOne,
-            consecutiveSentenceTwo
-          )
+            consecutiveSentenceTwo,
+          ),
         )
         workingBooking = createConsecutiveSentences(workingBooking)
         val result = validationService.validateBookingAfterCalculation(
-          workingBooking
+          workingBooking,
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_14_DAYS_AGGREGATE_GE_12_MONTHS), ValidationMessage(FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS)))
@@ -1165,12 +1181,12 @@ class ValidationServiceTest {
           fixedTermRecallDetails = FTR_DETAILS_28,
           sentences = listOf(
             consecutiveSentenceOne,
-            consecutiveSentenceTwo
-          )
+            consecutiveSentenceTwo,
+          ),
         )
         workingBooking = createConsecutiveSentences(workingBooking)
         val result = validationService.validateBookingAfterCalculation(
-          workingBooking
+          workingBooking,
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_28_DAYS_AGGREGATE_LT_12_MONTHS)))
@@ -1186,12 +1202,12 @@ class ValidationServiceTest {
           fixedTermRecallDetails = FTR_DETAILS_28,
           sentences = listOf(
             consecutiveSentenceOne,
-            consecutiveSentenceTwo
-          )
+            consecutiveSentenceTwo,
+          ),
         )
         workingBooking = createConsecutiveSentences(workingBooking)
         val result = validationService.validateBookingAfterCalculation(
-          workingBooking
+          workingBooking,
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_28_DAYS_AGGREGATE_LT_12_MONTHS), ValidationMessage(FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS)))
@@ -1207,12 +1223,12 @@ class ValidationServiceTest {
           fixedTermRecallDetails = FTR_DETAILS_28,
           sentences = listOf(
             consecutiveSentenceOne,
-            consecutiveSentenceTwo
-          )
+            consecutiveSentenceTwo,
+          ),
         )
         workingBooking = createConsecutiveSentences(workingBooking)
         val result = validationService.validateBookingAfterCalculation(
-          workingBooking
+          workingBooking,
         )
 
         assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS)))
@@ -1224,12 +1240,11 @@ class ValidationServiceTest {
     inner class DTORecallValidationTests {
       @Test
       fun `Test DTO with breach of supervision requirements returns validation message`() {
-
         val sentenceAndOffences = validSdsSentence.copy(
           sentenceCalculationType = SentenceCalculationType.DTO.name,
           terms = listOf(
-            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE)
-          )
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE),
+          ),
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
@@ -1238,7 +1253,7 @@ class ValidationServiceTest {
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
           ),
-          USER_INPUTS
+          USER_INPUTS,
         )
         assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
       }
@@ -1248,8 +1263,8 @@ class ValidationServiceTest {
         val sentenceAndOffences = validSdsSentence.copy(
           sentenceCalculationType = SentenceCalculationType.DTO.name,
           terms = listOf(
-            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE)
-          )
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE),
+          ),
         )
 
         val result = validationService.validateBeforeCalculation(
@@ -1259,7 +1274,7 @@ class ValidationServiceTest {
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
           ),
-          USER_INPUTS
+          USER_INPUTS,
         )
         assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
       }
@@ -1269,8 +1284,8 @@ class ValidationServiceTest {
         val sentenceAndOffences = validSdsSentence.copy(
           sentenceCalculationType = SentenceCalculationType.DTO.name,
           terms = listOf(
-            SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
-          )
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+          ),
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
@@ -1279,7 +1294,7 @@ class ValidationServiceTest {
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
           ),
-          USER_INPUTS
+          USER_INPUTS,
         )
         assertThat(result).isEmpty()
       }
@@ -1289,8 +1304,8 @@ class ValidationServiceTest {
         val sentenceAndOffences = validSdsSentence.copy(
           sentenceCalculationType = SentenceCalculationType.DTO_ORA.name,
           terms = listOf(
-            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE)
-          )
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE),
+          ),
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
@@ -1299,7 +1314,7 @@ class ValidationServiceTest {
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
           ),
-          USER_INPUTS
+          USER_INPUTS,
         )
         assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
       }
@@ -1309,8 +1324,8 @@ class ValidationServiceTest {
         val sentenceAndOffences = validSdsSentence.copy(
           sentenceCalculationType = SentenceCalculationType.DTO_ORA.name,
           terms = listOf(
-            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE)
-          )
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE),
+          ),
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
@@ -1319,7 +1334,7 @@ class ValidationServiceTest {
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
           ),
-          USER_INPUTS
+          USER_INPUTS,
         )
         assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
       }
@@ -1329,8 +1344,8 @@ class ValidationServiceTest {
         val sentenceAndOffences = validSdsSentence.copy(
           sentenceCalculationType = SentenceCalculationType.DTO_ORA.name,
           terms = listOf(
-            SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
-          )
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+          ),
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
@@ -1339,7 +1354,7 @@ class ValidationServiceTest {
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
           ),
-          USER_INPUTS
+          USER_INPUTS,
         )
         assertThat(result).isEmpty()
       }
@@ -1348,8 +1363,8 @@ class ValidationServiceTest {
       fun `Test non-DTO with breach of supervision requirements doesn't return DTO Recall validation message`() {
         val sentenceAndOffences = validSdsSentence.copy(
           terms = listOf(
-            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE)
-          )
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE),
+          ),
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
@@ -1358,7 +1373,7 @@ class ValidationServiceTest {
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
           ),
-          USER_INPUTS
+          USER_INPUTS,
         )
         assertThat(result).doesNotContain(ValidationMessage(ValidationCode.DTO_RECALL))
       }
@@ -1369,8 +1384,8 @@ class ValidationServiceTest {
         val sentenceAndOffences = validSdsSentence.copy(
           sentenceCalculationType = SentenceCalculationType.DTO_ORA.name,
           terms = listOf(
-            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE)
-          )
+            SentenceTerms(5, 0, 0, 0, SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE),
+          ),
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
@@ -1379,7 +1394,7 @@ class ValidationServiceTest {
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
           ),
-          USER_INPUTS
+          USER_INPUTS,
         )
         assertThat(result).containsExactly(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This is a sentence type")))
       }
@@ -1397,10 +1412,10 @@ class ValidationServiceTest {
               fromDate = LocalDate.now().minusDays(10),
               toDate = LocalDate.now().plusDays(10),
               numberOfDays = 20,
-              type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE
-            )
+              type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE,
+            ),
           ),
-          emptyList()
+          emptyList(),
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
@@ -1409,11 +1424,11 @@ class ValidationServiceTest {
             bookingAndSentenceAdjustments = adjustment,
             returnToCustodyDate = null,
           ),
-          USER_INPUTS
+          USER_INPUTS,
         )
 
         assertThat(result).isEqualTo(
-          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_UAL))
+          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_UAL)),
         )
       }
 
@@ -1426,10 +1441,10 @@ class ValidationServiceTest {
               fromDate = LocalDate.now().plusDays(10),
               toDate = null,
               numberOfDays = 20,
-              type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE
-            )
+              type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE,
+            ),
           ),
-          emptyList()
+          emptyList(),
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
@@ -1438,11 +1453,11 @@ class ValidationServiceTest {
             bookingAndSentenceAdjustments = adjustment,
             returnToCustodyDate = null,
           ),
-          USER_INPUTS
+          USER_INPUTS,
         )
 
         assertThat(result).isEqualTo(
-          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_UAL))
+          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_UAL)),
         )
       }
 
@@ -1455,10 +1470,10 @@ class ValidationServiceTest {
               fromDate = LocalDate.now().plusDays(10),
               toDate = null,
               numberOfDays = 20,
-              type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
-            )
+              type = BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED,
+            ),
           ),
-          emptyList()
+          emptyList(),
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
@@ -1467,11 +1482,11 @@ class ValidationServiceTest {
             bookingAndSentenceAdjustments = adjustment,
             returnToCustodyDate = null,
           ),
-          USER_INPUTS
+          USER_INPUTS,
         )
 
         assertThat(result).isEqualTo(
-          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_ADA))
+          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_ADA)),
         )
       }
 
@@ -1484,10 +1499,10 @@ class ValidationServiceTest {
               fromDate = LocalDate.now().plusDays(10),
               toDate = null,
               numberOfDays = 20,
-              type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
-            )
+              type = BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED,
+            ),
           ),
-          emptyList()
+          emptyList(),
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
@@ -1496,11 +1511,11 @@ class ValidationServiceTest {
             bookingAndSentenceAdjustments = adjustment,
             returnToCustodyDate = null,
           ),
-          USER_INPUTS
+          USER_INPUTS,
         )
 
         assertThat(result).isEqualTo(
-          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_RADA))
+          listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_RADA)),
         )
       }
     }
@@ -1537,7 +1552,7 @@ class ValidationServiceTest {
     start: AbstractSentence,
     chain: MutableList<AbstractSentence>,
     sentencesByPrevious: Map<UUID, List<AbstractSentence>>,
-    chains: MutableList<MutableList<AbstractSentence>> = mutableListOf(mutableListOf())
+    chains: MutableList<MutableList<AbstractSentence>> = mutableListOf(mutableListOf()),
   ) {
     val originalChain = chain.toMutableList()
     sentencesByPrevious[start.identifier]?.forEachIndexed { index, it ->
@@ -1588,9 +1603,9 @@ class ValidationServiceTest {
       caseSequence = CASE_SEQ,
       sentenceDate = FIRST_MAY_2018,
       terms = listOf(
-        SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
+        SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
       ),
-      sentenceCalculationType = _14FTR_ORA.primaryName!!,
+      sentenceCalculationType = FTR_14_ORA.primaryName!!,
       sentenceCategory = "2003",
       sentenceStatus = "a",
       sentenceTypeDescription = "This is a sentence type",
@@ -1603,7 +1618,7 @@ class ValidationServiceTest {
       caseSequence = CASE_SEQ,
       sentenceDate = FIRST_MAY_2018,
       terms = listOf(
-        SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE)
+        SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
       ),
       sentenceCalculationType = FTR.name,
       sentenceCategory = "2003",
@@ -1616,22 +1631,23 @@ class ValidationServiceTest {
       prisonerDetails = VALID_PRISONER,
       bookingAndSentenceAdjustments = VALID_ADJUSTMENTS,
       returnToCustodyDate = null,
-      fixedTermRecallDetails = FTR_DETAILS_14
+      fixedTermRecallDetails = FTR_DETAILS_14,
     )
     private val FTR_SDS_SENTENCE = StandardDeterminateSentence(
       sentencedAt = FIRST_JAN_2015,
       duration = FIVE_YEAR_DURATION,
       offence = Offence(
-        committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = true,
-        offenceCode = offenceCode
+        committedAt = FIRST_JAN_2015,
+        isScheduleFifteenMaximumLife = true,
+        offenceCode = offenceCode,
       ),
       identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
       consecutiveSentenceUUIDs = mutableListOf(
-        UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
+        UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray()),
       ),
       lineSequence = lineSequence,
       caseSequence = caseSequence,
-      recallType = FIXED_TERM_RECALL_28
+      recallType = FIXED_TERM_RECALL_28,
     )
     val ONE_DAY_DURATION = Duration(mapOf(DAYS to 1L))
     val OFFENCE = Offence(LocalDate.of(2020, 1, 1))
@@ -1647,7 +1663,7 @@ class ValidationServiceTest {
       FIRST_MAY_2018,
       false,
       Adjustments(mutableMapOf(REMAND to mutableListOf(Adjustment(numberOfDays = 1, appliesToSentencesFrom = FIRST_MAY_2018)))),
-      FIRST_MAY_2018
+      FIRST_MAY_2018,
     )
     private val BOOKING = Booking(
       bookingId = 123456,
@@ -1657,26 +1673,28 @@ class ValidationServiceTest {
         reference = prisonerId,
       ),
       sentences = mutableListOf(
-        FTR_SDS_SENTENCE
+        FTR_SDS_SENTENCE,
       ),
       adjustments = Adjustments(
         mutableMapOf(
           UNLAWFULLY_AT_LARGE to mutableListOf(
             Adjustment(
               appliesToSentencesFrom = FIRST_JAN_2015.minusDays(6),
-              numberOfDays = 5, fromDate = FIRST_JAN_2015.minusDays(6),
-              toDate = FIRST_JAN_2015.minusDays(1)
-            )
+              numberOfDays = 5,
+              fromDate = FIRST_JAN_2015.minusDays(6),
+              toDate = FIRST_JAN_2015.minusDays(1),
+            ),
           ),
           REMAND to mutableListOf(
             Adjustment(
-              appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 6,
+              appliesToSentencesFrom = FIRST_JAN_2015,
+              numberOfDays = 6,
               fromDate = FIRST_JAN_2015.minusDays(7),
-              toDate = FIRST_JAN_2015.minusDays(1)
-            )
-          )
-        )
-      )
+              toDate = FIRST_JAN_2015.minusDays(1),
+            ),
+          ),
+        ),
+      ),
     )
   }
 }
