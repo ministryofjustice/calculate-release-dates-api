@@ -5,5 +5,5 @@ import java.time.LocalDate
 
 data class RelevantRemandCalculationResult(
   val releaseDate: LocalDate? = null,
-  val validationMessages: List<ValidationMessage> = emptyList()
+  val validationMessages: List<ValidationMessage> = emptyList(),
 )

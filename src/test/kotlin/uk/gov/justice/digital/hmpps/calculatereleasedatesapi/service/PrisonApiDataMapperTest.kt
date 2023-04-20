@@ -28,12 +28,12 @@ class PrisonApiDataMapperTest {
       days = 1,
       weeks = 2,
       months = 3,
-      years = 4
+      years = 4,
     )
 
     val calculationRequest = CalculationRequest(
       sentenceAndOffences = objectMapper.valueToTree(listOf(version0)),
-      sentenceAndOffencesVersion = 0
+      sentenceAndOffencesVersion = 0,
     )
 
     val sentencesAndOffences = prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)

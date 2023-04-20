@@ -18,5 +18,5 @@ data class TimelineTracker(
   // Whenever a release happens a new group is started.
   val sentenceGroups: MutableList<MutableList<CalculableSentence>> = mutableListOf(),
   var currentSentenceGroup: MutableList<CalculableSentence> = mutableListOf(),
-  var previousReleaseDateReached: LocalDate? = null
+  var previousReleaseDateReached: LocalDate? = null,
 )

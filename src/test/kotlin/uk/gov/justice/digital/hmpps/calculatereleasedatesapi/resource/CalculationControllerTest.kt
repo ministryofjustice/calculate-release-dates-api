@@ -77,14 +77,17 @@ class CalculationControllerTest {
     val bookingId = 9995L
 
     val calculatedReleaseDates = CalculatedReleaseDates(
-      calculationRequestId = 9991L, dates = mapOf(), calculationStatus = PRELIMINARY,
-      bookingId = bookingId, prisonerId = prisonerId
+      calculationRequestId = 9991L,
+      dates = mapOf(),
+      calculationStatus = PRELIMINARY,
+      bookingId = bookingId,
+      prisonerId = prisonerId,
     )
     whenever(calculationTransactionalService.calculate(prisonerId, CalculationUserInputs())).thenReturn(calculatedReleaseDates)
 
     val result = mvc.perform(
       post("/calculation/$prisonerId")
-        .accept(APPLICATION_JSON)
+        .accept(APPLICATION_JSON),
     )
       .andExpect(status().isOk)
       .andExpect(content().contentType(APPLICATION_JSON))
@@ -100,8 +103,11 @@ class CalculationControllerTest {
     val bookingId = 9995L
     val userInput = CalculationUserInputs(listOf(CalculationSentenceUserInput(1, "ABC", UserInputType.ORIGINAL, true)))
     val calculatedReleaseDates = CalculatedReleaseDates(
-      calculationRequestId = 9991L, dates = mapOf(), calculationStatus = PRELIMINARY,
-      bookingId = bookingId, prisonerId = prisonerId
+      calculationRequestId = 9991L,
+      dates = mapOf(),
+      calculationStatus = PRELIMINARY,
+      bookingId = bookingId,
+      prisonerId = prisonerId,
     )
     whenever(calculationTransactionalService.calculate(prisonerId, userInput)).thenReturn(calculatedReleaseDates)
 
@@ -109,7 +115,7 @@ class CalculationControllerTest {
       post("/calculation/$prisonerId")
         .accept(APPLICATION_JSON)
         .contentType(APPLICATION_JSON)
-        .content(mapper.writeValueAsString(userInput))
+        .content(mapper.writeValueAsString(userInput)),
     )
       .andExpect(status().isOk)
       .andExpect(content().contentType(APPLICATION_JSON))
@@ -126,8 +132,11 @@ class CalculationControllerTest {
     val bookingId = 9995L
 
     val calculatedReleaseDates = CalculatedReleaseDates(
-      calculationRequestId = 9991L, dates = mapOf(), calculationStatus = PRELIMINARY,
-      bookingId = bookingId, prisonerId = prisonerId
+      calculationRequestId = 9991L,
+      dates = mapOf(),
+      calculationStatus = PRELIMINARY,
+      bookingId = bookingId,
+      prisonerId = prisonerId,
     )
     whenever(calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, calculationFragments)).thenReturn(calculatedReleaseDates)
 
@@ -135,7 +144,7 @@ class CalculationControllerTest {
       post("/calculation/confirm/$calculationRequestId")
         .accept(APPLICATION_JSON)
         .content(mapper.writeValueAsString(calculationFragments))
-        .contentType(APPLICATION_JSON)
+        .contentType(APPLICATION_JSON),
     )
       .andExpect(status().isOk)
       .andExpect(content().contentType(APPLICATION_JSON))
@@ -151,7 +160,7 @@ class CalculationControllerTest {
 
     whenever(calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, calculationFragments)).then {
       throw PreconditionFailedException(
-        "The booking data used for the preliminary calculation has changed"
+        "The booking data used for the preliminary calculation has changed",
       )
     }
 
@@ -159,14 +168,14 @@ class CalculationControllerTest {
       post("/calculation/confirm/$calculationRequestId")
         .accept(APPLICATION_JSON)
         .content(mapper.writeValueAsString(calculationFragments))
-        .contentType(APPLICATION_JSON)
+        .contentType(APPLICATION_JSON),
     )
       .andExpect(status().isPreconditionFailed)
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
 
     assertThat(result.response.contentAsString).contains(
-      "The booking data used for the preliminary calculation has changed"
+      "The booking data used for the preliminary calculation has changed",
     )
   }
 
@@ -174,8 +183,11 @@ class CalculationControllerTest {
   fun `Test GET of calculation results by calculationRequestId`() {
     val calculationRequestId = 9995L
     val calculatedReleaseDates = CalculatedReleaseDates(
-      calculationRequestId = calculationRequestId, dates = mapOf(), calculationStatus = PRELIMINARY,
-      bookingId = 123L, prisonerId = "ASD"
+      calculationRequestId = calculationRequestId,
+      dates = mapOf(),
+      calculationStatus = PRELIMINARY,
+      bookingId = 123L,
+      prisonerId = "ASD",
     )
 
     whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(calculatedReleaseDates)

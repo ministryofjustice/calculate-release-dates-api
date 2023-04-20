@@ -31,7 +31,7 @@ class ValidationIntTest : IntegrationTestBase() {
   fun `Run calculation where remand periods overlap with a sentence period`() {
     runValidationAndCheckMessages(
       REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID,
-      listOf(ValidationMessage(REMAND_OVERLAPS_WITH_SENTENCE))
+      listOf(ValidationMessage(REMAND_OVERLAPS_WITH_SENTENCE)),
     )
   }
 
@@ -69,7 +69,7 @@ class ValidationIntTest : IntegrationTestBase() {
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_RADA),
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_UAL),
         ValidationMessage(code = REMAND_OVERLAPS_WITH_REMAND),
-      )
+      ),
     )
   }
 
@@ -78,9 +78,9 @@ class ValidationIntTest : IntegrationTestBase() {
     runValidationAndCheckMessages(
       "DTO_NON_IMP",
       listOf(
-        ValidationMessage(code = DTO_RECALL)
+        ValidationMessage(code = DTO_RECALL),
 
-      )
+      ),
     )
   }
 
@@ -88,7 +88,7 @@ class ValidationIntTest : IntegrationTestBase() {
   fun `Run validation on unsupported sentence data`() {
     runValidationAndCheckMessages(
       UNSUPPORTED_SENTENCE_PRISONER_ID,
-      listOf(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This sentence is unsupported")))
+      listOf(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This sentence is unsupported"))),
     )
   }
 
@@ -107,8 +107,8 @@ class ValidationIntTest : IntegrationTestBase() {
     runValidationAndCheckMessages(
       "EXTINGUISH",
       listOf(
-        ValidationMessage(ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_REMAND)
-      )
+        ValidationMessage(ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_REMAND),
+      ),
     )
   }
 

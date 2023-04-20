@@ -6,5 +6,5 @@ data class BankHoliday(
   val title: String,
   val date: LocalDate,
   val notes: String = "",
-  val bunting: Boolean = false
+  val bunting: Boolean = false,
 )

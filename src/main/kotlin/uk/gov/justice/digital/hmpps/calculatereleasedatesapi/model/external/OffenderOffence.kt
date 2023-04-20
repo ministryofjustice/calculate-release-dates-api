@@ -8,7 +8,7 @@ data class OffenderOffence(
   val offenceEndDate: LocalDate? = null,
   val offenceCode: String,
   val offenceDescription: String,
-  var indicators: List<String> = listOf()
+  var indicators: List<String> = listOf(),
 ) {
   val isScheduleFifteenMaximumLife: Boolean get() {
     return this.indicators.any { it == SCHEDULE_15_LIFE_INDICATOR }

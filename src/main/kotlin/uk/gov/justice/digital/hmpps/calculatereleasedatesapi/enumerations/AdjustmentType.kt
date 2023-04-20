@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations
 
 enum class AdjustmentType(
-  val text: String
+  val text: String,
 ) {
   REMAND("Remand"),
   TAGGED_BAIL("Tagged bail"),
@@ -12,5 +12,5 @@ enum class AdjustmentType(
   RECALL_REMAND("Recall remand"),
   RECALL_TAGGED_BAIL("Recall tagged bail"),
   RELEASE_UNUSED_ADA("Release date unused ada"),
-  LICENSE_UNUSED_ADA("License date unused ada")
+  LICENSE_UNUSED_ADA("License date unused ada"),
 }

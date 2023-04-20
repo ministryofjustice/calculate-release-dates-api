@@ -30,20 +30,26 @@ class CalculationUserQuestionService(
 ) {
   val postPcscCalcTypes: Map<UserInputType, EnumSet<SentenceCalculationType>> = mapOf(
     ORIGINAL to EnumSet.of(
-      ADIMP, YOI,
-      ADIMP_ORA, YOI_ORA
+      ADIMP,
+      YOI,
+      ADIMP_ORA,
+      YOI_ORA,
     ),
     FOUR_TO_UNDER_SEVEN to EnumSet.of(
-      ADIMP, YOI,
-      ADIMP_ORA, YOI_ORA
+      ADIMP,
+      YOI,
+      ADIMP_ORA,
+      YOI_ORA,
     ),
     UPDATED to EnumSet.of(
-      ADIMP, YOI,
-      ADIMP_ORA, YOI_ORA
+      ADIMP,
+      YOI,
+      ADIMP_ORA,
+      YOI_ORA,
     ),
     SECTION_250 to EnumSet.of(
       SEC250,
-      SEC250_ORA
+      SEC250_ORA,
     ),
   )
 
@@ -85,13 +91,13 @@ class CalculationUserQuestionService(
             }
           }
           question
-        }
+        },
     )
   }
 
   private fun sentencedAfterPcsc(sentence: SentenceAndOffences): Boolean {
     return sentence.sentenceDate.isAfterOrEqualTo(
-      PCSC_COMMENCEMENT_DATE
+      PCSC_COMMENCEMENT_DATE,
     )
   }
 

@@ -18,5 +18,5 @@ data class SentenceAndOffences(
   val offences: List<OffenderOffence> = emptyList(),
   val caseReference: String? = null,
   val courtDescription: String? = null,
-  val fineAmount: BigDecimal? = null
+  val fineAmount: BigDecimal? = null,
 )

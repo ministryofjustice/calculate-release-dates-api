@@ -12,33 +12,33 @@ class ConsecutiveSentenceAggregatorTest {
     val durations = listOf(
       Duration(
         mapOf(
-          ChronoUnit.WEEKS to 3
-        )
+          ChronoUnit.WEEKS to 3,
+        ),
       ),
       Duration(
         mapOf(
-          ChronoUnit.MONTHS to 4
-        )
+          ChronoUnit.MONTHS to 4,
+        ),
       ),
       Duration(
         mapOf(
-          ChronoUnit.MONTHS to 5
-        )
+          ChronoUnit.MONTHS to 5,
+        ),
       ),
       Duration(
         mapOf(
-          ChronoUnit.WEEKS to 3
-        )
+          ChronoUnit.WEEKS to 3,
+        ),
       ),
       Duration(
         mapOf(
-          ChronoUnit.MONTHS to 3
-        )
+          ChronoUnit.MONTHS to 3,
+        ),
       ),
       Duration(
         mapOf(
-          ChronoUnit.MONTHS to 4
-        )
+          ChronoUnit.MONTHS to 4,
+        ),
       ),
     )
 
@@ -48,25 +48,25 @@ class ConsecutiveSentenceAggregatorTest {
       listOf(
         Duration(
           mapOf(
-            ChronoUnit.WEEKS to 3
-          )
+            ChronoUnit.WEEKS to 3,
+          ),
         ),
         Duration(
           mapOf(
-            ChronoUnit.MONTHS to 9
-          )
+            ChronoUnit.MONTHS to 9,
+          ),
         ),
         Duration(
           mapOf(
-            ChronoUnit.WEEKS to 3
-          )
+            ChronoUnit.WEEKS to 3,
+          ),
         ),
         Duration(
           mapOf(
-            ChronoUnit.MONTHS to 7
-          )
+            ChronoUnit.MONTHS to 7,
+          ),
         ),
-      )
+      ),
     )
   }
 
@@ -75,35 +75,35 @@ class ConsecutiveSentenceAggregatorTest {
     val durations = listOf(
       Duration(
         mapOf(
-          ChronoUnit.WEEKS to 3
-        )
+          ChronoUnit.WEEKS to 3,
+        ),
       ),
       Duration(
         mapOf(
-          ChronoUnit.MONTHS to 4
-        )
+          ChronoUnit.MONTHS to 4,
+        ),
       ),
       Duration(
         mapOf(
           ChronoUnit.MONTHS to 5,
-          ChronoUnit.WEEKS to 2
-        )
+          ChronoUnit.WEEKS to 2,
+        ),
       ),
       Duration(
         mapOf(
-          ChronoUnit.WEEKS to 3
-        )
+          ChronoUnit.WEEKS to 3,
+        ),
       ),
       Duration(
         mapOf(
           ChronoUnit.MONTHS to 3,
-          ChronoUnit.WEEKS to 2
-        )
+          ChronoUnit.WEEKS to 2,
+        ),
       ),
       Duration(
         mapOf(
-          ChronoUnit.MONTHS to 4
-        )
+          ChronoUnit.MONTHS to 4,
+        ),
       ),
     )
 
@@ -113,35 +113,35 @@ class ConsecutiveSentenceAggregatorTest {
       listOf(
         Duration(
           mapOf(
-            ChronoUnit.WEEKS to 3
-          )
+            ChronoUnit.WEEKS to 3,
+          ),
         ),
         Duration(
           mapOf(
-            ChronoUnit.MONTHS to 9
-          )
+            ChronoUnit.MONTHS to 9,
+          ),
         ),
         Duration(
           mapOf(
-            ChronoUnit.WEEKS to 5
-          )
+            ChronoUnit.WEEKS to 5,
+          ),
         ),
         Duration(
           mapOf(
-            ChronoUnit.MONTHS to 3
-          )
+            ChronoUnit.MONTHS to 3,
+          ),
         ),
         Duration(
           mapOf(
-            ChronoUnit.WEEKS to 2
-          )
+            ChronoUnit.WEEKS to 2,
+          ),
         ),
         Duration(
           mapOf(
-            ChronoUnit.MONTHS to 4
-          )
+            ChronoUnit.MONTHS to 4,
+          ),
         ),
-      )
+      ),
     )
   }
 
@@ -150,33 +150,33 @@ class ConsecutiveSentenceAggregatorTest {
     val durations = listOf(
       Duration(
         mapOf(
-          ChronoUnit.MONTHS to 3
-        )
+          ChronoUnit.MONTHS to 3,
+        ),
       ),
       Duration(
         mapOf(
-          ChronoUnit.MONTHS to 4
-        )
+          ChronoUnit.MONTHS to 4,
+        ),
       ),
       Duration(
         mapOf(
-          ChronoUnit.MONTHS to 5
-        )
+          ChronoUnit.MONTHS to 5,
+        ),
       ),
       Duration(
         mapOf(
-          ChronoUnit.MONTHS to 3
-        )
+          ChronoUnit.MONTHS to 3,
+        ),
       ),
       Duration(
         mapOf(
-          ChronoUnit.MONTHS to 3
-        )
+          ChronoUnit.MONTHS to 3,
+        ),
       ),
       Duration(
         mapOf(
-          ChronoUnit.MONTHS to 4
-        )
+          ChronoUnit.MONTHS to 4,
+        ),
       ),
     )
 
@@ -186,10 +186,10 @@ class ConsecutiveSentenceAggregatorTest {
       listOf(
         Duration(
           mapOf(
-            ChronoUnit.MONTHS to 22
-          )
+            ChronoUnit.MONTHS to 22,
+          ),
         ),
-      )
+      ),
     )
   }
 }

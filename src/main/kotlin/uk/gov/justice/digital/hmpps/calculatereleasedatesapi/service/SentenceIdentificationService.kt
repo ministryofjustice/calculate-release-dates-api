@@ -104,7 +104,7 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
       MTD,
       ETD,
       LTD,
-      TUSED
+      TUSED,
     )
   }
 
@@ -118,7 +118,7 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
     }
     return listOf(
       SED,
-      ARD
+      ARD,
     )
   }
 
@@ -130,15 +130,15 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
           listOf(
             SLED,
             CRD,
-            PED
-          )
+            PED,
+          ),
         )
       } else {
         releaseDateTypes.addAll(
           listOf(
             SLED,
-            CRD
-          )
+            CRD,
+          ),
         )
       }
     } else {
@@ -146,8 +146,8 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
         releaseDateTypes.addAll(
           listOf(
             SLED,
-            CRD
-          )
+            CRD,
+          ),
         )
       } else if (sentence.isMadeUpOfOnlyDtos()) {
         if (sentence.orderedSentences.all { it.identificationTrack == DTO_BEFORE_PCSC }) {
@@ -161,8 +161,8 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
             MTD,
             ETD,
             LTD,
-            TUSED
-          )
+            TUSED,
+          ),
         )
       } else if (sentence.isMadeUpOfBeforeAndAfterCjaLaspoSentences()) {
         // This consecutive sentence is made up of pre and post laspo date sentences. (Old and new style)
@@ -174,16 +174,16 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
               NCRD,
               PED,
               NPD,
-              SLED
-            )
+              SLED,
+            ),
           )
         } else {
           // PSI example 39
           releaseDateTypes.addAll(
             listOf(
               SLED,
-              CRD
-            )
+              CRD,
+            ),
           )
         }
       } else if (sentence.isMadeUpOfOnlyAfterCjaLaspoSentences()) {
@@ -195,15 +195,15 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
                 LED,
                 SED,
                 CRD,
-              )
+              ),
             )
           } else {
             // PSI example 21
             releaseDateTypes.addAll(
               listOf(
                 SLED,
-                CRD
-              )
+                CRD,
+              ),
             )
           }
         } else {
@@ -230,16 +230,16 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
       releaseDateTypes.addAll(
         listOf(
           SLED,
-          PRRD
-        )
+          PRRD,
+        ),
       )
     } else {
       releaseDateTypes.addAll(
         listOf(
           SLED,
           CRD,
-          PED
-        )
+          PED,
+        ),
       )
     }
     if (sentence.sdopcu18 || sentence.sentencedAt.isAfterOrEqualTo(PCSC_COMMENCEMENT_DATE)) {
@@ -257,8 +257,8 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
       releaseDateTypes.addAll(
         listOf(
           SLED,
-          PRRD
-        )
+          PRRD,
+        ),
       )
     } else {
       if (sentence.automaticRelease) {
@@ -266,8 +266,8 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
         releaseDateTypes.addAll(
           listOf(
             SLED,
-            CRD
-          )
+            CRD,
+          ),
         )
       } else {
         sentence.identificationTrack = EDS_DISCRETIONARY_RELEASE
@@ -275,8 +275,8 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
           listOf(
             SLED,
             CRD,
-            PED
-          )
+            PED,
+          ),
         )
       }
     }
@@ -314,11 +314,10 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
       releaseDateTypes.addAll(
         listOf(
           ARD,
-          SED
-        )
+          SED,
+        ),
       )
     } else {
-
       val durationGreaterThanSevenYears = sentence.durationIsGreaterThanOrEqualTo(SEVEN, ChronoUnit.YEARS)
       val durationGreaterThanFourLessThanSevenYears = sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS) &&
         sentence.durationIsLessThan(SEVEN, ChronoUnit.YEARS)
@@ -347,14 +346,13 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
       releaseDateTypes.addAll(
         listOf(
           SLED,
-          CRD
-        )
+          CRD,
+        ),
       )
     }
   }
 
   private fun beforeCJAAndLASPO(sentence: CalculableSentence, releaseDateTypes: MutableList<ReleaseDateType>) {
-
     sentence.identificationTrack = SDS_BEFORE_CJA_LASPO
 
     if (sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
@@ -364,15 +362,15 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
             PED,
             NPD,
             LED,
-            SED
-          )
+            SED,
+          ),
         )
       } else {
         releaseDateTypes.addAll(
           listOf(
             CRD,
-            SLED
-          )
+            SLED,
+          ),
         )
       }
     } else if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
@@ -380,15 +378,15 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
         listOf(
           LED,
           CRD,
-          SED
-        )
+          SED,
+        ),
       )
     } else {
       releaseDateTypes.addAll(
         listOf(
           ARD,
-          SED
-        )
+          SED,
+        ),
       )
     }
   }

@@ -5,5 +5,5 @@ import java.util.UUID
 data class UpdateOffenderDates(
   val calculationUuid: UUID,
   val submissionUser: String,
-  val keyDates: OffenderKeyDates
+  val keyDates: OffenderKeyDates,
 )

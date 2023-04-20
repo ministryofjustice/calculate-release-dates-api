@@ -52,7 +52,7 @@ class BookingServiceTest {
       offenceStartDate = FIRST_JAN_2015,
       offenceCode = offenceCode,
       offenceDescription = "Littering",
-      indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR)
+      indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
     ),
   )
   private val sentenceAndOffences = SentenceAndOffences(
@@ -63,7 +63,7 @@ class BookingServiceTest {
     consecutiveToSequence = consecutiveTo,
     sentenceDate = FIRST_JAN_2015,
     terms = listOf(
-      SentenceTerms(years = 5)
+      SentenceTerms(years = 5),
     ),
     sentenceStatus = "IMP",
     sentenceCategory = "CAT",
@@ -78,8 +78,8 @@ class BookingServiceTest {
         numberOfDays = 5,
         type = BookingAdjustmentType.UNLAWFULLY_AT_LARGE,
         fromDate = FIRST_JAN_2015.minusDays(6),
-        toDate = FIRST_JAN_2015.minusDays(1)
-      )
+        toDate = FIRST_JAN_2015.minusDays(1),
+      ),
     ),
     sentenceAdjustments = listOf(
       SentenceAdjustment(
@@ -88,23 +88,23 @@ class BookingServiceTest {
         numberOfDays = 6,
         type = SentenceAdjustmentType.REMAND,
         fromDate = FIRST_JAN_2015.minusDays(7),
-        toDate = FIRST_JAN_2015.minusDays(1)
+        toDate = FIRST_JAN_2015.minusDays(1),
 
       ),
       SentenceAdjustment(
         active = true,
         sentenceSequence = sequence,
         numberOfDays = 22,
-        type = SentenceAdjustmentType.UNUSED_REMAND
-      )
-    )
+        type = SentenceAdjustmentType.UNUSED_REMAND,
+      ),
+    ),
   )
   private val prisonerDetails = PrisonerDetails(
     bookingId,
     prisonerId,
     dateOfBirth = DOB,
     firstName = "Harry",
-    lastName = "Houdini"
+    lastName = "Houdini",
   )
   val returnToCustodyDate = ReturnToCustodyDate(bookingId, LocalDate.of(2022, 3, 15))
   private val offenderFineFinePayment = listOf(OffenderFinePayment(bookingId = 1, paymentDate = LocalDate.of(1, 2, 3), paymentAmount = BigDecimal("10000.88")))
@@ -128,37 +128,40 @@ class BookingServiceTest {
             sentencedAt = FIRST_JAN_2015,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
-              committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = true,
-              offenceCode = offenceCode
+              committedAt = FIRST_JAN_2015,
+              isScheduleFifteenMaximumLife = true,
+              offenceCode = offenceCode,
             ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
             consecutiveSentenceUUIDs = mutableListOf(
-              UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
+              UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray()),
             ),
             lineSequence = lineSequence,
             caseSequence = caseSequence,
-            recallType = RecallType.FIXED_TERM_RECALL_28
-          )
+            recallType = RecallType.FIXED_TERM_RECALL_28,
+          ),
         ),
         adjustments = Adjustments(
           mutableMapOf(
             UNLAWFULLY_AT_LARGE to mutableListOf(
               Adjustment(
                 appliesToSentencesFrom = FIRST_JAN_2015.minusDays(6),
-                numberOfDays = 5, fromDate = FIRST_JAN_2015.minusDays(6),
-                toDate = FIRST_JAN_2015.minusDays(1)
-              )
+                numberOfDays = 5,
+                fromDate = FIRST_JAN_2015.minusDays(6),
+                toDate = FIRST_JAN_2015.minusDays(1),
+              ),
             ),
             REMAND to mutableListOf(
               Adjustment(
-                appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 6,
+                appliesToSentencesFrom = FIRST_JAN_2015,
+                numberOfDays = 6,
                 fromDate = FIRST_JAN_2015.minusDays(7),
-                toDate = FIRST_JAN_2015.minusDays(1)
-              )
-            )
-          )
-        )
-      )
+                toDate = FIRST_JAN_2015.minusDays(1),
+              ),
+            ),
+          ),
+        ),
+      ),
     )
   }
 
@@ -180,37 +183,40 @@ class BookingServiceTest {
             sentencedAt = FIRST_JAN_2015,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
-              committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = true,
-              offenceCode = offenceCode
+              committedAt = FIRST_JAN_2015,
+              isScheduleFifteenMaximumLife = true,
+              offenceCode = offenceCode,
             ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
             consecutiveSentenceUUIDs = mutableListOf(
-              UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
+              UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray()),
             ),
             lineSequence = lineSequence,
             caseSequence = caseSequence,
-            recallType = RecallType.FIXED_TERM_RECALL_28
-          )
+            recallType = RecallType.FIXED_TERM_RECALL_28,
+          ),
         ),
         adjustments = Adjustments(
           mutableMapOf(
             UNLAWFULLY_AT_LARGE to mutableListOf(
               Adjustment(
                 appliesToSentencesFrom = FIRST_JAN_2015.minusDays(6),
-                numberOfDays = 5, fromDate = FIRST_JAN_2015.minusDays(6),
-                toDate = FIRST_JAN_2015.minusDays(1)
-              )
+                numberOfDays = 5,
+                fromDate = FIRST_JAN_2015.minusDays(6),
+                toDate = FIRST_JAN_2015.minusDays(1),
+              ),
             ),
             REMAND to mutableListOf(
               Adjustment(
-                appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 6,
+                appliesToSentencesFrom = FIRST_JAN_2015,
+                numberOfDays = 6,
                 fromDate = FIRST_JAN_2015.minusDays(7),
-                toDate = FIRST_JAN_2015.minusDays(1)
-              )
-            )
-          )
-        )
-      )
+                toDate = FIRST_JAN_2015.minusDays(1),
+              ),
+            ),
+          ),
+        ),
+      ),
     )
   }
 
@@ -232,37 +238,40 @@ class BookingServiceTest {
             sentencedAt = FIRST_JAN_2015,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
-              committedAt = FIRST_JAN_2015, isPcscSdsPlus = true,
-              offenceCode = offenceCode
+              committedAt = FIRST_JAN_2015,
+              isPcscSdsPlus = true,
+              offenceCode = offenceCode,
             ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
             consecutiveSentenceUUIDs = mutableListOf(
-              UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
+              UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray()),
             ),
             lineSequence = lineSequence,
             caseSequence = caseSequence,
-            recallType = RecallType.FIXED_TERM_RECALL_28
-          )
+            recallType = RecallType.FIXED_TERM_RECALL_28,
+          ),
         ),
         adjustments = Adjustments(
           mutableMapOf(
             UNLAWFULLY_AT_LARGE to mutableListOf(
               Adjustment(
                 appliesToSentencesFrom = FIRST_JAN_2015.minusDays(6),
-                numberOfDays = 5, fromDate = FIRST_JAN_2015.minusDays(6),
-                toDate = FIRST_JAN_2015.minusDays(1)
-              )
+                numberOfDays = 5,
+                fromDate = FIRST_JAN_2015.minusDays(6),
+                toDate = FIRST_JAN_2015.minusDays(1),
+              ),
             ),
             REMAND to mutableListOf(
               Adjustment(
-                appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 6,
+                appliesToSentencesFrom = FIRST_JAN_2015,
+                numberOfDays = 6,
                 fromDate = FIRST_JAN_2015.minusDays(7),
-                toDate = FIRST_JAN_2015.minusDays(1)
-              )
-            )
-          )
-        )
-      )
+                toDate = FIRST_JAN_2015.minusDays(1),
+              ),
+            ),
+          ),
+        ),
+      ),
     )
   }
 
@@ -284,37 +293,40 @@ class BookingServiceTest {
             sentencedAt = FIRST_JAN_2015,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
-              committedAt = FIRST_JAN_2015, isPcscSec250 = true,
-              offenceCode = offenceCode
+              committedAt = FIRST_JAN_2015,
+              isPcscSec250 = true,
+              offenceCode = offenceCode,
             ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
             consecutiveSentenceUUIDs = mutableListOf(
-              UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
+              UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray()),
             ),
             lineSequence = lineSequence,
             caseSequence = caseSequence,
-            recallType = RecallType.FIXED_TERM_RECALL_28
-          )
+            recallType = RecallType.FIXED_TERM_RECALL_28,
+          ),
         ),
         adjustments = Adjustments(
           mutableMapOf(
             UNLAWFULLY_AT_LARGE to mutableListOf(
               Adjustment(
                 appliesToSentencesFrom = FIRST_JAN_2015.minusDays(6),
-                numberOfDays = 5, fromDate = FIRST_JAN_2015.minusDays(6),
-                toDate = FIRST_JAN_2015.minusDays(1)
-              )
+                numberOfDays = 5,
+                fromDate = FIRST_JAN_2015.minusDays(6),
+                toDate = FIRST_JAN_2015.minusDays(1),
+              ),
             ),
             REMAND to mutableListOf(
               Adjustment(
-                appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 6,
+                appliesToSentencesFrom = FIRST_JAN_2015,
+                numberOfDays = 6,
                 fromDate = FIRST_JAN_2015.minusDays(7),
-                toDate = FIRST_JAN_2015.minusDays(1)
-              )
-            )
-          )
-        )
-      )
+                toDate = FIRST_JAN_2015.minusDays(1),
+              ),
+            ),
+          ),
+        ),
+      ),
     )
   }
 
@@ -329,44 +341,47 @@ class BookingServiceTest {
         returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
         offender = Offender(
           dateOfBirth = DOB,
-          reference = prisonerId
+          reference = prisonerId,
         ),
         sentences = mutableListOf(
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
-              committedAt = FIRST_JAN_2015, isPcscSds = true,
-              offenceCode = offenceCode
+              committedAt = FIRST_JAN_2015,
+              isPcscSds = true,
+              offenceCode = offenceCode,
             ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
             consecutiveSentenceUUIDs = mutableListOf(
-              UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())
+              UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray()),
             ),
             lineSequence = lineSequence,
             caseSequence = caseSequence,
-            recallType = RecallType.FIXED_TERM_RECALL_28
-          )
+            recallType = RecallType.FIXED_TERM_RECALL_28,
+          ),
         ),
         adjustments = Adjustments(
           mutableMapOf(
             UNLAWFULLY_AT_LARGE to mutableListOf(
               Adjustment(
                 appliesToSentencesFrom = FIRST_JAN_2015.minusDays(6),
-                numberOfDays = 5, fromDate = FIRST_JAN_2015.minusDays(6),
-                toDate = FIRST_JAN_2015.minusDays(1)
-              )
+                numberOfDays = 5,
+                fromDate = FIRST_JAN_2015.minusDays(6),
+                toDate = FIRST_JAN_2015.minusDays(1),
+              ),
             ),
             REMAND to mutableListOf(
               Adjustment(
-                appliesToSentencesFrom = FIRST_JAN_2015, numberOfDays = 6,
+                appliesToSentencesFrom = FIRST_JAN_2015,
+                numberOfDays = 6,
                 fromDate = FIRST_JAN_2015.minusDays(7),
-                toDate = FIRST_JAN_2015.minusDays(1)
-              )
-            )
-          )
-        )
-      )
+                toDate = FIRST_JAN_2015.minusDays(1),
+              ),
+            ),
+          ),
+        ),
+      ),
     )
   }
 

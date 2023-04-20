@@ -18,7 +18,7 @@ data class SopcSentence(
   override val caseSequence: Int? = null,
   override val lineSequence: Int? = null,
   override val caseReference: String?,
-  override val recallType: RecallType? = null
+  override val recallType: RecallType? = null,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType) {
 
   override fun buildString(): String {
@@ -31,6 +31,7 @@ data class SopcSentence(
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
       sentenceCalculation.buildString(releaseDateTypes)
   }
+
   @JsonIgnore
   fun getCustodialLengthInDays(): Int {
     return custodialDuration.getLengthInDays(sentencedAt)

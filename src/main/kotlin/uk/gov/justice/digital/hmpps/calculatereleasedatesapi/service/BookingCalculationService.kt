@@ -15,7 +15,7 @@ import java.util.UUID
 @Service
 class BookingCalculationService(
   val sentenceCalculationService: SentenceCalculationService,
-  val sentenceIdentificationService: SentenceIdentificationService
+  val sentenceIdentificationService: SentenceIdentificationService,
 ) {
 
   fun identify(booking: Booking): Booking {
@@ -85,7 +85,7 @@ class BookingCalculationService(
     start: AbstractSentence,
     chain: MutableList<AbstractSentence>,
     sentencesByPrevious: Map<UUID, List<AbstractSentence>>,
-    chains: MutableList<MutableList<AbstractSentence>> = mutableListOf(mutableListOf())
+    chains: MutableList<MutableList<AbstractSentence>> = mutableListOf(mutableListOf()),
   ) {
     val originalChain = chain.toMutableList()
     sentencesByPrevious[start.identifier]?.forEachIndexed { index, it ->

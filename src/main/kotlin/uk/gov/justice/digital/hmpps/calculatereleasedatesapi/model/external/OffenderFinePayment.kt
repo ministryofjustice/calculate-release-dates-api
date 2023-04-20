@@ -6,5 +6,5 @@ import java.time.LocalDate
 data class OffenderFinePayment(
   val bookingId: Long,
   val paymentDate: LocalDate,
-  val paymentAmount: BigDecimal
+  val paymentAmount: BigDecimal,
 )

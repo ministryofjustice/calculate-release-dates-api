@@ -7,7 +7,7 @@ data class BookingAdjustment(
   val fromDate: LocalDate,
   val toDate: LocalDate? = null,
   val numberOfDays: Int,
-  val type: BookingAdjustmentType
+  val type: BookingAdjustmentType,
 )
 
 enum class BookingAdjustmentType {
@@ -15,5 +15,6 @@ enum class BookingAdjustmentType {
   LAWFULLY_AT_LARGE,
   RESTORED_ADDITIONAL_DAYS_AWARDED,
   SPECIAL_REMISSION,
-  UNLAWFULLY_AT_LARGE;
+  UNLAWFULLY_AT_LARGE,
+  ;
 }

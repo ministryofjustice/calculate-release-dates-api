@@ -111,12 +111,13 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
       )
     }
 
-    val consecutiveSentenceUUIDs = if (sentence.consecutiveToSequence != null)
+    val consecutiveSentenceUUIDs = if (sentence.consecutiveToSequence != null) {
       listOf(
-        generateUUIDForSentence(sentence.bookingId, sentence.consecutiveToSequence)
+        generateUUIDForSentence(sentence.bookingId, sentence.consecutiveToSequence),
       )
-    else
+    } else {
       listOf()
+    }
 
     val sentenceCalculationType = SentenceCalculationType.from(sentence.sentenceCalculationType)
     if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java) {
@@ -130,7 +131,7 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
         lineSequence = sentence.lineSequence,
         caseReference = sentence.caseReference,
         recallType = sentenceCalculationType.recallType,
-        section250 = sentenceCalculationType == SentenceCalculationType.SEC250 || sentenceCalculationType == SentenceCalculationType.SEC250_ORA
+        section250 = sentenceCalculationType == SentenceCalculationType.SEC250 || sentenceCalculationType == SentenceCalculationType.SEC250_ORA,
       )
     } else if (sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
       AFineSentence(
@@ -143,7 +144,7 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
         lineSequence = sentence.lineSequence,
         caseReference = sentence.caseReference,
         recallType = sentenceCalculationType.recallType,
-        fineAmount = sentence.fineAmount
+        fineAmount = sentence.fineAmount,
       )
     } else if (sentenceCalculationType.sentenceClazz == DetentionAndTrainingOrderSentence::class.java) {
       DetentionAndTrainingOrderSentence(
@@ -155,7 +156,7 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
         caseSequence = sentence.caseSequence,
         lineSequence = sentence.lineSequence,
         caseReference = sentence.caseReference,
-        recallType = sentenceCalculationType.recallType
+        recallType = sentenceCalculationType.recallType,
       )
     } else {
       val imprisonmentTerm = sentence.terms.first { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
@@ -174,7 +175,7 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
             caseSequence = sentence.caseSequence,
             lineSequence = sentence.lineSequence,
             caseReference = sentence.caseReference,
-            recallType = sentenceCalculationType.recallType
+            recallType = sentenceCalculationType.recallType,
           )
         }
 
@@ -190,7 +191,7 @@ fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationU
             caseSequence = sentence.caseSequence,
             lineSequence = sentence.lineSequence,
             caseReference = sentence.caseReference,
-            recallType = sentenceCalculationType.recallType
+            recallType = sentenceCalculationType.recallType,
           )
         }
       }
@@ -204,8 +205,8 @@ private fun transform(term: SentenceTerms): Duration {
       DAYS to term.days.toLong(),
       WEEKS to term.weeks.toLong(),
       MONTHS to term.months.toLong(),
-      YEARS to term.years.toLong()
-    )
+      YEARS to term.years.toLong(),
+    ),
   )
 }
 
@@ -219,13 +220,13 @@ fun transform(prisonerDetails: PrisonerDetails): Offender {
     isActiveSexOffender = prisonerDetails.activeAlerts().any {
       it.alertType == "S" &&
         it.alertCode == "SOR" // Sex offence register
-    }
+    },
   )
 }
 
 fun transform(
   bookingAndSentenceAdjustments: BookingAndSentenceAdjustments,
-  sentencesAndOffences: List<SentenceAndOffences>
+  sentencesAndOffences: List<SentenceAndOffences>,
 ): Adjustments {
   val adjustments = Adjustments()
   bookingAndSentenceAdjustments.bookingAdjustments.forEach {
@@ -237,8 +238,8 @@ fun transform(
           appliesToSentencesFrom = it.fromDate,
           numberOfDays = it.numberOfDays,
           fromDate = it.fromDate,
-          toDate = it.toDate
-        )
+          toDate = it.toDate,
+        ),
       )
     }
   }
@@ -254,8 +255,8 @@ fun transform(
             appliesToSentencesFrom = sentence.sentenceDate,
             fromDate = it.fromDate,
             toDate = it.toDate,
-            numberOfDays = it.numberOfDays
-          )
+            numberOfDays = it.numberOfDays,
+          ),
         )
       }
     }
@@ -271,7 +272,7 @@ private fun findSentenceForAdjustment(adjustment: SentenceAdjustment, sentencesA
     val recallType = SentenceCalculationType.from(sentence.sentenceCalculationType).recallType
     if (listOf(
         SentenceAdjustmentType.REMAND,
-        SentenceAdjustmentType.TAGGED_BAIL
+        SentenceAdjustmentType.TAGGED_BAIL,
       ).contains(adjustment.type) && recallType != null
     ) {
       val firstDeterminate = sentencesAndOffences.sortedBy { it.sentenceDate }
@@ -282,7 +283,7 @@ private fun findSentenceForAdjustment(adjustment: SentenceAdjustment, sentencesA
     }
     if (listOf(
         SentenceAdjustmentType.RECALL_SENTENCE_REMAND,
-        SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL
+        SentenceAdjustmentType.RECALL_SENTENCE_TAGGED_BAIL,
       ).contains(adjustment.type) && recallType == null
     ) {
       val firstRecall = sentencesAndOffences.sortedBy { it.sentenceDate }
@@ -322,7 +323,7 @@ fun transform(
   sourceData: PrisonApiSourceData,
   objectMapper: ObjectMapper,
   calculationUserInputs: CalculationUserInputs?,
-  calculationFragments: CalculationFragments? = null
+  calculationFragments: CalculationFragments? = null,
 ): CalculationRequest {
   return CalculationRequest(
     prisonerId = booking.offender.reference,
@@ -336,7 +337,7 @@ fun transform(
     offenderFinePayments = objectToJson(sourceData.offenderFinePayments, objectMapper),
     returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
     calculationRequestUserInput = transform(calculationUserInputs, sourceData),
-    breakdownHtml = calculationFragments?.breakdownHtml
+    breakdownHtml = calculationFragments?.breakdownHtml,
   )
 }
 
@@ -353,9 +354,9 @@ fun transform(calculationUserInputs: CalculationUserInputs?, sourceData: PrisonA
         offenceCode = it.offenceCode,
         type = it.userInputType,
         userChoice = it.userChoice,
-        nomisMatches = sourceData.sentenceAndOffences.any { sentence -> sentence.sentenceSequence == it.sentenceSequence && sentence.offences.any { offence -> offence.offenceCode == it.offenceCode && offenceMatchesChoice(offence, it.userInputType, it.userChoice) } }
+        nomisMatches = sourceData.sentenceAndOffences.any { sentence -> sentence.sentenceSequence == it.sentenceSequence && sentence.offences.any { offence -> offence.offenceCode == it.offenceCode && offenceMatchesChoice(offence, it.userInputType, it.userChoice) } },
       )
-    }
+    },
   )
 }
 
@@ -382,7 +383,7 @@ fun transform(calculationRequestUserInput: CalculationRequestUserInput?): Calcul
         userInputType = it.type,
         userChoice = it.userChoice,
       )
-    }
+    },
   )
 }
 
@@ -393,7 +394,7 @@ fun objectToJson(subject: Any, objectMapper: ObjectMapper): JsonNode {
 fun transform(
   calculationRequest: CalculationRequest,
   releaseDateType: ReleaseDateType,
-  date: LocalDate
+  date: LocalDate,
 ): CalculationOutcome {
   return CalculationOutcome(
     calculationRequestId = calculationRequest.id,
@@ -405,13 +406,14 @@ fun transform(
 fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates {
   return CalculatedReleaseDates(
     dates = calculationRequest.calculationOutcomes.associateBy(
-      { ReleaseDateType.valueOf(it.calculationDateType) }, { it.outcomeDate }
+      { ReleaseDateType.valueOf(it.calculationDateType) },
+      { it.outcomeDate },
     ).toMutableMap(),
     calculationRequestId = calculationRequest.id,
     calculationFragments = if (calculationRequest.breakdownHtml != null) CalculationFragments(calculationRequest.breakdownHtml) else null,
     bookingId = calculationRequest.bookingId,
     prisonerId = calculationRequest.prisonerId,
-    calculationStatus = CalculationStatus.valueOf(calculationRequest.calculationStatus)
+    calculationStatus = CalculationStatus.valueOf(calculationRequest.calculationStatus),
   )
 }
 
@@ -431,7 +433,7 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
         extractDates(sentence),
         sentence.lineSequence ?: 0,
         sentence.caseSequence ?: 0,
-        sentence.caseReference
+        sentence.caseReference,
       )
     }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence })),
     consecutiveSentence = if (booking.consecutiveSentences.isNotEmpty()) {
@@ -446,11 +448,17 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
             sentencePart as AbstractSentence
             val originalSentence = booking.sentences.find { it.identifier == sentencePart.identifier }!!
             val consecutiveToUUID =
-              if (originalSentence.consecutiveSentenceUUIDs.isNotEmpty()) originalSentence.consecutiveSentenceUUIDs[0]
-              else null
+              if (originalSentence.consecutiveSentenceUUIDs.isNotEmpty()) {
+                originalSentence.consecutiveSentenceUUIDs[0]
+              } else {
+                null
+              }
             val consecutiveToSentence =
-              if (consecutiveToUUID != null) booking.sentences.find { it.identifier == consecutiveToUUID }!!
-              else null
+              if (consecutiveToUUID != null) {
+                booking.sentences.find { it.identifier == consecutiveToUUID }!!
+              } else {
+                null
+              }
             ConsecutiveSentencePart(
               sentencePart.lineSequence ?: 0,
               sentencePart.caseSequence ?: 0,
@@ -460,7 +468,7 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
               consecutiveToSentence?.lineSequence,
               consecutiveToSentence?.caseSequence,
             )
-          }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence }))
+          }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence })),
         )
       } else {
         // Multiple chains of consecutive sentences. This is currently unsupported in calc breakdown.
@@ -470,7 +478,7 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
       null
     },
     breakdownByReleaseDateType = breakdownByReleaseDateType,
-    otherDates = otherDates
+    otherDates = otherDates,
   )
 }
 
@@ -495,8 +503,8 @@ fun transform(calculation: CalculatedReleaseDates) =
       "%02d/%02d/%02d",
       calculation.effectiveSentenceLength?.years,
       calculation.effectiveSentenceLength?.months,
-      calculation.effectiveSentenceLength?.days
-    )
+      calculation.effectiveSentenceLength?.days,
+    ),
   )
 
 private fun extractDates(sentence: CalculableSentence): Map<ReleaseDateType, DateBreakdown> {
@@ -507,19 +515,19 @@ private fun extractDates(sentence: CalculableSentence): Map<ReleaseDateType, Dat
     dates[SLED] = DateBreakdown(
       sentenceCalculation.unadjustedExpiryDate,
       sentenceCalculation.adjustedExpiryDate,
-      sentenceCalculation.numberOfDaysToSentenceExpiryDate.toLong()
+      sentenceCalculation.numberOfDaysToSentenceExpiryDate.toLong(),
     )
   } else {
     dates[SED] = DateBreakdown(
       sentenceCalculation.unadjustedExpiryDate,
       sentenceCalculation.adjustedExpiryDate,
-      sentenceCalculation.numberOfDaysToSentenceExpiryDate.toLong()
+      sentenceCalculation.numberOfDaysToSentenceExpiryDate.toLong(),
     )
   }
   dates[sentence.getReleaseDateType()] = DateBreakdown(
     sentenceCalculation.unadjustedDeterminateReleaseDate,
     sentenceCalculation.adjustedDeterminateReleaseDate,
-    sentenceCalculation.numberOfDaysToDeterminateReleaseDate.toLong()
+    sentenceCalculation.numberOfDaysToDeterminateReleaseDate.toLong(),
   )
 
   return dates

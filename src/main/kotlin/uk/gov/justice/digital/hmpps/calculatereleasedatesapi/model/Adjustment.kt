@@ -6,5 +6,5 @@ data class Adjustment(
   val appliesToSentencesFrom: LocalDate,
   val numberOfDays: Int,
   val fromDate: LocalDate? = null,
-  val toDate: LocalDate? = null
+  val toDate: LocalDate? = null,
 )

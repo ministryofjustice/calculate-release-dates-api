@@ -25,7 +25,7 @@ class EventService(
     val event = ReleaseDateChangedEvent(additionalInformation = (CalculateReleaseDatesAdditionalInformation(prisonerId, bookingId)))
     domainTopic.snsClient.publish(
       PublishRequest(domainTopic.arn, mapper.writeValueAsString(event))
-        .addMessageAttributesEntry("eventType", MessageAttributeValue().withDataType("String").withStringValue(event.eventType))
+        .addMessageAttributesEntry("eventType", MessageAttributeValue().withDataType("String").withStringValue(event.eventType)),
     )
     log.info("Published 'release dates changed event' for: $prisonerId")
   }
@@ -37,7 +37,7 @@ class EventService(
 
 data class CalculateReleaseDatesAdditionalInformation(
   val prisonerId: String,
-  val bookingId: Long
+  val bookingId: Long,
 )
 
 abstract class CalculateReleaseDatesDomainEvent {

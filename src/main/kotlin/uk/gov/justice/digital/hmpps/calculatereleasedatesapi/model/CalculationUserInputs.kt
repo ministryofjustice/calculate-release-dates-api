@@ -11,5 +11,5 @@ data class CalculationUserInputs(
   @Schema(description = "A flag to indicate whether to calculate ERSED.")
   val calculateErsed: Boolean = false,
   @Schema(description = "Whether to use offence indicators from another system for the calculation or user's input.")
-  val useOffenceIndicators: Boolean = false
+  val useOffenceIndicators: Boolean = false,
 )

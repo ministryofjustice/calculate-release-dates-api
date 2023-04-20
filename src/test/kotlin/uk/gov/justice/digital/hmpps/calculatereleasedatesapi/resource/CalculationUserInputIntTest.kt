@@ -36,9 +36,9 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
           sentenceSequence = 1,
           offenceCode = "SX03014",
           userInputType = UserInputType.ORIGINAL,
-          userChoice = false // difference to NOMIS.
-        )
-      )
+          userChoice = false, // difference to NOMIS.
+        ),
+      ),
     )
     val prelimResponse = webTestClient.post()
       .uri("/calculation/USERINPUT")
@@ -101,9 +101,9 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
           sentenceSequence = 1,
           offenceCode = "SX03014",
           userInputType = UserInputType.ORIGINAL,
-          userChoice = true // same as NOMIS.
-        )
-      )
+          userChoice = true, // same as NOMIS.
+        ),
+      ),
     )
     val prelimResponse = webTestClient.post()
       .uri("/calculation/USERINPUT")
@@ -135,7 +135,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
   fun `Use NOMIS markers rather than user input`() {
     val userInput = CalculationUserInputs(
       calculateErsed = false,
-      useOffenceIndicators = true
+      useOffenceIndicators = true,
     )
     val prelimResponse = webTestClient.post()
       .uri("/calculation/USERINPUT")
@@ -175,6 +175,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
     assertThat(response.sentenceQuestions.size).isEqualTo(1)
     assertThat(response.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.ORIGINAL)
   }
+
   @Test
   fun `Service will return which sentences may fall under SDS+ and with an unknown sentence type`() {
     val response = webTestClient.get()

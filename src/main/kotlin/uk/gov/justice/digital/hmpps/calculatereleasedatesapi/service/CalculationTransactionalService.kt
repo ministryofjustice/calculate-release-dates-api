@@ -92,7 +92,7 @@ class CalculationTransactionalService(
     val calculationRequest =
       calculationRequestRepository.findByIdAndCalculationStatus(
         calculationRequestId,
-        PRELIMINARY.name
+        PRELIMINARY.name,
       ).orElseThrow {
         EntityNotFoundException("No preliminary calculation exists for calculationRequestId $calculationRequestId")
       }
@@ -116,7 +116,7 @@ class CalculationTransactionalService(
     calculationFragments: CalculationFragments,
     sourceData: PrisonApiSourceData,
     booking: Booking,
-    userInput: CalculationUserInputs?
+    userInput: CalculationUserInputs?,
   ): CalculatedReleaseDates {
     try {
       val calculation =
@@ -136,7 +136,7 @@ class CalculationTransactionalService(
     calculationStatus: CalculationStatus,
     sourceData: PrisonApiSourceData,
     calculationUserInputs: CalculationUserInputs?,
-    calculationFragments: CalculationFragments? = null
+    calculationFragments: CalculationFragments? = null,
   ): CalculatedReleaseDates {
     val calculationRequest =
       calculationRequestRepository.save(
@@ -147,8 +147,8 @@ class CalculationTransactionalService(
           sourceData,
           objectMapper,
           calculationUserInputs,
-          calculationFragments
-        )
+          calculationFragments,
+        ),
       )
 
     val calculationResult = calculationService.calculateReleaseDates(booking).second
@@ -164,14 +164,14 @@ class CalculationTransactionalService(
       bookingId = sourceData.prisonerDetails.bookingId,
       calculationFragments = calculationFragments,
       calculationRequestId = calculationRequest.id,
-      calculationStatus = calculationStatus
+      calculationStatus = calculationStatus,
     )
   }
 
   @Transactional(readOnly = true)
   fun calculateWithBreakdown(
     booking: Booking,
-    previousCalculationResults: CalculatedReleaseDates
+    previousCalculationResults: CalculatedReleaseDates,
   ): CalculationBreakdown {
     val (workingBooking, bookingCalculation) = calculationService.calculateReleaseDates(booking)
     if (bookingCalculation.dates == previousCalculationResults.dates) {
@@ -187,7 +187,7 @@ class CalculationTransactionalService(
       calculationRequestRepository.findFirstByPrisonerIdAndBookingIdAndCalculationStatusOrderByCalculatedAtDesc(
         prisonerId,
         bookingId,
-        CONFIRMED.name
+        CONFIRMED.name,
       ).orElseThrow {
         EntityNotFoundException("No confirmed calculation exists for prisoner $prisonerId and bookingId $bookingId")
       }
@@ -256,7 +256,7 @@ class CalculationTransactionalService(
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = getCurrentAuthentication().principal,
-      keyDates = transform(calculation)
+      keyDates = transform(calculation),
     )
     try {
       prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)
@@ -264,7 +264,7 @@ class CalculationTransactionalService(
       log.error("Nomis write failed: ${ex.message}")
       throw EntityNotFoundException(
         "Writing release dates to NOMIS failed for prisonerId $prisonerId " +
-          "and bookingId ${booking.bookingId}"
+          "and bookingId ${booking.bookingId}",
       )
     }
     runCatching {
@@ -272,7 +272,7 @@ class CalculationTransactionalService(
     }.onFailure { error ->
       log.error(
         "Failed to send release-dates-changed-event for prisoner ID $prisonerId",
-        error
+        error,
       )
     }
   }
@@ -282,16 +282,16 @@ class CalculationTransactionalService(
     booking: Booking,
     sourceData: PrisonApiSourceData,
     calculationUserInputs: CalculationUserInputs?,
-    error: Exception
+    error: Exception,
   ) {
     calculationRequestRepository.save(
-      transform(booking, getCurrentAuthentication().principal, ERROR, sourceData, objectMapper, calculationUserInputs)
+      transform(booking, getCurrentAuthentication().principal, ERROR, sourceData, objectMapper, calculationUserInputs),
     )
   }
 
   @Transactional(readOnly = true)
   fun getCalculationBreakdown(
-    calculationRequestId: Long
+    calculationRequestId: Long,
   ): CalculationBreakdown {
     val calculationUserInputs = findUserInput(calculationRequestId)
     val prisonerDetails = findPrisonerDetailsFromCalculation(calculationRequestId)
@@ -305,7 +305,7 @@ class CalculationTransactionalService(
       adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
       bookingId = prisonerDetails.bookingId,
       returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,
-      calculateErsed = calculationUserInputs.calculateErsed
+      calculateErsed = calculationUserInputs.calculateErsed,
     )
     return calculateWithBreakdown(booking, calculation)
   }

@@ -27,7 +27,7 @@ import javax.validation.constraints.NotNull
 @Entity
 @Table
 @TypeDefs(
-  TypeDef(name = "json", typeClass = JsonType::class)
+  TypeDef(name = "json", typeClass = JsonType::class),
 )
 data class CalculationRequest(
   @Id
@@ -93,7 +93,7 @@ data class CalculationRequest(
   val calculationOutcomes: List<CalculationOutcome> = ArrayList(),
 
   @OneToOne(mappedBy = "calculationRequest", cascade = [CascadeType.ALL])
-  val calculationRequestUserInput: CalculationRequestUserInput? = null
+  val calculationRequestUserInput: CalculationRequestUserInput? = null,
 ) {
 
   init {

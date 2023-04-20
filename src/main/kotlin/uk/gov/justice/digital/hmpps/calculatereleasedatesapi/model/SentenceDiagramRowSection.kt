@@ -5,5 +5,5 @@ import java.time.LocalDate
 data class SentenceDiagramRowSection(
   val start: LocalDate,
   val end: LocalDate,
-  val description: String?
+  val description: String?,
 )

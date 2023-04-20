@@ -37,15 +37,15 @@ class ValidationController(
     value = [
       ApiResponse(responseCode = "200", description = "Validation job has run successfully, the response indicates if there are any errors"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role")
-    ]
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
   )
   fun validate(
     @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
     @PathVariable("prisonerId")
     prisonerId: String,
     @RequestBody
-    calculationUserInputs: CalculationUserInputs?
+    calculationUserInputs: CalculationUserInputs?,
   ): List<ValidationMessage> {
     log.info("Request received to validate prisonerId $prisonerId")
     return calculationTransactionalService.fullValidation(prisonerId, calculationUserInputs ?: CalculationUserInputs())

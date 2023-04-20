@@ -9,7 +9,7 @@ import java.time.LocalDate
 
 @Service
 class WorkingDayService(
-  private val bankHolidayService: BankHolidayService
+  private val bankHolidayService: BankHolidayService,
 ) {
   fun nextWorkingDay(date: LocalDate): WorkingDay {
     return iterateOverNonWorkingDays(date) { it.plusDays(1) }

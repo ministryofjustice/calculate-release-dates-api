@@ -30,7 +30,7 @@ data class CalculationRequestUserInput(
   var useOffenceIndicators: Boolean = false,
 
   @OneToMany(mappedBy = "calculationRequestUserInput", cascade = [CascadeType.ALL])
-  val calculationRequestSentenceUserInputs: List<CalculationRequestSentenceUserInput> = ArrayList()
+  val calculationRequestSentenceUserInputs: List<CalculationRequestSentenceUserInput> = ArrayList(),
 
 ) {
   init {

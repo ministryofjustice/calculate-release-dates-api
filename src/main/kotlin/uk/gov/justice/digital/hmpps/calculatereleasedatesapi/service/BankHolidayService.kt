@@ -21,14 +21,13 @@ import javax.transaction.Transactional
 class BankHolidayService(
   private val bankHolidayApiClient: BankHolidayApiClient,
   private val bankHolidayCacheRepository: BankHolidayCacheRepository,
-  private val objectMapper: ObjectMapper
+  private val objectMapper: ObjectMapper,
 ) {
 
   @Transactional
   fun refreshCache() {
     var cached = bankHolidayCacheRepository.findFirstByOrderByIdAsc()
     if (cached == null || cached.cachedAt.toLocalDate().isBefore(LocalDate.now())) {
-
       log.info("Fetching latest bank holiday data")
       val bankHolidays = bankHolidayApiClient.getBankHolidays()
 

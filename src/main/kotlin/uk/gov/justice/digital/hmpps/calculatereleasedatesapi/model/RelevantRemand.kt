@@ -6,5 +6,5 @@ data class RelevantRemand(
   val from: LocalDate,
   val to: LocalDate,
   val days: Int,
-  val sentenceSequence: Int
+  val sentenceSequence: Int,
 )

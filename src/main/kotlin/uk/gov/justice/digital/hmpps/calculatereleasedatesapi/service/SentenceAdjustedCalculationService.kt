@@ -47,7 +47,7 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
     // PSI 03/2015: P53: The license period is one of at least 12 month.
     // Hence, there is no requirement for a TUSED
     if (sentenceCalculation.numberOfDaysToSentenceExpiryDate - sentenceCalculation.numberOfDaysToDeterminateReleaseDate < YEAR_IN_DAYS && sentence.releaseDateTypes.contains(
-        TUSED
+        TUSED,
       )
     ) {
       if (booking.offender.getAgeOnDate(sentence.sentenceCalculation.releaseDateWithoutAwarded) >= 18) {
@@ -93,7 +93,7 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
 
   private fun setSedOrSledDetails(
     sentence: CalculableSentence,
-    sentenceCalculation: SentenceCalculation
+    sentenceCalculation: SentenceCalculation,
   ) {
     if (sentence.releaseDateTypes.contains(SLED)) {
       sentenceCalculation.breakdownByReleaseDateType[SLED] = getBreakdownForExpiryDate(sentenceCalculation)
@@ -104,7 +104,7 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
 
   private fun setCrdOrArdDetails(
     sentence: CalculableSentence,
-    sentenceCalculation: SentenceCalculation
+    sentenceCalculation: SentenceCalculation,
   ) {
     if (sentence.releaseDateTypes.contains(ARD)) {
       sentenceCalculation.isReleaseDateConditional = false
@@ -121,15 +121,15 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
       unadjustedDate = sentenceCalculation.unadjustedExpiryDate,
       adjustedDays = DAYS.between(
         sentenceCalculation.unadjustedExpiryDate,
-        sentenceCalculation.adjustedExpiryDate
+        sentenceCalculation.adjustedExpiryDate,
       )
-        .toInt()
+        .toInt(),
     )
 
   private fun getBreakdownForReleaseDate(sentenceCalculation: SentenceCalculation): ReleaseDateCalculationBreakdown {
     val daysBetween = DAYS.between(
       sentenceCalculation.unadjustedDeterminateReleaseDate,
-      sentenceCalculation.adjustedDeterminateReleaseDate
+      sentenceCalculation.adjustedDeterminateReleaseDate,
     )
       .toInt()
     return ReleaseDateCalculationBreakdown(
@@ -137,18 +137,22 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
       unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
       rules = if (sentenceCalculation.isImmediateRelease()) setOf(IMMEDIATE_RELEASE) else emptySet(),
       adjustedDays = daysBetween,
-      rulesWithExtraAdjustments = if (sentenceCalculation.calculatedUnusedReleaseAda != 0) mapOf(
-        CalculationRule.UNUSED_ADA to AdjustmentDuration(
-          sentenceCalculation.calculatedUnusedReleaseAda,
-          DAYS
+      rulesWithExtraAdjustments = if (sentenceCalculation.calculatedUnusedReleaseAda != 0) {
+        mapOf(
+          CalculationRule.UNUSED_ADA to AdjustmentDuration(
+            sentenceCalculation.calculatedUnusedReleaseAda,
+            DAYS,
+          ),
         )
-      ) else emptyMap()
+      } else {
+        emptyMap()
+      },
     )
   }
 
   private fun calculateLED(
     sentence: CalculableSentence,
-    sentenceCalculation: SentenceCalculation
+    sentenceCalculation: SentenceCalculation,
   ) {
     if (sentence is ConsecutiveSentence &&
       sentence.isMadeUpOfOnlyAfterCjaLaspoSentences() &&
@@ -176,12 +180,16 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
           adjustedDays = adjustment.toInt(),
           releaseDate = sentenceCalculation.licenceExpiryDate!!,
           unadjustedDate = sentenceCalculation.adjustedDeterminateReleaseDate,
-          rulesWithExtraAdjustments = if (unusedAda != 0) mapOf(
-            CalculationRule.UNUSED_ADA to AdjustmentDuration(
-              unusedAda,
-              DAYS
+          rulesWithExtraAdjustments = if (unusedAda != 0) {
+            mapOf(
+              CalculationRule.UNUSED_ADA to AdjustmentDuration(
+                unusedAda,
+                DAYS,
+              ),
             )
-          ) else emptyMap()
+          } else {
+            emptyMap()
+          },
         )
     } else {
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
@@ -190,21 +198,21 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
           .plus(sentenceCalculation.calculatedTotalAddedDays)
           .minus(sentenceCalculation.calculatedTotalDeductedDays)
       sentenceCalculation.licenceExpiryDate = sentence.sentencedAt.plusDays(
-        sentenceCalculation.numberOfDaysToLicenceExpiryDate
+        sentenceCalculation.numberOfDaysToLicenceExpiryDate,
       ).minusDays(ONE)
     }
   }
 
   private fun calculateNPD(
     sentenceCalculation: SentenceCalculation,
-    sentence: CalculableSentence
+    sentence: CalculableSentence,
   ) {
     sentenceCalculation.numberOfDaysToNonParoleDate =
       ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(TWO).div(THREE)).toLong()
         .plus(sentenceCalculation.calculatedTotalAddedDays)
         .minus(sentenceCalculation.calculatedTotalDeductedDays)
     sentenceCalculation.nonParoleDate = sentence.sentencedAt.plusDays(
-      sentenceCalculation.numberOfDaysToNonParoleDate
+      sentenceCalculation.numberOfDaysToNonParoleDate,
     ).minusDays(ONE)
   }
 
@@ -239,11 +247,11 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
         .minusDays(ONE)
 
       sentenceCalculation.notionalConditionalReleaseDate = unAdjustedNotionalConditionalReleaseDate.minusDays(
-        sentenceCalculation.calculatedTotalDeductedDays.toLong()
+        sentenceCalculation.calculatedTotalDeductedDays.toLong(),
       ).plusDays(
-        sentenceCalculation.calculatedTotalAddedDays.toLong()
+        sentenceCalculation.calculatedTotalAddedDays.toLong(),
       ).plusDays(
-        sentenceCalculation.calculatedTotalAwardedDays.toLong()
+        sentenceCalculation.calculatedTotalAwardedDays.toLong(),
       )
 
       val dayAfterNotionalConditionalReleaseDate =

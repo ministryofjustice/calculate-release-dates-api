@@ -13,7 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient
 class WebClientConfiguration(
   @Value("\${prison.api.url}") private val prisonApiUri: String,
   @Value("\${hmpps.auth.url}") private val oauthApiUrl: String,
-  @Value("\${bank-holiday.api.url:https://www.gov.uk}") private val bankHolidayApiUrl: String
+  @Value("\${bank-holiday.api.url:https://www.gov.uk}") private val bankHolidayApiUrl: String,
 ) {
 
   @Bean

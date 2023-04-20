@@ -4,5 +4,5 @@ enum class CalculationStatus {
   PRELIMINARY,
   CONFIRMED,
   ERROR,
-  TEST
+  TEST,
 }

@@ -1212,9 +1212,9 @@ class BankHolidayApiMockServer : WireMockServer(WIREMOCK_PORT) {
                     ]
                  }
               }
-              """.trimIndent()
+              """.trimIndent(),
             )
-            .withStatus(200)
-        )
+            .withStatus(200),
+        ),
     )
 }

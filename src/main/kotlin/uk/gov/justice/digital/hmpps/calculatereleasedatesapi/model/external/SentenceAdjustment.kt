@@ -8,7 +8,7 @@ data class SentenceAdjustment(
   val fromDate: LocalDate? = null,
   val toDate: LocalDate? = null,
   val numberOfDays: Int,
-  val type: SentenceAdjustmentType
+  val type: SentenceAdjustmentType,
 )
 
 enum class SentenceAdjustmentType {
@@ -16,5 +16,5 @@ enum class SentenceAdjustmentType {
   RECALL_SENTENCE_TAGGED_BAIL,
   REMAND,
   TAGGED_BAIL,
-  UNUSED_REMAND
+  UNUSED_REMAND,
 }

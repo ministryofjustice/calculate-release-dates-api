@@ -7,13 +7,13 @@ data class DateBreakdown(
   val unadjusted: LocalDate,
   val adjusted: LocalDate,
   val daysFromSentenceStart: Long,
-  val adjustedByDays: Long
+  val adjustedByDays: Long,
 
 ) {
   constructor(
     unadjusted: LocalDate,
     adjusted: LocalDate,
-    daysFromSentenceStart: Long
+    daysFromSentenceStart: Long,
   ) :
     this(unadjusted, adjusted, daysFromSentenceStart, ChronoUnit.DAYS.between(adjusted, unadjusted))
 }

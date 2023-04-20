@@ -42,12 +42,12 @@ interface CalculableSentence {
       // The deducted days make this an immediate release sentence.
       LocalDateRange.of(
         sentencedAt,
-        sentencedAt
+        sentencedAt,
       )
     } else {
       LocalDateRange.of(
         sentencedAt,
-        releaseDateBeforeAda
+        releaseDateBeforeAda,
       )
     }
   }
@@ -103,12 +103,17 @@ interface CalculableSentence {
 
   @JsonIgnore
   fun getReleaseDateType(): ReleaseDateType {
-    return if (isRecall())
-      ReleaseDateType.PRRD else if (releaseDateTypes.getReleaseDateTypes().contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null)
-      ReleaseDateType.PED else if (sentenceCalculation.isReleaseDateConditional)
-      ReleaseDateType.CRD else if (releaseDateTypes.contains(ReleaseDateType.MTD))
-      ReleaseDateType.MTD else
+    return if (isRecall()) {
+      ReleaseDateType.PRRD
+    } else if (releaseDateTypes.getReleaseDateTypes().contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null) {
+      ReleaseDateType.PED
+    } else if (sentenceCalculation.isReleaseDateConditional) {
+      ReleaseDateType.CRD
+    } else if (releaseDateTypes.contains(ReleaseDateType.MTD)) {
+      ReleaseDateType.MTD
+    } else {
       ReleaseDateType.ARD
+    }
   }
 
   @JsonIgnore
@@ -187,8 +192,10 @@ interface CalculableSentence {
 
   @JsonIgnore
   fun isCalculationInitialised(): Boolean
+
   @JsonIgnore
   fun isIdentificationTrackInitialized(): Boolean
+
   @JsonIgnore
   fun isDto(): Boolean {
     return this is DetentionAndTrainingOrderSentence ||

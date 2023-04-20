@@ -37,7 +37,7 @@ class PrisonService(
       bookingAndSentenceAdjustments,
       offenderFinePayments,
       returnToCustodyDate,
-      ftrDetails
+      ftrDetails,
     )
   }
 
@@ -57,7 +57,7 @@ class PrisonService(
     val adjustments = prisonApiClient.getSentenceAndBookingAdjustments(bookingId)
     return BookingAndSentenceAdjustments(
       sentenceAdjustments = adjustments.sentenceAdjustments.filter { !filterActive || it.active },
-      bookingAdjustments = adjustments.bookingAdjustments.filter { !filterActive || it.active }
+      bookingAdjustments = adjustments.bookingAdjustments.filter { !filterActive || it.active },
     )
   }
 

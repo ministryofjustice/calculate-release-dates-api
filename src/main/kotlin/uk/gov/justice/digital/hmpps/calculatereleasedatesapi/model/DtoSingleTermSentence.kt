@@ -8,13 +8,13 @@ import java.time.temporal.ChronoUnit
 class DtoSingleTermSentence(
   override val sentencedAt: LocalDate,
   override val offence: Offence,
-  override val standardSentences: List<AbstractSentence>
+  override val standardSentences: List<AbstractSentence>,
 ) : SingleTermed, Term {
   constructor(standardSentences: List<AbstractSentence>) :
     this(
       standardSentences.minOf(AbstractSentence::sentencedAt),
       standardSentences.map(AbstractSentence::offence).minByOrNull(Offence::committedAt)!!,
-      standardSentences
+      standardSentences,
     )
 
   override val recallType: RecallType?
@@ -24,6 +24,7 @@ class DtoSingleTermSentence(
 
   @JsonIgnore
   override lateinit var sentenceCalculation: SentenceCalculation
+
   @JsonIgnore
   override lateinit var identificationTrack: SentenceIdentificationTrack
 
@@ -53,13 +54,13 @@ class DtoSingleTermSentence(
     val durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()
     durationElements[ChronoUnit.DAYS] = ChronoUnit.DAYS.between(
       earliestSentencedAt(longestEarliestSentence, shortestRecentSentence),
-      latestExpiryDate(longestEarliestSentence, shortestRecentSentence)?.plusDays(1L)
+      latestExpiryDate(longestEarliestSentence, shortestRecentSentence)?.plusDays(1L),
     )
     val duration = Duration(durationElements)
     if (duration.getEndDate(longestEarliestSentence.sentencedAt).isAfter(earliestSentencedAt(longestEarliestSentence, shortestRecentSentence).plusYears(2))) {
       durationElements[ChronoUnit.DAYS] = ChronoUnit.DAYS.between(
         earliestSentencedAt(longestEarliestSentence, shortestRecentSentence),
-        earliestSentencedAt(longestEarliestSentence, shortestRecentSentence).plusYears(2)
+        earliestSentencedAt(longestEarliestSentence, shortestRecentSentence).plusYears(2),
       )
       return Duration(durationElements)
     }

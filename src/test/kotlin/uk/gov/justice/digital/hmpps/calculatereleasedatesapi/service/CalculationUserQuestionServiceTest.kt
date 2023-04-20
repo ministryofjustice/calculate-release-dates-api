@@ -23,7 +23,7 @@ class CalculationUserQuestionServiceTest {
       offenceStartDate = FIRST_MAY_2020,
       offenceCode = "ABC",
       offenceDescription = "Littering",
-      indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR)
+      indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
     ),
   )
 
@@ -34,7 +34,7 @@ class CalculationUserQuestionServiceTest {
     caseSequence = 1,
     sentenceDate = PCSC_COMMENCEMENT_DATE.minusDays(1),
     terms = listOf(
-      SentenceTerms(years = 6, months = 11)
+      SentenceTerms(years = 6, months = 11),
     ),
     sentenceStatus = "IMP",
     sentenceCategory = "CAT",
@@ -50,7 +50,7 @@ class CalculationUserQuestionServiceTest {
     caseSequence = 1,
     sentenceDate = PCSC_COMMENCEMENT_DATE.plusDays(1),
     terms = listOf(
-      SentenceTerms(years = 3, months = 11)
+      SentenceTerms(years = 3, months = 11),
     ),
     sentenceStatus = "IMP",
     sentenceCategory = "CAT",
@@ -66,7 +66,7 @@ class CalculationUserQuestionServiceTest {
     caseSequence = 1,
     sentenceDate = PCSC_COMMENCEMENT_DATE.minusDays(1),
     terms = listOf(
-      SentenceTerms(years = 8)
+      SentenceTerms(years = 8),
     ),
     sentenceStatus = "IMP",
     sentenceCategory = "CAT",
@@ -82,7 +82,7 @@ class CalculationUserQuestionServiceTest {
     caseSequence = 1,
     sentenceDate = PCSC_COMMENCEMENT_DATE.minusDays(1),
     terms = listOf(
-      SentenceTerms(years = 8)
+      SentenceTerms(years = 8),
     ),
     sentenceStatus = "IMP",
     sentenceCategory = "CAT",
@@ -98,7 +98,7 @@ class CalculationUserQuestionServiceTest {
     caseSequence = 1,
     sentenceDate = PCSC_COMMENCEMENT_DATE,
     terms = listOf(
-      SentenceTerms(years = 6)
+      SentenceTerms(years = 6),
     ),
     sentenceStatus = "IMP",
     sentenceCategory = "CAT",
@@ -114,7 +114,7 @@ class CalculationUserQuestionServiceTest {
     caseSequence = 1,
     sentenceDate = PCSC_COMMENCEMENT_DATE,
     terms = listOf(
-      SentenceTerms(years = 8)
+      SentenceTerms(years = 8),
     ),
     sentenceStatus = "IMP",
     sentenceCategory = "CAT",
@@ -130,7 +130,7 @@ class CalculationUserQuestionServiceTest {
     caseSequence = 1,
     sentenceDate = PCSC_COMMENCEMENT_DATE,
     terms = listOf(
-      SentenceTerms(years = 8)
+      SentenceTerms(years = 8),
     ),
     sentenceStatus = "IMP",
     sentenceCategory = "CAT",
@@ -146,7 +146,7 @@ class CalculationUserQuestionServiceTest {
     caseSequence = 1,
     sentenceDate = FIRST_MAY_2020,
     terms = listOf(
-      SentenceTerms(years = 8)
+      SentenceTerms(years = 8),
     ),
     sentenceStatus = "EDS",
     sentenceCategory = "CAT",
@@ -162,7 +162,7 @@ class CalculationUserQuestionServiceTest {
     caseSequence = 1,
     sentenceDate = FIRST_MAY_2018,
     terms = listOf(
-      SentenceTerms(years = 8)
+      SentenceTerms(years = 8),
     ),
     sentenceStatus = "IMP",
     sentenceCategory = "CAT",
@@ -178,7 +178,7 @@ class CalculationUserQuestionServiceTest {
     caseSequence = 1,
     sentenceDate = FIRST_MAY_2020,
     terms = listOf(
-      SentenceTerms(years = 8)
+      SentenceTerms(years = 8),
     ),
     sentenceStatus = "IMP",
     sentenceCategory = "CAT",
@@ -192,7 +192,7 @@ class CalculationUserQuestionServiceTest {
     "asd",
     dateOfBirth = LocalDate.of(1980, 1, 1),
     firstName = "Harry",
-    lastName = "Houdini"
+    lastName = "Houdini",
   )
 
   val under18PrisonerDetails = PrisonerDetails(
@@ -200,7 +200,7 @@ class CalculationUserQuestionServiceTest {
     "asd",
     dateOfBirth = LocalDate.of(2015, 1, 1),
     firstName = "Harry",
-    lastName = "Houdini"
+    lastName = "Houdini",
   )
 
   @Test
@@ -217,8 +217,8 @@ class CalculationUserQuestionServiceTest {
         section250Sentence,
         edsSentence,
         beforeSdsWindow,
-        ftrSentence
-      )
+        ftrSentence,
+      ),
     )
     val result = calculationUserQuestionService.getQuestionsForSentences(under18PrisonerDetails.offenderNo)
     assertThat(result.sentenceQuestions.size).isEqualTo(1)
@@ -231,9 +231,13 @@ class CalculationUserQuestionServiceTest {
     whenever(prisonService.getOffenderDetail(over18PrisonerDetails.offenderNo)).thenReturn(over18PrisonerDetails)
     whenever(prisonService.getSentencesAndOffences(over18PrisonerDetails.bookingId)).thenReturn(
       listOf(
-        originalSentence, edsSentence, beforeSdsWindow, ftrSentence, under7YearSentencePrePcsc,
-        beforeSdsWindow
-      )
+        originalSentence,
+        edsSentence,
+        beforeSdsWindow,
+        ftrSentence,
+        under7YearSentencePrePcsc,
+        beforeSdsWindow,
+      ),
     )
     val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails.offenderNo)
     assertThat(result.sentenceQuestions.size).isEqualTo(1)
@@ -246,8 +250,8 @@ class CalculationUserQuestionServiceTest {
     whenever(prisonService.getOffenderDetail(over18PrisonerDetails.offenderNo)).thenReturn(over18PrisonerDetails)
     whenever(prisonService.getSentencesAndOffences(over18PrisonerDetails.bookingId)).thenReturn(
       listOf(
-        fourToUnderSevenSentence
-      )
+        fourToUnderSevenSentence,
+      ),
     )
     val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails.offenderNo)
     assertThat(result.sentenceQuestions.size).isEqualTo(1)
@@ -270,8 +274,8 @@ class CalculationUserQuestionServiceTest {
     whenever(prisonService.getOffenderDetail(over18PrisonerDetails.offenderNo)).thenReturn(over18PrisonerDetails)
     whenever(prisonService.getSentencesAndOffences(over18PrisonerDetails.bookingId)).thenReturn(
       listOf(
-        section250Sentence
-      )
+        section250Sentence,
+      ),
     )
     val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails.offenderNo)
     assertThat(result.sentenceQuestions.size).isEqualTo(1)
@@ -284,8 +288,8 @@ class CalculationUserQuestionServiceTest {
     whenever(prisonService.getOffenderDetail(over18PrisonerDetails.offenderNo)).thenReturn(over18PrisonerDetails)
     whenever(prisonService.getSentencesAndOffences(over18PrisonerDetails.bookingId)).thenReturn(
       listOf(
-        originalSentenceSec250
-      )
+        originalSentenceSec250,
+      ),
     )
     val result = calculationUserQuestionService.getQuestionsForSentences(over18PrisonerDetails.offenderNo)
     assertThat(result.sentenceQuestions.size).isEqualTo(0)

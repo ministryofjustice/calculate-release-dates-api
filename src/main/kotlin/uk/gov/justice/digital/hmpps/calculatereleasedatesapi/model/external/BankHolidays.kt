@@ -8,5 +8,5 @@ data class BankHolidays(
 
   val scotland: RegionBankHolidays,
   @JsonProperty("northern-ireland")
-  val northernIreland: RegionBankHolidays
+  val northernIreland: RegionBankHolidays,
 )

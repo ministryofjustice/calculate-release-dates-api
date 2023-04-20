@@ -15,14 +15,14 @@ import java.util.UUID
   use = JsonTypeInfo.Id.NAME,
   include = JsonTypeInfo.As.PROPERTY,
   property = "type",
-  defaultImpl = StandardDeterminateSentence::class
+  defaultImpl = StandardDeterminateSentence::class,
 )
 @JsonSubTypes(
   JsonSubTypes.Type(value = StandardDeterminateSentence::class, name = "StandardSentence"),
   JsonSubTypes.Type(value = ExtendedDeterminateSentence::class, name = "ExtendedDeterminateSentence"),
   JsonSubTypes.Type(value = SopcSentence::class, name = "SopcSentence"),
   JsonSubTypes.Type(value = AFineSentence::class, name = "AFineSentence"),
-  JsonSubTypes.Type(value = DetentionAndTrainingOrderSentence::class, name = "DetentionAndTrainingOrderSentence")
+  JsonSubTypes.Type(value = DetentionAndTrainingOrderSentence::class, name = "DetentionAndTrainingOrderSentence"),
 )
 abstract class AbstractSentence(
   override val offence: Offence,
@@ -33,7 +33,7 @@ abstract class AbstractSentence(
   open val caseSequence: Int? = null,
   open val lineSequence: Int? = null,
   open val caseReference: String? = null,
-  override val recallType: RecallType? = null
+  override val recallType: RecallType? = null,
 ) : CalculableSentence {
   @JsonIgnore
   @Transient

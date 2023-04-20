@@ -9,8 +9,9 @@ import java.time.LocalDate
 data class ReleaseDateCalculationBreakdown(
   @ArraySchema(
     arraySchema = Schema(
-      description = "Calculation rules used to determine this calculation.", example = "[\"HDCED_GE_MIN_PERIOD_LT_MIDPOINT\"]"
-    )
+      description = "Calculation rules used to determine this calculation.",
+      example = "[\"HDCED_GE_MIN_PERIOD_LT_MIDPOINT\"]",
+    ),
   )
   val rules: Set<CalculationRule> = emptySet(),
   @Schema(description = "Adjustments details associated that are specifically added as part of a rule")
