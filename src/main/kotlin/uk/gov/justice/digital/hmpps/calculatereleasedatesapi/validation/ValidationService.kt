@@ -34,7 +34,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.DTO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.DTO_ORA
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType._14FTR_ORA
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
@@ -267,9 +267,9 @@ class ValidationService(
   ): Triple<Int, Boolean, Boolean> {
     val recallLength = ftrDetails.recallLength
     val bookingsSentenceTypes = sentencesAndOffences.map { from(it.sentenceCalculationType) }
-    val has14DayFTRSentence = bookingsSentenceTypes.any { it == _14FTR_ORA }
+    val has14DayFTRSentence = bookingsSentenceTypes.any { it == FTR_14_ORA }
     val has28DayFTRSentence = SentenceCalculationType.values()
-      .any { it.isFixedTermRecall && it != _14FTR_ORA && bookingsSentenceTypes.contains(it) }
+      .any { it.isFixedTermRecall && it != FTR_14_ORA && bookingsSentenceTypes.contains(it) }
     return Triple(recallLength, has14DayFTRSentence, has28DayFTRSentence)
   }
 
