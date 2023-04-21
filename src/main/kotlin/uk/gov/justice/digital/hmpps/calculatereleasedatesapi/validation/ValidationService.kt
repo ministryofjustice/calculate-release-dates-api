@@ -137,14 +137,14 @@ class ValidationService(
     val adjustments = mutableSetOf<SentenceAdjustmentType>()
     sourceData.bookingAndSentenceAdjustments.sentenceAdjustments.forEach { adjustment ->
       if (adjustment.type == SentenceAdjustmentType.REMAND || adjustment.type == SentenceAdjustmentType.TAGGED_BAIL) {
-        val sentence = sourceData.sentenceAndOffences.first { it.sentenceSequence == adjustment.sentenceSequence }
-        if (SentenceCalculationType.from(sentence.sentenceCalculationType).sentenceClazz == DetentionAndTrainingOrderSentence::class.java && sentence.sentenceDate.isBefore(PCSC_COMMENCEMENT_DATE)) {
+        val sentence = sourceData.sentenceAndOffences.firstOrNull { it.sentenceSequence == adjustment.sentenceSequence }
+        if (sentence != null && SentenceCalculationType.from(sentence.sentenceCalculationType).sentenceClazz == DetentionAndTrainingOrderSentence::class.java && sentence.sentenceDate.isBefore(PCSC_COMMENCEMENT_DATE)) {
           adjustments.add(adjustment.type)
         }
       }
     }
     if (adjustments.size > 0) {
-      val adjustmentString = adjustments.joinToString(separator = " and ") { it -> "${it.toString().lowercase()}" }
+      val adjustmentString = adjustments.joinToString(separator = " and ") { it.toString().lowercase() }
       messages.add(ValidationMessage(PRE_PCSC_DTO_WITH_ADJUSTMENT, listOf(adjustmentString.replace("_", " "))))
     }
     return messages
