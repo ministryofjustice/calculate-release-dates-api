@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.vladmihalcea.hibernate.type.json.internal.JacksonUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -15,6 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
@@ -43,8 +45,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserQuestions
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentencePart
@@ -55,12 +60,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
@@ -71,6 +78,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
@@ -530,3 +538,144 @@ fun transform(fixedTermRecallDetails: FixedTermRecallDetails): ReturnToCustodyDa
     bookingId = fixedTermRecallDetails.bookingId,
     returnToCustodyDate = fixedTermRecallDetails.returnToCustodyDate,
   )
+
+fun transform(booking: Booking, messages: List<ValidationMessage>): ComparisonResult =
+  ComparisonResult()
+
+fun transform(nomisId: String, prisonerDetails: PrisonerDetails, workingBooking: Booking, bookingCalculation: CalculationResult, calculationBreakdown: CalculationBreakdown, nomisDates: SentenceCalculationDates, keyDates: OffenderKeyDates, sentenceAndOffences: List<SentenceAndOffences>, adjustments: BookingAndSentenceAdjustments, returnToCustody: LocalDate?, finePayments: List<OffenderFinePayment>, questions: CalculationUserQuestions?, exception: Exception?, errorText: String?): ComparisonResult {
+  return ComparisonResult(
+    nomisId,
+    prisonerDetails.dateOfBirth,
+    null,
+    objectToJson(bookingCalculation.dates, jacksonObjectMapper()).toPrettyString(),
+    bookingCalculation.dates[CRD].toString(),
+    nomisDates.conditionalReleaseDate,
+    nomisDates.conditionalReleaseOverrideDate,
+    isMatch(
+      nomisDates.conditionalReleaseDate,
+      nomisDates.conditionalReleaseOverrideDate,
+      bookingCalculation.dates[CRD]
+    ),
+    bookingCalculation.dates[LED].toString(),
+    nomisDates.licenceExpiryDate,
+    nomisDates.licenceExpiryCalculatedDate,
+    nomisDates.licenceExpiryOverrideDate,
+    isSame(nomisDates.licenceExpiryDate, bookingCalculation.dates[LED].toString()),
+    bookingCalculation.dates[SED].toString(),
+    nomisDates.sentenceExpiryDate,
+    nomisDates.sentenceExpiryCalculatedDate,
+    nomisDates.sentenceExpiryOverrideDate,
+    isSame(nomisDates.sentenceExpiryDate, bookingCalculation.dates[SED].toString()),
+    bookingCalculation.dates[NPD].toString(),
+    nomisDates.nonParoleDate,
+    nomisDates.nonParoleOverrideDate,
+    isMatch(nomisDates.nonParoleDate, nomisDates.nonParoleOverrideDate, bookingCalculation.dates[NPD]),
+    bookingCalculation.dates[ARD].toString(),
+    nomisDates.automaticReleaseDate,
+    nomisDates.automaticReleaseOverrideDate,
+    isMatch(nomisDates.automaticReleaseDate, nomisDates.automaticReleaseOverrideDate, bookingCalculation.dates[ARD),
+    bookingCalculation.dates[TUSED].toString(),
+    nomisDates.topupSupervisionExpiryDate,
+    nomisDates.topupSupervisionExpiryCalculatedDate,
+    nomisDates.topupSupervisionExpiryOverrideDate,
+    isSame(nomisDates.topupSupervisionExpiryDate, bookingCalculation.dates[TUSED].toString()),
+    bookingCalculation.dates[PED].toString(),
+    nomisDates.paroleEligibilityDate,
+    nomisDates.paroleEligibilityCalculatedDate,
+    nomisDates.paroleEligibilityOverrideDate,
+    isSame(nomisDates.paroleEligibilityDate, bookingCalculation.dates[PED].toString()),
+    bookingCalculation.dates[HDCED].toString(),
+    nomisDates.homeDetentionCurfewEligibilityDate,
+    nomisDates.homeDetentionCurfewEligibilityCalculatedDate,
+    nomisDates.homeDetentionCurfewEligibilityOverrideDate,
+    isSame(nomisDates.homeDetentionCurfewEligibilityDate, bookingCalculation.dates[HDCED].toString()),
+    bookingCalculation.dates[ETD].toString(),
+    nomisDates.earlyTermDate,
+    nomisDates.etdCalculatedDate,
+    nomisDates.etdOverrideDate,
+    isSame(nomisDates.earlyTermDate, bookingCalculation.dates[ETD].toString()),
+    bookingCalculation.dates[MTD].toString(),
+    nomisDates.midTermDate,
+    nomisDates.mtdCalculatedDate,
+    nomisDates.mtdOverrideDate,
+    isSame(nomisDates.midTermDate, bookingCalculation.dates[MTD].toString()),
+    bookingCalculation.dates[LTD].toString(),
+    nomisDates.lateTermDate,
+    nomisDates.ltdCalculatedDate,
+    nomisDates.ltdOverrideDate,
+    isSame(nomisDates.lateTermDate, bookingCalculation.dates[LTD].toString()),
+    bookingCalculation.dates[DPRRD].toString(),
+    nomisDates.dtoPostRecallReleaseDate,
+    nomisDates.dtoPostRecallReleaseDateOverride,
+    isMatch(nomisDates.dtoPostRecallReleaseDate, nomisDates.dtoPostRecallReleaseDateOverride, bookingCalculation.dates[DPRRD]),
+    bookingCalculation.dates[PRRD].toString(),
+    nomisDates.postRecallReleaseDate,
+    nomisDates.postRecallReleaseOverrideDate,
+    isMatch(nomisDates.postRecallReleaseDate, nomisDates.postRecallReleaseOverrideDate, bookingCalculation.dates[PRRD]),
+    bookingCalculation.dates[ESED].toString(),
+    nomisDates.effectiveSentenceEndDate,
+    bookingCalculation.dates[ERSED].toString(),
+    nomisDates.earlyRemovalSchemeEligibilityDate,
+    isSame(nomisDates.earlyRemovalSchemeEligibilityDate, bookingCalculation.dates[ERSED].toString()),
+    nomisDates.releaseOnTemporaryLicenceDate,
+    nomisDates.comment,
+    nomisDates.reasonCode,
+    null, // TODO calculate sentence length
+    keyDates.sentenceLength,
+    nomisDates.judiciallyImposedSentenceLength,
+    false, // TODO calculate sentence length
+    false, // TODO calculate sentence length
+    isPedAjustedToCrd(calculationBreakdown, bookingCalculation),
+    isHdcedFourteenDayRule(calculationBreakdown, bookingCalculation),
+    hasSdsPlusPcsc(questions),
+    isSexOffender(prisonerDetails),
+    location = prisonerDetails.locationDescription,
+    objectToJson(sentenceAndOffences, jacksonObjectMapper()).toPrettyString(),
+    objectToJson(adjustments, jacksonObjectMapper()).toPrettyString(),
+    objectToJson(returnToCustody, jacksonObjectMapper()).toPrettyString(),
+    objectToJson(finePayments, jacksonObjectMapper()).toPrettyString(),
+    getConsecutiveSentences(sentenceAndOffences),
+    exception?.message,
+    objectToJson(exception, jacksonObjectMapper()).toPrettyString(),
+    allDatesMatch(this)
+  )
+
+}
+
+private fun isSexOffender(prisonerDetails: PrisonerDetails): Boolean {
+  return prisonerDetails.activeAlerts().any {alert -> alert.alertCode == "SOR" && alert.alertType == "S"}
+}
+
+private fun hasSdsPlusPcsc(questions: CalculationUserQuestions?): Boolean? {
+  if (questions != null) {
+    return questions.sentenceQuestions.isNotEmpty()
+  }
+  return null;
+}
+
+private fun isPedAjustedToCrd(calculationBreakdown: CalculationBreakdown?, bookingCalculation: CalculationResult?): Boolean? {
+  if (bookingCalculation!!.dates[PED] != null) {
+    return calculationBreakdown!!.breakdownByReleaseDateType[PED]!!.rules.contains(CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_ACTUAL_RELEASE) ||
+      calculationBreakdown.breakdownByReleaseDateType[PED]!!.rules.contains(CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE)
+  }
+  return null
+}
+
+private fun isHdcedFourteenDayRule(calculationBreakdown: CalculationBreakdown?, bookingCalculation: CalculationResult?): Boolean? {
+  if (bookingCalculation!!.dates[HDCED] != null) {
+    return calculationBreakdown!!.breakdownByReleaseDateType[HDCED]!!.rules.contains(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD)
+  }
+  return null
+}
+
+private fun isMatch(nomisDate: String?, nomisOverrideDate: String?, calculatedDate: LocalDate?): Boolean {
+  return if (nomisOverrideDate!!.isEmpty()) {
+    calculatedDate?.equals(nomisDate)!!
+  } else {
+    calculatedDate?.equals(nomisOverrideDate)!!
+  }
+}
+
+private fun isSame(nomisDate: String?, calculatedDate: String): Boolean {
+  return nomisDate == calculatedDate
+}

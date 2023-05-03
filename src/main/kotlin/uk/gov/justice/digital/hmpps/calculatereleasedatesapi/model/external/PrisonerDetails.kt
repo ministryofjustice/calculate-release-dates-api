@@ -10,7 +10,8 @@ data class PrisonerDetails(
   val lastName: String = "",
   val dateOfBirth: LocalDate,
   val alerts: List<Alert> = emptyList(),
-  val agencyId: String = ""
+  val agencyId: String = "",
+  val locationDescription: String = ""
 ) {
 
   fun activeAlerts(): List<Alert> {

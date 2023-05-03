@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
@@ -70,6 +72,23 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .uri("api/offender-fine-payment/booking/$bookingId")
       .retrieve()
       .bodyToMono(typeReference<List<OffenderFinePayment>>())
+      .block()!!
+  }
+
+  fun getOffenderKeyDates(bookingId: Long): OffenderKeyDates {
+    log.info("Requesting offender key dates for bookingId $bookingId")
+    return webClient.get()
+      .uri("/api/offender-dates/$bookingId")
+      .retrieve()
+      .bodyToMono(typeReference<OffenderKeyDates>())
+      .block()!!
+  }
+  fun getSentenceDetail(bookingId: Long): SentenceCalculationDates {
+    log.info("Requesting sentence detail for bookingId $bookingId")
+    return webClient.get()
+      .uri("/api/bookings/$bookingId/sentenceDetail")
+      .retrieve()
+      .bodyToMono(typeReference<SentenceCalculationDates>())
       .block()!!
   }
 }

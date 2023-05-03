@@ -2,8 +2,11 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -11,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.isSupported
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
+import java.time.LocalDate
 
 @Service
 class PrisonService(
@@ -68,5 +72,21 @@ class PrisonService(
 
   fun postReleaseDates(bookingId: Long, updateOffenderDates: UpdateOffenderDates) {
     return prisonApiClient.postReleaseDates(bookingId, updateOffenderDates)
+  }
+
+  fun getOffenderKeyDates(bookingId: Long): OffenderKeyDates {
+    return prisonApiClient.getOffenderKeyDates(bookingId)
+  }
+
+  fun getSentenceDetail(bookingId: Long): SentenceCalculationDates {
+    return prisonApiClient.getSentenceDetail(bookingId)
+  }
+
+  fun getReturnToCustodyDate(bookingId: Long): LocalDate {
+    return getFixedTermRecallDetails(bookingId, true).second!!.returnToCustodyDate
+  }
+
+  fun getOffenderFinePayments(bookingId: Long): List<OffenderFinePayment> {
+    return prisonApiClient.getOffenderFinePayments(bookingId)
   }
 }
