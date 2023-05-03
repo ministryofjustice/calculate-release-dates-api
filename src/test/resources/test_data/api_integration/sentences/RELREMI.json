@@ -1,0 +1,37 @@
+[
+  {
+    "bookingId": 2590773,
+    "sentenceSequence": 1,
+    "lineSequence": 1,
+    "caseSequence": 2,
+    "caseReference": "T20197113",
+    "courtDescription": "Oxford Crown Court",
+    "sentenceStatus": "I",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "ORA CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2020-01-13",
+    "terms": [
+      {
+        "years": 0,
+        "months": 12,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 5878850,
+        "offenceStartDate": "2018-09-10",
+        "offenceCode": "TH68001",
+        "offenceDescription": "Theft from the person of another",
+        "indicators": [
+          "D",
+          "50"
+        ]
+      }
+    ]
+  }
+]
+

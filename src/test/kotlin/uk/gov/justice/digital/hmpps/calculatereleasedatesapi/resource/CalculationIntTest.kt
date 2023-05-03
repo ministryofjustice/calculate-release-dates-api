@@ -75,8 +75,9 @@ class CalculationIntTest : IntegrationTestBase() {
   fun `Confirm a calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
     val prelim = createPreliminaryCalculation(PRISONER_ID)
     val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId)
-    val calculationRequest: CalculationRequest = calculationRequestRepository.findById(confirmed.calculationRequestId)
-      .orElseThrow { EntityNotFoundException("No calculation request exists for id ${confirmed.calculationRequestId}") }
+    val calculationRequest: CalculationRequest =
+      calculationRequestRepository.findById(confirmed.calculationRequestId)
+        .orElseThrow { EntityNotFoundException("No calculation request exists for id ${confirmed.calculationRequestId}") }
 
     assertThat(confirmed.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
     assertThat(confirmed.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
@@ -653,7 +654,11 @@ class CalculationIntTest : IntegrationTestBase() {
           sentenceSequence = 4,
         ),
       ),
-      RelevantRemandSentence(sentenceDate = LocalDate.of(2021, 2, 1), bookingId = "RELREM".hashCode().toLong(), sequence = 4),
+      RelevantRemandSentence(
+        sentenceDate = LocalDate.of(2021, 6, 8),
+        bookingId = "RELREM".hashCode().toLong(),
+        sequence = 11,
+      ),
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREM")
@@ -682,7 +687,11 @@ class CalculationIntTest : IntegrationTestBase() {
           sentenceSequence = 4,
         ),
       ),
-      RelevantRemandSentence(sentenceDate = LocalDate.of(2021, 2, 1), bookingId = "RELREMV".hashCode().toLong(), sequence = 4),
+      RelevantRemandSentence(
+        sentenceDate = LocalDate.of(2021, 2, 1),
+        bookingId = "RELREMV".hashCode().toLong(),
+        sequence = 4,
+      ),
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREMV")
@@ -698,6 +707,39 @@ class CalculationIntTest : IntegrationTestBase() {
 
     assertThat(calculation.releaseDate).isNull()
     assertThat(calculation.validationMessages).singleElement()
+  }
+
+  @Test
+  fun `Run relevant remand which has enough calculated remand for immediate release`() {
+    val request = RelevantRemandCalculationRequest(
+      listOf(
+        RelevantRemand(
+          from = LocalDate.of(2014, 1, 1),
+          to = LocalDate.of(2019, 6, 23),
+          days = 2000,
+          sentenceSequence = 1,
+        ),
+      ),
+      RelevantRemandSentence(
+        sentenceDate = LocalDate.of(2020, 1, 13),
+        bookingId = "RELREMI".hashCode().toLong(),
+        sequence = 1,
+      ),
+    )
+    val calculation: RelevantRemandCalculationResult = webTestClient.post()
+      .uri("/calculation/relevant-remand/RELREMI")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(request))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(RelevantRemandCalculationResult::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.releaseDate).isEqualTo(request.sentence.sentenceDate)
+    assertThat(calculation.validationMessages).isEmpty()
   }
 
   private fun createPreliminaryCalculation(prisonerid: String): CalculatedReleaseDates = webTestClient.post()
