@@ -371,7 +371,7 @@ data class SentenceCalculation(
   }
 
   val expiryDate: LocalDate get() {
-    return adjustedExpiryDate
+    return maxOf(adjustedExpiryDate, sentence.sentencedAt)
   }
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
