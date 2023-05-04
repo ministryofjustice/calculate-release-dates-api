@@ -70,7 +70,7 @@ import javax.persistence.EntityNotFoundException
 @ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceTest {
   private val jsonTransformation = JsonTransformation()
-  private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 18, ChronoUnit.MONTHS, 135)
+  private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 720, ChronoUnit.DAYS, 179)
   private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
   private val bankHolidayService = mock<BankHolidayService>()
   private val workingDayService = WorkingDayService(bankHolidayService)
@@ -364,6 +364,7 @@ class CalculationTransactionalServiceTest {
   fun beforeAll() {
     Mockito.`when`(bankHolidayService.getBankHolidays()).thenReturn(cachedBankHolidays)
   }
+
   companion object {
     val cachedBankHolidays =
       BankHolidays(
