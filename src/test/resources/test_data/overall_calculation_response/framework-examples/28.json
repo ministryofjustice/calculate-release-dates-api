@@ -2,7 +2,15 @@
   "dates": {
     "SLED": "2025-08-03",
     "CRD": "2023-12-19",
-    "HDCED": "2023-08-07",
+    "HDCED": "2023-06-23",
+    "ESED": "2025-08-03"
+  },
+  "effectiveSentenceLength": "P3Y2M29D"
+}{
+  "dates": {
+    "SLED": "2025-08-03",
+    "CRD": "2023-12-19",
+    "HDCED": "2023-06-23",
     "ESED": "2025-08-03"
   },
   "effectiveSentenceLength": "P3Y2M29D"
