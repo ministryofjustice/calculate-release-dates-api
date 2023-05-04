@@ -22,7 +22,7 @@ import java.time.temporal.ChronoUnit
 @ExtendWith(MockitoExtension::class)
 class SentenceCalculationServiceTest {
 
-  private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 18, ChronoUnit.MONTHS, 135)
+  private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 720, ChronoUnit.DAYS, 179)
   private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
   private val bankHolidayService = mock<BankHolidayService>()
   private val workingDayService = WorkingDayService(bankHolidayService)
@@ -42,7 +42,7 @@ class SentenceCalculationServiceTest {
     val calculation = sentenceCalculationService.calculate(sentence, booking)
     assertEquals(calculation.expiryDate, LocalDate.of(2015, 9, 20))
     assertEquals(calculation.releaseDate, LocalDate.of(2014, 9, 20))
-    assertEquals(LocalDate.of(2014, 5, 9), calculation.homeDetentionCurfewEligibilityDate)
+    assertEquals(LocalDate.of(2014, 3, 25), calculation.homeDetentionCurfewEligibilityDate)
     assertEquals("[SLED, CRD, HDCED]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
@@ -59,7 +59,7 @@ class SentenceCalculationServiceTest {
     val calculation = sentenceCalculationService.calculate(sentence, booking)
     assertEquals(LocalDate.of(2015, 10, 30), calculation.expiryDate)
     assertEquals(LocalDate.of(2014, 5, 1), calculation.releaseDate)
-    assertEquals(LocalDate.of(2013, 12, 18), calculation.homeDetentionCurfewEligibilityDate)
+    assertEquals(LocalDate.of(2013, 11, 3), calculation.homeDetentionCurfewEligibilityDate)
     assertEquals("[SLED, CRD, HDCED]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
