@@ -728,6 +728,7 @@ class ValidationService(
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
       val sentenceRanges = booking.getAllExtractableSentences()
+        .filter { !it.isRecall() }
         .map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.adjustedDeterminateReleaseDate) }
 
       val allRanges = (remandRanges + sentenceRanges).sortedBy { it.start }
