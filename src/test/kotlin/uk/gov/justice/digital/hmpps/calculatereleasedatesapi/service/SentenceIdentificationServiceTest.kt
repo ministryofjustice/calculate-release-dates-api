@@ -10,7 +10,7 @@ import java.time.temporal.ChronoUnit
 
 @ExtendWith(MockitoExtension::class)
 class SentenceIdentificationServiceTest {
-  private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 720, ChronoUnit.DAYS, 179)
+  private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 18, ChronoUnit.MONTHS, 135)
   private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
   private val workingDayService = mock<WorkingDayService>()
   private val tusedCalculator = TusedCalculator(workingDayService)
