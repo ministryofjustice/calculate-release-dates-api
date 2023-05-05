@@ -1,6 +1,5 @@
 spring:
-  jackson:
-    date-format: 'yyyy-MM-dd'
+
   config:
     use-legacy-processing: true
 
@@ -75,10 +74,9 @@ hdced:
       value: 4
       unit: YEARS
     midPoint:
-      value: 720
-      unit: DAYS
+      value: 18
+      unit: MONTHS
   custodialDays:
     minimum: 14
   deduction:
-    days: 179
-
+    days: 135

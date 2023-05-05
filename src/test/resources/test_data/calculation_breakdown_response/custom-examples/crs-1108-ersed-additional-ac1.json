@@ -50,18 +50,17 @@
     },
     "HDCED": {
       "rules": [
-        "HDCED_MINIMUM_CUSTODIAL_PERIOD",
         "HDCED_GE_MIDPOINT_LT_MAX_PERIOD"
       ],
       "rulesWithExtraAdjustments": {
-        "HDCED_MINIMUM_CUSTODIAL_PERIOD": {
-          "adjustmentValue": 14,
+        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD": {
+          "adjustmentValue": -135,
           "type": "DAYS"
         }
       },
-      "adjustedDays": 0,
-      "releaseDate": "2022-09-09",
-      "unadjustedDate": "2022-08-26"
+      "adjustedDays": -231,
+      "releaseDate": "2022-10-11",
+      "unadjustedDate": "2023-02-23"
     }
   },
   "otherDates": {}
