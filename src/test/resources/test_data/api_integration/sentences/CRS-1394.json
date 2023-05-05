@@ -1,0 +1,139 @@
+[
+  {
+    "bookingId":2785772,
+    "sentenceSequence":1,
+    "consecutiveToSequence":2,
+    "lineSequence":1,
+    "caseSequence":2,
+    "caseReference":"T20200160",
+    "courtDescription":"St. Albans Crown Court",
+    "sentenceStatus":"A",
+    "sentenceCategory":"2020",
+    "sentenceCalculationType":"LR_ORA",
+    "sentenceTypeDescription":"ORA Licence Recall",
+    "sentenceDate":"2021-12-10",
+    "terms":[
+      {
+        "years":0,
+        "months":3,
+        "weeks":0,
+        "days":0,
+        "code":"IMP"
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":6740185,
+        "offenceStartDate":"2019-01-27",
+        "offenceCode":"PC02021",
+        "offenceDescription":"Acquire / use / possess criminal property",
+        "indicators":[
+          "99"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId":2785772,
+    "sentenceSequence":2,
+    "lineSequence":2,
+    "caseSequence":2,
+    "caseReference":"T20200160",
+    "courtDescription":"St. Albans Crown Court",
+    "sentenceStatus":"A",
+    "sentenceCategory":"2020",
+    "sentenceCalculationType":"LR_ORA",
+    "sentenceTypeDescription":"ORA Licence Recall",
+    "sentenceDate":"2021-12-10",
+    "terms":[
+      {
+        "years":0,
+        "months":17,
+        "weeks":0,
+        "days":0,
+        "code":"IMP"
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":6740186,
+        "offenceStartDate":"2018-11-01",
+        "offenceCode":"MD71533",
+        "offenceDescription":"Concerned in the supply of a controlled drug of Class B - cannabis",
+        "indicators":[
+          "90",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId":2785772,
+    "sentenceSequence":9,
+    "lineSequence":3,
+    "caseSequence":1,
+    "caseReference":"01XH0243022",
+    "courtDescription":"Isleworth Crown Court",
+    "sentenceStatus":"A",
+    "sentenceCategory":"2020",
+    "sentenceCalculationType":"ADIMP_ORA",
+    "sentenceTypeDescription":"ORA Sentencing Code Standard Determinate Sentence",
+    "sentenceDate":"2023-03-31",
+    "terms":[
+      {
+        "years":0,
+        "months":14,
+        "weeks":0,
+        "days":0,
+        "code":"IMP"
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":6737853,
+        "offenceStartDate":"2022-08-03",
+        "offenceCode":"MD71526",
+        "offenceDescription":"Possess with intent to supply a controlled drug of Class B - Cannabis",
+        "indicators":[
+          "87",
+          "D"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId":2785772,
+    "sentenceSequence":16,
+    "lineSequence":4,
+    "caseSequence":1,
+    "caseReference":"01XH0243022",
+    "courtDescription":"Isleworth Crown Court",
+    "sentenceStatus":"A",
+    "sentenceCategory":"2020",
+    "sentenceCalculationType":"ADIMP_ORA",
+    "sentenceTypeDescription":"ORA Sentencing Code Standard Determinate Sentence",
+    "sentenceDate":"2023-03-31",
+    "terms":[
+      {
+        "years":0,
+        "months":1,
+        "weeks":0,
+        "days":0,
+        "code":"IMP"
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":6737854,
+        "offenceStartDate":"2022-08-03",
+        "offenceCode":"MD71530",
+        "offenceDescription":"Possess a controlled drug of Class B - Cannabis / Cannabis Resin",
+        "indicators":[
+          "88",
+          "D",
+          "85"
+        ]
+      }
+    ]
+  }
+]
