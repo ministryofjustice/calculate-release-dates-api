@@ -51,6 +51,11 @@ class ValidationIntTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `Run validation for overlapping remand and custodial period`() {
+    runValidationAndCheckMessages("CRS-1394", listOf())
+  }
+
+  @Test
   fun `Run validation on invalid data`() {
     runValidationAndCheckMessages(
       VALIDATION_PRISONER_ID,
