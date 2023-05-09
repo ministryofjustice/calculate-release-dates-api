@@ -2,6 +2,8 @@
 # Per environment values which override defaults in hmpps-template-kotlin/values.yaml
 
 generic-service:
+  replicaCount: 2
+
   ingress:
     host: hmpps-template-kotlin-preprod.hmpps.service.justice.gov.uk
 
