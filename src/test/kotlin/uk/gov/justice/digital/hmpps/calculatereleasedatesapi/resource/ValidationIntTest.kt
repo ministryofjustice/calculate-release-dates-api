@@ -98,6 +98,19 @@ class ValidationIntTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `Run supported validation on unsupported sentence data`() {
+    runSupportedValidationAndCheckMessages(
+      UNSUPPORTED_SENTENCE_PRISONER_ID,
+      listOf(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This sentence is unsupported"))),
+    )
+  }
+
+  @Test
+  fun `Run supported validation for unsupported DTO concurrent to recall`() {
+    runSupportedValidationAndCheckMessages("CRS-1145-AC1", listOf(ValidationMessage(code = UNSUPPORTED_CALCULATION_DTO_WITH_RECALL)))
+  }
+
+  @Test
   fun `Run validation on valid data`() {
     runValidationAndCheckMessages(PRISONER_ID, emptyList())
   }
@@ -140,6 +153,20 @@ class ValidationIntTest : IntegrationTestBase() {
   @Test
   fun `Run validation on adjustment after release with a term`() {
     runValidationAndCheckMessages("CRS-1191-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
+  }
+
+  private fun runSupportedValidationAndCheckMessages(prisonerId: String, messages: List<ValidationMessage>) {
+    val validationMessages = webTestClient.get()
+      .uri("/validation/$prisonerId/supported-validation")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBodyList(ValidationMessage::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(validationMessages).isEqualTo(messages)
   }
 
   private fun runValidationAndCheckMessages(prisonerId: String, messages: List<ValidationMessage>) {

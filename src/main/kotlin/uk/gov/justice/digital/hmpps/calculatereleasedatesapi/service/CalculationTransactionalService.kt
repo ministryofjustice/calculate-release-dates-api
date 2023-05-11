@@ -71,6 +71,11 @@ class CalculationTransactionalService(
     return messages
   }
 
+  fun supportedValidation(prisonerId: String): List<ValidationMessage> {
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly = true)
+    return validationService.validateSupportedSentencesAndCalculations(sourceData)
+  }
+
   //  The activeDataOnly flag is only used by a test endpoint (1000 calcs test, which is used to test historic data)
   @Transactional
   fun calculate(prisonerId: String, calculationUserInputs: CalculationUserInputs, activeDataOnly: Boolean = true, calculationType: CalculationStatus = PRELIMINARY): CalculatedReleaseDates {
