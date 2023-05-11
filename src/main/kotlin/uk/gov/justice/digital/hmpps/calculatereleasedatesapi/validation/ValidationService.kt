@@ -132,6 +132,17 @@ class ValidationService(
     return validationMessages
   }
 
+  fun validateSupportedSentencesAndCalculations(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+    val sentencesAndOffences = sourceData.sentenceAndOffences
+    val sortedSentences = sentencesAndOffences.sortedWith(this::sortByCaseNumberAndLineSequence)
+    val validationMessages = mutableListOf<ValidationMessage>()
+    validationMessages += validateSupportedSentences(sortedSentences)
+    if (validationMessages.isEmpty()) {
+      validationMessages += validateUnsupportedCalculation(sourceData)
+    }
+    return validationMessages.toList()
+  }
+
   private fun validatePrePcscDtoDoesNotHaveRemandOrTaggedBail(sourceData: PrisonApiSourceData): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
     val adjustments = mutableSetOf<SentenceAdjustmentType>()
