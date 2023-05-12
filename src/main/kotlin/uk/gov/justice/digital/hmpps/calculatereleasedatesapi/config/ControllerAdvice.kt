@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config
 
+import jakarta.persistence.EntityNotFoundException
+import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -10,8 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
-import javax.persistence.EntityNotFoundException
-import javax.validation.ValidationException
 
 @RestControllerAdvice
 class ControllerAdvice {
@@ -51,10 +51,10 @@ class ControllerAdvice {
   fun handleRestClientException(e: RestClientResponseException): ResponseEntity<ErrorResponse> {
     log.error("RestClientResponseException: ${e.message}", e)
     return ResponseEntity
-      .status(e.rawStatusCode)
+      .status(e.statusCode.value())
       .body(
         ErrorResponse(
-          status = e.rawStatusCode,
+          status = e.statusCode.value(),
           userMessage = "Rest client exception ${e.message}",
           developerMessage = e.message,
         ),
