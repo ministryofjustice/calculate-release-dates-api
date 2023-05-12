@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.vladmihalcea.hibernate.type.json.internal.JacksonUtil
+import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -24,7 +24,6 @@ import java.util.UUID
 @Suppress("DEPRECATION")
 @Entity
 @Table
-
 data class CalculationRequest(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -54,7 +54,7 @@ class BankHolidayService(
       bankHolidayCacheRepository.save(cache)
       bankHolidays
     } else {
-      objectMapper.convertValue(cached.data, BankHolidays::class.java)
+      objectMapper.readValue(cached.data.textValue(), BankHolidays::class.java)
     }
   }
 
