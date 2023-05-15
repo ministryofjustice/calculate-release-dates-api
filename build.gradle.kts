@@ -60,9 +60,7 @@ dependencies {
   implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.3.2")
 
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.7.0")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.7.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.0.3")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
