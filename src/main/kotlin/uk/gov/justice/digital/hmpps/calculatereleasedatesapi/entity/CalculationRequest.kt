@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity
 
 import com.fasterxml.jackson.databind.JsonNode
+import io.hypersistence.utils.hibernate.type.json.JsonType
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
@@ -16,8 +17,7 @@ import jakarta.validation.constraints.NotNull
 import org.hibernate.Hibernate
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
-import org.hibernate.annotations.JdbcTypeCode
-import org.hibernate.type.SqlTypes
+import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -48,34 +48,34 @@ data class CalculationRequest(
   val calculatedByUsername: String = "",
 
   @NotNull
-  @JdbcTypeCode(SqlTypes.JSON)
+  @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val inputData: JsonNode = JacksonUtil.toJsonNode("{}"),
 
   @NotNull
-  @JdbcTypeCode(SqlTypes.JSON)
+  @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val sentenceAndOffences: JsonNode? = null,
   val sentenceAndOffencesVersion: Int? = 1,
 
   @NotNull
-  @JdbcTypeCode(SqlTypes.JSON)
+  @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val prisonerDetails: JsonNode? = null,
   val prisonerDetailsVersion: Int? = 0,
 
   @NotNull
-  @JdbcTypeCode(SqlTypes.JSON)
+  @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val adjustments: JsonNode? = null,
   val adjustmentsVersion: Int? = 0,
 
-  @JdbcTypeCode(SqlTypes.JSON)
+  @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val returnToCustodyDate: JsonNode? = null,
   val returnToCustodyDateVersion: Int? = 0,
 
-  @JdbcTypeCode(SqlTypes.JSON)
+  @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val offenderFinePayments: JsonNode? = null,
   val offenderFinePaymentsVersion: Int? = 0,
