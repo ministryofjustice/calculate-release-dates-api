@@ -1,7 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.vladmihalcea.hibernate.type.json.internal.JacksonUtil
+import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
+import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
@@ -65,7 +66,6 @@ import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
 import java.util.Optional
 import java.util.UUID
-import javax.persistence.EntityNotFoundException
 
 @ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceTest {
