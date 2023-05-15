@@ -49,7 +49,6 @@ dependencies {
   // Database dependencies
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.6.0")
-  runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
 
   // JWT
   implementation("io.jsonwebtoken:jjwt-api:0.11.5")
