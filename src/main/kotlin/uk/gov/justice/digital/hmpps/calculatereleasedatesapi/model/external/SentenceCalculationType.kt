@@ -11,11 +11,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.ST
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 
+// These SentenceCalculationType values come from NOMIS - they map to offender_sentences.sentence_calc_type in NOMIS
 enum class SentenceCalculationType(
   val recallType: RecallType? = null,
   val sentenceClazz: Class<out AbstractSentence> = StandardDeterminateSentence::class.java,
   val primaryName: String? = null,
   val isFixedTermRecall: Boolean = false,
+  val isSupported: Boolean = true,
+  val isIndeterminate: Boolean = false,
 ) {
   ADIMP,
   ADIMP_ORA,
@@ -57,6 +60,34 @@ enum class SentenceCalculationType(
   LR_SOPC21(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
   DTO(sentenceClazz = DetentionAndTrainingOrderSentence::class.java),
   DTO_ORA(sentenceClazz = DetentionAndTrainingOrderSentence::class.java),
+  IPP(isSupported = false, isIndeterminate = true),
+  LIFE(isSupported = false, isIndeterminate = true),
+  LIFE_IPP(isSupported = false, isIndeterminate = true, primaryName = "LIFE/IPP"),
+  LR_IPP(isSupported = false, isIndeterminate = true),
+  MLP(isSupported = false, isIndeterminate = true),
+  DLP(isSupported = false, isIndeterminate = true),
+  ALP(isSupported = false, isIndeterminate = true),
+  LEGACY(isSupported = false, isIndeterminate = true),
+  LR_LIFE(isSupported = false, isIndeterminate = true),
+  HMPL(isSupported = false, isIndeterminate = true),
+  DFL(isSupported = false, isIndeterminate = true),
+  LR_ALP(isSupported = false, isIndeterminate = true),
+  ALP_LASPO(isSupported = false, isIndeterminate = true),
+  LR_DLP(isSupported = false, isIndeterminate = true),
+  LR_MLP(isSupported = false, isIndeterminate = true),
+  SEC94(isSupported = false, isIndeterminate = true),
+  SEC93_03(isSupported = false, isIndeterminate = true),
+  ALP_CODE18(isSupported = false, isIndeterminate = true),
+  DPP(isSupported = false, isIndeterminate = true),
+  SEC272(isSupported = false, isIndeterminate = true),
+  SEC275(isSupported = false, isIndeterminate = true),
+  ALP_CODE21(isSupported = false, isIndeterminate = true),
+  LR_DPP(isSupported = false, isIndeterminate = true),
+  LR_ALP_CDE21(isSupported = false, isIndeterminate = true),
+  LR_ALP_LASPO(isSupported = false, isIndeterminate = true),
+  ZMD(isSupported = false, isIndeterminate = true),
+  SEC93(isSupported = false, isIndeterminate = true),
+  TWENTY(isSupported = false, isIndeterminate = true, primaryName = "20"),
   ;
 
   companion object {
@@ -65,8 +96,13 @@ enum class SentenceCalculationType(
 
     fun isSupported(sentenceCalculationType: String): Boolean =
       try {
-        from(sentenceCalculationType)
-        true
+        from(sentenceCalculationType).isSupported
+      } catch (error: IllegalArgumentException) {
+        false
+      }
+    fun isIndeterminate(sentenceCalculationType: String): Boolean =
+      try {
+        from(sentenceCalculationType).isIndeterminate
       } catch (error: IllegalArgumentException) {
         false
       }
