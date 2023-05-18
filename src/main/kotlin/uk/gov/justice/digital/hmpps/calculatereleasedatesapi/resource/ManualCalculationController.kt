@@ -37,7 +37,7 @@ class ManualCalculationController(
     ],
   )
   fun hasIndeterminateSentences(
-    @Parameter(required = true, example = "100001", description = "The booking ID associated with the calculation")
+    @Parameter(required = true, example = "100001", description = "The booking ID to check against")
     @PathVariable("bookingId")
     bookingId: Long,
   ): Boolean {
