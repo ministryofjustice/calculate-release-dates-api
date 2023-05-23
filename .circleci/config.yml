@@ -158,6 +158,7 @@ workflows:
           slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
+          jdk_tag: "19.0"
           cache_key: "v2_0"
       - hmpps/trivy_latest_scan:
           slack_channel: << pipeline.parameters.alerts-slack-channel >>
