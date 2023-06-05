@@ -1,101 +1,89 @@
 {
-  "concurrentSentences":[
+  "concurrentSentences": [
     {
-      "sentencedAt":"2020-07-26",
-      "sentenceLength":"3 years",
-      "sentenceLengthDays":1095,
-      "dates":{
-        "SLED":{
-          "unadjusted":"2023-07-25",
-          "adjusted":"2023-07-25",
-          "daysFromSentenceStart":1095,
-          "adjustedByDays":0
+      "sentencedAt": "2020-07-26",
+      "sentenceLength": "3 years",
+      "sentenceLengthDays": 1095,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2023-07-25",
+          "adjusted": "2023-07-25",
+          "daysFromSentenceStart": 1095,
+          "adjustedByDays": 0
         },
-        "CRD":{
-          "unadjusted":"2022-01-24",
-          "adjusted":"2022-01-24",
-          "daysFromSentenceStart":548,
-          "adjustedByDays":0
+        "CRD": {
+          "unadjusted": "2022-01-24",
+          "adjusted": "2022-01-24",
+          "daysFromSentenceStart": 548,
+          "adjustedByDays": 0
         }
       },
-      "lineSequence":0,
-      "caseSequence":0,
-      "caseReference":null
+      "lineSequence": 0,
+      "caseSequence": 0,
+      "caseReference": null
     },
     {
-      "sentencedAt":"2020-07-26",
-      "sentenceLength":"18 months",
-      "sentenceLengthDays":549,
-      "dates":{
-        "SLED":{
-          "unadjusted":"2022-01-25",
-          "adjusted":"2022-01-25",
-          "daysFromSentenceStart":549,
-          "adjustedByDays":0
+      "sentencedAt": "2020-07-26",
+      "sentenceLength": "18 months",
+      "sentenceLengthDays": 549,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2022-01-25",
+          "adjusted": "2022-01-25",
+          "daysFromSentenceStart": 549,
+          "adjustedByDays": 0
         },
-        "CRD":{
-          "unadjusted":"2021-04-26",
-          "adjusted":"2021-04-26",
-          "daysFromSentenceStart":275,
-          "adjustedByDays":0
+        "CRD": {
+          "unadjusted": "2021-04-26",
+          "adjusted": "2021-04-26",
+          "daysFromSentenceStart": 275,
+          "adjustedByDays": 0
         }
       },
-      "lineSequence":0,
-      "caseSequence":0,
-      "caseReference":null
+      "lineSequence": 0,
+      "caseSequence": 0,
+      "caseReference": null
     }
   ],
-  "consecutiveSentence":null,
-  "breakdownByReleaseDateType":{
-    "SLED":{
-      "rules":[
-
-      ],
-      "rulesWithExtraAdjustments":{
-
-      },
-      "adjustedDays":0,
-      "releaseDate":"2023-07-25",
-      "unadjustedDate":"2023-07-25"
+  "consecutiveSentence": null,
+  "breakdownByReleaseDateType": {
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2023-07-25",
+      "unadjustedDate": "2023-07-25"
     },
-    "CRD":{
-      "rules":[
-
-      ],
-      "rulesWithExtraAdjustments":{
-
-      },
-      "adjustedDays":0,
-      "releaseDate":"2022-01-24",
-      "unadjustedDate":"2022-01-24"
+    "CRD": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2022-01-24",
+      "unadjustedDate": "2022-01-24"
     },
-    "HDCED":{
-      "rules":[
+    "HDCED": {
+      "rules": [
         "HDCED_GE_MIDPOINT_LT_MAX_PERIOD"
       ],
-      "rulesWithExtraAdjustments":{
-        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD":{
-          "adjustmentValue":-135,
-          "type":"DAYS"
+      "rulesWithExtraAdjustments": {
+        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD": {
+          "adjustmentValue": -179,
+          "type": "DAYS"
         }
       },
-      "adjustedDays":0,
-      "releaseDate":"2021-09-12",
-      "unadjustedDate":"2022-01-25"
+      "adjustedDays": 0,
+      "releaseDate": "2021-07-29",
+      "unadjustedDate": "2022-01-24"
     },
-    "ERSED":{
-      "rules":[
+    "ERSED": {
+      "rules": [
         "ERSED_ADJUSTED_TO_CONCURRENT_TERM"
       ],
-      "rulesWithExtraAdjustments":{
-
-      },
-      "adjustedDays":0,
-      "releaseDate":"2021-05-02",
-      "unadjustedDate":"2021-04-26"
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2021-05-02",
+      "unadjustedDate": "2021-04-26"
     }
   },
-  "otherDates":{
-
-  }
+  "otherDates": {}
 }

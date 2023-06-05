@@ -90,7 +90,7 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
   ) {
     sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate =
       sentenceCalculation.numberOfDaysToDeterminateReleaseDate
-        .minus(hdcedConfiguration.deductionDays)
+        .minus(hdcedConfiguration.deductionDays + 1) // Extra plus one because we use the numberOfDaysToDeterminateReleaseDate param and not the sentencedAt param
         .plus(adjustedDays)
     sentenceCalculation.homeDetentionCurfewEligibilityDate = sentence.sentencedAt
       .plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate)
