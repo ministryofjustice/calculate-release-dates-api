@@ -19,7 +19,8 @@
         }
       },
       "lineSequence": 1,
-      "caseSequence": 1
+      "caseSequence": 1,
+      "caseReference": null
     },
     {
       "sentencedAt": "2021-03-27",
@@ -40,7 +41,8 @@
         }
       },
       "lineSequence": 2,
-      "caseSequence": 2
+      "caseSequence": 2,
+      "caseReference": null
     },
     {
       "sentencedAt": "2021-08-05",
@@ -61,7 +63,8 @@
         }
       },
       "lineSequence": 3,
-      "caseSequence": 3
+      "caseSequence": 3,
+      "caseReference": null
     }
   ],
   "consecutiveSentence": null,
@@ -86,13 +89,14 @@
       ],
       "rulesWithExtraAdjustments": {
         "HDCED_GE_MIDPOINT_LT_MAX_PERIOD": {
-          "adjustmentValue": -135,
+          "adjustmentValue": -179,
           "type": "DAYS"
         }
       },
       "adjustedDays": -20,
-      "releaseDate": "2022-03-03",
-      "unadjustedDate": "2022-07-16"
+      "releaseDate": "2022-01-17",
+      "unadjustedDate": "2022-07-15"
     }
-  }
+  },
+  "otherDates": {}
 }
