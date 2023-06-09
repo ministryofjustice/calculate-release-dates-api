@@ -281,7 +281,7 @@ class CalculationTransactionalServiceTest {
       BOOKING.copy(sentences = listOf(StandardSENTENCE.copy(duration = ZERO_DURATION))),
       BOOKING_CALCULATION.copy(
         dates = mutableMapOf(
-          CRD to CALCULATION_OUTCOME_CRD.outcomeDate,
+          CRD to CALCULATION_OUTCOME_CRD.outcomeDate!!,
           SED to THIRD_FEB_2021,
           ERSED to FIFTH_APRIL_2021,
           ESED to ESED_DATE,
@@ -439,7 +439,7 @@ class CalculationTransactionalServiceTest {
     )
 
     val BOOKING_CALCULATION = CalculatedReleaseDates(
-      dates = mutableMapOf(CRD to CALCULATION_OUTCOME_CRD.outcomeDate, SED to THIRD_FEB_2021),
+      dates = mutableMapOf(CRD to CALCULATION_OUTCOME_CRD.outcomeDate!!, SED to THIRD_FEB_2021),
       calculationRequestId = CALCULATION_REQUEST_ID,
       bookingId = BOOKING_ID,
       prisonerId = PRISONER_ID,
@@ -456,6 +456,7 @@ class CalculationTransactionalServiceTest {
         effectiveSentenceEndDate = THIRD_FEB_2021,
         sentenceLength = "11/00/00",
       ),
+      noDates = false,
     )
 
     private val OFFENDER = Offender(PRISONER_ID, LocalDate.of(1980, 1, 1))

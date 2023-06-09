@@ -6,4 +6,6 @@ data class UpdateOffenderDates(
   val calculationUuid: UUID,
   val submissionUser: String,
   val keyDates: OffenderKeyDates,
+  val noDates: Boolean,
+  val comment: String? = null,
 )

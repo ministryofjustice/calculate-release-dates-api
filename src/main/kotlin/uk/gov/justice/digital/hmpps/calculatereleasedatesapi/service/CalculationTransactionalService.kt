@@ -262,6 +262,7 @@ class CalculationTransactionalService(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = getCurrentAuthentication().principal,
       keyDates = transform(calculation),
+      noDates = false,
     )
     try {
       prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)

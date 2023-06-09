@@ -17,7 +17,7 @@ data class CalculationOutcome(
 
   val calculationRequestId: Long,
 
-  val outcomeDate: LocalDate = LocalDate.now(),
+  val outcomeDate: LocalDate? = LocalDate.now(),
 
   @NotNull
   val calculationDateType: String = "",
