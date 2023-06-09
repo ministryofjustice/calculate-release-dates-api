@@ -18,5 +18,9 @@ data class OffenderKeyDates(
   val topupSupervisionExpiryDate: LocalDate? = null,
   val earlyRemovalSchemeEligibilityDate: LocalDate? = null,
   val effectiveSentenceEndDate: LocalDate? = null,
-  val sentenceLength: String,
+  val sentenceLength: String? = "00/00/00",
+  val homeDetentionCurfewApprovedDate: LocalDate? = null,
+  val tariffDate: LocalDate? = null,
+  val tariffExpiredRemovalSchemeEligibilityDate: LocalDate? = null,
+  val approvedParoleDate: LocalDate? = null,
 )

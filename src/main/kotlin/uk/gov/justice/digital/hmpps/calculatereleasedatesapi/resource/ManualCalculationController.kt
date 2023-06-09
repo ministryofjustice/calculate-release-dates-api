@@ -11,9 +11,13 @@ import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManualCalculationService
 
 @RestController
@@ -45,6 +49,26 @@ class ManualCalculationController(
     return manualCalculationService.hasIndeterminateSentences(bookingId)
   }
 
+  @PostMapping(value = ["/{prisonerId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Store a manual calculation",
+    description = "This endpoint will return a response model which indicates the success of storing a manual calculation",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "201", description = "Returns a ManualCalculationResponse"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun storeManualCalculation(
+    @PathVariable prisonerId: String,
+    @RequestBody manualCalculationRequest: List<ManualCalculationRequest>,
+  ): ManualCalculationResponse {
+    return manualCalculationService.storeManualCalculation(prisonerId, manualCalculationRequest)
+  }
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }

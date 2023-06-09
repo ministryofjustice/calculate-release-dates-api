@@ -17,22 +17,27 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.APD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.DPRRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ETD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCAD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.MTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.None
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.Tariff
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
@@ -52,6 +57,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DateBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
@@ -322,7 +328,7 @@ fun transform(
   calculationStatus: CalculationStatus,
   sourceData: PrisonApiSourceData,
   objectMapper: ObjectMapper,
-  calculationUserInputs: CalculationUserInputs?,
+  calculationUserInputs: CalculationUserInputs? = null,
   calculationFragments: CalculationFragments? = null,
 ): CalculationRequest {
   return CalculationRequest(
@@ -407,7 +413,7 @@ fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates {
   return CalculatedReleaseDates(
     dates = calculationRequest.calculationOutcomes.associateBy(
       { ReleaseDateType.valueOf(it.calculationDateType) },
-      { it.outcomeDate },
+      { it.outcomeDate!! },
     ).toMutableMap(),
     calculationRequestId = calculationRequest.id,
     calculationFragments = if (calculationRequest.breakdownHtml != null) CalculationFragments(calculationRequest.breakdownHtml) else null,
@@ -505,6 +511,10 @@ fun transform(calculation: CalculatedReleaseDates) =
       calculation.effectiveSentenceLength?.months,
       calculation.effectiveSentenceLength?.days,
     ),
+    homeDetentionCurfewApprovedDate = calculation.dates[HDCAD],
+    tariffDate = calculation.dates[Tariff],
+    tariffExpiredRemovalSchemeEligibilityDate = calculation.dates[TERSED],
+    approvedParoleDate = calculation.dates[APD],
   )
 
 private fun extractDates(sentence: CalculableSentence): Map<ReleaseDateType, DateBreakdown> {
@@ -538,3 +548,52 @@ fun transform(fixedTermRecallDetails: FixedTermRecallDetails): ReturnToCustodyDa
     bookingId = fixedTermRecallDetails.bookingId,
     returnToCustodyDate = fixedTermRecallDetails.returnToCustodyDate,
   )
+
+fun transform(calculationRequest: CalculationRequest, manualCalculationRequest: ManualCalculationRequest): CalculationOutcome {
+  if (manualCalculationRequest.date != null) {
+    val date = manualCalculationRequest.date?.year!!.let { LocalDate.of(it, manualCalculationRequest.date.month, manualCalculationRequest.date.day) }
+    return CalculationOutcome(
+      calculationDateType = manualCalculationRequest.dateType.name,
+      outcomeDate = date,
+      calculationRequestId = calculationRequest.id,
+    )
+  }
+  return CalculationOutcome(
+    calculationDateType = manualCalculationRequest.dateType.name,
+    outcomeDate = null,
+    calculationRequestId = calculationRequest.id,
+  )
+}
+
+fun transform(dates: Map<ReleaseDateType, LocalDate?>?): OffenderKeyDates {
+  if (dates!!.containsKey(None)) {
+    return OffenderKeyDates(null)
+  }
+  return OffenderKeyDates(
+    conditionalReleaseDate = dates[CRD],
+    licenceExpiryDate = dates[SLED] ?: dates[LED],
+    sentenceExpiryDate = dates[SLED] ?: dates[SED],
+    automaticReleaseDate = dates[ARD],
+    dtoPostRecallReleaseDate = dates[DPRRD],
+    earlyTermDate = dates[ETD],
+    homeDetentionCurfewEligibilityDate = dates[HDCED],
+    lateTermDate = dates[LTD],
+    midTermDate = dates[MTD],
+    nonParoleDate = dates[NPD],
+    paroleEligibilityDate = dates[PED],
+    postRecallReleaseDate = dates[PRRD],
+    topupSupervisionExpiryDate = dates[TUSED],
+    earlyRemovalSchemeEligibilityDate = dates[ERSED],
+    effectiveSentenceEndDate = dates[ESED],
+    sentenceLength = String.format(
+      "%02d/%02d/%02d",
+      0,
+      0,
+      0,
+    ),
+    homeDetentionCurfewApprovedDate = dates[HDCAD],
+    tariffDate = dates[Tariff],
+    tariffExpiredRemovalSchemeEligibilityDate = dates[TERSED],
+    approvedParoleDate = dates[APD],
+  )
+}

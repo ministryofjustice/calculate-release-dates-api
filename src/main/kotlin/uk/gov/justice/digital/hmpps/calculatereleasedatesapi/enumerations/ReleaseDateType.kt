@@ -18,4 +18,9 @@ enum class ReleaseDateType {
   PRRD,
   ESED, // Effective sentence end date
   ERSED,
+  TERSED,
+  APD,
+  HDCAD,
+  None,
+  Tariff,
 }
