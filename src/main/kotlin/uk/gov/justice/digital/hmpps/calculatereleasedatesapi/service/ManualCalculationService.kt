@@ -56,7 +56,7 @@ class ManualCalculationService(
     calculationOutcomeRepository.saveAll(calculationOutcomes)
     val enteredDates = writeToNomisAndPublishEvent(prisonerId, booking, calculationRequest.id, calculationOutcomes)
       ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
-    return ManualCalculationResponse(enteredDates)
+    return ManualCalculationResponse(enteredDates, calculationRequest.id)
   }
 
   @Transactional(readOnly = true)
