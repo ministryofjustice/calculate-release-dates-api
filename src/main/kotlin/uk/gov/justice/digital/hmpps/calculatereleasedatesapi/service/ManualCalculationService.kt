@@ -1,14 +1,95 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.persistence.EntityNotFoundException
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveManualEntryException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import java.time.LocalDate
 
 @Service
 class ManualCalculationService(
   private val prisonService: PrisonService,
+  private val bookingService: BookingService,
+  private val calculationOutcomeRepository: CalculationOutcomeRepository,
+  private val calculationRequestRepository: CalculationRequestRepository,
+  private val objectMapper: ObjectMapper,
+  private val eventService: EventService,
 ) {
+
+  fun getCurrentAuthentication(): AuthAwareAuthenticationToken =
+    SecurityContextHolder.getContext().authentication as AuthAwareAuthenticationToken?
+      ?: throw IllegalStateException("User is not authenticated")
+
   fun hasIndeterminateSentences(bookingId: Long): Boolean {
     val sentencesAndOffences = prisonService.getSentencesAndOffences(bookingId)
     return sentencesAndOffences.any { SentenceCalculationType.isIndeterminate(it.sentenceCalculationType) }
+  }
+
+  fun storeManualCalculation(prisonerId: String, manualCalculationRequest: List<ManualCalculationRequest>): ManualCalculationResponse {
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, true)
+    val booking = bookingService.getBooking(sourceData, CalculationUserInputs())
+    val calculationRequest =
+      calculationRequestRepository.save(
+        transform(
+          booking,
+          getCurrentAuthentication().principal,
+          CalculationStatus.CONFIRMED,
+          sourceData,
+          objectMapper,
+        ),
+      )
+    val calculationOutcomes = manualCalculationRequest.map { transform(calculationRequest, it) }
+    calculationOutcomeRepository.saveAll(calculationOutcomes)
+    val enteredDates = writeToNomisAndPublishEvent(prisonerId, booking, calculationRequest.id, calculationOutcomes)
+      ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
+    return ManualCalculationResponse(enteredDates)
+  }
+
+  @Transactional(readOnly = true)
+  fun writeToNomisAndPublishEvent(prisonerId: String, booking: Booking, calculationRequestId: Long, calculationOutcomes: List<CalculationOutcome>): Map<ReleaseDateType, LocalDate?>? {
+    val calculationRequest = calculationRequestRepository.findById(calculationRequestId)
+      .orElseThrow { EntityNotFoundException("No calculation request exists") }
+    val dates = calculationOutcomes.map { ReleaseDateType.valueOf(it.calculationDateType) to it.outcomeDate }.toMap()
+    val comment = if (dates.containsKey(ReleaseDateType.None)) "Indeterminate, no dates to enter" else "Manually entered dates, at least one date entered"
+    val updateOffenderDates = UpdateOffenderDates(
+      calculationUuid = calculationRequest.calculationReference,
+      submissionUser = getCurrentAuthentication().principal,
+      keyDates = transform(dates),
+      noDates = dates.containsKey(ReleaseDateType.None),
+      comment = comment,
+    )
+    try {
+      prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)
+    } catch (ex: Exception) {
+      CalculationTransactionalService.log.error("Nomis write failed: ${ex.message}")
+      throw EntityNotFoundException(
+        "Writing release dates to NOMIS failed for prisonerId $prisonerId " +
+          "and bookingId ${booking.bookingId}",
+      )
+    }
+    runCatching {
+      eventService.publishReleaseDatesChangedEvent(prisonerId, booking.bookingId)
+      return dates
+    }.onFailure { error ->
+      CalculationTransactionalService.log.error(
+        "Failed to send release-dates-changed-event for prisoner ID $prisonerId",
+        error,
+      )
+    }
+    return null
   }
 }
