@@ -57,7 +57,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DateBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
@@ -549,17 +549,17 @@ fun transform(fixedTermRecallDetails: FixedTermRecallDetails): ReturnToCustodyDa
     returnToCustodyDate = fixedTermRecallDetails.returnToCustodyDate,
   )
 
-fun transform(calculationRequest: CalculationRequest, manualCalculationRequest: ManualCalculationRequest): CalculationOutcome {
-  if (manualCalculationRequest.date != null) {
-    val date = manualCalculationRequest.date?.year!!.let { LocalDate.of(it, manualCalculationRequest.date.month, manualCalculationRequest.date.day) }
+fun transform(calculationRequest: CalculationRequest, manualEntrySelectedDate: ManualEntrySelectedDate): CalculationOutcome {
+  if (manualEntrySelectedDate.date != null) {
+    val date = manualEntrySelectedDate.date?.year!!.let { LocalDate.of(it, manualEntrySelectedDate.date.month, manualEntrySelectedDate.date.day) }
     return CalculationOutcome(
-      calculationDateType = manualCalculationRequest.dateType.name,
+      calculationDateType = manualEntrySelectedDate.dateType.name,
       outcomeDate = date,
       calculationRequestId = calculationRequest.id,
     )
   }
   return CalculationOutcome(
-    calculationDateType = manualCalculationRequest.dateType.name,
+    calculationDateType = manualEntrySelectedDate.dateType.name,
     outcomeDate = null,
     calculationRequestId = calculationRequest.id,
   )
