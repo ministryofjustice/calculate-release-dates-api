@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManualCalculationService
 
 @RestController
@@ -65,10 +65,11 @@ class ManualCalculationController(
   )
   fun storeManualCalculation(
     @PathVariable prisonerId: String,
-    @RequestBody manualCalculationRequest: List<ManualCalculationRequest>,
+    @RequestBody manualEntryRequest: ManualEntryRequest,
   ): ManualCalculationResponse {
-    return manualCalculationService.storeManualCalculation(prisonerId, manualCalculationRequest)
+    return manualCalculationService.storeManualCalculation(prisonerId, manualEntryRequest.selectedManualEntryDates)
   }
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }

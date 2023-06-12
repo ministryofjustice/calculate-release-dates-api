@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -94,7 +94,7 @@ class ManualCalculationServiceTest {
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
-    val manualCalcRequest = ManualCalculationRequest(ReleaseDateType.None, "None of the dates apply", null)
+    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.None, "None of the dates apply", null)
     manualCalculationService.storeManualCalculation(PRISONER_ID, listOf(manualCalcRequest))
     val expectedUpdatedOffenderDates = UpdateOffenderDates(
       calculationUuid = CALCULATION_REFERENCE,
@@ -116,7 +116,7 @@ class ManualCalculationServiceTest {
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
-    val manualCalcRequest = ManualCalculationRequest(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
+    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
     manualCalculationService.storeManualCalculation(PRISONER_ID, listOf(manualCalcRequest))
     val expectedUpdatedOffenderDates = UpdateOffenderDates(
       calculationUuid = CALCULATION_REFERENCE,

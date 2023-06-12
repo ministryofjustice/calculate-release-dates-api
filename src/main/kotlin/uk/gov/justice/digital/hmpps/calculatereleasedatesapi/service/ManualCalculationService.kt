@@ -12,8 +12,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveManualEntryException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
@@ -39,7 +39,7 @@ class ManualCalculationService(
     return sentencesAndOffences.any { SentenceCalculationType.isIndeterminate(it.sentenceCalculationType) }
   }
 
-  fun storeManualCalculation(prisonerId: String, manualCalculationRequest: List<ManualCalculationRequest>): ManualCalculationResponse {
+  fun storeManualCalculation(prisonerId: String, manualEntrySelectedDate: List<ManualEntrySelectedDate>): ManualCalculationResponse {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, true)
     val booking = bookingService.getBooking(sourceData, CalculationUserInputs())
     val calculationRequest =
@@ -52,7 +52,7 @@ class ManualCalculationService(
           objectMapper,
         ),
       )
-    val calculationOutcomes = manualCalculationRequest.map { transform(calculationRequest, it) }
+    val calculationOutcomes = manualEntrySelectedDate.map { transform(calculationRequest, it) }
     calculationOutcomeRepository.saveAll(calculationOutcomes)
     val enteredDates = writeToNomisAndPublishEvent(prisonerId, booking, calculationRequest.id, calculationOutcomes)
       ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
