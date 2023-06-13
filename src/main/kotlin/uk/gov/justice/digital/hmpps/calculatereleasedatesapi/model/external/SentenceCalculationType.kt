@@ -88,6 +88,24 @@ enum class SentenceCalculationType(
   ZMD(isSupported = false, isIndeterminate = true),
   SEC93(isSupported = false, isIndeterminate = true),
   TWENTY(isSupported = false, isIndeterminate = true, primaryName = "20"),
+  NP(isSupported = false, isIndeterminate = false),
+  LR_EPP(isSupported = false, isIndeterminate = false),
+  CR(isSupported = false, isIndeterminate = false),
+  BOTUS(isSupported = false, isIndeterminate = false),
+  AR(isSupported = false, isIndeterminate = false),
+  EPP(isSupported = false, isIndeterminate = false),
+  CUR_ORA(isSupported = false, isIndeterminate = false),
+  A_FINE(isSupported = false, isIndeterminate = false, primaryName = "A/FINE"),
+  CUR(isSupported = false, isIndeterminate = false),
+  CIVIC(isSupported = false, isIndeterminate = false),
+  EXT(isSupported = false, isIndeterminate = false),
+  HDR_ORA(isSupported = false, isIndeterminate = false),
+  HDR(isSupported = false, isIndeterminate = false),
+  LR_ES(isSupported = false, isIndeterminate = false),
+  FTR_HDC(isSupported = false, isIndeterminate = false),
+  YRO(isSupported = false, isIndeterminate = false),
+  SEC91(isSupported = false, isIndeterminate = false),
+  VOO(isSupported = false, isIndeterminate = false),
   ;
 
   companion object {
@@ -100,6 +118,7 @@ enum class SentenceCalculationType(
       } catch (error: IllegalArgumentException) {
         false
       }
+
     fun isIndeterminate(sentenceCalculationType: String): Boolean =
       try {
         from(sentenceCalculationType).isIndeterminate
