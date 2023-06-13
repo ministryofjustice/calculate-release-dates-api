@@ -101,7 +101,7 @@ class ManualCalculationServiceTest {
       submissionUser = USERNAME,
       keyDates = OffenderKeyDates(),
       noDates = true,
-      comment = "Indeterminate, no dates to enter",
+      comment = "An Indeterminate (Life) sentence was entered with no dates currently available. This was intentionally recorded as blank. It was entered using the Calculate release dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
     )
     verify(prisonService).postReleaseDates(BOOKING_ID, expectedUpdatedOffenderDates)
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
@@ -123,7 +123,7 @@ class ManualCalculationServiceTest {
       submissionUser = USERNAME,
       keyDates = OffenderKeyDates(conditionalReleaseDate = LocalDate.of(2023, 3, 3)),
       noDates = false,
-      comment = "Manually entered dates, at least one date entered",
+      comment = "The information shown was manually recorded in the Calculate release dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
     )
     verify(prisonService).postReleaseDates(BOOKING_ID, expectedUpdatedOffenderDates)
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)

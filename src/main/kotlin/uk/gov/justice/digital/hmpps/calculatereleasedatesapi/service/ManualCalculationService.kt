@@ -64,13 +64,13 @@ class ManualCalculationService(
     val calculationRequest = calculationRequestRepository.findById(calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
     val dates = calculationOutcomes.map { ReleaseDateType.valueOf(it.calculationDateType) to it.outcomeDate }.toMap()
-    val comment = if (dates.containsKey(ReleaseDateType.None)) "Indeterminate, no dates to enter" else "Manually entered dates, at least one date entered"
+    val comment = if (dates.containsKey(ReleaseDateType.None)) INDETERMINATE_COMMENT else DETERMINATE_COMMENT
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = getCurrentAuthentication().principal,
       keyDates = transform(dates),
       noDates = dates.containsKey(ReleaseDateType.None),
-      comment = comment,
+      comment = comment.format(calculationRequest.calculationReference),
     )
     try {
       prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)
@@ -91,5 +91,10 @@ class ManualCalculationService(
       )
     }
     return null
+  }
+
+  private companion object {
+    const val INDETERMINATE_COMMENT = "An Indeterminate (Life) sentence was entered with no dates currently available. This was intentionally recorded as blank. It was entered using the Calculate release dates service. The calculation ID is: %s"
+    const val DETERMINATE_COMMENT = "The information shown was manually recorded in the Calculate release dates service. The calculation ID is: %s"
   }
 }
