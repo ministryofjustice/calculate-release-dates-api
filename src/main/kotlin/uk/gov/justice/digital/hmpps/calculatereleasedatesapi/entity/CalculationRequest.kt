@@ -117,4 +117,21 @@ data class CalculationRequest(
   override fun toString(): String {
     return this::class.simpleName + "(calculationReference = $calculationReference )"
   }
+
+  fun withType(calculationType: CalculationType): CalculationRequest {
+    return copy(
+      id = this.id,
+      calculationReference = this.calculationReference,
+      prisonerId = this.prisonerId,
+      bookingId = this.bookingId,
+      calculationStatus = this.calculationStatus,
+      calculatedAt = this.calculatedAt,
+      calculatedByUsername = this.calculatedByUsername,
+      inputData = this.inputData,
+      sentenceAndOffences = this.sentenceAndOffences,
+      sentenceAndOffencesVersion = this.sentenceAndOffencesVersion,
+      prisonerDetails = this.prisonerDetails,
+      calculationType = calculationType,
+    )
+  }
 }

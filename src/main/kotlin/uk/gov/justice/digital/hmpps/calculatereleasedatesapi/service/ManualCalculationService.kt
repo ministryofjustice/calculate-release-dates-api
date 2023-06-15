@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveManualEntryException
@@ -42,21 +43,20 @@ class ManualCalculationService(
   fun storeManualCalculation(prisonerId: String, manualEntrySelectedDate: List<ManualEntrySelectedDate>): ManualCalculationResponse {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, true)
     val booking = bookingService.getBooking(sourceData, CalculationUserInputs())
-    val calculationRequest =
-      calculationRequestRepository.save(
-        transform(
-          booking,
-          getCurrentAuthentication().principal,
-          CalculationStatus.CONFIRMED,
-          sourceData,
-          objectMapper,
-        ),
-      )
-    val calculationOutcomes = manualEntrySelectedDate.map { transform(calculationRequest, it) }
+    val type = if (hasIndeterminateSentences(booking.bookingId)) CalculationType.MANUAL_INDETERMINATE else CalculationType.MANUAL_DETERMINATE
+    val calculationRequest = transform(
+      booking,
+      getCurrentAuthentication().principal,
+      CalculationStatus.CONFIRMED,
+      sourceData,
+      objectMapper,
+    ).withType(type)
+    val savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
+    val calculationOutcomes = manualEntrySelectedDate.map { transform(savedCalculationRequest, it) }
     calculationOutcomeRepository.saveAll(calculationOutcomes)
-    val enteredDates = writeToNomisAndPublishEvent(prisonerId, booking, calculationRequest.id, calculationOutcomes)
+    val enteredDates = writeToNomisAndPublishEvent(prisonerId, booking, savedCalculationRequest.id, calculationOutcomes)
       ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
-    return ManualCalculationResponse(enteredDates, calculationRequest.id)
+    return ManualCalculationResponse(enteredDates, savedCalculationRequest.id)
   }
 
   @Transactional(readOnly = true)
