@@ -6,6 +6,8 @@ import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -86,6 +88,10 @@ data class CalculationRequest(
   @OneToMany
   @Fetch(FetchMode.JOIN)
   val calculationOutcomes: List<CalculationOutcome> = ArrayList(),
+
+  @Column
+  @Enumerated(value = EnumType.STRING)
+  val calculationType: CalculationType = CalculationType.CALCULATED,
 
   @OneToOne(mappedBy = "calculationRequest", cascade = [CascadeType.ALL])
   val calculationRequestUserInput: CalculationRequestUserInput? = null,
