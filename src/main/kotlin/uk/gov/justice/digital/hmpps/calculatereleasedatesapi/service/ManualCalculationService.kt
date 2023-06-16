@@ -51,12 +51,19 @@ class ManualCalculationService(
       sourceData,
       objectMapper,
     ).withType(type)
-    val savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
-    val calculationOutcomes = manualEntrySelectedDate.map { transform(savedCalculationRequest, it) }
-    calculationOutcomeRepository.saveAll(calculationOutcomes)
-    val enteredDates = writeToNomisAndPublishEvent(prisonerId, booking, savedCalculationRequest.id, calculationOutcomes)
-      ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
-    return ManualCalculationResponse(enteredDates, savedCalculationRequest.id)
+    return try {
+      val savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
+      val calculationOutcomes = manualEntrySelectedDate.map { transform(savedCalculationRequest, it) }
+      calculationOutcomeRepository.saveAll(calculationOutcomes)
+      val enteredDates = writeToNomisAndPublishEvent(prisonerId, booking, savedCalculationRequest.id, calculationOutcomes)
+        ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
+      ManualCalculationResponse(enteredDates, savedCalculationRequest.id)
+    } catch (ex: Exception) {
+      calculationRequestRepository.save(
+        transform(booking, getCurrentAuthentication().principal, CalculationStatus.ERROR, sourceData, objectMapper),
+      )
+      ManualCalculationResponse(emptyMap(), calculationRequest.id)
+    }
   }
 
   @Transactional(readOnly = true)

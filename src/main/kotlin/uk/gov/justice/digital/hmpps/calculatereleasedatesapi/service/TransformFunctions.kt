@@ -413,7 +413,7 @@ fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates {
   return CalculatedReleaseDates(
     dates = calculationRequest.calculationOutcomes.associateBy(
       { ReleaseDateType.valueOf(it.calculationDateType) },
-      { it.outcomeDate!! },
+      { it.outcomeDate },
     ).toMutableMap(),
     calculationRequestId = calculationRequest.id,
     calculationFragments = if (calculationRequest.breakdownHtml != null) CalculationFragments(calculationRequest.breakdownHtml) else null,
