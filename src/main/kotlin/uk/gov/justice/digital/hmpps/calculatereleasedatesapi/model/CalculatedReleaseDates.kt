@@ -6,7 +6,7 @@ import java.time.LocalDate
 import java.time.Period
 
 data class CalculatedReleaseDates(
-  val dates: Map<ReleaseDateType, LocalDate>,
+  val dates: Map<ReleaseDateType, LocalDate?>,
   val calculationRequestId: Long,
   val bookingId: Long,
   val prisonerId: String,
