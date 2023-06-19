@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import java.time.LocalDate
@@ -15,4 +16,5 @@ data class CalculatedReleaseDates(
   // TODO. This needs refactoring. The effectiveSentenceLength comes out of the calculation engine, but its not stored.
   // Its required to be sent to NOMIS, but not required for our API.
   val effectiveSentenceLength: Period? = null,
+  val calculationType: CalculationType = CalculationType.CALCULATED,
 )

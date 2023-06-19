@@ -168,7 +168,7 @@ class CalculationTransactionalServiceTest {
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculation = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
 
-    val calculationBreakdown: CalculationBreakdown
+    val calculationBreakdown: CalculationBreakdown?
     try {
       calculationBreakdown = calculationTransactionalService.calculateWithBreakdown(booking, CalculatedReleaseDates(calculation.dates, -1, -1, "", PRELIMINARY))
     } catch (e: Exception) {

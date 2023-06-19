@@ -420,6 +420,7 @@ fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates {
     bookingId = calculationRequest.bookingId,
     prisonerId = calculationRequest.prisonerId,
     calculationStatus = CalculationStatus.valueOf(calculationRequest.calculationStatus),
+    calculationType = calculationRequest.calculationType,
   )
 }
 
@@ -551,7 +552,7 @@ fun transform(fixedTermRecallDetails: FixedTermRecallDetails): ReturnToCustodyDa
 
 fun transform(calculationRequest: CalculationRequest, manualEntrySelectedDate: ManualEntrySelectedDate): CalculationOutcome {
   if (manualEntrySelectedDate.date != null) {
-    val date = manualEntrySelectedDate.date?.year!!.let { LocalDate.of(it, manualEntrySelectedDate.date.month, manualEntrySelectedDate.date.day) }
+    val date = manualEntrySelectedDate.date.year.let { LocalDate.of(it, manualEntrySelectedDate.date.month, manualEntrySelectedDate.date.day) }
     return CalculationOutcome(
       calculationDateType = manualEntrySelectedDate.dateType.name,
       outcomeDate = date,

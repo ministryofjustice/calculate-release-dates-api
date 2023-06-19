@@ -213,7 +213,7 @@ class CalculationController(
     @Parameter(required = true, example = "123456", description = "The calculationRequestId of the breakdown")
     @PathVariable("calculationRequestId")
     calculationRequestId: Long,
-  ): CalculationBreakdown {
+  ): CalculationBreakdown? {
     log.info("Request received return calculation breakdown for calculationRequestId {}", calculationRequestId)
     return calculationTransactionalService.getCalculationBreakdown(calculationRequestId)
   }
