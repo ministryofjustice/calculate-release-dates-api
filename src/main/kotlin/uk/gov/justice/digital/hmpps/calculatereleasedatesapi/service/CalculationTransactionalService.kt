@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.ERROR
@@ -177,13 +178,16 @@ class CalculationTransactionalService(
   fun calculateWithBreakdown(
     booking: Booking,
     previousCalculationResults: CalculatedReleaseDates,
-  ): CalculationBreakdown {
-    val (workingBooking, bookingCalculation) = calculationService.calculateReleaseDates(booking)
-    if (bookingCalculation.dates == previousCalculationResults.dates) {
-      return transform(workingBooking, bookingCalculation.breakdownByReleaseDateType, bookingCalculation.otherDates)
-    } else {
-      throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")
+  ): CalculationBreakdown? {
+    if (previousCalculationResults.calculationType == CalculationType.CALCULATED) {
+      val (workingBooking, bookingCalculation) = calculationService.calculateReleaseDates(booking)
+      if (bookingCalculation.dates == previousCalculationResults.dates) {
+        return transform(workingBooking, bookingCalculation.breakdownByReleaseDateType, bookingCalculation.otherDates)
+      } else {
+        throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")
+      }
     }
+    return null
   }
 
   @Transactional(readOnly = true)
@@ -298,7 +302,7 @@ class CalculationTransactionalService(
   @Transactional(readOnly = true)
   fun getCalculationBreakdown(
     calculationRequestId: Long,
-  ): CalculationBreakdown {
+  ): CalculationBreakdown? {
     val calculationUserInputs = findUserInput(calculationRequestId)
     val prisonerDetails = findPrisonerDetailsFromCalculation(calculationRequestId)
     val sentenceAndOffences = findSentenceAndOffencesFromCalculation(calculationRequestId)
