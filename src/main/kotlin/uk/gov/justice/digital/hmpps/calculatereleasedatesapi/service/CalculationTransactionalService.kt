@@ -178,7 +178,7 @@ class CalculationTransactionalService(
   fun calculateWithBreakdown(
     booking: Booking,
     previousCalculationResults: CalculatedReleaseDates,
-  ): CalculationBreakdown? {
+  ): CalculationBreakdown {
     if (previousCalculationResults.calculationType == CalculationType.CALCULATED) {
       val (workingBooking, bookingCalculation) = calculationService.calculateReleaseDates(booking)
       if (bookingCalculation.dates == previousCalculationResults.dates) {
@@ -187,7 +187,7 @@ class CalculationTransactionalService(
         throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")
       }
     }
-    return null
+    return CalculationBreakdown(emptyList(), null, emptyMap(), emptyMap())
   }
 
   @Transactional(readOnly = true)
@@ -302,7 +302,7 @@ class CalculationTransactionalService(
   @Transactional(readOnly = true)
   fun getCalculationBreakdown(
     calculationRequestId: Long,
-  ): CalculationBreakdown? {
+  ): CalculationBreakdown {
     val calculationUserInputs = findUserInput(calculationRequestId)
     val prisonerDetails = findPrisonerDetailsFromCalculation(calculationRequestId)
     val sentenceAndOffences = findSentenceAndOffencesFromCalculation(calculationRequestId)
