@@ -20,12 +20,3 @@ class ComparisonPerson(
   @NotNull
   val person: String,
 )
-
-/*
-CREATE TABLE comparison_person
-(
-    id                          serial                        PRIMARY KEY,
-    comparison_id               int references comparison(id) NOT NULL,
-    person                      varchar(20)                   NOT NULL
-);
- */
