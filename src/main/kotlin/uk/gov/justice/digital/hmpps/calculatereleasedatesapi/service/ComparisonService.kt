@@ -16,7 +16,7 @@ class ComparisonService(
 
   fun create(comparison: ComparisonInput): Comparison {
     return comparisonRepository.save(
-      transform(comparison, serviceUserService.getCurrentAuthentication().principal),
+      transform(comparison, serviceUserService.getUsername()),
     )
   }
 
