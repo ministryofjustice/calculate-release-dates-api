@@ -63,7 +63,6 @@ class ComparisonControllerTest {
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(comparisonInput)),
     )
-      .andDo(MockMvcResultHandlers.print())
       .andExpect(MockMvcResultMatchers.status().isOk)
       .andReturn()
 
@@ -72,12 +71,14 @@ class ComparisonControllerTest {
 
   @Test
   fun `Test GET of manual input comparisons`() {
-    whenever(comparisonService.listManual()).thenReturn(listOf(Comparison(1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), null, true, LocalDateTime.now(), "JOEL")))
+    val comparisonList = listOf(Comparison(1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), null, true, LocalDateTime.now(), "JOEL"))
+    whenever(comparisonService.listComparisons()).thenReturn(comparisonList)
 
     val result = mvc.perform(
-      MockMvcRequestBuilders.get("/comparison/list/manual")
+      MockMvcRequestBuilders.get("/comparison/list/")
         .accept(MediaType.APPLICATION_JSON),
     )
+      .andDo(MockMvcResultHandlers.print())
       .andExpect(MockMvcResultMatchers.status().isOk)
       .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
       .andReturn()
@@ -87,10 +88,10 @@ class ComparisonControllerTest {
 
   @Test
   fun `Test GET of preconfigured comparisons`() {
-    whenever(comparisonService.listComparisons()).thenReturn(listOf(Comparison(1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "JAS", false, LocalDateTime.now(), "JOEL")))
+    whenever(comparisonService.listManual()).thenReturn(listOf(Comparison(1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "JAS", false, LocalDateTime.now(), "JOEL")))
 
     val result = mvc.perform(
-      MockMvcRequestBuilders.get("/comparison/list/")
+      MockMvcRequestBuilders.get("/comparison/manual/")
         .accept(MediaType.APPLICATION_JSON),
     )
       .andExpect(MockMvcResultMatchers.status().isOk)

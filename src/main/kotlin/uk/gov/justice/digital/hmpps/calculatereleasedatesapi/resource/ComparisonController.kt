@@ -48,7 +48,7 @@ class ComparisonController(
     return comparisonService.create(comparison)
   }
 
-  @GetMapping(value = ["/list/manual"])
+  @GetMapping(value = ["/manual"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'ROLE_RELEASE_DATE_MANUAL_COMPARER')")
   @ResponseBody
   @Operation(
