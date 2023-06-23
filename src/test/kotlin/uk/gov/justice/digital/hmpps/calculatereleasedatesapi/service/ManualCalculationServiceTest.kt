@@ -8,11 +8,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.oauth2.jwt.Jwt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -36,7 +33,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 class ManualCalculationServiceTest {
   private val prisonService = mock<PrisonService>()
@@ -45,6 +43,7 @@ class ManualCalculationServiceTest {
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val objectMapper = TestUtil.objectMapper()
   private val eventService = mock<EventService>()
+  private val serviceUserService = mock<ServiceUserService>()
   private val manualCalculationService = ManualCalculationService(
     prisonService,
     bookingService,
@@ -52,6 +51,7 @@ class ManualCalculationServiceTest {
     calculationRequestRepository,
     objectMapper,
     eventService,
+    serviceUserService,
   )
 
   @Nested
@@ -87,13 +87,11 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check noDates is set correctly when indeterminate`() {
-    SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())),
-    )
     whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.None, "None of the dates apply", null)
     manualCalculationService.storeManualCalculation(PRISONER_ID, listOf(manualCalcRequest))
     val expectedUpdatedOffenderDates = UpdateOffenderDates(
@@ -109,13 +107,11 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check noDates is set correctly for determinate manual entry`() {
-    SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())),
-    )
     whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
     manualCalculationService.storeManualCalculation(PRISONER_ID, listOf(manualCalcRequest))
     val expectedUpdatedOffenderDates = UpdateOffenderDates(

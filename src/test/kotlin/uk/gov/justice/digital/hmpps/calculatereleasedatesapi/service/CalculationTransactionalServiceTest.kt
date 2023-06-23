@@ -21,11 +21,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.oauth2.jwt.Jwt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
@@ -104,6 +101,7 @@ class CalculationTransactionalServiceTest {
   )
   private val bookingService = mock<BookingService>()
   private val validationService = mock<ValidationService>()
+  private val serviceUserService = mock<ServiceUserService>()
 
   private val calculationTransactionalService =
     CalculationTransactionalService(
@@ -116,6 +114,7 @@ class CalculationTransactionalServiceTest {
       bookingService,
       validationService,
       eventService,
+      serviceUserService,
     )
 
   private val fakeSourceData = PrisonApiSourceData(
@@ -134,9 +133,8 @@ class CalculationTransactionalServiceTest {
   fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
-    SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())),
-    )
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculatedReleaseDates: CalculatedReleaseDates
     try {
@@ -162,9 +160,8 @@ class CalculationTransactionalServiceTest {
   @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
   fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String, error: String?) {
     log.info("Testing example $exampleType/$exampleNumber")
-    SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())),
-    )
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculation = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
 
@@ -250,7 +247,7 @@ class CalculationTransactionalServiceTest {
 
   @Test
   fun `Test validation succeeds if the PRELIMINARY calculation matches the one being confirmed`() {
-    SecurityContextHolder.setContext(SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())))
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(CALCULATION_REQUEST_ID, PRELIMINARY.name))
       .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
     whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(fakeSourceData)
@@ -263,9 +260,7 @@ class CalculationTransactionalServiceTest {
 
   @Test
   fun `Test that write to NOMIS and publishing event succeeds`() {
-    SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())),
-    )
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(
       calculationRequestRepository.findById(
         CALCULATION_REQUEST_ID,
@@ -307,9 +302,8 @@ class CalculationTransactionalServiceTest {
 
   @Test
   fun `Test that exception with correct message is thrown if write to NOMIS fails `() {
-    SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())),
-    )
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+
     whenever(
       calculationRequestRepository.findById(
         CALCULATION_REQUEST_ID,
@@ -337,9 +331,7 @@ class CalculationTransactionalServiceTest {
 
   @Test
   fun `Test that if the publishing of an event fails the exception is handled and not propagated`() {
-    SecurityContextHolder.setContext(
-      SecurityContextImpl(AuthAwareAuthenticationToken(FAKE_TOKEN, USERNAME, emptyList())),
-    )
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(
       calculationRequestRepository.findById(
         CALCULATION_REQUEST_ID,

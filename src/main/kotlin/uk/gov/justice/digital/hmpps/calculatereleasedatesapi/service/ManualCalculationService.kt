@@ -2,10 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -29,11 +27,8 @@ class ManualCalculationService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val objectMapper: ObjectMapper,
   private val eventService: EventService,
+  private val serviceUserService: ServiceUserService,
 ) {
-
-  fun getCurrentAuthentication(): AuthAwareAuthenticationToken =
-    SecurityContextHolder.getContext().authentication as AuthAwareAuthenticationToken?
-      ?: throw IllegalStateException("User is not authenticated")
 
   fun hasIndeterminateSentences(bookingId: Long): Boolean {
     val sentencesAndOffences = prisonService.getSentencesAndOffences(bookingId)
@@ -46,7 +41,7 @@ class ManualCalculationService(
     val type = if (hasIndeterminateSentences(booking.bookingId)) CalculationType.MANUAL_INDETERMINATE else CalculationType.MANUAL_DETERMINATE
     val calculationRequest = transform(
       booking,
-      getCurrentAuthentication().principal,
+      serviceUserService.getUsername(),
       CalculationStatus.CONFIRMED,
       sourceData,
       objectMapper,
@@ -60,7 +55,7 @@ class ManualCalculationService(
       ManualCalculationResponse(enteredDates, savedCalculationRequest.id)
     } catch (ex: Exception) {
       calculationRequestRepository.save(
-        transform(booking, getCurrentAuthentication().principal, CalculationStatus.ERROR, sourceData, objectMapper),
+        transform(booking, serviceUserService.getUsername(), CalculationStatus.ERROR, sourceData, objectMapper),
       )
       ManualCalculationResponse(emptyMap(), calculationRequest.id)
     }
@@ -74,7 +69,7 @@ class ManualCalculationService(
     val comment = if (dates.containsKey(ReleaseDateType.None)) INDETERMINATE_COMMENT else DETERMINATE_COMMENT
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
-      submissionUser = getCurrentAuthentication().principal,
+      submissionUser = serviceUserService.getUsername(),
       keyDates = transform(dates),
       noDates = dates.containsKey(ReleaseDateType.None),
       comment = comment.format(calculationRequest.calculationReference),
