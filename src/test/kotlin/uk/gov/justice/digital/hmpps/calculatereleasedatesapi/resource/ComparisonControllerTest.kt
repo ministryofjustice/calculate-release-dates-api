@@ -58,7 +58,7 @@ class ComparisonControllerTest {
 
     val result = mvc.perform(
       MockMvcRequestBuilders
-        .post("/compare/")
+        .post("/comparison/")
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(comparisonInput)),
