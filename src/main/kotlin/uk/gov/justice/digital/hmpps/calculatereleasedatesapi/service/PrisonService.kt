@@ -69,4 +69,9 @@ class PrisonService(
   fun postReleaseDates(bookingId: Long, updateOffenderDates: UpdateOffenderDates) {
     return prisonApiClient.postReleaseDates(bookingId, updateOffenderDates)
   }
+
+  fun getCurrentUserPrisonsList(): List<String> {
+    return prisonApiClient.getCurrentUserCaseLoads()?.filter { it.currentlyActive }?.map { caseLoad -> caseLoad.caseLoadId }
+      ?: emptyList()
+  }
 }

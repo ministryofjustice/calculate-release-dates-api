@@ -66,6 +66,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -78,6 +79,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
@@ -596,5 +598,18 @@ fun transform(dates: Map<ReleaseDateType, LocalDate?>?): OffenderKeyDates {
     tariffDate = dates[Tariff],
     tariffExpiredRemovalSchemeEligibilityDate = dates[TERSED],
     approvedParoleDate = dates[APD],
+  )
+}
+
+fun transform(
+  comparison: ComparisonInput,
+  username: String,
+): uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison {
+  return uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison(
+    criteria = comparison.criteria,
+    manualInput = comparison.manualInput,
+    prison = comparison.prison,
+    calculatedAt = LocalDateTime.now(),
+    calculatedByUsername = username,
   )
 }
