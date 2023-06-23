@@ -126,9 +126,6 @@ domain-events-sns:
     topic:
       arn: topic_arn
 
-feature-toggles:
-  dto: ${DTO_FEATURE_TOGGLE}
-
 hdced:
   envelope:
     minimum:
