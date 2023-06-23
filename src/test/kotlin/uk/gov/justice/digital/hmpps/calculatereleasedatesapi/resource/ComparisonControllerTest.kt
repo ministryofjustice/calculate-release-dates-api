@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -66,7 +66,7 @@ class ComparisonControllerTest {
       .andExpect(MockMvcResultMatchers.status().isOk)
       .andReturn()
 
-    Assertions.assertThat(result.response.contentAsString).contains("ABCD1234")
+    assertThat(result.response.contentAsString).contains("ABCD1234")
   }
 
   @Test
@@ -83,7 +83,7 @@ class ComparisonControllerTest {
       .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
       .andReturn()
 
-    Assertions.assertThat(result.response.contentAsString).contains("\"comparisonShortReference\":\"ABCD1234\"")
+    assertThat(result.response.contentAsString).contains("\"comparisonShortReference\":\"ABCD1234\"")
   }
 
   @Test
@@ -98,7 +98,7 @@ class ComparisonControllerTest {
       .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
       .andReturn()
 
-    Assertions.assertThat(result.response.contentAsString).contains("\"comparisonShortReference\":\"ABCD1234\"")
+    assertThat(result.response.contentAsString).contains("\"comparisonShortReference\":\"ABCD1234\"")
   }
 
   @Test
@@ -114,6 +114,6 @@ class ComparisonControllerTest {
       .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
       .andReturn()
 
-    Assertions.assertThat(result.response.contentAsString).isEqualTo("7")
+    assertThat(result.response.contentAsString).isEqualTo("7")
   }
 }
