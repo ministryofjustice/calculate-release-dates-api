@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -98,7 +97,6 @@ import java.time.temporal.ChronoUnit.MONTHS
 @Service
 class ValidationService(
   private val extractionService: SentencesExtractionService,
-  private val featureToggles: FeatureToggles,
 ) {
   fun validateBeforeCalculation(
     sourceData: PrisonApiSourceData,
@@ -637,12 +635,7 @@ class ValidationService(
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedCategories = listOf("2003", "2020")
     val validationMessages = sentencesAndOffences.filter {
-      if (SentenceCalculationType.isSupported(it.sentenceCalculationType) && supportedCategories.contains(it.sentenceCategory)) {
-        val type = from(it.sentenceCalculationType)
-        !featureToggles.dto && type.sentenceClazz == DetentionAndTrainingOrderSentence::class.java
-      } else {
-        true
-      }
+      !(SentenceCalculationType.isSupported(it.sentenceCalculationType) && supportedCategories.contains(it.sentenceCategory))
     }
       .map {
         ValidationMessage(
@@ -670,7 +663,7 @@ class ValidationService(
       if (sentenceCalculationType.recallType != null) {
         bookingHasRecall = true
       }
-      if (featureToggles.dto && hasDto && hasDtoRecall) {
+      if (hasDto && hasDtoRecall) {
         validationMessages.add(ValidationMessage(ValidationCode.DTO_RECALL))
       } else if (bookingHasDto && bookingHasRecall) {
         validationMessages.add(ValidationMessage(UNSUPPORTED_CALCULATION_DTO_WITH_RECALL))
