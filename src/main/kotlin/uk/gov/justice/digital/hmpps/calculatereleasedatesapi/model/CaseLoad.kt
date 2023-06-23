@@ -1,9 +1,12 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import io.swagger.v3.oas.annotations.media.Schema
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadFunction
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadType
 
 @Schema(description = "Case Load")
 class CaseLoad(
+
   @Schema(required = true, description = "Case Load ID", example = "MDI")
   val caseLoadId: String,
 
@@ -16,14 +19,14 @@ class CaseLoad(
     example = "INST",
     allowableValues = ["COMM", "INST", "APP"],
   )
-  val type: String,
+  val type: CaseLoadType,
 
   @Schema(
     description = "Functional Use of the case load",
     example = "GENERAL",
     allowableValues = ["GENERAL", "ADMIN"],
   )
-  val caseloadFunction: String? = null,
+  val caseloadFunction: CaseLoadFunction? = null,
 
   @Schema(
     required = true,
