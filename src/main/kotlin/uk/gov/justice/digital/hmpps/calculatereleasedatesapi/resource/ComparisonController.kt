@@ -20,13 +20,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Comp
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ComparisonService
 
 @RestController
-@RequestMapping("/compare", produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/comparison", produces = [MediaType.APPLICATION_JSON_VALUE])
 @Tag(name = "comparison-controller", description = "Operations performing a comparison")
 class ComparisonController(
   private val comparisonService: ComparisonService,
 ) {
 
-  @PostMapping(value = ["/"])
+  @PostMapping
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'ROLE_RELEASE_DATE_COMPARER', 'ROLE_RELEASE_DATE_MANUAL_COMPARER')")
   @ResponseBody
   @Operation(

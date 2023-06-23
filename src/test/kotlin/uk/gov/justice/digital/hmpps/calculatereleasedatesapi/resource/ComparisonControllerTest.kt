@@ -75,7 +75,7 @@ class ComparisonControllerTest {
     whenever(comparisonService.listManual()).thenReturn(listOf(Comparison(1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), null, true, LocalDateTime.now(), "JOEL")))
 
     val result = mvc.perform(
-      MockMvcRequestBuilders.get("/compare/list/manual")
+      MockMvcRequestBuilders.get("/comparison/list/manual")
         .accept(MediaType.APPLICATION_JSON),
     )
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -90,7 +90,7 @@ class ComparisonControllerTest {
     whenever(comparisonService.listComparisons()).thenReturn(listOf(Comparison(1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "JAS", false, LocalDateTime.now(), "JOEL")))
 
     val result = mvc.perform(
-      MockMvcRequestBuilders.get("/compare/list/")
+      MockMvcRequestBuilders.get("/comparison/list/")
         .accept(MediaType.APPLICATION_JSON),
     )
       .andExpect(MockMvcResultMatchers.status().isOk)
@@ -106,7 +106,7 @@ class ComparisonControllerTest {
     whenever(comparisonService.getCountOfPersonsInComparisonByComparisonReference(shortReference)).thenReturn(7)
 
     val result = mvc.perform(
-      MockMvcRequestBuilders.get("/compare/$shortReference/count/")
+      MockMvcRequestBuilders.get("/comparison/$shortReference/count/")
         .accept(MediaType.APPLICATION_JSON),
     )
       .andExpect(MockMvcResultMatchers.status().isOk)
