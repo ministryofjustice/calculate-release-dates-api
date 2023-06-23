@@ -67,7 +67,7 @@ class ComparisonController(
     return comparisonService.listManual()
   }
 
-  @GetMapping(value = ["/list"])
+  @GetMapping
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'ROLE_RELEASE_DATE_COMPARER', 'ROLE_RELEASE_DATE_MANUAL_COMPARER')")
   @ResponseBody
   @Operation(

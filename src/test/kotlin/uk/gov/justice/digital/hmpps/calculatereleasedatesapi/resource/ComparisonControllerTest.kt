@@ -75,7 +75,7 @@ class ComparisonControllerTest {
     whenever(comparisonService.listComparisons()).thenReturn(comparisonList)
 
     val result = mvc.perform(
-      MockMvcRequestBuilders.get("/comparison/list/")
+      MockMvcRequestBuilders.get("/comparison/")
         .accept(MediaType.APPLICATION_JSON),
     )
       .andDo(MockMvcResultHandlers.print())
