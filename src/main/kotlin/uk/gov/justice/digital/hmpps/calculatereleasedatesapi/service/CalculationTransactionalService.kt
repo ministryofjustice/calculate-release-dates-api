@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.AuthAwareAuthenticationToken
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -44,11 +42,8 @@ class CalculationTransactionalService(
   private val bookingService: BookingService,
   private val validationService: ValidationService,
   private val eventService: EventService,
+  private val serviceUserService: ServiceUserService,
 ) {
-
-  fun getCurrentAuthentication(): AuthAwareAuthenticationToken =
-    SecurityContextHolder.getContext().authentication as AuthAwareAuthenticationToken?
-      ?: throw IllegalStateException("User is not authenticated")
 
   /*
    * There are 3 stages of full validation:
@@ -148,7 +143,7 @@ class CalculationTransactionalService(
       calculationRequestRepository.save(
         transform(
           booking,
-          getCurrentAuthentication().principal,
+          serviceUserService.getUsername(),
           calculationStatus,
           sourceData,
           objectMapper,
@@ -264,7 +259,7 @@ class CalculationTransactionalService(
 
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
-      submissionUser = getCurrentAuthentication().principal,
+      submissionUser = serviceUserService.getUsername(),
       keyDates = transform(calculation),
       noDates = false,
     )
@@ -295,7 +290,7 @@ class CalculationTransactionalService(
     error: Exception,
   ) {
     calculationRequestRepository.save(
-      transform(booking, getCurrentAuthentication().principal, ERROR, sourceData, objectMapper, calculationUserInputs),
+      transform(booking, serviceUserService.getUsername(), ERROR, sourceData, objectMapper, calculationUserInputs),
     )
   }
 
