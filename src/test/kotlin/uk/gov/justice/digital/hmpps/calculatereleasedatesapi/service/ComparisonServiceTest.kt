@@ -43,6 +43,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       true,
       LocalDateTime.now(),
       USERNAME,
+      0,
     )
 
     Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
@@ -65,6 +66,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       true,
       LocalDateTime.now(),
       USERNAME,
+      0,
     )
 
     Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
@@ -91,6 +93,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
           false,
           LocalDateTime.now(),
           USERNAME,
+          0,
         ),
       ),
     )
@@ -112,6 +115,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       true,
       LocalDateTime.now(),
       USERNAME,
+      0,
     )
     Mockito.`when`(comparisonRepository.findAllByManualInput(true)).thenReturn(listOf(comparison))
 
@@ -139,6 +143,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       true,
       LocalDateTime.now(),
       USERNAME,
+      0,
     )
     Mockito.`when`(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
 
