@@ -40,11 +40,11 @@ class ComparisonController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun create(
+  fun createComparison(
     @RequestBody
     comparison: ComparisonInput,
   ): uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison {
-    ComparisonController.log.info("Request received to create a new Comparison")
+    log.info("Request received to create a new Comparison")
     return comparisonService.create(comparison)
   }
 
@@ -63,7 +63,7 @@ class ComparisonController(
     ],
   )
   fun getManualComparisons(): List<uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison> {
-    ComparisonController.log.info("Requested a list of manual Comparisons")
+    log.info("Requested a list of manual Comparisons")
     return comparisonService.listManual()
   }
 
@@ -82,7 +82,7 @@ class ComparisonController(
     ],
   )
   fun getComparisons(): List<uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison> {
-    ComparisonController.log.info("Requested a list of Comparisons")
+    log.info("Requested a list of Comparisons")
     return comparisonService.listComparisons()
   }
 
@@ -105,7 +105,7 @@ class ComparisonController(
     @PathVariable("comparisonReference")
     comparisonReference: String,
   ): Long {
-    ComparisonController.log.info("Requested a count of the number of persons in a particular comparison")
+    log.info("Requested a count of the number of persons in a particular comparison")
     return comparisonService.getCountOfPersonsInComparisonByComparisonReference(comparisonReference)
   }
 
