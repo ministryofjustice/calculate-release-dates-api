@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
+import org.hibernate.annotations.Formula
 import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.util.UUID
@@ -42,4 +43,8 @@ class Comparison(
 
   @NotNull
   val calculatedByUsername: String,
+
+  @Formula("(SELECT count(id) FROM comparisonPerson cp WHERE cp.comparison_id=id)")
+  val numberOfPeopleCompared: Long?,
+
 )

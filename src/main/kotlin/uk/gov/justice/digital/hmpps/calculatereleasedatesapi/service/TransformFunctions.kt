@@ -611,5 +611,6 @@ fun transform(
     prison = comparison.prison,
     calculatedAt = LocalDateTime.now(),
     calculatedByUsername = username,
+    numberOfPeopleCompared = null,
   )
 }
