@@ -34,7 +34,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
   @Test
   fun `A Comparison is created when create is called`() {
-    var outputComparison = Comparison(
+    val outputComparison = Comparison(
       1,
       UUID.randomUUID(),
       "ABCD1234",
@@ -43,7 +43,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       true,
       LocalDateTime.now(),
       USERNAME,
-      0,
+      null,
     )
 
     Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
@@ -57,7 +57,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
   @Test
   fun `A Comparison is created when create is called with manual input`() {
-    var outputComparison = Comparison(
+    val outputComparison = Comparison(
       1,
       UUID.randomUUID(),
       "ABCD1234",
@@ -66,7 +66,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       true,
       LocalDateTime.now(),
       USERNAME,
-      0,
+      null,
     )
 
     Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
@@ -93,7 +93,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
           false,
           LocalDateTime.now(),
           USERNAME,
-          0,
+          null,
         ),
       ),
     )
@@ -115,7 +115,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       true,
       LocalDateTime.now(),
       USERNAME,
-      0,
+      null,
     )
     Mockito.`when`(comparisonRepository.findAllByManualInput(true)).thenReturn(listOf(comparison))
 
@@ -143,7 +143,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       true,
       LocalDateTime.now(),
       USERNAME,
-      0,
+      null,
     )
     Mockito.`when`(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
 

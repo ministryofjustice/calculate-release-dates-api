@@ -1,7 +1,11 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
@@ -15,8 +19,10 @@ class ComparisonService(
 ) {
 
   fun create(comparison: ComparisonInput): Comparison {
+    val comparisonToCreate = transform(comparison, serviceUserService.getUsername())
+    log.info("Creating new comparison $comparisonToCreate")
     return comparisonRepository.save(
-      transform(comparison, serviceUserService.getUsername()),
+      comparisonToCreate,
     )
   }
 
@@ -50,5 +56,20 @@ class ComparisonService(
       }
     }
     return 0
+  }
+
+  fun getComparisonByComparisonReference(comparisonReference: String): Comparison {
+    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
+
+    if (comparison != null && (
+        !comparison.manualInput ||
+          (comparison.manualInput && serviceUserService.hasRoles(listOf("ROLE_RELEASE_DATE_MANUAL_COMPARER", "SYSTEM_USER"))))) {
+      return comparison
+    }
+    throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
+  }
+
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }

@@ -1,0 +1,1 @@
+alter table comparison alter column calculated_by_username type varchar(40)

@@ -33,6 +33,7 @@ class Comparison(
   @Column(columnDefinition = "jsonb")
   val criteria: JsonNode? = null,
 
+  @Column(length = 5)
   val prison: String? = null,
 
   @NotNull
@@ -42,9 +43,14 @@ class Comparison(
   val calculatedAt: LocalDateTime = LocalDateTime.now(),
 
   @NotNull
+  @Column(length = 40)
   val calculatedByUsername: String,
 
-  @Formula("(SELECT count(id) FROM comparisonPerson cp WHERE cp.comparison_id=id)")
+  @Formula("(SELECT count(*) FROM comparison_person cp WHERE cp.comparison_id=id)")
   val numberOfPeopleCompared: Long?,
 
-)
+) {
+  override fun toString(): String {
+    return "Comparison(id=$id, comparisonReference=$comparisonReference, comparisonShortReference='$comparisonShortReference', criteria=$criteria, prison=$prison, manualInput=$manualInput, calculatedAt=$calculatedAt, calculatedByUsername='$calculatedByUsername')"
+  }
+}
