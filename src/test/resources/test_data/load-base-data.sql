@@ -1,1 +1,1 @@
-insert into calculation_request(calculation_reference, prisoner_id, booking_id, calculation_status, calculated_at, calculated_by_username, input_data) values ('d4c96712-e0eb-11ec-9d64-0242ac120002', 'A1234AB', 12345, 'preliminary', now(), 'int_test_user', '{}');
+insert into calculation_request(calculation_reference, prisoner_id, booking_id, calculation_status, calculated_at, calculated_by_username, input_data, calculation_type) values ('d4c96712-e0eb-11ec-9d64-0242ac120002', 'A1234AB', 12345, 'preliminary', now(), 'int_test_user', '{}', 'CALCULATED');
