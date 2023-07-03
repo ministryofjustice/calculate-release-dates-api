@@ -17,11 +17,6 @@ generic-service:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
     PRISON_API_URL: https://api-preprod.prison.service.justice.gov.uk
-    HMPPS_SQS_USE_WEB_TOKEN: "true"
-
-  namespace_secrets:
-    hmpps-domain-events-topic:
-      HMPPS_SQS_TOPICS_HMPPSEVENTTOPIC_ARN: "topic_arn"
 
   serviceAccountName: calculate-release-dates-api-preprod
 
