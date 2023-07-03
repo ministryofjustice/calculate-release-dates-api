@@ -17,6 +17,8 @@ generic-service:
       HMPPS_SQS_TOPICS_HMPPSEVENTTOPIC_SECRET_ACCESS_KEY: "secret_access_key"
       HMPPS_SQS_TOPICS_HMPPSEVENTTOPIC_ARN: "topic_arn"
 
+  serviceAccountName: calculate-release-dates-api-prod
+
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
