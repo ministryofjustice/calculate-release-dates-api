@@ -80,6 +80,8 @@ class CalculationTransactionalService(
     try {
       return calculate(booking, calculationType, sourceData, calculationUserInputs)
     } catch (error: Exception) {
+      log.error("EXCEPTION #################################################")
+      log.error("EXCEPTION #################################################" + error.message)
       recordError(booking, sourceData, calculationUserInputs, error)
       throw error
     }
@@ -139,6 +141,7 @@ class CalculationTransactionalService(
     calculationUserInputs: CalculationUserInputs?,
     calculationFragments: CalculationFragments? = null,
   ): CalculatedReleaseDates {
+    log.error("################# 1")
     val calculationRequest =
       calculationRequestRepository.save(
         transform(
@@ -152,11 +155,16 @@ class CalculationTransactionalService(
         ),
       )
 
+    log.error("################# 2")
     val calculationResult = calculationService.calculateReleaseDates(booking).second
+
+    log.error("################# 3")
 
     calculationResult.dates.forEach {
       calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
     }
+
+    log.error("################# 4")
 
     return CalculatedReleaseDates(
       dates = calculationResult.dates,
