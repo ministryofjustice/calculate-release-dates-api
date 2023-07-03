@@ -2,7 +2,6 @@
 # Per environment values which override defaults in calculate-release-dates-api/values.yaml
 
 generic-service:
-  replicaCount: 2
 
   ingress:
     host: calculate-release-dates-api-preprod.hmpps.service.justice.gov.uk
