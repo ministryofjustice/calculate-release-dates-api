@@ -1,8 +1,8 @@
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.2.0"
-  id("org.springdoc.openapi-gradle-plugin") version "1.8.22"
-  kotlin("plugin.spring") version "1.8.21"
-  kotlin("plugin.jpa") version "1.8.21"
+  id("org.springdoc.openapi-gradle-plugin") version "1.6.0"
+  kotlin("plugin.spring") version "1.8.22"
+  kotlin("plugin.jpa") version "1.8.22"
   id("jacoco")
 }
 
@@ -20,8 +20,6 @@ tasks.named("check") {
     }
   )
 }
-
-val awsSdkVersion = "1.12.285"
 
 dependencies {
 
@@ -68,9 +66,6 @@ dependencies {
 
   // SQS
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:2.0.0")
-
-  // AWS
-  implementation("com.amazonaws:aws-java-sdk-sns:$awsSdkVersion")
 
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
