@@ -21,8 +21,6 @@ tasks.named("check") {
   )
 }
 
-val awsSdkVersion = "1.12.285"
-
 dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -67,17 +65,7 @@ dependencies {
   implementation("com.google.code.gson:gson:2.10.1")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.2.0")
-
-  // AWS
-  implementation("com.amazonaws:aws-java-sdk-s3:$awsSdkVersion")
-  implementation("com.amazonaws:aws-java-sdk-cloudformation:$awsSdkVersion")
-  implementation("com.amazonaws:aws-java-sdk-core:$awsSdkVersion")
-  implementation("com.amazonaws:aws-java-sdk-ec2:$awsSdkVersion")
-  implementation("com.amazonaws:aws-java-sdk-kms:$awsSdkVersion")
-  implementation("com.amazonaws:aws-java-sdk-sns:$awsSdkVersion")
-  implementation("com.amazonaws:aws-java-sdk-sqs:$awsSdkVersion")
-  implementation("com.amazonaws:jmespath-java:$awsSdkVersion")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:2.0.0")
 
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
