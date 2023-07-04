@@ -23,4 +23,5 @@ data class OffenderKeyDates(
   val tariffDate: LocalDate? = null,
   val tariffExpiredRemovalSchemeEligibilityDate: LocalDate? = null,
   val approvedParoleDate: LocalDate? = null,
+  val releaseOnTemporaryLicenceDate: LocalDate? = null,
 )
