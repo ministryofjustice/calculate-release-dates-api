@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.None
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ROTL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TERSED
@@ -518,6 +519,7 @@ fun transform(calculation: CalculatedReleaseDates) =
     tariffDate = calculation.dates[Tariff],
     tariffExpiredRemovalSchemeEligibilityDate = calculation.dates[TERSED],
     approvedParoleDate = calculation.dates[APD],
+    releaseOnTemporaryLicenceDate = calculation.dates[ROTL],
   )
 
 private fun extractDates(sentence: CalculableSentence): Map<ReleaseDateType, DateBreakdown> {
@@ -598,6 +600,7 @@ fun transform(dates: Map<ReleaseDateType, LocalDate?>?): OffenderKeyDates {
     tariffDate = dates[Tariff],
     tariffExpiredRemovalSchemeEligibilityDate = dates[TERSED],
     approvedParoleDate = dates[APD],
+    releaseOnTemporaryLicenceDate = dates[ROTL],
   )
 }
 

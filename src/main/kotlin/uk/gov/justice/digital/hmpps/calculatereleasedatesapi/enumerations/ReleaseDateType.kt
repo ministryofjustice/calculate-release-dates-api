@@ -23,4 +23,5 @@ enum class ReleaseDateType {
   HDCAD,
   None,
   Tariff,
+  ROTL,
 }
