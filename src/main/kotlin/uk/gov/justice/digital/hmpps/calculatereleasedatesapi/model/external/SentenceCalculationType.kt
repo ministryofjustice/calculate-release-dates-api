@@ -97,7 +97,7 @@ enum class SentenceCalculationType(
   CUR_ORA(isSupported = false, isIndeterminate = false),
   A_FINE(isSupported = false, isIndeterminate = false, primaryName = "A/FINE"),
   CUR(isSupported = false, isIndeterminate = false),
-  CIVIC(isSupported = false, isIndeterminate = false),
+  CIVIL(isSupported = false, isIndeterminate = false),
   EXT(isSupported = false, isIndeterminate = false),
   HDR_ORA(isSupported = false, isIndeterminate = false),
   HDR(isSupported = false, isIndeterminate = false),
