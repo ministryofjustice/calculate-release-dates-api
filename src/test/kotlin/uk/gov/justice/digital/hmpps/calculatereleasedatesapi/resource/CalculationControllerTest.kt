@@ -32,6 +32,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
@@ -59,7 +60,7 @@ class CalculationControllerTest {
   @Autowired
   private lateinit var mapper: ObjectMapper
 
-  private val calculationFragments = CalculationFragments("<p>breakdown</p>")
+  private val submitCalculationRequest = SubmitCalculationRequest(calculationFragments = CalculationFragments(breakdownHtml = "<p>breakdown</p>"), approvedDates = null)
 
   @BeforeEach
   fun reset() {
@@ -138,12 +139,12 @@ class CalculationControllerTest {
       bookingId = bookingId,
       prisonerId = prisonerId,
     )
-    whenever(calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, calculationFragments)).thenReturn(calculatedReleaseDates)
+    whenever(calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, submitCalculationRequest)).thenReturn(calculatedReleaseDates)
 
     val result = mvc.perform(
       post("/calculation/confirm/$calculationRequestId")
         .accept(APPLICATION_JSON)
-        .content(mapper.writeValueAsString(calculationFragments))
+        .content(mapper.writeValueAsString(submitCalculationRequest))
         .contentType(APPLICATION_JSON),
     )
       .andExpect(status().isOk)
@@ -151,14 +152,14 @@ class CalculationControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
-    verify(calculationTransactionalService, times(1)).validateAndConfirmCalculation(calculationRequestId, calculationFragments)
+    verify(calculationTransactionalService, times(1)).validateAndConfirmCalculation(calculationRequestId, submitCalculationRequest)
   }
 
   @Test
   fun `Test POST to confirm a calculation when the data has changed since the PRELIM calc - results in exception`() {
     val calculationRequestId = 12345L
 
-    whenever(calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, calculationFragments)).then {
+    whenever(calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, submitCalculationRequest)).then {
       throw PreconditionFailedException(
         "The booking data used for the preliminary calculation has changed",
       )
@@ -167,7 +168,7 @@ class CalculationControllerTest {
     val result = mvc.perform(
       post("/calculation/confirm/$calculationRequestId")
         .accept(APPLICATION_JSON)
-        .content(mapper.writeValueAsString(calculationFragments))
+        .content(mapper.writeValueAsString(submitCalculationRequest))
         .contentType(APPLICATION_JSON),
     )
       .andExpect(status().isPreconditionFailed)
