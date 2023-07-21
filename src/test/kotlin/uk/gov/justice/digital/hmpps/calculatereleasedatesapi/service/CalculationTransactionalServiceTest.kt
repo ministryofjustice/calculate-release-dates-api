@@ -320,6 +320,7 @@ class CalculationTransactionalServiceTest {
           effectiveSentenceEndDate = ESED_DATE,
           sentenceLength = "06/02/03",
         ),
+        comment = "The information shown was calculated using the Calculate Release Dates service. The calculation ID is: $CALCULATION_REFERENCE",
       ),
     )
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
