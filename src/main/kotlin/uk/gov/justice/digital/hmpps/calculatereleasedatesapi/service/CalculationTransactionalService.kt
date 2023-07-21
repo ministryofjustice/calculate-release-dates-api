@@ -269,12 +269,17 @@ class CalculationTransactionalService(
   fun writeToNomisAndPublishEvent(prisonerId: String, booking: Booking, calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>?) {
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
-
+    val comment = if (approvedDates?.isNotEmpty() == true) {
+      "The information shown was calculated using the Calculate Release Dates service with manually entered approved dates. The calculation ID is: ${calculationRequest.calculationReference}"
+    } else {
+      "The information shown was calculated using the Calculate Release Dates service. The calculation ID is: ${calculationRequest.calculationReference}"
+    }
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = serviceUserService.getUsername(),
       keyDates = transform(calculation, approvedDates),
       noDates = false,
+      comment = comment,
     )
     try {
       prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)
