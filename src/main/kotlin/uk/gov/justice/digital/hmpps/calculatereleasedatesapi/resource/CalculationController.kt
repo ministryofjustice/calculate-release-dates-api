@@ -20,12 +20,12 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.TEST
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserQuestions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -137,10 +137,10 @@ class CalculationController(
     @PathVariable("calculationRequestId")
     calculationRequestId: Long,
     @RequestBody
-    calculationFragments: CalculationFragments,
+    submitCalculationRequest: SubmitCalculationRequest,
   ): CalculatedReleaseDates {
     log.info("Request received to confirm release dates calculation for $calculationRequestId")
-    return calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, calculationFragments)
+    return calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, submitCalculationRequest)
   }
 
   @GetMapping(value = ["/results/{prisonerId}/{bookingId}"])

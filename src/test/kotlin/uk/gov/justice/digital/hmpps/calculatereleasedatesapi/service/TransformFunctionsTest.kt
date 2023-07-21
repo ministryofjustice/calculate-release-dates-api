@@ -183,6 +183,7 @@ class TransformFunctionsTest {
           dates = mutableMapOf(CRD to CRD_DATE, SLED to SLED_DATE, ESED to ESED_DATE),
           effectiveSentenceLength = Period.of(6, 2, 3),
         ),
+        null,
       ),
     ).isEqualTo(
       OffenderKeyDates(

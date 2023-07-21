@@ -95,6 +95,11 @@ data class CalculationRequest(
 
   @OneToOne(mappedBy = "calculationRequest", cascade = [CascadeType.ALL])
   val calculationRequestUserInput: CalculationRequestUserInput? = null,
+
+  @JoinColumn(name = "calculationRequestId")
+  @OneToMany
+  @Fetch(FetchMode.JOIN)
+  val approvedDatesSubmissions: List<ApprovedDatesSubmission> = ArrayList(),
 ) {
 
   init {

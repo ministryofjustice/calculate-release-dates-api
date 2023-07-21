@@ -6,6 +6,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -13,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.ERROR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationNotFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PrisonApiDataNotFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -20,12 +23,16 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
@@ -43,6 +50,8 @@ class CalculationTransactionalService(
   private val validationService: ValidationService,
   private val eventService: EventService,
   private val serviceUserService: ServiceUserService,
+  private val approvedDatesSubmissionRepository: ApprovedDatesSubmissionRepository,
+  private val approvedDatesRepository: ApprovedDatesRepository,
 ) {
 
   /*
@@ -88,7 +97,7 @@ class CalculationTransactionalService(
   @Transactional
   fun validateAndConfirmCalculation(
     calculationRequestId: Long,
-    calculationFragments: CalculationFragments,
+    submitCalculationRequest: SubmitCalculationRequest,
   ): CalculatedReleaseDates {
     val calculationRequest =
       calculationRequestRepository.findByIdAndCalculationStatus(
@@ -109,7 +118,7 @@ class CalculationTransactionalService(
       throw PreconditionFailedException("The booking now fails validation")
     }
 
-    return confirmCalculation(calculationRequest.prisonerId, calculationFragments, sourceData, booking, userInput)
+    return confirmCalculation(calculationRequest.prisonerId, submitCalculationRequest.calculationFragments, sourceData, booking, userInput, submitCalculationRequest.approvedDates)
   }
 
   private fun confirmCalculation(
@@ -118,11 +127,15 @@ class CalculationTransactionalService(
     sourceData: PrisonApiSourceData,
     booking: Booking,
     userInput: CalculationUserInputs?,
+    approvedDates: List<ManualEntrySelectedDate>?,
   ): CalculatedReleaseDates {
     try {
       val calculation =
         calculate(booking, CONFIRMED, sourceData, userInput, calculationFragments)
-      writeToNomisAndPublishEvent(prisonerId, booking, calculation)
+      if (approvedDates != null) {
+        storeApprovedDates(calculation, approvedDates)
+      }
+      writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates)
       return calculation
     } catch (error: Exception) {
       recordError(booking, sourceData, userInput, error)
@@ -253,14 +266,14 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun writeToNomisAndPublishEvent(prisonerId: String, booking: Booking, calculation: CalculatedReleaseDates) {
+  fun writeToNomisAndPublishEvent(prisonerId: String, booking: Booking, calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>?) {
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
 
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = serviceUserService.getUsername(),
-      keyDates = transform(calculation),
+      keyDates = transform(calculation, approvedDates),
       noDates = false,
     )
     try {
@@ -313,6 +326,28 @@ class CalculationTransactionalService(
       calculateErsed = calculationUserInputs.calculateErsed,
     )
     return calculateWithBreakdown(booking, calculation)
+  }
+
+  @Transactional
+  fun storeApprovedDates(calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>?) {
+    val foundCalculation = calculationRequestRepository.findById(calculation.calculationRequestId)
+    foundCalculation.map {
+      val approvedDatesSubmission = ApprovedDatesSubmission(
+        calculationRequest = it,
+        bookingId = it.bookingId,
+        prisonerId = it.prisonerId,
+        submittedByUsername = it.calculatedByUsername,
+      )
+      val savedSubmission = approvedDatesSubmissionRepository.save(approvedDatesSubmission)
+      val submittedDatesToSave = approvedDates!!.map { approvedDate ->
+        ApprovedDates(
+          approvedDatesSubmissionRequestId = savedSubmission,
+          calculationDateType = approvedDate.dateType.name,
+          outcomeDate = approvedDate.date!!.toLocalDate(),
+        )
+      }
+      approvedDatesRepository.saveAll(submittedDatesToSave)
+    }.orElseThrow { CalculationNotFoundException("Could not find calculation with request id: ${calculation.calculationRequestId}") }
   }
 
   companion object {
