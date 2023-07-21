@@ -492,8 +492,12 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
   )
 }
 
-fun transform(calculation: CalculatedReleaseDates) =
-  OffenderKeyDates(
+fun transform(calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>?): OffenderKeyDates {
+  val groupedApprovedDates = approvedDates?.map { it.dateType to LocalDate.of(it.date!!.year, it.date.month, it.date.day) }?.toMap()
+  val hdcad = groupedApprovedDates?.get(HDCAD) ?: calculation.dates[HDCAD]
+  val rotl = groupedApprovedDates?.get(ROTL) ?: calculation.dates[ROTL]
+  val apd = groupedApprovedDates?.get(APD) ?: calculation.dates[APD]
+  return OffenderKeyDates(
     conditionalReleaseDate = calculation.dates[CRD],
     licenceExpiryDate = calculation.dates[SLED] ?: calculation.dates[LED],
     sentenceExpiryDate = calculation.dates[SLED] ?: calculation.dates[SED],
@@ -515,13 +519,13 @@ fun transform(calculation: CalculatedReleaseDates) =
       calculation.effectiveSentenceLength?.months,
       calculation.effectiveSentenceLength?.days,
     ),
-    homeDetentionCurfewApprovedDate = calculation.dates[HDCAD],
+    homeDetentionCurfewApprovedDate = hdcad,
     tariffDate = calculation.dates[Tariff],
     tariffExpiredRemovalSchemeEligibilityDate = calculation.dates[TERSED],
-    approvedParoleDate = calculation.dates[APD],
-    releaseOnTemporaryLicenceDate = calculation.dates[ROTL],
+    approvedParoleDate = apd,
+    releaseOnTemporaryLicenceDate = rotl,
   )
-
+}
 private fun extractDates(sentence: CalculableSentence): Map<ReleaseDateType, DateBreakdown> {
   val dates: MutableMap<ReleaseDateType, DateBreakdown> = mutableMapOf()
   val sentenceCalculation = sentence.sentenceCalculation
