@@ -16,14 +16,17 @@ class ComparisonService(
   private var prisonService: PrisonService,
   private var serviceUserService: ServiceUserService,
   private val comparisonPersonRepository: ComparisonPersonRepository,
+  private var bulkComparisonService: BulkComparisonService,
 ) {
 
-  fun create(comparison: ComparisonInput): Comparison {
-    val comparisonToCreate = transform(comparison, serviceUserService.getUsername())
+  fun create(comparisonInput: ComparisonInput): Comparison {
+    val comparisonToCreate = transform(comparisonInput, serviceUserService.getUsername())
     log.info("Creating new comparison $comparisonToCreate")
-    return comparisonRepository.save(
+    val initialComparisonCreated = comparisonRepository.save(
       comparisonToCreate,
     )
+    this.bulkComparisonService.populate(initialComparisonCreated)
+    return initialComparisonCreated
   }
 
   fun listManual(): List<Comparison> {
@@ -62,8 +65,10 @@ class ComparisonService(
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
 
     if (comparison != null && (
-        !comparison.manualInput ||
-          (comparison.manualInput && serviceUserService.hasRoles(listOf("ROLE_RELEASE_DATE_MANUAL_COMPARER", "SYSTEM_USER"))))) {
+      !comparison.manualInput ||
+        (comparison.manualInput && serviceUserService.hasRoles(listOf("ROLE_RELEASE_DATE_MANUAL_COMPARER", "SYSTEM_USER")))
+      )
+    ) {
       return comparison
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())

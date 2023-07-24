@@ -11,6 +11,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
@@ -31,6 +33,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
   private val comparisonRepository = mock<ComparisonRepository>()
   private val comparisonPersonRepository = mock<ComparisonPersonRepository>()
   private var serviceUserService = mock<ServiceUserService>()
+  private var bulkComparisonService = mock<BulkComparisonService>()
 
   @Test
   fun `A Comparison is created when create is called`() {
@@ -43,6 +46,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       true,
       LocalDateTime.now(),
       USERNAME,
+      ComparisonStatus(ComparisonStatusValue.PROCESSING),
       null,
     )
 
@@ -66,6 +70,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       true,
       LocalDateTime.now(),
       USERNAME,
+      ComparisonStatus(ComparisonStatusValue.PROCESSING),
       null,
     )
 
@@ -93,6 +98,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
           false,
           LocalDateTime.now(),
           USERNAME,
+          ComparisonStatus(ComparisonStatusValue.PROCESSING),
           null,
         ),
       ),
@@ -115,6 +121,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       true,
       LocalDateTime.now(),
       USERNAME,
+      ComparisonStatus(ComparisonStatusValue.PROCESSING),
       null,
     )
     Mockito.`when`(comparisonRepository.findAllByManualInput(true)).thenReturn(listOf(comparison))
@@ -143,6 +150,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       true,
       LocalDateTime.now(),
       USERNAME,
+      ComparisonStatus(ComparisonStatusValue.PROCESSING),
       null,
     )
     Mockito.`when`(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
