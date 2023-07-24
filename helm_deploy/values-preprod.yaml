@@ -2,7 +2,6 @@
 # Per environment values which override defaults in calculate-release-dates-api/values.yaml
 
 generic-service:
-  replicaCount: 2
 
   ingress:
     host: calculate-release-dates-api-preprod.hmpps.service.justice.gov.uk
@@ -17,6 +16,8 @@ generic-service:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
     PRISON_API_URL: https://api-preprod.prison.service.justice.gov.uk
+
+  serviceAccountName: calculate-release-dates-api-preprod
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts

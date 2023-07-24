@@ -13,9 +13,13 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
+import org.mockito.ArgumentCaptor
+import org.mockito.Captor
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doNothing
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -23,13 +27,18 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.security.oauth2.jwt.Jwt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.APD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCAD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ROTL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
@@ -39,9 +48,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -50,6 +62,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
@@ -102,6 +116,8 @@ class CalculationTransactionalServiceTest {
   private val bookingService = mock<BookingService>()
   private val validationService = mock<ValidationService>()
   private val serviceUserService = mock<ServiceUserService>()
+  private val approvedDatesSubmissionRepository = mock<ApprovedDatesSubmissionRepository>()
+  private val approvedDatesRepository = mock<ApprovedDatesRepository>()
 
   private val calculationTransactionalService =
     CalculationTransactionalService(
@@ -115,6 +131,8 @@ class CalculationTransactionalServiceTest {
       validationService,
       eventService,
       serviceUserService,
+      approvedDatesSubmissionRepository,
+      approvedDatesRepository,
     )
 
   private val fakeSourceData = PrisonApiSourceData(
@@ -127,6 +145,12 @@ class CalculationTransactionalServiceTest {
     listOf(),
     null,
   )
+
+  @Captor
+  lateinit var updatedOffenderDatesArgumentCaptor: ArgumentCaptor<UpdateOffenderDates>
+
+  @Captor
+  lateinit var approvedDatesArgumentCaptor: ArgumentCaptor<List<ApprovedDates>>
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
@@ -219,7 +243,7 @@ class CalculationTransactionalServiceTest {
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
 
     val exception = assertThrows<PreconditionFailedException> {
-      calculationTransactionalService.validateAndConfirmCalculation(CALCULATION_REQUEST_ID, CalculationFragments(""))
+      calculationTransactionalService.validateAndConfirmCalculation(CALCULATION_REQUEST_ID, SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null))
     }
     assertThat(exception)
       .isInstanceOf(PreconditionFailedException::class.java)
@@ -238,7 +262,7 @@ class CalculationTransactionalServiceTest {
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
 
     val exception = assertThrows<EntityNotFoundException> {
-      calculationTransactionalService.validateAndConfirmCalculation(CALCULATION_REQUEST_ID, CalculationFragments(""))
+      calculationTransactionalService.validateAndConfirmCalculation(CALCULATION_REQUEST_ID, SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null))
     }
     assertThat(exception)
       .isInstanceOf(EntityNotFoundException::class.java)
@@ -255,7 +279,7 @@ class CalculationTransactionalServiceTest {
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
 
-    assertDoesNotThrow { calculationTransactionalService.validateAndConfirmCalculation(CALCULATION_REQUEST_ID, CalculationFragments("")) }
+    assertDoesNotThrow { calculationTransactionalService.validateAndConfirmCalculation(CALCULATION_REQUEST_ID, SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null)) }
   }
 
   @Test
@@ -283,6 +307,7 @@ class CalculationTransactionalServiceTest {
         ),
         effectiveSentenceLength = Period.of(6, 2, 3),
       ),
+      emptyList(),
     )
 
     verify(prisonService).postReleaseDates(
@@ -295,6 +320,7 @@ class CalculationTransactionalServiceTest {
           effectiveSentenceEndDate = ESED_DATE,
           sentenceLength = "06/02/03",
         ),
+        comment = "The information shown was calculated using the Calculate Release Dates service. The calculation ID is: $CALCULATION_REFERENCE",
       ),
     )
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
@@ -318,7 +344,7 @@ class CalculationTransactionalServiceTest {
     ).thenThrow(EntityNotFoundException("test ex"))
 
     val exception = assertThrows<EntityNotFoundException> {
-      calculationTransactionalService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION)
+      calculationTransactionalService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION, emptyList())
     }
 
     assertThat(exception)
@@ -346,11 +372,91 @@ class CalculationTransactionalServiceTest {
     ).thenThrow(EntityNotFoundException("test ex"))
 
     try {
-      calculationTransactionalService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION)
+      calculationTransactionalService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION, emptyList())
     } catch (ex: Exception) {
       fail("Exception was thrown!")
     }
   }
+
+  @Test
+  fun `Test that if approved dates are submitted then they get submitted to the database`() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(calculationRequestRepository.findByIdAndCalculationStatus(CALCULATION_REQUEST_ID, PRELIMINARY.name))
+      .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
+    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(fakeSourceData)
+    whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+    val submission = ApprovedDatesSubmission(calculationRequest = CALCULATION_REQUEST, prisonerId = PRISONER_ID, bookingId = BOOKING_ID, submittedByUsername = USERNAME)
+    whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
+    whenever(approvedDatesRepository.saveAll(any<List<ApprovedDates>>())).thenReturn(emptyList())
+    calculationTransactionalService.validateAndConfirmCalculation(
+      CALCULATION_REQUEST_ID,
+      SubmitCalculationRequest(
+        calculationFragments = CalculationFragments(""),
+        approvedDates = listOf(
+          ManualEntrySelectedDate(ROTL, "rotl text", SubmittedDate(1, 1, 2020)),
+          ManualEntrySelectedDate(APD, "apd text", SubmittedDate(1, 2, 2020)),
+          ManualEntrySelectedDate(HDCAD, "hdcad text", SubmittedDate(1, 3, 2020)),
+        ),
+      ),
+    )
+    verify(approvedDatesSubmissionRepository).save(eq(submission))
+    approvedDatesArgumentCaptor.apply {
+      verify(approvedDatesRepository).saveAll(capture(this))
+    }
+
+    assertThat(approvedDatesArgumentCaptor.value).containsAll(
+      listOf(
+        ApprovedDates(approvedDatesSubmissionRequestId = submission, calculationDateType = "ROTL", outcomeDate = LocalDate.of(2020, 1, 1)),
+        ApprovedDates(approvedDatesSubmissionRequestId = submission, calculationDateType = "APD", outcomeDate = LocalDate.of(2020, 2, 1)),
+        ApprovedDates(approvedDatesSubmissionRequestId = submission, calculationDateType = "HDCAD", outcomeDate = LocalDate.of(2020, 3, 1)),
+      ),
+    )
+  }
+
+  @Test
+  fun `Test that if dates are in approved dates they are used instead of the calculation`() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(
+      calculationRequestRepository.findById(
+        CALCULATION_REQUEST_ID,
+      ),
+    ).thenReturn(
+      Optional.of(
+        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA),
+      ),
+    )
+    calculationTransactionalService.writeToNomisAndPublishEvent(
+      PRISONER_ID,
+      BOOKING.copy(sentences = listOf(StandardSENTENCE.copy(duration = ZERO_DURATION))),
+      BOOKING_CALCULATION.copy(
+        dates = mutableMapOf(
+          CRD to CALCULATION_OUTCOME_CRD.outcomeDate!!,
+          SED to THIRD_FEB_2021,
+          ERSED to FIFTH_APRIL_2021,
+          ESED to ESED_DATE,
+        ),
+        effectiveSentenceLength = Period.of(6, 2, 3),
+      ),
+      listOf(
+        ManualEntrySelectedDate(ROTL, "rotl text", SubmittedDate(1, 1, 2020)),
+        ManualEntrySelectedDate(APD, "apd text", SubmittedDate(1, 2, 2020)),
+        ManualEntrySelectedDate(HDCAD, "hdcad text", SubmittedDate(1, 3, 2020)),
+      ),
+    )
+    doNothing().`when`(prisonService).postReleaseDates(any(), any())
+    updatedOffenderDatesArgumentCaptor.apply {
+      verify(prisonService).postReleaseDates(eq(BOOKING.bookingId), capture(this))
+    }
+//    verify(prisonService).postReleaseDates(eq(BOOKING.bookingId), updatedOffenderDatesArgumentCaptor.capture())
+    val submittedDates = updatedOffenderDatesArgumentCaptor.value.keyDates
+    assertThat(submittedDates.releaseOnTemporaryLicenceDate).isEqualTo("2020-01-01")
+    assertThat(submittedDates.approvedParoleDate).isEqualTo("2020-02-01")
+    assertThat(submittedDates.homeDetentionCurfewApprovedDate).isEqualTo("2020-03-01")
+  }
+
+  private fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
 
   @BeforeEach
   fun beforeAll() {
