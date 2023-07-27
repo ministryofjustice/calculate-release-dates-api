@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -37,6 +38,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
+import java.time.LocalDate
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
@@ -199,6 +201,28 @@ class CalculationControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
+    verify(calculationTransactionalService, times(1)).findCalculationResults(calculationRequestId)
+  }
+
+  @Test
+  fun `Test GET of calculation results with approved dates`() {
+    val calculationRequestId = 9995L
+    val calculatedReleaseDates = CalculatedReleaseDates(
+      calculationRequestId = calculationRequestId,
+      dates = mapOf(),
+      calculationStatus = PRELIMINARY,
+      bookingId = 123L,
+      prisonerId = "ASD",
+      approvedDates = mapOf(ReleaseDateType.APD to LocalDate.of(2020, 3, 3)),
+    )
+    whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(calculatedReleaseDates)
+
+    val result = mvc.perform(get("/calculation/results/$calculationRequestId").accept(APPLICATION_JSON))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(mapper.readValue(result.response.contentAsString, CalculatedReleaseDates::class.java)).isEqualTo(calculatedReleaseDates)
     verify(calculationTransactionalService, times(1)).findCalculationResults(calculationRequestId)
   }
 

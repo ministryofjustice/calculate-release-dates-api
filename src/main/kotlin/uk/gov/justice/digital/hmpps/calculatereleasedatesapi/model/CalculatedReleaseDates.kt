@@ -17,4 +17,5 @@ data class CalculatedReleaseDates(
   // Its required to be sent to NOMIS, but not required for our API.
   val effectiveSentenceLength: Period? = null,
   val calculationType: CalculationType = CalculationType.CALCULATED,
+  val approvedDates: Map<ReleaseDateType, LocalDate?>? = null,
 )
