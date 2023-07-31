@@ -196,7 +196,6 @@ class TransformFunctionsTest {
         ApprovedDates(
           calculationDateType = "APD",
           outcomeDate = LocalDate.of(2020, 3, 3),
-          approvedDatesSubmissionRequestId = 1L,
         ),
       ),
     )

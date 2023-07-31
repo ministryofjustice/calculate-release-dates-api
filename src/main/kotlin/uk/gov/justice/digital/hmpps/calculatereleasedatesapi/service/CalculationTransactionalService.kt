@@ -132,7 +132,7 @@ class CalculationTransactionalService(
     try {
       val calculation =
         calculate(booking, CONFIRMED, sourceData, userInput, calculationFragments)
-      if (approvedDates != null) {
+      if (!approvedDates.isNullOrEmpty()) {
         storeApprovedDates(calculation, approvedDates)
       }
       writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates)
@@ -335,14 +335,13 @@ class CalculationTransactionalService(
   }
 
   @Transactional
-  fun storeApprovedDates(calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>?) {
+  fun storeApprovedDates(calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>) {
     val foundCalculation = calculationRequestRepository.findById(calculation.calculationRequestId)
     foundCalculation.map {
-      val submittedDatesToSave = approvedDates!!.map { approvedDate ->
+      val submittedDatesToSave = approvedDates.map { approvedDate ->
         ApprovedDates(
           calculationDateType = approvedDate.dateType.name,
           outcomeDate = approvedDate.date!!.toLocalDate(),
-          approvedDatesSubmissionRequestId = 1L,
         )
       }
       val approvedDatesSubmission = ApprovedDatesSubmission(
