@@ -15,8 +15,6 @@ data class ApprovedDates(
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = -1,
   @NotNull
-  val approvedDatesSubmissionRequestId: Long,
-  @NotNull
   val calculationDateType: String,
   @NotNull
   val outcomeDate: LocalDate,
