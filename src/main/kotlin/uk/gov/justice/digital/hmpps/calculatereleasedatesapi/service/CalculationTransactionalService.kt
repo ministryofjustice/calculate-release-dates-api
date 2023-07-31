@@ -179,6 +179,7 @@ class CalculationTransactionalService(
       calculationFragments = calculationFragments,
       calculationRequestId = calculationRequest.id,
       calculationStatus = calculationStatus,
+      approvedDates = null,
     )
   }
 
@@ -337,21 +338,21 @@ class CalculationTransactionalService(
   fun storeApprovedDates(calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>?) {
     val foundCalculation = calculationRequestRepository.findById(calculation.calculationRequestId)
     foundCalculation.map {
+      val submittedDatesToSave = approvedDates!!.map { approvedDate ->
+        ApprovedDates(
+          calculationDateType = approvedDate.dateType.name,
+          outcomeDate = approvedDate.date!!.toLocalDate(),
+          approvedDatesSubmissionRequestId = 1L,
+        )
+      }
       val approvedDatesSubmission = ApprovedDatesSubmission(
         calculationRequest = it,
         bookingId = it.bookingId,
         prisonerId = it.prisonerId,
         submittedByUsername = it.calculatedByUsername,
+        approvedDates = submittedDatesToSave,
       )
-      val savedSubmission = approvedDatesSubmissionRepository.save(approvedDatesSubmission)
-      val submittedDatesToSave = approvedDates!!.map { approvedDate ->
-        ApprovedDates(
-          approvedDatesSubmissionRequestId = savedSubmission,
-          calculationDateType = approvedDate.dateType.name,
-          outcomeDate = approvedDate.date!!.toLocalDate(),
-        )
-      }
-      approvedDatesRepository.saveAll(submittedDatesToSave)
+      approvedDatesSubmissionRepository.save(approvedDatesSubmission)
     }.orElseThrow { CalculationNotFoundException("Could not find calculation with request id: ${calculation.calculationRequestId}") }
   }
 

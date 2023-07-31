@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import org.hibernate.Hibernate
@@ -29,6 +30,9 @@ data class ApprovedDatesSubmission(
   val submittedAt: LocalDateTime = LocalDateTime.now(),
   @NotNull
   val submittedByUsername: String,
+  @NotNull
+  @OneToMany(mappedBy = "approvedDatesSubmissionRequestId")
+  val approvedDates: List<ApprovedDates> = emptyList(),
 ) {
   @Override
   override fun equals(other: Any?): Boolean {

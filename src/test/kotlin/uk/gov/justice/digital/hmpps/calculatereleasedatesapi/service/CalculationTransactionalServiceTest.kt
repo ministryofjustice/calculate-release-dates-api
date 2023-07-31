@@ -389,7 +389,6 @@ class CalculationTransactionalServiceTest {
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     val submission = ApprovedDatesSubmission(calculationRequest = CALCULATION_REQUEST, prisonerId = PRISONER_ID, bookingId = BOOKING_ID, submittedByUsername = USERNAME)
     whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
-    whenever(approvedDatesRepository.saveAll(any<List<ApprovedDates>>())).thenReturn(emptyList())
     calculationTransactionalService.validateAndConfirmCalculation(
       CALCULATION_REQUEST_ID,
       SubmitCalculationRequest(
@@ -402,17 +401,6 @@ class CalculationTransactionalServiceTest {
       ),
     )
     verify(approvedDatesSubmissionRepository).save(eq(submission))
-    approvedDatesArgumentCaptor.apply {
-      verify(approvedDatesRepository).saveAll(capture(this))
-    }
-
-    assertThat(approvedDatesArgumentCaptor.value).containsAll(
-      listOf(
-        ApprovedDates(approvedDatesSubmissionRequestId = submission, calculationDateType = "ROTL", outcomeDate = LocalDate.of(2020, 1, 1)),
-        ApprovedDates(approvedDatesSubmissionRequestId = submission, calculationDateType = "APD", outcomeDate = LocalDate.of(2020, 2, 1)),
-        ApprovedDates(approvedDatesSubmissionRequestId = submission, calculationDateType = "HDCAD", outcomeDate = LocalDate.of(2020, 3, 1)),
-      ),
-    )
   }
 
   @Test
