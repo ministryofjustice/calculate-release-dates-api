@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorResponse
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.TUSED_LICENCE_PERIOD_LT_1Y
