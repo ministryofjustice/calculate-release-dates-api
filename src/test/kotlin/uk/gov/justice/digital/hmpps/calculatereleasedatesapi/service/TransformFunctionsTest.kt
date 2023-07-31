@@ -2,10 +2,13 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
@@ -29,6 +32,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
@@ -171,6 +175,40 @@ class TransformFunctionsTest {
         bookingId = BOOKING_ID,
         prisonerId = PRISONER_ID,
         calculationStatus = CalculationStatus.PRELIMINARY,
+      ),
+    )
+  }
+
+  @Test
+  fun `Transform a CalculationRequest with approved dates`() {
+    val releaseDatesByType = mutableMapOf(
+      CRD to FIRST_JAN_2015,
+      SED to SECOND_JAN_2015,
+    )
+
+    val approvedDatesSubmission = ApprovedDatesSubmission(
+      calculationRequest = CALCULATION_REQUEST,
+      prisonerId = PRISONER_ID,
+      bookingId = BOOKING_ID,
+      submittedByUsername = "user1",
+      submittedAt = LocalDateTime.now(),
+      approvedDates = listOf(
+        ApprovedDates(
+          calculationDateType = "APD",
+          outcomeDate = LocalDate.of(2020, 3, 3),
+          approvedDatesSubmissionRequestId = 1L,
+        ),
+      ),
+    )
+
+    assertThat(transform(CALCULATION_REQUEST.copy(approvedDatesSubmissions = listOf(approvedDatesSubmission)))).isEqualTo(
+      CalculatedReleaseDates(
+        releaseDatesByType,
+        CALCULATION_REQUEST_ID,
+        bookingId = BOOKING_ID,
+        prisonerId = PRISONER_ID,
+        calculationStatus = CalculationStatus.PRELIMINARY,
+        approvedDates = mapOf(ReleaseDateType.APD to LocalDate.of(2020, 3, 3)),
       ),
     )
   }
