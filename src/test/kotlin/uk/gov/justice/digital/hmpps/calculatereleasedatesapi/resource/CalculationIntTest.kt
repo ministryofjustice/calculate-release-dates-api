@@ -682,6 +682,7 @@ class CalculationIntTest : IntegrationTestBase() {
         bookingId = "RELREM".hashCode().toLong(),
         sequence = 11,
       ),
+      calculateAt = LocalDate.of(2021, 6, 8),
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREM")
@@ -696,6 +697,43 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.releaseDate).isEqualTo(LocalDate.of(2021, 4, 1))
+    assertThat(calculation.postRecallReleaseDate).isNull()
+    assertThat(calculation.validationMessages).isEmpty()
+  }
+
+  @Test
+  fun `Run relevant remand calculation against a recall`() {
+    val request = RelevantRemandCalculationRequest(
+      listOf(
+        RelevantRemand(
+          from = LocalDate.of(2021, 1, 1),
+          to = LocalDate.of(2021, 1, 31),
+          days = 31,
+          sentenceSequence = 1,
+        ),
+      ),
+      RelevantRemandSentence(
+        sentenceDate = LocalDate.of(2021, 1, 4),
+        bookingId = "RELREMR".hashCode().toLong(),
+        recallDate = LocalDate.of(2022, 2, 4),
+        sequence = 1,
+      ),
+      calculateAt = LocalDate.of(2022, 2, 4),
+    )
+    val calculation: RelevantRemandCalculationResult = webTestClient.post()
+      .uri("/calculation/relevant-remand/RELREMR")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(request))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(RelevantRemandCalculationResult::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.postRecallReleaseDate).isEqualTo(LocalDate.of(2022, 6, 2))
+    assertThat(calculation.releaseDate).isEqualTo(LocalDate.of(2021, 9, 2))
     assertThat(calculation.validationMessages).isEmpty()
   }
 
@@ -715,6 +753,7 @@ class CalculationIntTest : IntegrationTestBase() {
         bookingId = "RELREMV".hashCode().toLong(),
         sequence = 4,
       ),
+      calculateAt = LocalDate.of(2021, 2, 1),
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREMV")
@@ -729,6 +768,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.releaseDate).isNull()
+    assertThat(calculation.postRecallReleaseDate).isNull()
     assertThat(calculation.validationMessages).singleElement()
   }
 
@@ -748,6 +788,7 @@ class CalculationIntTest : IntegrationTestBase() {
         bookingId = "RELREMI".hashCode().toLong(),
         sequence = 1,
       ),
+      calculateAt = LocalDate.of(2020, 1, 13),
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREMI")
