@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import java.time.LocalDate
 
 @Service
 class RelevantRemandService(
@@ -44,16 +45,25 @@ class RelevantRemandService(
       )
     }
 
-    val calculationResult = calculationService.calculateReleaseDates(booking).second
-    val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.PRRD, ReleaseDateType.MTD)
+    val result = calculationService.calculateReleaseDates(booking)
+    val calculationResult = result.second
+    val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.MTD)
+
+    var releaseDate = calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOfOrNull { it.value }
+    var postRecallReleaseDate: LocalDate? = null
+    if (releaseDate == null && calculationResult.dates.contains(ReleaseDateType.PRRD)) {
+      postRecallReleaseDate = calculationResult.dates[ReleaseDateType.PRRD]
+      releaseDate = result.first.getAllExtractableSentences().find { it.sentenceCalculation.adjustedPostRecallReleaseDate == postRecallReleaseDate }!!.sentenceCalculation.adjustedDeterminateReleaseDate
+    }
     return RelevantRemandCalculationResult(
-      releaseDate = calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOf { it.value },
+      releaseDate = releaseDate,
+      postRecallReleaseDate = postRecallReleaseDate,
     )
   }
 
   private fun filterSentencesAndAdjustmentsForRelevantRemandCalc(sourceData: PrisonApiSourceData, request: RelevantRemandCalculationRequest): PrisonApiSourceData {
     return sourceData.copy(
-      sentenceAndOffences = sourceData.sentenceAndOffences.filter { it.sentenceDate.isBeforeOrEqualTo(request.sentence.sentenceDate) },
+      sentenceAndOffences = sourceData.sentenceAndOffences.filter { it.sentenceDate.isBeforeOrEqualTo(request.calculateAt) },
       bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments.copy(
         sentenceAdjustments = sourceData.bookingAndSentenceAdjustments.sentenceAdjustments.filter { !listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.UNUSED_REMAND).contains(it.type) } +
           request.relevantRemands.map {
