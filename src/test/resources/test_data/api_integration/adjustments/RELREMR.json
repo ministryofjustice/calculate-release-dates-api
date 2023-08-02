@@ -1,0 +1,31 @@
+{
+  "sentenceAdjustments":[
+    {
+      "sentenceSequence":1,
+      "type":"REMAND",
+      "numberOfDays":31,
+      "fromDate":"2021-01-01",
+      "toDate":"2021-01-31",
+      "active":true
+    },
+    {
+      "sentenceSequence":1,
+      "type":"RECALL_SENTENCE_REMAND",
+      "numberOfDays":31,
+      "fromDate":"2021-01-01",
+      "toDate":"2021-01-31",
+      "active":true
+    },
+    {
+      "sentenceSequence":999,
+      "type":"TAGGED_BAIL",
+      "numberOfDays":31,
+      "fromDate":"2021-01-01",
+      "toDate":"2021-01-31",
+      "active":true
+    }
+  ],
+  "bookingAdjustments":[
+
+  ]
+}
