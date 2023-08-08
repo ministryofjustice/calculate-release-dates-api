@@ -130,8 +130,13 @@ class CalculationTransactionalService(
     approvedDates: List<ManualEntrySelectedDate>?,
   ): CalculatedReleaseDates {
     try {
-      val calculation =
-        calculate(booking, CONFIRMED, sourceData, userInput, calculationFragments)
+      val calculationType = if (approvedDates != null) {
+        CalculationType.CALCULATED
+      } else {
+        CalculationType.CALCULATED_WITH_APPROVED_DATES
+      }
+      val calculation = calculate(booking, CONFIRMED, sourceData, userInput, calculationFragments, calculationType)
+
       if (!approvedDates.isNullOrEmpty()) {
         storeApprovedDates(calculation, approvedDates)
       }
@@ -151,6 +156,7 @@ class CalculationTransactionalService(
     sourceData: PrisonApiSourceData,
     calculationUserInputs: CalculationUserInputs?,
     calculationFragments: CalculationFragments? = null,
+    calculationType: CalculationType = CalculationType.CALCULATED,
   ): CalculatedReleaseDates {
     val calculationRequest =
       calculationRequestRepository.save(
@@ -162,6 +168,7 @@ class CalculationTransactionalService(
           objectMapper,
           calculationUserInputs,
           calculationFragments,
+          calculationType,
         ),
       )
 
