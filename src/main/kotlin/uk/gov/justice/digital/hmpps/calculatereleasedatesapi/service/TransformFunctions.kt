@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestUserInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
@@ -334,6 +335,7 @@ fun transform(
   objectMapper: ObjectMapper,
   calculationUserInputs: CalculationUserInputs? = null,
   calculationFragments: CalculationFragments? = null,
+  calculationType: CalculationType = CalculationType.CALCULATED,
 ): CalculationRequest {
   return CalculationRequest(
     prisonerId = booking.offender.reference,
@@ -348,6 +350,7 @@ fun transform(
     returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
     calculationRequestUserInput = transform(calculationUserInputs, sourceData),
     breakdownHtml = calculationFragments?.breakdownHtml,
+    calculationType = calculationType,
   )
 }
 
