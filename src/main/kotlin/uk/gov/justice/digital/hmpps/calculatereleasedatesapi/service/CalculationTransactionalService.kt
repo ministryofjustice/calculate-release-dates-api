@@ -278,7 +278,7 @@ class CalculationTransactionalService(
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
     val comment = if (approvedDates?.isNotEmpty() == true) {
-      "The information shown was calculated using the Calculate Release Dates service with manually entered approved dates. The calculation ID is: ${calculationRequest.calculationReference}"
+      "The information shown was calculated using the Calculate Release Dates service with manually entered dates. The calculation ID is: ${calculationRequest.calculationReference}"
     } else {
       "The information shown was calculated using the Calculate Release Dates service. The calculation ID is: ${calculationRequest.calculationReference}"
     }
