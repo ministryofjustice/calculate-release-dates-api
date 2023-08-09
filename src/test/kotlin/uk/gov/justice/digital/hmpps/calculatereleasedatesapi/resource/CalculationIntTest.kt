@@ -224,6 +224,23 @@ class CalculationIntTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `Run calculation for on sex offender register (check HDCED not set - based on example 13 from the unit tests)`() {
+    val result = createPreliminaryCalculation(PRISONER_ID_ON_SEX_OFFENDER_REGISTER)
+
+    val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
+      .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
+
+    assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
+    assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
+    assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
+    assertThat(result.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
+    assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID_ON_SEX_OFFENDER_REGISTER)
+    assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText())
+      .isEqualTo("2015-03-17")
+    assert(!result.dates.containsKey(HDCED))
+  }
+
+  @Test
   fun `Run calculation where SDS+ is consecutive to SDS`() {
     val userInput = CalculationUserInputs(
       useOffenceIndicators = true,
@@ -843,6 +860,7 @@ class CalculationIntTest : IntegrationTestBase() {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"
     const val PRISONER_ID_SEX_OFFENDER = "S3333XX"
+    const val PRISONER_ID_ON_SEX_OFFENDER_REGISTER = "SR"
     val BOOKING_ID = PRISONER_ID.hashCode().toLong()
     val BOOKING_ERROR_ID = PRISONER_ERROR_ID.hashCode().toLong()
     const val BOOKING_ID_DOESNT_EXIST = 92929988L
