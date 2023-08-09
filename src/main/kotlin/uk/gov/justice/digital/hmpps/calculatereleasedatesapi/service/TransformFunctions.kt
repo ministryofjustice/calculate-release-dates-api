@@ -230,7 +230,10 @@ fun transform(prisonerDetails: PrisonerDetails): Offender {
     reference = prisonerDetails.offenderNo,
     isActiveSexOffender = prisonerDetails.activeAlerts().any {
       it.alertType == "S" &&
-        it.alertCode == "SOR" // Sex offence register
+        (
+          it.alertCode == "SOR" || // Sex offence register
+            it.alertCode == "SR"
+          ) // On sex offender register
     },
   )
 }
