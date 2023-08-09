@@ -130,8 +130,13 @@ class CalculationTransactionalService(
     approvedDates: List<ManualEntrySelectedDate>?,
   ): CalculatedReleaseDates {
     try {
-      val calculation =
-        calculate(booking, CONFIRMED, sourceData, userInput, calculationFragments)
+      val calculationType = if (approvedDates != null) {
+        CalculationType.CALCULATED
+      } else {
+        CalculationType.CALCULATED_WITH_APPROVED_DATES
+      }
+      val calculation = calculate(booking, CONFIRMED, sourceData, userInput, calculationFragments, calculationType)
+
       if (!approvedDates.isNullOrEmpty()) {
         storeApprovedDates(calculation, approvedDates)
       }
@@ -151,6 +156,7 @@ class CalculationTransactionalService(
     sourceData: PrisonApiSourceData,
     calculationUserInputs: CalculationUserInputs?,
     calculationFragments: CalculationFragments? = null,
+    calculationType: CalculationType = CalculationType.CALCULATED,
   ): CalculatedReleaseDates {
     val calculationRequest =
       calculationRequestRepository.save(
@@ -162,6 +168,7 @@ class CalculationTransactionalService(
           objectMapper,
           calculationUserInputs,
           calculationFragments,
+          calculationType,
         ),
       )
 
@@ -271,7 +278,7 @@ class CalculationTransactionalService(
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
     val comment = if (approvedDates?.isNotEmpty() == true) {
-      "The information shown was calculated using the Calculate Release Dates service with manually entered approved dates. The calculation ID is: ${calculationRequest.calculationReference}"
+      "The information shown was calculated using the Calculate Release Dates service with manually entered dates. The calculation ID is: ${calculationRequest.calculationReference}"
     } else {
       "The information shown was calculated using the Calculate Release Dates service. The calculation ID is: ${calculationRequest.calculationReference}"
     }
