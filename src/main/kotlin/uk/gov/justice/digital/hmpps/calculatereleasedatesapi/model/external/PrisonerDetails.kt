@@ -11,6 +11,7 @@ data class PrisonerDetails(
   val dateOfBirth: LocalDate,
   val alerts: List<Alert> = emptyList(),
   val agencyId: String = "",
+  val assignedLivingUnit: AssignedLivingUnit? = null,
 ) {
 
   fun activeAlerts(): List<Alert> {
