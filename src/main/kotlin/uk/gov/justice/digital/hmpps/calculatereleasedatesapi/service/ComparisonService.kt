@@ -25,7 +25,11 @@ class ComparisonService(
     val initialComparisonCreated = comparisonRepository.save(
       comparisonToCreate,
     )
-    this.bulkComparisonService.populate(initialComparisonCreated)
+    if (!comparisonToCreate.manualInput) {
+      val peopleAtEstablishment = this.bulkComparisonService.populate(initialComparisonCreated)
+      val mismatches = this.bulkComparisonService.identifyMismatches(peopleAtEstablishment)
+      this.bulkComparisonService.recordMismatchesForComparison(comparisonToCreate, mismatches.stream().filter { it.shouldRecordMismatch() }.toList())
+    }
     return initialComparisonCreated
   }
 
@@ -66,7 +70,7 @@ class ComparisonService(
 
     if (comparison != null && (
       !comparison.manualInput ||
-        (comparison.manualInput && serviceUserService.hasRoles(listOf("ROLE_RELEASE_DATE_MANUAL_COMPARER", "SYSTEM_USER")))
+        serviceUserService.hasRoles(listOf("ROLE_RELEASE_DATE_MANUAL_COMPARER", "SYSTEM_USER"))
       )
     ) {
       return comparison

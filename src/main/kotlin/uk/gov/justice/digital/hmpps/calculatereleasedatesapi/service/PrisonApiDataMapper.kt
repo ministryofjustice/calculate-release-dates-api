@@ -18,7 +18,9 @@ class PrisonApiDataMapper(private val objectMapper: ObjectMapper) {
     if (calculationRequest.sentenceAndOffencesVersion == 0) {
       val reader = objectMapper.readerFor(object : TypeReference<List<PrisonApiDataVersions.Version0.SentenceAndOffences>>() {})
       val sentencesAndOffences: List<PrisonApiDataVersions.Version0.SentenceAndOffences> = reader.readValue(calculationRequest.sentenceAndOffences)
-      return sentencesAndOffences.map { it.toLatest() }
+      return sentencesAndOffences.map {
+        it.toLatest()
+      }
     }
     val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffences>>() {})
     return reader.readValue(calculationRequest.sentenceAndOffences)

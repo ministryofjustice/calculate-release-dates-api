@@ -5,19 +5,20 @@ import java.time.LocalDate
 
 data class OffenderOffence(
   @Schema(description = "Internal ID for charge relating to offender")
-  private var offenderChargeId: Long? = null,
+  var offenderChargeId: Long? = null,
+
   @Schema(description = "Offence Start Date")
-  private val offenceStartDate: LocalDate? = null,
+  val offenceStartDate: LocalDate? = null,
 
   @Schema(description = "Offence End Date")
-  private val offenceEndDate: LocalDate? = null,
+  val offenceEndDate: LocalDate? = null,
 
   @Schema(description = "Offence Code")
-  private val offenceCode: String? = null,
+  val offenceCode: String? = null,
 
   @Schema(description = "Offence Description")
-  private val offenceDescription: String? = null,
+  val offenceDescription: String? = null,
 
   @Schema(description = "Offence Indicators")
-  private val indicators: List<String>? = null,
+  val indicators: List<String>? = null,
 )

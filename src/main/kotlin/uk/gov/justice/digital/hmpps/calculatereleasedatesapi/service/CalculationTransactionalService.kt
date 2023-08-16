@@ -36,6 +36,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Approved
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 
 @Service
@@ -76,6 +77,26 @@ class CalculationTransactionalService(
     return messages
   }
 
+  fun validateAndCalculate(
+    prisonerId: String,
+    calculationUserInputs: CalculationUserInputs,
+    activeDataOnly: Boolean = true,
+    providedSourceData: PrisonApiSourceData,
+    calculationType: CalculationStatus = PRELIMINARY,
+  ):
+    ValidationResult {
+    var messages = validationService.validateBeforeCalculation(providedSourceData, calculationUserInputs) // Validation stage 1 of 3
+    if (messages.isNotEmpty()) return ValidationResult(messages, null, null)
+    // getBooking relies on the previous validation stage to have succeeded
+    val booking = bookingService.getBooking(providedSourceData, calculationUserInputs)
+    messages = validationService.validateBeforeCalculation(booking) // Validation stage 2 of 4
+    if (messages.isNotEmpty()) return ValidationResult(messages, null, null)
+    val bookingAfterCalculation = calculationService.calculate(booking) // Validation stage 3 of 4
+    messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation) // Validation stage 4 of 4
+    val calculatedReleaseDates = calculate(booking, calculationType, providedSourceData, calculationUserInputs)
+    return ValidationResult(messages, bookingAfterCalculation, calculatedReleaseDates)
+  }
+
   fun supportedValidation(prisonerId: String): List<ValidationMessage> {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly = true)
     return validationService.validateSupportedSentencesAndCalculations(sourceData)
@@ -83,7 +104,12 @@ class CalculationTransactionalService(
 
   //  The activeDataOnly flag is only used by a test endpoint (1000 calcs test, which is used to test historic data)
   @Transactional
-  fun calculate(prisonerId: String, calculationUserInputs: CalculationUserInputs, activeDataOnly: Boolean = true, calculationType: CalculationStatus = PRELIMINARY): CalculatedReleaseDates {
+  fun calculate(
+    prisonerId: String,
+    calculationUserInputs: CalculationUserInputs,
+    activeDataOnly: Boolean = true,
+    calculationType: CalculationStatus = PRELIMINARY,
+  ): CalculatedReleaseDates {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     try {

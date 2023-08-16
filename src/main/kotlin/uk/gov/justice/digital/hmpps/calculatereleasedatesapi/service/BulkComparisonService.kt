@@ -1,80 +1,204 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import org.springframework.core.convert.ConversionService
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 
 @Service
 class BulkComparisonService(
   private val comparisonPersonRepository: ComparisonPersonRepository,
-  private val prisonService: PrisonService
+  private val prisonService: PrisonService,
+  private val calculationTransactionalService: CalculationTransactionalService,
 ) {
 
-  fun populate(comparison: Comparison) {
-    var peopleAtEstablishment = getPeopleAtEstablishment(comparison)
-    identifyMismatches(peopleAtEstablishment)
+  fun populate(comparison: Comparison): List<CalculableSentenceEnvelope> {
+    return getPeopleAtEstablishment(comparison)
   }
 
-  private fun identifyMismatches(peopleAtEstablishment: List<SentenceSummary>) {
-    var mismatches: List<Mismatch?> = peopleAtEstablishment.map(this::determineIfMismatch)
+  fun identifyMismatches(peopleAtEstablishment: List<CalculableSentenceEnvelope>): List<Mismatch> {
+    return peopleAtEstablishment.map(this::determineIfMismatch)
   }
 
-  private fun determineIfMismatch(sentenceSummary: SentenceSummary):Mismatch {
+  fun recordMismatchesForComparison(comparisonToCreate: Comparison, mismatches: List<Mismatch>) {
+    comparisonPersonRepository
+  }
 
-    val prisonApiSourceData: PrisonApiSourceData = sentenceSummary
+  private fun determineIfMismatch(calculableSentenceEnvelope: CalculableSentenceEnvelope): Mismatch {
+    val mismatch = Mismatch(false, false, calculableSentenceEnvelope, null)
 
-    var mismatch = Mismatch(false, sentenceSummary)
+    val calculationUserInput = CalculationUserInputs(
+      listOf(),
+      calculableSentenceEnvelope.sentenceCalcDates?.earlyRemovalSchemeEligibilityDate != null,
+      true,
+    )
 
-      // returns a mismatch object
+    val prisonApiSourceData: PrisonApiSourceData = this.convert(calculableSentenceEnvelope)
+
+    val validationResult = calculationTransactionalService.validateAndCalculate(
+      calculableSentenceEnvelope.person.prisonerNumber,
+      calculationUserInput,
+      false,
+      prisonApiSourceData,
+    )
+
+    mismatch.isValid = validationResult.messages.isEmpty()
+    mismatch.calculatedReleaseDates = validationResult.calculatedReleaseDates
+    if (mismatch.isValid) {
+      mismatch.isMismatch =
+        identifyMismatches(validationResult.calculatedReleaseDates, calculableSentenceEnvelope.sentenceCalcDates)
+    } else {
+      mismatch.isMismatch = true
+    }
+    // returns a mismatch object
     return mismatch
   }
 
-  /*
-  @Async
-  public fun identifyMismatches(comparison: Comparison) {
-    // I loop over all the people in the comparison
-    val peopleToCompare = comparisonPersonRepository.findByComparisonIdIs(comparison.id)
-
-    // I analyse the results,
-    // peopleToCompare.forEach { person -> this.determineIfMismatch(person, comparison) }
-
-    // then I change the state of the analysis
-    // comparison.comparisonStatus = ComparisonStatus(ComparisonStatusValue.ACTIVE)
-    // comparisonRepository.save(comparison)
+  private fun identifyMismatches(calculatedReleaseDates: CalculatedReleaseDates?, sentenceCalcDates: SentenceCalcDates?): Boolean {
+    if (calculatedReleaseDates != null && calculatedReleaseDates.dates.isNotEmpty()) {
+      val calculatedSentenceCalcDates = calculatedReleaseDates.toSentenceCalcDates()
+      if (sentenceCalcDates != null) {
+        return calculatedSentenceCalcDates == sentenceCalcDates
+      }
+    }
+    return true
   }
 
-  private fun determineIfMismatch(person: ComparisonPerson, comparison: Comparison) {
-    // Not yet implemented
-
-    // if any are a mismatch
-
-    // record any mismatch in the database
-  }
-  */
-
   @Async
-  fun getPeopleAtEstablishment(comparison: Comparison): List<SentenceSummary> {
+  fun getPeopleAtEstablishment(comparison: Comparison): List<CalculableSentenceEnvelope> {
     if (!comparison.manualInput && comparison.prison != null) {
       val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison)
-      val comparisonPeople = activeBookingsAtEstablishment.filter { it.prisonerNumber != null || it.latestPrisonTerm != null }.map {
+      val comparisonPeople = activeBookingsAtEstablishment.map {
         ComparisonPerson(
           comparisonId = comparison.id,
-          personId = it.prisonerNumber!!,
+          personId = it.person.prisonerNumber,
           latestBookingId = it.latestPrisonTerm!!.bookingId,
         )
       }
       // record all the people we are going to run comparison for
       comparisonPersonRepository.saveAll(comparisonPeople)
       return activeBookingsAtEstablishment
-
-    } else {
-      TODO("Not yet implemented - throw?")
     }
+    return emptyList()
+  }
+
+  private fun convert(source: CalculableSentenceEnvelope): PrisonApiSourceData {
+    val prisonerDetails = PrisonerDetails(
+      bookingId = source.latestPrisonTerm?.bookingId!!,
+      offenderNo = source.person.prisonerNumber,
+      dateOfBirth = source.person.dateOfBirth,
+    )
+
+    val sentencesOffences = ArrayList<SentenceAndOffences>()
+
+    source.latestPrisonTerm.courtSentences!!.forEach { courtCase ->
+      for (sentence in courtCase.sentences!!) {
+        val offenderOffences: List<OffenderOffence> =
+          sentence.offences?.map {
+            OffenderOffence(
+              it.offenderChargeId!!,
+              it.offenceStartDate,
+              it.offenceEndDate,
+              it.offenceCode!!,
+              it.offenceDescription!!,
+              it.indicators!!,
+            )
+          }?.toList() ?: emptyList()
+
+        sentencesOffences.add(
+          SentenceAndOffences(
+            source.latestPrisonTerm.bookingId,
+            sentence.sentenceSequence!!,
+            sentence.lineSeq!!.toInt(),
+            courtCase.caseSeq!!,
+            sentence.consecutiveToSequence,
+            sentence.sentenceStatus!!,
+            sentence.sentenceCategory!!,
+            sentence.sentenceCalculationType!!,
+            sentence.sentenceTypeDescription!!,
+            sentence.sentenceStartDate!!,
+            emptyList(),
+            offenderOffences,
+            courtCase.caseInfoNumber,
+            courtCase.court?.description,
+            sentence.fineAmount!!.toBigDecimal(),
+          ),
+        )
+      }
+    }
+
+    val bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(
+      source.bookingAdjustments.map {
+        BookingAdjustment(
+          it.active,
+          it.fromDate,
+          it.toDate,
+          it.numberOfDays,
+          it.type,
+        )
+      }.toList(),
+      source.sentenceAdjustments.map {
+        SentenceAdjustment(
+          it.sentenceSequence!!,
+          it.active,
+          it.fromDate,
+          it.toDate,
+          it.numberOfDays!!,
+          it.type!!,
+        )
+      }.toList(),
+    )
+
+    val offenderFinePayments = source.offenderFinePayments.map {
+      OffenderFinePayment(
+        it.bookingId!!,
+        it.paymentDate!!,
+        it.paymentAmount!!,
+      )
+    }
+
+    val fixedTermRecallDetails = if (source.fixedTermRecallDetails != null) {
+      FixedTermRecallDetails(
+        source.fixedTermRecallDetails.bookingId!!,
+        source.fixedTermRecallDetails.returnToCustodyDate!!,
+        source.fixedTermRecallDetails.recallLength!!,
+      )
+    } else {
+      null
+    }
+
+    val returnToCustodyDate = if (source.fixedTermRecallDetails != null) {
+      ReturnToCustodyDate(
+        source.fixedTermRecallDetails.bookingId!!,
+        source.fixedTermRecallDetails.returnToCustodyDate!!,
+      )
+    } else {
+      null
+    }
+
+    return PrisonApiSourceData(
+      sentencesOffences,
+      prisonerDetails,
+      bookingAndSentenceAdjustments,
+      offenderFinePayments,
+      returnToCustodyDate,
+      fixedTermRecallDetails,
+    )
   }
 }

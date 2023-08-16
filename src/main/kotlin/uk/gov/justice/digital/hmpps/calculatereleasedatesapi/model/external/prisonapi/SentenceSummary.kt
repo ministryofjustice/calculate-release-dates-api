@@ -12,6 +12,4 @@ data class SentenceSummary(
   @Schema(description = "Most recent term in prison")
   val latestPrisonTerm: PrisonTerm? = null,
 
-) {
-
-}
+)
