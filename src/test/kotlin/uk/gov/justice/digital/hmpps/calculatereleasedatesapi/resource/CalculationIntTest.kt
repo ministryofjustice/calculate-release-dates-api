@@ -122,6 +122,34 @@ class CalculationIntTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `Get the results for a confirmed calculation by reference`() {
+    val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
+    createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId)
+
+    val result = webTestClient.get()
+      .uri("/calculationReference/${resultCalculation.calculationReference}")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody
+
+    assertThat(result).isNotNull
+
+    if (result != null && result.dates.containsKey(SLED)) {
+      assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
+    }
+    if (result != null && result.dates.containsKey(CRD)) {
+      assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
+    }
+    if (result != null && result.dates.containsKey(TUSED)) {
+      assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
+    }
+  }
+
+  @Test
   fun `Get the results for a calc that causes an error `() {
     val result = webTestClient.post()
       .uri("/calculation/$PRISONER_ERROR_ID")
