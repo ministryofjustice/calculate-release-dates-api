@@ -1,3 +1,4 @@
+DELETE FROM approved_dates_submission_approved_dates;
 DELETE FROM approved_dates;
 DELETE From approved_dates_submission;
 DELETE FROM calculation_outcome;

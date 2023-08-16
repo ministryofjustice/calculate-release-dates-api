@@ -1,0 +1,61 @@
+[
+  {
+    "bookingId":2734526,
+    "sentenceSequence":1,
+    "lineSequence":1,
+    "caseSequence":2,
+    "sentenceStatus":"A",
+    "sentenceCategory":"2020",
+    "sentenceCalculationType":"LR_ORA",
+    "sentenceTypeDescription":"ORA Licence Recall",
+    "sentenceDate":"2021-01-04",
+    "terms": [{
+      "years": 0,
+      "months": 18,
+      "weeks": 0,
+      "days": 0
+    }],
+    "offences":[
+      {
+        "offenderChargeId":6477659,
+        "offenceStartDate":"2020-11-26",
+        "offenceCode":"CJ88117",
+        "offenceDescription":"Having article with blade or which was sharply pointed in public place",
+        "indicators":[
+          "14"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId":2734526,
+    "sentenceSequence":2,
+    "lineSequence":2,
+    "caseSequence":2,
+    "sentenceStatus":"A",
+    "sentenceCategory":"2020",
+    "sentenceCalculationType":"LR_ORA",
+    "sentenceTypeDescription":"ORA Licence Recall",
+    "sentenceDate":"2021-01-04",
+    "terms": [{
+      "years": 0,
+      "months": 3,
+      "weeks": 0,
+      "days": 0
+    }],
+    "offences":[
+      {
+        "offenderChargeId":6477658,
+        "offenceStartDate":"2020-11-26",
+        "offenceCode":"CD71040",
+        "offenceDescription":"Destroy / damage property of a value unknown",
+        "indicators":[
+          "ERS",
+          "71",
+          "S15/CJIB",
+          "SCH17A2"
+        ]
+      }
+    ]
+  }
+]

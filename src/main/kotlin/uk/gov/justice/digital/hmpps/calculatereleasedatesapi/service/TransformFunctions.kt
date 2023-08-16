@@ -3,11 +3,16 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestUserInput
+<<<<<<< HEAD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
+=======
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
+>>>>>>> main
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
@@ -230,7 +235,10 @@ fun transform(prisonerDetails: PrisonerDetails): Offender {
     reference = prisonerDetails.offenderNo,
     isActiveSexOffender = prisonerDetails.activeAlerts().any {
       it.alertType == "S" &&
-        it.alertCode == "SOR" // Sex offence register
+        (
+          it.alertCode == "SOR" || // Sex offence register
+            it.alertCode == "SR"
+          ) // On sex offender register
     },
   )
 }
@@ -335,6 +343,7 @@ fun transform(
   objectMapper: ObjectMapper,
   calculationUserInputs: CalculationUserInputs? = null,
   calculationFragments: CalculationFragments? = null,
+  calculationType: CalculationType = CalculationType.CALCULATED,
 ): CalculationRequest {
   return CalculationRequest(
     prisonerId = booking.offender.reference,
@@ -349,6 +358,7 @@ fun transform(
     returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
     calculationRequestUserInput = transform(calculationUserInputs, sourceData),
     breakdownHtml = calculationFragments?.breakdownHtml,
+    calculationType = calculationType,
   )
 }
 
@@ -426,7 +436,15 @@ fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates {
     prisonerId = calculationRequest.prisonerId,
     calculationStatus = CalculationStatus.valueOf(calculationRequest.calculationStatus),
     calculationType = calculationRequest.calculationType,
+    approvedDates = transform(calculationRequest.approvedDatesSubmissions.firstOrNull()),
   )
+}
+
+fun transform(firstOrNull: ApprovedDatesSubmission?): Map<ReleaseDateType, LocalDate?>? {
+  return firstOrNull?.approvedDates?.associateBy(
+    { ReleaseDateType.valueOf(it.calculationDateType) },
+    { it.outcomeDate },
+  )?.toMutableMap()
 }
 
 fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>, otherDates: Map<ReleaseDateType, LocalDate>): CalculationBreakdown {
@@ -528,6 +546,7 @@ fun transform(calculation: CalculatedReleaseDates, approvedDates: List<ManualEnt
     releaseOnTemporaryLicenceDate = rotl,
   )
 }
+
 private fun extractDates(sentence: CalculableSentence): Map<ReleaseDateType, DateBreakdown> {
   val dates: MutableMap<ReleaseDateType, DateBreakdown> = mutableMapOf()
   val sentenceCalculation = sentence.sentenceCalculation

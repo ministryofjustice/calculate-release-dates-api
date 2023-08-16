@@ -5,6 +5,11 @@ spring:
         jwt:
           public-key-location: classpath:local-public-key.pub
 
+  jackson:
+    date-format: "yyyy-MM-dd HH:mm:ss"
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
   datasource:
     url: 'jdbc:h2:mem:release-dates-db;MODE=PostgreSQL;INIT=create domain if not exists jsonb as json'
     username: create_vary

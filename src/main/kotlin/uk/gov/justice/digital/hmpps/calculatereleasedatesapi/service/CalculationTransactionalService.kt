@@ -156,9 +156,14 @@ class CalculationTransactionalService(
     approvedDates: List<ManualEntrySelectedDate>?,
   ): CalculatedReleaseDates {
     try {
-      val calculation =
-        calculate(booking, CONFIRMED, sourceData, userInput, calculationFragments)
-      if (approvedDates != null) {
+      val calculationType = if (approvedDates != null) {
+        CalculationType.CALCULATED
+      } else {
+        CalculationType.CALCULATED_WITH_APPROVED_DATES
+      }
+      val calculation = calculate(booking, CONFIRMED, sourceData, userInput, calculationFragments, calculationType)
+
+      if (!approvedDates.isNullOrEmpty()) {
         storeApprovedDates(calculation, approvedDates)
       }
       writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates)
@@ -177,6 +182,7 @@ class CalculationTransactionalService(
     sourceData: PrisonApiSourceData,
     calculationUserInputs: CalculationUserInputs?,
     calculationFragments: CalculationFragments? = null,
+    calculationType: CalculationType = CalculationType.CALCULATED,
   ): CalculatedReleaseDates {
     val calculationRequest =
       calculationRequestRepository.save(
@@ -188,6 +194,7 @@ class CalculationTransactionalService(
           objectMapper,
           calculationUserInputs,
           calculationFragments,
+          calculationType,
         ),
       )
 
@@ -205,6 +212,7 @@ class CalculationTransactionalService(
       calculationFragments = calculationFragments,
       calculationRequestId = calculationRequest.id,
       calculationStatus = calculationStatus,
+      approvedDates = null,
     )
   }
 
@@ -296,7 +304,7 @@ class CalculationTransactionalService(
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
     val comment = if (approvedDates?.isNotEmpty() == true) {
-      "The information shown was calculated using the Calculate Release Dates service with manually entered approved dates. The calculation ID is: ${calculationRequest.calculationReference}"
+      "The information shown was calculated using the Calculate Release Dates service with manually entered dates. The calculation ID is: ${calculationRequest.calculationReference}"
     } else {
       "The information shown was calculated using the Calculate Release Dates service. The calculation ID is: ${calculationRequest.calculationReference}"
     }
@@ -360,24 +368,23 @@ class CalculationTransactionalService(
   }
 
   @Transactional
-  fun storeApprovedDates(calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>?) {
+  fun storeApprovedDates(calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>) {
     val foundCalculation = calculationRequestRepository.findById(calculation.calculationRequestId)
     foundCalculation.map {
+      val submittedDatesToSave = approvedDates.map { approvedDate ->
+        ApprovedDates(
+          calculationDateType = approvedDate.dateType.name,
+          outcomeDate = approvedDate.date!!.toLocalDate(),
+        )
+      }
       val approvedDatesSubmission = ApprovedDatesSubmission(
         calculationRequest = it,
         bookingId = it.bookingId,
         prisonerId = it.prisonerId,
         submittedByUsername = it.calculatedByUsername,
+        approvedDates = submittedDatesToSave,
       )
-      val savedSubmission = approvedDatesSubmissionRepository.save(approvedDatesSubmission)
-      val submittedDatesToSave = approvedDates!!.map { approvedDate ->
-        ApprovedDates(
-          approvedDatesSubmissionRequestId = savedSubmission,
-          calculationDateType = approvedDate.dateType.name,
-          outcomeDate = approvedDate.date!!.toLocalDate(),
-        )
-      }
-      approvedDatesRepository.saveAll(submittedDatesToSave)
+      approvedDatesSubmissionRepository.save(approvedDatesSubmission)
     }.orElseThrow { CalculationNotFoundException("Could not find calculation with request id: ${calculation.calculationRequestId}") }
   }
 

@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.entry
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
@@ -12,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.TUSED_LICENCE_PERIOD_LT_1Y
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.APD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
@@ -32,11 +34,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemand
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -185,6 +189,24 @@ class CalculationIntTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `Confirm a calculation with approved dates`() {
+    val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
+    val calc = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId, listOf(ManualEntrySelectedDate(APD, "APD", SubmittedDate(3, 3, 2023))))
+    assertThat(calc).isNotNull
+    val result = webTestClient.get()
+      .uri("/calculation/results/$PRISONER_ID/$BOOKING_ID")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody
+    assertThat(result!!.approvedDates).isNotNull
+    assertThat(result.approvedDates).containsExactly(entry(APD, LocalDate.of(2023, 3, 3)))
+  }
+
+  @Test
   fun `Run calculation for a sex offender (check HDCED not set - based on example 13 from the unit tests)`() {
     val result = createPreliminaryCalculation(PRISONER_ID_SEX_OFFENDER)
 
@@ -196,6 +218,23 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
     assertThat(result.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
     assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID_SEX_OFFENDER)
+    assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText())
+      .isEqualTo("2015-03-17")
+    assert(!result.dates.containsKey(HDCED))
+  }
+
+  @Test
+  fun `Run calculation for on sex offender register (check HDCED not set - based on example 13 from the unit tests)`() {
+    val result = createPreliminaryCalculation(PRISONER_ID_ON_SEX_OFFENDER_REGISTER)
+
+    val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
+      .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
+
+    assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2016, 11, 6))
+    assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
+    assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
+    assertThat(result.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
+    assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID_ON_SEX_OFFENDER_REGISTER)
     assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText())
       .isEqualTo("2015-03-17")
     assert(!result.dates.containsKey(HDCED))
@@ -660,6 +699,7 @@ class CalculationIntTest : IntegrationTestBase() {
         bookingId = "RELREM".hashCode().toLong(),
         sequence = 11,
       ),
+      calculateAt = LocalDate.of(2021, 6, 8),
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREM")
@@ -674,6 +714,43 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.releaseDate).isEqualTo(LocalDate.of(2021, 4, 1))
+    assertThat(calculation.postRecallReleaseDate).isNull()
+    assertThat(calculation.validationMessages).isEmpty()
+  }
+
+  @Test
+  fun `Run relevant remand calculation against a recall`() {
+    val request = RelevantRemandCalculationRequest(
+      listOf(
+        RelevantRemand(
+          from = LocalDate.of(2021, 1, 1),
+          to = LocalDate.of(2021, 1, 31),
+          days = 31,
+          sentenceSequence = 1,
+        ),
+      ),
+      RelevantRemandSentence(
+        sentenceDate = LocalDate.of(2021, 1, 4),
+        bookingId = "RELREMR".hashCode().toLong(),
+        recallDate = LocalDate.of(2022, 2, 4),
+        sequence = 1,
+      ),
+      calculateAt = LocalDate.of(2022, 2, 4),
+    )
+    val calculation: RelevantRemandCalculationResult = webTestClient.post()
+      .uri("/calculation/relevant-remand/RELREMR")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(request))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(RelevantRemandCalculationResult::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.postRecallReleaseDate).isEqualTo(LocalDate.of(2022, 6, 2))
+    assertThat(calculation.releaseDate).isEqualTo(LocalDate.of(2021, 9, 2))
     assertThat(calculation.validationMessages).isEmpty()
   }
 
@@ -693,6 +770,7 @@ class CalculationIntTest : IntegrationTestBase() {
         bookingId = "RELREMV".hashCode().toLong(),
         sequence = 4,
       ),
+      calculateAt = LocalDate.of(2021, 2, 1),
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREMV")
@@ -707,6 +785,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     assertThat(calculation.releaseDate).isNull()
+    assertThat(calculation.postRecallReleaseDate).isNull()
     assertThat(calculation.validationMessages).singleElement()
   }
 
@@ -726,6 +805,7 @@ class CalculationIntTest : IntegrationTestBase() {
         bookingId = "RELREMI".hashCode().toLong(),
         sequence = 1,
       ),
+      calculateAt = LocalDate.of(2020, 1, 13),
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREMI")
@@ -756,12 +836,19 @@ class CalculationIntTest : IntegrationTestBase() {
   private fun createConfirmCalculationForPrisoner(
     calculationRequestId: Long,
   ): CalculatedReleaseDates {
+    return createConfirmCalculationForPrisoner(calculationRequestId, emptyList())
+  }
+
+  private fun createConfirmCalculationForPrisoner(
+    calculationRequestId: Long,
+    approvedDates: List<ManualEntrySelectedDate>,
+  ): CalculatedReleaseDates {
     return webTestClient.post()
       .uri("/calculation/confirm/$calculationRequestId")
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(objectMapper.writeValueAsString(SubmitCalculationRequest(CalculationFragments("<p>BREAKDOWN</p>"), emptyList())))
+      .bodyValue(objectMapper.writeValueAsString(SubmitCalculationRequest(CalculationFragments("<p>BREAKDOWN</p>"), approvedDates)))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -773,6 +860,7 @@ class CalculationIntTest : IntegrationTestBase() {
     const val PRISONER_ID = "default"
     const val PRISONER_ERROR_ID = "123CBA"
     const val PRISONER_ID_SEX_OFFENDER = "S3333XX"
+    const val PRISONER_ID_ON_SEX_OFFENDER_REGISTER = "SR"
     val BOOKING_ID = PRISONER_ID.hashCode().toLong()
     val BOOKING_ERROR_ID = PRISONER_ERROR_ID.hashCode().toLong()
     const val BOOKING_ID_DOESNT_EXIST = 92929988L
