@@ -37,6 +37,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import java.util.UUID
 
 @Service
 class CalculationTransactionalService(
@@ -187,6 +188,7 @@ class CalculationTransactionalService(
       calculationRequestId = calculationRequest.id,
       calculationStatus = calculationStatus,
       approvedDates = null,
+      calculationReference = calculationRequest.calculationReference,
     )
   }
 
@@ -270,6 +272,12 @@ class CalculationTransactionalService(
   private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest {
     return calculationRequestRepository.findById(calculationRequestId).orElseThrow {
       EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId ")
+    }
+  }
+
+  private fun getCalculationRequestByReference(calculationReference: String): CalculationRequest {
+    return calculationRequestRepository.findByCalculationReference(UUID.fromString(calculationReference)).orElseThrow {
+      EntityNotFoundException("No calculation results exist for calculationReference $calculationReference ")
     }
   }
 
@@ -360,6 +368,10 @@ class CalculationTransactionalService(
       )
       approvedDatesSubmissionRepository.save(approvedDatesSubmission)
     }.orElseThrow { CalculationNotFoundException("Could not find calculation with request id: ${calculation.calculationRequestId}") }
+  }
+
+  fun findCalculationResultsByCalculationReference(calculationReference: String): CalculatedReleaseDates {
+    return transform(getCalculationRequestByReference(calculationReference))
   }
 
   companion object {

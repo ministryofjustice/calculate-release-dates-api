@@ -39,6 +39,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.Calculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 import java.time.LocalDate
+import java.util.UUID
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
@@ -85,6 +86,7 @@ class CalculationControllerTest {
       calculationStatus = PRELIMINARY,
       bookingId = bookingId,
       prisonerId = prisonerId,
+      calculationReference = UUID.randomUUID(),
     )
     whenever(calculationTransactionalService.calculate(prisonerId, CalculationUserInputs())).thenReturn(calculatedReleaseDates)
 
@@ -111,6 +113,7 @@ class CalculationControllerTest {
       calculationStatus = PRELIMINARY,
       bookingId = bookingId,
       prisonerId = prisonerId,
+      calculationReference = UUID.randomUUID(),
     )
     whenever(calculationTransactionalService.calculate(prisonerId, userInput)).thenReturn(calculatedReleaseDates)
 
@@ -140,6 +143,7 @@ class CalculationControllerTest {
       calculationStatus = PRELIMINARY,
       bookingId = bookingId,
       prisonerId = prisonerId,
+      calculationReference = UUID.randomUUID(),
     )
     whenever(calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, submitCalculationRequest)).thenReturn(calculatedReleaseDates)
 
@@ -191,6 +195,7 @@ class CalculationControllerTest {
       calculationStatus = PRELIMINARY,
       bookingId = 123L,
       prisonerId = "ASD",
+      calculationReference = UUID.randomUUID(),
     )
 
     whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(calculatedReleaseDates)
@@ -214,6 +219,7 @@ class CalculationControllerTest {
       bookingId = 123L,
       prisonerId = "ASD",
       approvedDates = mapOf(ReleaseDateType.APD to LocalDate.of(2020, 3, 3)),
+      calculationReference = UUID.randomUUID(),
     )
     whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(calculatedReleaseDates)
 

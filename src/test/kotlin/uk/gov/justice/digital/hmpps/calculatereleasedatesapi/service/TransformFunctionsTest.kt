@@ -175,6 +175,7 @@ class TransformFunctionsTest {
         bookingId = BOOKING_ID,
         prisonerId = PRISONER_ID,
         calculationStatus = CalculationStatus.PRELIMINARY,
+        calculationReference = CALCULATION_REFERENCE,
       ),
     )
   }
@@ -208,6 +209,7 @@ class TransformFunctionsTest {
         prisonerId = PRISONER_ID,
         calculationStatus = CalculationStatus.PRELIMINARY,
         approvedDates = mapOf(ReleaseDateType.APD to LocalDate.of(2020, 3, 3)),
+        calculationReference = CALCULATION_REFERENCE,
       ),
     )
   }
@@ -427,6 +429,7 @@ class TransformFunctionsTest {
       bookingId = 1L,
       prisonerId = PRISONER_ID,
       calculationStatus = CalculationStatus.PRELIMINARY,
+      calculationReference = UUID.randomUUID(),
     )
 
     val SEX_OFFENDER_ALERT = Alert(
