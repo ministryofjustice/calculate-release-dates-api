@@ -70,7 +70,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.LocalDate
 import java.time.Period
-import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
@@ -81,7 +80,7 @@ import java.util.UUID
 @ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceTest {
   private val jsonTransformation = JsonTransformation()
-  private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 720, ChronoUnit.DAYS, 179)
+  private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, WEEKS, 4, YEARS, 14, 720, DAYS, 179)
   private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
   private val bankHolidayService = mock<BankHolidayService>()
   private val workingDayService = WorkingDayService(bankHolidayService)
@@ -191,7 +190,7 @@ class CalculationTransactionalServiceTest {
 
     val calculationBreakdown: CalculationBreakdown?
     try {
-      calculationBreakdown = calculationTransactionalService.calculateWithBreakdown(booking, CalculatedReleaseDates(calculation.dates, -1, -1, "", PRELIMINARY))
+      calculationBreakdown = calculationTransactionalService.calculateWithBreakdown(booking, CalculatedReleaseDates(calculation.dates, -1, -1, "", PRELIMINARY, calculationReference = UUID.randomUUID()))
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -530,6 +529,7 @@ class CalculationTransactionalServiceTest {
       bookingId = BOOKING_ID,
       prisonerId = PRISONER_ID,
       calculationStatus = CONFIRMED,
+      calculationReference = CALCULATION_REFERENCE,
     )
 
     val UPDATE_OFFENDER_DATES = UpdateOffenderDates(
