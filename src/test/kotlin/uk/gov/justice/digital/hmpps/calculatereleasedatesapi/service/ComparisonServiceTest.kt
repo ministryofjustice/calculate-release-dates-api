@@ -14,9 +14,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.Person
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonTerm
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -60,13 +65,56 @@ class ComparisonServiceTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `A Comparison is created when create is called with manual input`() {
+  fun `A Comparison is created and results returned when create is called on AUTO`() {
     val outputComparison = Comparison(
       1,
       UUID.randomUUID(),
       "ABCD1234",
       objectMapper.createObjectNode(),
       "ABC",
+      false,
+      LocalDateTime.now(),
+      USERNAME,
+      ComparisonStatus(ComparisonStatusValue.PROCESSING),
+      2,
+    )
+
+    val calculableSentenceEnvelope = CalculableSentenceEnvelope(
+      Person("A", LocalDate.of(1990, 5, 1)),
+      PrisonTerm(),
+      emptyList(),
+      emptyList(),
+      emptyList(),
+      null,
+      null,
+    )
+
+    val mismatch = Mismatch(
+      true,
+      true,
+      calculableSentenceEnvelope,
+      null,
+    )
+
+    Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
+    Mockito.`when`(comparisonRepository.save(any())).thenReturn(outputComparison)
+    Mockito.`when`(bulkComparisonService.populate(outputComparison)).thenReturn(listOf(calculableSentenceEnvelope))
+    Mockito.`when`(bulkComparisonService.determineIfMismatch(calculableSentenceEnvelope)).thenReturn(mismatch)
+
+    val comparisonInput = ComparisonInput(criteria = objectMapper.createObjectNode(), manualInput = false, prison = "ABC")
+    val comparison = comparisonService.create(comparisonInput)
+    Assertions.assertEquals(comparison.manualInput, false)
+    Assertions.assertEquals(comparison.prison, "ABC")
+  }
+
+  @Test
+  fun `A Comparison is created when create is called with manual input`() {
+    val outputComparison = Comparison(
+      1,
+      UUID.randomUUID(),
+      "ABCD1234",
+      objectMapper.createObjectNode(),
+      null,
       true,
       LocalDateTime.now(),
       USERNAME,
@@ -80,7 +128,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     val comparisonInput = ComparisonInput(criteria = objectMapper.createObjectNode(), manualInput = true, prison = "ABC")
     val comparison = comparisonService.create(comparisonInput)
     Assertions.assertEquals(comparison.manualInput, true)
-    Assertions.assertEquals(comparison.prison, "ABC")
+    Assertions.assertEquals(comparison.prison, null)
   }
 
   @Test

@@ -8,11 +8,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestUserInput
-<<<<<<< HEAD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
-=======
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
->>>>>>> main
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND

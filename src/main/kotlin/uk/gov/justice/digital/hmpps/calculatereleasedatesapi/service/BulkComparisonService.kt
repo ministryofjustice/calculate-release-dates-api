@@ -32,16 +32,18 @@ class BulkComparisonService(
     return getPeopleAtEstablishment(comparison)
   }
 
-  fun identifyMismatches(peopleAtEstablishment: List<CalculableSentenceEnvelope>): List<Mismatch> {
-    return peopleAtEstablishment.map(this::determineIfMismatch)
-  }
-
   fun recordMismatchesForComparison(comparisonToCreate: Comparison, mismatches: List<Mismatch>) {
     comparisonPersonRepository
   }
 
-  private fun determineIfMismatch(calculableSentenceEnvelope: CalculableSentenceEnvelope): Mismatch {
-    val mismatch = Mismatch(false, false, calculableSentenceEnvelope, null)
+  fun determineIfMismatch(calculableSentenceEnvelope: CalculableSentenceEnvelope): Mismatch {
+    // Specify the default
+    val mismatch = Mismatch(
+      isMatch = false,
+      isValid = false,
+      calculableSentenceEnvelope = calculableSentenceEnvelope,
+      calculatedReleaseDates = null,
+    )
 
     val calculationUserInput = CalculationUserInputs(
       listOf(),
@@ -60,12 +62,14 @@ class BulkComparisonService(
 
     mismatch.isValid = validationResult.messages.isEmpty()
     mismatch.calculatedReleaseDates = validationResult.calculatedReleaseDates
+
     if (mismatch.isValid) {
-      mismatch.isMismatch =
+      mismatch.isMatch =
         identifyMismatches(validationResult.calculatedReleaseDates, calculableSentenceEnvelope.sentenceCalcDates)
     } else {
-      mismatch.isMismatch = true
+      mismatch.isMatch = false
     }
+
     // returns a mismatch object
     return mismatch
   }
