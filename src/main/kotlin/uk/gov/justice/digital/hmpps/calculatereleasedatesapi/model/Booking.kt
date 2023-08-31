@@ -14,15 +14,12 @@ data class Booking(
   val calculateErsed: Boolean = false,
 ) {
   @JsonIgnore
-  @Transient
   lateinit var consecutiveSentences: List<ConsecutiveSentence>
 
   @JsonIgnore
-  @Transient
   var singleTermSentence: SingleTermed? = null
 
   @JsonIgnore
-  @Transient
   lateinit var sentenceGroups: List<List<CalculableSentence>>
 
   @JsonIgnore

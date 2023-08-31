@@ -36,15 +36,12 @@ abstract class AbstractSentence(
   override val recallType: RecallType? = null,
 ) : CalculableSentence {
   @JsonIgnore
-  @Transient
   override lateinit var sentenceCalculation: SentenceCalculation
 
   @JsonIgnore
-  @Transient
   override lateinit var identificationTrack: SentenceIdentificationTrack
 
   @JsonIgnore
-  @Transient
   override lateinit var releaseDateTypes: ReleaseDateTypes
 
   override fun calculateErsedFromHalfway(): Boolean {

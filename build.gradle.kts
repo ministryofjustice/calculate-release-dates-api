@@ -1,8 +1,8 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.4.0"
   id("org.springdoc.openapi-gradle-plugin") version "1.6.0"
-  kotlin("plugin.spring") version "1.8.21"
-  kotlin("plugin.jpa") version "1.8.21"
+  kotlin("plugin.spring") version "1.9.10"
+  kotlin("plugin.jpa") version "1.9.10"
   id("jacoco")
 }
 
@@ -11,14 +11,6 @@ configurations {
     exclude(group = "org.junit.vintage")
     exclude(group = "logback-classic")
   }
-}
-
-tasks.named("check") {
-  setDependsOn(
-    dependsOn.filterNot {
-      it is TaskProvider<*> && it.name == "detekt"
-    }
-  )
 }
 
 dependencies {
