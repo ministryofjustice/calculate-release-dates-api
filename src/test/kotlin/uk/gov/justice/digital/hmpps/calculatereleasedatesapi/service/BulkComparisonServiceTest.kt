@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import java.time.LocalDate
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class BulkComparisonServiceTest : IntegrationTestBase() {
@@ -61,7 +62,14 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
     releaseDates[ReleaseDateType.TERSED] = LocalDate.of(2026, 1, 1)
     releaseDates[ReleaseDateType.ESED] = LocalDate.of(2026, 1, 1)
 
-    val calculatedReleaseDates = CalculatedReleaseDates(releaseDates, 123, 123, "ABC123DEF", CalculationStatus.CONFIRMED)
+    val calculatedReleaseDates = CalculatedReleaseDates(
+      dates = releaseDates,
+      calculationRequestId = 123,
+      bookingId = 123,
+      prisonerId = "ABC123DEF",
+      calculationStatus = CalculationStatus.CONFIRMED,
+      calculationReference = UUID.randomUUID(),
+    )
 
     val booking = Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
     val validationResult = ValidationResult(emptyList(), booking, calculatedReleaseDates)
@@ -149,8 +157,22 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
     val duplicateReleaseDates = releaseDates.toMutableMap()
     duplicateReleaseDates[ReleaseDateType.SED] = LocalDate.of(2022, 1, 1)
 
-    val calculatedReleaseDates = CalculatedReleaseDates(releaseDates, 123, 123, "ABC123DEF", CalculationStatus.CONFIRMED)
-    val duplicatedReleaseDates = CalculatedReleaseDates(duplicateReleaseDates, 123, 123, "ABC123DEF", CalculationStatus.CONFIRMED)
+    val calculatedReleaseDates = CalculatedReleaseDates(
+      dates = releaseDates,
+      calculationRequestId = 123,
+      bookingId = 123,
+      prisonerId = "ABC123DEF",
+      calculationStatus = CalculationStatus.CONFIRMED,
+      calculationReference = UUID.randomUUID(),
+    )
+    val duplicatedReleaseDates = CalculatedReleaseDates(
+      dates = duplicateReleaseDates,
+      calculationRequestId = 123,
+      bookingId = 123,
+      prisonerId = "ABC123DEF",
+      calculationStatus = CalculationStatus.CONFIRMED,
+      calculationReference = UUID.randomUUID(),
+    )
 
     val booking = Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates)

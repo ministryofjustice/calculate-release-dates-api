@@ -20,7 +20,7 @@ data class CalculatedReleaseDates(
   val effectiveSentenceLength: Period? = null,
   val calculationType: CalculationType = CalculationType.CALCULATED,
   val approvedDates: Map<ReleaseDateType, LocalDate?>? = null,
-  val calculationReference: UUID = UUID.randomUUID(),
+  val calculationReference: UUID,
 ) {
   fun toSentenceCalcDates(): SentenceCalcDates {
     return SentenceCalcDates(
