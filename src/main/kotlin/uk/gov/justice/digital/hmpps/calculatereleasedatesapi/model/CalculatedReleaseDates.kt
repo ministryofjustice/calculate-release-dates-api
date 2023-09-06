@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import java.time.LocalDate
 import java.time.Period
+import java.util.UUID
 
 data class CalculatedReleaseDates(
   val dates: Map<ReleaseDateType, LocalDate?>,
@@ -19,6 +20,7 @@ data class CalculatedReleaseDates(
   val effectiveSentenceLength: Period? = null,
   val calculationType: CalculationType = CalculationType.CALCULATED,
   val approvedDates: Map<ReleaseDateType, LocalDate?>? = null,
+  val calculationReference: UUID = UUID.randomUUID(),
 ) {
   fun toSentenceCalcDates(): SentenceCalcDates {
     return SentenceCalcDates(

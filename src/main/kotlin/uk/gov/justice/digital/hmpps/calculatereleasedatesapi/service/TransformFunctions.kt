@@ -434,6 +434,7 @@ fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates {
     calculationStatus = CalculationStatus.valueOf(calculationRequest.calculationStatus),
     calculationType = calculationRequest.calculationType,
     approvedDates = transform(calculationRequest.approvedDatesSubmissions.firstOrNull()),
+    calculationReference = calculationRequest.calculationReference,
   )
 }
 
