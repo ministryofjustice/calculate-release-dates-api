@@ -106,6 +106,7 @@ enum class SentenceCalculationType(
   YRO(isSupported = false, isIndeterminate = false),
   SEC91(isSupported = false, isIndeterminate = false),
   VOO(isSupported = false, isIndeterminate = false),
+  TISCS(isSupported = false, isIndeterminate = false),
   ;
 
   companion object {
