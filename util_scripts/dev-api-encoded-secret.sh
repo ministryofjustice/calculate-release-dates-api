@@ -13,7 +13,7 @@
 
 CLIENT=${1?No encoded client details found}
 AUTH_HOST="https://sign-in-dev.hmpps.service.justice.gov.uk"
-API_HOST="https://api-dev.prison.service.justice.gov.uk"
+API_HOST="https://prison-api-dev.prison.service.justice.gov.uk"
 
 TOKEN_RESPONSE=$(curl -s -k -d "" -X POST "$AUTH_HOST/auth/oauth/token?grant_type=client_credentials" -H "Authorization: Basic $CLIENT")
 TOKEN=$(echo "$TOKEN_RESPONSE" | jq -er .access_token)
