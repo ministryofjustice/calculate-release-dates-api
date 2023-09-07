@@ -16,7 +16,7 @@ generic-service:
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
-    PRISON_API_URL: https://api-dev.prison.service.justice.gov.uk
+    PRISON_API_URL: https://prison-api-dev.prison.service.justice.gov.uk
 
   # Switches off the allow list in the DEV env only.
   allowlist: null
