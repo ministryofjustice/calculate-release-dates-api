@@ -723,11 +723,11 @@ class CalculationIntTest : IntegrationTestBase() {
         ),
       ),
       RelevantRemandSentence(
-        sentenceDate = LocalDate.of(2021, 6, 8),
+        sentenceDate = LocalDate.of(2021, 2, 1),
         bookingId = "RELREM".hashCode().toLong(),
         sequence = 11,
       ),
-      calculateAt = LocalDate.of(2021, 6, 8),
+      calculateAt = LocalDate.of(2021, 2, 1),
     )
     val calculation: RelevantRemandCalculationResult = webTestClient.post()
       .uri("/calculation/relevant-remand/RELREM")
@@ -743,6 +743,72 @@ class CalculationIntTest : IntegrationTestBase() {
 
     assertThat(calculation.releaseDate).isEqualTo(LocalDate.of(2021, 4, 1))
     assertThat(calculation.postRecallReleaseDate).isNull()
+    assertThat(calculation.unusedDeductions).isEqualTo(0)
+    assertThat(calculation.validationMessages).isEmpty()
+  }
+
+  @Test
+  fun `Run relevant remand calculation with more remand than required`() {
+    val request = RelevantRemandCalculationRequest(
+      listOf(
+        RelevantRemand(
+          from = LocalDate.of(2020, 2, 1),
+          to = LocalDate.of(2021, 1, 31),
+          days = 396,
+          sentenceSequence = 4,
+        ),
+      ),
+      RelevantRemandSentence(
+        sentenceDate = LocalDate.of(2021, 2, 1),
+        bookingId = "RELREM".hashCode().toLong(),
+        sequence = 11,
+      ),
+      calculateAt = LocalDate.of(2021, 2, 1),
+    )
+    val calculation: RelevantRemandCalculationResult = webTestClient.post()
+      .uri("/calculation/relevant-remand/RELREM")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(request))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(RelevantRemandCalculationResult::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.releaseDate).isEqualTo(LocalDate.of(2021, 2, 1))
+    assertThat(calculation.postRecallReleaseDate).isNull()
+    assertThat(calculation.unusedDeductions).isEqualTo(305)
+    assertThat(calculation.validationMessages).isEmpty()
+  }
+
+  @Test
+  fun `Run relevant remand calculation with more tagged bail than required`() {
+    val request = RelevantRemandCalculationRequest(
+      listOf(),
+      RelevantRemandSentence(
+        sentenceDate = LocalDate.of(2021, 2, 1),
+        bookingId = "RELREMT".hashCode().toLong(),
+        sequence = 11,
+      ),
+      calculateAt = LocalDate.of(2021, 2, 1),
+    )
+    val calculation: RelevantRemandCalculationResult = webTestClient.post()
+      .uri("/calculation/relevant-remand/RELREMT")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(request))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(RelevantRemandCalculationResult::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.releaseDate).isEqualTo(LocalDate.of(2021, 2, 1))
+    assertThat(calculation.postRecallReleaseDate).isNull()
+    assertThat(calculation.unusedDeductions).isEqualTo(209)
     assertThat(calculation.validationMessages).isEmpty()
   }
 
