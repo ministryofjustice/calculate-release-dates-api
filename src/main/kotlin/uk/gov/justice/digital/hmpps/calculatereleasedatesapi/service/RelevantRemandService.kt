@@ -59,7 +59,7 @@ class RelevantRemandService(
     }
 
     val releaseDateSentence = result.first.getAllExtractableSentences().find { it.sentenceCalculation.releaseDate == releaseDate }
-    val unusedDeductions = if (releaseDateSentence != null) { //The release date will be a PRRD, no unused deductions.
+    val unusedDeductions = if (releaseDateSentence != null) { // The release date will be a PRRD, no unused deductions.
       val allAdjustmentDaysExceptDeductions =
         releaseDateSentence.sentenceCalculation.calculatedTotalAwardedDays + releaseDateSentence.sentenceCalculation.calculatedTotalAddedDays
       val maxDeductions =
@@ -73,7 +73,7 @@ class RelevantRemandService(
     return RelevantRemandCalculationResult(
       releaseDate = releaseDate,
       postRecallReleaseDate = postRecallReleaseDate,
-      unusedDeductions = unusedDeductions
+      unusedDeductions = unusedDeductions,
 
     )
   }

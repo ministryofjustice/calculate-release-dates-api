@@ -746,6 +746,7 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(calculation.unusedDeductions).isEqualTo(0)
     assertThat(calculation.validationMessages).isEmpty()
   }
+
   @Test
   fun `Run relevant remand calculation with more remand than required`() {
     val request = RelevantRemandCalculationRequest(
@@ -781,6 +782,7 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(calculation.unusedDeductions).isEqualTo(305)
     assertThat(calculation.validationMessages).isEmpty()
   }
+
   @Test
   fun `Run relevant remand calculation with more tagged bail than required`() {
     val request = RelevantRemandCalculationRequest(
