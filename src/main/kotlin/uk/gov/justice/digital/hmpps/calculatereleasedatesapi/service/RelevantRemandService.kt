@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
@@ -15,6 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.LocalDate
+import kotlin.math.max
 
 @Service
 class RelevantRemandService(
@@ -55,9 +57,24 @@ class RelevantRemandService(
       postRecallReleaseDate = calculationResult.dates[ReleaseDateType.PRRD]
       releaseDate = result.first.getAllExtractableSentences().find { it.sentenceCalculation.adjustedPostRecallReleaseDate == postRecallReleaseDate }!!.sentenceCalculation.adjustedDeterminateReleaseDate
     }
+
+    val releaseDateSentence = result.first.getAllExtractableSentences().find { it.sentenceCalculation.releaseDate == releaseDate }
+    val unusedDeductions = if (releaseDateSentence != null) { //The release date will be a PRRD, no unused deductions.
+      val allAdjustmentDaysExceptDeductions =
+        releaseDateSentence.sentenceCalculation.calculatedTotalAwardedDays + releaseDateSentence.sentenceCalculation.calculatedTotalAddedDays
+      val maxDeductions =
+        releaseDateSentence.sentenceCalculation.numberOfDaysToDeterminateReleaseDate + allAdjustmentDaysExceptDeductions
+      val taggedBail = releaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.TAGGED_BAIL)
+      val remand = request.relevantRemands.map { it.days }.reduceOrNull { acc, it -> acc + it } ?: 0
+      val deductions = taggedBail + remand
+      max(0, deductions - maxDeductions)
+    } else { 0 }
+
     return RelevantRemandCalculationResult(
       releaseDate = releaseDate,
       postRecallReleaseDate = postRecallReleaseDate,
+      unusedDeductions = unusedDeductions
+
     )
   }
 
