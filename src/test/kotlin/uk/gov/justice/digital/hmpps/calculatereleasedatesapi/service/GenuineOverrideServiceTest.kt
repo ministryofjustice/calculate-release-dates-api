@@ -20,7 +20,8 @@ import java.util.UUID
 class GenuineOverrideServiceTest() {
   private val genuineOverrideRepository = mock<GenuineOverrideRepository>()
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
-  private val underTest = GenuineOverrideService(genuineOverrideRepository, calculationRequestRepository)
+  private val manualCalculationService = mock<ManualCalculationService>()
+  private val underTest = GenuineOverrideService(genuineOverrideRepository, calculationRequestRepository, manualCalculationService)
 
   @Nested
   inner class CreateGenuineOverride {

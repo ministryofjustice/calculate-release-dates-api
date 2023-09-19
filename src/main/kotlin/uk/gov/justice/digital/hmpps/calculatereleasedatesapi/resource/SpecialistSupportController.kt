@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideDateRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideDateResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.GenuineOverrideService
@@ -36,9 +38,27 @@ class SpecialistSupportController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun storeManualCalculation(
+  fun storeGenuineOverride(
     @RequestBody genuineOverrideRequest: GenuineOverrideRequest,
   ): GenuineOverrideResponse {
     return genuineOverrideService.createGenuineOverride(genuineOverrideRequest)
+  }
+
+  @PostMapping(value = ["/genuine-override/calculation"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRDS_SPECIALIST_SUPPORT')")
+  @ResponseBody
+  @Operation(
+    summary = "Store a genuine override",
+    description = "This endpoint will return a response model which indicates the success of storing a genuine override",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns a GenuineOverrideResponse"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun storeGenuineOverrideDates(@RequestBody genuineOverrideRequest: GenuineOverrideDateRequest): GenuineOverrideDateResponse {
+    return genuineOverrideService.storeGenuineOverrideDates(genuineOverrideRequest)
   }
 }
