@@ -19,7 +19,7 @@ data class GenuineOverride(
   @OneToOne
   val originalCalculationRequest: CalculationRequest,
   @OneToOne
-  val savedCalculation: CalculationRequest? = null,
+  var savedCalculation: CalculationRequest? = null,
   val isOverridden: Boolean = false,
   @NotNull
   val savedAt: LocalDateTime = LocalDateTime.now(),
