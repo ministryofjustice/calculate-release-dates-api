@@ -443,6 +443,51 @@ class CalculationTransactionalServiceTest {
     assertThat(submittedDates.homeDetentionCurfewApprovedDate).isEqualTo("2020-03-01")
   }
 
+  @Test
+  fun `Test that the specialist support comment is written to NOMIS`() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(
+      calculationRequestRepository.findById(
+        CALCULATION_REQUEST_ID,
+      ),
+    ).thenReturn(
+      Optional.of(
+        CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA),
+      ),
+    )
+
+    calculationTransactionalService.writeToNomisAndPublishEvent(
+      PRISONER_ID,
+      BOOKING.copy(sentences = listOf(StandardSENTENCE.copy(duration = ZERO_DURATION))),
+      BOOKING_CALCULATION.copy(
+        dates = mutableMapOf(
+          CRD to CALCULATION_OUTCOME_CRD.outcomeDate!!,
+          SED to THIRD_FEB_2021,
+          ERSED to FIFTH_APRIL_2021,
+          ESED to ESED_DATE,
+        ),
+        effectiveSentenceLength = Period.of(6, 2, 3),
+      ),
+      emptyList(),
+      true,
+    )
+
+    verify(prisonService).postReleaseDates(
+      BOOKING_ID,
+      UPDATE_OFFENDER_DATES.copy(
+        keyDates = OffenderKeyDates(
+          conditionalReleaseDate = THIRD_FEB_2021,
+          sentenceExpiryDate = THIRD_FEB_2021,
+          earlyRemovalSchemeEligibilityDate = FIFTH_APRIL_2021,
+          effectiveSentenceEndDate = ESED_DATE,
+          sentenceLength = "06/02/03",
+        ),
+        comment = "The information shown was calculated using the Calculate release dates service and submitted by Specialist Support. The calculation ID is: $CALCULATION_REFERENCE",
+      ),
+    )
+    verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
+  }
+
   private fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
 
   @BeforeEach
