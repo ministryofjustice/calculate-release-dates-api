@@ -119,7 +119,7 @@ class CalculationTransactionalService(
       throw PreconditionFailedException("The booking now fails validation")
     }
 
-    return confirmCalculation(calculationRequest.prisonerId, submitCalculationRequest.calculationFragments, sourceData, booking, userInput, submitCalculationRequest.approvedDates)
+    return confirmCalculation(calculationRequest.prisonerId, submitCalculationRequest.calculationFragments, sourceData, booking, userInput, submitCalculationRequest.approvedDates, submitCalculationRequest.isSpecialistSupport)
   }
 
   private fun confirmCalculation(
@@ -129,10 +129,13 @@ class CalculationTransactionalService(
     booking: Booking,
     userInput: CalculationUserInputs?,
     approvedDates: List<ManualEntrySelectedDate>?,
+    isSpecialistSupport: Boolean? = false,
   ): CalculatedReleaseDates {
     try {
       val calculationType = if (approvedDates != null) {
         CalculationType.CALCULATED
+      } else if (isSpecialistSupport!!) {
+        CalculationType.CALCULATED_BY_SPECIALIST_SUPPORT
       } else {
         CalculationType.CALCULATED_WITH_APPROVED_DATES
       }
@@ -141,7 +144,7 @@ class CalculationTransactionalService(
       if (!approvedDates.isNullOrEmpty()) {
         storeApprovedDates(calculation, approvedDates)
       }
-      writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates)
+      writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates, isSpecialistSupport)
       return calculation
     } catch (error: Exception) {
       recordError(booking, sourceData, userInput, error)
@@ -282,10 +285,12 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun writeToNomisAndPublishEvent(prisonerId: String, booking: Booking, calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>?) {
+  fun writeToNomisAndPublishEvent(prisonerId: String, booking: Booking, calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>?, isSpecialistSupport: Boolean? = false) {
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
-    val comment = if (approvedDates?.isNotEmpty() == true) {
+    val commentToSave = if (isSpecialistSupport!!) {
+      "The information shown was calculated using the Calculate release dates service and submitted by Specialist Support. The calculation ID is: ${calculationRequest.calculationReference}"
+    } else if (approvedDates?.isNotEmpty() == true) {
       "The information shown was calculated using the Calculate Release Dates service with manually entered dates. The calculation ID is: ${calculationRequest.calculationReference}"
     } else {
       "The information shown was calculated using the Calculate Release Dates service. The calculation ID is: ${calculationRequest.calculationReference}"
@@ -295,7 +300,7 @@ class CalculationTransactionalService(
       submissionUser = serviceUserService.getUsername(),
       keyDates = transform(calculation, approvedDates),
       noDates = false,
-      comment = comment,
+      comment = commentToSave,
     )
     try {
       prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)
