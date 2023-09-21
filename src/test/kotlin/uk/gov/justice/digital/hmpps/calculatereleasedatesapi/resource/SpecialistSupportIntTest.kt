@@ -48,7 +48,7 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
   @Test
   fun `Store an overridden calculation`() {
     val preliminaryCalculation = createPreliminaryCalculation(CalculationIntTest.PRISONER_ID)
-    val genuineOverride = createGenuineOverride(preliminaryCalculation.calculationReference.toString(), true)
+    createGenuineOverride(preliminaryCalculation.calculationReference.toString(), true)
     val responseBody = webTestClient.post()
       .uri("/specialist-support/genuine-override/calculation")
       .accept(MediaType.APPLICATION_JSON)
