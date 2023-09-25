@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -60,5 +62,24 @@ class SpecialistSupportController(
   )
   fun storeGenuineOverrideDates(@RequestBody genuineOverrideRequest: GenuineOverrideDateRequest): GenuineOverrideDateResponse {
     return genuineOverrideService.storeGenuineOverrideDates(genuineOverrideRequest)
+  }
+
+  @GetMapping(value = ["genuine-override/calculation/{calculationReference}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRDS_SPECIALIST_SUPPORT')")
+  @ResponseBody
+  @Operation(
+    summary = "Get a genuine override",
+    description = "This endpoint will return a response model which returns a genuine override",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns a GenuineOverrideResponse"),
+      ApiResponse(responseCode = "404", description = "Not Found, a genuine override doesn't exist for the calculation reference"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun getGenuineOverride(@PathVariable calculationReference: String): GenuineOverrideResponse {
+    return genuineOverrideService.getGenuineOverride(calculationReference)
   }
 }

@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.GenuineOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationNotFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveGenuineOverrideException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.GenuineOverrideNotFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideDateRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideDateResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideRequest
@@ -49,6 +50,12 @@ class GenuineOverrideService(
         throw CouldNotSaveGenuineOverrideException("No overrides existed for the original calculation reference ${genuineOverrideRequest.originalCalculationReference}")
       }
     }.orElseThrow { CouldNotSaveGenuineOverrideException("Could not find new calculation to store against Genuine Override") }
+  }
+
+  fun getGenuineOverride(calculationReference: String): GenuineOverrideResponse {
+    return genuineOverrideRepository.findBySavedCalculationCalculationReference(UUID.fromString(calculationReference)).map {
+      GenuineOverrideResponse(it.reason, it.originalCalculationRequest.calculationReference.toString(), it.savedCalculation?.calculationReference.toString(), it.isOverridden)
+    }.orElseThrow { GenuineOverrideNotFoundException("Could not find genuine override for reference: $calculationReference") }
   }
 
   companion object {

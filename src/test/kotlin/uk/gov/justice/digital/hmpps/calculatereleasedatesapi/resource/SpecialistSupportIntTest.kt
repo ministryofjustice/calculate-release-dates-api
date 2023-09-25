@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.GenuineOverrideRepository
+import java.util.UUID
 
 class SpecialistSupportIntTest() : IntegrationTestBase() {
 
@@ -49,7 +50,44 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
   fun `Store an overridden calculation`() {
     val preliminaryCalculation = createPreliminaryCalculation(CalculationIntTest.PRISONER_ID)
     createGenuineOverride(preliminaryCalculation.calculationReference.toString(), true)
-    val responseBody = webTestClient.post()
+    val responseBody = createGenuineOverrideDates(preliminaryCalculation)
+    assertThat(responseBody!!.calculationReference).isNotNull
+    assertThat(responseBody.originalCalculationReference).isEqualTo(preliminaryCalculation.calculationReference.toString())
+    val overrides = genuineOverrideRepository.findAllByOriginalCalculationRequestCalculationReferenceOrderBySavedAtDesc(preliminaryCalculation.calculationReference)
+    assertThat(overrides.size).isEqualTo(1)
+    assertThat(overrides[0].isOverridden).isTrue
+  }
+
+  @Test
+  fun `Retrieve an overridden calculation`() {
+    val preliminaryCalculation = createPreliminaryCalculation(CalculationIntTest.PRISONER_ID)
+    createGenuineOverride(preliminaryCalculation.calculationReference.toString(), true)
+    val responseBody = createGenuineOverrideDates(preliminaryCalculation)
+    val storedOverride = webTestClient.get()
+      .uri("/specialist-support/genuine-override/calculation/${responseBody!!.calculationReference}")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_CRDS_SPECIALIST_SUPPORT")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(GenuineOverrideResponse::class.java)
+      .returnResult().responseBody
+    assertThat(storedOverride).isNotNull
+    assertThat(storedOverride!!.savedCalculation).isEqualTo(responseBody.calculationReference)
+  }
+
+  @Test
+  fun `Throw 404 if an overridden calculation cannot be found`() {
+    val storedOverride = webTestClient.get()
+      .uri("/specialist-support/genuine-override/calculation/${UUID.randomUUID()}")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_CRDS_SPECIALIST_SUPPORT")))
+      .exchange()
+      .expectStatus().isNotFound
+  }
+
+  private fun createGenuineOverrideDates(preliminaryCalculation: CalculatedReleaseDates): GenuineOverrideDateResponse? =
+    webTestClient.post()
       .uri("/specialist-support/genuine-override/calculation")
       .accept(MediaType.APPLICATION_JSON)
       .bodyValue(
@@ -68,12 +106,6 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
       .expectBody(GenuineOverrideDateResponse::class.java)
       .returnResult().responseBody
-    assertThat(responseBody!!.calculationReference).isNotNull
-    assertThat(responseBody.originalCalculationReference).isEqualTo(preliminaryCalculation.calculationReference.toString())
-    val overrides = genuineOverrideRepository.findAllByOriginalCalculationRequestCalculationReferenceOrderBySavedAtDesc(preliminaryCalculation.calculationReference)
-    assertThat(overrides.size).isEqualTo(1)
-    assertThat(overrides[0].isOverridden).isTrue
-  }
 
   private fun createGenuineOverride(calculationReference: String, isOverridden: Boolean) = webTestClient.post()
     .uri("/specialist-support/genuine-override")
