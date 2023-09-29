@@ -56,6 +56,21 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
     val overrides = genuineOverrideRepository.findAllByOriginalCalculationRequestCalculationReferenceOrderBySavedAtDesc(preliminaryCalculation.calculationReference)
     assertThat(overrides.size).isEqualTo(1)
     assertThat(overrides[0].isOverridden).isTrue
+    assertThat(overrides[0].savedCalculation).isNotNull
+  }
+
+  @Test
+  fun `Store an overridden calculation with the saved calculation`() {
+    val preliminaryCalculation = createPreliminaryCalculation(CalculationIntTest.PRISONER_ID)
+    val secondCalculation = createPreliminaryCalculation(CalculationIntTest.PRISONER_ID)
+    val responseBody = createGenuineOverride(preliminaryCalculation.calculationReference.toString(), true, secondCalculation.calculationReference.toString())
+    assertThat(responseBody!!.savedCalculation).isNotNull
+    assertThat(responseBody.originalCalculationRequest).isEqualTo(preliminaryCalculation.calculationReference.toString())
+    val overrides = genuineOverrideRepository.findAllByOriginalCalculationRequestCalculationReferenceOrderBySavedAtDesc(preliminaryCalculation.calculationReference)
+    assertThat(overrides.size).isEqualTo(1)
+    assertThat(overrides[0].isOverridden).isTrue
+    assertThat(overrides[0].savedCalculation!!.calculationReference).isEqualTo(secondCalculation.calculationReference)
+    assertThat(overrides[0].originalCalculationRequest.calculationReference).isEqualTo(preliminaryCalculation.calculationReference)
   }
 
   @Test
@@ -78,7 +93,7 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
 
   @Test
   fun `Throw 404 if an overridden calculation cannot be found`() {
-    val storedOverride = webTestClient.get()
+    webTestClient.get()
       .uri("/specialist-support/genuine-override/calculation/${UUID.randomUUID()}")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_CRDS_SPECIALIST_SUPPORT")))
@@ -107,14 +122,14 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
       .expectBody(GenuineOverrideDateResponse::class.java)
       .returnResult().responseBody
 
-  private fun createGenuineOverride(calculationReference: String, isOverridden: Boolean) = webTestClient.post()
+  private fun createGenuineOverride(calculationReference: String, isOverridden: Boolean, savedCalculationReference: String? = null) = webTestClient.post()
     .uri("/specialist-support/genuine-override")
     .accept(MediaType.APPLICATION_JSON)
     .bodyValue(
       GenuineOverrideRequest(
         "a reason",
         calculationReference,
-        null,
+        savedCalculationReference,
         isOverridden,
       ),
     )
