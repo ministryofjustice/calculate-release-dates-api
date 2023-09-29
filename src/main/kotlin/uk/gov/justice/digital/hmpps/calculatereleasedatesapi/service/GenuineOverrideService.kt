@@ -23,11 +23,17 @@ class GenuineOverrideService(
 
   fun createGenuineOverride(genuineOverrideRequest: GenuineOverrideRequest): GenuineOverrideResponse {
     val originalCalculation = calculationRequestRepository.findByCalculationReference(UUID.fromString(genuineOverrideRequest.originalCalculationRequest))
+    val savedCalc = try {
+      calculationRequestRepository.findByCalculationReference(UUID.fromString(genuineOverrideRequest.savedCalculation)).get()
+    } catch (ex: NullPointerException) {
+      null
+    }
     return originalCalculation.map {
       val genuineOverride = GenuineOverride(
         reason = genuineOverrideRequest.reason,
         originalCalculationRequest = it,
         isOverridden = genuineOverrideRequest.isOverridden,
+        savedCalculation = savedCalc,
       )
       val savedGenuineOverride = genuineOverrideRepository.save(genuineOverride)
       transform(savedGenuineOverride)
