@@ -140,7 +140,6 @@ class CalculationTransactionalService(
         CalculationType.CALCULATED_WITH_APPROVED_DATES
       }
       val calculation = calculate(booking, CONFIRMED, sourceData, userInput, calculationFragments, calculationType)
-
       if (!approvedDates.isNullOrEmpty()) {
         storeApprovedDates(calculation, approvedDates)
       }
