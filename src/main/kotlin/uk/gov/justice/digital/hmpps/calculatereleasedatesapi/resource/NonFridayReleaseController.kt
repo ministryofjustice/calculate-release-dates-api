@@ -30,7 +30,6 @@ class NonFridayReleaseController(
 ) {
 
   @GetMapping(value = ["/{date}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
   @Operation(
     summary = "Find the non friday release day from a given date",
