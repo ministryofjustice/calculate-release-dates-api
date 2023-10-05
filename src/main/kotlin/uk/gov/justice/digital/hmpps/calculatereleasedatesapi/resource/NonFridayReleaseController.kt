@@ -38,8 +38,8 @@ class NonFridayReleaseController(
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "Returns non friday release day"),
+      ApiResponse(responseCode = "400", description = "Bad Request"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
   fun nonFridayReleaseDay(
