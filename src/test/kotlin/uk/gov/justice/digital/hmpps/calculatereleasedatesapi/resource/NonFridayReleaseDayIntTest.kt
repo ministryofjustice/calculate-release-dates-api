@@ -18,7 +18,7 @@ class NonFridayReleaseDayIntTest : IntegrationTestBase() {
       webTestClient.get()
         .uri("/non-friday-release/$SATURDAY")
         .accept(MediaType.APPLICATION_JSON)
-        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+        .headers(setAuthorisation())
         .exchange()
         .expectStatus().isOk
         .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -34,7 +34,7 @@ class NonFridayReleaseDayIntTest : IntegrationTestBase() {
     webTestClient.get()
       .uri("/non-friday-release/$PAST_DATE")
       .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .headers(setAuthorisation())
       .exchange()
       .expectStatus().isBadRequest
   }

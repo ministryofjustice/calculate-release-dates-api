@@ -10,7 +10,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -30,7 +29,6 @@ class NonFridayReleaseController(
 ) {
 
   @GetMapping(value = ["/{date}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
   @Operation(
     summary = "Find the non friday release day from a given date",
@@ -39,8 +37,8 @@ class NonFridayReleaseController(
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "Returns non friday release day"),
+      ApiResponse(responseCode = "400", description = "Bad Request"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
   fun nonFridayReleaseDay(
