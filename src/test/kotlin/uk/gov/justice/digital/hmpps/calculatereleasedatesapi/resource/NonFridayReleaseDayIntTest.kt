@@ -35,7 +35,6 @@ class NonFridayReleaseDayIntTest : IntegrationTestBase() {
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isBadRequest
-
   }
 
   companion object {
