@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NonFridayReleaseDay
+import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.temporal.TemporalAdjusters
 
 class NonFridayReleaseDayIntTest : IntegrationTestBase() {
 
@@ -38,8 +40,8 @@ class NonFridayReleaseDayIntTest : IntegrationTestBase() {
   }
 
   companion object {
-    val SATURDAY: LocalDate = LocalDate.of(2023, 10, 7)
-    val THURSDAY: LocalDate = LocalDate.of(2023, 10, 5)
+    val THURSDAY: LocalDate = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.THURSDAY))
+    val SATURDAY: LocalDate = THURSDAY.with(TemporalAdjusters.next(DayOfWeek.SATURDAY))
     val PAST_DATE: LocalDate = LocalDate.MIN
   }
 }
