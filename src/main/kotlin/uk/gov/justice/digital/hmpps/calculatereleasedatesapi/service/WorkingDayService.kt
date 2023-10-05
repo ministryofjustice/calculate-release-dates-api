@@ -4,6 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.WorkingDay
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isNonWorkingDay
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isWeekend
 import java.time.LocalDate
 
@@ -31,7 +32,7 @@ class WorkingDayService(
     log.info("Bank holidays data fetched successfully")
 
     var workingDate = date
-    while (workingDate.isWeekend() || bankHolidays.contains(workingDate)) {
+    while (workingDate.isNonWorkingDay(bankHolidays)) {
       adjustedForWeekend = workingDate.isWeekend() || adjustedForWeekend
       adjustedForBankHoliday = bankHolidays.contains(workingDate) || adjustedForBankHoliday
       workingDate = increment.invoke(workingDate)

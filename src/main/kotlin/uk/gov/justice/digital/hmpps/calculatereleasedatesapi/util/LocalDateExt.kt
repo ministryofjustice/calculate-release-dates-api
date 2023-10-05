@@ -15,6 +15,10 @@ fun LocalDate.isWeekend(): Boolean {
   return this.dayOfWeek == DayOfWeek.SATURDAY || this.dayOfWeek == DayOfWeek.SUNDAY
 }
 
+fun LocalDate.isNonWorkingDay(bankHolidays: List<LocalDate>): Boolean {
+  return isWeekend() || bankHolidays.contains(this)
+}
+
 fun LocalDate.isFirstDayOfMonth(): Boolean {
   return this.dayOfMonth == 1
 }
