@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.GenuineOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
@@ -62,6 +63,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DateBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -639,5 +641,16 @@ fun transform(
     calculatedByUsername = username,
     numberOfPeopleCompared = null,
     comparisonStatus = ComparisonStatus(ComparisonStatusValue.PROCESSING),
+  )
+}
+
+fun transform(
+  genuineOverride: GenuineOverride,
+): GenuineOverrideResponse {
+  return GenuineOverrideResponse(
+    reason = genuineOverride.reason,
+    originalCalculationRequest = genuineOverride.originalCalculationRequest.calculationReference.toString(),
+    savedCalculation = genuineOverride.savedCalculation?.calculationReference.toString(),
+    isOverridden = genuineOverride.isOverridden,
   )
 }
