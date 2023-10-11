@@ -61,7 +61,7 @@ class BookingTimelineService(
         var daysBetween = DAYS.between(timelineTracker.timelineRange.end, it.sentencedAt)
         val adaAvailable = it.sentenceCalculation.calculatedTotalAwardedDays
         val daysAdaServed = min(daysBetween - 1, adaAvailable.toLong())
-        booking.adjustments?.addAdjustment(
+        booking.adjustments.addAdjustment(
           ADDITIONAL_DAYS_SERVED,
           Adjustment(
             numberOfDays = daysAdaServed.toInt(),
