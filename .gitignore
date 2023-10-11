@@ -72,3 +72,4 @@ ecr.repo
 
 #Mac System Files
 .DS_Store
+/qodana.yaml

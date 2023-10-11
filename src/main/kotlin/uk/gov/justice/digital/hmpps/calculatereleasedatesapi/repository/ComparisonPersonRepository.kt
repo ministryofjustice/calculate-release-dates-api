@@ -6,4 +6,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPe
 interface ComparisonPersonRepository : JpaRepository<ComparisonPerson, Long> {
 
   fun countByComparisonId(comparisonId: Long): Long
+
+  fun findByComparisonIdIs(comparisonId: Long): List<ComparisonPerson>
 }

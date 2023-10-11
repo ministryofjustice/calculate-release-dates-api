@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Offe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 
 @Service
 class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: WebClient) {
@@ -80,5 +81,14 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .retrieve()
       .bodyToMono(typeReference<ArrayList<CaseLoad>>())
       .block()
+  }
+
+  fun getCalculableSentenceEnvelopesByEstablishment(establishmentId: String): List<CalculableSentenceEnvelope> {
+    log.info("Requesting personId and booking details for latest booking of all offenders at establishment $establishmentId")
+    return webClient.get()
+      .uri("/api/prison/$establishmentId/booking/latest/calculable-sentence-envelope")
+      .retrieve()
+      .bodyToMono(typeReference<List<CalculableSentenceEnvelope>>())
+      .block()!!
   }
 }

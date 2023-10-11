@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ComparisonService
 
@@ -43,8 +44,8 @@ class ComparisonController(
   fun createComparison(
     @RequestBody
     comparison: ComparisonInput,
-  ): uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison {
-    log.info("Request received to create a new Comparison")
+  ): Comparison {
+    log.info("Request received to create a new Comparison -- $comparison")
     return comparisonService.create(comparison)
   }
 
@@ -62,7 +63,7 @@ class ComparisonController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun getManualComparisons(): List<uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison> {
+  fun getManualComparisons(): List<Comparison> {
     log.info("Requested a list of manual Comparisons")
     return comparisonService.listManual()
   }
@@ -81,12 +82,12 @@ class ComparisonController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun getComparisons(): List<uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison> {
+  fun getComparisons(): List<Comparison> {
     log.info("Requested a list of Comparisons")
     return comparisonService.listComparisons()
   }
 
-  @GetMapping(value = ["{comparisonReference}/count/"])
+  @GetMapping(value = ["{comparisonReference}/count"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'ROLE_RELEASE_DATE_COMPARER', 'ROLE_RELEASE_DATE_MANUAL_COMPARER')")
   @ResponseBody
   @Operation(
@@ -107,6 +108,29 @@ class ComparisonController(
   ): Long {
     log.info("Requested a count of the number of persons in a particular comparison")
     return comparisonService.getCountOfPersonsInComparisonByComparisonReference(comparisonReference)
+  }
+
+  @GetMapping(value = ["{comparisonReference}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'ROLE_RELEASE_DATE_COMPARER', 'ROLE_RELEASE_DATE_MANUAL_COMPARER')")
+  @ResponseBody
+  @Operation(
+    summary = "Returns the people for a particular caseload",
+    description = "This endpoint return the people associated to a specific comparison",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns a list of comparisons Comparison"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun getComparisonByShortReference(
+    @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the comparison")
+    @PathVariable("comparisonReference")
+    comparisonReference: String,
+  ): Comparison {
+    log.info("Return the specific particular comparison")
+    return comparisonService.getComparisonByComparisonReference(comparisonReference)
   }
 
   companion object {

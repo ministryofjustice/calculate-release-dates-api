@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.isSupported
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 
 @Service
 class PrisonService(
@@ -73,5 +74,9 @@ class PrisonService(
   fun getCurrentUserPrisonsList(): List<String> {
     return prisonApiClient.getCurrentUserCaseLoads()?.filter { it.currentlyActive }?.map { caseLoad -> caseLoad.caseLoadId }
       ?: emptyList()
+  }
+
+  fun getActiveBookingsByEstablishment(establishmentId: String): List<CalculableSentenceEnvelope> {
+    return prisonApiClient.getCalculableSentenceEnvelopesByEstablishment(establishmentId)
   }
 }
