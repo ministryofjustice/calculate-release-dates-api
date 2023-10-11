@@ -112,6 +112,25 @@ data class SentenceCalculation(
     return getAdjustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
   }
 
+  val calculatedTotalAddedDaysForSled: Int get() {
+    if (isReleaseDateConditional && !sentence.isRecall()) {
+      return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = unadjustedDeterminateReleaseDate, adjustmentsAfter = sentence.sentencedAt.minusDays(1))
+    } else {
+      return getAdjustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
+    }
+  }
+  val calculatedTotalAddedDaysForTused: Int get() {
+    return if (sentence.isRecall() && !sentence.recallType!!.isFixedTermRecall) {
+      if (returnToCustodyDate != null) {
+        adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = returnToCustodyDate, adjustmentsAfter = sentence.sentencedAt)
+      } else {
+        getAdjustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
+      }
+    } else {
+      adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = releaseDate, adjustmentsAfter = sentence.sentencedAt.minusDays(1))
+    }
+  }
+
   fun getTotalAddedDaysAfter(after: LocalDate): Int {
     return adjustments.getOrZero(UNLAWFULLY_AT_LARGE, adjustmentsBefore = latestConcurrentRelease, adjustmentsAfter = after)
   }
@@ -152,7 +171,7 @@ data class SentenceCalculation(
       .minusDays(
         calculatedTotalDeductedDays.toLong(),
       ).plusDays(
-        calculatedTotalAddedDays.toLong(),
+        calculatedTotalAddedDaysForSled.toLong(),
       )
   }
 

@@ -63,7 +63,7 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
         .plusDays(sentenceCalculation.calculatedDeterminateTotalAddedDays.toLong())
         .minusDays(sentenceCalculation.calculatedDeterminateTotalDeductedDays.toLong())
         .plusMonths(TWELVE)
-        .plusDays(sentenceCalculation.calculatedTotalAddedDays.minus(sentenceCalculation.calculatedDeterminateTotalAddedDays).toLong())
+        .plusDays(sentenceCalculation.calculatedTotalAddedDaysForTused.minus(sentenceCalculation.calculatedDeterminateTotalAddedDays).toLong())
     }
   }
 
