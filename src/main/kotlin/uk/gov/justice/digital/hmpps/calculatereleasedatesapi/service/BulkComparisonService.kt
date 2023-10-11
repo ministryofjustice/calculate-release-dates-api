@@ -33,6 +33,7 @@ class BulkComparisonService(
   }
 
   fun recordMismatchesForComparison(comparisonToCreate: Comparison, mismatches: List<Mismatch>) {
+    // TODO is mismatch stored in the comparison person table? columns need adding?
     comparisonPersonRepository
   }
 
@@ -177,23 +178,19 @@ class BulkComparisonService(
       )
     }
 
-    val fixedTermRecallDetails = if (source.fixedTermRecallDetails != null) {
+    val fixedTermRecallDetails = source.fixedTermRecallDetails?.let {
       FixedTermRecallDetails(
-        source.fixedTermRecallDetails.bookingId!!,
-        source.fixedTermRecallDetails.returnToCustodyDate!!,
-        source.fixedTermRecallDetails.recallLength!!,
+        it.bookingId!!,
+        it.returnToCustodyDate!!,
+        it.recallLength!!,
       )
-    } else {
-      null
     }
 
-    val returnToCustodyDate = if (source.fixedTermRecallDetails != null) {
+    val returnToCustodyDate = source.fixedTermRecallDetails?.let {
       ReturnToCustodyDate(
-        source.fixedTermRecallDetails.bookingId!!,
-        source.fixedTermRecallDetails.returnToCustodyDate!!,
+        it.bookingId!!,
+        it.returnToCustodyDate!!,
       )
-    } else {
-      null
     }
 
     return PrisonApiSourceData(

@@ -27,7 +27,8 @@ class ComparisonService(
     val initialComparisonCreated = comparisonRepository.save(
       comparisonToCreate,
     )
-    if (!comparisonToCreate.manualInput) {
+    if (!comparisonToCreate.manualInput) { // TODO in a manual comparison the noms IDs are supplied which is a different populate
+      // TODO move this into bulk comparison so that it can be async
       val peopleAtEstablishment = this.bulkComparisonService.populate(initialComparisonCreated)
       val mismatches = this.identifyMismatches(peopleAtEstablishment)
       this.bulkComparisonService.recordMismatchesForComparison(comparisonToCreate, mismatches.stream().filter { it.shouldRecordMismatch() }.toList())
@@ -45,12 +46,12 @@ class ComparisonService(
   }
 
   fun listManual(): List<Comparison> {
-    return comparisonRepository.findAllByManualInput(boolean = true)
+    return comparisonRepository.findAllByManualInput(true)
   }
 
   fun listComparisons(): List<Comparison> {
     return comparisonRepository.findAllByManualInputAndPrisonIsIn(
-      boolean = false,
+      false,
       prisonService.getCurrentUserPrisonsList(),
     )
   }
