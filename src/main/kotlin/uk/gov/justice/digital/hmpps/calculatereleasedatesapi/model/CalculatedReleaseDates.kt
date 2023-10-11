@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import java.time.LocalDate
 import java.time.Period
 import java.util.UUID
@@ -20,4 +21,29 @@ data class CalculatedReleaseDates(
   val calculationType: CalculationType = CalculationType.CALCULATED,
   val approvedDates: Map<ReleaseDateType, LocalDate?>? = null,
   val calculationReference: UUID,
-)
+) {
+  fun toSentenceCalcDates(): SentenceCalcDates {
+    return SentenceCalcDates(
+      this.dates.getValue(ReleaseDateType.SED),
+      this.dates.getValue(ReleaseDateType.ARD),
+      this.dates.getValue(ReleaseDateType.CRD),
+      this.dates.getValue(ReleaseDateType.NPD),
+      this.dates.getValue(ReleaseDateType.PRRD),
+      this.dates.getValue(ReleaseDateType.LED),
+      this.dates.getValue(ReleaseDateType.HDCED),
+      this.dates.getValue(ReleaseDateType.PED),
+      this.dates.getValue(ReleaseDateType.HDCAD),
+      this.dates.getValue(ReleaseDateType.APD),
+      this.dates.getValue(ReleaseDateType.ROTL),
+      this.dates.getValue(ReleaseDateType.ERSED),
+      this.dates.getValue(ReleaseDateType.ETD),
+      this.dates.getValue(ReleaseDateType.MTD),
+      this.dates.getValue(ReleaseDateType.LTD),
+      this.dates.getValue(ReleaseDateType.TUSED),
+      this.dates.getValue(ReleaseDateType.Tariff),
+      this.dates.getValue(ReleaseDateType.DPRRD),
+      this.dates.getValue(ReleaseDateType.TERSED),
+      this.dates.getValue(ReleaseDateType.ESED),
+    )
+  }
+}

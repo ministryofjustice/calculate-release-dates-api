@@ -15,8 +15,11 @@ class ComparisonPerson(
   val id: Long = -1,
 
   @NotNull
-  val comparisonId: Int,
+  val comparisonId: Long,
 
   @NotNull
-  val person: String,
+  val personId: String,
+
+  @NotNull
+  val latestBookingId: Long,
 )

@@ -22,9 +22,22 @@ class PrisonApiDataVersions {
       val days: Int = 0,
       val offences: List<OffenderOffence> = emptyList(),
     ) {
-      fun toLatest() = SentenceAndOffences(
-        bookingId, sentenceSequence, lineSequence, caseSequence, consecutiveToSequence, sentenceStatus, sentenceCategory, sentenceCalculationType, sentenceTypeDescription, sentenceDate,
-        listOf(SentenceTerms(years, months, weeks, days)), offences,
+      fun toLatest() = uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences(
+        bookingId,
+        sentenceSequence,
+        lineSequence,
+        caseSequence,
+        consecutiveToSequence,
+        sentenceStatus,
+        sentenceCategory,
+        sentenceCalculationType,
+        sentenceTypeDescription,
+        sentenceDate,
+        listOf(SentenceTerms(years, months, weeks, days)),
+        offences,
+        null,
+        null,
+        0.toBigDecimal(),
       )
     }
   }

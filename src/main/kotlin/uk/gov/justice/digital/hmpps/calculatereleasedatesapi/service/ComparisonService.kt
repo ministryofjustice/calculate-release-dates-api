@@ -1,8 +1,14 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 
@@ -12,21 +18,40 @@ class ComparisonService(
   private var prisonService: PrisonService,
   private var serviceUserService: ServiceUserService,
   private val comparisonPersonRepository: ComparisonPersonRepository,
+  private var bulkComparisonService: BulkComparisonService,
 ) {
 
-  fun create(comparison: ComparisonInput): Comparison {
-    return comparisonRepository.save(
-      transform(comparison, serviceUserService.getUsername()),
+  fun create(comparisonInput: ComparisonInput): Comparison {
+    val comparisonToCreate = transform(comparisonInput, serviceUserService.getUsername())
+    log.info("Creating new comparison $comparisonToCreate")
+    val initialComparisonCreated = comparisonRepository.save(
+      comparisonToCreate,
     )
+    if (!comparisonToCreate.manualInput) { // TODO in a manual comparison the noms IDs are supplied which is a different populate
+      // TODO move this into bulk comparison so that it can be async
+      val peopleAtEstablishment = this.bulkComparisonService.populate(initialComparisonCreated)
+      val mismatches = this.identifyMismatches(peopleAtEstablishment)
+      this.bulkComparisonService.recordMismatchesForComparison(comparisonToCreate, mismatches.stream().filter { it.shouldRecordMismatch() }.toList())
+    }
+    return initialComparisonCreated
+  }
+
+  private fun identifyMismatches(sentenceEnvelopes: List<CalculableSentenceEnvelope>): List<Mismatch> {
+    val mismatches = mutableListOf<Mismatch>()
+
+    for (personAtEstablishment in sentenceEnvelopes) {
+      mismatches.add(this.bulkComparisonService.determineIfMismatch(personAtEstablishment))
+    }
+    return mismatches.toList()
   }
 
   fun listManual(): List<Comparison> {
-    return comparisonRepository.findAllByManualInput(boolean = true)
+    return comparisonRepository.findAllByManualInput(true)
   }
 
   fun listComparisons(): List<Comparison> {
     return comparisonRepository.findAllByManualInputAndPrisonIsIn(
-      boolean = false,
+      false,
       prisonService.getCurrentUserPrisonsList(),
     )
   }
@@ -50,5 +75,22 @@ class ComparisonService(
       }
     }
     return 0
+  }
+
+  fun getComparisonByComparisonReference(comparisonReference: String): Comparison {
+    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
+
+    if (comparison != null && (
+      !comparison.manualInput ||
+        serviceUserService.hasRoles(listOf("ROLE_RELEASE_DATE_MANUAL_COMPARER", "SYSTEM_USER"))
+      )
+    ) {
+      return comparison
+    }
+    throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
+  }
+
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }

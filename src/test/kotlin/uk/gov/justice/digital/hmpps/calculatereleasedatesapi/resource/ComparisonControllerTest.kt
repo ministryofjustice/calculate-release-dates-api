@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ComparisonService
 import java.time.LocalDateTime
@@ -54,7 +56,12 @@ class ComparisonControllerTest {
   fun `Test POST for creation of comparison`() {
     val comparisonInput = ComparisonInput(objectMapper.createObjectNode(), false, "ABC")
 
-    whenever(comparisonService.create(comparisonInput)).thenReturn(Comparison(1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "JAS", false, LocalDateTime.now(), "JOEL", 0))
+    whenever(comparisonService.create(comparisonInput)).thenReturn(
+      Comparison(
+        1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "JAS", false, LocalDateTime.now(), "JOEL",
+        ComparisonStatus(ComparisonStatusValue.PROCESSING), null,
+      ),
+    )
 
     val result = mvc.perform(
       MockMvcRequestBuilders
@@ -71,7 +78,7 @@ class ComparisonControllerTest {
 
   @Test
   fun `Test GET of manual input comparisons`() {
-    val comparisonList = listOf(Comparison(1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), null, true, LocalDateTime.now(), "JOEL", 0))
+    val comparisonList = listOf(Comparison(1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), null, true, LocalDateTime.now(), "JOEL", ComparisonStatus(ComparisonStatusValue.PROCESSING), 0))
     whenever(comparisonService.listComparisons()).thenReturn(comparisonList)
 
     val result = mvc.perform(
@@ -88,7 +95,7 @@ class ComparisonControllerTest {
 
   @Test
   fun `Test GET of preconfigured comparisons`() {
-    whenever(comparisonService.listManual()).thenReturn(listOf(Comparison(1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "JAS", false, LocalDateTime.now(), "JOEL", 0)))
+    whenever(comparisonService.listManual()).thenReturn(listOf(Comparison(1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "JAS", false, LocalDateTime.now(), "JOEL", ComparisonStatus(ComparisonStatusValue.PROCESSING), 0)))
 
     val result = mvc.perform(
       MockMvcRequestBuilders.get("/comparison/manual/")
