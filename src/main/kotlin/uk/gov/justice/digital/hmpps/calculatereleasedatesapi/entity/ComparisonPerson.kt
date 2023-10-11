@@ -21,5 +21,5 @@ class ComparisonPerson(
   val personId: String,
 
   @NotNull
-  val latestBookingId: Long?,
+  val latestBookingId: Long,
 )

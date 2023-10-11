@@ -93,7 +93,7 @@ class BulkComparisonService(
         ComparisonPerson(
           comparisonId = comparison.id,
           personId = it.person.prisonerNumber,
-          latestBookingId = it.latestPrisonTerm!!.bookingId,
+          latestBookingId = it.latestPrisonTerm!!.bookingId!!,
         )
       }
       // record all the people we are going to run comparison for
