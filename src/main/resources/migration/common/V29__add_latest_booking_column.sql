@@ -1,0 +1,1 @@
+alter table comparison_person add column latest_booking_id bigint not null;
