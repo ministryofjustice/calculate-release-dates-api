@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.ERROR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationDataHasChangedError
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationNotFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PrisonApiDataNotFoundException
@@ -400,8 +401,28 @@ class CalculationTransactionalService(
     }.orElseThrow { CalculationNotFoundException("Could not find calculation with request id: ${calculation.calculationRequestId}") }
   }
 
-  fun findCalculationResultsByCalculationReference(calculationReference: String): CalculatedReleaseDates {
-    return transform(getCalculationRequestByReference(calculationReference))
+  fun findCalculationResultsByCalculationReference(calculationReference: String, checkForChange: Boolean = false): CalculatedReleaseDates {
+    val calculationRequest = getCalculationRequestByReference(calculationReference)
+
+    return if (checkForChange) {
+      log.info("Checking for change in data")
+      val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId, true)
+      val originalCalculationAdjustments = objectMapper.treeToValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
+      val originalPrisonerDetails = objectMapper.treeToValue(calculationRequest.prisonerDetails, PrisonerDetails::class.java)
+      val originalSentenceAndOffences = calculationRequest.sentenceAndOffences?.map { element -> objectMapper.treeToValue(element, SentenceAndOffences::class.java) }
+      val originalReturnToCustodyDate = objectMapper.treeToValue(calculationRequest.returnToCustodyDate, ReturnToCustodyDate::class.java)
+      val bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments
+      val prisonerDetails = sourceData.prisonerDetails
+      val sentenceAndOffences = sourceData.sentenceAndOffences
+      val returnToCustodyDate = sourceData.returnToCustodyDate
+      if (originalCalculationAdjustments == bookingAndSentenceAdjustments && prisonerDetails == originalPrisonerDetails && sentenceAndOffences == originalSentenceAndOffences && returnToCustodyDate == originalReturnToCustodyDate) {
+        return transform(calculationRequest)
+      } else {
+        throw CalculationDataHasChangedError(calculationReference, calculationRequest.prisonerId)
+      }
+    } else {
+      transform(calculationRequest)
+    }
   }
 
   companion object {
