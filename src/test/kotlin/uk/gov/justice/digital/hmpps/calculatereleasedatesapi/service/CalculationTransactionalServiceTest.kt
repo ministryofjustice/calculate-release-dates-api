@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
 import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Captor
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
@@ -40,6 +41,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCAD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ROTL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationDataHasChangedError
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -58,9 +60,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Bank
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
@@ -488,6 +496,13 @@ class CalculationTransactionalServiceTest {
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
   }
 
+  @Test
+  fun `If the NOMIS data has changed and checkForChange is true, throw exception`() {
+    whenever(calculationRequestRepository.findByCalculationReference(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+    whenever(prisonService.getPrisonApiSourceData(anyString(), eq(true))).thenReturn(SOURCE_DATA)
+    assertThrows<CalculationDataHasChangedError> { calculationTransactionalService.findCalculationResultsByCalculationReference(UUID.randomUUID().toString(), true) }
+  }
+
   private fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
 
   @BeforeEach
@@ -496,6 +511,42 @@ class CalculationTransactionalServiceTest {
   }
 
   companion object {
+    private val originalSentence = SentenceAndOffences(
+      bookingId = 1L,
+      sentenceSequence = 3,
+      lineSequence = 2,
+      caseSequence = 1,
+      sentenceDate = ImportantDates.PCSC_COMMENCEMENT_DATE.minusDays(1),
+      terms = listOf(
+        SentenceTerms(years = 8),
+      ),
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceTypeDescription = "ADMIP",
+      offences = listOf(OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A"))),
+    )
+    private val prisonerDetails = PrisonerDetails(
+      1,
+      "asd",
+      dateOfBirth = LocalDate.of(1980, 1, 1),
+      firstName = "Harry",
+      lastName = "Houdini",
+    )
+    private val adjustments = BookingAndSentenceAdjustments(
+      bookingAdjustments = emptyList(),
+      sentenceAdjustments = listOf(
+        SentenceAdjustment(
+          sentenceSequence = 1,
+          active = true,
+          fromDate = LocalDate.of(2021, 1, 30),
+          toDate = LocalDate.of(2021, 1, 31),
+          numberOfDays = 1,
+          type = SentenceAdjustmentType.REMAND,
+        ),
+      ),
+    )
+    val SOURCE_DATA = PrisonApiSourceData(listOf(originalSentence), prisonerDetails, adjustments, emptyList(), null, null)
     val cachedBankHolidays =
       BankHolidays(
         RegionBankHolidays(
