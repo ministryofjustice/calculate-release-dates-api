@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
@@ -41,8 +42,9 @@ class CalculationReferenceController(
     @Parameter(required = true, example = "123ABC", description = "The calculationRequestId of the results")
     @PathVariable("calculationReference")
     calculationReference: String,
+    @RequestParam("checkForChange", required = false, defaultValue = "false") checkForChange: Boolean,
   ): CalculatedReleaseDates {
     CalculationController.log.info("Request received return calculation results for calculationRequestId {}", calculationReference)
-    return calculationTransactionalService.findCalculationResultsByCalculationReference(calculationReference)
+    return calculationTransactionalService.findCalculationResultsByCalculationReference(calculationReference, checkForChange)
   }
 }

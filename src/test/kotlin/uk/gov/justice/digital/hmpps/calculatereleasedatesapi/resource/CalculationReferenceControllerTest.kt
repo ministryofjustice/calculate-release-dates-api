@@ -77,6 +77,6 @@ class CalculationReferenceControllerTest {
       .andReturn()
 
     Assertions.assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
-    verify(calculationTransactionalService, times(1)).findCalculationResultsByCalculationReference(eq(calculationReference.toString()))
+    verify(calculationTransactionalService, times(1)).findCalculationResultsByCalculationReference(eq(calculationReference.toString()), eq(false))
   }
 }
