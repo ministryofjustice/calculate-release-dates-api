@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Comp
 class ComparisonIntTest : IntegrationTestBase() {
 
   @Test
-  fun `a test`() {
+  fun `Run comparison on a prison must compare all viable prisoners`() {
     val request = ComparisonInput(null, false, "ABC")
     val result =
       webTestClient.post()
