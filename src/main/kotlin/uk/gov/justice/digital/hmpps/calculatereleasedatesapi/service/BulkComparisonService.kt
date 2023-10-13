@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
@@ -75,7 +76,10 @@ class BulkComparisonService(
     return mismatch
   }
 
-  private fun identifyMismatches(calculatedReleaseDates: CalculatedReleaseDates?, sentenceCalcDates: SentenceCalcDates?): Boolean {
+  private fun identifyMismatches(
+    calculatedReleaseDates: CalculatedReleaseDates?,
+    sentenceCalcDates: SentenceCalcDates?,
+  ): Boolean {
     if (calculatedReleaseDates != null && calculatedReleaseDates.dates.isNotEmpty()) {
       val calculatedSentenceCalcDates = calculatedReleaseDates.toSentenceCalcDates()
       if (sentenceCalcDates != null) {
@@ -92,7 +96,7 @@ class BulkComparisonService(
       val comparisonPeople = activeBookingsAtEstablishment.map {
         ComparisonPerson(
           comparisonId = comparison.id,
-          personId = it.person.prisonerNumber,
+          person = it.person.prisonerNumber,
           latestBookingId = it.latestPrisonTerm!!.bookingId!!,
         )
       }
@@ -122,7 +126,7 @@ class BulkComparisonService(
               it.offenceEndDate,
               it.offenceCode!!,
               it.offenceDescription!!,
-              it.indicators!!,
+              it.indicators ?: emptyList(),
             )
           }?.toList() ?: emptyList()
 
@@ -138,11 +142,18 @@ class BulkComparisonService(
             sentence.sentenceCalculationType!!,
             sentence.sentenceTypeDescription!!,
             sentence.sentenceStartDate!!,
-            emptyList(),
+            sentence.terms?.map { terms ->
+              SentenceTerms(
+                terms.years ?: 0,
+                terms.months ?: 0,
+                terms.weeks ?: 0,
+                terms.days ?: 0,
+              )
+            } ?: emptyList(),
             offenderOffences,
             courtCase.caseInfoNumber,
             courtCase.court?.description,
-            sentence.fineAmount!!.toBigDecimal(),
+            sentence.fineAmount?.toBigDecimal(),
           ),
         )
       }

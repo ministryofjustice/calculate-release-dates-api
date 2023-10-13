@@ -49,6 +49,8 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
 
     val returnToCustodyDates = jsonTransformation.getAllReturnToCustodyDatesJson()
 
+    val calculableSentenceEnvelopes = jsonTransformation.getAllCalculableSentenceEnvelopesJson()
+
     val allPrisoners = (adjustments.keys + sentences.keys + prisoners.keys).distinct()
     allPrisoners.forEach {
       val prisoner = if (prisoners.containsKey(it)) {
@@ -97,6 +99,10 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
       prisonApi.stubOffenderFinePayments(it.hashCode().toLong(), finePayment)
 
       prisonApi.stubPostOffenderDates(it.hashCode().toLong())
+    }
+
+    calculableSentenceEnvelopes.forEach { (key, value) ->
+      prisonApi.stubCalculableSentenceEnvelope(key, value)
     }
   }
 
@@ -171,6 +177,17 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
   fun stubOffenderFinePayments(bookingId: Long, json: String): StubMapping =
     stubFor(
       get("/api/offender-fine-payment/booking/$bookingId")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(json)
+            .withStatus(200),
+        ),
+    )
+
+  fun stubCalculableSentenceEnvelope(establishmentId: String, json: String): StubMapping =
+    stubFor(
+      get("/api/prison/$establishmentId/booking/latest/calculable-sentence-envelope")
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
