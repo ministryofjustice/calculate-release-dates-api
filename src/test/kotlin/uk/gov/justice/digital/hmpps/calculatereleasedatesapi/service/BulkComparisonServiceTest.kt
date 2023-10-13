@@ -15,18 +15,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.Agency
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CourtSentences
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.KeyDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.Person
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonTerm
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentencesOffencesTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class BulkComparisonServiceTest : IntegrationTestBase() {
@@ -84,39 +81,27 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
       "finagling",
       emptyList(),
     )
-    val sentencesOffencesTerms = SentencesOffencesTerms(1, 1, "ACTIVE", "SEN", "TYPE", "DESC", LocalDate.of(2010, 1, 1), LocalDate.of(2013, 1, 1), 0.toDouble(), 2, listOf(offenderOffence), null)
-    val courtSentence = CourtSentences("12", 123, 0, LocalDate.of(2012, 1, 1), Agency("MYC", "My Court", "My Court Name", "PRI", true), "CASE", "SWAG", "ACTIVE", sentences = listOf(sentencesOffencesTerms), null, null)
+
+    val sentenceAndOffence = SentenceAndOffences(
+      bookingId = 12345,
+      sentenceSequence = 0,
+      lineSequence = 2,
+      caseSequence = 1,
+      sentenceDate = LocalDate.of(2012, 1, 1),
+      terms = listOf(
+        SentenceTerms(years = 5),
+      ),
+      sentenceStatus = "A",
+      sentenceCategory = "SEN",
+      sentenceCalculationType = "TYPE",
+      sentenceTypeDescription = "DESC",
+      offences = listOf(offenderOffence),
+    )
+
     val calculableSentenceEnvelope = CalculableSentenceEnvelope(
       person = Person("A", LocalDate.of(1990, 5, 1)),
-      latestPrisonTerm = PrisonTerm(
-        bookingId = 12345,
-        bookNumber = "ABC123",
-        courtSentences = listOf(courtSentence),
-        licenceSentences = listOf(sentencesOffencesTerms),
-        keyDates = KeyDates(
-          LocalDate.of(2012, 1, 1),
-          LocalDate.of(2012, 1, 1),
-          1,
-          LocalDate.of(2012, 1, 1),
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          LocalDate.of(2012, 1, 1),
-          null,
-          null,
-          null,
-          null, null, null, null, null, null, null, null, null,
-        ),
-
-      ),
+      bookingId = 12345,
+      sentenceAndOffences = listOf(sentenceAndOffence),
       sentenceAdjustments = emptyList(),
       bookingAdjustments = emptyList(),
       offenderFinePayments = emptyList(),
@@ -187,39 +172,25 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
       "finagling",
       emptyList(),
     )
-    val sentencesOffencesTerms = SentencesOffencesTerms(1, 1, "ACTIVE", "SEN", "TYPE", "DESC", LocalDate.of(2010, 1, 1), LocalDate.of(2013, 1, 1), 0.toDouble(), 2, listOf(offenderOffence), null)
-    val courtSentence = CourtSentences("12", 123, 0, LocalDate.of(2012, 1, 1), Agency("MYC", "My Court", "My Court Name", "PRI", true), "CASE", "SWAG", "ACTIVE", sentences = listOf(sentencesOffencesTerms), null, null)
+    val sentenceAndOffence = SentenceAndOffences(
+      bookingId = 12345,
+      sentenceSequence = 0,
+      lineSequence = 2,
+      caseSequence = 1,
+      sentenceDate = LocalDate.of(2012, 1, 1),
+      terms = listOf(
+        SentenceTerms(years = 5),
+      ),
+      sentenceStatus = "A",
+      sentenceCategory = "SEN",
+      sentenceCalculationType = "TYPE",
+      sentenceTypeDescription = "DESC",
+      offences = listOf(offenderOffence),
+    )
     val calculableSentenceEnvelope = CalculableSentenceEnvelope(
       person = Person("A", LocalDate.of(1990, 5, 1)),
-      latestPrisonTerm = PrisonTerm(
-        bookingId = 12345,
-        bookNumber = "ABC123",
-        courtSentences = listOf(courtSentence),
-        licenceSentences = listOf(sentencesOffencesTerms),
-        keyDates = KeyDates(
-          LocalDate.of(2012, 1, 1),
-          LocalDate.of(2012, 1, 1),
-          1,
-          LocalDate.of(2012, 1, 1),
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          LocalDate.of(2012, 1, 1),
-          null,
-          null,
-          null,
-          null, null, null, null, null, null, null, null, null,
-        ),
-
-      ),
+      bookingId = 12345,
+      sentenceAndOffences = listOf(sentenceAndOffence),
       sentenceAdjustments = emptyList(),
       bookingAdjustments = emptyList(),
       offenderFinePayments = emptyList(),

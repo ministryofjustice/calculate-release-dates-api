@@ -18,7 +18,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.Person
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonTerm
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import java.time.LocalDate
@@ -81,7 +80,8 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
     val calculableSentenceEnvelope = CalculableSentenceEnvelope(
       Person("A", LocalDate.of(1990, 5, 1)),
-      PrisonTerm(),
+      1,
+      emptyList(),
       emptyList(),
       emptyList(),
       emptyList(),

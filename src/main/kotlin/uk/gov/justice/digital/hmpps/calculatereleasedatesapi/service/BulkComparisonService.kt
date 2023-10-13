@@ -11,13 +11,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
@@ -97,7 +94,7 @@ class BulkComparisonService(
         ComparisonPerson(
           comparisonId = comparison.id,
           person = it.person.prisonerNumber,
-          latestBookingId = it.latestPrisonTerm!!.bookingId!!,
+          latestBookingId = it.bookingId,
         )
       }
       // record all the people we are going to run comparison for
@@ -109,55 +106,10 @@ class BulkComparisonService(
 
   private fun convert(source: CalculableSentenceEnvelope): PrisonApiSourceData {
     val prisonerDetails = PrisonerDetails(
-      bookingId = source.latestPrisonTerm?.bookingId!!,
+      bookingId = source.bookingId,
       offenderNo = source.person.prisonerNumber,
       dateOfBirth = source.person.dateOfBirth,
     )
-
-    val sentencesOffences = ArrayList<SentenceAndOffences>()
-
-    source.latestPrisonTerm.courtSentences!!.forEach { courtCase ->
-      for (sentence in courtCase.sentences!!) {
-        val offenderOffences: List<OffenderOffence> =
-          sentence.offences?.map {
-            OffenderOffence(
-              it.offenderChargeId!!,
-              it.offenceStartDate,
-              it.offenceEndDate,
-              it.offenceCode!!,
-              it.offenceDescription!!,
-              it.indicators ?: emptyList(),
-            )
-          }?.toList() ?: emptyList()
-
-        sentencesOffences.add(
-          SentenceAndOffences(
-            source.latestPrisonTerm.bookingId,
-            sentence.sentenceSequence!!,
-            sentence.lineSeq!!.toInt(),
-            courtCase.caseSeq!!,
-            sentence.consecutiveToSequence,
-            sentence.sentenceStatus!!,
-            sentence.sentenceCategory!!,
-            sentence.sentenceCalculationType!!,
-            sentence.sentenceTypeDescription!!,
-            sentence.sentenceStartDate!!,
-            sentence.terms?.map { terms ->
-              SentenceTerms(
-                terms.years ?: 0,
-                terms.months ?: 0,
-                terms.weeks ?: 0,
-                terms.days ?: 0,
-              )
-            } ?: emptyList(),
-            offenderOffences,
-            courtCase.caseInfoNumber,
-            courtCase.court?.description,
-            sentence.fineAmount?.toBigDecimal(),
-          ),
-        )
-      }
-    }
 
     val bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(
       source.bookingAdjustments.map {
@@ -205,7 +157,7 @@ class BulkComparisonService(
     }
 
     return PrisonApiSourceData(
-      sentencesOffences,
+      source.sentenceAndOffences,
       prisonerDetails,
       bookingAndSentenceAdjustments,
       offenderFinePayments,
