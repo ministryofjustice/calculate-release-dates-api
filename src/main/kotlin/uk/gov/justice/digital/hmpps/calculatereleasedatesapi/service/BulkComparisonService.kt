@@ -41,19 +41,21 @@ class BulkComparisonService(
 
     activeBookingsAtEstablishment.forEach { calculableSentenceEnvelope ->
       val mismatch = determineIfMismatch(calculableSentenceEnvelope)
-
-      comparisonPersonRepository.save(
-        ComparisonPerson(
-          comparisonId = comparison.id,
-          person = calculableSentenceEnvelope.person.prisonerNumber,
-          latestBookingId = calculableSentenceEnvelope.bookingId,
-          isMatch = mismatch.isMatch,
-          isValid = mismatch.isValid,
-          validationMessages = objectMapper.valueToTree(mismatch.messages),
-        ),
-      )
+      if (mismatch.shouldRecordMismatch()) {
+        comparisonPersonRepository.save(
+          ComparisonPerson(
+            comparisonId = comparison.id,
+            person = calculableSentenceEnvelope.person.prisonerNumber,
+            latestBookingId = calculableSentenceEnvelope.bookingId,
+            isMatch = mismatch.isMatch,
+            isValid = mismatch.isValid,
+            validationMessages = objectMapper.valueToTree(mismatch.messages),
+          ),
+        )
+      }
     }
     comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
+    comparison.numberOfPeopleCompared = activeBookingsAtEstablishment.size.toLong()
     comparisonRepository.save(comparison)
   }
 
