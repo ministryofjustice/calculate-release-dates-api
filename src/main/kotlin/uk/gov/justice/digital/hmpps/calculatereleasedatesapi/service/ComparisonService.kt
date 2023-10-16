@@ -6,9 +6,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 
@@ -27,22 +25,10 @@ class ComparisonService(
     val initialComparisonCreated = comparisonRepository.save(
       comparisonToCreate,
     )
-    if (!comparisonToCreate.manualInput) { // TODO in a manual comparison the noms IDs are supplied which is a different populate
-      // TODO move this into bulk comparison so that it can be async
-      val peopleAtEstablishment = this.bulkComparisonService.populate(initialComparisonCreated)
-      val mismatches = this.identifyMismatches(peopleAtEstablishment)
-      this.bulkComparisonService.recordMismatchesForComparison(comparisonToCreate, mismatches.stream().filter { it.shouldRecordMismatch() }.toList())
+    if (!comparisonToCreate.manualInput) {
+      this.bulkComparisonService.processPrisonComparison(initialComparisonCreated)
     }
     return initialComparisonCreated
-  }
-
-  private fun identifyMismatches(sentenceEnvelopes: List<CalculableSentenceEnvelope>): List<Mismatch> {
-    val mismatches = mutableListOf<Mismatch>()
-
-    for (personAtEstablishment in sentenceEnvelopes) {
-      mismatches.add(this.bulkComparisonService.determineIfMismatch(personAtEstablishment))
-    }
-    return mismatches.toList()
   }
 
   fun listManual(): List<Comparison> {

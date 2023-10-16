@@ -1,13 +1,24 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 
 class ComparisonIntTest : IntegrationTestBase() {
+
+  @Autowired
+  lateinit var comparisonPersonRepository: ComparisonPersonRepository
+
+  @Autowired
+  lateinit var comparisonRepository: ComparisonRepository
 
   @Test
   fun `Run comparison on a prison must compare all viable prisoners`() {
@@ -25,5 +36,11 @@ class ComparisonIntTest : IntegrationTestBase() {
         .returnResult().responseBody!!
 
     assertEquals(request.manualInput, result.manualInput)
+    assertEquals(1, result.numberOfPeopleCompared!!)
+    val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
+    val personComparison = comparisonPersonRepository.findByComparisonIdIs(comparison!!.id)[0]
+    assertTrue(personComparison.isValid!!)
+    assertFalse(personComparison.isMatch!!)
+    assertEquals("Z0020ZZ", personComparison.person)
   }
 }

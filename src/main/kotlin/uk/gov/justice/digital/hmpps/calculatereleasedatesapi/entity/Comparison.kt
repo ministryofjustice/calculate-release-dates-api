@@ -12,7 +12,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
-import org.hibernate.annotations.Formula
 import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.util.UUID
@@ -52,8 +51,7 @@ class Comparison(
   @ManyToOne(cascade = [CascadeType.ALL])
   var comparisonStatus: ComparisonStatus,
 
-  @Formula("(SELECT count(*) FROM comparison_person cp WHERE cp.comparison_id=id)")
-  val numberOfPeopleCompared: Long?,
+  var numberOfPeopleCompared: Long?,
 
 ) {
   override fun toString(): String {
