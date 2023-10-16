@@ -1,9 +1,12 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
@@ -18,21 +21,40 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 
 @Service
 class BulkComparisonService(
   private val comparisonPersonRepository: ComparisonPersonRepository,
   private val prisonService: PrisonService,
   private val calculationTransactionalService: CalculationTransactionalService,
+  private val objectMapper: ObjectMapper,
+  private val comparisonRepository: ComparisonRepository,
 ) {
 
   fun populate(comparison: Comparison): List<CalculableSentenceEnvelope> {
     return getPeopleAtEstablishment(comparison)
   }
 
-  fun recordMismatchesForComparison(comparisonToCreate: Comparison, mismatches: List<Mismatch>) {
-    // TODO is mismatch stored in the comparison person table? columns need adding?
-    comparisonPersonRepository
+  fun processPrisonComparison(comparison: Comparison) {
+    val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison!!)
+
+    activeBookingsAtEstablishment.forEach { calculableSentenceEnvelope ->
+      val mismatch = determineIfMismatch(calculableSentenceEnvelope)
+
+      comparisonPersonRepository.save(
+        ComparisonPerson(
+          comparisonId = comparison.id,
+          person = calculableSentenceEnvelope.person.prisonerNumber,
+          latestBookingId = calculableSentenceEnvelope.bookingId,
+          isMatch = mismatch.isMatch,
+          isValid = mismatch.isValid,
+          validationMessages = objectMapper.valueToTree(mismatch.messages),
+        ),
+      )
+    }
+    comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
+    comparisonRepository.save(comparison)
   }
 
   fun determineIfMismatch(calculableSentenceEnvelope: CalculableSentenceEnvelope): Mismatch {
@@ -58,7 +80,7 @@ class BulkComparisonService(
       false,
       prisonApiSourceData,
     )
-
+    mismatch.messages = validationResult.messages
     mismatch.isValid = validationResult.messages.isEmpty()
     mismatch.calculatedReleaseDates = validationResult.calculatedReleaseDates
 
