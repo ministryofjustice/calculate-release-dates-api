@@ -98,8 +98,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
     Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
     Mockito.`when`(comparisonRepository.save(any())).thenReturn(outputComparison)
-    Mockito.`when`(bulkComparisonService.populate(outputComparison)).thenReturn(listOf(calculableSentenceEnvelope))
-    Mockito.`when`(bulkComparisonService.determineIfMismatch(calculableSentenceEnvelope)).thenReturn(mismatch)
 
     val comparisonInput = ComparisonInput(criteria = objectMapper.createObjectNode(), manualInput = false, prison = "ABC")
     val comparison = comparisonService.create(comparisonInput)
