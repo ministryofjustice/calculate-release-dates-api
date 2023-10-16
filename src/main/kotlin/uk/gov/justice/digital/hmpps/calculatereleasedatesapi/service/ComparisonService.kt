@@ -25,8 +25,7 @@ class ComparisonService(
     val initialComparisonCreated = comparisonRepository.save(
       comparisonToCreate,
     )
-    if (!comparisonToCreate.manualInput) { // TODO in a manual comparison the noms IDs are supplied which is a different populate
-      // TODO move this into bulk comparison so that it can be async
+    if (!comparisonToCreate.manualInput) {
       this.bulkComparisonService.processPrisonComparison(initialComparisonCreated)
     }
     return initialComparisonCreated
