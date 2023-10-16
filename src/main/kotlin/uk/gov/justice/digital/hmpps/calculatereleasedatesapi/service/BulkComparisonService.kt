@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
@@ -31,10 +30,6 @@ class BulkComparisonService(
   private val objectMapper: ObjectMapper,
   private val comparisonRepository: ComparisonRepository,
 ) {
-
-  fun populate(comparison: Comparison): List<CalculableSentenceEnvelope> {
-    return getPeopleAtEstablishment(comparison)
-  }
 
   fun processPrisonComparison(comparison: Comparison) {
     val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison!!)
@@ -108,24 +103,6 @@ class BulkComparisonService(
       }
     }
     return true
-  }
-
-  @Async
-  fun getPeopleAtEstablishment(comparison: Comparison): List<CalculableSentenceEnvelope> {
-    if (!comparison.manualInput && comparison.prison != null) {
-      val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison)
-      val comparisonPeople = activeBookingsAtEstablishment.map {
-        ComparisonPerson(
-          comparisonId = comparison.id,
-          person = it.person.prisonerNumber,
-          latestBookingId = it.bookingId,
-        )
-      }
-      // record all the people we are going to run comparison for
-      comparisonPersonRepository.saveAll(comparisonPeople)
-      return activeBookingsAtEstablishment
-    }
-    return emptyList()
   }
 
   private fun convert(source: CalculableSentenceEnvelope): PrisonApiSourceData {

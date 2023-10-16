@@ -27,12 +27,12 @@ class ComparisonPerson(
   @NotNull
   val latestBookingId: Long,
 
-  var isMatch: Boolean? = null,
+  var isMatch: Boolean,
 
-  var isValid: Boolean? = null,
+  var isValid: Boolean,
 
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
-  val validationMessages: JsonNode? = null,
+  val validationMessages: JsonNode,
 
 )
