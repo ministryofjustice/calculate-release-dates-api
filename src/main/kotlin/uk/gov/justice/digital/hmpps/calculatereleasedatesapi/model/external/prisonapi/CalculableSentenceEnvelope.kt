@@ -2,14 +2,17 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pri
 
 import io.swagger.v3.oas.annotations.media.Schema
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 
 @Schema(description = "The active sentence envelope is a combination of the person information, the active booking and calculable sentences at a particular establishment")
 data class CalculableSentenceEnvelope(
   @Schema(description = "The identifiers of a person necessary for a calculation")
   val person: Person,
 
-  @Schema(description = "Most recent term in prison")
-  val latestPrisonTerm: PrisonTerm? = null,
+  @Schema(description = "The booking ID")
+  val bookingId: Long,
+  @Schema(description = "Sentence and offence details  for a prisoner")
+  val sentenceAndOffences: List<SentenceAndOffences> = listOf(),
 
   @Schema(description = "Adjustments at a sentence level")
   val sentenceAdjustments: List<SentenceAdjustmentValues> = listOf(),
