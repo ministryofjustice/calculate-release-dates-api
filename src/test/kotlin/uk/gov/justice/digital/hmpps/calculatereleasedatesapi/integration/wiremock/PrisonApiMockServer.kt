@@ -2,8 +2,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremo
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
@@ -49,7 +51,9 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
 
     val returnToCustodyDates = jsonTransformation.getAllReturnToCustodyDatesJson()
 
-    val calculableSentenceEnvelopes = jsonTransformation.getAllCalculableSentenceEnvelopesJson()
+    val prisonCalculableSentenceEnvelopes = jsonTransformation.getAllPrisonCalculableSentenceEnvelopesJson()
+
+    val prisonerCalculableSentenceEnvelopes = jsonTransformation.getAllPrisonerCalculableSentenceEnvelopesJson()
 
     val allPrisoners = (adjustments.keys + sentences.keys + prisoners.keys).distinct()
     allPrisoners.forEach {
@@ -101,8 +105,12 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
       prisonApi.stubPostOffenderDates(it.hashCode().toLong())
     }
 
-    calculableSentenceEnvelopes.forEach { (key, value) ->
-      prisonApi.stubCalculableSentenceEnvelope(key, value)
+    prisonCalculableSentenceEnvelopes.forEach { (key, value) ->
+      prisonApi.stubPrisonCalculableSentenceEnvelope(key, value)
+    }
+
+    prisonerCalculableSentenceEnvelopes.forEach { (key, value) ->
+      prisonApi.stubPrisonerCalculableSentenceEnvelope(listOf(key), value)
     }
   }
 
@@ -185,9 +193,21 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
         ),
     )
 
-  fun stubCalculableSentenceEnvelope(establishmentId: String, json: String): StubMapping =
+  fun stubPrisonCalculableSentenceEnvelope(establishmentId: String, json: String): StubMapping =
     stubFor(
       get("/api/prison/$establishmentId/booking/latest/calculable-sentence-envelope")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(json)
+            .withStatus(200),
+        ),
+    )
+
+  fun stubPrisonerCalculableSentenceEnvelope(prisonerIds: List<String>, json: String): StubMapping =
+    stubFor(
+      get(urlPathEqualTo("/api/bookings/latest/calculable-sentence-envelope"))
+        .withQueryParam("offenderNo", equalTo(prisonerIds.joinToString(",")))
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")

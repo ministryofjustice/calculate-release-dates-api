@@ -34,7 +34,19 @@ class BulkComparisonService(
   fun processPrisonComparison(comparison: Comparison) {
     val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison!!)
 
-    activeBookingsAtEstablishment.forEach { calculableSentenceEnvelope ->
+    processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison)
+  }
+
+  fun processManualComparison(comparison: Comparison, prisonerIds: List<String>) {
+    val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIds(prisonerIds)
+    processCalculableSentenceEnvelopes(activeBookingsForPrisoners, comparison)
+  }
+
+  private fun processCalculableSentenceEnvelopes(
+    calculableSentenceEnvelopes: List<CalculableSentenceEnvelope>,
+    comparison: Comparison,
+  ) {
+    calculableSentenceEnvelopes.forEach { calculableSentenceEnvelope ->
       val mismatch = determineIfMismatch(calculableSentenceEnvelope)
       if (mismatch.shouldRecordMismatch()) {
         comparisonPersonRepository.save(
@@ -50,7 +62,7 @@ class BulkComparisonService(
       }
     }
     comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
-    comparison.numberOfPeopleCompared = activeBookingsAtEstablishment.size.toLong()
+    comparison.numberOfPeopleCompared = calculableSentenceEnvelopes.size.toLong()
     comparisonRepository.save(comparison)
   }
 
