@@ -9,6 +9,7 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
 import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
@@ -31,7 +32,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
   lateinit var comparisonService: ComparisonService
 
   @Autowired
-  lateinit var objectMapper: ObjectMapper
+  var objectMapper: ObjectMapper = spy<ObjectMapper>()
 
   private val prisonService = mock<PrisonService>()
   private val comparisonRepository = mock<ComparisonRepository>()

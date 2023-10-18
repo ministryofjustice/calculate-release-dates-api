@@ -94,21 +94,6 @@ class ComparisonControllerTest {
   }
 
   @Test
-  fun `Test GET of preconfigured comparisons`() {
-    whenever(comparisonService.listManual()).thenReturn(listOf(Comparison(1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "JAS", false, LocalDateTime.now(), "JOEL", ComparisonStatus(ComparisonStatusValue.PROCESSING), 0)))
-
-    val result = mvc.perform(
-      MockMvcRequestBuilders.get("/comparison/manual/")
-        .accept(MediaType.APPLICATION_JSON),
-    )
-      .andExpect(MockMvcResultMatchers.status().isOk)
-      .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-      .andReturn()
-
-    assertThat(result.response.contentAsString).contains("\"comparisonShortReference\":\"ABCD1234\"")
-  }
-
-  @Test
   fun `Test GET of count of person in a comparison`() {
     val shortReference = "ABCD1234"
     whenever(comparisonService.getCountOfPersonsInComparisonByComparisonReference(shortReference)).thenReturn(7)

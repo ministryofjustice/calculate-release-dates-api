@@ -91,4 +91,16 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .bodyToMono(typeReference<List<CalculableSentenceEnvelope>>())
       .block()!!
   }
+
+  fun getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds: List<String>): List<CalculableSentenceEnvelope> {
+    return webClient.get()
+      .uri { uriBuilder ->
+        uriBuilder.path("/api/bookings/latest/calculable-sentence-envelope")
+          .queryParam("offenderNo", prisonerIds)
+          .build()
+      }
+      .retrieve()
+      .bodyToMono(typeReference<List<CalculableSentenceEnvelope>>())
+      .block()!!
+  }
 }

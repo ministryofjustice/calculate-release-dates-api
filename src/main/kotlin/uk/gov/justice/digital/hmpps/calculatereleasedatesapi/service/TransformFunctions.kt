@@ -645,6 +645,18 @@ fun transform(
 }
 
 fun transform(
+  criteria: JsonNode,
+  username: String,
+): uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison = uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison(
+  criteria = criteria,
+  manualInput = true,
+  calculatedAt = LocalDateTime.now(),
+  calculatedByUsername = username,
+  numberOfPeopleCompared = null,
+  comparisonStatus = ComparisonStatus(ComparisonStatusValue.PROCESSING),
+)
+
+fun transform(
   genuineOverride: GenuineOverride,
 ): GenuineOverrideResponse {
   return GenuineOverrideResponse(
