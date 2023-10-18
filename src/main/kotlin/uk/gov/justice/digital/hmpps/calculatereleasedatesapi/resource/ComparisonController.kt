@@ -49,25 +49,6 @@ class ComparisonController(
     return comparisonService.create(comparison)
   }
 
-  @GetMapping(value = ["/manual"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'ROLE_RELEASE_DATE_MANUAL_COMPARER')")
-  @ResponseBody
-  @Operation(
-    summary = "List all comparisons which were performed manually",
-    description = "This endpoint will return all of the manually performed calculations recorded in the service. This is not limited by caseload, but requires the MANUAL_COMPARER role.",
-  )
-  @ApiResponses(
-    value = [
-      ApiResponse(responseCode = "200", description = "Returns a list of comparisons Comparison"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-    ],
-  )
-  fun getManualComparisons(): List<Comparison> {
-    log.info("Requested a list of manual Comparisons")
-    return comparisonService.listManual()
-  }
-
   @GetMapping
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'ROLE_RELEASE_DATE_COMPARER', 'ROLE_RELEASE_DATE_MANUAL_COMPARER')")
   @ResponseBody

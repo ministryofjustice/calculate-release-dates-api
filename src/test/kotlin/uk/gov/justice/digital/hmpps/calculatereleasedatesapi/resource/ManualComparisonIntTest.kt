@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 
-class ComparisonIntTest : IntegrationTestBase() {
+class ManualComparisonIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var comparisonPersonRepository: ComparisonPersonRepository
@@ -22,20 +22,20 @@ class ComparisonIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run comparison on a prison must compare all viable prisoners`() {
-    val request = ComparisonInput(null, false, "ABC")
+    val request = ManualComparisonInput(listOf("Z0020ZZ"))
     val result =
       webTestClient.post()
-        .uri("/comparison")
+        .uri("/comparison/manual")
         .accept(MediaType.APPLICATION_JSON)
         .bodyValue(request)
-        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
+        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_MANUAL_COMPARER")))
         .exchange()
         .expectStatus().isOk
         .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(Comparison::class.java)
         .returnResult().responseBody!!
 
-    assertEquals(request.manualInput, result.manualInput)
+    assertEquals(true, result.manualInput)
     assertEquals(1, result.numberOfPeopleCompared!!)
     val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
     val personComparison = comparisonPersonRepository.findByComparisonIdIs(comparison!!.id)[0]

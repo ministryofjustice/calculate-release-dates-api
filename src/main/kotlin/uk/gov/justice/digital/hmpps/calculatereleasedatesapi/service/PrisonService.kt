@@ -79,4 +79,6 @@ class PrisonService(
   fun getActiveBookingsByEstablishment(establishmentId: String): List<CalculableSentenceEnvelope> {
     return prisonApiClient.getCalculableSentenceEnvelopesByEstablishment(establishmentId)
   }
+
+  fun getActiveBookingsByPrisonerIds(prisonerIds: List<String>): List<CalculableSentenceEnvelope> = prisonApiClient.getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds)
 }
