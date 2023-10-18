@@ -65,7 +65,7 @@ class SpecialistSupportController(
   }
 
   @GetMapping(value = ["genuine-override/calculation/{calculationReference}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRDS_SPECIALIST_SUPPORT')")
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'CRDS_SPECIALIST_SUPPORT', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
   @Operation(
     summary = "Get a genuine override",
