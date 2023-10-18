@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.persistence.EntityNotFoundException
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
@@ -180,30 +182,101 @@ class ComparisonServiceTest : IntegrationTestBase() {
   @Test
   fun `Get a count of people associated with a single calculation reference with unknown reference`() {
     val numberOfPeople = comparisonService.getCountOfPersonsInComparisonByComparisonReference("ABCD1234")
-    Assertions.assertEquals(numberOfPeople, 0)
+    Assertions.assertEquals(0, numberOfPeople)
   }
 
   @Test
-  fun `Get a count of people associated with a single calculation reference with valid reference`() {
-    Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
-    Mockito.`when`(serviceUserService.hasRoles(any())).thenReturn(true)
-    Mockito.`when`(comparisonPersonRepository.countByComparisonId(1)).thenReturn(7)
+  fun `Get a count of people associated with a single calculation reference in a different prison`() {
+    val prison = "ABC"
+    Mockito.`when`(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ADIFFERENTPRISON"))
     val comparison = Comparison(
       1,
       UUID.randomUUID(),
       "ABCD1234",
       objectMapper.createObjectNode(),
-      "ABC",
+      prison,
       true,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
       null,
     )
-    Mockito.`when`(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
+    Mockito.`when`(comparisonRepository.findByManualInputAndComparisonShortReference(false, "ABCD1234")).thenReturn(comparison)
+    val numberOfPeople = comparisonService.getCountOfPersonsInComparisonByComparisonReference(comparison.comparisonShortReference)
+    Assertions.assertEquals(0, numberOfPeople)
+  }
+
+  @Test
+  fun `Get a count of people associated with a single calculation reference with valid reference`() {
+    val prison = "ABC"
+    Mockito.`when`(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf(prison))
+    Mockito.`when`(comparisonPersonRepository.countByComparisonId(1)).thenReturn(7)
+    val comparison = Comparison(
+      1,
+      UUID.randomUUID(),
+      "ABCD1234",
+      objectMapper.createObjectNode(),
+      prison,
+      true,
+      LocalDateTime.now(),
+      USERNAME,
+      ComparisonStatus(ComparisonStatusValue.PROCESSING),
+      null,
+    )
+    Mockito.`when`(comparisonRepository.findByManualInputAndComparisonShortReference(false, "ABCD1234")).thenReturn(comparison)
 
     val numberOfPeople = comparisonService.getCountOfPersonsInComparisonByComparisonReference(comparison.comparisonShortReference)
-    Assertions.assertEquals(numberOfPeople, 7)
+    Assertions.assertEquals(7, numberOfPeople)
+  }
+
+  @Test
+  fun `Get a comparison with unknown reference`() {
+    Assertions.assertThrows(EntityNotFoundException::class.java) {
+      comparisonService.getComparisonByComparisonReference("UNKNOWNREFERENCE")
+    }
+  }
+
+  @Test
+  fun `Get a comparison for a different prison`() {
+    val prison = "ABC"
+    Mockito.`when`(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ADIFFERENTPRISON"))
+    val comparison = Comparison(
+      1,
+      UUID.randomUUID(),
+      "ABCD1234",
+      objectMapper.createObjectNode(),
+      prison,
+      true,
+      LocalDateTime.now(),
+      USERNAME,
+      ComparisonStatus(ComparisonStatusValue.PROCESSING),
+      null,
+    )
+    Mockito.`when`(comparisonRepository.findByManualInputAndComparisonShortReference(false, "ABCD1234")).thenReturn(comparison)
+    Assertions.assertThrows(CrdWebException::class.java) {
+      comparisonService.getComparisonByComparisonReference("ABCD1234")
+    }
+  }
+
+  @Test
+  fun `Get a comparison with valid reference`() {
+    val prison = "ABC"
+    Mockito.`when`(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf(prison))
+    val comparison = Comparison(
+      1,
+      UUID.randomUUID(),
+      "ABCD1234",
+      objectMapper.createObjectNode(),
+      prison,
+      true,
+      LocalDateTime.now(),
+      USERNAME,
+      ComparisonStatus(ComparisonStatusValue.PROCESSING),
+      null,
+    )
+    Mockito.`when`(comparisonRepository.findByManualInputAndComparisonShortReference(false, "ABCD1234")).thenReturn(comparison)
+    val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
+    Assertions.assertEquals(comparison, result)
   }
 
   companion object {
