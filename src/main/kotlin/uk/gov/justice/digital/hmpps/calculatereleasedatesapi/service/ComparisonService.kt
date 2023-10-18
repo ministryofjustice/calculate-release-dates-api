@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -56,34 +57,18 @@ class ComparisonService(
   }
 
   fun getCountOfPersonsInComparisonByComparisonReference(shortReference: String): Long {
-    val comparison = comparisonRepository.findByComparisonShortReference(shortReference)
+    val comparison = comparisonRepository.findByManualInputAndComparisonShortReference(false, shortReference)
 
-    if (comparison != null) {
-      if (comparison.manualInput && serviceUserService.hasRoles(
-          listOf(
-              "ROLE_RELEASE_DATE_MANUAL_COMPARER",
-              "SYSTEM_USER",
-            ),
-        )
-      ) {
-        return comparisonPersonRepository.countByComparisonId(comparison.id)
-      } else {
-        if (comparison.prison == null || prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
-          return comparisonPersonRepository.countByComparisonId(comparison.id)
-        }
-      }
+    if (comparison?.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
+      return comparisonPersonRepository.countByComparisonId(comparison.id)
     }
     return 0
   }
 
   fun getComparisonByComparisonReference(comparisonReference: String): Comparison {
-    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
+    val comparison = comparisonRepository.findByManualInputAndComparisonShortReference(false, comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
 
-    if (comparison != null && (
-      !comparison.manualInput ||
-        serviceUserService.hasRoles(listOf("ROLE_RELEASE_DATE_MANUAL_COMPARER", "SYSTEM_USER"))
-      )
-    ) {
+    if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
       return comparison
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())

@@ -37,7 +37,7 @@ class ComparisonIntTest : IntegrationTestBase() {
 
     assertEquals(request.manualInput, result.manualInput)
     assertEquals(1, result.numberOfPeopleCompared!!)
-    val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
+    val comparison = comparisonRepository.findByManualInputAndComparisonShortReference(false, result.comparisonShortReference)
     val personComparison = comparisonPersonRepository.findByComparisonIdIs(comparison!!.id)[0]
     assertTrue(personComparison.isValid)
     assertFalse(personComparison.isMatch)

@@ -28,7 +28,7 @@ class ComparisonController(
 ) {
 
   @PostMapping
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'ROLE_RELEASE_DATE_COMPARER', 'ROLE_RELEASE_DATE_MANUAL_COMPARER')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER')")
   @ResponseBody
   @Operation(
     summary = "Create a record of a new calculation ",
@@ -50,7 +50,7 @@ class ComparisonController(
   }
 
   @GetMapping
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'ROLE_RELEASE_DATE_COMPARER', 'ROLE_RELEASE_DATE_MANUAL_COMPARER')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER')")
   @ResponseBody
   @Operation(
     summary = "List all Comparisons performed using presets",
@@ -69,7 +69,7 @@ class ComparisonController(
   }
 
   @GetMapping(value = ["{comparisonReference}/count"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'ROLE_RELEASE_DATE_COMPARER', 'ROLE_RELEASE_DATE_MANUAL_COMPARER')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER')")
   @ResponseBody
   @Operation(
     summary = "Returns a count of the number of people compared for a particular caseload",
@@ -92,7 +92,7 @@ class ComparisonController(
   }
 
   @GetMapping(value = ["{comparisonReference}"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'ROLE_RELEASE_DATE_COMPARER', 'ROLE_RELEASE_DATE_MANUAL_COMPARER')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER')")
   @ResponseBody
   @Operation(
     summary = "Returns the people for a particular caseload",
