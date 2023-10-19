@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -8,7 +7,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
@@ -20,7 +18,6 @@ class ComparisonService(
   private var serviceUserService: ServiceUserService,
   private val comparisonPersonRepository: ComparisonPersonRepository,
   private var bulkComparisonService: BulkComparisonService,
-  private val objectMapper: ObjectMapper,
 ) {
 
   fun create(comparisonInput: ComparisonInput): Comparison {
@@ -29,24 +26,8 @@ class ComparisonService(
     val initialComparisonCreated = comparisonRepository.save(
       comparisonToCreate,
     )
-    if (!comparisonToCreate.manualInput) {
-      this.bulkComparisonService.processPrisonComparison(initialComparisonCreated)
-    }
+    bulkComparisonService.processPrisonComparison(initialComparisonCreated)
     return initialComparisonCreated
-  }
-
-  fun create(manualComparison: ManualComparisonInput): Comparison {
-    val comparisonToCreate = transform(objectMapper.valueToTree(manualComparison), serviceUserService.getUsername())
-    val initialComparisonCreated = comparisonRepository.save(
-      comparisonToCreate,
-    )
-    bulkComparisonService.processManualComparison(initialComparisonCreated, manualComparison.prisonerIds)
-
-    return initialComparisonCreated
-  }
-
-  fun listManual(): List<Comparison> {
-    return comparisonRepository.findAllByManualInput(true)
   }
 
   fun listComparisons(): List<Comparison> {
