@@ -32,7 +32,7 @@ class Comparison(
   @NotNull
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
-  val criteria: JsonNode? = null,
+  val criteria: JsonNode,
 
   @Column(length = 5)
   val prison: String? = null,

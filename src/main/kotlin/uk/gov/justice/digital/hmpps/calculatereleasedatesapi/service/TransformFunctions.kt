@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -634,8 +635,8 @@ fun transform(
   username: String,
 ): uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison {
   return uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison(
-    criteria = comparison.criteria,
-    manualInput = comparison.manualInput,
+    criteria = comparison.criteria ?: JsonNodeFactory.instance.objectNode(),
+    manualInput = false,
     prison = comparison.prison,
     calculatedAt = LocalDateTime.now(),
     calculatedByUsername = username,

@@ -7,9 +7,6 @@ data class ComparisonInput(
   @Schema(description = "Criteria")
   val criteria: JsonNode?,
 
-  @Schema(description = "Was it manually input")
-  val manualInput: Boolean,
-
   @Schema(description = "The prison the analysis was run against")
   val prison: String?,
 
