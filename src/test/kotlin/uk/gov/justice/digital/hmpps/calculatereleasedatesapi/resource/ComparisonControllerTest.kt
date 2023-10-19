@@ -54,7 +54,7 @@ class ComparisonControllerTest {
 
   @Test
   fun `Test POST for creation of comparison`() {
-    val comparisonInput = ComparisonInput(objectMapper.createObjectNode(), false, "ABC")
+    val comparisonInput = ComparisonInput(objectMapper.createObjectNode(), "ABC")
 
     whenever(comparisonService.create(comparisonInput)).thenReturn(
       Comparison(

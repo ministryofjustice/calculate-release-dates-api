@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -20,9 +21,12 @@ class ComparisonIntTest : IntegrationTestBase() {
   @Autowired
   lateinit var comparisonRepository: ComparisonRepository
 
+  @Autowired
+  lateinit var objectMapper: ObjectMapper
+
   @Test
   fun `Run comparison on a prison must compare all viable prisoners`() {
-    val request = ComparisonInput(null, false, "ABC")
+    val request = ComparisonInput(objectMapper.createObjectNode(), "ABC")
     val result =
       webTestClient.post()
         .uri("/comparison")
@@ -35,7 +39,7 @@ class ComparisonIntTest : IntegrationTestBase() {
         .expectBody(Comparison::class.java)
         .returnResult().responseBody!!
 
-    assertEquals(request.manualInput, result.manualInput)
+    assertEquals(false, result.manualInput)
     assertEquals(1, result.numberOfPeopleCompared!!)
     val comparison = comparisonRepository.findByManualInputAndComparisonShortReference(false, result.comparisonShortReference)
     val personComparison = comparisonPersonRepository.findByComparisonIdIs(comparison!!.id)[0]

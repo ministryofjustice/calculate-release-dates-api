@@ -10,8 +10,6 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
@@ -33,14 +31,12 @@ class ComparisonServiceTest : IntegrationTestBase() {
   @InjectMocks
   lateinit var comparisonService: ComparisonService
 
-  @Autowired
-  var objectMapper: ObjectMapper = spy<ObjectMapper>()
-
   private val prisonService = mock<PrisonService>()
   private val comparisonRepository = mock<ComparisonRepository>()
   private val comparisonPersonRepository = mock<ComparisonPersonRepository>()
   private var serviceUserService = mock<ServiceUserService>()
   private var bulkComparisonService = mock<BulkComparisonService>()
+  private val objectMapper: ObjectMapper = ObjectMapper()
 
   @Test
   fun `A Comparison is created when create is called`() {
@@ -49,8 +45,8 @@ class ComparisonServiceTest : IntegrationTestBase() {
       UUID.randomUUID(),
       "ABCD1234",
       objectMapper.createObjectNode(),
-      null,
-      true,
+      "ABC",
+      false,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -60,10 +56,9 @@ class ComparisonServiceTest : IntegrationTestBase() {
     Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
     Mockito.`when`(comparisonRepository.save(any())).thenReturn(outputComparison)
 
-    val comparisonInput = ComparisonInput(criteria = objectMapper.createObjectNode(), manualInput = false, prison = null)
+    val comparisonInput = ComparisonInput(objectMapper.createObjectNode(), prison = "ABC")
     val comparison = comparisonService.create(comparisonInput)
-    Assertions.assertEquals(comparison.manualInput, true)
-    Assertions.assertEquals(comparison.prison, null)
+    Assertions.assertEquals(outputComparison, comparison)
   }
 
   @Test
@@ -102,34 +97,9 @@ class ComparisonServiceTest : IntegrationTestBase() {
     Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
     Mockito.`when`(comparisonRepository.save(any())).thenReturn(outputComparison)
 
-    val comparisonInput = ComparisonInput(criteria = objectMapper.createObjectNode(), manualInput = false, prison = "ABC")
+    val comparisonInput = ComparisonInput(null, prison = "ABC")
     val comparison = comparisonService.create(comparisonInput)
-    Assertions.assertEquals(comparison.manualInput, false)
-    Assertions.assertEquals(comparison.prison, "ABC")
-  }
-
-  @Test
-  fun `A Comparison is created when create is called with manual input`() {
-    val outputComparison = Comparison(
-      1,
-      UUID.randomUUID(),
-      "ABCD1234",
-      objectMapper.createObjectNode(),
-      null,
-      true,
-      LocalDateTime.now(),
-      USERNAME,
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
-      null,
-    )
-
-    Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
-    Mockito.`when`(comparisonRepository.save(any())).thenReturn(outputComparison)
-
-    val comparisonInput = ComparisonInput(criteria = objectMapper.createObjectNode(), manualInput = true, prison = "ABC")
-    val comparison = comparisonService.create(comparisonInput)
-    Assertions.assertEquals(comparison.manualInput, true)
-    Assertions.assertEquals(comparison.prison, null)
+    Assertions.assertEquals(outputComparison, comparison)
   }
 
   @Test
@@ -156,27 +126,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
     val comparisonList = comparisonService.listComparisons()
 
     Assertions.assertEquals(comparisonList.size, 1)
-  }
-
-  @Test
-  fun `Get a list of manual comparisons`() {
-    Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
-    val comparison = Comparison(
-      1,
-      UUID.randomUUID(),
-      "ABCD1234",
-      objectMapper.createObjectNode(),
-      "ABC",
-      true,
-      LocalDateTime.now(),
-      USERNAME,
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
-      null,
-    )
-    Mockito.`when`(comparisonRepository.findAllByManualInput(true)).thenReturn(listOf(comparison))
-
-    val manualComparisonList = comparisonService.listManual()
-    Assertions.assertTrue(manualComparisonList.isNotEmpty())
   }
 
   @Test
