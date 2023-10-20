@@ -17,8 +17,8 @@ class WebClientConfiguration(
 ) {
 
   @Bean
-  fun prisonApiWebClient(): WebClient {
-    return WebClient.builder()
+  fun prisonApiWebClient(webClientBuilder: WebClient.Builder): WebClient {
+    return webClientBuilder
       .baseUrl(prisonApiUri)
       .filter(addAuthHeaderFilterFunction())
       .build()
@@ -34,17 +34,17 @@ class WebClientConfiguration(
   }
 
   @Bean
-  fun prisonApiHealthWebClient(): WebClient {
-    return WebClient.builder().baseUrl(prisonApiUri).build()
+  fun prisonApiHealthWebClient(webClientBuilder: WebClient.Builder): WebClient {
+    return webClientBuilder.baseUrl(prisonApiUri).build()
   }
 
   @Bean
-  fun oauthApiHealthWebClient(): WebClient {
-    return WebClient.builder().baseUrl(oauthApiUrl).build()
+  fun oauthApiHealthWebClient(webClientBuilder: WebClient.Builder): WebClient {
+    return webClientBuilder.baseUrl(oauthApiUrl).build()
   }
 
   @Bean
-  fun bankHolidayApiWebClient(): WebClient {
-    return WebClient.builder().baseUrl(bankHolidayApiUrl).build()
+  fun bankHolidayApiWebClient(webClientBuilder: WebClient.Builder): WebClient {
+    return webClientBuilder.baseUrl(bankHolidayApiUrl).build()
   }
 }
