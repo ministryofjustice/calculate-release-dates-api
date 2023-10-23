@@ -12,6 +12,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
+import org.hibernate.annotations.Formula
 import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.util.UUID
@@ -53,6 +54,8 @@ class Comparison(
 
   var numberOfPeopleCompared: Long?,
 
+  @Formula("(SELECT count(id) FROM comparison_person cp WHERE cp.comparison_id=id)")
+  val numberOfMismatches: Long = 0,
 ) {
   override fun toString(): String {
     return "Comparison(id=$id, comparisonReference=$comparisonReference, comparisonShortReference='$comparisonShortReference', criteria=$criteria, prison=$prison, manualInput=$manualInput, calculatedAt=$calculatedAt, calculatedByUsername='$calculatedByUsername')"

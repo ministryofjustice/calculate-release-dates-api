@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAd
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ComparisonService
 import java.time.LocalDateTime
@@ -78,7 +79,7 @@ class ComparisonControllerTest {
 
   @Test
   fun `Test GET of manual input comparisons`() {
-    val comparisonList = listOf(Comparison(1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), null, true, LocalDateTime.now(), "JOEL", ComparisonStatus(ComparisonStatusValue.PROCESSING), 0))
+    val comparisonList = listOf(ComparisonSummary("ABCD1234", null, LocalDateTime.now(), "JOEL", 0, 0))
     whenever(comparisonService.listComparisons()).thenReturn(comparisonList)
 
     val result = mvc.perform(
