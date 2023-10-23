@@ -52,7 +52,7 @@ class Comparison(
   @ManyToOne(cascade = [CascadeType.ALL])
   var comparisonStatus: ComparisonStatus,
 
-  var numberOfPeopleCompared: Long?,
+  var numberOfPeopleCompared: Long = 0,
 
   @Formula("(SELECT count(id) FROM comparison_person cp WHERE cp.comparison_id=id)")
   val numberOfMismatches: Long = 0,
