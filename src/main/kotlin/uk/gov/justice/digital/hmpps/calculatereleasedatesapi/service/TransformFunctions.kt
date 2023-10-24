@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.GenuineOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
@@ -57,6 +58,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentencePart
@@ -633,14 +635,13 @@ fun transform(dates: Map<ReleaseDateType, LocalDate?>?): OffenderKeyDates {
 fun transform(
   comparison: ComparisonInput,
   username: String,
-): uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison {
-  return uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison(
+): Comparison {
+  return Comparison(
     criteria = comparison.criteria ?: JsonNodeFactory.instance.objectNode(),
     manualInput = false,
     prison = comparison.prison,
     calculatedAt = LocalDateTime.now(),
     calculatedByUsername = username,
-    numberOfPeopleCompared = null,
     comparisonStatus = ComparisonStatus(ComparisonStatusValue.PROCESSING),
   )
 }
@@ -648,12 +649,11 @@ fun transform(
 fun transform(
   criteria: JsonNode,
   username: String,
-): uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison = uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison(
+): Comparison = Comparison(
   criteria = criteria,
   manualInput = true,
   calculatedAt = LocalDateTime.now(),
   calculatedByUsername = username,
-  numberOfPeopleCompared = null,
   comparisonStatus = ComparisonStatus(ComparisonStatusValue.PROCESSING),
 )
 
@@ -667,3 +667,12 @@ fun transform(
     isOverridden = genuineOverride.isOverridden,
   )
 }
+
+fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
+  comparison.comparisonShortReference,
+  comparison.prison,
+  comparison.calculatedAt,
+  comparison.calculatedByUsername,
+  comparison.numberOfMismatches,
+  comparison.numberOfPeopleCompared,
+)

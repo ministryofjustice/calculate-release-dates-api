@@ -50,7 +50,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
-      null,
     )
 
     Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
@@ -118,7 +117,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
           LocalDateTime.now(),
           USERNAME,
           ComparisonStatus(ComparisonStatusValue.PROCESSING),
-          null,
         ),
       ),
     )
@@ -148,7 +146,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
-      null,
     )
     Mockito.`when`(comparisonRepository.findByManualInputAndComparisonShortReference(false, "ABCD1234")).thenReturn(comparison)
     val numberOfPeople = comparisonService.getCountOfPersonsInComparisonByComparisonReference(comparison.comparisonShortReference)
@@ -170,7 +167,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
-      null,
     )
     Mockito.`when`(comparisonRepository.findByManualInputAndComparisonShortReference(false, "ABCD1234")).thenReturn(comparison)
 
@@ -199,7 +195,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
-      null,
     )
     Mockito.`when`(comparisonRepository.findByManualInputAndComparisonShortReference(false, "ABCD1234")).thenReturn(comparison)
     Assertions.assertThrows(CrdWebException::class.java) {
@@ -221,7 +216,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
-      null,
     )
     Mockito.`when`(comparisonRepository.findByManualInputAndComparisonShortReference(false, "ABCD1234")).thenReturn(comparison)
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")

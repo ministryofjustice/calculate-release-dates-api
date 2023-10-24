@@ -70,6 +70,10 @@ class JsonTransformation {
     return getAllJsonFromDir("api_integration/prisonerCalculableSentenceEnvelope")
   }
 
+  fun getAllCaseloads(): Map<String, String> {
+    return getAllJsonFromDir("api_integration/caseloads")
+  }
+
   fun getJsonTest(fileName: String, calculationType: String): String {
     return getResourceAsText("/test_data/$calculationType/$fileName")
   }
