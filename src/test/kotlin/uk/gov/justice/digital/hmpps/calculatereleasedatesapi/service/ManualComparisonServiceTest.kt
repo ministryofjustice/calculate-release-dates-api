@@ -48,7 +48,6 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
-      null,
     )
 
     Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
@@ -72,7 +71,6 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
-      null,
     )
     Mockito.`when`(comparisonRepository.findAllByManualInput(true)).thenReturn(listOf(comparison))
 
@@ -99,7 +97,6 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
-      null,
     )
     Mockito.`when`(comparisonRepository.findByManualInputAndComparisonShortReference(true, "ABCD1234")).thenReturn(comparison)
 
@@ -126,7 +123,6 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
-      null,
     )
     Mockito.`when`(comparisonRepository.findByManualInputAndComparisonShortReference(true, "ABCD1234")).thenReturn(comparison)
     val result = manualComparisonService.getComparisonByComparisonReference("ABCD1234")

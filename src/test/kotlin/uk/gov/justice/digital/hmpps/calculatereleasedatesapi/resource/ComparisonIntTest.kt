@@ -6,9 +6,11 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
@@ -26,18 +28,7 @@ class ComparisonIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run comparison on a prison must compare all viable prisoners`() {
-    val request = ComparisonInput(objectMapper.createObjectNode(), "ABC")
-    val result =
-      webTestClient.post()
-        .uri("/comparison")
-        .accept(MediaType.APPLICATION_JSON)
-        .bodyValue(request)
-        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
-        .exchange()
-        .expectStatus().isOk
-        .expectHeader().contentType(MediaType.APPLICATION_JSON)
-        .expectBody(Comparison::class.java)
-        .returnResult().responseBody!!
+    val result = createComparison("ABC")
 
     assertEquals(false, result.manualInput)
     assertEquals(1, result.numberOfPeopleCompared!!)
@@ -46,5 +37,38 @@ class ComparisonIntTest : IntegrationTestBase() {
     assertTrue(personComparison.isValid)
     assertFalse(personComparison.isMatch)
     assertEquals("Z0020ZZ", personComparison.person)
+  }
+
+  @Test
+  fun `Retrieve comparisons must return summary`() {
+    val comparison = createComparison("ABC")
+    val result = webTestClient.get()
+      .uri("/comparison")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(object : ParameterizedTypeReference<List<ComparisonSummary>>() {})
+      .returnResult().responseBody!!
+
+    assertEquals(1, result.size)
+    assertEquals(comparison.prison, result[0].prison)
+    assertEquals(1, result[0].numberOfPeopleCompared)
+    assertEquals(1, result[0].numberOfMismatches)
+  }
+
+  private fun createComparison(prisonId: String): Comparison {
+    val request = ComparisonInput(objectMapper.createObjectNode(), prisonId)
+    return webTestClient.post()
+      .uri("/comparison")
+      .accept(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(Comparison::class.java)
+      .returnResult().responseBody!!
   }
 }

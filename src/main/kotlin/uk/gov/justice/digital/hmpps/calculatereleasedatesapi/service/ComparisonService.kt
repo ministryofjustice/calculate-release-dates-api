@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
@@ -30,11 +31,11 @@ class ComparisonService(
     return initialComparisonCreated
   }
 
-  fun listComparisons(): List<Comparison> {
+  fun listComparisons(): List<ComparisonSummary> {
     return comparisonRepository.findAllByManualInputAndPrisonIsIn(
       false,
       prisonService.getCurrentUserPrisonsList(),
-    )
+    ).map { transform(it) }
   }
 
   fun getCountOfPersonsInComparisonByComparisonReference(shortReference: String): Long {

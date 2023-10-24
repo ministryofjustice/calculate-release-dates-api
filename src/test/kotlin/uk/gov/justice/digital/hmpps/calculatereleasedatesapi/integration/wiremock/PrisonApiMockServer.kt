@@ -55,6 +55,8 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
 
     val prisonerCalculableSentenceEnvelopes = jsonTransformation.getAllPrisonerCalculableSentenceEnvelopesJson()
 
+    val caseloads = jsonTransformation.getAllCaseloads()
+
     val allPrisoners = (adjustments.keys + sentences.keys + prisoners.keys).distinct()
     allPrisoners.forEach {
       val prisoner = if (prisoners.containsKey(it)) {
@@ -112,6 +114,8 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
     prisonerCalculableSentenceEnvelopes.forEach { (key, value) ->
       prisonApi.stubPrisonerCalculableSentenceEnvelope(listOf(key), value)
     }
+
+    prisonApi.stubCaseloads(caseloads[DEFAULT]!!)
   }
 
   override fun beforeEach(context: ExtensionContext) {
@@ -215,4 +219,14 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
             .withStatus(200),
         ),
     )
+
+  fun stubCaseloads(json: String): StubMapping = stubFor(
+    get(urlPathEqualTo("/api/users/me/caseLoads"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(json)
+          .withStatus(200),
+      ),
+  )
 }
