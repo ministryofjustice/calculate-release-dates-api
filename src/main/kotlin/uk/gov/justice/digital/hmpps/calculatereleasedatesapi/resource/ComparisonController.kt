@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ComparisonService
@@ -110,7 +111,7 @@ class ComparisonController(
     @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the comparison")
     @PathVariable("comparisonReference")
     comparisonReference: String,
-  ): Comparison {
+  ): ComparisonOverview {
     log.info("Return the specific particular comparison")
     return comparisonService.getComparisonByComparisonReference(comparisonReference)
   }
