@@ -54,7 +54,7 @@ class Comparison(
 
   var numberOfPeopleCompared: Long = 0,
 
-  @Formula("(SELECT count(id) FROM comparison_person cp WHERE cp.comparison_id=id)")
+  @Formula("(SELECT count(*) FROM comparison_person cp WHERE cp.comparison_id=id)")
   val numberOfMismatches: Long = 0,
 ) {
   override fun toString(): String {
