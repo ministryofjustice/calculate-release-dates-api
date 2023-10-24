@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.databind.JsonNode
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
@@ -10,6 +11,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.Type
+import java.util.*
 
 @Entity
 @Table
@@ -35,4 +37,8 @@ class ComparisonPerson(
   @Column(columnDefinition = "jsonb")
   val validationMessages: JsonNode,
 
+  @JsonIgnore
+  @NotNull
+  val reference: UUID = UUID.randomUUID(),
+  val shortReference: String = reference.toString().substring(0, 8),
 )

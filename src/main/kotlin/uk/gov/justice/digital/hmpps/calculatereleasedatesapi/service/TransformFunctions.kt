@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.GenuineOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
@@ -58,6 +59,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonMismatchSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
@@ -675,4 +678,22 @@ fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
   comparison.calculatedByUsername,
   comparison.numberOfMismatches,
   comparison.numberOfPeopleCompared,
+)
+
+fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>): ComparisonOverview = ComparisonOverview(
+  comparison.comparisonShortReference,
+  comparison.prison,
+  comparison.calculatedAt,
+  comparison.calculatedByUsername,
+  comparison.numberOfMismatches,
+  comparison.numberOfPeopleCompared,
+  mismatches.map { transform(it) },
+)
+
+private fun transform(comparisonPerson: ComparisonPerson): ComparisonMismatchSummary = ComparisonMismatchSummary(
+  comparisonPerson.person,
+  comparisonPerson.isValid,
+  comparisonPerson.isMatch,
+  comparisonPerson.validationMessages,
+  comparisonPerson.shortReference,
 )
