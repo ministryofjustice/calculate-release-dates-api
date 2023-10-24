@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
@@ -25,6 +27,12 @@ class ComparisonIntTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var objectMapper: ObjectMapper
+
+  @BeforeEach
+  fun clearTables() {
+    comparisonPersonRepository.deleteAll()
+    comparisonRepository.deleteAll()
+  }
 
   @Test
   fun `Run comparison on a prison must compare all viable prisoners`() {
@@ -56,6 +64,27 @@ class ComparisonIntTest : IntegrationTestBase() {
     assertEquals(comparison.prison, result[0].prison)
     assertEquals(1, result[0].numberOfPeopleCompared)
     assertEquals(1, result[0].numberOfMismatches)
+  }
+
+  @Test
+  fun `Retrieve comparison must return mismatches associated`() {
+    val comparison = createComparison("ABC")
+    val result = webTestClient.get()
+      .uri("/comparison/{comparisonId}", comparison.comparisonShortReference)
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ComparisonOverview::class.java)
+      .returnResult().responseBody!!
+
+    assertEquals(comparison.prison, result.prison)
+    assertEquals(1, result.numberOfPeopleCompared)
+    assertEquals(1, result.numberOfMismatches)
+    assertTrue(result.mismatches[0].isValid)
+    assertFalse(result.mismatches[0].isMatch)
+    assertEquals("Z0020ZZ", result.mismatches[0].personId)
   }
 
   private fun createComparison(prisonId: String): Comparison {

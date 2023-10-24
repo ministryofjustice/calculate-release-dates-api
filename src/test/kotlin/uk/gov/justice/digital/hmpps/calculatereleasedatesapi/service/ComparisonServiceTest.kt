@@ -219,7 +219,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     )
     Mockito.`when`(comparisonRepository.findByManualInputAndComparisonShortReference(false, "ABCD1234")).thenReturn(comparison)
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
-    Assertions.assertEquals(comparison, result)
+    Assertions.assertEquals(comparison.comparisonShortReference, result.comparisonShortReference)
   }
 
   companion object {
