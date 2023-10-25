@@ -11,6 +11,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.Type
+import java.time.LocalDateTime
 import java.util.*
 
 @Entity
@@ -41,4 +42,18 @@ class ComparisonPerson(
   @NotNull
   val reference: UUID = UUID.randomUUID(),
   val shortReference: String = reference.toString().substring(0, 8),
+
+  @NotNull
+  val calculatedAt: LocalDateTime = LocalDateTime.now(),
+
+  @NotNull
+  @Column(length = 40)
+  val calculatedByUsername: String,
+
+  @Type(value = JsonType::class)
+  @Column(columnDefinition = "jsonb")
+  var nomisDates: JsonNode,
+
+  var calculationRequestId: Long? = null,
+
 )

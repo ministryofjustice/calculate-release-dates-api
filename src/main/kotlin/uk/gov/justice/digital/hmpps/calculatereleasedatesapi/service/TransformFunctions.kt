@@ -61,6 +61,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonMismatchSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
@@ -696,4 +697,16 @@ private fun transform(comparisonPerson: ComparisonPerson): ComparisonMismatchSum
   comparisonPerson.isMatch,
   comparisonPerson.validationMessages,
   comparisonPerson.shortReference,
+)
+
+fun transform(comparisonPerson: ComparisonPerson, nomisDates: Map<ReleaseDateType, LocalDate?>, calculatedReleaseDates: CalculatedReleaseDates?): ComparisonPersonOverview = ComparisonPersonOverview(
+  comparisonPerson.person,
+  comparisonPerson.isValid,
+  comparisonPerson.isMatch,
+  comparisonPerson.validationMessages,
+  comparisonPerson.shortReference,
+  comparisonPerson.latestBookingId,
+  comparisonPerson.calculatedAt,
+  calculatedReleaseDates?.dates ?: emptyMap(),
+  nomisDates,
 )
