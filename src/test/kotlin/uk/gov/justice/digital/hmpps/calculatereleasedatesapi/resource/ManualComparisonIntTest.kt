@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
@@ -22,18 +23,7 @@ class ManualComparisonIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run comparison on a prison must compare all viable prisoners`() {
-    val request = ManualComparisonInput(listOf("Z0020ZZ"))
-    val result =
-      webTestClient.post()
-        .uri("/comparison/manual")
-        .accept(MediaType.APPLICATION_JSON)
-        .bodyValue(request)
-        .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_MANUAL_COMPARER")))
-        .exchange()
-        .expectStatus().isOk
-        .expectHeader().contentType(MediaType.APPLICATION_JSON)
-        .expectBody(Comparison::class.java)
-        .returnResult().responseBody!!
+    val result = createManualComparison("Z0020ZZ")
 
     assertEquals(true, result.manualInput)
     assertEquals(1, result.numberOfPeopleCompared!!)
@@ -42,5 +32,38 @@ class ManualComparisonIntTest : IntegrationTestBase() {
     assertTrue(personComparison.isValid)
     assertFalse(personComparison.isMatch)
     assertEquals("Z0020ZZ", personComparison.person)
+  }
+
+  @Test
+  fun `Retrieve comparison person must return all dates`() {
+    val comparison = createManualComparison("Z0020ZZ")
+    val storedComparison = comparisonRepository.findByManualInputAndComparisonShortReference(true, comparison.comparisonShortReference)
+    val comparisonPerson = comparisonPersonRepository.findByComparisonIdIs(storedComparison!!.id)[0]
+    val result = webTestClient.get()
+      .uri("/comparison/manual/{comparisonId}/mismatch/{mismatchId}", comparison.comparisonShortReference, comparisonPerson.shortReference)
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_MANUAL_COMPARER")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ComparisonPersonOverview::class.java)
+      .returnResult().responseBody!!
+    assertTrue(result.isValid)
+    assertFalse(result.isMatch)
+    assertEquals(comparisonPerson.person, result.personId)
+  }
+
+  private fun createManualComparison(prisonerId: String): Comparison {
+    val request = ManualComparisonInput(listOf(prisonerId))
+    return webTestClient.post()
+      .uri("/comparison/manual")
+      .accept(MediaType.APPLICATION_JSON)
+      .bodyValue(request)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_MANUAL_COMPARER")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(Comparison::class.java)
+      .returnResult().responseBody!!
   }
 }
