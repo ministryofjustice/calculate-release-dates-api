@@ -12,6 +12,7 @@ import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
@@ -85,6 +86,25 @@ class ComparisonIntTest : IntegrationTestBase() {
     assertTrue(result.mismatches[0].isValid)
     assertFalse(result.mismatches[0].isMatch)
     assertEquals("Z0020ZZ", result.mismatches[0].personId)
+  }
+
+  @Test
+  fun `Retrieve comparison person must return all dates`() {
+    val comparison = createComparison("ABC")
+    val storedComparison = comparisonRepository.findByManualInputAndComparisonShortReference(false, comparison.comparisonShortReference)
+    val comparisonPerson = comparisonPersonRepository.findByComparisonIdIs(storedComparison!!.id)[0]
+    val result = webTestClient.get()
+      .uri("/comparison/{comparisonId}/mismatch/{mismatchId}", comparison.comparisonShortReference, comparisonPerson.shortReference)
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ComparisonPersonOverview::class.java)
+      .returnResult().responseBody!!
+    assertTrue(result.isValid)
+    assertFalse(result.isMatch)
+    assertEquals(comparisonPerson.person, result.personId)
   }
 
   private fun createComparison(prisonId: String): Comparison {

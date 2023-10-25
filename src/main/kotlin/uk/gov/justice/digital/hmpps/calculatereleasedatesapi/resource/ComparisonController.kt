@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ComparisonService
@@ -114,6 +115,31 @@ class ComparisonController(
   ): ComparisonOverview {
     log.info("Return the specific particular comparison")
     return comparisonService.getComparisonByComparisonReference(comparisonReference)
+  }
+
+  @GetMapping(value = ["{comparisonReference}/mismatch/{mismatchReference}"])
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER')")
+  @ResponseBody
+  @Operation(
+    summary = "Returns the mismatch for a particular comparison",
+    description = "This endpoint return the mismatch for a particular comparison",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns a details of a comparison mismatch"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun getComparisonMismatchByShortReference(
+    @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the comparison")
+    @PathVariable("comparisonReference")
+    comparisonReference: String,
+    @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the mismatch")
+    @PathVariable("mismatchReference")
+    mismatchReference: String,
+  ): ComparisonPersonOverview {
+    return comparisonService.getComparisonPersonByShortReference(comparisonReference, mismatchReference)
   }
 
   companion object {
