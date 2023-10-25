@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import jakarta.persistence.EntityNotFoundException
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -15,7 +16,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonSt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.Person
@@ -36,7 +36,8 @@ class ComparisonServiceTest : IntegrationTestBase() {
   private val comparisonPersonRepository = mock<ComparisonPersonRepository>()
   private var serviceUserService = mock<ServiceUserService>()
   private var bulkComparisonService = mock<BulkComparisonService>()
-  private val objectMapper: ObjectMapper = ObjectMapper()
+  private val calculationTransactionalService = mock<CalculationTransactionalService>()
+  private val objectMapper: ObjectMapper = mock<ObjectMapper>()
 
   @Test
   fun `A Comparison is created when create is called`() {
@@ -44,7 +45,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       1,
       UUID.randomUUID(),
       "ABCD1234",
-      objectMapper.createObjectNode(),
+      JsonNodeFactory.instance.objectNode(),
       "ABC",
       false,
       LocalDateTime.now(),
@@ -55,7 +56,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     Mockito.`when`(serviceUserService.getUsername()).thenReturn(USERNAME)
     Mockito.`when`(comparisonRepository.save(any())).thenReturn(outputComparison)
 
-    val comparisonInput = ComparisonInput(objectMapper.createObjectNode(), prison = "ABC")
+    val comparisonInput = ComparisonInput(JsonNodeFactory.instance.objectNode(), prison = "ABC")
     val comparison = comparisonService.create(comparisonInput)
     Assertions.assertEquals(outputComparison, comparison)
   }
@@ -66,7 +67,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       1,
       UUID.randomUUID(),
       "ABCD1234",
-      objectMapper.createObjectNode(),
+      JsonNodeFactory.instance.objectNode(),
       "ABC",
       false,
       LocalDateTime.now(),
@@ -83,13 +84,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
       emptyList(),
       emptyList(),
       null,
-      null,
-    )
-
-    val mismatch = Mismatch(
-      true,
-      true,
-      calculableSentenceEnvelope,
       null,
     )
 
@@ -111,7 +105,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
           1,
           UUID.randomUUID(),
           "ABCD1234",
-          objectMapper.createObjectNode(),
+          JsonNodeFactory.instance.objectNode(),
           "ABC",
           false,
           LocalDateTime.now(),
@@ -140,7 +134,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       1,
       UUID.randomUUID(),
       "ABCD1234",
-      objectMapper.createObjectNode(),
+      JsonNodeFactory.instance.objectNode(),
       prison,
       true,
       LocalDateTime.now(),
@@ -161,7 +155,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       1,
       UUID.randomUUID(),
       "ABCD1234",
-      objectMapper.createObjectNode(),
+      JsonNodeFactory.instance.objectNode(),
       prison,
       true,
       LocalDateTime.now(),
@@ -189,7 +183,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       1,
       UUID.randomUUID(),
       "ABCD1234",
-      objectMapper.createObjectNode(),
+      JsonNodeFactory.instance.objectNode(),
       prison,
       true,
       LocalDateTime.now(),
@@ -210,7 +204,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       1,
       UUID.randomUUID(),
       "ABCD1234",
-      objectMapper.createObjectNode(),
+      JsonNodeFactory.instance.objectNode(),
       prison,
       true,
       LocalDateTime.now(),
