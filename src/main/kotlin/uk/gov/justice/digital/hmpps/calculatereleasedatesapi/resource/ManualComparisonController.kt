@@ -68,7 +68,7 @@ class ManualComparisonController(
   }
 
   @GetMapping(value = ["{comparisonReference}/count"])
-  @PreAuthorize("hasAnyRole(''ROLE_RELEASE_DATE_MANUAL_COMPARER'')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER')")
   @ResponseBody
   @Operation(
     summary = "Returns a count of the number of people compared for a particular caseload",
@@ -91,7 +91,7 @@ class ManualComparisonController(
   }
 
   @GetMapping(value = ["{comparisonReference}"])
-  @PreAuthorize("hasAnyRole(''ROLE_RELEASE_DATE_MANUAL_COMPARER'')")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_MANUAL_COMPARER')")
   @ResponseBody
   @Operation(
     summary = "Returns the people for a particular caseload",
