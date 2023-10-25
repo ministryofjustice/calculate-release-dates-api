@@ -35,6 +35,7 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
   private val comparisonPersonRepository = mock<ComparisonPersonRepository>()
   private var serviceUserService = mock<ServiceUserService>()
   private var bulkComparisonService = mock<BulkComparisonService>()
+  private val calculationTransactionalService = mock<CalculationTransactionalService>()
 
   @Test
   fun `A Comparison is created when create is called`() {
