@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManualComparisonService
 
@@ -60,7 +62,7 @@ class ManualComparisonController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun getManualComparisons(): List<Comparison> {
+  fun getManualComparisons(): List<ComparisonSummary> {
     ComparisonController.log.info("Requested a list of manual Comparisons")
     return manualComparisonService.listManual()
   }
@@ -106,7 +108,7 @@ class ManualComparisonController(
     @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the comparison")
     @PathVariable("comparisonReference")
     comparisonReference: String,
-  ): Comparison {
+  ): ComparisonOverview {
     ComparisonController.log.info("Return the specific particular comparison")
     return manualComparisonService.getComparisonByComparisonReference(comparisonReference)
   }
