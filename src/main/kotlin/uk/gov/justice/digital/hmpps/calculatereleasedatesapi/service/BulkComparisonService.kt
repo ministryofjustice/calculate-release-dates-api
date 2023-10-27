@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
@@ -69,10 +67,8 @@ class BulkComparisonService(
         )
       }
     }
-    log.info("finished processing calculable sentence envelopes, setting comparison to completed")
     comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
     comparison.numberOfPeopleCompared = calculableSentenceEnvelopes.size.toLong()
-    log.info("saving comparison ${comparison.comparisonShortReference}")
     comparisonRepository.save(comparison)
   }
 
@@ -187,8 +183,5 @@ class BulkComparisonService(
       returnToCustodyDate,
       fixedTermRecallDetails,
     )
-  }
-  companion object {
-    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }
