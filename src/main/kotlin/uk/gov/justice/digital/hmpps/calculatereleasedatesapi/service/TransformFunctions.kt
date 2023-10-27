@@ -689,6 +689,7 @@ fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>): Compa
   comparison.numberOfMismatches,
   comparison.numberOfPeopleCompared,
   mismatches.map { transform(it) },
+  comparison.comparisonStatus.name,
 )
 
 private fun transform(comparisonPerson: ComparisonPerson): ComparisonMismatchSummary = ComparisonMismatchSummary(
