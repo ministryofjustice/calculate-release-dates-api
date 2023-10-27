@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.matches
+import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -10,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
@@ -40,9 +44,10 @@ class ComparisonIntTest : IntegrationTestBase() {
     val result = createComparison("ABC")
 
     assertEquals(false, result.manualInput)
-    assertEquals(1, result.numberOfPeopleCompared!!)
+    assertEquals(0, result.numberOfPeopleCompared)
     val comparison = comparisonRepository.findByManualInputAndComparisonShortReference(false, result.comparisonShortReference)
-    val personComparison = comparisonPersonRepository.findByComparisonIdIs(comparison!!.id)[0]
+    assertEquals(1, comparison!!.numberOfPeopleCompared)
+    val personComparison = comparisonPersonRepository.findByComparisonIdIs(comparison.id)[0]
     assertTrue(personComparison.isValid)
     assertFalse(personComparison.isMatch)
     assertEquals("Z0020ZZ", personComparison.person)
@@ -109,7 +114,7 @@ class ComparisonIntTest : IntegrationTestBase() {
 
   private fun createComparison(prisonId: String): Comparison {
     val request = ComparisonInput(objectMapper.createObjectNode(), prisonId)
-    return webTestClient.post()
+    val result = webTestClient.post()
       .uri("/comparison")
       .accept(MediaType.APPLICATION_JSON)
       .bodyValue(request)
@@ -119,5 +124,9 @@ class ComparisonIntTest : IntegrationTestBase() {
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
       .expectBody(Comparison::class.java)
       .returnResult().responseBody!!
+    await untilCallTo { comparisonRepository.findByManualInputAndComparisonShortReference(false, result.comparisonShortReference) } matches {
+      it!!.comparisonStatus.name == ComparisonStatusValue.COMPLETED.name
+    }
+    return result
   }
 }

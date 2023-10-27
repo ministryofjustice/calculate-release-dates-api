@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.matches
+import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -7,6 +10,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualComparisonInput
@@ -26,9 +30,10 @@ class ManualComparisonIntTest : IntegrationTestBase() {
     val result = createManualComparison("Z0020ZZ")
 
     assertEquals(true, result.manualInput)
-    assertEquals(1, result.numberOfPeopleCompared!!)
+    assertEquals(0, result.numberOfPeopleCompared)
     val comparison = comparisonRepository.findByManualInputAndComparisonShortReference(true, result.comparisonShortReference)
-    val personComparison = comparisonPersonRepository.findByComparisonIdIs(comparison!!.id)[0]
+    assertEquals(1, comparison!!.numberOfPeopleCompared)
+    val personComparison = comparisonPersonRepository.findByComparisonIdIs(comparison.id)[0]
     assertTrue(personComparison.isValid)
     assertFalse(personComparison.isMatch)
     assertEquals("Z0020ZZ", personComparison.person)
@@ -55,7 +60,7 @@ class ManualComparisonIntTest : IntegrationTestBase() {
 
   private fun createManualComparison(prisonerId: String): Comparison {
     val request = ManualComparisonInput(listOf(prisonerId))
-    return webTestClient.post()
+    val result = webTestClient.post()
       .uri("/comparison/manual")
       .accept(MediaType.APPLICATION_JSON)
       .bodyValue(request)
@@ -65,5 +70,9 @@ class ManualComparisonIntTest : IntegrationTestBase() {
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
       .expectBody(Comparison::class.java)
       .returnResult().responseBody!!
+    await untilCallTo { comparisonRepository.findByManualInputAndComparisonShortReference(true, result.comparisonShortReference) } matches {
+      it!!.comparisonStatus.name == ComparisonStatusValue.COMPLETED.name
+    }
+    return result
   }
 }
