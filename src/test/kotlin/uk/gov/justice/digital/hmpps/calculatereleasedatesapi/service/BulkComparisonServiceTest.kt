@@ -104,7 +104,7 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
     )
 
     val calculableSentenceEnvelope = CalculableSentenceEnvelope(
-      person = Person("A", LocalDate.of(1990, 5, 1)),
+      person = Person("A", LocalDate.of(1990, 5, 1), emptyList()),
       bookingId = 12345,
       sentenceAndOffences = listOf(sentenceAndOffence),
       sentenceAdjustments = emptyList(),
@@ -193,7 +193,7 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
       offences = listOf(offenderOffence),
     )
     val calculableSentenceEnvelope = CalculableSentenceEnvelope(
-      person = Person("A", LocalDate.of(1990, 5, 1)),
+      person = Person("A", LocalDate.of(1990, 5, 1), emptyList()),
       bookingId = 12345,
       sentenceAndOffences = listOf(sentenceAndOffence),
       sentenceAdjustments = emptyList(),
