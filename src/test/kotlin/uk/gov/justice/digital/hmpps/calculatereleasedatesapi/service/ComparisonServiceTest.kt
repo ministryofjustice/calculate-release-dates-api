@@ -77,7 +77,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     )
 
     val calculableSentenceEnvelope = CalculableSentenceEnvelope(
-      Person("A", LocalDate.of(1990, 5, 1)),
+      Person("A", LocalDate.of(1990, 5, 1), emptyList()),
       1,
       emptyList(),
       emptyList(),
