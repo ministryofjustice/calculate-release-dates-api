@@ -128,6 +128,7 @@ class BulkComparisonService(
       bookingId = source.bookingId,
       offenderNo = source.person.prisonerNumber,
       dateOfBirth = source.person.dateOfBirth,
+      alerts = source.person.alerts,
     )
 
     val bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(
