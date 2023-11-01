@@ -21,8 +21,13 @@ class UnusedDeductionsService(
     val deductions = adjustments
       .filter { it.adjustmentType === AdjustmentServiceAdjustmentType.REMAND || it.adjustmentType === AdjustmentServiceAdjustmentType.TAGGED_BAIL }
 
-    val allDeductionsEnteredInDps =
-      deductions.isNotEmpty() && deductions.all { it.days != null || it.daysBetween != null }
+    if (deductions.isEmpty()) {
+      setUnusedDeductions(0, adjustments, deductions)
+      setEffectiveDays(0, adjustments)
+      return
+    }
+
+    val allDeductionsEnteredInDps = deductions.all { it.days != null || it.daysBetween != null }
 
     if (allDeductionsEnteredInDps) {
       val unusedDeductions =
