@@ -56,7 +56,7 @@ class AdjustmentsApiClient(@Qualifier("adjustmentsApiWebClient") private val web
   fun deleteAdjustment(id: UUID) {
     log.info("Delete adjustment details")
     webClient.delete()
-      .uri("/adjustments/${id}")
+      .uri("/adjustments/$id")
       .retrieve()
       .toBodilessEntity()
       .block()!!
