@@ -26,7 +26,7 @@ class AdjustmentsApiClient(@Qualifier("adjustmentsApiWebClient") private val web
   fun updateEffectiveDays(effectiveDays: AdjustmentEffectiveDays) {
     log.info("Updating effective days details for prisoner ${effectiveDays.person}")
     webClient.post()
-      .uri("/adjustments/effective-days")
+      .uri("/adjustments/{adjustmentId}/effective-days", effectiveDays.id)
       .bodyValue(effectiveDays)
       .retrieve()
       .toBodilessEntity()
