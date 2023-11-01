@@ -23,7 +23,6 @@ class UnusedDeductionsService(
 
     if (deductions.isEmpty()) {
       setUnusedDeductions(0, adjustments, deductions)
-      setEffectiveDays(0, adjustments)
       return
     }
 
