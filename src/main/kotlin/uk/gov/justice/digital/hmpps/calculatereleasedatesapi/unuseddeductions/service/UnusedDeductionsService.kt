@@ -17,25 +17,25 @@ class UnusedDeductionsService(
 
   fun handleUnusedDeductionRequest(person: String) {
     log.info("Received message for adjustment change")
-      val adjustments = adjustmentsApiClient.getAdjustmentsByPerson(person)
-      val deductions = adjustments
-        .filter { it.adjustmentType === AdjustmentServiceAdjustmentType.REMAND || it.adjustmentType === AdjustmentServiceAdjustmentType.TAGGED_BAIL }
+    val adjustments = adjustmentsApiClient.getAdjustmentsByPerson(person)
+    val deductions = adjustments
+      .filter { it.adjustmentType === AdjustmentServiceAdjustmentType.REMAND || it.adjustmentType === AdjustmentServiceAdjustmentType.TAGGED_BAIL }
 
-      val allDeductionsEnteredInDps =
-        deductions.isNotEmpty() && deductions.all { it.days != null || it.daysBetween != null }
+    val allDeductionsEnteredInDps =
+      deductions.isNotEmpty() && deductions.all { it.days != null || it.daysBetween != null }
 
-      if (allDeductionsEnteredInDps) {
-        val unusedDeductions =
-          unusedDeductionsCalculationService.calculate(adjustments, person)
+    if (allDeductionsEnteredInDps) {
+      val unusedDeductions =
+        unusedDeductionsCalculationService.calculate(adjustments, person)
 
-        if (unusedDeductions == null) {
-          // Couldn't calculate.
-          return
-        }
-
-        setUnusedDeductions(unusedDeductions, adjustments, deductions)
-        setEffectiveDays(unusedDeductions, deductions)
+      if (unusedDeductions == null) {
+        // Couldn't calculate.
+        return
       }
+
+      setUnusedDeductions(unusedDeductions, adjustments, deductions)
+      setEffectiveDays(unusedDeductions, deductions)
+    }
   }
 
   private fun setEffectiveDays(unusedDeductions: Int, deductions: List<AdjustmentServiceAdjustment>) {
