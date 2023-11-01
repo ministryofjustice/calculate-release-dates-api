@@ -36,7 +36,7 @@ class AdjustmentsApiClient(@Qualifier("adjustmentsApiWebClient") private val web
   fun updateAdjustment(adjustment: AdjustmentServiceAdjustment) {
     log.info("Updating adjustment details for prisoner ${adjustment.person}")
     webClient.put()
-      .uri("/adjustments/${adjustment.id}")
+      .uri("/adjustments/{adjustmentId}", adjustment.id)
       .bodyValue(adjustment)
       .retrieve()
       .toBodilessEntity()
@@ -56,7 +56,7 @@ class AdjustmentsApiClient(@Qualifier("adjustmentsApiWebClient") private val web
   fun deleteAdjustment(id: UUID) {
     log.info("Delete adjustment details")
     webClient.delete()
-      .uri("/adjustments/$id")
+      .uri("/adjustments/{adjustmentId}", id)
       .retrieve()
       .toBodilessEntity()
       .block()!!
