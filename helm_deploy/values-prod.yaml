@@ -10,6 +10,7 @@ generic-service:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     HMPPS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
     PRISON_API_URL: https://api.prison.service.justice.gov.uk
+    ADJUSTMENTS_API_URL: https://adjustments-api.hmpps.service.justice.gov.uk
 
   serviceAccountName: calculate-release-dates-api-prod
 

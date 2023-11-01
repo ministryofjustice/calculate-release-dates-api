@@ -57,6 +57,11 @@ bank-holiday:
   api:
     url: http://localhost:8333
 
+adjustments:
+  api:
+    url: http://localhost:8334
+
+
 domain-events-sns:
   provider: localstack
 

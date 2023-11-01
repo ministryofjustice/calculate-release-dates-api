@@ -14,6 +14,7 @@ class WebClientConfiguration(
   @Value("\${prison.api.url}") private val prisonApiUri: String,
   @Value("\${hmpps.auth.url}") private val oauthApiUrl: String,
   @Value("\${bank-holiday.api.url:https://www.gov.uk}") private val bankHolidayApiUrl: String,
+  @Value("\${adjustments.api.url}") private val adjustmentsApiUrl: String,
 ) {
 
   @Bean
@@ -46,5 +47,13 @@ class WebClientConfiguration(
   @Bean
   fun bankHolidayApiWebClient(webClientBuilder: WebClient.Builder): WebClient {
     return webClientBuilder.baseUrl(bankHolidayApiUrl).build()
+  }
+
+  @Bean
+  fun adjustmentsApiWebClient(webClientBuilder: WebClient.Builder): WebClient {
+    return webClientBuilder
+      .baseUrl(adjustmentsApiUrl)
+      .filter(addAuthHeaderFilterFunction())
+      .build()
   }
 }

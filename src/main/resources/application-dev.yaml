@@ -26,6 +26,10 @@ prison:
   api:
     url: http://localhost:8080
 
+adjustments:
+  api:
+    url: http://localhost:8081
+
 system:
   client:
     id: calculate-release-dates-admin
