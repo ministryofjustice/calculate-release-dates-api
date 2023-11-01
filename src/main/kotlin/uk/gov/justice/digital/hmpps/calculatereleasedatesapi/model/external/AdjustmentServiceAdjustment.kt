@@ -1,10 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
-import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 import java.util.UUID
 
-@Schema(description = "The adjustment and its identifier")
 data class AdjustmentServiceAdjustment(
   val id: UUID?,
   val bookingId: Long,
@@ -16,4 +14,4 @@ data class AdjustmentServiceAdjustment(
   val days: Int?,
   val daysBetween: Int?,
   val effectiveDays: Int? = null,
-) {}
+)
