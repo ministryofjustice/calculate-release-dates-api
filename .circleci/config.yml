@@ -15,7 +15,7 @@ jobs:
   validate:
     executor:
       name: hmpps/java
-      tag: "20.0"
+      tag: "21.0"
     steps:
       - checkout
       - restore_cache:
@@ -109,7 +109,7 @@ workflows:
           slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
-          jdk_tag: "20.0"
+          jdk_tag: "21.0"
       - hmpps/trivy_latest_scan:
           slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
