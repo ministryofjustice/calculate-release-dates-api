@@ -90,4 +90,21 @@ class UnusedDeductionsServiceTest {
     verify(adjustmentsApiClient).updateEffectiveDays(AdjustmentEffectiveDays(remand.id!!, 90, person))
     verify(adjustmentsApiClient).deleteAdjustment(unusedDeductions.id!!)
   }
+
+  @Test
+  fun updateUnusedDeductions_NoDeductionsButUnusedDeductions() {
+    val person = "ABC123"
+    val unusedDeductions = AdjustmentServiceAdjustment(
+      UUID.randomUUID(), 1, 1, person, AdjustmentServiceAdjustmentType.UNUSED_DEDUCTIONS, LocalDate.now().minusDays(100),
+      LocalDate.now().minusDays(9), null, 90, 90,
+    )
+    val adjustments = listOf(unusedDeductions)
+
+    whenever(adjustmentsApiClient.getAdjustmentsByPerson(person)).thenReturn(adjustments)
+    whenever(unusedDeductionsCalculationService.calculate(adjustments, person)).thenReturn(0)
+
+    unusedDeductionsService.handleUnusedDeductionRequest(person)
+
+    verify(adjustmentsApiClient).deleteAdjustment(unusedDeductions.id!!)
+  }
 }
