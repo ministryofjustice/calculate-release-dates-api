@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
@@ -44,7 +46,10 @@ class CalculationReferenceController(
     calculationReference: String,
     @RequestParam("checkForChange", required = false, defaultValue = "false") checkForChange: Boolean,
   ): CalculatedReleaseDates {
-    CalculationController.log.info("Request received return calculation results for calculationRequestId {}", calculationReference)
+    log.info("Request received return calculation results for calculationRequestId {}", calculationReference)
     return calculationTransactionalService.findCalculationResultsByCalculationReference(calculationReference, checkForChange)
+  }
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }

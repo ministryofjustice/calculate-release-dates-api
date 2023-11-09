@@ -17,4 +17,5 @@ interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long>
   fun findByIdAndCalculationStatus(calculationRequestId: Long, calculationStatus: String): Optional<CalculationRequest>
 
   fun findByCalculationReference(calculationReference: UUID): Optional<CalculationRequest>
+  fun findAllByPrisonerIdAndCalculationStatus(prisonerId: String, calculationStatus: String): List<CalculationRequest>
 }
