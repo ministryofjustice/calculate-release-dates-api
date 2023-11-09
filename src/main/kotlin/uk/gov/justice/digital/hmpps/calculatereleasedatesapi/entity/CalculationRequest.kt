@@ -23,7 +23,6 @@ import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.util.UUID
 
-@Suppress("DEPRECATION")
 @Entity
 @Table
 data class CalculationRequest(
@@ -48,6 +47,8 @@ data class CalculationRequest(
 
   @NotNull
   val calculatedByUsername: String = "",
+
+  val prisonerLocation: String? = null,
 
   @NotNull
   @Type(value = JsonType::class)
@@ -137,6 +138,7 @@ data class CalculationRequest(
       sentenceAndOffencesVersion = this.sentenceAndOffencesVersion,
       prisonerDetails = this.prisonerDetails,
       calculationType = calculationType,
+      prisonerLocation = this.prisonerLocation,
     )
   }
 }

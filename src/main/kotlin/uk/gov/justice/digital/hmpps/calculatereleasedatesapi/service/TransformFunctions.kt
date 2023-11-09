@@ -356,6 +356,7 @@ fun transform(
     bookingId = booking.bookingId,
     calculationStatus = calculationStatus.name,
     calculatedByUsername = username,
+    prisonerLocation = sourceData.prisonerDetails.agencyId,
     inputData = objectToJson(booking, objectMapper),
     sentenceAndOffences = objectToJson(sourceData.sentenceAndOffences, objectMapper),
     prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
