@@ -6,6 +6,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
@@ -66,6 +67,7 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
 
     log.info("Writing release dates to NOMIS finished")
   }
+
   fun getOffenderFinePayments(bookingId: Long): List<OffenderFinePayment> {
     log.info("Requesting offender fine payments for bookingId $bookingId")
     return webClient.get()
@@ -101,6 +103,17 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       }
       .retrieve()
       .bodyToMono(typeReference<List<CalculableSentenceEnvelope>>())
+      .block()!!
+  }
+
+  fun getCalculationsForAPrisonerId(prisonerId: String): List<OffenderSentenceCalculation> {
+    return webClient.get()
+      .uri { uriBuilder ->
+        uriBuilder.path("/api/offender-dates/calculations/$prisonerId")
+          .build()
+      }
+      .retrieve()
+      .bodyToMono(typeReference<List<OffenderSentenceCalculation>>())
       .block()!!
   }
 }
