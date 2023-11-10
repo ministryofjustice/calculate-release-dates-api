@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationViewConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricCalculation
@@ -65,6 +66,7 @@ class HistoricCalculationsControllerTest {
       CalculationSource.CRDS,
       CalculationViewConfiguration("ref", 1),
       "Comment",
+      CalculationType.CALCULATED,
     )
 
     whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(anyString())).thenReturn(listOf(historicCalculation))

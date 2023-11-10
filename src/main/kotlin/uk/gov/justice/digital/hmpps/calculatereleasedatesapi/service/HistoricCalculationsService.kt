@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationViewConfiguration
@@ -19,13 +20,15 @@ class HistoricCalculationsService(
     val historicCalculations = nomisCalculations.map { nomisCalculation ->
       var source = CalculationSource.NOMIS
       var calculationViewData: CalculationViewConfiguration? = null
+      var calculationType: CalculationType? = null
       for (calculation in calculations) {
         if (nomisCalculation.commentText.contains(calculation.calculationReference.toString())) {
           source = CalculationSource.CRDS
+          calculationType = calculation.calculationType
           calculationViewData = CalculationViewConfiguration(calculation.calculationReference.toString(), calculation.id)
         }
       }
-      HistoricCalculation(nomisCalculation.calculationDate, source, calculationViewData, nomisCalculation.commentText)
+      HistoricCalculation(nomisCalculation.calculationDate, source, calculationViewData, nomisCalculation.commentText, calculationType)
     }
     return historicCalculations
   }
