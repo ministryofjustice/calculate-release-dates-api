@@ -11,9 +11,13 @@ import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.AdjustmentServiceAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UnusedDeductionCalculationResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.service.UnusedDeductionsCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.service.UnusedDeductionsService
 
 @RestController
@@ -21,7 +25,32 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.se
 @Tag(name = "unused-deductions-controller", description = "Operations involving a calculating unused deductions")
 class UnusedDeductionsController(
   val unusedDeductionsService: UnusedDeductionsService,
+  val unusedDeductionsCalculationService: UnusedDeductionsCalculationService,
 ) {
+
+  @PostMapping(value = ["/{prisonerId}/calculation"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Calculate unused deductions.",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Calculated"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun calculate(
+    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
+    @PathVariable("prisonerId")
+    prisonerId: String,
+    @RequestBody
+    adjustments: List<AdjustmentServiceAdjustment>,
+  ): UnusedDeductionCalculationResponse {
+    log.info("Request received to calculate unused deductions for $prisonerId")
+    return UnusedDeductionCalculationResponse(unusedDeductionsCalculationService.calculate(adjustments, prisonerId))
+  }
 
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -36,12 +65,12 @@ class UnusedDeductionsController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun calculate(
+  fun handleUnusedDeductionsUpdate(
     @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
     @PathVariable("prisonerId")
     prisonerId: String,
   ) {
-    log.info("Request received to calculate unused deductions for $prisonerId")
+    log.info("Request received to handle unused deduction change for $prisonerId")
     unusedDeductionsService.handleUnusedDeductionRequest(prisonerId)
   }
   companion object {
