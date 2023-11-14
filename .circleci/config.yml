@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@7.5.0
+  hmpps: ministryofjustice/hmpps@7
 
 parameters:
   alerts-slack-channel:
@@ -73,12 +73,9 @@ jobs:
       - run: "[ -d lint-results ] || mkdir lint-results"
       - run:
           name: Run Spectral Lint
-          command: npx @stoplight/spectral-cli lint ~/docs/openapi.json
-            -o lint-results/junit.xml
-            -f junit
+          command: npx @stoplight/spectral-cli lint ~/docs/openapi.json -o lint-results/junit.xml -f junit
       - store_test_results:
           path: lint-results
-
 
 workflows:
   version: 2
@@ -89,15 +86,15 @@ workflows:
             tags:
               ignore: /.*/
       - generate-api-docs:
-           filters:
-             tags:
-               ignore: /.*/
+          filters:
+            tags:
+              ignore: /.*/
       - lint-api-docs:
-           filters:
-             tags:
-               ignore: /.*/
-           requires:
-             - generate-api-docs
+          filters:
+            tags:
+              ignore: /.*/
+          requires:
+            - generate-api-docs
       - hmpps/helm_lint:
           name: helm_lint
       - hmpps/build_docker:
@@ -183,5 +180,3 @@ workflows:
           context:
             - veracode-credentials
             - hmpps-common-vars
-
-
