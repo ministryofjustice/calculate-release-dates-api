@@ -24,12 +24,12 @@ data class CalculatedReleaseDates(
 ) {
   fun toSentenceCalcDates(): SentenceCalcDates {
     return SentenceCalcDates(
-      this.dates[ReleaseDateType.SED],
+      this.dates[ReleaseDateType.SLED] ?: this.dates[ReleaseDateType.SED],
       this.dates[ReleaseDateType.ARD],
       this.dates[ReleaseDateType.CRD],
       this.dates[ReleaseDateType.NPD],
       this.dates[ReleaseDateType.PRRD],
-      this.dates[ReleaseDateType.LED],
+      this.dates[ReleaseDateType.SLED] ?: this.dates[ReleaseDateType.LED],
       this.dates[ReleaseDateType.HDCED],
       this.dates[ReleaseDateType.PED],
       this.dates[ReleaseDateType.HDCAD],

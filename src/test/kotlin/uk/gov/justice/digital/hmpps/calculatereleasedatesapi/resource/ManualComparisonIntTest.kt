@@ -58,6 +58,14 @@ class ManualComparisonIntTest : IntegrationTestBase() {
     assertEquals(comparisonPerson.person, result.personId)
   }
 
+  @Test
+  fun `if SLED is present in calculation it must be compared to SED and LED from NOMIS`() {
+    val comparison = createManualComparison("CRS-1704")
+    val storedComparison = comparisonRepository.findByManualInputAndComparisonShortReference(true, comparison.comparisonShortReference)
+    assertEquals(0, storedComparison!!.numberOfMismatches)
+    assertTrue(comparisonPersonRepository.findByComparisonIdIs(storedComparison.id).isEmpty())
+  }
+
   private fun createManualComparison(prisonerId: String): Comparison {
     val request = ManualComparisonInput(listOf(prisonerId))
     val result = webTestClient.post()
