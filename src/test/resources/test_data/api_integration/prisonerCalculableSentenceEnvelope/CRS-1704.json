@@ -1,0 +1,91 @@
+[
+  {
+    "person": {
+      "prisonerNumber": "Z0030ZZ",
+      "dateOfBirth": "1972-11-14",
+      "alerts": []
+    },
+    "bookingId": 1205535,
+    "sentenceAndOffences": [
+      {
+        "bookingId": 1205535,
+        "sentenceSequence": 1,
+        "lineSequence": 1,
+        "caseSequence": 1,
+        "courtDescription": "Reading Crown Court",
+        "sentenceStatus": "A",
+        "sentenceCategory": "2020",
+        "sentenceCalculationType": "ADIMP_ORA",
+        "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
+        "sentenceDate": "2023-02-13",
+        "sentenceStartDate": "2023-02-13",
+        "sentenceEndDate": "2023-05-14",
+        "terms": [
+          {
+            "years": 0,
+            "months": 3,
+            "weeks": 0,
+            "days": 2,
+            "code": "IMP"
+          }
+        ],
+        "offences": [
+          {
+            "offenderChargeId": 3933832,
+            "offenceStartDate": "2023-01-12",
+            "offenceStatute": "CD71",
+            "offenceCode": "CD71039A",
+            "offenceDescription": "Attempt criminal damage to property valued under £5000",
+            "indicators": [
+              "99",
+              "ERS",
+              "SCH17A2",
+              "71"
+            ]
+          }
+        ]
+      }
+    ],
+    "sentenceAdjustments": [
+      {
+        "sentenceSequence": 1,
+        "type": "REMAND",
+        "numberOfDays": 10,
+        "fromDate": "2023-02-03",
+        "toDate": "2023-02-12",
+        "active": true
+      }
+    ],
+    "bookingAdjustments": [
+      {
+        "type": "ADDITIONAL_DAYS_AWARDED",
+        "numberOfDays": 5,
+        "fromDate": "2023-02-14",
+        "toDate": "2023-02-18",
+        "active": true
+      }
+    ],
+    "offenderFinePayments": [],
+    "fixedTermRecallDetails": null,
+    "sentenceCalcDates": {
+      "sentenceExpiryDate": "2023-05-04",
+      "conditionalReleaseDate": "2023-03-25",
+      "licenceExpiryDate": "2023-05-04",
+      "homeDetentionCurfewEligibilityDate": "2023-03-08",
+      "topupSupervisionExpiryDate": "2024-03-20",
+      "effectiveSentenceEndDate": "2023-05-14",
+      "bookingId": 1205535,
+      "sentenceStartDate": "2023-02-13",
+      "additionalDaysAwarded": 5,
+      "nonDtoReleaseDate": "2023-03-25",
+      "sentenceExpiryCalculatedDate": "2023-05-04",
+      "licenceExpiryCalculatedDate": "2023-05-04",
+      "topupSupervisionExpiryCalculatedDate": "2024-03-20",
+      "homeDetentionCurfewEligibilityCalculatedDate": "2023-03-08",
+      "nonDtoReleaseDateType": "CRD",
+      "confirmedReleaseDate": "2023-03-25",
+      "releaseDate": "2023-03-25",
+      "topupSupervisionStartDate": "2023-05-05"
+    }
+  }
+]
