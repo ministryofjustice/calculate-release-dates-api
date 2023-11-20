@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import java.util.Optional
@@ -18,4 +19,7 @@ interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long>
 
   fun findByCalculationReference(calculationReference: UUID): Optional<CalculationRequest>
   fun findAllByPrisonerIdAndCalculationStatus(prisonerId: String, calculationStatus: String): List<CalculationRequest>
+
+  @Query(nativeQuery = true, value = "select * from calculation_request where prisoner_id in (select prisoner_id from calculation_request where booking_id = ? limit 1) order by calculated_at desc limit 1")
+  fun findLatestCalculation(bookingId: Long): Optional<CalculationRequest>
 }

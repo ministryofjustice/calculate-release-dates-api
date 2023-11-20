@@ -52,6 +52,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
@@ -75,6 +76,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
@@ -712,3 +714,13 @@ fun transform(comparisonPerson: ComparisonPerson, nomisDates: Map<ReleaseDateTyp
   calculatedReleaseDates?.dates ?: emptyMap(),
   nomisDates,
 )
+
+fun transform(sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis, sentencesAndOffences: List<SentenceAndOffences>): List<AnalyzedSentenceAndOffences> {
+  return sentencesAndOffences.map {
+    transform(sentenceAndOffences = it, sentenceAndOffenceAnalysis = sentenceAndOffenceAnalysis)
+  }
+}
+
+fun transform(sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis, sentenceAndOffences: SentenceAndOffences): AnalyzedSentenceAndOffences {
+  return AnalyzedSentenceAndOffences(sentenceAndOffences.bookingId, sentenceAndOffences.sentenceSequence, sentenceAndOffences.lineSequence, sentenceAndOffences.caseSequence, sentenceAndOffences.consecutiveToSequence, sentenceAndOffences.sentenceStatus, sentenceAndOffences.sentenceCategory, sentenceAndOffences.sentenceCalculationType, sentenceAndOffences.sentenceTypeDescription, sentenceAndOffences.sentenceDate, sentenceAndOffences.terms, sentenceAndOffences.offences, sentenceAndOffences.caseReference, sentenceAndOffences.courtDescription, sentenceAndOffences.fineAmount, sentenceAndOffenceAnalysis)
+}
