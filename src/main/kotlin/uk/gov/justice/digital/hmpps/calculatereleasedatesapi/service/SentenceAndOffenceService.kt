@@ -31,7 +31,7 @@ class SentenceAndOffenceService(
             if (value.offences == lastSentencesAndOffencesBySequence[key]!!.offences) {
               transform(SentenceAndOffenceAnalysis.SAME, value)
             } else {
-              transform(SentenceAndOffenceAnalysis.CHANGED, value)
+              transform(SentenceAndOffenceAnalysis.UPDATED, value)
             }
           } else {
             transform(SentenceAndOffenceAnalysis.NEW, value)
