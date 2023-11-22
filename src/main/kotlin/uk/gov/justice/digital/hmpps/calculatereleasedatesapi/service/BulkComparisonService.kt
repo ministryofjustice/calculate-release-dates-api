@@ -62,7 +62,8 @@ class BulkComparisonService(
             validationMessages = objectMapper.valueToTree(mismatch.messages),
             calculatedByUsername = comparison.calculatedByUsername,
             calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
-            nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toMap()) } ?: objectMapper.createObjectNode(),
+            nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) } ?: objectMapper.createObjectNode(),
+            overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) } ?: objectMapper.createObjectNode(),
           ),
         )
       }
