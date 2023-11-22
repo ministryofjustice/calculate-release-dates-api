@@ -22,28 +22,6 @@ class ManageOffencesServiceTest {
       assertThat(listOf(dummyOffencePcscSomeMarkers)).isEqualTo(testResult);
     }
 
-    @Test
-    fun doesSingleOffenceCodeHaveAllPcscMarkers() {
-      whenever(mockManageOffencesApiClient.getPCSCMarkersForOffences(listOf(OFFENCE_CODE_SOME_PCSC_MARKERS))).thenReturn(listOf(dummyOffencePcscSomeMarkers))
-      val testResult = underTest.doesOffenceCodeHavePcscMarkers(OFFENCE_CODE_SOME_PCSC_MARKERS)
-      assertTrue(testResult);
-    }
-
-  @Test
-  fun doesSingleOffenceCodeHaveSomePcscMarkers() {
-    whenever(mockManageOffencesApiClient.getPCSCMarkersForOffences(listOf(OFFENCE_CODE_SOME_PCSC_MARKERS))).thenReturn(listOf(dummyOffencePcscSomeMarkers))
-    val testResult = underTest.doesOffenceCodeHavePcscMarkers(OFFENCE_CODE_SOME_PCSC_MARKERS)
-    assertTrue(testResult);
-  }
-
-  @Test
-  fun doesSingleOffenceCodeHaveNoPcscMarkers() {
-    whenever(mockManageOffencesApiClient.getPCSCMarkersForOffences(listOf(OFFENCE_CODE_NO_PCSC_MARKERS))).thenReturn(listOf(dummyOffencePcscNoMarkers))
-    val testResult = underTest.doesOffenceCodeHavePcscMarkers(OFFENCE_CODE_NO_PCSC_MARKERS)
-    assertFalse(testResult);
-  }
-
-
   companion object {
     private const val OFFENCE_CODE_SOME_PCSC_MARKERS = "AV82002"
     private const val OFFENCE_CODE_NO_PCSC_MARKERS = ""

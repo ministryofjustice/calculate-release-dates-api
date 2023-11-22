@@ -12,9 +12,4 @@ class ManageOffencesService(
   fun getPcscMarkersForOffenceCodes(vararg offenceCodes: String): List<OffencePcscMarkers> {
     return manageOffencesApiClient.getPCSCMarkersForOffences(offenceCodes.toList())
   }
-
-  fun doesOffenceCodeHavePcscMarkers(offenceCode: String): Boolean {
-    val returnedPcscMarkers = getPcscMarkersForOffenceCodes(offenceCode).firstOrNull();
-    return returnedPcscMarkers!!.pcscMarkers.inListA || returnedPcscMarkers.pcscMarkers.inListB || returnedPcscMarkers.pcscMarkers.inListC || returnedPcscMarkers.pcscMarkers.inListD
-  }
 }
