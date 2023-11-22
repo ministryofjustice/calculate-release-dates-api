@@ -91,9 +91,14 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
     log.info("Requesting personId and booking details for latest booking of all offenders at establishment $establishmentId")
     return webClient.get()
       .uri("/api/prison/$establishmentId/booking/latest/calculable-sentence-envelope")
+      .httpRequest { httpRequest ->
+        run {
+          val reactorRequest = httpRequest.getNativeRequest<HttpClientRequest>()
+          reactorRequest.responseTimeout(Duration.ofMinutes(10))
+        }
+      }
       .retrieve()
       .bodyToMono(typeReference<List<CalculableSentenceEnvelope>>())
-      .timeout(Duration.ofMinutes(10))
       .block()!!
   }
 
@@ -120,12 +125,6 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .uri { uriBuilder ->
         uriBuilder.path("/api/offender-dates/calculations/$prisonerId")
           .build()
-      }
-      .httpRequest { httpRequest ->
-        run {
-          val reactorRequest = httpRequest.getNativeRequest<HttpClientRequest>()
-          reactorRequest.responseTimeout(Duration.ofMinutes(10))
-        }
       }
       .retrieve()
       .bodyToMono(typeReference<List<OffenderSentenceCalculation>>())
