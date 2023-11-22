@@ -118,7 +118,7 @@ class BulkComparisonService(
     if (calculatedReleaseDates != null && calculatedReleaseDates.dates.isNotEmpty()) {
       val calculatedSentenceCalcDates = calculatedReleaseDates.toSentenceCalcDates()
       if (sentenceCalcDates != null) {
-        return calculatedSentenceCalcDates == sentenceCalcDates
+        return calculatedSentenceCalcDates.isSameComparableCalculatedDates(sentenceCalcDates)
       }
     }
     return true
