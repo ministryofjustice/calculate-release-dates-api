@@ -51,17 +51,11 @@ data class SentenceCalcDates(
       ReleaseDateType.LED to licenceExpiryCalculatedDate,
       ReleaseDateType.HDCED to homeDetentionCurfewEligibilityCalculatedDate,
       ReleaseDateType.PED to paroleEligibilityCalculatedDate,
-      ReleaseDateType.HDCAD to homeDetentionCurfewActualDate,
-      ReleaseDateType.APD to actualParoleDate,
-      ReleaseDateType.ROTL to releaseOnTemporaryLicenceDate,
-      ReleaseDateType.ERSED to earlyRemovalSchemeEligibilityDate,
       ReleaseDateType.ETD to etdCalculatedDate,
       ReleaseDateType.MTD to mtdCalculatedDate,
       ReleaseDateType.LTD to ltdCalculatedDate,
       ReleaseDateType.TUSED to topupSupervisionExpiryCalculatedDate,
-      ReleaseDateType.Tariff to tariffDate,
       ReleaseDateType.DPRRD to dtoPostRecallReleaseDate,
-      ReleaseDateType.TERSED to tariffEarlyRemovalSchemeEligibilityDate,
       ReleaseDateType.ESED to effectiveSentenceEndDate,
     )
 
@@ -80,5 +74,11 @@ data class SentenceCalcDates(
       ReleaseDateType.PRRD to postRecallReleaseOverrideDate,
       ReleaseDateType.SED to sentenceExpiryOverrideDate,
       ReleaseDateType.TUSED to topupSupervisionExpiryOverrideDate,
+      ReleaseDateType.HDCAD to homeDetentionCurfewActualDate,
+      ReleaseDateType.APD to actualParoleDate,
+      ReleaseDateType.ROTL to releaseOnTemporaryLicenceDate,
+      ReleaseDateType.ERSED to earlyRemovalSchemeEligibilityDate,
+      ReleaseDateType.TERSED to tariffEarlyRemovalSchemeEligibilityDate,
+      ReleaseDateType.Tariff to tariffDate,
     )
 }
