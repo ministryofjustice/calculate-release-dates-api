@@ -56,7 +56,7 @@ class SentenceAndOffenceServiceTest {
     whenever(calculationRequestRepository.findLatestCalculation(anyLong())).thenReturn(Optional.of(changedCalculationRequest))
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(1)
-    assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.CHANGED)
+    assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.UPDATED)
   }
 
   @Test

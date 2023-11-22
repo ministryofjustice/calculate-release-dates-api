@@ -34,7 +34,7 @@ class PrisonApiProxyController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun storeGenuineOverride(@PathVariable bookingId: Long): List<AnalyzedSentenceAndOffences> {
+  fun getSentencesAndOffences(@PathVariable bookingId: Long): List<AnalyzedSentenceAndOffences> {
     return sentenceAndOffenceService.getSentencesAndOffences(bookingId)
   }
 }
