@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.netty.http.client.HttpClientRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -14,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
+import java.time.Duration
 
 @Service
 class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: WebClient) {
@@ -91,6 +93,7 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .uri("/api/prison/$establishmentId/booking/latest/calculable-sentence-envelope")
       .retrieve()
       .bodyToMono(typeReference<List<CalculableSentenceEnvelope>>())
+      .timeout(Duration.ofMinutes(10))
       .block()!!
   }
 
@@ -100,6 +103,12 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
         uriBuilder.path("/api/bookings/latest/calculable-sentence-envelope")
           .queryParam("offenderNo", prisonerIds)
           .build()
+      }
+      .httpRequest { httpRequest ->
+        run {
+          val reactorRequest = httpRequest.getNativeRequest<HttpClientRequest>()
+          reactorRequest.responseTimeout(Duration.ofMinutes(10))
+        }
       }
       .retrieve()
       .bodyToMono(typeReference<List<CalculableSentenceEnvelope>>())
@@ -111,6 +120,12 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .uri { uriBuilder ->
         uriBuilder.path("/api/offender-dates/calculations/$prisonerId")
           .build()
+      }
+      .httpRequest { httpRequest ->
+        run {
+          val reactorRequest = httpRequest.getNativeRequest<HttpClientRequest>()
+          reactorRequest.responseTimeout(Duration.ofMinutes(10))
+        }
       }
       .retrieve()
       .bodyToMono(typeReference<List<OffenderSentenceCalculation>>())
