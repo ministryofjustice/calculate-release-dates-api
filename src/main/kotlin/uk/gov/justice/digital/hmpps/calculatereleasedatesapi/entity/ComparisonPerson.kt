@@ -54,6 +54,10 @@ class ComparisonPerson(
   @Column(columnDefinition = "jsonb")
   var nomisDates: JsonNode,
 
+  @Type(value = JsonType::class)
+  @Column(columnDefinition = "jsonb")
+  var overrideDates: JsonNode,
+
   var calculationRequestId: Long? = null,
 
 )
