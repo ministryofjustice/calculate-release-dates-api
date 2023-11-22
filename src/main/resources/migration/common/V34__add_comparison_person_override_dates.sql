@@ -1,0 +1,1 @@
+ALTER TABLE comparison_person ADD COLUMN override_dates jsonb NOT NULL default '{}'::jsonb;

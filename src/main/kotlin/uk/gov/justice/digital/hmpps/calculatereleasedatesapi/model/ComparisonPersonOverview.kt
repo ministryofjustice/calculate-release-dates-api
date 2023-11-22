@@ -15,4 +15,5 @@ data class ComparisonPersonOverview(
   val calculatedAt: LocalDateTime,
   val crdsDates: Map<ReleaseDateType, LocalDate?>,
   val nomisDates: Map<ReleaseDateType, LocalDate?>,
+  val overrideDates: Map<ReleaseDateType, LocalDate?>,
 )
