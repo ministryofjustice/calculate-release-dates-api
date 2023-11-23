@@ -51,7 +51,6 @@ class BulkComparisonService(
   ) {
     calculableSentenceEnvelopes.forEach { calculableSentenceEnvelope ->
       val mismatch = determineIfMismatch(calculableSentenceEnvelope)
-      mismatch.calculatedReleaseDates
       if (mismatch.shouldRecordMismatch()) {
         comparisonPersonRepository.save(
           ComparisonPerson(
