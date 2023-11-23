@@ -42,22 +42,37 @@ data class SentenceCalcDates(
 ) {
 
   private fun toComparableCalculatedMap(): Map<ReleaseDateType, LocalDate?> = mapOf(
-    ReleaseDateType.SED to sentenceExpiryCalculatedDate,
-    ReleaseDateType.ARD to automaticReleaseDate,
-    ReleaseDateType.CRD to conditionalReleaseDate,
-    ReleaseDateType.NPD to nonParoleDate,
-    ReleaseDateType.PRRD to postRecallReleaseDate,
-    ReleaseDateType.LED to licenceExpiryCalculatedDate,
-    ReleaseDateType.HDCED to homeDetentionCurfewEligibilityCalculatedDate,
-    ReleaseDateType.PED to paroleEligibilityCalculatedDate,
-    ReleaseDateType.ETD to etdCalculatedDate,
-    ReleaseDateType.MTD to mtdCalculatedDate,
-    ReleaseDateType.LTD to ltdCalculatedDate,
-    ReleaseDateType.TUSED to topupSupervisionExpiryCalculatedDate,
-    ReleaseDateType.DPRRD to dtoPostRecallReleaseDate,
+    ReleaseDateType.SED to (sentenceExpiryOverrideDate ?: sentenceExpiryCalculatedDate),
+    ReleaseDateType.ARD to (automaticReleaseOverrideDate ?: automaticReleaseDate),
+    ReleaseDateType.CRD to (conditionalReleaseOverrideDate ?: conditionalReleaseDate),
+    ReleaseDateType.NPD to (nonParoleOverrideDate ?: nonParoleDate),
+    ReleaseDateType.PRRD to (postRecallReleaseOverrideDate ?: postRecallReleaseDate),
+    ReleaseDateType.LED to (licenceExpiryOverrideDate ?: licenceExpiryCalculatedDate),
+    ReleaseDateType.HDCED to (homeDetentionCurfewEligibilityOverrideDate ?: homeDetentionCurfewEligibilityCalculatedDate),
+    ReleaseDateType.PED to (paroleEligibilityOverrideDate ?: paroleEligibilityCalculatedDate),
+    ReleaseDateType.ETD to (etdOverrideDate ?: etdCalculatedDate),
+    ReleaseDateType.MTD to (mtdOverrideDate ?: mtdCalculatedDate),
+    ReleaseDateType.LTD to (ltdOverrideDate ?: ltdCalculatedDate),
+    ReleaseDateType.TUSED to (topupSupervisionExpiryOverrideDate ?: topupSupervisionExpiryCalculatedDate),
+    ReleaseDateType.DPRRD to (dtoPostRecallReleaseDateOverride ?: dtoPostRecallReleaseDate),
   )
   fun toCalculatedMap(): Map<ReleaseDateType, LocalDate?> =
-    toComparableCalculatedMap().plus(ReleaseDateType.ESED to effectiveSentenceEndDate)
+    mapOf(
+      ReleaseDateType.SED to sentenceExpiryCalculatedDate,
+      ReleaseDateType.ARD to automaticReleaseDate,
+      ReleaseDateType.CRD to conditionalReleaseDate,
+      ReleaseDateType.NPD to nonParoleDate,
+      ReleaseDateType.PRRD to postRecallReleaseDate,
+      ReleaseDateType.LED to licenceExpiryCalculatedDate,
+      ReleaseDateType.HDCED to homeDetentionCurfewEligibilityCalculatedDate,
+      ReleaseDateType.PED to paroleEligibilityCalculatedDate,
+      ReleaseDateType.ETD to etdCalculatedDate,
+      ReleaseDateType.MTD to mtdCalculatedDate,
+      ReleaseDateType.LTD to ltdCalculatedDate,
+      ReleaseDateType.TUSED to topupSupervisionExpiryCalculatedDate,
+      ReleaseDateType.DPRRD to dtoPostRecallReleaseDate,
+      ReleaseDateType.ESED to effectiveSentenceEndDate,
+    )
 
   fun toOverrideMap(): Map<ReleaseDateType, LocalDate?> =
     mapOf(

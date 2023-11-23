@@ -316,4 +316,82 @@ internal class SentenceCalcDatesTest {
     val result = sentenceCalcDates.isSameComparableCalculatedDates(sameSentenceExpiryCalculatedDate)
     Assertions.assertTrue(result)
   }
+
+  @Test
+  fun `user override dates take precedence over calculated dates`() {
+    val sentenceCalcDates = SentenceCalcDates(
+      LocalDate.of(2023, 11, 22),
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      LocalDate.of(2023, 11, 21),
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+    )
+
+    val overridenSentenceCalcDates = SentenceCalcDates(
+      LocalDate.of(2023, 11, 22),
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      LocalDate.of(2023, 11, 7),
+      LocalDate.of(2023, 11, 21),
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+    )
+
+    val result = sentenceCalcDates.isSameComparableCalculatedDates(overridenSentenceCalcDates)
+    Assertions.assertTrue(result)
+  }
 }
