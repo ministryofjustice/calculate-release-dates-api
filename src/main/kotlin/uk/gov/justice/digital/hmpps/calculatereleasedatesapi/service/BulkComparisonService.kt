@@ -51,6 +51,7 @@ class BulkComparisonService(
   ) {
     calculableSentenceEnvelopes.forEach { calculableSentenceEnvelope ->
       val mismatch = determineIfMismatch(calculableSentenceEnvelope)
+      mismatch.calculatedReleaseDates
       if (mismatch.shouldRecordMismatch()) {
         comparisonPersonRepository.save(
           ComparisonPerson(
@@ -64,6 +65,7 @@ class BulkComparisonService(
             calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
             nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) } ?: objectMapper.createObjectNode(),
             overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) } ?: objectMapper.createObjectNode(),
+            breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) } ?: objectMapper.createObjectNode(),
           ),
         )
       }
@@ -99,6 +101,7 @@ class BulkComparisonService(
     mismatch.messages = validationResult.messages
     mismatch.isValid = validationResult.messages.isEmpty()
     mismatch.calculatedReleaseDates = validationResult.calculatedReleaseDates
+    mismatch.calculationResult = validationResult.calculationResult
 
     if (mismatch.isValid) {
       mismatch.isMatch =

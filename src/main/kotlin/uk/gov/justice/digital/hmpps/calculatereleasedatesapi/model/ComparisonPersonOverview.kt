@@ -16,4 +16,5 @@ data class ComparisonPersonOverview(
   val crdsDates: Map<ReleaseDateType, LocalDate?>,
   val nomisDates: Map<ReleaseDateType, LocalDate?>,
   val overrideDates: Map<ReleaseDateType, LocalDate?>,
+  val breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
 )

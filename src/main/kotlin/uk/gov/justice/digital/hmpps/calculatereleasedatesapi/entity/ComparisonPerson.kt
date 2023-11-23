@@ -58,6 +58,10 @@ class ComparisonPerson(
   @Column(columnDefinition = "jsonb")
   var overrideDates: JsonNode,
 
+  @Type(value = JsonType::class)
+  @Column(columnDefinition = "jsonb")
+  var breakdownByReleaseDateType: JsonNode,
+
   var calculationRequestId: Long? = null,
 
 )
