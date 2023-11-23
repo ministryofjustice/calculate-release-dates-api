@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebEx
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
@@ -74,7 +75,8 @@ class ComparisonService(
       val calculatedReleaseDates = comparisonPerson.calculationRequestId?.let { calculationTransactionalService.findCalculationResults(it) }
       val nomisDates = objectMapper.convertValue(comparisonPerson.nomisDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
       val overrideDates = objectMapper.convertValue(comparisonPerson.overrideDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
-      return transform(comparisonPerson, nomisDates, calculatedReleaseDates, overrideDates)
+      val breakdownByReleaseDateType = objectMapper.convertValue(comparisonPerson.breakdownByReleaseDateType, object : TypeReference<Map<ReleaseDateType, ReleaseDateCalculationBreakdown>>() {})
+      return transform(comparisonPerson, nomisDates, calculatedReleaseDates, overrideDates, breakdownByReleaseDateType)
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
   }

@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOve
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualComparisonInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import java.time.LocalDate
@@ -58,7 +59,8 @@ class ManualComparisonService(
     val calculatedReleaseDates = comparisonPerson.calculationRequestId?.let { calculationTransactionalService.findCalculationResults(it) }
     val nomisDates = objectMapper.convertValue(comparisonPerson.nomisDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
     val overrideDates = objectMapper.convertValue(comparisonPerson.overrideDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
-    return transform(comparisonPerson, nomisDates, calculatedReleaseDates, overrideDates)
+    val breakdownByReleaseDateType = objectMapper.convertValue(comparisonPerson.breakdownByReleaseDateType, object : TypeReference<Map<ReleaseDateType, ReleaseDateCalculationBreakdown>>() {})
+    return transform(comparisonPerson, nomisDates, calculatedReleaseDates, overrideDates, breakdownByReleaseDateType)
   }
 
   companion object {

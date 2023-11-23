@@ -74,7 +74,7 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
     )
 
     val booking = Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
-    val validationResult = ValidationResult(emptyList(), booking, calculatedReleaseDates)
+    val validationResult = ValidationResult(emptyList(), booking, calculatedReleaseDates, null)
 
     Mockito.`when`(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(validationResult)
 
@@ -165,7 +165,7 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
     )
 
     val booking = Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
-    val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates)
+    val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
 
     Mockito.`when`(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(validationResult)
 
