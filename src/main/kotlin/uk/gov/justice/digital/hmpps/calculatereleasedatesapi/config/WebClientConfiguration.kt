@@ -59,7 +59,7 @@ class WebClientConfiguration(
   }
 
   @Bean
-  fun manageOffencesApiClient(webClientBuilder: WebClient.Builder): WebClient {
+  fun manageOffencesApiWebClient(webClientBuilder: WebClient.Builder): WebClient {
     return webClientBuilder
       .baseUrl(manageOffencesApiUrl)
       .filter(addAuthHeaderFilterFunction())

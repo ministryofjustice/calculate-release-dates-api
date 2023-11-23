@@ -32,37 +32,40 @@ class OffenceSdsPlusLookupService(
 
     val bookingIdToSentences = getMatchingSentencesToBookingId(sentencesAndOffences)
     val offencesToCheck = getOffenceCodesToCheckWithMO(bookingIdToSentences)
-    val moCheckResponses = manageOffencesService.getPcscMarkersForOffenceCodes(*offencesToCheck.toTypedArray()).associateBy { it.offenceCode }
 
-    bookingIdToSentences.forEach {
-      it.value.forEach { sentenceAndOffence ->
-        sentenceAndOffence.offences.filter { offenderOffence -> offencesToCheck.contains(offenderOffence.offenceCode) }
-          .forEach { offence ->
-            val moResponseForOffence = moCheckResponses[offence.offenceCode]
-            val sentenceIsAfterPcsc = sentencedAfterPcsc(sentenceAndOffence)
-            var sdsPlusIdentified = false;
-            val sentenceCalculationType = SentenceCalculationType.from(sentenceAndOffence.sentenceCalculationType)
-            var sevenYearsOrMore = sevenYearsOrMore(sentenceAndOffence)
+    if (offencesToCheck.isNotEmpty()) {
+      val moCheckResponses = manageOffencesService.getPcscMarkersForOffenceCodes(*offencesToCheck.toTypedArray()).associateBy { it.offenceCode }
 
-            if (postPcscCalcTypes["SDS"]!!.contains(sentenceCalculationType)
-              || postPcscCalcTypes["DYOI"]!!.contains(sentenceCalculationType)) {
-              if (sentencedWithinOriginalSdsPlusWindow(sentenceAndOffence) && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListA == true) {
-                sdsPlusIdentified = true
-              } else if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListD == true) {
-                sdsPlusIdentified = true
-              } else if (sentenceIsAfterPcsc && fourToUnderSeven(sentenceAndOffence) && moResponseForOffence?.pcscMarkers?.inListB == true) {
-                sdsPlusIdentified = true
+      bookingIdToSentences.forEach {
+        it.value.forEach { sentenceAndOffence ->
+          sentenceAndOffence.offences.filter { offenderOffence -> offencesToCheck.contains(offenderOffence.offenceCode) }
+            .forEach { offence ->
+              val moResponseForOffence = moCheckResponses[offence.offenceCode]
+              val sentenceIsAfterPcsc = sentencedAfterPcsc(sentenceAndOffence)
+              var sdsPlusIdentified = false;
+              val sentenceCalculationType = SentenceCalculationType.from(sentenceAndOffence.sentenceCalculationType)
+              var sevenYearsOrMore = sevenYearsOrMore(sentenceAndOffence)
+
+              if (postPcscCalcTypes["SDS"]!!.contains(sentenceCalculationType)
+                || postPcscCalcTypes["DYOI"]!!.contains(sentenceCalculationType)) {
+                if (sentencedWithinOriginalSdsPlusWindow(sentenceAndOffence) && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListA == true) {
+                  sdsPlusIdentified = true
+                } else if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListD == true) {
+                  sdsPlusIdentified = true
+                } else if (sentenceIsAfterPcsc && fourToUnderSeven(sentenceAndOffence) && moResponseForOffence?.pcscMarkers?.inListB == true) {
+                  sdsPlusIdentified = true
+                }
+              } else if (postPcscCalcTypes["S250"]!!.contains(sentenceCalculationType)) {
+                if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListC == true) {
+                  sdsPlusIdentified = true
+                }
               }
-            } else if (postPcscCalcTypes["S250"]!!.contains(sentenceCalculationType)) {
-              if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListC == true) {
-                sdsPlusIdentified = true
+
+              if (sdsPlusIdentified) {
+                offence.indicators = offence.indicators.plus(listOf(OffenderOffence.PCSC_SDS_PLUS))
               }
             }
-
-            if (sdsPlusIdentified) {
-              offence.indicators = offence.indicators.plus(listOf(OffenderOffence.PCSC_SDS_PLUS))
-            }
-          }
+        }
       }
     }
   }
@@ -85,14 +88,13 @@ class OffenceSdsPlusLookupService(
 
         var matchFilter = false;
 
-        if (postPcscCalcTypes["SDS"]!!.contains(sentenceCalculationType) || postPcscCalcTypes["DYOI"]!!.contains(sentenceCalculationType) ){
-          if (sentencedWithinOriginalSdsWindow && sevenYearsOrMore){
+        if (postPcscCalcTypes["SDS"]!!.contains(sentenceCalculationType) || postPcscCalcTypes["DYOI"]!!.contains(sentenceCalculationType)) {
+          if (sentencedWithinOriginalSdsWindow && sevenYearsOrMore) {
+            matchFilter = true;
+          } else if (sentenceIsAfterPcsc && overFourYearsSentenceLength(sentenceAndOffences)) {
             matchFilter = true;
           }
-          else if(sentenceIsAfterPcsc && overFourYearsSentenceLength(sentenceAndOffences)){
-            matchFilter = true;
-          }
-        } else if(postPcscCalcTypes["S250"]!!.contains(sentenceCalculationType) && sentenceIsAfterPcsc && sevenYearsOrMore){
+        } else if (postPcscCalcTypes["S250"]!!.contains(sentenceCalculationType) && sentenceIsAfterPcsc && sevenYearsOrMore) {
           matchFilter = true;
         }
 

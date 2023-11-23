@@ -28,7 +28,7 @@ class ManualCalculationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Storing a no dates manual entry is successful`() {
-    val response = webTestClient.post()
+      val response = webTestClient.post()
       .uri("/manual-calculation/$PRISONER_ID")
       .bodyValue(ManualEntryRequest(listOf(ManualEntrySelectedDate(ReleaseDateType.None, "None", null))))
       .accept(MediaType.APPLICATION_JSON)

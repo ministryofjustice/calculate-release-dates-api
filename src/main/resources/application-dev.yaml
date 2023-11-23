@@ -30,6 +30,10 @@ adjustments:
   api:
     url: http://localhost:8081
 
+manage-offences:
+  api:
+    url: http://localhost:8335
+
 system:
   client:
     id: calculate-release-dates-admin
