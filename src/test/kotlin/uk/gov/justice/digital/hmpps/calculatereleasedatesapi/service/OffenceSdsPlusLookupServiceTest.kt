@@ -1,61 +1,72 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.*
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.*
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.time.LocalDate
 
 class OffenceSdsPlusLookupServiceTest {
 
-  private val mockManageOffencesService = mock<ManageOffencesService>();
+  private val mockManageOffencesService = mock<ManageOffencesService>()
 
-  private val underTest = OffenceSdsPlusLookupService(mockManageOffencesService);
+  private val underTest = OffenceSdsPlusLookupService(mockManageOffencesService)
 
   @Test
-  fun testSetSdsPlusMarkerSentencedAfterSDSPlusBeforePCSCLongerThan7YearsAndSingularOffence() {
+  fun `SDS+ Marker set when sentenced after SDS and before PCSC and sentence longer than 7 Years with singular offence - List A`() {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListAMarkers))
     underTest.setSdsPlusMarkerForOffences(sentencedAfterSDSPlusBeforePCSCLongerThan7Years)
     assertTrue(sentencedAfterSDSPlusBeforePCSCLongerThan7Years[0].offences[0].isPcscSdsPlus)
   }
 
   @Test
-  fun testSetSdsPlusMarkerForADIMPOver7Years() {
+  fun `SDS+ Marker set for ADIMP Over 7 Years after PCSC and List D marker returned`() {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListDMarkers))
     underTest.setSdsPlusMarkerForOffences(sentencedADIMPAfterPCSCLongerThan7Years)
     assertTrue(sentencedADIMPAfterPCSCLongerThan7Years[0].offences[0].isPcscSdsPlus)
   }
 
   @Test
-  fun testSetSdsPlusMarkerForYOIORAOver7Years() {
+  fun `SDS+ Marker set for YOI_ORA 4 to 7 years after PCSC and List B Marker returned`() {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListBMarkers))
     underTest.setSdsPlusMarkerForOffences(sentencedYOIORAAfterPCSCLonger4To7Years)
     assertTrue(sentencedYOIORAAfterPCSCLonger4To7Years[0].offences[0].isPcscSdsPlus)
   }
 
   @Test
-  fun testSetSdsPlusMarkerForSection250Over7YearsPostPCSC() {
+  fun `SDS+ Marker set for SEC_250 Over 7 Years After PCSC and List C marker returned`() {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListCMarkers))
     underTest.setSdsPlusMarkerForOffences(section250Over7YearsPostPCSCSentence)
     assertTrue(section250Over7YearsPostPCSCSentence[0].offences[0].isPcscSdsPlus)
   }
 
   @Test
-  fun testSetSdsPlusMarkerForSection250Over7YearsPrePCSC() {
+  fun `SDS+ is NOT set for SEC_250 Over 7 Years sentenced prior to PCSC`() {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListCMarkers))
 
-    //no call to MO should take place as offences don't match filter.
+    // no call to MO should take place as offences don't match filter.
     verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
     underTest.setSdsPlusMarkerForOffences(section250Over7YearsPrePCSCSentence)
     assertFalse(section250Over7YearsPrePCSCSentence[0].offences[0].isPcscSdsPlus)
   }
 
   @Test
-  fun testNoMatchingSentencesDueToSentenceDate() {
+  fun `SDS+ is NOT set for ADIMP as sentenced before SDS and not over 7 years in duration`() {
     underTest.setSdsPlusMarkerForOffences(sentenceMatchesNoMatchingOffencesDueToSentenceDate)
+    // no call to MO should take place as offences don't match filter.
+    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
     assertFalse(sentenceMatchesNoMatchingOffencesDueToSentenceDate[0].offences[0].isPcscSdsPlus)
   }
-
 
   companion object {
     private val sentenceMatchesNoMatchingOffencesDueToSentenceDate = listOf(
@@ -367,28 +378,40 @@ class OffenceSdsPlusLookupServiceTest {
     private val pcscListAMarkers = OffencePcscMarkers(
       offenceCode = OFFENCE_CODE_SOME_PCSC_MARKERS,
       pcscMarkers = PcscMarkers(
-        inListA = true, inListB = false, inListC = false, inListD = false,
+        inListA = true,
+        inListB = false,
+        inListC = false,
+        inListD = false,
       ),
     )
 
     private val pcscListDMarkers = OffencePcscMarkers(
       offenceCode = OFFENCE_CODE_SOME_PCSC_MARKERS,
       pcscMarkers = PcscMarkers(
-        inListA = false, inListB = false, inListC = false, inListD = true,
+        inListA = false,
+        inListB = false,
+        inListC = false,
+        inListD = true,
       ),
     )
 
     private val pcscListBMarkers = OffencePcscMarkers(
       offenceCode = OFFENCE_CODE_SOME_PCSC_MARKERS,
       pcscMarkers = PcscMarkers(
-        inListA = false, inListB = true, inListC = false, inListD = false,
+        inListA = false,
+        inListB = true,
+        inListC = false,
+        inListD = false,
       ),
     )
 
     private val pcscListCMarkers = OffencePcscMarkers(
       offenceCode = OFFENCE_CODE_SOME_PCSC_MARKERS,
       pcscMarkers = PcscMarkers(
-        inListA = false, inListB = false, inListC = true, inListD = false,
+        inListA = false,
+        inListB = false,
+        inListC = true,
+        inListD = false,
       ),
     )
   }

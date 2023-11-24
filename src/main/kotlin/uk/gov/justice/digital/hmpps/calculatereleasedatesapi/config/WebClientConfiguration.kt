@@ -15,7 +15,7 @@ class WebClientConfiguration(
   @Value("\${hmpps.auth.url}") private val oauthApiUrl: String,
   @Value("\${bank-holiday.api.url:https://www.gov.uk}") private val bankHolidayApiUrl: String,
   @Value("\${adjustments.api.url}") private val adjustmentsApiUrl: String,
-  @Value("\${manage-offences.api.url}") private val manageOffencesApiUrl: String
+  @Value("\${manage-offences.api.url}") private val manageOffencesApiUrl: String,
 ) {
 
   @Bean

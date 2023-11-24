@@ -18,8 +18,8 @@ class MoPCSCIntTest : IntegrationTestBase() {
   lateinit var offenceSdsPlusLookupService: OffenceSdsPlusLookupService
 
   @Test
-  fun `Test Call to MO Service Matching S250 Offence marked as SDS+`() {
-    //S250 over 7 years and sentenced after PCSC date
+  fun `Test Call to MO Service Matching SEC_250 Offence marked as SDS+`() {
+    // S250 over 7 years and sentenced after PCSC date
     val inputOffenceList = listOf(
       SentenceAndOffences(
         1,
@@ -51,8 +51,8 @@ class MoPCSCIntTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `Test Call to MO Service Matching S250 Offence marked as SDS+ `() {
-    //S250 over 7 years and sentenced after PCSC date
+  fun `Test Call to MO Service Matching SEC_250 multiple offences marked as SDS+ `() {
+    // S250 over 7 years and sentenced after PCSC date
     val inputOffenceList = listOf(
       SentenceAndOffences(
         1,

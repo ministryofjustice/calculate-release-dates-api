@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
@@ -13,7 +15,7 @@ import org.slf4j.LoggerFactory
 class ManageOffensesApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
   companion object {
     @JvmField
-    val manageOffensesApi = ManageOffensesMockServer();
+    val manageOffensesApi = ManageOffensesMockServer()
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
@@ -31,7 +33,6 @@ class ManageOffensesApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEa
     manageOffensesApi.resetRequests()
   }
 }
-
 
 class ManageOffensesMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
@@ -55,7 +56,8 @@ class ManageOffensesMockServer : WireMockServer(WIREMOCK_PORT) {
                         "inListD": false
                     }
                 }
-            ]""".trimIndent(),
+            ]
+              """.trimIndent(),
             )
             .withStatus(200),
         ),
@@ -87,10 +89,10 @@ class ManageOffensesMockServer : WireMockServer(WIREMOCK_PORT) {
                         "inListD": false
                     }
                 }
-            ]""".trimIndent(),
+            ]
+              """.trimIndent(),
             )
             .withStatus(200),
         ),
     )
 }
-

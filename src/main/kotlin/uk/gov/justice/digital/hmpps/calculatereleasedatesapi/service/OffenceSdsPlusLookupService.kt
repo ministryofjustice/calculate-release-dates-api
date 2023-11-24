@@ -29,7 +29,6 @@ class OffenceSdsPlusLookupService(
   )
 
   fun setSdsPlusMarkerForOffences(sentencesAndOffences: List<SentenceAndOffences>) {
-
     val bookingIdToSentences = getMatchingSentencesToBookingId(sentencesAndOffences)
     val offencesToCheck = getOffenceCodesToCheckWithMO(bookingIdToSentences)
 
@@ -42,12 +41,13 @@ class OffenceSdsPlusLookupService(
             .forEach { offence ->
               val moResponseForOffence = moCheckResponses[offence.offenceCode]
               val sentenceIsAfterPcsc = sentencedAfterPcsc(sentenceAndOffence)
-              var sdsPlusIdentified = false;
+              var sdsPlusIdentified = false
               val sentenceCalculationType = SentenceCalculationType.from(sentenceAndOffence.sentenceCalculationType)
-              var sevenYearsOrMore = sevenYearsOrMore(sentenceAndOffence)
+              val sevenYearsOrMore = sevenYearsOrMore(sentenceAndOffence)
 
-              if (postPcscCalcTypes["SDS"]!!.contains(sentenceCalculationType)
-                || postPcscCalcTypes["DYOI"]!!.contains(sentenceCalculationType)) {
+              if (postPcscCalcTypes["SDS"]!!.contains(sentenceCalculationType) ||
+                postPcscCalcTypes["DYOI"]!!.contains(sentenceCalculationType)
+              ) {
                 if (sentencedWithinOriginalSdsPlusWindow(sentenceAndOffence) && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListA == true) {
                   sdsPlusIdentified = true
                 } else if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListD == true) {
@@ -73,7 +73,7 @@ class OffenceSdsPlusLookupService(
   fun getOffenceCodesToCheckWithMO(bookingIdToSentences: Map<Long, List<SentenceAndOffences>>): List<String> {
     val offencesToCheck = bookingIdToSentences.map {
       it.value.flatMap { offenceList -> offenceList.offences.map { offence -> offence.offenceCode } }
-    }.flatten().distinct();
+    }.flatten().distinct()
     return offencesToCheck
   }
 
@@ -86,19 +86,19 @@ class OffenceSdsPlusLookupService(
         val sevenYearsOrMore = sevenYearsOrMore(sentenceAndOffences)
         val sentencedWithinOriginalSdsWindow = sentencedWithinOriginalSdsPlusWindow(sentenceAndOffences)
 
-        var matchFilter = false;
+        var matchFilter = false
 
         if (postPcscCalcTypes["SDS"]!!.contains(sentenceCalculationType) || postPcscCalcTypes["DYOI"]!!.contains(sentenceCalculationType)) {
           if (sentencedWithinOriginalSdsWindow && sevenYearsOrMore) {
-            matchFilter = true;
+            matchFilter = true
           } else if (sentenceIsAfterPcsc && overFourYearsSentenceLength(sentenceAndOffences)) {
-            matchFilter = true;
+            matchFilter = true
           }
         } else if (postPcscCalcTypes["S250"]!!.contains(sentenceCalculationType) && sentenceIsAfterPcsc && sevenYearsOrMore) {
-          matchFilter = true;
+          matchFilter = true
         }
 
-        return@filter matchFilter;
+        return@filter matchFilter
       }
       .groupBy { it.bookingId }
     return bookingIdToSentences
