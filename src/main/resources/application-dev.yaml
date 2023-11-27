@@ -26,13 +26,15 @@ prison:
   api:
     url: http://localhost:8080
 
+#TODO: Add local docker compose support for Adjustments container
 adjustments:
   api:
     url: http://localhost:8081
 
+#TODO: Add local docker compose support for Manage Offences container
 manage-offences:
   api:
-    url: http://localhost:8335
+    url: https://manage-offences-api-dev.hmpps.service.justice.gov.uk
 
 system:
   client:
