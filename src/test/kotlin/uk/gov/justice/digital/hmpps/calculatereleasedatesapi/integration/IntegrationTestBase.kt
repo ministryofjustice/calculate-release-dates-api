@@ -11,6 +11,7 @@ import org.springframework.test.context.jdbc.SqlMergeMode
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.helpers.JwtAuthHelper
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.BankHolidayApiExtension
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.ManageOffensesApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.OAuthExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.PrisonApiExtension
 /*
@@ -32,7 +33,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremoc
   "classpath:test_data/reset-base-data.sql",
   "classpath:test_data/load-base-data.sql",
 )
-@ExtendWith(OAuthExtension::class, PrisonApiExtension::class, BankHolidayApiExtension::class)
+@ExtendWith(OAuthExtension::class, PrisonApiExtension::class, BankHolidayApiExtension::class, ManageOffensesApiExtension::class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
 class IntegrationTestBase internal constructor() {

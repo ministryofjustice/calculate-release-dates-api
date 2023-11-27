@@ -61,6 +61,10 @@ adjustments:
   api:
     url: http://localhost:8334
 
+manage-offences:
+  api:
+    url: http://localhost:8335
+
 
 domain-events-sns:
   provider: localstack
