@@ -65,6 +65,7 @@ class BulkComparisonService(
             nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) } ?: objectMapper.createObjectNode(),
             overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) } ?: objectMapper.createObjectNode(),
             breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) } ?: objectMapper.createObjectNode(),
+            isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
           ),
         )
       }

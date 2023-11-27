@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-internal class OffenderTest {
+internal class
+OffenderTest {
 
   @Test
   fun testConstructor() {

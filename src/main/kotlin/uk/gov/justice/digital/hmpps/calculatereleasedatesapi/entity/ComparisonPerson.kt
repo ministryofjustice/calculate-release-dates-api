@@ -64,4 +64,5 @@ class ComparisonPerson(
 
   var calculationRequestId: Long? = null,
 
+  val isActiveSexOffender: Boolean? = null,
 )
