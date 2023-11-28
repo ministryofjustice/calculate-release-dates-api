@@ -1,22 +1,29 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.jupiter.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
-import org.mockito.Mockito
+import org.mockito.ArgumentCaptor
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Alert
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -26,135 +33,80 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Comparis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class BulkComparisonServiceTest : IntegrationTestBase() {
+  private val comparisonPersonRepository = mock<ComparisonPersonRepository>()
+  private val prisonService = mock<PrisonService>()
+  private val calculationTransactionalService = mock<CalculationTransactionalService>()
+  private val objectMapper: ObjectMapper = TestUtil.objectMapper()
+  private val comparisonRepository = mock<ComparisonRepository>()
+  private val bulkComparisonService: BulkComparisonService = BulkComparisonService(
+    comparisonPersonRepository,
+    prisonService,
+    calculationTransactionalService,
+    objectMapper,
+    comparisonRepository,
+  )
 
-  @InjectMocks
-  lateinit var bulkComparisonService: BulkComparisonService
+  private val releaseDates = someReleaseDates()
 
-  private var comparisonPersonRepository = mock<ComparisonPersonRepository>()
-  private var prisonService = mock<PrisonService>()
-  private var calculationTransactionalService = mock<CalculationTransactionalService>()
-  private var objectMapper: ObjectMapper = spy<ObjectMapper>()
-  private var comparisonRepository = mock<ComparisonRepository>()
+  private val calculatedReleaseDates = CalculatedReleaseDates(
+    dates = releaseDates,
+    calculationRequestId = 123,
+    bookingId = 123,
+    prisonerId = "ABC123DEF",
+    calculationStatus = CalculationStatus.CONFIRMED,
+    calculationReference = UUID.randomUUID(),
+  )
 
-  @Test
-  fun `Determine if a mismatch report  isValid and  isMatch `() {
-    val releaseDates = mutableMapOf<ReleaseDateType, LocalDate>()
-    releaseDates[ReleaseDateType.SED] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.ARD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.CRD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.NPD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.PRRD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.LED] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.HDCED] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.PED] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.HDCAD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.APD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.ROTL] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.ERSED] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.ETD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.MTD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.LTD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.TUSED] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.Tariff] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.DPRRD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.TERSED] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.ESED] = LocalDate.of(2026, 1, 1)
+  private val offenderOffence = OffenderOffence(
+    123,
+    LocalDate.of(2012, 1, 1),
+    LocalDate.of(2012, 1, 1),
+    "AB123DEF",
+    "finagling",
+    emptyList(),
+  )
 
-    val calculatedReleaseDates = CalculatedReleaseDates(
-      dates = releaseDates,
-      calculationRequestId = 123,
-      bookingId = 123,
-      prisonerId = "ABC123DEF",
-      calculationStatus = CalculationStatus.CONFIRMED,
-      calculationReference = UUID.randomUUID(),
-    )
+  private val sentenceAndOffence = SentenceAndOffences(
+    bookingId = 12345,
+    sentenceSequence = 0,
+    lineSequence = 2,
+    caseSequence = 1,
+    sentenceDate = LocalDate.of(2012, 1, 1),
+    terms = listOf(
+      SentenceTerms(years = 5),
+    ),
+    sentenceStatus = "A",
+    sentenceCategory = "SEN",
+    sentenceCalculationType = "TYPE",
+    sentenceTypeDescription = "DESC",
+    offences = listOf(offenderOffence),
+  )
 
-    val booking = Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
-    val validationResult = ValidationResult(emptyList(), booking, calculatedReleaseDates, null)
-
-    Mockito.`when`(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(validationResult)
-
-    val offenderOffence = OffenderOffence(
-      123,
-      LocalDate.of(2012, 1, 1),
-      LocalDate.of(2012, 1, 1),
-      "AB123DEF",
-      "finagling",
-      emptyList(),
-    )
-
-    val sentenceAndOffence = SentenceAndOffences(
-      bookingId = 12345,
-      sentenceSequence = 0,
-      lineSequence = 2,
-      caseSequence = 1,
-      sentenceDate = LocalDate.of(2012, 1, 1),
-      terms = listOf(
-        SentenceTerms(years = 5),
-      ),
-      sentenceStatus = "A",
-      sentenceCategory = "SEN",
-      sentenceCalculationType = "TYPE",
-      sentenceTypeDescription = "DESC",
-      offences = listOf(offenderOffence),
-    )
-
-    val calculableSentenceEnvelope = CalculableSentenceEnvelope(
-      person = Person("A", LocalDate.of(1990, 5, 1), emptyList()),
-      bookingId = 12345,
-      sentenceAndOffences = listOf(sentenceAndOffence),
-      sentenceAdjustments = emptyList(),
-      bookingAdjustments = emptyList(),
-      offenderFinePayments = emptyList(),
-      fixedTermRecallDetails = null,
-      sentenceCalcDates = calculatedReleaseDates.toSentenceCalcDates(),
-    )
-
-    val mismatch = bulkComparisonService.determineIfMismatch(calculableSentenceEnvelope)
-
-    Assertions.assertEquals(mismatch.isValid, true)
-    Assertions.assertEquals(mismatch.isMatch, true)
-  }
+  private val calculableSentenceEnvelope = CalculableSentenceEnvelope(
+    person = Person("A", LocalDate.of(1990, 5, 1), listOf(Alert(LocalDate.now(), alertType = "S", alertCode = "SR"))),
+    bookingId = 12345,
+    sentenceAndOffences = listOf(sentenceAndOffence),
+    sentenceAdjustments = emptyList(),
+    bookingAdjustments = emptyList(),
+    offenderFinePayments = emptyList(),
+    fixedTermRecallDetails = null,
+    sentenceCalcDates = calculatedReleaseDates.toSentenceCalcDates(),
+  )
 
   @Test
-  fun `Determine if a mismatch report isValid and not isMatch `() {
-    val releaseDates = mutableMapOf<ReleaseDateType, LocalDate>()
-    releaseDates[ReleaseDateType.SED] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.ARD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.CRD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.NPD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.PRRD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.LED] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.HDCED] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.PED] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.HDCAD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.APD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.ROTL] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.ERSED] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.ETD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.MTD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.LTD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.TUSED] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.Tariff] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.DPRRD] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.TERSED] = LocalDate.of(2026, 1, 1)
-    releaseDates[ReleaseDateType.ESED] = LocalDate.of(2026, 1, 1)
-
+  fun `Should create a prison comparison`() {
+    val comparison = Comparison(
+      1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "BMI", false, LocalDateTime.now(), "SOMEONE",
+      ComparisonStatus(ComparisonStatusValue.PROCESSING),
+    )
     val duplicateReleaseDates = releaseDates.toMutableMap()
     duplicateReleaseDates[ReleaseDateType.SED] = LocalDate.of(2022, 1, 1)
 
-    val calculatedReleaseDates = CalculatedReleaseDates(
-      dates = releaseDates,
-      calculationRequestId = 123,
-      bookingId = 123,
-      prisonerId = "ABC123DEF",
-      calculationStatus = CalculationStatus.CONFIRMED,
-      calculationReference = UUID.randomUUID(),
-    )
     val duplicatedReleaseDates = CalculatedReleaseDates(
       dates = duplicateReleaseDates,
       calculationRequestId = 123,
@@ -164,48 +116,99 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
       calculationReference = UUID.randomUUID(),
     )
 
-    val booking = Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
-
-    Mockito.`when`(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(validationResult)
-
-    val offenderOffence = OffenderOffence(
-      123,
-      LocalDate.of(2012, 1, 1),
-      LocalDate.of(2012, 1, 1),
-      "AB123DEF",
-      "finagling",
-      emptyList(),
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
     )
-    val sentenceAndOffence = SentenceAndOffences(
-      bookingId = 12345,
-      sentenceSequence = 0,
-      lineSequence = 2,
-      caseSequence = 1,
-      sentenceDate = LocalDate.of(2012, 1, 1),
-      terms = listOf(
-        SentenceTerms(years = 5),
+
+    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!)).thenReturn(
+      listOf(
+        calculableSentenceEnvelope,
       ),
-      sentenceStatus = "A",
-      sentenceCategory = "SEN",
-      sentenceCalculationType = "TYPE",
-      sentenceTypeDescription = "DESC",
-      offences = listOf(offenderOffence),
     )
-    val calculableSentenceEnvelope = CalculableSentenceEnvelope(
-      person = Person("A", LocalDate.of(1990, 5, 1), emptyList()),
-      bookingId = 12345,
-      sentenceAndOffences = listOf(sentenceAndOffence),
-      sentenceAdjustments = emptyList(),
-      bookingAdjustments = emptyList(),
-      offenderFinePayments = emptyList(),
-      fixedTermRecallDetails = null,
-      sentenceCalcDates = calculatedReleaseDates.toSentenceCalcDates(),
+
+    bulkComparisonService.processPrisonComparison(comparison)
+
+    val comparisonPersonCaptor = ArgumentCaptor.forClass(ComparisonPerson::class.java)
+    verify(comparisonPersonRepository).save(comparisonPersonCaptor.capture())
+
+    val comparisonPerson = comparisonPersonCaptor.value
+    assertThat(comparisonPerson.person).isEqualTo(calculableSentenceEnvelope.person.prisonerNumber)
+    assertThat(comparisonPerson.latestBookingId).isEqualTo(calculableSentenceEnvelope.bookingId)
+    assertThat(comparisonPerson.isMatch).isEqualTo(false)
+    assertThat(comparisonPerson.isValid).isEqualTo(true)
+    assertThat(comparisonPerson.calculatedByUsername).isEqualTo(comparison.calculatedByUsername)
+    assertThat(comparisonPerson.isActiveSexOffender).isEqualTo(true)
+  }
+
+  @Test
+  fun `Determine if a mismatch report  isValid and  isMatch `() {
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(emptyList(), booking, calculatedReleaseDates, null)
+
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
     )
 
     val mismatch = bulkComparisonService.determineIfMismatch(calculableSentenceEnvelope)
 
-    Assertions.assertEquals(mismatch.isValid, true)
-    Assertions.assertEquals(mismatch.isMatch, false)
+    assertEquals(mismatch.isValid, true)
+    assertEquals(mismatch.isMatch, true)
+  }
+
+  @Test
+  fun `Determine if a mismatch report isValid and not isMatch `() {
+    val duplicateReleaseDates = releaseDates.toMutableMap()
+    duplicateReleaseDates[ReleaseDateType.SED] = LocalDate.of(2022, 1, 1)
+
+    val duplicatedReleaseDates = CalculatedReleaseDates(
+      dates = duplicateReleaseDates,
+      calculationRequestId = 123,
+      bookingId = 123,
+      prisonerId = "ABC123DEF",
+      calculationStatus = CalculationStatus.CONFIRMED,
+      calculationReference = UUID.randomUUID(),
+    )
+
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
+
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+
+    val mismatch = bulkComparisonService.determineIfMismatch(calculableSentenceEnvelope)
+
+    assertEquals(mismatch.isValid, true)
+    assertEquals(mismatch.isMatch, false)
+  }
+
+  private fun someReleaseDates(): MutableMap<ReleaseDateType, LocalDate> {
+    val releaseDates = mutableMapOf<ReleaseDateType, LocalDate>()
+    releaseDates[ReleaseDateType.SED] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.ARD] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.CRD] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.NPD] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.PRRD] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.LED] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.HDCED] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.PED] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.HDCAD] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.APD] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.ROTL] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.ERSED] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.ETD] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.MTD] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.LTD] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.TUSED] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.Tariff] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.DPRRD] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.TERSED] = LocalDate.of(2026, 1, 1)
+    releaseDates[ReleaseDateType.ESED] = LocalDate.of(2026, 1, 1)
+    return releaseDates
   }
 }
