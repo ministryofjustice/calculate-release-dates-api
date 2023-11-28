@@ -707,6 +707,7 @@ fun transform(comparisonPerson: ComparisonPerson, nomisDates: Map<ReleaseDateTyp
   comparisonPerson.person,
   comparisonPerson.isValid,
   comparisonPerson.isMatch,
+  comparisonPerson.isActiveSexOffender,
   comparisonPerson.validationMessages,
   comparisonPerson.shortReference,
   comparisonPerson.latestBookingId,
