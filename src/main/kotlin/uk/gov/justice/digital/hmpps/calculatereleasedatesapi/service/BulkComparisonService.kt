@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
@@ -32,13 +33,18 @@ class BulkComparisonService(
   private val calculationTransactionalService: CalculationTransactionalService,
   private val objectMapper: ObjectMapper,
   private val comparisonRepository: ComparisonRepository,
+  private val pcscLookupService: OffenceSdsPlusLookupService
 ) {
 
   @Async
   fun processPrisonComparison(comparison: Comparison) {
     val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison!!)
-
+    getPCSCMarkerForOffences(activeBookingsAtEstablishment.map { it.sentenceAndOffences }.flatten())
     processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison)
+  }
+
+  private fun getPCSCMarkerForOffences(sentencesAndOffencesToCheck: List<SentenceAndOffences>) {
+    pcscLookupService.setSdsPlusMarkerForOffences(sentencesAndOffencesToCheck);
   }
 
   @Async
