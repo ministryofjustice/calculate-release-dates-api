@@ -9,6 +9,7 @@ data class Mismatch(
   var calculableSentenceEnvelope: CalculableSentenceEnvelope,
   var calculatedReleaseDates: CalculatedReleaseDates? = null,
   var messages: List<ValidationMessage> = emptyList(),
+  var calculationResult: CalculationResult? = null,
 ) {
   fun shouldRecordMismatch(): Boolean {
     return !isValid || !isMatch

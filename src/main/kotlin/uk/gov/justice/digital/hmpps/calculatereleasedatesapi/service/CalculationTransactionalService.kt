@@ -88,15 +88,15 @@ class CalculationTransactionalService(
   ):
     ValidationResult {
     var messages = validationService.validateBeforeCalculation(providedSourceData, calculationUserInputs) // Validation stage 1 of 3
-    if (messages.isNotEmpty()) return ValidationResult(messages, null, null)
+    if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
     // getBooking relies on the previous validation stage to have succeeded
     val booking = bookingService.getBooking(providedSourceData, calculationUserInputs)
     messages = validationService.validateBeforeCalculation(booking) // Validation stage 2 of 4
-    if (messages.isNotEmpty()) return ValidationResult(messages, null, null)
-    val bookingAfterCalculation = calculationService.calculate(booking) // Validation stage 3 of 4
+    if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
+    val (bookingAfterCalculation, calculationResult) = calculationService.calculateReleaseDates(booking) // Validation stage 3 of 4
     messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation) // Validation stage 4 of 4
     val calculatedReleaseDates = calculate(booking, calculationType, providedSourceData, calculationUserInputs)
-    return ValidationResult(messages, bookingAfterCalculation, calculatedReleaseDates)
+    return ValidationResult(messages, bookingAfterCalculation, calculatedReleaseDates, calculationResult)
   }
 
   fun supportedValidation(prisonerId: String): List<ValidationMessage> {

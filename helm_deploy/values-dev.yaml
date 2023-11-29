@@ -18,7 +18,7 @@ generic-service:
     HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
     PRISON_API_URL: https://prison-api-dev.prison.service.justice.gov.uk
     ADJUSTMENTS_API_URL: https://adjustments-api-dev.hmpps.service.justice.gov.uk
-
+    MANAGE-OFFENCES_API_URL: https://manage-offences-api-dev.hmpps.service.justice.gov.uk
   # Switches off the allow list in the DEV env only.
   allowlist: null
 

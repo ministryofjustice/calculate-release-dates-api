@@ -9,10 +9,13 @@ data class ComparisonPersonOverview(
   val personId: String,
   val isValid: Boolean,
   val isMatch: Boolean,
+  val isActiveSexOffender: Boolean?,
   val validationMessages: JsonNode,
   val shortReference: String,
   val bookingId: Long,
   val calculatedAt: LocalDateTime,
   val crdsDates: Map<ReleaseDateType, LocalDate?>,
   val nomisDates: Map<ReleaseDateType, LocalDate?>,
+  val overrideDates: Map<ReleaseDateType, LocalDate?>,
+  val breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
 )

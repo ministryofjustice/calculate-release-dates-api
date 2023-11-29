@@ -62,7 +62,10 @@ class BulkComparisonService(
             validationMessages = objectMapper.valueToTree(mismatch.messages),
             calculatedByUsername = comparison.calculatedByUsername,
             calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
-            nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toMap()) } ?: objectMapper.createObjectNode(),
+            nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) } ?: objectMapper.createObjectNode(),
+            overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) } ?: objectMapper.createObjectNode(),
+            breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) } ?: objectMapper.createObjectNode(),
+            isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
           ),
         )
       }
@@ -98,6 +101,7 @@ class BulkComparisonService(
     mismatch.messages = validationResult.messages
     mismatch.isValid = validationResult.messages.isEmpty()
     mismatch.calculatedReleaseDates = validationResult.calculatedReleaseDates
+    mismatch.calculationResult = validationResult.calculationResult
 
     if (mismatch.isValid) {
       mismatch.isMatch =
@@ -117,7 +121,7 @@ class BulkComparisonService(
     if (calculatedReleaseDates != null && calculatedReleaseDates.dates.isNotEmpty()) {
       val calculatedSentenceCalcDates = calculatedReleaseDates.toSentenceCalcDates()
       if (sentenceCalcDates != null) {
-        return calculatedSentenceCalcDates == sentenceCalcDates
+        return calculatedSentenceCalcDates.isSameComparableCalculatedDates(sentenceCalcDates)
       }
     }
     return true
