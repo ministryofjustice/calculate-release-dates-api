@@ -1,0 +1,34 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2000-07-23"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2021-12-07"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 5
+        }
+      },
+      "sentencedAt": "2021-12-08",
+      "sentenceType": "ADIMP"
+    },
+    {
+      "offence": {
+        "committedAt": "2023-09-27"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "sentencedAt": "2023-09-28",
+      "sentenceType": "ADIMP"
+    }
+  ],
+  "adjustments": {
+  }
+}

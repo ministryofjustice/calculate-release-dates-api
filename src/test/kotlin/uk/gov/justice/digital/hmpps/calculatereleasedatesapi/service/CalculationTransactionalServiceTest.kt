@@ -93,10 +93,13 @@ class CalculationTransactionalServiceTest {
   private val bankHolidayService = mock<BankHolidayService>()
   private val workingDayService = WorkingDayService(bankHolidayService)
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator)
+  private val hdced4onfiguration = Hdced4Calculator.Hdced4Configuration(12, WEEKS, 14, 720, DAYS, 179)
+
+  private val hdced4Calculator = Hdced4Calculator(hdced4onfiguration)
+  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
   private val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
   private val sentencesExtractionService = SentencesExtractionService()
-  private val sentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator)
+  private val sentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
   private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
     sentenceIdentificationService,
@@ -211,7 +214,6 @@ class CalculationTransactionalServiceTest {
       "Example $exampleType/$exampleNumber outcome CalculationBreakdown: {}",
       TestUtil.objectMapper().writeValueAsString(calculationBreakdown),
     )
-
     assertEquals(
       jsonTransformation.loadCalculationBreakdown("$exampleType/$exampleNumber"),
       calculationBreakdown,
