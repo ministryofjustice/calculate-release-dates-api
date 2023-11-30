@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
@@ -61,8 +62,8 @@ class ComparisonService(
 
     if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
       val mismatches = comparisonPersonRepository.findByComparisonIdIs(comparison.id)
-
-      return transform(comparison, mismatches)
+      val mismatchesSortedByReleaseDate = mismatches.sortedWith(::releaseDateComparator)
+      return transform(comparison, mismatchesSortedByReleaseDate)
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
   }
@@ -79,6 +80,28 @@ class ComparisonService(
       return transform(comparisonPerson, nomisDates, calculatedReleaseDates, overrideDates, breakdownByReleaseDateType)
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
+  }
+
+  private fun releaseDateComparator(mismatchA: ComparisonPerson, mismatchB: ComparisonPerson): Int {
+    val releaseDatesA = objectMapper.convertValue(mismatchA.nomisDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
+    val releaseDatesB = objectMapper.convertValue(mismatchB.nomisDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
+
+    val earliestReleaseDateA = releaseDatesA.values.filterNotNull().minOrNull()
+    val earliestBReleaseDateB = releaseDatesB.values.filterNotNull().minOrNull()
+
+    if (earliestReleaseDateA === null && earliestBReleaseDateB == null) {
+      return 0
+    }
+
+    if (earliestReleaseDateA == null) {
+      return 1
+    }
+
+    if (earliestBReleaseDateB == null) {
+      return -1
+    }
+
+    return earliestReleaseDateA.compareTo(earliestBReleaseDateB)
   }
 
   companion object {
