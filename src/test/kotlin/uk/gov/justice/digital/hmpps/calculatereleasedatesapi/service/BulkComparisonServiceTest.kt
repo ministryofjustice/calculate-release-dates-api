@@ -48,12 +48,14 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
   private val calculationTransactionalService = mock<CalculationTransactionalService>()
   private val objectMapper: ObjectMapper = TestUtil.objectMapper()
   private val comparisonRepository = mock<ComparisonRepository>()
+  private var pcscLookupService = mock<OffenceSdsPlusLookupService>()
   private val bulkComparisonService: BulkComparisonService = BulkComparisonService(
     comparisonPersonRepository,
     prisonService,
     calculationTransactionalService,
     objectMapper,
     comparisonRepository,
+    pcscLookupService
   )
 
   private val releaseDates = someReleaseDates()
