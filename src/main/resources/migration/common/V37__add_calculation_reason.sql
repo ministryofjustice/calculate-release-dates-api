@@ -7,12 +7,13 @@ CREATE TABLE calculation_reason
 );
 
 ALTER TABLE calculation_request
-    ADD COLUMN reason_for_calculation INT DEFAULT -1 REFERENCES calculation_reason (id);
+    ADD COLUMN reason_for_calculation INT REFERENCES calculation_reason (id);
 ALTER TABLE calculation_request
     ADD COLUMN other_reason_for_calculation VARCHAR(40);
 
 UPDATE calculation_request
-SET reason_for_calculation = -1;
+SET reason_for_calculation = -1
+WHERE reason_for_calculation IS NULL;
 
 INSERT INTO calculation_reason (id, rank, display_name)
 VALUES (1, 10, 'Initial calculation'),
