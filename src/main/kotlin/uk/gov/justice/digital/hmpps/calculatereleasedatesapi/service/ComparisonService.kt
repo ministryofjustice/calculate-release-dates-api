@@ -87,9 +87,9 @@ class ComparisonService(
     val releaseDatesB = objectMapper.convertValue(mismatchB.nomisDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
 
     val earliestReleaseDateA = releaseDatesA.values.filterNotNull().minOrNull()
-    val earliestBReleaseDateB = releaseDatesB.values.filterNotNull().minOrNull()
+    val earliestReleaseDateB = releaseDatesB.values.filterNotNull().minOrNull()
 
-    if (earliestReleaseDateA === null && earliestBReleaseDateB == null) {
+    if (earliestReleaseDateA === null && earliestReleaseDateB == null) {
       return 0
     }
 
@@ -97,11 +97,11 @@ class ComparisonService(
       return 1
     }
 
-    if (earliestBReleaseDateB == null) {
+    if (earliestReleaseDateB == null) {
       return -1
     }
 
-    return earliestReleaseDateA.compareTo(earliestBReleaseDateB)
+    return earliestReleaseDateA.compareTo(earliestReleaseDateB)
   }
 
   companion object {
