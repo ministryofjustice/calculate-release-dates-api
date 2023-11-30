@@ -77,7 +77,18 @@ class PrisonService(
   }
 
   fun getActiveBookingsByEstablishment(establishmentId: String): List<CalculableSentenceEnvelope> {
-    return prisonApiClient.getCalculableSentenceEnvelopesByEstablishment(establishmentId)
+    var isLastPage = false
+    var pageNumber = 0
+    val calculableSentenceEnvelope = mutableListOf<CalculableSentenceEnvelope>()
+
+    while (!isLastPage) {
+      val calculableSentenceEnvelopePage =
+        prisonApiClient.getCalculableSentenceEnvelopesByEstablishment(establishmentId, pageNumber)
+      calculableSentenceEnvelope.addAll(calculableSentenceEnvelopePage.content)
+      isLastPage = calculableSentenceEnvelopePage.isLast
+      pageNumber++
+    }
+    return calculableSentenceEnvelope
   }
 
   fun getActiveBookingsByPrisonerIds(prisonerIds: List<String>): List<CalculableSentenceEnvelope> = prisonApiClient.getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds)

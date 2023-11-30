@@ -199,7 +199,7 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubPrisonCalculableSentenceEnvelope(establishmentId: String, json: String): StubMapping =
     stubFor(
-      get("/api/prison/$establishmentId/booking/latest/calculable-sentence-envelope")
+      get("/api/prison/$establishmentId/booking/latest/paged/calculable-sentence-envelope?page=0")
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
