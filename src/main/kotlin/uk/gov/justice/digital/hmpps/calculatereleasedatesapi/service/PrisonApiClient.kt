@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClientRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RestResponsePage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
@@ -87,10 +88,13 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .block()
   }
 
-  fun getCalculableSentenceEnvelopesByEstablishment(establishmentId: String): List<CalculableSentenceEnvelope> {
-    log.info("Requesting personId and booking details for latest booking of all offenders at establishment $establishmentId")
+  fun getCalculableSentenceEnvelopesByEstablishment(
+    establishmentId: String,
+    pageNumber: Int,
+  ): RestResponsePage<CalculableSentenceEnvelope> {
+    log.info("Requesting personId and booking details for latest booking of all offenders at establishment $establishmentId and page $pageNumber")
     return webClient.get()
-      .uri("/api/prison/$establishmentId/booking/latest/calculable-sentence-envelope")
+      .uri("/api/prison/$establishmentId/booking/latest/paged/calculable-sentence-envelope?page=$pageNumber")
       .httpRequest { httpRequest ->
         run {
           val reactorRequest = httpRequest.getNativeRequest<HttpClientRequest>()
@@ -98,7 +102,7 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
         }
       }
       .retrieve()
-      .bodyToMono(typeReference<List<CalculableSentenceEnvelope>>())
+      .bodyToMono(typeReference<RestResponsePage<CalculableSentenceEnvelope>>())
       .block()!!
   }
 
