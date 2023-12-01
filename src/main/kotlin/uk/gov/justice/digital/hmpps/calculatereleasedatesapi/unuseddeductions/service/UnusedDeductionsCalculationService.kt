@@ -8,6 +8,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Adju
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UnusedDeductionCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
@@ -45,9 +47,10 @@ class UnusedDeductionsCalculationService(
     val releaseDate = calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOfOrNull { it.value }
     val releaseDateSentence = result.first.getAllExtractableSentences().find { it.sentenceCalculation.releaseDate == releaseDate }
     val unusedDeductions = if (releaseDateSentence != null) { // The release date will be a PRRD, no unused deductions.
+      val allAdjustmentDaysExceptDeductions =
+        releaseDateSentence.sentenceCalculation.calculatedTotalAwardedDays + releaseDateSentence.sentenceCalculation.calculatedTotalAddedDays
       val maxDeductions =
-        releaseDateSentence.sentenceCalculation.numberOfDaysToDeterminateReleaseDate
-
+        releaseDateSentence.sentenceCalculation.numberOfDaysToDeterminateReleaseDate + allAdjustmentDaysExceptDeductions
       val remand = adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.REMAND }.map { it.daysBetween!! }.reduceOrNull { acc, it -> acc + it } ?: 0
       val taggedBail = adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.TAGGED_BAIL }.map { it.days!! }.reduceOrNull { acc, it -> acc + it } ?: 0
       val deductions = taggedBail + remand
@@ -66,12 +69,22 @@ class UnusedDeductionsCalculationService(
       else -> null
     }
   }
+  private fun mapToSentenceAdjustmentType(adjustmentType: AdjustmentServiceAdjustmentType): SentenceAdjustmentType? {
+    return when (adjustmentType) {
+      AdjustmentServiceAdjustmentType.REMAND -> SentenceAdjustmentType.REMAND
+      AdjustmentServiceAdjustmentType.UNUSED_DEDUCTIONS -> SentenceAdjustmentType.UNUSED_REMAND
+      AdjustmentServiceAdjustmentType.TAGGED_BAIL -> SentenceAdjustmentType.TAGGED_BAIL
+      else -> null
+    }
+  }
 
   private fun useAdjustmentsFromAdjustmentsApi(adjustments: List<AdjustmentServiceAdjustment>): BookingAndSentenceAdjustments {
     return BookingAndSentenceAdjustments(
       bookingAdjustments = adjustments.filter { mapToBookingAdjustmentType(it.adjustmentType) != null }
         .map { BookingAdjustment(active = true, fromDate = it.fromDate!!, toDate = it.toDate, numberOfDays = it.effectiveDays!!, type = mapToBookingAdjustmentType(it.adjustmentType)!!) },
-      sentenceAdjustments = listOf(),
+      sentenceAdjustments = adjustments.filter { mapToSentenceAdjustmentType(it.adjustmentType) != null }
+        .map { SentenceAdjustment(active = true, fromDate = it.fromDate!!, toDate = it.toDate, numberOfDays = it.effectiveDays!!, sentenceSequence = it.sentenceSequence!!, type = mapToSentenceAdjustmentType(it.adjustmentType)!!) },
+
     )
   }
 }
