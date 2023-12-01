@@ -47,7 +47,7 @@ class UnusedDeductionsController(
     adjustments: List<AdjustmentServiceAdjustment>,
   ): UnusedDeductionCalculationResponse {
     log.info("Request received to calculate unused deductions for $prisonerId")
-    return UnusedDeductionCalculationResponse(unusedDeductionsCalculationService.calculate(adjustments, prisonerId))
+    return unusedDeductionsCalculationService.calculate(adjustments, prisonerId)
   }
 
   companion object {
