@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Adju
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UnusedDeductionCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
@@ -22,7 +23,7 @@ class UnusedDeductionsCalculationService(
   private val bookingService: BookingService,
 ) {
 
-  fun calculate(adjustments: List<AdjustmentServiceAdjustment>, offenderNo: String): Int? {
+  fun calculate(adjustments: List<AdjustmentServiceAdjustment>, offenderNo: String): UnusedDeductionCalculationResponse {
     val prisoner = prisonService.getOffenderDetail(offenderNo)
     val sourceData = prisonService.getPrisonApiSourceData(prisoner).copy(bookingAndSentenceAdjustments = useAdjustmentsFromAdjustmentsApi(adjustments))
 
@@ -30,18 +31,18 @@ class UnusedDeductionsCalculationService(
 
     var validationMessages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs)
     if (validationMessages.isNotEmpty()) {
-      return null
+      return UnusedDeductionCalculationResponse(null, validationMessages)
     }
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     validationMessages = validationService.validateBeforeCalculation(booking)
     if (validationMessages.isNotEmpty()) {
-      return null
+      return UnusedDeductionCalculationResponse(null, validationMessages)
     }
 
     val result = calculationService.calculateReleaseDates(booking)
     val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.MTD)
     val calculationResult = result.second
-    var releaseDate = calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOfOrNull { it.value }
+    val releaseDate = calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOfOrNull { it.value }
     val releaseDateSentence = result.first.getAllExtractableSentences().find { it.sentenceCalculation.releaseDate == releaseDate }
     val unusedDeductions = if (releaseDateSentence != null) { // The release date will be a PRRD, no unused deductions.
       val maxDeductions =
@@ -52,7 +53,9 @@ class UnusedDeductionsCalculationService(
       val deductions = taggedBail + remand
       max(0, deductions - maxDeductions)
     } else { 0 }
-    return unusedDeductions
+
+    validationMessages = validationService.validateBookingAfterCalculation(result.first)
+    return UnusedDeductionCalculationResponse(unusedDeductions, validationMessages)
   }
 
   private fun mapToBookingAdjustmentType(adjustmentType: AdjustmentServiceAdjustmentType): BookingAdjustmentType? {
