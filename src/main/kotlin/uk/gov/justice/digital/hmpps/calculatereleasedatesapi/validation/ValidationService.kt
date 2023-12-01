@@ -366,7 +366,8 @@ class ValidationService(
         if (totalRange == null) {
           totalRange = it
         } else if (it.isConnected(totalRange)) {
-          return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_REMAND))
+          val messageArgs = listOf(it.start.toString(), it.end.toString(), totalRange!!.start.toString(), totalRange!!.end.toString())
+          return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_REMAND, arguments = messageArgs))
         }
       }
     }
@@ -745,6 +746,7 @@ class ValidationService(
         if (totalRange == null && previousRangeIsRemand == null) {
           totalRange = it
         } else if (it.isConnected(totalRange) && (previousRangeIsRemand!! || isRemand)) {
+          val messageArgs = listOf(it.start.toString(), it.end.toString(), previousRange!!.start.toString(), previousRange!!.end.toString())
           // Remand overlaps
           if (previousRangeIsRemand!! && isRemand) {
             val args = listOf(previousRange!!.toString(), it.toString())
@@ -754,9 +756,9 @@ class ValidationService(
                 *args.toTypedArray(),
               ),
             )
-            return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_REMAND))
+            return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_REMAND, arguments = messageArgs))
           } else {
-            return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_SENTENCE))
+            return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_SENTENCE, arguments = messageArgs))
           }
         } else if (it.end.isAfter(totalRange!!.end)) {
           totalRange = LocalDateRange.of(totalRange!!.start, it.end)

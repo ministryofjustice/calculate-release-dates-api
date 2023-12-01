@@ -31,7 +31,7 @@ class ValidationIntTest : IntegrationTestBase() {
   fun `Run calculation where remand periods overlap with a sentence period`() {
     runValidationAndCheckMessages(
       REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID,
-      listOf(ValidationMessage(REMAND_OVERLAPS_WITH_SENTENCE)),
+      listOf(ValidationMessage(REMAND_OVERLAPS_WITH_SENTENCE, arguments = listOf("2000-04-29", "2001-02-25", "2000-04-28", "2000-04-30"))),
     )
   }
 
@@ -73,7 +73,7 @@ class ValidationIntTest : IntegrationTestBase() {
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_ADA),
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_RADA),
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_UAL),
-        ValidationMessage(code = REMAND_OVERLAPS_WITH_REMAND),
+        ValidationMessage(code = REMAND_OVERLAPS_WITH_REMAND, arguments = listOf("2000-04-01", "2000-04-02", "2000-03-28", "2000-04-28")),
       ),
     )
   }
