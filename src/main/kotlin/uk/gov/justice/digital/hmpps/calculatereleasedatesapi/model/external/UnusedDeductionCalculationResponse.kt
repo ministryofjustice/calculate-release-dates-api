@@ -4,5 +4,5 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 
 data class UnusedDeductionCalculationResponse(
   val unusedDeductions: Int?,
-  val validationMessages: List<ValidationMessage> = emptyList()
+  val validationMessages: List<ValidationMessage> = emptyList(),
 )

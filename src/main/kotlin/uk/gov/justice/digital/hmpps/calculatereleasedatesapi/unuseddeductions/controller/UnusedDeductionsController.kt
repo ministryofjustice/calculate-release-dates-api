@@ -49,7 +49,7 @@ class UnusedDeductionsController(
     log.info("Request received to calculate unused deductions for $prisonerId")
     return unusedDeductionsCalculationService.calculate(adjustments, prisonerId)
   }
-g
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
