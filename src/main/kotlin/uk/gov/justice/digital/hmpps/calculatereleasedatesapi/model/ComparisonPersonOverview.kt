@@ -9,6 +9,7 @@ data class ComparisonPersonOverview(
   val personId: String,
   val isValid: Boolean,
   val isMatch: Boolean,
+  val mismatchType: MismatchType,
   val isActiveSexOffender: Boolean?,
   val validationMessages: JsonNode,
   val shortReference: String,
