@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Compar
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
@@ -22,6 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 
 @Service
 class BulkComparisonService(
@@ -50,38 +52,37 @@ class BulkComparisonService(
     comparison: Comparison,
   ) {
     calculableSentenceEnvelopes.forEach { calculableSentenceEnvelope ->
-      val mismatch = determineIfMismatch(calculableSentenceEnvelope)
-      if (mismatch.shouldRecordMismatch()) {
-        comparisonPersonRepository.save(
-          ComparisonPerson(
-            comparisonId = comparison.id,
-            person = calculableSentenceEnvelope.person.prisonerNumber,
-            latestBookingId = calculableSentenceEnvelope.bookingId,
-            isMatch = mismatch.isMatch,
-            isValid = mismatch.isValid,
-            validationMessages = objectMapper.valueToTree(mismatch.messages),
-            calculatedByUsername = comparison.calculatedByUsername,
-            calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
-            nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) } ?: objectMapper.createObjectNode(),
-            overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) } ?: objectMapper.createObjectNode(),
-            breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) } ?: objectMapper.createObjectNode(),
-            isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
-          ),
-        )
-      }
+      val mismatch = determineMismatchType(calculableSentenceEnvelope)
+      comparisonPersonRepository.save(
+        ComparisonPerson(
+          comparisonId = comparison.id,
+          person = calculableSentenceEnvelope.person.prisonerNumber,
+          latestBookingId = calculableSentenceEnvelope.bookingId,
+          isMatch = mismatch.isMatch,
+          isValid = mismatch.isValid,
+          mismatchType = mismatch.type,
+          validationMessages = objectMapper.valueToTree(mismatch.messages),
+          calculatedByUsername = comparison.calculatedByUsername,
+          calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
+          nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) } ?: objectMapper.createObjectNode(),
+          overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) } ?: objectMapper.createObjectNode(),
+          breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) } ?: objectMapper.createObjectNode(),
+          isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
+        ),
+      )
     }
     comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
     comparison.numberOfPeopleCompared = calculableSentenceEnvelopes.size.toLong()
     comparisonRepository.save(comparison)
   }
 
-  fun determineIfMismatch(calculableSentenceEnvelope: CalculableSentenceEnvelope): Mismatch {
-    // Specify the default
+  fun determineMismatchType(calculableSentenceEnvelope: CalculableSentenceEnvelope): Mismatch {
     val mismatch = Mismatch(
       isMatch = false,
       isValid = false,
       calculableSentenceEnvelope = calculableSentenceEnvelope,
       calculatedReleaseDates = null,
+      type = MismatchType.NONE,
     )
 
     val calculationUserInput = CalculationUserInputs(
@@ -104,13 +105,20 @@ class BulkComparisonService(
     mismatch.calculationResult = validationResult.calculationResult
 
     if (mismatch.isValid) {
-      mismatch.isMatch =
+      val datesMatch =
         identifyMismatches(validationResult.calculatedReleaseDates, calculableSentenceEnvelope.sentenceCalcDates)
+      if (datesMatch) {
+        mismatch.isMatch = true
+        mismatch.type = MismatchType.NONE
+      } else {
+        mismatch.type = MismatchType.RELEASE_DATES_MISMATCH
+      }
     } else {
+      val unsupportedSentenceType = validationResult.messages.any { it.code == ValidationCode.UNSUPPORTED_SENTENCE_TYPE }
+      mismatch.type = if (unsupportedSentenceType) MismatchType.UNSUPPORTED_SENTENCE_TYPE else MismatchType.VALIDATION_ERROR
       mismatch.isMatch = false
     }
 
-    // returns a mismatch object
     return mismatch
   }
 

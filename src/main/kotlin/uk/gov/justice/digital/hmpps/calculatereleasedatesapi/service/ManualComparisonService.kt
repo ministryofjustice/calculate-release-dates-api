@@ -49,7 +49,7 @@ class ManualComparisonService(
 
   fun getComparisonByComparisonReference(comparisonReference: String): ComparisonOverview {
     val comparison = comparisonRepository.findByManualInputAndComparisonShortReference(true, comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
-    val mismatches = comparisonPersonRepository.findByComparisonIdIs(comparison.id)
+    val mismatches = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)
     return transform(comparison, mismatches)
   }
 
