@@ -60,7 +60,7 @@ class ComparisonService(
     val comparison = comparisonRepository.findByManualInputAndComparisonShortReference(false, comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
 
     if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
-      val mismatches = comparisonPersonRepository.findByComparisonIdIs(comparison.id)
+      val mismatches = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)
 
       return transform(comparison, mismatches)
     }

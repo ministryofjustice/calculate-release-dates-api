@@ -33,7 +33,7 @@ class ManualComparisonIntTest : IntegrationTestBase() {
     assertEquals(0, result.numberOfPeopleCompared)
     val comparison = comparisonRepository.findByManualInputAndComparisonShortReference(true, result.comparisonShortReference)
     assertEquals(1, comparison!!.numberOfPeopleCompared)
-    val personComparison = comparisonPersonRepository.findByComparisonIdIs(comparison.id)[0]
+    val personComparison = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)[0]
     assertTrue(personComparison.isValid)
     assertFalse(personComparison.isMatch)
     assertEquals("Z0020ZZ", personComparison.person)
@@ -43,7 +43,7 @@ class ManualComparisonIntTest : IntegrationTestBase() {
   fun `Retrieve comparison person must return all dates`() {
     val comparison = createManualComparison("Z0020ZZ")
     val storedComparison = comparisonRepository.findByManualInputAndComparisonShortReference(true, comparison.comparisonShortReference)
-    val comparisonPerson = comparisonPersonRepository.findByComparisonIdIs(storedComparison!!.id)[0]
+    val comparisonPerson = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison!!.id)[0]
     val result = webTestClient.get()
       .uri("/comparison/manual/{comparisonId}/mismatch/{mismatchId}", comparison.comparisonShortReference, comparisonPerson.shortReference)
       .accept(MediaType.APPLICATION_JSON)
@@ -63,7 +63,7 @@ class ManualComparisonIntTest : IntegrationTestBase() {
     val comparison = createManualComparison("CRS-1704")
     val storedComparison = comparisonRepository.findByManualInputAndComparisonShortReference(true, comparison.comparisonShortReference)
     assertEquals(0, storedComparison!!.numberOfMismatches)
-    assertTrue(comparisonPersonRepository.findByComparisonIdIs(storedComparison.id).isEmpty())
+    assertTrue(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison.id).isEmpty())
   }
 
   private fun createManualComparison(prisonerId: String): Comparison {

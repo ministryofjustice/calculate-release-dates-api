@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
@@ -22,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.Integra
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Alert
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -31,10 +34,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.Person
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class BulkComparisonServiceTest : IntegrationTestBase() {
@@ -144,7 +149,7 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `Determine if a mismatch report  isValid and  isMatch `() {
+  fun `Determine if a mismatch report isValid and isMatch`() {
     val booking =
       Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
     val validationResult = ValidationResult(emptyList(), booking, calculatedReleaseDates, null)
@@ -153,14 +158,49 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
       validationResult,
     )
 
-    val mismatch = bulkComparisonService.determineIfMismatch(calculableSentenceEnvelope)
+    val mismatch = bulkComparisonService.determineMismatchType(calculableSentenceEnvelope)
 
-    assertEquals(mismatch.isValid, true)
-    assertEquals(mismatch.isMatch, true)
+    assertTrue(mismatch.isValid)
+    assertTrue(mismatch.isMatch)
+    assertEquals(MismatchType.NONE, mismatch.type)
   }
 
   @Test
-  fun `Determine if a mismatch report isValid and not isMatch `() {
+  fun `Determine if a mismatch report is not valid`() {
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(listOf(ValidationMessage(ValidationCode.FTR_28_DAYS_SENTENCE_LT_12_MONTHS)), booking, calculatedReleaseDates, null)
+
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+
+    val mismatch = bulkComparisonService.determineMismatchType(calculableSentenceEnvelope)
+
+    assertFalse(mismatch.isValid)
+    assertFalse(mismatch.isMatch)
+    assertEquals(MismatchType.VALIDATION_ERROR, mismatch.type)
+  }
+
+  @Test
+  fun `Determine if a mismatch report is not valid due to unsupported sentence type`() {
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(listOf(ValidationMessage(ValidationCode.FTR_28_DAYS_SENTENCE_LT_12_MONTHS), ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)), booking, calculatedReleaseDates, null)
+
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+
+    val mismatch = bulkComparisonService.determineMismatchType(calculableSentenceEnvelope)
+
+    assertFalse(mismatch.isValid)
+    assertFalse(mismatch.isMatch)
+    assertEquals(MismatchType.UNSUPPORTED_SENTENCE_TYPE, mismatch.type)
+  }
+
+  @Test
+  fun `Determine if a mismatch report isValid and not isMatch due to release dates mismatch`() {
     val duplicateReleaseDates = releaseDates.toMutableMap()
     duplicateReleaseDates[ReleaseDateType.SED] = LocalDate.of(2022, 1, 1)
 
@@ -181,10 +221,11 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
       validationResult,
     )
 
-    val mismatch = bulkComparisonService.determineIfMismatch(calculableSentenceEnvelope)
+    val mismatch = bulkComparisonService.determineMismatchType(calculableSentenceEnvelope)
 
-    assertEquals(mismatch.isValid, true)
-    assertEquals(mismatch.isMatch, false)
+    assertTrue(mismatch.isValid)
+    assertFalse(mismatch.isMatch)
+    assertEquals(MismatchType.RELEASE_DATES_MISMATCH, mismatch.type)
   }
 
   private fun someReleaseDates(): MutableMap<ReleaseDateType, LocalDate> {

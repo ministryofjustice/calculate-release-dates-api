@@ -5,12 +5,15 @@ import com.fasterxml.jackson.databind.JsonNode
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.Type
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import java.time.LocalDateTime
 import java.util.*
 
@@ -33,6 +36,10 @@ class ComparisonPerson(
   var isMatch: Boolean,
 
   var isValid: Boolean,
+
+  @Column
+  @Enumerated(value = EnumType.STRING)
+  val mismatchType: MismatchType,
 
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
