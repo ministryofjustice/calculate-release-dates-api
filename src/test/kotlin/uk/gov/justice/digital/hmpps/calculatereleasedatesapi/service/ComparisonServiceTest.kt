@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Compar
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
@@ -303,7 +304,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
         "ABCD1234",
       ),
     ).thenReturn(comparison)
-    whenever(comparisonPersonRepository.findByComparisonIdIs(comparison.id)).thenReturn(comparisonPersons)
+    whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(comparisonPersons)
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
@@ -331,6 +332,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       latestBookingId = 25,
       isMatch = false,
       isValid = true,
+      mismatchType = MismatchType.NONE,
       validationMessages = emptyObjectNode,
       calculatedByUsername = USERNAME,
       nomisDates = objectMapper.valueToTree(releaseDates),
