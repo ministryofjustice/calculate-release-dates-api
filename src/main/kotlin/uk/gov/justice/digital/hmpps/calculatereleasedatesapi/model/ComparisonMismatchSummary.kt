@@ -8,4 +8,5 @@ data class ComparisonMismatchSummary(
   val isMatch: Boolean,
   val validationMessages: JsonNode,
   val shortReference: String,
+  val misMatchType: MismatchType,
 )

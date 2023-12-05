@@ -7,7 +7,7 @@ interface ComparisonPersonRepository : JpaRepository<ComparisonPerson, Long> {
 
   fun countByComparisonId(comparisonId: Long): Long
 
-  fun findByComparisonIdIs(comparisonId: Long): List<ComparisonPerson>
+  fun findByComparisonIdIsAndIsMatchFalse(comparisonId: Long): List<ComparisonPerson>
 
   fun findByComparisonIdAndShortReference(comparisonId: Long, shortReference: String): ComparisonPerson?
 }

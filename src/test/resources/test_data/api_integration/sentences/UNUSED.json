@@ -1,0 +1,35 @@
+[
+  {
+    "bookingId": -1786840618,
+    "sentenceSequence":4,
+    "lineSequence":2,
+    "caseSequence":2,
+    "caseReference":"C2",
+    "courtDescription":"Birmingham Crown Court",
+    "sentenceStatus":"A",
+    "sentenceCategory":"2020",
+    "sentenceCalculationType":"ADIMP",
+    "sentenceTypeDescription":"Sentencing Code Standard Determinate Sentence",
+    "sentenceDate":"2021-02-01",
+    "terms":[
+      {
+        "years":0,
+        "months":6,
+        "weeks":0,
+        "days":0,
+        "code":"IMP"
+      }
+    ],
+    "offences":[
+      {
+        "offenderChargeId":3933932,
+        "offenceStartDate":"2019-01-01",
+        "offenceCode":"CS00011",
+        "offenceDescription":"Act as child minder while disqualified from registration as a child minder",
+        "indicators":[
+          "99"
+        ]
+      }
+    ]
+  }
+]
