@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
@@ -47,8 +49,10 @@ class ComparisonController(
   fun createComparison(
     @RequestBody
     comparison: ComparisonInput,
+    @RequestHeader("Authorization") token: String,
   ): Comparison {
     log.info("Request received to create a new Comparison -- $comparison")
+    UserContext.setAuthToken(token)
     return comparisonService.create(comparison)
   }
 

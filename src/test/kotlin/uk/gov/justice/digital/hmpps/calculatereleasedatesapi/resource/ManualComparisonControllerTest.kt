@@ -66,6 +66,7 @@ class ManualComparisonControllerTest {
     val result = mvc.perform(
       MockMvcRequestBuilders
         .post("/comparison/manual/")
+        .header("Authorization", "Bearer token")
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(comparisonInput)),
