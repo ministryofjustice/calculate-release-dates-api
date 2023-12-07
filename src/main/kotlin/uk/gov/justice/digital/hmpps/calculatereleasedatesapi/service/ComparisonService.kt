@@ -7,6 +7,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -14,14 +15,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebEx
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import java.time.LocalDate
 
 @Service
 class ComparisonService(
+  private var calculationOutcomeRepository: CalculationOutcomeRepository,
   private var comparisonRepository: ComparisonRepository,
   private var prisonService: PrisonService,
   private var serviceUserService: ServiceUserService,
@@ -62,8 +66,28 @@ class ComparisonService(
 
     if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
       val mismatches = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)
-      val mismatchesSortedByReleaseDate = mismatches.sortedWith(::releaseDateComparator)
-      return transform(comparison, mismatchesSortedByReleaseDate)
+
+      val releaseMismatchCalculationRequests = mismatches
+        .filter { it.mismatchType == MismatchType.RELEASE_DATES_MISMATCH }
+        .mapNotNull { it.calculationRequestId }
+
+      val calculationOutcomes = if (releaseMismatchCalculationRequests.isNotEmpty()) {
+        calculationOutcomeRepository.findByCalculationRequestIdIn(releaseMismatchCalculationRequests)
+      } else {
+        emptyList()
+      }
+
+      val requestIdsToCalculationOutcomes = calculationOutcomes.groupBy { it.calculationRequestId }
+      val mismatchesAndCrdsDates = mismatches.map { mismatch ->
+        if (requestIdsToCalculationOutcomes[mismatch.calculationRequestId] != null) {
+          Pair(mismatch, requestIdsToCalculationOutcomes[mismatch.calculationRequestId]!!)
+        } else {
+          Pair(mismatch, emptyList())
+        }
+      }
+
+      val mismatchesSortedByReleaseDate = mismatchesAndCrdsDates.sortedWith(::releaseDateComparator)
+      return transform(comparison, mismatchesSortedByReleaseDate.map { it.first })
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
   }
@@ -82,12 +106,21 @@ class ComparisonService(
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
   }
 
-  private fun releaseDateComparator(mismatchA: ComparisonPerson, mismatchB: ComparisonPerson): Int {
-    val releaseDatesA = objectMapper.convertValue(mismatchA.nomisDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
-    val releaseDatesB = objectMapper.convertValue(mismatchB.nomisDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
+  private fun releaseDateComparator(
+    mismatchA: Pair<ComparisonPerson, List<CalculationOutcome>>,
+    mismatchB: Pair<ComparisonPerson, List<CalculationOutcome>>,
+  ): Int {
+    val releaseDatesA = mismatchA.second
+    val releaseDatesB = mismatchB.second
 
-    val earliestReleaseDateA = releaseDatesA.values.filterNotNull().minOrNull()
-    val earliestReleaseDateB = releaseDatesB.values.filterNotNull().minOrNull()
+    val includedDates =
+      listOf(ReleaseDateType.CRD.name, ReleaseDateType.ARD.name, ReleaseDateType.PRRD.name, ReleaseDateType.MTD.name)
+
+    val applicableDatesA = releaseDatesA.filter { it.calculationDateType in includedDates }
+    val applicableDatesB = releaseDatesB.filter { it.calculationDateType in includedDates }
+
+    val earliestReleaseDateA = applicableDatesA.mapNotNull { it.outcomeDate }.minByOrNull { it }
+    val earliestReleaseDateB = applicableDatesB.mapNotNull { it.outcomeDate }.minByOrNull { it }
 
     if (earliestReleaseDateA === null && earliestReleaseDateB == null) {
       return 0
