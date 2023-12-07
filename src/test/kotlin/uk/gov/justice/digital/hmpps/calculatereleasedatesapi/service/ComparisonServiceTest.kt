@@ -13,6 +13,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
@@ -22,15 +23,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebEx
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class ComparisonServiceTest : IntegrationTestBase() {
   private val prisonService = mock<PrisonService>()
+  private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val comparisonRepository = mock<ComparisonRepository>()
   private val comparisonPersonRepository = mock<ComparisonPersonRepository>()
   private var serviceUserService = mock<ServiceUserService>()
@@ -39,6 +42,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
   private val objectMapper: ObjectMapper = TestUtil.objectMapper()
 
   private val comparisonService = ComparisonService(
+    calculationOutcomeRepository,
     comparisonRepository,
     prisonService,
     serviceUserService,
@@ -255,49 +259,106 @@ class ComparisonServiceTest : IntegrationTestBase() {
     val comparisonPerson1 = aComparisonPerson(
       1,
       comparison.id,
+      1,
       "person 1",
-      someReleaseDates(crd = LocalDate.of(2036, 2, 20), led = LocalDate.of(2037, 2, 20)),
+    )
+    val calculationOutcomePerson1Crd = CalculationOutcome(
+      calculationDateType = ReleaseDateType.CRD.name,
+      outcomeDate = LocalDate.of(2036, 2, 20),
+      calculationRequestId = 1,
+    )
+    val calculationOutcomePerson1Esed = CalculationOutcome(
+      calculationDateType = ReleaseDateType.ESED.name,
+      outcomeDate = LocalDate.of(2024, 5, 13),
+      calculationRequestId = 1,
     )
     val comparisonPerson2 = aComparisonPerson(
       2,
       comparison.id,
+      2,
       "person 2",
-      someReleaseDates(ped = LocalDate.of(2032, 4, 24)),
+    )
+    val calculationOutcomePerson2Ard = CalculationOutcome(
+      calculationDateType = ReleaseDateType.ARD.name,
+      outcomeDate = LocalDate.of(2032, 4, 24),
+      calculationRequestId = 2,
     )
     val comparisonPerson3 = aComparisonPerson(
       3,
       comparison.id,
+      3,
       "person 3",
-      someReleaseDates(),
     )
     val comparisonPerson4 = aComparisonPerson(
       4,
       comparison.id,
+      4,
       "person 4",
-      someReleaseDates(crd = LocalDate.of(2034, 6, 15)),
     )
+    val calculationOutcomePerson4Crd = CalculationOutcome(
+      calculationDateType = ReleaseDateType.CRD.name,
+      outcomeDate = LocalDate.of(2034, 6, 15),
+      calculationRequestId = 4,
+    )
+
     val comparisonPerson5 = aComparisonPerson(
       5,
       comparison.id,
+      5,
       "person 5",
-      someReleaseDates(crd = LocalDate.of(2028, 6, 19), hdced = LocalDate.of(2028, 3, 31)),
     )
+    val calculationOutcomePerson5Crd = CalculationOutcome(
+      calculationDateType = ReleaseDateType.CRD.name,
+      outcomeDate = LocalDate.of(2028, 6, 19),
+      calculationRequestId = 5,
+    )
+    val calculationOutcomePerson5Hdced = CalculationOutcome(
+      calculationDateType = ReleaseDateType.HDCED.name,
+      outcomeDate = LocalDate.of(2028, 6, 19),
+      calculationRequestId = 5,
+    )
+
     val comparisonPerson6 = aComparisonPerson(
       6,
       comparison.id,
+      6,
       "person 6",
-      someReleaseDates(),
     )
-
-    val comparisonPersons =
-      listOf(
-        comparisonPerson1,
-        comparisonPerson2,
-        comparisonPerson3,
-        comparisonPerson4,
-        comparisonPerson5,
-        comparisonPerson6,
-      )
+    val calculationOutcomePerson6Prrd = CalculationOutcome(
+      calculationDateType = ReleaseDateType.PRRD.name,
+      outcomeDate = LocalDate.of(2029, 6, 15),
+      calculationRequestId = 6,
+    )
+    val comparisonPerson7 = aComparisonPerson(
+      7,
+      comparison.id,
+      7,
+      "person 7",
+    )
+    val calculationOutcomePerson7Mtd = CalculationOutcome(
+      calculationDateType = ReleaseDateType.MTD.name,
+      outcomeDate = LocalDate.of(2033, 4, 25),
+      calculationRequestId = 7,
+    )
+    val comparisonPersons = listOf(
+      comparisonPerson1,
+      comparisonPerson2,
+      comparisonPerson3,
+      comparisonPerson4,
+      comparisonPerson5,
+      comparisonPerson6,
+      comparisonPerson7,
+    )
+    val calculationOutcomes = listOf(
+      calculationOutcomePerson2Ard,
+      calculationOutcomePerson6Prrd,
+      calculationOutcomePerson1Crd,
+      calculationOutcomePerson4Crd,
+      calculationOutcomePerson5Crd,
+      calculationOutcomePerson1Esed,
+      calculationOutcomePerson5Hdced,
+      calculationOutcomePerson7Mtd,
+    )
     whenever(
       comparisonRepository.findByManualInputAndComparisonShortReference(
         false,
@@ -306,23 +367,26 @@ class ComparisonServiceTest : IntegrationTestBase() {
     ).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(comparisonPersons)
 
+    whenever(calculationOutcomeRepository.findByCalculationRequestIdIn(any())).thenReturn(calculationOutcomes)
+
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
     assertEquals(comparison.comparisonShortReference, result.comparisonShortReference)
     assertEquals(comparisonPersons.size, result.mismatches.size)
     assertEquals(comparisonPerson5.person, result.mismatches[0].personId)
-    assertEquals(comparisonPerson2.person, result.mismatches[1].personId)
-    assertEquals(comparisonPerson4.person, result.mismatches[2].personId)
-    assertEquals(comparisonPerson1.person, result.mismatches[3].personId)
-    assertEquals(comparisonPerson3.person, result.mismatches[4].personId)
-    assertEquals(comparisonPerson6.person, result.mismatches[5].personId)
+    assertEquals(comparisonPerson6.person, result.mismatches[1].personId)
+    assertEquals(comparisonPerson2.person, result.mismatches[2].personId)
+    assertEquals(comparisonPerson7.person, result.mismatches[3].personId)
+    assertEquals(comparisonPerson4.person, result.mismatches[4].personId)
+    assertEquals(comparisonPerson1.person, result.mismatches[5].personId)
+    assertEquals(comparisonPerson3.person, result.mismatches[6].personId)
   }
 
   private fun aComparisonPerson(
     id: Long,
     comparisonId: Long,
+    calculationRequestId: Long,
     person: String,
-    releaseDates: Map<ReleaseDateType, LocalDate?>,
   ): ComparisonPerson {
     val emptyObjectNode = objectMapper.createObjectNode()
     return ComparisonPerson(
@@ -332,42 +396,13 @@ class ComparisonServiceTest : IntegrationTestBase() {
       latestBookingId = 25,
       isMatch = false,
       isValid = true,
-      mismatchType = MismatchType.NONE,
+      mismatchType = MismatchType.RELEASE_DATES_MISMATCH,
       validationMessages = emptyObjectNode,
       calculatedByUsername = USERNAME,
-      nomisDates = objectMapper.valueToTree(releaseDates),
+      nomisDates = emptyObjectNode,
       overrideDates = emptyObjectNode,
       breakdownByReleaseDateType = emptyObjectNode,
-    )
-  }
-
-  private fun someReleaseDates(
-    crd: LocalDate? = null,
-    ped: LocalDate? = null,
-    led: LocalDate? = null,
-    hdced: LocalDate? = null,
-  ): Map<ReleaseDateType, LocalDate?> {
-    return mapOf(
-      ReleaseDateType.APD to null,
-      ReleaseDateType.ARD to null,
-      ReleaseDateType.CRD to crd,
-      ReleaseDateType.ETD to null,
-      ReleaseDateType.LED to led,
-      ReleaseDateType.LTD to null,
-      ReleaseDateType.MTD to null,
-      ReleaseDateType.NPD to null,
-      ReleaseDateType.PED to ped,
-      ReleaseDateType.SED to null,
-      ReleaseDateType.ESED to null,
-      ReleaseDateType.PRRD to null,
-      ReleaseDateType.ROTL to null,
-      ReleaseDateType.DPRRD to null,
-      ReleaseDateType.ERSED to null,
-      ReleaseDateType.HDCAD to null,
-      ReleaseDateType.HDCED to hdced,
-      ReleaseDateType.TUSED to null,
-      ReleaseDateType.TERSED to null,
-      ReleaseDateType.Tariff to null,
+      calculationRequestId = calculationRequestId,
     )
   }
 
