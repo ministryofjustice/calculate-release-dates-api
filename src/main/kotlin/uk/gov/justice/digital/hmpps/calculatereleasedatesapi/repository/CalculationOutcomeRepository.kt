@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 
 @Repository
-interface CalculationOutcomeRepository : JpaRepository<CalculationOutcome, Long>
+interface CalculationOutcomeRepository : JpaRepository<CalculationOutcome, Long> {
+  fun findByCalculationRequestIdIn(calculationRequestIds: List<Long>): List<CalculationOutcome>
+}
