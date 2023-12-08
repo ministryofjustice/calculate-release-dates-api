@@ -72,4 +72,9 @@ class ComparisonPerson(
   var calculationRequestId: Long? = null,
 
   val isActiveSexOffender: Boolean? = null,
+
+  @Type(value = JsonType::class)
+  @Column(columnDefinition = "jsonb")
+  var sdsPlusSentencesIdentified: JsonNode,
+
 )

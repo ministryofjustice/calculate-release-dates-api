@@ -1,0 +1,1 @@
+ALTER TABLE comparison_person ADD COLUMN sds_plus_sentences_identified jsonb NOT NULL default '{}'::jsonb;

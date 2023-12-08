@@ -44,7 +44,7 @@ class BulkComparisonService(
   }
 
   private fun getPCSCMarkerForOffences(sentencesAndOffencesToCheck: List<SentenceAndOffences>) {
-    pcscLookupService.setSdsPlusMarkerForOffences(sentencesAndOffencesToCheck);
+    pcscLookupService.populateSdsPlusMarkerForOffences(sentencesAndOffencesToCheck)
   }
 
   @Async
