@@ -403,6 +403,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       overrideDates = emptyObjectNode,
       breakdownByReleaseDateType = emptyObjectNode,
       calculationRequestId = calculationRequestId,
+      sdsPlusSentencesIdentified = emptyObjectNode
     )
   }
 
