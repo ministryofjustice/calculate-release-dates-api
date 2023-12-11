@@ -39,7 +39,6 @@ class OffenceSdsPlusLookupService(
    * @return matchingSentenceMap - A map of bookingId to [SentencesAndOffences] identified as SDS+
    */
   fun populateSdsPlusMarkerForOffences(sentencesAndOffences: List<SentenceAndOffences>): Map<Long, List<SentenceAndOffences>> {
-
     log.info("Checking ${sentencesAndOffences.size} sentences for SDS+")
     val bookingIdToSentences = getMatchingSentencesToBookingId(sentencesAndOffences)
     val offencesToCheck = getOffenceCodesToCheckWithMO(bookingIdToSentences)

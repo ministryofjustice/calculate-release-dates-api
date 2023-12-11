@@ -55,7 +55,7 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
     calculationTransactionalService,
     objectMapper,
     comparisonRepository,
-    pcscLookupService
+    pcscLookupService,
   )
 
   private val releaseDates = someReleaseDates()

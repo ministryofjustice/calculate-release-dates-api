@@ -108,8 +108,7 @@ class ComparisonService(
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
   }
 
-  private fun buildSdsCaseAndCount(sentencesAndOffences: List<SentenceAndOffences>) : List<String>{
-
+  private fun buildSdsCaseAndCount(sentencesAndOffences: List<SentenceAndOffences>): List<String> {
     val caseAndCountList = mutableListOf<String>()
     sentencesAndOffences.forEach {
       caseAndCountList.add("Court case ${it.caseSequence}, count ${it.lineSequence}")
