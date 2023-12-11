@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSum
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
@@ -101,10 +102,19 @@ class ComparisonService(
       val nomisDates = objectMapper.convertValue(comparisonPerson.nomisDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
       val overrideDates = objectMapper.convertValue(comparisonPerson.overrideDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
       val breakdownByReleaseDateType = objectMapper.convertValue(comparisonPerson.breakdownByReleaseDateType, object : TypeReference<Map<ReleaseDateType, ReleaseDateCalculationBreakdown>>() {})
-      val sdsCaseAndCount = listOf("Court case 1, count 3", "Court case 2, count 1")
+      val sdsCaseAndCount = buildSdsCaseAndCount(objectMapper.convertValue(comparisonPerson.sdsPlusSentencesIdentified, object : TypeReference<List<SentenceAndOffences>>() {}))
       return transform(comparisonPerson, nomisDates, calculatedReleaseDates, overrideDates, breakdownByReleaseDateType, sdsCaseAndCount)
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
+  }
+
+  private fun buildSdsCaseAndCount(sentencesAndOffences: List<SentenceAndOffences>) : List<String>{
+
+    val caseAndCountList = mutableListOf<String>()
+    sentencesAndOffences.forEach {
+      caseAndCountList.add("Court case ${it.caseSequence}, count ${it.lineSequence}")
+    }
+    return caseAndCountList
   }
 
   private fun releaseDateComparator(

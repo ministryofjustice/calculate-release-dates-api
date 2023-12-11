@@ -33,18 +33,13 @@ class BulkComparisonService(
   private val calculationTransactionalService: CalculationTransactionalService,
   private val objectMapper: ObjectMapper,
   private val comparisonRepository: ComparisonRepository,
-  private val pcscLookupService: OffenceSdsPlusLookupService
+  private val pcscLookupService: OffenceSdsPlusLookupService,
 ) {
 
   @Async
   fun processPrisonComparison(comparison: Comparison) {
     val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison!!)
-    getPCSCMarkerForOffences(activeBookingsAtEstablishment.map { it.sentenceAndOffences }.flatten())
     processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison)
-  }
-
-  private fun getPCSCMarkerForOffences(sentencesAndOffencesToCheck: List<SentenceAndOffences>) {
-    pcscLookupService.populateSdsPlusMarkerForOffences(sentencesAndOffencesToCheck)
   }
 
   @Async
@@ -57,6 +52,7 @@ class BulkComparisonService(
     calculableSentenceEnvelopes: List<CalculableSentenceEnvelope>,
     comparison: Comparison,
   ) {
+    val bookingIdToSDSMatchingSentencesAndOffences = pcscLookupService.populateSdsPlusMarkerForOffences(calculableSentenceEnvelopes.map { it.sentenceAndOffences }.flatten())
     calculableSentenceEnvelopes.forEach { calculableSentenceEnvelope ->
       val mismatch = determineMismatchType(calculableSentenceEnvelope)
       comparisonPersonRepository.save(
@@ -70,10 +66,15 @@ class BulkComparisonService(
           validationMessages = objectMapper.valueToTree(mismatch.messages),
           calculatedByUsername = comparison.calculatedByUsername,
           calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
-          nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) } ?: objectMapper.createObjectNode(),
-          overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) } ?: objectMapper.createObjectNode(),
-          breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) } ?: objectMapper.createObjectNode(),
+          nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) }
+            ?: objectMapper.createObjectNode(),
+          overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) }
+            ?: objectMapper.createObjectNode(),
+          breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) }
+            ?: objectMapper.createObjectNode(),
           isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
+          sdsPlusSentencesIdentified = bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId]?.let { objectMapper.valueToTree(bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId]) }
+            ?: objectMapper.createObjectNode(),
         ),
       )
     }

@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -34,12 +36,14 @@ class OffenceSdsPlusLookupService(
    * Sets the [OffenderOffence.PCSC_SDS_PLUS] indicators if it falls under SDS+.
    *
    * @param sentencesAndOffences - A list of [SentenceAndOffences] to process for SDS+
-   * @return matchingSentenceMap - A map of sentences with offences flagged as SDS+.
+   * @return matchingSentenceMap - A map of bookingId to [SentencesAndOffences] identified as SDS+
    */
-  fun populateSdsPlusMarkerForOffences(sentencesAndOffences: List<SentenceAndOffences>): Map<SentenceAndOffences, List<OffenderOffence>> {
+  fun populateSdsPlusMarkerForOffences(sentencesAndOffences: List<SentenceAndOffences>): Map<Long, List<SentenceAndOffences>> {
+
+    log.info("Checking ${sentencesAndOffences.size} sentences for SDS+")
     val bookingIdToSentences = getMatchingSentencesToBookingId(sentencesAndOffences)
     val offencesToCheck = getOffenceCodesToCheckWithMO(bookingIdToSentences)
-    val matchingSentenceMap = mutableMapOf<SentenceAndOffences, List<OffenderOffence>>()
+    val bookingToSentenceOffenceMap = mutableMapOf<Long, List<SentenceAndOffences>>()
 
     if (offencesToCheck.isNotEmpty()) {
       val moCheckResponses = manageOffencesService.getPcscMarkersForOffenceCodes(*offencesToCheck.toTypedArray()).associateBy { it.offenceCode }
@@ -60,16 +64,16 @@ class OffenceSdsPlusLookupService(
               .forEach { offence ->
                 offence.indicators = offence.indicators.plus(listOf(OffenderOffence.PCSC_SDS_PLUS))
 
-                if (matchingSentenceMap.contains(sentenceAndOffence)) {
-                  matchingSentenceMap.get(sentenceAndOffence)?.plus(offence)
+                if (bookingToSentenceOffenceMap.contains(sentenceAndOffence.bookingId)) {
+                  bookingToSentenceOffenceMap[sentenceAndOffence.bookingId]?.plus(sentenceAndOffence)
                 } else {
-                  matchingSentenceMap[sentenceAndOffence] = listOf(offence)
+                  bookingToSentenceOffenceMap[sentenceAndOffence.bookingId] = listOf(sentenceAndOffence)
                 }
               }
           }
       }
     }
-    return matchingSentenceMap
+    return bookingToSentenceOffenceMap
   }
 
   private fun isOffenceSdsPlus(sentenceCalculationType: SentenceCalculationType, sentenceAndOffence: SentenceAndOffences, sevenYearsOrMore: Boolean, moResponseForOffence: OffencePcscMarkers?, sentenceIsAfterPcsc: Boolean): Boolean {
@@ -159,5 +163,9 @@ class OffenceSdsPlusLookupService(
     val endOfFourYears = sentence.sentenceDate.plusYears(4)
     val endOfSevenYears = sentence.sentenceDate.plusYears(7)
     return endOfSentence.isAfterOrEqualTo(endOfFourYears) && endOfSentence.isBefore(endOfSevenYears)
+  }
+
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }
