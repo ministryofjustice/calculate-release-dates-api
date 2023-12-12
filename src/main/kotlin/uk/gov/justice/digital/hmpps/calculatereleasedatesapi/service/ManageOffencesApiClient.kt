@@ -14,10 +14,10 @@ class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private v
 
   fun getPCSCMarkersForOffences(offenceCodes: List<String>): List<OffencePcscMarkers> {
     val offencesList = if (offenceCodes.size > 1) offenceCodes.joinToString(",") else offenceCodes[0]
-    log.info("/schedule/pcsc-indicators?$offencesList")
+    log.info("/schedule/pcsc-indicators?offenceCodes=$offencesList")
 
     return webClient.get()
-      .uri("/schedule/pcsc-indicators?$offencesList")
+      .uri("/schedule/pcsc-indicators?offenceCodes=$offencesList")
       .retrieve()
       .bodyToMono(typeReference<List<OffencePcscMarkers>>())
       .block()!!

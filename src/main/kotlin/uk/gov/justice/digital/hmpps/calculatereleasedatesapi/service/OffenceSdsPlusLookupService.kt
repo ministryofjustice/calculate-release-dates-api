@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
@@ -28,9 +31,18 @@ class OffenceSdsPlusLookupService(
     ),
   )
 
-  fun setSdsPlusMarkerForOffences(sentencesAndOffences: List<SentenceAndOffences>) {
+  /**
+   * Queries MO against Sentences of type and duration that could fit the SDS+ criteria.
+   * Sets the [OffenderOffence.PCSC_SDS_PLUS] indicators if it falls under SDS+.
+   *
+   * @param sentencesAndOffences - A list of [SentenceAndOffences] to process for SDS+
+   * @return matchingSentenceMap - A map of bookingId to [SentencesAndOffences] identified as SDS+
+   */
+  fun populateSdsPlusMarkerForOffences(sentencesAndOffences: List<SentenceAndOffences>): Map<Long, List<SentenceAndOffences>> {
+    log.info("Checking ${sentencesAndOffences.size} sentences for SDS+")
     val bookingIdToSentences = getMatchingSentencesToBookingId(sentencesAndOffences)
     val offencesToCheck = getOffenceCodesToCheckWithMO(bookingIdToSentences)
+    val bookingToSentenceOffenceMap = mutableMapOf<Long, List<SentenceAndOffences>>()
 
     if (offencesToCheck.isNotEmpty()) {
       val moCheckResponses = manageOffencesService.getPcscMarkersForOffenceCodes(*offencesToCheck.toTypedArray()).associateBy { it.offenceCode }
@@ -40,35 +52,47 @@ class OffenceSdsPlusLookupService(
           .forEach { sentenceAndOffence ->
             sentenceAndOffence.offences
               .filter { offenderOffence -> offencesToCheck.contains(offenderOffence.offenceCode) }
-              .forEach { offence ->
-                val moResponseForOffence = moCheckResponses[offence.offenceCode]
+              .filter { offenderOffence ->
+                val moResponseForOffence = moCheckResponses[offenderOffence.offenceCode]
                 val sentenceIsAfterPcsc = sentencedAfterPcsc(sentenceAndOffence)
-                var sdsPlusIdentified = false
                 val sentenceCalculationType = SentenceCalculationType.from(sentenceAndOffence.sentenceCalculationType)
                 val sevenYearsOrMore = sevenYearsOrMore(sentenceAndOffence)
 
-                if (postPcscCalcTypes["SDS"]!!.contains(sentenceCalculationType) ||
-                  postPcscCalcTypes["DYOI"]!!.contains(sentenceCalculationType)
-                ) {
-                  if (sentencedWithinOriginalSdsPlusWindow(sentenceAndOffence) && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListA == true) {
-                    sdsPlusIdentified = true
-                  } else if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListD == true) {
-                    sdsPlusIdentified = true
-                  } else if (sentenceIsAfterPcsc && fourToUnderSeven(sentenceAndOffence) && moResponseForOffence?.pcscMarkers?.inListB == true) {
-                    sdsPlusIdentified = true
-                  }
-                } else if (postPcscCalcTypes["S250"]!!.contains(sentenceCalculationType)) {
-                  if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListC == true) {
-                    sdsPlusIdentified = true
-                  }
-                }
-                if (sdsPlusIdentified) {
-                  offence.indicators = offence.indicators.plus(listOf(OffenderOffence.PCSC_SDS_PLUS))
+                return@filter isOffenceSdsPlus(sentenceCalculationType, sentenceAndOffence, sevenYearsOrMore, moResponseForOffence, sentenceIsAfterPcsc)
+              }
+              .forEach { offence ->
+                offence.indicators = offence.indicators.plus(listOf(OffenderOffence.PCSC_SDS_PLUS))
+
+                if (bookingToSentenceOffenceMap.contains(sentenceAndOffence.bookingId)) {
+                  bookingToSentenceOffenceMap[sentenceAndOffence.bookingId]?.plus(sentenceAndOffence)
+                } else {
+                  bookingToSentenceOffenceMap[sentenceAndOffence.bookingId] = listOf(sentenceAndOffence)
                 }
               }
           }
       }
     }
+    return bookingToSentenceOffenceMap
+  }
+
+  private fun isOffenceSdsPlus(sentenceCalculationType: SentenceCalculationType, sentenceAndOffence: SentenceAndOffences, sevenYearsOrMore: Boolean, moResponseForOffence: OffencePcscMarkers?, sentenceIsAfterPcsc: Boolean): Boolean {
+    var sdsPlusIdentified = false
+    if (postPcscCalcTypes["SDS"]!!.contains(sentenceCalculationType) ||
+      postPcscCalcTypes["DYOI"]!!.contains(sentenceCalculationType)
+    ) {
+      if (sentencedWithinOriginalSdsPlusWindow(sentenceAndOffence) && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListA == true) {
+        sdsPlusIdentified = true
+      } else if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListD == true) {
+        sdsPlusIdentified = true
+      } else if (sentenceIsAfterPcsc && fourToUnderSeven(sentenceAndOffence) && moResponseForOffence?.pcscMarkers?.inListB == true) {
+        sdsPlusIdentified = true
+      }
+    } else if (postPcscCalcTypes["S250"]!!.contains(sentenceCalculationType)) {
+      if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListC == true) {
+        sdsPlusIdentified = true
+      }
+    }
+    return sdsPlusIdentified
   }
 
   fun getOffenceCodesToCheckWithMO(bookingIdToSentences: Map<Long, List<SentenceAndOffences>>): List<String> {
@@ -138,5 +162,9 @@ class OffenceSdsPlusLookupService(
     val endOfFourYears = sentence.sentenceDate.plusYears(4)
     val endOfSevenYears = sentence.sentenceDate.plusYears(7)
     return endOfSentence.isAfterOrEqualTo(endOfFourYears) && endOfSentence.isBefore(endOfSevenYears)
+  }
+
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }
