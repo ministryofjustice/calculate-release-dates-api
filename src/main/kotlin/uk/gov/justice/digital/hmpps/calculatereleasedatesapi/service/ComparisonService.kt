@@ -102,19 +102,10 @@ class ComparisonService(
       val nomisDates = objectMapper.convertValue(comparisonPerson.nomisDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
       val overrideDates = objectMapper.convertValue(comparisonPerson.overrideDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
       val breakdownByReleaseDateType = objectMapper.convertValue(comparisonPerson.breakdownByReleaseDateType, object : TypeReference<Map<ReleaseDateType, ReleaseDateCalculationBreakdown>>() {})
-      val sdsSentences = if (comparisonPerson.sdsPlusSentencesIdentified.isEmpty) emptyList<SentenceAndOffences>() else objectMapper.convertValue(comparisonPerson.sdsPlusSentencesIdentified, object : TypeReference<List<SentenceAndOffences>>() {})
-      val sdsCaseAndCount = buildSdsCaseAndCount(sdsSentences)
-      return transform(comparisonPerson, nomisDates, calculatedReleaseDates, overrideDates, breakdownByReleaseDateType, sdsCaseAndCount)
+      val sdsPlusSentences = if (comparisonPerson.sdsPlusSentencesIdentified.isEmpty) emptyList<SentenceAndOffences>() else objectMapper.convertValue(comparisonPerson.sdsPlusSentencesIdentified, object : TypeReference<List<SentenceAndOffences>>() {})
+      return transform(comparisonPerson, nomisDates, calculatedReleaseDates, overrideDates, breakdownByReleaseDateType, sdsPlusSentences)
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
-  }
-
-  private fun buildSdsCaseAndCount(sentencesAndOffences: List<SentenceAndOffences>): List<String> {
-    val caseAndCountList = mutableListOf<String>()
-    sentencesAndOffences.forEach {
-      caseAndCountList.add("Court case ${it.caseSequence}, count ${it.lineSequence}")
-    }
-    return caseAndCountList
   }
 
   private fun releaseDateComparator(
