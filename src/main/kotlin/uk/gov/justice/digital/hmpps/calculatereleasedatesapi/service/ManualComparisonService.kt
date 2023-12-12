@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPer
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import java.time.LocalDate
@@ -60,7 +61,8 @@ class ManualComparisonService(
     val nomisDates = objectMapper.convertValue(comparisonPerson.nomisDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
     val overrideDates = objectMapper.convertValue(comparisonPerson.overrideDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
     val breakdownByReleaseDateType = objectMapper.convertValue(comparisonPerson.breakdownByReleaseDateType, object : TypeReference<Map<ReleaseDateType, ReleaseDateCalculationBreakdown>>() {})
-    return transform(comparisonPerson, nomisDates, calculatedReleaseDates, overrideDates, breakdownByReleaseDateType)
+    val sdsPlusSentences = if (comparisonPerson.sdsPlusSentencesIdentified.isEmpty) emptyList<SentenceAndOffences>() else objectMapper.convertValue(comparisonPerson.sdsPlusSentencesIdentified, object : TypeReference<List<SentenceAndOffences>>() {})
+    return transform(comparisonPerson, nomisDates, calculatedReleaseDates, overrideDates, breakdownByReleaseDateType, sdsPlusSentences)
   }
 
   companion object {

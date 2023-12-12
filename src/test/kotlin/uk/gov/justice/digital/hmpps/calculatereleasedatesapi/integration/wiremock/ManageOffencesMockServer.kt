@@ -41,7 +41,7 @@ class ManageOffensesMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubMOResponse(): StubMapping =
     stubFor(
-      get(urlMatching("/schedule/pcsc-indicators\\?COML025A"))
+      get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=COML025A"))
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
@@ -65,7 +65,7 @@ class ManageOffensesMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubMOMultipleResults(): StubMapping =
     stubFor(
-      get(urlMatching("/schedule/pcsc-indicators\\?COML025A,COML022"))
+      get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=COML025A,COML022"))
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")

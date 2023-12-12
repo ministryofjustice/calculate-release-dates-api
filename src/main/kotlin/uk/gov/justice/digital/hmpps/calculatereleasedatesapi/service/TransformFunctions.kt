@@ -702,9 +702,10 @@ private fun transform(comparisonPerson: ComparisonPerson): ComparisonMismatchSum
   comparisonPerson.validationMessages,
   comparisonPerson.shortReference,
   comparisonPerson.mismatchType,
+  comparisonPerson.sdsPlusSentencesIdentified,
 )
 
-fun transform(comparisonPerson: ComparisonPerson, nomisDates: Map<ReleaseDateType, LocalDate?>, calculatedReleaseDates: CalculatedReleaseDates?, overrideDates: Map<ReleaseDateType, LocalDate?>, breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>): ComparisonPersonOverview = ComparisonPersonOverview(
+fun transform(comparisonPerson: ComparisonPerson, nomisDates: Map<ReleaseDateType, LocalDate?>, calculatedReleaseDates: CalculatedReleaseDates?, overrideDates: Map<ReleaseDateType, LocalDate?>, breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>, sdsSentencesIdentified: List<SentenceAndOffences>): ComparisonPersonOverview = ComparisonPersonOverview(
   comparisonPerson.person,
   comparisonPerson.isValid,
   comparisonPerson.isMatch,
@@ -718,6 +719,7 @@ fun transform(comparisonPerson: ComparisonPerson, nomisDates: Map<ReleaseDateTyp
   nomisDates,
   overrideDates,
   breakdownByReleaseDateType,
+  sdsSentencesIdentified,
 )
 
 fun transform(sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis, sentencesAndOffences: List<SentenceAndOffences>): List<AnalyzedSentenceAndOffences> {
