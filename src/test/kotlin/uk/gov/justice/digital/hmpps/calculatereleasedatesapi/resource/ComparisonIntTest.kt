@@ -98,7 +98,6 @@ class ComparisonIntTest : IntegrationTestBase() {
     val comparison = createComparison("ABC")
     val storedComparison = comparisonRepository.findByManualInputAndComparisonShortReference(false, comparison.comparisonShortReference)
     val comparisonPerson = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison!!.id)[0]
-    println("--- Sentences = ${comparisonPerson.sdsPlusSentencesIdentified.size()} -----")
     val result = webTestClient.get()
       .uri("/comparison/{comparisonId}/mismatch/{mismatchId}", comparison.comparisonShortReference, comparisonPerson.shortReference)
       .accept(MediaType.APPLICATION_JSON)
