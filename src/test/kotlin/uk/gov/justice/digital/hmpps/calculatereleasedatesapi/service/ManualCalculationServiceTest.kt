@@ -175,7 +175,7 @@ class ManualCalculationServiceTest {
       isActive = true,
       isOther = false,
       isBulk = false,
-      displayName = "Reason"
+      displayName = "Reason",
     )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(

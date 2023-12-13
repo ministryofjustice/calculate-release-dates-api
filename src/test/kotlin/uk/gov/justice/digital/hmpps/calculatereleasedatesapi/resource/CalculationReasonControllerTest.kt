@@ -46,8 +46,8 @@ class CalculationReasonControllerTest {
     val calculationReasons = listOf(
       CalculationReason(1, isActive = true, isOther = false, isBulk = false, displayName = "Reason 1"),
       CalculationReason(2, isActive = true, isOther = false, isBulk = false, displayName = "Reason 2"),
-      CalculationReason(3, isActive = true, isOther = true,  isBulk = false, displayName = "Other"),
-      CalculationReason(4, isActive = false, isOther = false,  isBulk = true, displayName = "Bulk Calculation"),
+      CalculationReason(3, isActive = true, isOther = true, isBulk = false, displayName = "Other"),
+      CalculationReason(4, isActive = false, isOther = false, isBulk = true, displayName = "Bulk Calculation"),
     )
 
     whenever(calculationReasonRepository.findAllByIsActiveTrueOrderById()).thenReturn(calculationReasons)

@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
-data class CalculationRequestModel (
+data class CalculationRequestModel(
   val calculationUserInputs: CalculationUserInputs?,
   val calculationReasonId: Long,
-  val otherReasonDescription: String? = null
+  val otherReasonDescription: String? = null,
 )

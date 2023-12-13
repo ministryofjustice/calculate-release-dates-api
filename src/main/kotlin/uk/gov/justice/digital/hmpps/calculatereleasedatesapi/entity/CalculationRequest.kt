@@ -134,21 +134,21 @@ data class CalculationRequest(
 
   fun withType(calculationType: CalculationType): CalculationRequest {
     return copy(
-        id = this.id,
-        calculationReference = this.calculationReference,
-        prisonerId = this.prisonerId,
-        bookingId = this.bookingId,
-        calculationStatus = this.calculationStatus,
-        calculatedAt = this.calculatedAt,
-        calculatedByUsername = this.calculatedByUsername,
-        inputData = this.inputData,
-        sentenceAndOffences = this.sentenceAndOffences,
-        sentenceAndOffencesVersion = this.sentenceAndOffencesVersion,
-        prisonerDetails = this.prisonerDetails,
-        calculationType = calculationType,
-        prisonerLocation = this.prisonerLocation,
-        reasonForCalculation = this.reasonForCalculation,
-        otherReasonForCalculation = this.otherReasonForCalculation,
+      id = this.id,
+      calculationReference = this.calculationReference,
+      prisonerId = this.prisonerId,
+      bookingId = this.bookingId,
+      calculationStatus = this.calculationStatus,
+      calculatedAt = this.calculatedAt,
+      calculatedByUsername = this.calculatedByUsername,
+      inputData = this.inputData,
+      sentenceAndOffences = this.sentenceAndOffences,
+      sentenceAndOffencesVersion = this.sentenceAndOffencesVersion,
+      prisonerDetails = this.prisonerDetails,
+      calculationType = calculationType,
+      prisonerLocation = this.prisonerLocation,
+      reasonForCalculation = this.reasonForCalculation,
+      otherReasonForCalculation = this.otherReasonForCalculation,
     )
   }
 }

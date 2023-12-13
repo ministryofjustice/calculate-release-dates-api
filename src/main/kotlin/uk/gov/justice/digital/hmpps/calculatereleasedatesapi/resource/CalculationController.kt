@@ -63,7 +63,7 @@ class CalculationController(
     @PathVariable("prisonerId")
     prisonerId: String,
     @RequestBody
-    calculationRequestModel: CalculationRequestModel
+    calculationRequestModel: CalculationRequestModel,
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
     return calculationTransactionalService.calculate(prisonerId, calculationRequestModel)

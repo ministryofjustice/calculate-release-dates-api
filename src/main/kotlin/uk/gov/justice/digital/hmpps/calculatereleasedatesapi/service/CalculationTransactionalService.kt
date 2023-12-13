@@ -112,7 +112,7 @@ class CalculationTransactionalService(
       providedSourceData,
       bulkCalculationReason,
       calculationUserInputs,
-      )
+    )
     return ValidationResult(messages, bookingAfterCalculation, calculatedReleaseDates, calculationResult)
   }
 
@@ -133,7 +133,7 @@ class CalculationTransactionalService(
     val calculationUserInputs = calculationRequestModel.calculationUserInputs ?: CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     val reasonForCalculation = calculationReasonRepository.findById(calculationRequestModel.calculationReasonId)
-      .orElseThrow{ EntityNotFoundException("No calculation reason found for id: ${calculationRequestModel.calculationReasonId}") }
+      .orElseThrow { EntityNotFoundException("No calculation reason found for id: ${calculationRequestModel.calculationReasonId}") }
     try {
       return calculate(
         booking,
@@ -144,7 +144,14 @@ class CalculationTransactionalService(
         calculationRequestModel.otherReasonDescription,
       )
     } catch (error: Exception) {
-      recordError(booking, sourceData, calculationUserInputs, error, reasonForCalculation, calculationRequestModel.otherReasonDescription)
+      recordError(
+        booking,
+        sourceData,
+        calculationUserInputs,
+        error,
+        reasonForCalculation,
+        calculationRequestModel.otherReasonDescription,
+      )
       throw error
     }
   }
@@ -163,7 +170,6 @@ class CalculationTransactionalService(
       }
     val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId)
     val userInput = transform(calculationRequest.calculationRequestUserInput)
-//    val calculationRequestModel = CalculationRequestModel(calculationUserInputs = userInput, calculationReason = calculationRequest.reasonForCalculation, otherReasonDescription = calculationRequest.otherReasonForCalculation)
     val booking = bookingService.getBooking(sourceData, userInput)
 
     if (calculationRequest.inputData.hashCode() != objectToJson(booking, objectMapper).hashCode()) {
@@ -360,7 +366,13 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun writeToNomisAndPublishEvent(prisonerId: String, booking: Booking, calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>?, isSpecialistSupport: Boolean? = false) {
+  fun writeToNomisAndPublishEvent(
+    prisonerId: String,
+    booking: Booking,
+    calculation: CalculatedReleaseDates,
+    approvedDates: List<ManualEntrySelectedDate>?,
+    isSpecialistSupport: Boolean? = false,
+  ) {
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
     val commentToSave = if (isSpecialistSupport!!) {
@@ -406,7 +418,16 @@ class CalculationTransactionalService(
     otherReasonForCalculation: String?,
   ) {
     calculationRequestRepository.save(
-      transform(booking, serviceUserService.getUsername(), ERROR, sourceData, reasonForCalculation, objectMapper, otherReasonForCalculation, calculationUserInputs),
+      transform(
+        booking,
+        serviceUserService.getUsername(),
+        ERROR,
+        sourceData,
+        reasonForCalculation,
+        objectMapper,
+        otherReasonForCalculation,
+        calculationUserInputs,
+      ),
     )
   }
 
@@ -449,19 +470,31 @@ class CalculationTransactionalService(
         approvedDates = submittedDatesToSave,
       )
       approvedDatesSubmissionRepository.save(approvedDatesSubmission)
-    }.orElseThrow { CalculationNotFoundException("Could not find calculation with request id: ${calculation.calculationRequestId}") }
+    }
+      .orElseThrow { CalculationNotFoundException("Could not find calculation with request id: ${calculation.calculationRequestId}") }
   }
 
-  fun findCalculationResultsByCalculationReference(calculationReference: String, checkForChange: Boolean = false): CalculatedReleaseDates {
+  fun findCalculationResultsByCalculationReference(
+    calculationReference: String,
+    checkForChange: Boolean = false,
+  ): CalculatedReleaseDates {
     val calculationRequest = getCalculationRequestByReference(calculationReference)
 
     return if (checkForChange) {
       log.info("Checking for change in data")
       val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId, true)
-      val originalCalculationAdjustments = objectMapper.treeToValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
-      val originalPrisonerDetails = objectMapper.treeToValue(calculationRequest.prisonerDetails, PrisonerDetails::class.java)
-      val originalSentenceAndOffences = calculationRequest.sentenceAndOffences?.map { element -> objectMapper.treeToValue(element, SentenceAndOffences::class.java) }
-      val originalReturnToCustodyDate = objectMapper.treeToValue(calculationRequest.returnToCustodyDate, ReturnToCustodyDate::class.java)
+      val originalCalculationAdjustments =
+        objectMapper.treeToValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
+      val originalPrisonerDetails =
+        objectMapper.treeToValue(calculationRequest.prisonerDetails, PrisonerDetails::class.java)
+      val originalSentenceAndOffences = calculationRequest.sentenceAndOffences?.map { element ->
+        objectMapper.treeToValue(
+          element,
+          SentenceAndOffences::class.java,
+        )
+      }
+      val originalReturnToCustodyDate =
+        objectMapper.treeToValue(calculationRequest.returnToCustodyDate, ReturnToCustodyDate::class.java)
       val bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments
       val prisonerDetails = sourceData.prisonerDetails
       val sentenceAndOffences = sourceData.sentenceAndOffences

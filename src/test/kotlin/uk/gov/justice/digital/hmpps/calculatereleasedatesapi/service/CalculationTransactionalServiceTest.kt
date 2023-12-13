@@ -171,7 +171,7 @@ class CalculationTransactionalServiceTest {
 
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculatedReleaseDates: CalculatedReleaseDates
-    val calculationReason = CalculationReason(-1, true, false,"",false )
+    val calculationReason = CalculationReason(-1, true, false, "", false)
     try {
       calculatedReleaseDates = calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, calculationReason, null)
     } catch (e: Exception) {

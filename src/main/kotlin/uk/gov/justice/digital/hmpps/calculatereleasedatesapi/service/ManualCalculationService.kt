@@ -60,7 +60,7 @@ class ManualCalculationService(
       reasonForCalculation,
       objectMapper,
       manualEntryRequest.otherReasonDescription,
-      ).withType(CalculationType.CALCULATED)
+    ).withType(CalculationType.CALCULATED)
 
     return try {
       val savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
@@ -77,7 +77,8 @@ class ManualCalculationService(
           booking,
           serviceUserService.getUsername(),
           CalculationStatus.ERROR,
-          sourceData, reasonForCalculation,
+          sourceData,
+          reasonForCalculation,
           objectMapper,
           manualEntryRequest.otherReasonDescription,
         ),

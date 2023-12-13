@@ -8,4 +8,3 @@ interface CalculationReasonRepository : JpaRepository<CalculationReason, Long> {
 
   fun findTopByIsBulkTrue(): CalculationReason
 }
-
