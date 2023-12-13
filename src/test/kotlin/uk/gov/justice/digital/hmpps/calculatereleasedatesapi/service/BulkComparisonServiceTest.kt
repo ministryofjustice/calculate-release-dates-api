@@ -73,6 +73,7 @@ class BulkComparisonServiceTest {
     prisonerId = "ABC123DEF",
     calculationStatus = CalculationStatus.CONFIRMED,
     calculationReference = UUID.randomUUID(),
+    calculationReason = CalculationReason(1, true, false, "Bulk Calculation", true),
   )
 
   private val offenderOffence = OffenderOffence(
@@ -136,6 +137,7 @@ class BulkComparisonServiceTest {
       prisonerId = "ABC123DEF",
       calculationStatus = CalculationStatus.CONFIRMED,
       calculationReference = UUID.randomUUID(),
+      calculationReason = BULK_CALCULATION_REASON,
     )
 
     val booking =
@@ -456,6 +458,7 @@ class BulkComparisonServiceTest {
       prisonerId = "ABC123DEF",
       calculationStatus = CalculationStatus.CONFIRMED,
       calculationReference = UUID.randomUUID(),
+      calculationReason = BULK_CALCULATION_REASON,
     )
 
     val booking =
@@ -491,6 +494,7 @@ class BulkComparisonServiceTest {
       prisonerId = "ABC123DEF",
       calculationStatus = CalculationStatus.CONFIRMED,
       calculationReference = UUID.randomUUID(),
+      calculationReason = BULK_CALCULATION_REASON,
     )
 
     val booking =
@@ -533,6 +537,7 @@ class BulkComparisonServiceTest {
       prisonerId = "ABC123DEF",
       calculationStatus = CalculationStatus.CONFIRMED,
       calculationReference = UUID.randomUUID(),
+      calculationReason = BULK_CALCULATION_REASON,
     )
 
     val booking =

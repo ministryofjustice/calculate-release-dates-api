@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -21,6 +22,8 @@ data class CalculatedReleaseDates(
   val calculationType: CalculationType = CalculationType.CALCULATED,
   val approvedDates: Map<ReleaseDateType, LocalDate?>? = null,
   val calculationReference: UUID,
+  val calculationReason: CalculationReason?,
+  val otherReasonDescription: String? = null,
 ) {
   fun toSentenceCalcDates(): SentenceCalcDates {
     return SentenceCalcDates(
