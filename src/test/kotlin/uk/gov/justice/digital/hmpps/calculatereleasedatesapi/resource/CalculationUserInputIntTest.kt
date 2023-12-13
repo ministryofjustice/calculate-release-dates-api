@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserQuestions
@@ -46,7 +47,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(objectMapper.writeValueAsString(userInput))
+      .bodyValue(objectMapper.writeValueAsString(CalculationRequestModel(userInput, 1L)))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -111,7 +112,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(objectMapper.writeValueAsString(userInput))
+      .bodyValue(objectMapper.writeValueAsString(CalculationRequestModel(userInput, 1L)))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -143,7 +144,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(objectMapper.writeValueAsString(userInput))
+      .bodyValue(objectMapper.writeValueAsString(CalculationRequestModel(userInput, 1L)))
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)

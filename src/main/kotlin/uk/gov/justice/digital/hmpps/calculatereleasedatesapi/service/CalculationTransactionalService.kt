@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -23,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
@@ -35,6 +37,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Upda
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
@@ -45,6 +48,7 @@ import java.util.UUID
 class CalculationTransactionalService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
+  private val calculationReasonRepository: CalculationReasonRepository,
   private val objectMapper: ObjectMapper,
   private val prisonService: PrisonService,
   private val prisonApiDataMapper: PrisonApiDataMapper,
@@ -66,9 +70,14 @@ class CalculationTransactionalService(
    *
    * activeDataOnly is only used by the test 1000 calcs functionality
    */
-  fun fullValidation(prisonerId: String, calculationUserInputs: CalculationUserInputs, activeDataOnly: Boolean = true): List<ValidationMessage> {
+  fun fullValidation(
+    prisonerId: String,
+    calculationUserInputs: CalculationUserInputs,
+    activeDataOnly: Boolean = true,
+  ): List<ValidationMessage> {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
-    var messages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs) // Validation stage 1 of 3
+    var messages =
+      validationService.validateBeforeCalculation(sourceData, calculationUserInputs) // Validation stage 1 of 3
     if (messages.isNotEmpty()) return messages
     // getBooking relies on the previous validation stage to have succeeded
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
@@ -87,7 +96,9 @@ class CalculationTransactionalService(
     calculationType: CalculationStatus = PRELIMINARY,
   ):
     ValidationResult {
-    var messages = validationService.validateBeforeCalculation(providedSourceData, calculationUserInputs) // Validation stage 1 of 3
+    val bulkCalculationReason = calculationReasonRepository.findTopByIsBulkTrue()
+    var messages =
+      validationService.validateBeforeCalculation(providedSourceData, calculationUserInputs) // Validation stage 1 of 3
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
     // getBooking relies on the previous validation stage to have succeeded
     val booking = bookingService.getBooking(providedSourceData, calculationUserInputs)
@@ -95,7 +106,13 @@ class CalculationTransactionalService(
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
     val (bookingAfterCalculation, calculationResult) = calculationService.calculateReleaseDates(booking) // Validation stage 3 of 4
     messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation) // Validation stage 4 of 4
-    val calculatedReleaseDates = calculate(booking, calculationType, providedSourceData, calculationUserInputs)
+    val calculatedReleaseDates = calculate(
+      booking,
+      calculationType,
+      providedSourceData,
+      bulkCalculationReason,
+      calculationUserInputs,
+      )
     return ValidationResult(messages, bookingAfterCalculation, calculatedReleaseDates, calculationResult)
   }
 
@@ -108,16 +125,26 @@ class CalculationTransactionalService(
   @Transactional
   fun calculate(
     prisonerId: String,
-    calculationUserInputs: CalculationUserInputs,
+    calculationRequestModel: CalculationRequestModel,
     activeDataOnly: Boolean = true,
     calculationType: CalculationStatus = PRELIMINARY,
   ): CalculatedReleaseDates {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
+    val calculationUserInputs = calculationRequestModel.calculationUserInputs ?: CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    val reasonForCalculation = calculationReasonRepository.findById(calculationRequestModel.calculationReasonId)
+      .orElseThrow{ EntityNotFoundException("No calculation reason found for id: ${calculationRequestModel.calculationReasonId}") }
     try {
-      return calculate(booking, calculationType, sourceData, calculationUserInputs)
+      return calculate(
+        booking,
+        calculationType,
+        sourceData,
+        reasonForCalculation,
+        calculationUserInputs,
+        calculationRequestModel.otherReasonDescription,
+      )
     } catch (error: Exception) {
-      recordError(booking, sourceData, calculationUserInputs, error)
+      recordError(booking, sourceData, calculationUserInputs, error, reasonForCalculation, calculationRequestModel.otherReasonDescription)
       throw error
     }
   }
@@ -136,6 +163,7 @@ class CalculationTransactionalService(
       }
     val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId)
     val userInput = transform(calculationRequest.calculationRequestUserInput)
+//    val calculationRequestModel = CalculationRequestModel(calculationUserInputs = userInput, calculationReason = calculationRequest.reasonForCalculation, otherReasonDescription = calculationRequest.otherReasonForCalculation)
     val booking = bookingService.getBooking(sourceData, userInput)
 
     if (calculationRequest.inputData.hashCode() != objectToJson(booking, objectMapper).hashCode()) {
@@ -146,7 +174,13 @@ class CalculationTransactionalService(
       throw PreconditionFailedException("The booking now fails validation")
     }
 
-    return confirmCalculation(calculationRequest.prisonerId, submitCalculationRequest.calculationFragments, sourceData, booking, userInput, submitCalculationRequest.approvedDates, submitCalculationRequest.isSpecialistSupport)
+    return confirmCalculation(
+      calculationRequest.prisonerId,
+      submitCalculationRequest.calculationFragments, sourceData, booking, userInput,
+      submitCalculationRequest.approvedDates, submitCalculationRequest.isSpecialistSupport,
+      calculationRequest.reasonForCalculation,
+      calculationRequest.otherReasonForCalculation,
+    )
   }
 
   private fun confirmCalculation(
@@ -157,6 +191,8 @@ class CalculationTransactionalService(
     userInput: CalculationUserInputs?,
     approvedDates: List<ManualEntrySelectedDate>?,
     isSpecialistSupport: Boolean? = false,
+    reasonForCalculation: CalculationReason?,
+    otherReasonForCalculation: String?,
   ): CalculatedReleaseDates {
     try {
       val calculationType = if (approvedDates != null) {
@@ -166,14 +202,23 @@ class CalculationTransactionalService(
       } else {
         CalculationType.CALCULATED_WITH_APPROVED_DATES
       }
-      val calculation = calculate(booking, CONFIRMED, sourceData, userInput, calculationFragments, calculationType)
+      val calculation = calculate(
+        booking,
+        CONFIRMED,
+        sourceData,
+        reasonForCalculation,
+        userInput,
+        otherReasonForCalculation,
+        calculationFragments,
+        calculationType,
+      )
       if (!approvedDates.isNullOrEmpty()) {
         storeApprovedDates(calculation, approvedDates)
       }
       writeToNomisAndPublishEvent(prisonerId, booking, calculation, approvedDates, isSpecialistSupport)
       return calculation
     } catch (error: Exception) {
-      recordError(booking, sourceData, userInput, error)
+      recordError(booking, sourceData, userInput, error, reasonForCalculation, otherReasonForCalculation)
       throw error
     }
   }
@@ -184,7 +229,9 @@ class CalculationTransactionalService(
     booking: Booking,
     calculationStatus: CalculationStatus,
     sourceData: PrisonApiSourceData,
+    reasonForCalculation: CalculationReason?,
     calculationUserInputs: CalculationUserInputs?,
+    otherCalculationReason: String? = null,
     calculationFragments: CalculationFragments? = null,
     calculationType: CalculationType = CalculationType.CALCULATED,
   ): CalculatedReleaseDates {
@@ -195,7 +242,9 @@ class CalculationTransactionalService(
           serviceUserService.getUsername(),
           calculationStatus,
           sourceData,
+          reasonForCalculation,
           objectMapper,
+          otherCalculationReason,
           calculationUserInputs,
           calculationFragments,
           calculationType,
@@ -353,9 +402,11 @@ class CalculationTransactionalService(
     sourceData: PrisonApiSourceData,
     calculationUserInputs: CalculationUserInputs?,
     error: Exception,
+    reasonForCalculation: CalculationReason?,
+    otherReasonForCalculation: String?,
   ) {
     calculationRequestRepository.save(
-      transform(booking, serviceUserService.getUsername(), ERROR, sourceData, objectMapper, calculationUserInputs),
+      transform(booking, serviceUserService.getUsername(), ERROR, sourceData, reasonForCalculation, objectMapper, otherReasonForCalculation, calculationUserInputs),
     )
   }
 

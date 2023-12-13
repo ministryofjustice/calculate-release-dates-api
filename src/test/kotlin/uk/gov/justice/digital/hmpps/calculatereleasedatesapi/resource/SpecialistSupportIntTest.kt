@@ -7,6 +7,8 @@ import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideDateRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideDateResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideRequest
@@ -15,7 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.GenuineOverrideRepository
-import java.util.UUID
+import java.util.*
 
 class SpecialistSupportIntTest() : IntegrationTestBase() {
 
@@ -111,7 +113,7 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
           manualEntryRequest = ManualEntryRequest(
             listOf(
               ManualEntrySelectedDate(ReleaseDateType.APD, "text", SubmittedDate(day = 1, month = 2, year = 2023)),
-            ),
+            ), 1L, ""
           ),
         ),
       )
@@ -144,6 +146,7 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
     .uri("/calculation/$prisonerid")
     .accept(MediaType.APPLICATION_JSON)
     .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .bodyValue(CalculationRequestModel(CalculationUserInputs(), 1L))
     .exchange()
     .expectStatus().isOk
     .expectHeader().contentType(MediaType.APPLICATION_JSON)

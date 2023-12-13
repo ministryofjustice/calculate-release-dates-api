@@ -20,4 +20,7 @@ data class CalculationReason(
   @NotNull
   val isOther: Boolean,
   val displayName: String,
+  @NotNull
+  @JsonIgnore
+  val isBulk: Boolean
 )

@@ -67,7 +67,7 @@ class ManualCalculationController(
     @PathVariable prisonerId: String,
     @RequestBody manualEntryRequest: ManualEntryRequest,
   ): ManualCalculationResponse {
-    return manualCalculationService.storeManualCalculation(prisonerId, manualEntryRequest.selectedManualEntryDates)
+    return manualCalculationService.storeManualCalculation(prisonerId, manualEntryRequest)
   }
 
   companion object {

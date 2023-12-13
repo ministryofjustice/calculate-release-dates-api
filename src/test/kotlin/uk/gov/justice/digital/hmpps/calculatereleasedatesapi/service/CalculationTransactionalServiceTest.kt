@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
@@ -73,6 +74,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Upda
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
@@ -82,8 +84,7 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.Optional
-import java.util.UUID
+import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceTest {
@@ -113,6 +114,7 @@ class CalculationTransactionalServiceTest {
 
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
+  private val calculationReasonRepository = mock<CalculationReasonRepository>()
   private val prisonService = mock<PrisonService>()
   private val eventService = mock<EventService>()
   private val calculationService = CalculationService(
@@ -130,6 +132,7 @@ class CalculationTransactionalServiceTest {
     CalculationTransactionalService(
       calculationRequestRepository,
       calculationOutcomeRepository,
+      calculationReasonRepository,
       TestUtil.objectMapper(),
       prisonService,
       prisonApiDataMapper,
@@ -168,8 +171,9 @@ class CalculationTransactionalServiceTest {
 
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculatedReleaseDates: CalculatedReleaseDates
+    val calculationReason = CalculationReason(-1, true, false,"",false )
     try {
-      calculatedReleaseDates = calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, null)
+      calculatedReleaseDates = calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, calculationReason, null)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)

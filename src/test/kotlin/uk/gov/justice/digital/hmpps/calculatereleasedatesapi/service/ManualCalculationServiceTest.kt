@@ -10,6 +10,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.security.oauth2.jwt.Jwt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -17,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -30,17 +32,18 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.Optional
-import java.util.UUID
+import java.util.*
 
 class ManualCalculationServiceTest {
   private val prisonService = mock<PrisonService>()
   private val bookingService = mock<BookingService>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
+  private val calculationReasonRepository = mock<CalculationReasonRepository>()
   private val objectMapper = TestUtil.objectMapper()
   private val eventService = mock<EventService>()
   private val serviceUserService = mock<ServiceUserService>()
@@ -49,6 +52,7 @@ class ManualCalculationServiceTest {
     bookingService,
     calculationOutcomeRepository,
     calculationRequestRepository,
+    calculationReasonRepository,
     objectMapper,
     eventService,
     serviceUserService,
@@ -90,10 +94,12 @@ class ManualCalculationServiceTest {
     whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+    whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.None, "None of the dates apply", null)
-    manualCalculationService.storeManualCalculation(PRISONER_ID, listOf(manualCalcRequest))
+    val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
+    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest)
     val expectedUpdatedOffenderDates = UpdateOffenderDates(
       calculationUuid = CALCULATION_REFERENCE,
       submissionUser = USERNAME,
@@ -110,10 +116,14 @@ class ManualCalculationServiceTest {
     whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+    whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+
     val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
-    manualCalculationService.storeManualCalculation(PRISONER_ID, listOf(manualCalcRequest))
+    val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
+
+    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest)
     val expectedUpdatedOffenderDates = UpdateOffenderDates(
       calculationUuid = CALCULATION_REFERENCE,
       submissionUser = USERNAME,
@@ -159,6 +169,14 @@ class ManualCalculationServiceTest {
     )
     private val CALCULATION_REFERENCE: UUID = UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5")
     private const val CALCULATION_REQUEST_ID = 123456L
+
+    val CALCULATION_REASON = CalculationReason(
+      id = 1,
+      isActive = true,
+      isOther = false,
+      isBulk = false,
+      displayName = "Reason"
+    )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
       id = CALCULATION_REQUEST_ID,

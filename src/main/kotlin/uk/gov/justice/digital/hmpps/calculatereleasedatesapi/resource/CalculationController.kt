@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.TEST
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserQuestions
@@ -62,10 +63,10 @@ class CalculationController(
     @PathVariable("prisonerId")
     prisonerId: String,
     @RequestBody
-    calculationUserInputs: CalculationUserInputs?,
+    calculationRequestModel: CalculationRequestModel
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
-    return calculationTransactionalService.calculate(prisonerId, calculationUserInputs ?: CalculationUserInputs())
+    return calculationTransactionalService.calculate(prisonerId, calculationRequestModel)
   }
 
   @PostMapping(value = ["/{prisonerId}/test"])
@@ -88,12 +89,12 @@ class CalculationController(
     @PathVariable("prisonerId")
     prisonerId: String,
     @RequestBody
-    calculationUserInputs: CalculationUserInputs?,
+    calculationRequestModel: CalculationRequestModel,
   ): CalculationResults {
     log.info("Request received to calculate release dates for $prisonerId")
     val validationMessages = calculationTransactionalService.fullValidation(
       prisonerId,
-      calculationUserInputs ?: CalculationUserInputs(),
+      calculationRequestModel.calculationUserInputs ?: CalculationUserInputs(),
       false,
     )
 
@@ -103,7 +104,7 @@ class CalculationController(
       CalculationResults(
         calculationTransactionalService.calculate(
           prisonerId,
-          calculationUserInputs ?: CalculationUserInputs(),
+          calculationRequestModel,
           false,
           TEST,
         ),

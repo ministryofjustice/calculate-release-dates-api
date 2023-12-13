@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
@@ -21,7 +22,7 @@ import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import org.hibernate.annotations.Type
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @Entity
 @Table
@@ -101,6 +102,13 @@ data class CalculationRequest(
   @OneToMany
   @Fetch(FetchMode.JOIN)
   val approvedDatesSubmissions: List<ApprovedDatesSubmission> = ArrayList(),
+
+  @JoinColumn(name = "reasonForCalculation")
+  @ManyToOne
+  @NotNull
+  val reasonForCalculation: CalculationReason? = null,
+
+  val otherReasonForCalculation: String? = null,
 ) {
 
   init {
@@ -126,19 +134,21 @@ data class CalculationRequest(
 
   fun withType(calculationType: CalculationType): CalculationRequest {
     return copy(
-      id = this.id,
-      calculationReference = this.calculationReference,
-      prisonerId = this.prisonerId,
-      bookingId = this.bookingId,
-      calculationStatus = this.calculationStatus,
-      calculatedAt = this.calculatedAt,
-      calculatedByUsername = this.calculatedByUsername,
-      inputData = this.inputData,
-      sentenceAndOffences = this.sentenceAndOffences,
-      sentenceAndOffencesVersion = this.sentenceAndOffencesVersion,
-      prisonerDetails = this.prisonerDetails,
-      calculationType = calculationType,
-      prisonerLocation = this.prisonerLocation,
+        id = this.id,
+        calculationReference = this.calculationReference,
+        prisonerId = this.prisonerId,
+        bookingId = this.bookingId,
+        calculationStatus = this.calculationStatus,
+        calculatedAt = this.calculatedAt,
+        calculatedByUsername = this.calculatedByUsername,
+        inputData = this.inputData,
+        sentenceAndOffences = this.sentenceAndOffences,
+        sentenceAndOffencesVersion = this.sentenceAndOffencesVersion,
+        prisonerDetails = this.prisonerDetails,
+        calculationType = calculationType,
+        prisonerLocation = this.prisonerLocation,
+        reasonForCalculation = this.reasonForCalculation,
+        otherReasonForCalculation = this.otherReasonForCalculation,
     )
   }
 }

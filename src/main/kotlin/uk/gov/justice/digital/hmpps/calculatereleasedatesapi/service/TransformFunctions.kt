@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestUserInput
@@ -101,7 +102,7 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.UUID
+import java.util.*
 
 /*
 ** Functions which transform entities objects into their model equivalents.
@@ -349,7 +350,9 @@ fun transform(
   username: String,
   calculationStatus: CalculationStatus,
   sourceData: PrisonApiSourceData,
+  reasonForCalculation: CalculationReason?,
   objectMapper: ObjectMapper,
+  otherReasonDescription: String?,
   calculationUserInputs: CalculationUserInputs? = null,
   calculationFragments: CalculationFragments? = null,
   calculationType: CalculationType = CalculationType.CALCULATED,
@@ -369,6 +372,8 @@ fun transform(
     calculationRequestUserInput = transform(calculationUserInputs, sourceData),
     breakdownHtml = calculationFragments?.breakdownHtml,
     calculationType = calculationType,
+    reasonForCalculation =  reasonForCalculation,
+    otherReasonForCalculation = otherReasonDescription
   )
 }
 

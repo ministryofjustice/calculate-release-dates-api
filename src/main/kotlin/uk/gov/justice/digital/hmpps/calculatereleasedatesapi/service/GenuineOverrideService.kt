@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverri
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.GenuineOverrideRepository
-import java.util.UUID
+import java.util.*
 
 @Service
 class GenuineOverrideService(
@@ -44,7 +44,7 @@ class GenuineOverrideService(
   fun storeGenuineOverrideDates(genuineOverrideRequest: GenuineOverrideDateRequest): GenuineOverrideDateResponse {
     val originalCalculation = calculationRequestRepository.findByCalculationReference(UUID.fromString(genuineOverrideRequest.originalCalculationReference))
     return originalCalculation.map { it ->
-      val storeManualCalculation = manualCalculationService.storeManualCalculation(it.prisonerId, genuineOverrideRequest.manualEntryRequest.selectedManualEntryDates, MANUALLY_ENTERED_OVERRIDE)
+      val storeManualCalculation = manualCalculationService.storeManualCalculation(it.prisonerId, genuineOverrideRequest.manualEntryRequest, MANUALLY_ENTERED_OVERRIDE)
       val overridesForCalculation = genuineOverrideRepository.findAllByOriginalCalculationRequestCalculationReferenceOrderBySavedAtDesc(UUID.fromString(genuineOverrideRequest.originalCalculationReference))
       if (overridesForCalculation.isNotEmpty()) {
         return@map calculationRequestRepository.findById(storeManualCalculation.calculationRequestId).map {
