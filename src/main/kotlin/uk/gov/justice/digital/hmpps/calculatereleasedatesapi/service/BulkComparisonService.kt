@@ -152,7 +152,7 @@ class BulkComparisonService(
 
     val prisonApiSourceData: PrisonApiSourceData = this.convert(calculableSentenceEnvelope)
 
-    val bulkCalculationReason = calculationReasonRepository.findTopByIsBulkTrue().orElseThrow{
+    val bulkCalculationReason = calculationReasonRepository.findTopByIsBulkTrue().orElseThrow {
       EntityNotFoundException("The bulk calculation reason was not found.")
     }
 

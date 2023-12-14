@@ -3,14 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import com.fasterxml.jackson.databind.JsonNode
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.EntityNotFoundException
-import java.time.LocalDate
-import java.time.Period
-import java.time.temporal.ChronoUnit.DAYS
-import java.time.temporal.ChronoUnit.MONTHS
-import java.time.temporal.ChronoUnit.WEEKS
-import java.time.temporal.ChronoUnit.YEARS
-import java.util.Optional
-import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
@@ -86,6 +78,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import java.time.LocalDate
+import java.time.Period
+import java.time.temporal.ChronoUnit.DAYS
+import java.time.temporal.ChronoUnit.MONTHS
+import java.time.temporal.ChronoUnit.WEEKS
+import java.time.temporal.ChronoUnit.YEARS
+import java.util.Optional
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceTest {
@@ -174,7 +174,8 @@ class CalculationTransactionalServiceTest {
     val calculatedReleaseDates: CalculatedReleaseDates
     val calculationReason = CalculationReason(-1, true, false, "", false)
     try {
-      calculatedReleaseDates = calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, calculationReason, null)
+      calculatedReleaseDates =
+        calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, calculationReason, null)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -203,7 +204,10 @@ class CalculationTransactionalServiceTest {
 
     val calculationBreakdown: CalculationBreakdown?
     try {
-      calculationBreakdown = calculationTransactionalService.calculateWithBreakdown(booking, CalculatedReleaseDates(calculation.dates, -1, -1, "", PRELIMINARY, calculationReference = UUID.randomUUID()))
+      calculationBreakdown = calculationTransactionalService.calculateWithBreakdown(
+        booking,
+        CalculatedReleaseDates(calculation.dates, -1, -1, "", PRELIMINARY, calculationReference = UUID.randomUUID()),
+      )
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -251,11 +255,16 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES,
       ),
     )
-    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(fakeSourceData)
+    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(
+      fakeSourceData,
+    )
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
 
     val exception = assertThrows<PreconditionFailedException> {
-      calculationTransactionalService.validateAndConfirmCalculation(CALCULATION_REQUEST_ID, SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null))
+      calculationTransactionalService.validateAndConfirmCalculation(
+        CALCULATION_REQUEST_ID,
+        SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null),
+      )
     }
     assertThat(exception)
       .isInstanceOf(PreconditionFailedException::class.java)
@@ -270,11 +279,16 @@ class CalculationTransactionalServiceTest {
         PRELIMINARY.name,
       ),
     ).thenReturn(Optional.empty())
-    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(fakeSourceData)
+    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(
+      fakeSourceData,
+    )
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
 
     val exception = assertThrows<EntityNotFoundException> {
-      calculationTransactionalService.validateAndConfirmCalculation(CALCULATION_REQUEST_ID, SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null))
+      calculationTransactionalService.validateAndConfirmCalculation(
+        CALCULATION_REQUEST_ID,
+        SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null),
+      )
     }
     assertThat(exception)
       .isInstanceOf(EntityNotFoundException::class.java)
@@ -286,12 +300,23 @@ class CalculationTransactionalServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(CALCULATION_REQUEST_ID, PRELIMINARY.name))
       .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
-    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(fakeSourceData)
+    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(
+      fakeSourceData,
+    )
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
-    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
+      Optional.of(
+        CALCULATION_REQUEST_WITH_OUTCOMES,
+      ),
+    )
 
-    assertDoesNotThrow { calculationTransactionalService.validateAndConfirmCalculation(CALCULATION_REQUEST_ID, SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null)) }
+    assertDoesNotThrow {
+      calculationTransactionalService.validateAndConfirmCalculation(
+        CALCULATION_REQUEST_ID,
+        SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null),
+      )
+    }
   }
 
   @Test
@@ -356,7 +381,12 @@ class CalculationTransactionalServiceTest {
     ).thenThrow(EntityNotFoundException("test ex"))
 
     val exception = assertThrows<EntityNotFoundException> {
-      calculationTransactionalService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION, emptyList())
+      calculationTransactionalService.writeToNomisAndPublishEvent(
+        PRISONER_ID,
+        BOOKING,
+        BOOKING_CALCULATION,
+        emptyList(),
+      )
     }
 
     assertThat(exception)
@@ -384,7 +414,12 @@ class CalculationTransactionalServiceTest {
     ).thenThrow(EntityNotFoundException("test ex"))
 
     try {
-      calculationTransactionalService.writeToNomisAndPublishEvent(PRISONER_ID, BOOKING, BOOKING_CALCULATION, emptyList())
+      calculationTransactionalService.writeToNomisAndPublishEvent(
+        PRISONER_ID,
+        BOOKING,
+        BOOKING_CALCULATION,
+        emptyList(),
+      )
     } catch (ex: Exception) {
       fail("Exception was thrown!")
     }
@@ -395,11 +430,22 @@ class CalculationTransactionalServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(CALCULATION_REQUEST_ID, PRELIMINARY.name))
       .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
-    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(fakeSourceData)
+    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId)).thenReturn(
+      fakeSourceData,
+    )
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
-    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
-    val submission = ApprovedDatesSubmission(calculationRequest = CALCULATION_REQUEST, prisonerId = PRISONER_ID, bookingId = BOOKING_ID, submittedByUsername = USERNAME)
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(
+      Optional.of(
+        CALCULATION_REQUEST_WITH_OUTCOMES,
+      ),
+    )
+    val submission = ApprovedDatesSubmission(
+      calculationRequest = CALCULATION_REQUEST,
+      prisonerId = PRISONER_ID,
+      bookingId = BOOKING_ID,
+      submittedByUsername = USERNAME,
+    )
     whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
     calculationTransactionalService.validateAndConfirmCalculation(
       CALCULATION_REQUEST_ID,
@@ -503,9 +549,18 @@ class CalculationTransactionalServiceTest {
 
   @Test
   fun `If the NOMIS data has changed and checkForChange is true, throw exception`() {
-    whenever(calculationRequestRepository.findByCalculationReference(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+    whenever(calculationRequestRepository.findByCalculationReference(any())).thenReturn(
+      Optional.of(
+        CALCULATION_REQUEST_WITH_OUTCOMES,
+      ),
+    )
     whenever(prisonService.getPrisonApiSourceData(anyString(), eq(true))).thenReturn(SOURCE_DATA)
-    assertThrows<CalculationDataHasChangedError> { calculationTransactionalService.findCalculationResultsByCalculationReference(UUID.randomUUID().toString(), true) }
+    assertThrows<CalculationDataHasChangedError> {
+      calculationTransactionalService.findCalculationResultsByCalculationReference(
+        UUID.randomUUID().toString(),
+        true,
+      )
+    }
   }
 
   private fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
@@ -551,7 +606,8 @@ class CalculationTransactionalServiceTest {
         ),
       ),
     )
-    val SOURCE_DATA = PrisonApiSourceData(listOf(originalSentence), prisonerDetails, adjustments, emptyList(), null, null)
+    val SOURCE_DATA =
+      PrisonApiSourceData(listOf(originalSentence), prisonerDetails, adjustments, emptyList(), null, null)
     val cachedBankHolidays =
       BankHolidays(
         RegionBankHolidays(

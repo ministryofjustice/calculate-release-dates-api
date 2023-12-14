@@ -97,7 +97,6 @@ class CalculationTransactionalService(
     calculationType: CalculationStatus = PRELIMINARY,
   ):
     ValidationResult {
-
     var messages =
       validationService.validateBeforeCalculation(providedSourceData, calculationUserInputs) // Validation stage 1 of 3
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)

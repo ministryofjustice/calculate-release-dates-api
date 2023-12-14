@@ -17,12 +17,12 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
-import java.time.LocalDateTime
-import java.util.UUID
 import org.hibernate.Hibernate
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import org.hibernate.annotations.Type
+import java.time.LocalDateTime
+import java.util.UUID
 
 @Entity
 @Table
