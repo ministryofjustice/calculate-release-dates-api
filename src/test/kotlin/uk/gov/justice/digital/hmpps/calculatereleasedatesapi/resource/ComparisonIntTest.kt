@@ -14,6 +14,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
@@ -44,6 +45,7 @@ class ComparisonIntTest : IntegrationTestBase() {
     val result = createComparison("ABC")
 
     assertEquals(false, result.manualInput)
+    assertEquals(ComparisonType.ESTABLISHMENT_FULL, result.type)
     assertEquals(0, result.numberOfPeopleCompared)
     val comparison = comparisonRepository.findByManualInputAndComparisonShortReference(false, result.comparisonShortReference)
     assertEquals(1, comparison!!.numberOfPeopleCompared)
@@ -112,8 +114,8 @@ class ComparisonIntTest : IntegrationTestBase() {
     assertEquals(comparisonPerson.person, result.personId)
   }
 
-  private fun createComparison(prisonId: String): Comparison {
-    val request = ComparisonInput(objectMapper.createObjectNode(), prisonId)
+  private fun createComparison(prisonId: String, type: ComparisonType = ComparisonType.ESTABLISHMENT_FULL): Comparison {
+    val request = ComparisonInput(objectMapper.createObjectNode(), prisonId, type)
     val result = webTestClient.post()
       .uri("/comparison")
       .accept(MediaType.APPLICATION_JSON)

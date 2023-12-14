@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
@@ -46,6 +47,7 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       objectMapper.createObjectNode(),
       null,
       true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -69,11 +71,12 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       objectMapper.createObjectNode(),
       "ABC",
       true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
-    Mockito.`when`(comparisonRepository.findAllByManualInput(true)).thenReturn(listOf(comparison))
+    Mockito.`when`(comparisonRepository.findAllByTypeIsIn(setOf(ComparisonType.MANUAL))).thenReturn(listOf(comparison))
 
     val manualComparisonList = manualComparisonService.listManual()
     Assertions.assertTrue(manualComparisonList.isNotEmpty())
@@ -95,6 +98,7 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       objectMapper.createObjectNode(),
       null,
       true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -121,6 +125,7 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       objectMapper.createObjectNode(),
       null,
       true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),

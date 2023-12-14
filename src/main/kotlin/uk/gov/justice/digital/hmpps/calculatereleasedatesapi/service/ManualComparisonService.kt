@@ -7,6 +7,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
@@ -39,7 +40,7 @@ class ManualComparisonService(
   }
 
   fun listManual(): List<ComparisonSummary> {
-    return comparisonRepository.findAllByManualInput(true).map { transform(it) }
+    return comparisonRepository.findAllByTypeIsIn(setOf(ComparisonType.MANUAL)).map { transform(it) }
   }
 
   fun getCountOfPersonsInComparisonByComparisonReference(shortReference: String): Long {

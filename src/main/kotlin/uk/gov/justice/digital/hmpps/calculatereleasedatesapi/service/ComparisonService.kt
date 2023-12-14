@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
@@ -47,8 +48,8 @@ class ComparisonService(
   }
 
   fun listComparisons(): List<ComparisonSummary> {
-    return comparisonRepository.findAllByManualInputAndPrisonIsIn(
-      false,
+    return comparisonRepository.findAllByTypeIsInAndPrisonIsIn(
+      setOf(ComparisonType.ESTABLISHMENT_FULL, ComparisonType.ESTABLISHMENT_HDCED4PLUS),
       prisonService.getCurrentUserPrisonsList(),
     ).map { transform(it) }
   }

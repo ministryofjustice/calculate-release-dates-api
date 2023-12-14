@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
@@ -61,6 +62,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       JsonNodeFactory.instance.objectNode(),
       "ABC",
       false,
+      ComparisonType.ESTABLISHMENT_FULL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -83,6 +85,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       JsonNodeFactory.instance.objectNode(),
       "ABC",
       false,
+      ComparisonType.ESTABLISHMENT_FULL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -101,7 +104,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
   fun `Get a list of comparisons`() {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
-    whenever(comparisonRepository.findAllByManualInputAndPrisonIsIn(any(), any())).thenReturn(
+    whenever(comparisonRepository.findAllByTypeIsInAndPrisonIsIn(any(), any())).thenReturn(
       listOf(
         Comparison(
           1,
@@ -110,6 +113,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
           JsonNodeFactory.instance.objectNode(),
           "ABC",
           false,
+          ComparisonType.ESTABLISHMENT_FULL,
           LocalDateTime.now(),
           USERNAME,
           ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -139,6 +143,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       JsonNodeFactory.instance.objectNode(),
       prison,
       true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -166,6 +171,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       JsonNodeFactory.instance.objectNode(),
       prison,
       true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -200,6 +206,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       JsonNodeFactory.instance.objectNode(),
       prison,
       true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -226,6 +233,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       JsonNodeFactory.instance.objectNode(),
       prison,
       true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -251,6 +259,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       JsonNodeFactory.instance.objectNode(),
       prison,
       true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),

@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
@@ -108,7 +109,7 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
   @Test
   fun `Should create a prison comparison`() {
     val comparison = Comparison(
-      1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "BMI", false, LocalDateTime.now(), "SOMEONE",
+      1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "BMI", false, ComparisonType.ESTABLISHMENT_FULL, LocalDateTime.now(), "SOMEONE",
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     val duplicateReleaseDates = releaseDates.toMutableMap()
