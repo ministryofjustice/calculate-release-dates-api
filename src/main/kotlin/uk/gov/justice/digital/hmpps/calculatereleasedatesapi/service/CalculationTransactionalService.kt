@@ -92,11 +92,12 @@ class CalculationTransactionalService(
     prisonerId: String,
     calculationUserInputs: CalculationUserInputs,
     activeDataOnly: Boolean = true,
+    calculationReason: CalculationReason,
     providedSourceData: PrisonApiSourceData,
     calculationType: CalculationStatus = PRELIMINARY,
   ):
     ValidationResult {
-    val bulkCalculationReason = calculationReasonRepository.findTopByIsBulkTrue()
+
     var messages =
       validationService.validateBeforeCalculation(providedSourceData, calculationUserInputs) // Validation stage 1 of 3
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
@@ -110,7 +111,7 @@ class CalculationTransactionalService(
       booking,
       calculationType,
       providedSourceData,
-      bulkCalculationReason,
+      calculationReason,
       calculationUserInputs,
     )
     return ValidationResult(messages, bookingAfterCalculation, calculatedReleaseDates, calculationResult)
