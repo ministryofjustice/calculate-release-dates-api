@@ -3,6 +3,14 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import com.fasterxml.jackson.databind.JsonNode
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.EntityNotFoundException
+import java.time.LocalDate
+import java.time.Period
+import java.time.temporal.ChronoUnit.DAYS
+import java.time.temporal.ChronoUnit.MONTHS
+import java.time.temporal.ChronoUnit.WEEKS
+import java.time.temporal.ChronoUnit.YEARS
+import java.util.Optional
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
@@ -78,13 +86,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-import java.time.LocalDate
-import java.time.Period
-import java.time.temporal.ChronoUnit.DAYS
-import java.time.temporal.ChronoUnit.MONTHS
-import java.time.temporal.ChronoUnit.WEEKS
-import java.time.temporal.ChronoUnit.YEARS
-import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceTest {

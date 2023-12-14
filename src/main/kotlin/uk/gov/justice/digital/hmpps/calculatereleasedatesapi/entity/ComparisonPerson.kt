@@ -15,7 +15,7 @@ import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.Type
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Entity
 @Table

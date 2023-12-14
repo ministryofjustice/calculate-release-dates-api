@@ -1,6 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import java.util.Optional
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -34,9 +38,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Upda
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
-import java.util.*
 
 class ManualCalculationServiceTest {
   private val prisonService = mock<PrisonService>()
