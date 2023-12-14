@@ -646,7 +646,6 @@ fun transform(
 ): Comparison {
   return Comparison(
     criteria = comparison.criteria ?: JsonNodeFactory.instance.objectNode(),
-    manualInput = false,
     type = comparison.type,
     prison = comparison.prison,
     calculatedAt = LocalDateTime.now(),
@@ -660,7 +659,6 @@ fun transform(
   username: String,
 ): Comparison = Comparison(
   criteria = criteria,
-  manualInput = true,
   type = MANUAL,
   calculatedAt = LocalDateTime.now(),
   calculatedByUsername = username,

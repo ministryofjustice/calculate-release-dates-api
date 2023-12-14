@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonSt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.nonManualComparisonTypes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
@@ -61,7 +62,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       JsonNodeFactory.instance.objectNode(),
       "ABC",
-      false,
       ComparisonType.ESTABLISHMENT_FULL,
       LocalDateTime.now(),
       USERNAME,
@@ -84,7 +84,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       JsonNodeFactory.instance.objectNode(),
       "ABC",
-      false,
       ComparisonType.ESTABLISHMENT_FULL,
       LocalDateTime.now(),
       USERNAME,
@@ -112,7 +111,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
           "ABCD1234",
           JsonNodeFactory.instance.objectNode(),
           "ABC",
-          false,
           ComparisonType.ESTABLISHMENT_FULL,
           LocalDateTime.now(),
           USERNAME,
@@ -142,15 +140,14 @@ class ComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       JsonNodeFactory.instance.objectNode(),
       prison,
-      true,
       ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     whenever(
-      comparisonRepository.findByManualInputAndComparisonShortReference(
-        false,
+      comparisonRepository.findByTypeIsInAndComparisonShortReference(
+        nonManualComparisonTypes(),
         "ABCD1234",
       ),
     ).thenReturn(comparison)
@@ -170,15 +167,14 @@ class ComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       JsonNodeFactory.instance.objectNode(),
       prison,
-      true,
       ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     whenever(
-      comparisonRepository.findByManualInputAndComparisonShortReference(
-        false,
+      comparisonRepository.findByTypeIsInAndComparisonShortReference(
+        nonManualComparisonTypes(),
         "ABCD1234",
       ),
     ).thenReturn(comparison)
@@ -205,15 +201,14 @@ class ComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       JsonNodeFactory.instance.objectNode(),
       prison,
-      true,
       ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     whenever(
-      comparisonRepository.findByManualInputAndComparisonShortReference(
-        false,
+      comparisonRepository.findByTypeIsInAndComparisonShortReference(
+        nonManualComparisonTypes(),
         "ABCD1234",
       ),
     ).thenReturn(comparison)
@@ -232,15 +227,14 @@ class ComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       JsonNodeFactory.instance.objectNode(),
       prison,
-      true,
       ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     whenever(
-      comparisonRepository.findByManualInputAndComparisonShortReference(
-        false,
+      comparisonRepository.findByTypeIsInAndComparisonShortReference(
+        nonManualComparisonTypes(),
         "ABCD1234",
       ),
     ).thenReturn(comparison)
@@ -258,7 +252,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       JsonNodeFactory.instance.objectNode(),
       prison,
-      true,
       ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
@@ -369,8 +362,8 @@ class ComparisonServiceTest : IntegrationTestBase() {
       calculationOutcomePerson7Mtd,
     )
     whenever(
-      comparisonRepository.findByManualInputAndComparisonShortReference(
-        false,
+      comparisonRepository.findByTypeIsInAndComparisonShortReference(
+        nonManualComparisonTypes(),
         "ABCD1234",
       ),
     ).thenReturn(comparison)

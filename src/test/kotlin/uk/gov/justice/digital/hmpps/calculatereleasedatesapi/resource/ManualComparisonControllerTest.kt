@@ -59,7 +59,7 @@ class ManualComparisonControllerTest {
 
     whenever(manualComparisonService.create(comparisonInput)).thenReturn(
       Comparison(
-        1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "JAS", false, ComparisonType.MANUAL, LocalDateTime.now(), "JOEL",
+        1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "JAS", ComparisonType.MANUAL, LocalDateTime.now(), "JOEL",
         ComparisonStatus(ComparisonStatusValue.PROCESSING),
       ),
     )

@@ -60,7 +60,7 @@ class ComparisonControllerTest {
 
     whenever(comparisonService.create(comparisonInput)).thenReturn(
       Comparison(
-        1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "JAS", false, ComparisonType.ESTABLISHMENT_FULL, LocalDateTime.now(), "JOEL",
+        1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "JAS", ComparisonType.ESTABLISHMENT_FULL, LocalDateTime.now(), "JOEL",
         ComparisonStatus(ComparisonStatusValue.PROCESSING),
       ),
     )

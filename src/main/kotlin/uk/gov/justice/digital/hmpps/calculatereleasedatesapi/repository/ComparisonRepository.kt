@@ -12,5 +12,5 @@ interface ComparisonRepository : JpaRepository<Comparison, Long> {
 
   fun findAllByTypeIsInAndPrisonIsIn(types: Collection<ComparisonType>, includedPrisons: List<String>): List<Comparison>
 
-  fun findByManualInputAndComparisonShortReference(manualInput: Boolean, shortReference: String): Comparison?
+  fun findByTypeIsInAndComparisonShortReference(types: Collection<ComparisonType>, shortReference: String): Comparison?
 }

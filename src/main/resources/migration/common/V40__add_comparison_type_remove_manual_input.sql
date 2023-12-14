@@ -8,3 +8,5 @@ UPDATE comparison SET comparison_type = 'MANUAL' WHERE manual_input = true;
 ALTER TABLE comparison ALTER COLUMN comparison_type SET NOT NULL;
 
 CREATE INDEX idx_comparison_type ON comparison (comparison_type);
+
+ALTER TABLE comparison DROP COLUMN manual_input;

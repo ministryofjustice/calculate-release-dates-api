@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.nonManualComparisonTypes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
@@ -49,13 +49,13 @@ class ComparisonService(
 
   fun listComparisons(): List<ComparisonSummary> {
     return comparisonRepository.findAllByTypeIsInAndPrisonIsIn(
-      setOf(ComparisonType.ESTABLISHMENT_FULL, ComparisonType.ESTABLISHMENT_HDCED4PLUS),
+      nonManualComparisonTypes(),
       prisonService.getCurrentUserPrisonsList(),
     ).map { transform(it) }
   }
 
   fun getCountOfPersonsInComparisonByComparisonReference(shortReference: String): Long {
-    val comparison = comparisonRepository.findByManualInputAndComparisonShortReference(false, shortReference)
+    val comparison = comparisonRepository.findByTypeIsInAndComparisonShortReference(nonManualComparisonTypes(), shortReference)
 
     if (comparison?.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
       return comparisonPersonRepository.countByComparisonId(comparison.id)
@@ -64,7 +64,7 @@ class ComparisonService(
   }
 
   fun getComparisonByComparisonReference(comparisonReference: String): ComparisonOverview {
-    val comparison = comparisonRepository.findByManualInputAndComparisonShortReference(false, comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
+    val comparison = comparisonRepository.findByTypeIsInAndComparisonShortReference(nonManualComparisonTypes(), comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
 
     if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
       val mismatches = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)
@@ -95,7 +95,7 @@ class ComparisonService(
   }
 
   fun getComparisonPersonByShortReference(comparisonReference: String, comparisonPersonReference: String): ComparisonPersonOverview {
-    val comparison = comparisonRepository.findByManualInputAndComparisonShortReference(false, comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
+    val comparison = comparisonRepository.findByTypeIsInAndComparisonShortReference(nonManualComparisonTypes(), comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
 
     if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
       val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")

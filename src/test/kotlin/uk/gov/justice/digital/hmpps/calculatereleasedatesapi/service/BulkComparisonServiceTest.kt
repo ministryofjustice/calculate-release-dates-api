@@ -109,7 +109,7 @@ class BulkComparisonServiceTest : IntegrationTestBase() {
   @Test
   fun `Should create a prison comparison`() {
     val comparison = Comparison(
-      1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "BMI", false, ComparisonType.ESTABLISHMENT_FULL, LocalDateTime.now(), "SOMEONE",
+      1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "BMI", ComparisonType.ESTABLISHMENT_FULL, LocalDateTime.now(), "SOMEONE",
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     val duplicateReleaseDates = releaseDates.toMutableMap()
