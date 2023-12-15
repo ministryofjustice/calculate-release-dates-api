@@ -40,23 +40,23 @@ class ManualComparisonService(
   }
 
   fun listManual(): List<ComparisonSummary> {
-    return comparisonRepository.findAllByTypeIsIn(manualComparisonTypes()).map { transform(it) }
+    return comparisonRepository.findAllByComparisonTypeIsIn(manualComparisonTypes()).map { transform(it) }
   }
 
   fun getCountOfPersonsInComparisonByComparisonReference(shortReference: String): Long {
-    return comparisonRepository.findByTypeIsInAndComparisonShortReference(manualComparisonTypes(), shortReference)?.let {
+    return comparisonRepository.findByComparisonShortReference(shortReference)?.let {
       comparisonPersonRepository.countByComparisonId(it.id)
     } ?: 0
   }
 
   fun getComparisonByComparisonReference(comparisonReference: String): ComparisonOverview {
-    val comparison = comparisonRepository.findByTypeIsInAndComparisonShortReference(manualComparisonTypes(), comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
+    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
     val mismatches = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)
     return transform(comparison, mismatches)
   }
 
   fun getComparisonPersonByShortReference(comparisonReference: String, comparisonPersonReference: String): ComparisonPersonOverview {
-    val comparison = comparisonRepository.findByTypeIsInAndComparisonShortReference(manualComparisonTypes(), comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
+    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
     val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
     val calculatedReleaseDates = comparisonPerson.calculationRequestId?.let { calculationTransactionalService.findCalculationResults(it) }
     val nomisDates = objectMapper.convertValue(comparisonPerson.nomisDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})

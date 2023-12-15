@@ -75,7 +75,7 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
-    Mockito.`when`(comparisonRepository.findAllByTypeIsIn(manualComparisonTypes())).thenReturn(listOf(comparison))
+    Mockito.`when`(comparisonRepository.findAllByComparisonTypeIsIn(manualComparisonTypes())).thenReturn(listOf(comparison))
 
     val manualComparisonList = manualComparisonService.listManual()
     Assertions.assertTrue(manualComparisonList.isNotEmpty())
@@ -101,7 +101,7 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
-    Mockito.`when`(comparisonRepository.findByTypeIsInAndComparisonShortReference(manualComparisonTypes(), "ABCD1234")).thenReturn(comparison)
+    Mockito.`when`(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
 
     val numberOfPeople = manualComparisonService.getCountOfPersonsInComparisonByComparisonReference(comparison.comparisonShortReference)
     Assertions.assertEquals(7, numberOfPeople)
@@ -127,7 +127,7 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
-    Mockito.`when`(comparisonRepository.findByTypeIsInAndComparisonShortReference(manualComparisonTypes(), "ABCD1234")).thenReturn(comparison)
+    Mockito.`when`(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
     val result = manualComparisonService.getComparisonByComparisonReference("ABCD1234")
     Assertions.assertEquals(comparison.comparisonShortReference, result.comparisonShortReference)
   }

@@ -43,8 +43,7 @@ class Comparison(
 
   @NotNull
   @Enumerated(EnumType.STRING)
-  @Column(name = "comparison_type")
-  var type: ComparisonType,
+  var comparisonType: ComparisonType,
 
   @NotNull
   val calculatedAt: LocalDateTime = LocalDateTime.now(),
@@ -63,6 +62,6 @@ class Comparison(
   val numberOfMismatches: Long = 0,
 ) {
   override fun toString(): String {
-    return "Comparison(id=$id, comparisonReference=$comparisonReference, comparisonShortReference='$comparisonShortReference', criteria=$criteria, prison=$prison, type=$type, calculatedAt=$calculatedAt, calculatedByUsername='$calculatedByUsername')"
+    return "Comparison(id=$id, comparisonReference=$comparisonReference, comparisonShortReference='$comparisonShortReference', criteria=$criteria, prison=$prison, comparisonType=$comparisonType, calculatedAt=$calculatedAt, calculatedByUsername='$calculatedByUsername')"
   }
 }

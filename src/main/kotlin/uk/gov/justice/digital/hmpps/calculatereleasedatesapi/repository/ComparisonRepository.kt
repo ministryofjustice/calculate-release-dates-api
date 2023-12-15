@@ -8,9 +8,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Compar
 @Repository
 interface ComparisonRepository : JpaRepository<Comparison, Long> {
 
-  fun findAllByTypeIsIn(types: Collection<ComparisonType>): List<Comparison>
+  fun findAllByComparisonTypeIsIn(types: Collection<ComparisonType>): List<Comparison>
 
-  fun findAllByTypeIsInAndPrisonIsIn(types: Collection<ComparisonType>, includedPrisons: List<String>): List<Comparison>
+  fun findAllByComparisonTypeIsInAndPrisonIsIn(types: Collection<ComparisonType>, includedPrisons: List<String>): List<Comparison>
 
-  fun findByTypeIsInAndComparisonShortReference(types: Collection<ComparisonType>, shortReference: String): Comparison?
+  fun findByComparisonShortReference(shortReference: String): Comparison?
 }

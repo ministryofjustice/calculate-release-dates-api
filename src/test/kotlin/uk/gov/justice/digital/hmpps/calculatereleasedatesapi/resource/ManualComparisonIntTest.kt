@@ -12,7 +12,6 @@ import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.manualComparisonTypes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualComparisonInput
@@ -31,9 +30,9 @@ class ManualComparisonIntTest : IntegrationTestBase() {
   fun `Run comparison on a prison must compare all viable prisoners`() {
     val result = createManualComparison("Z0020ZZ")
 
-    assertEquals(ComparisonType.MANUAL, result.type)
+    assertEquals(ComparisonType.MANUAL, result.comparisonType)
     assertEquals(0, result.numberOfPeopleCompared)
-    val comparison = comparisonRepository.findByTypeIsInAndComparisonShortReference(manualComparisonTypes(), result.comparisonShortReference)
+    val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
     assertEquals(1, comparison!!.numberOfPeopleCompared)
     val personComparison = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)[0]
     assertTrue(personComparison.isValid)
@@ -44,7 +43,7 @@ class ManualComparisonIntTest : IntegrationTestBase() {
   @Test
   fun `Retrieve comparison person must return all dates`() {
     val comparison = createManualComparison("Z0020ZZ")
-    val storedComparison = comparisonRepository.findByTypeIsInAndComparisonShortReference(manualComparisonTypes(), comparison.comparisonShortReference)
+    val storedComparison = comparisonRepository.findByComparisonShortReference(comparison.comparisonShortReference)
     val comparisonPerson = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison!!.id)[0]
     val result = webTestClient.get()
       .uri("/comparison/manual/{comparisonId}/mismatch/{mismatchId}", comparison.comparisonShortReference, comparisonPerson.shortReference)
@@ -63,7 +62,7 @@ class ManualComparisonIntTest : IntegrationTestBase() {
   @Test
   fun `if SLED is present in calculation it must be compared to SED and LED from NOMIS`() {
     val comparison = createManualComparison("CRS-1704")
-    val storedComparison = comparisonRepository.findByTypeIsInAndComparisonShortReference(manualComparisonTypes(), comparison.comparisonShortReference)
+    val storedComparison = comparisonRepository.findByComparisonShortReference(comparison.comparisonShortReference)
     assertEquals(0, storedComparison!!.numberOfMismatches)
     assertTrue(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison.id).isEmpty())
   }
@@ -80,7 +79,7 @@ class ManualComparisonIntTest : IntegrationTestBase() {
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
       .expectBody(Comparison::class.java)
       .returnResult().responseBody!!
-    await untilCallTo { comparisonRepository.findByTypeIsInAndComparisonShortReference(manualComparisonTypes(), result.comparisonShortReference) } matches {
+    await untilCallTo { comparisonRepository.findByComparisonShortReference(result.comparisonShortReference) } matches {
       it!!.comparisonStatus.name == ComparisonStatusValue.COMPLETED.name
     }
     return result

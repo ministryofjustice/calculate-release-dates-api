@@ -20,7 +20,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonSt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.nonManualComparisonTypes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
@@ -103,7 +102,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
   fun `Get a list of comparisons`() {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
-    whenever(comparisonRepository.findAllByTypeIsInAndPrisonIsIn(any(), any())).thenReturn(
+    whenever(comparisonRepository.findAllByComparisonTypeIsInAndPrisonIsIn(any(), any())).thenReturn(
       listOf(
         Comparison(
           1,
@@ -146,10 +145,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     whenever(
-      comparisonRepository.findByTypeIsInAndComparisonShortReference(
-        nonManualComparisonTypes(),
-        "ABCD1234",
-      ),
+      comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
     val numberOfPeople =
       comparisonService.getCountOfPersonsInComparisonByComparisonReference(comparison.comparisonShortReference)
@@ -173,10 +169,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     whenever(
-      comparisonRepository.findByTypeIsInAndComparisonShortReference(
-        nonManualComparisonTypes(),
-        "ABCD1234",
-      ),
+      comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
 
     val numberOfPeople =
@@ -207,10 +200,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     whenever(
-      comparisonRepository.findByTypeIsInAndComparisonShortReference(
-        nonManualComparisonTypes(),
-        "ABCD1234",
-      ),
+      comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
     assertThrows(CrdWebException::class.java) {
       comparisonService.getComparisonByComparisonReference("ABCD1234")
@@ -233,10 +223,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     whenever(
-      comparisonRepository.findByTypeIsInAndComparisonShortReference(
-        nonManualComparisonTypes(),
-        "ABCD1234",
-      ),
+      comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
     assertEquals(comparison.comparisonShortReference, result.comparisonShortReference)
@@ -362,10 +349,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       calculationOutcomePerson7Mtd,
     )
     whenever(
-      comparisonRepository.findByTypeIsInAndComparisonShortReference(
-        nonManualComparisonTypes(),
-        "ABCD1234",
-      ),
+      comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(comparisonPersons)
 

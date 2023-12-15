@@ -48,14 +48,14 @@ class ComparisonService(
   }
 
   fun listComparisons(): List<ComparisonSummary> {
-    return comparisonRepository.findAllByTypeIsInAndPrisonIsIn(
+    return comparisonRepository.findAllByComparisonTypeIsInAndPrisonIsIn(
       nonManualComparisonTypes(),
       prisonService.getCurrentUserPrisonsList(),
     ).map { transform(it) }
   }
 
   fun getCountOfPersonsInComparisonByComparisonReference(shortReference: String): Long {
-    val comparison = comparisonRepository.findByTypeIsInAndComparisonShortReference(nonManualComparisonTypes(), shortReference)
+    val comparison = comparisonRepository.findByComparisonShortReference(shortReference)
 
     if (comparison?.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
       return comparisonPersonRepository.countByComparisonId(comparison.id)
@@ -64,7 +64,7 @@ class ComparisonService(
   }
 
   fun getComparisonByComparisonReference(comparisonReference: String): ComparisonOverview {
-    val comparison = comparisonRepository.findByTypeIsInAndComparisonShortReference(nonManualComparisonTypes(), comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
+    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
 
     if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
       val mismatches = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)
@@ -95,7 +95,7 @@ class ComparisonService(
   }
 
   fun getComparisonPersonByShortReference(comparisonReference: String, comparisonPersonReference: String): ComparisonPersonOverview {
-    val comparison = comparisonRepository.findByTypeIsInAndComparisonShortReference(nonManualComparisonTypes(), comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
+    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
 
     if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
       val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")

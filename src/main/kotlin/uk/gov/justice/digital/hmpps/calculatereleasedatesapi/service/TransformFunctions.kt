@@ -646,7 +646,7 @@ fun transform(
 ): Comparison {
   return Comparison(
     criteria = comparison.criteria ?: JsonNodeFactory.instance.objectNode(),
-    type = comparison.type,
+    comparisonType = comparison.comparisonType,
     prison = comparison.prison,
     calculatedAt = LocalDateTime.now(),
     calculatedByUsername = username,
@@ -659,7 +659,7 @@ fun transform(
   username: String,
 ): Comparison = Comparison(
   criteria = criteria,
-  type = MANUAL,
+  comparisonType = MANUAL,
   calculatedAt = LocalDateTime.now(),
   calculatedByUsername = username,
   comparisonStatus = ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -679,7 +679,7 @@ fun transform(
 fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
   comparison.comparisonShortReference,
   comparison.prison,
-  comparison.type,
+  comparison.comparisonType,
   comparison.calculatedAt,
   comparison.calculatedByUsername,
   comparison.numberOfMismatches,
@@ -689,7 +689,7 @@ fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
 fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>): ComparisonOverview = ComparisonOverview(
   comparison.comparisonShortReference,
   comparison.prison,
-  comparison.type,
+  comparison.comparisonType,
   comparison.calculatedAt,
   comparison.calculatedByUsername,
   comparison.numberOfMismatches,
