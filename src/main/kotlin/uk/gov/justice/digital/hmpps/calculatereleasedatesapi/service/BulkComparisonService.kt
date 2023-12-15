@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
@@ -63,32 +64,34 @@ class BulkComparisonService(
       )
     calculableSentenceEnvelopes.forEach { calculableSentenceEnvelope ->
       val mismatch = determineMismatchType(calculableSentenceEnvelope)
-      comparisonPersonRepository.save(
-        ComparisonPerson(
-          comparisonId = comparison.id,
-          person = calculableSentenceEnvelope.person.prisonerNumber,
-          latestBookingId = calculableSentenceEnvelope.bookingId,
-          isMatch = mismatch.isMatch,
-          isValid = mismatch.isValid,
-          mismatchType = mismatch.type,
-          validationMessages = objectMapper.valueToTree(mismatch.messages),
-          calculatedByUsername = comparison.calculatedByUsername,
-          calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
-          nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) }
-            ?: objectMapper.createObjectNode(),
-          overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) }
-            ?: objectMapper.createObjectNode(),
-          breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) }
-            ?: objectMapper.createObjectNode(),
-          isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
-          sdsPlusSentencesIdentified = bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId]?.let {
-            objectMapper.valueToTree(
-              bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId],
-            )
-          }
-            ?: objectMapper.createObjectNode(),
-        ),
-      )
+      if (comparison.shouldStoreMismatch(mismatch)) {
+        comparisonPersonRepository.save(
+          ComparisonPerson(
+            comparisonId = comparison.id,
+            person = calculableSentenceEnvelope.person.prisonerNumber,
+            latestBookingId = calculableSentenceEnvelope.bookingId,
+            isMatch = mismatch.isMatch,
+            isValid = mismatch.isValid,
+            mismatchType = mismatch.type,
+            validationMessages = objectMapper.valueToTree(mismatch.messages),
+            calculatedByUsername = comparison.calculatedByUsername,
+            calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
+            nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) }
+              ?: objectMapper.createObjectNode(),
+            overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) }
+              ?: objectMapper.createObjectNode(),
+            breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) }
+              ?: objectMapper.createObjectNode(),
+            isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
+            sdsPlusSentencesIdentified = bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId]?.let {
+              objectMapper.valueToTree(
+                bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId],
+              )
+            }
+              ?: objectMapper.createObjectNode(),
+          ),
+        )
+      }
     }
     comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
     comparison.numberOfPeopleCompared = calculableSentenceEnvelopes.size.toLong()
@@ -311,5 +314,13 @@ class BulkComparisonService(
       SentenceCalculationType.SOPC21,
       SentenceCalculationType.SEC236A,
     )
+  }
+
+  private fun Comparison.shouldStoreMismatch(mismatch: Mismatch): Boolean {
+    if (comparisonType == ComparisonType.ESTABLISHMENT_HDCED4PLUS) {
+      return mismatch.type == MismatchType.VALIDATION_ERROR_HDC4_PLUS
+    }
+
+    return true
   }
 }
