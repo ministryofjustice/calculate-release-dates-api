@@ -14,6 +14,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
@@ -43,9 +44,9 @@ class ComparisonIntTest : IntegrationTestBase() {
   fun `Run comparison on a prison must compare all viable prisoners`() {
     val result = createComparison("ABC")
 
-    assertEquals(false, result.manualInput)
+    assertEquals(ComparisonType.ESTABLISHMENT_FULL, result.comparisonType)
     assertEquals(0, result.numberOfPeopleCompared)
-    val comparison = comparisonRepository.findByManualInputAndComparisonShortReference(false, result.comparisonShortReference)
+    val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
     assertEquals(1, comparison!!.numberOfPeopleCompared)
     val personComparison = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)[0]
     assertTrue(personComparison.isValid)
@@ -96,7 +97,7 @@ class ComparisonIntTest : IntegrationTestBase() {
   @Test
   fun `Retrieve comparison person must return all dates`() {
     val comparison = createComparison("ABC")
-    val storedComparison = comparisonRepository.findByManualInputAndComparisonShortReference(false, comparison.comparisonShortReference)
+    val storedComparison = comparisonRepository.findByComparisonShortReference(comparison.comparisonShortReference)
     val comparisonPerson = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison!!.id)[0]
     val result = webTestClient.get()
       .uri("/comparison/{comparisonId}/mismatch/{mismatchId}", comparison.comparisonShortReference, comparisonPerson.shortReference)
@@ -112,8 +113,8 @@ class ComparisonIntTest : IntegrationTestBase() {
     assertEquals(comparisonPerson.person, result.personId)
   }
 
-  private fun createComparison(prisonId: String): Comparison {
-    val request = ComparisonInput(objectMapper.createObjectNode(), prisonId)
+  private fun createComparison(prisonId: String, comparisonType: ComparisonType = ComparisonType.ESTABLISHMENT_FULL): Comparison {
+    val request = ComparisonInput(objectMapper.createObjectNode(), prisonId, comparisonType)
     val result = webTestClient.post()
       .uri("/comparison")
       .accept(MediaType.APPLICATION_JSON)
@@ -124,7 +125,7 @@ class ComparisonIntTest : IntegrationTestBase() {
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
       .expectBody(Comparison::class.java)
       .returnResult().responseBody!!
-    await untilCallTo { comparisonRepository.findByManualInputAndComparisonShortReference(false, result.comparisonShortReference) } matches {
+    await untilCallTo { comparisonRepository.findByComparisonShortReference(result.comparisonShortReference) } matches {
       it!!.comparisonStatus.name == ComparisonStatusValue.COMPLETED.name
     }
     return result

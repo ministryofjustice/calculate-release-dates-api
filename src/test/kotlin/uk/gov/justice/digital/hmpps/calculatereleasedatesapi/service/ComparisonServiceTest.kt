@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
@@ -60,7 +61,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       JsonNodeFactory.instance.objectNode(),
       "ABC",
-      false,
+      ComparisonType.ESTABLISHMENT_FULL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -82,7 +83,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       JsonNodeFactory.instance.objectNode(),
       "ABC",
-      false,
+      ComparisonType.ESTABLISHMENT_FULL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -101,7 +102,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
   fun `Get a list of comparisons`() {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
-    whenever(comparisonRepository.findAllByManualInputAndPrisonIsIn(any(), any())).thenReturn(
+    whenever(comparisonRepository.findAllByComparisonTypeIsInAndPrisonIsIn(any(), any())).thenReturn(
       listOf(
         Comparison(
           1,
@@ -109,7 +110,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
           "ABCD1234",
           JsonNodeFactory.instance.objectNode(),
           "ABC",
-          false,
+          ComparisonType.ESTABLISHMENT_FULL,
           LocalDateTime.now(),
           USERNAME,
           ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -138,16 +139,13 @@ class ComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       JsonNodeFactory.instance.objectNode(),
       prison,
-      true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     whenever(
-      comparisonRepository.findByManualInputAndComparisonShortReference(
-        false,
-        "ABCD1234",
-      ),
+      comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
     val numberOfPeople =
       comparisonService.getCountOfPersonsInComparisonByComparisonReference(comparison.comparisonShortReference)
@@ -165,16 +163,13 @@ class ComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       JsonNodeFactory.instance.objectNode(),
       prison,
-      true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     whenever(
-      comparisonRepository.findByManualInputAndComparisonShortReference(
-        false,
-        "ABCD1234",
-      ),
+      comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
 
     val numberOfPeople =
@@ -199,16 +194,13 @@ class ComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       JsonNodeFactory.instance.objectNode(),
       prison,
-      true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     whenever(
-      comparisonRepository.findByManualInputAndComparisonShortReference(
-        false,
-        "ABCD1234",
-      ),
+      comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
     assertThrows(CrdWebException::class.java) {
       comparisonService.getComparisonByComparisonReference("ABCD1234")
@@ -225,16 +217,13 @@ class ComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       JsonNodeFactory.instance.objectNode(),
       prison,
-      true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     whenever(
-      comparisonRepository.findByManualInputAndComparisonShortReference(
-        false,
-        "ABCD1234",
-      ),
+      comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
     assertEquals(comparison.comparisonShortReference, result.comparisonShortReference)
@@ -250,7 +239,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       JsonNodeFactory.instance.objectNode(),
       prison,
-      true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -360,10 +349,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       calculationOutcomePerson7Mtd,
     )
     whenever(
-      comparisonRepository.findByManualInputAndComparisonShortReference(
-        false,
-        "ABCD1234",
-      ),
+      comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(comparisonPersons)
 

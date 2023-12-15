@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType.MANUAL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.APD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
@@ -645,7 +646,7 @@ fun transform(
 ): Comparison {
   return Comparison(
     criteria = comparison.criteria ?: JsonNodeFactory.instance.objectNode(),
-    manualInput = false,
+    comparisonType = comparison.comparisonType,
     prison = comparison.prison,
     calculatedAt = LocalDateTime.now(),
     calculatedByUsername = username,
@@ -658,7 +659,7 @@ fun transform(
   username: String,
 ): Comparison = Comparison(
   criteria = criteria,
-  manualInput = true,
+  comparisonType = MANUAL,
   calculatedAt = LocalDateTime.now(),
   calculatedByUsername = username,
   comparisonStatus = ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -678,6 +679,7 @@ fun transform(
 fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
   comparison.comparisonShortReference,
   comparison.prison,
+  comparison.comparisonType,
   comparison.calculatedAt,
   comparison.calculatedByUsername,
   comparison.numberOfMismatches,
@@ -687,6 +689,7 @@ fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
 fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>): ComparisonOverview = ComparisonOverview(
   comparison.comparisonShortReference,
   comparison.prison,
+  comparison.comparisonType,
   comparison.calculatedAt,
   comparison.calculatedByUsername,
   comparison.numberOfMismatches,
