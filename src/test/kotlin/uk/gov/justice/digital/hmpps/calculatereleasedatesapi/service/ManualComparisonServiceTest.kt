@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.manualComparisonTypes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
@@ -45,7 +47,7 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       objectMapper.createObjectNode(),
       null,
-      true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
@@ -68,12 +70,12 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       objectMapper.createObjectNode(),
       "ABC",
-      true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
-    Mockito.`when`(comparisonRepository.findAllByManualInput(true)).thenReturn(listOf(comparison))
+    Mockito.`when`(comparisonRepository.findAllByComparisonTypeIsIn(manualComparisonTypes())).thenReturn(listOf(comparison))
 
     val manualComparisonList = manualComparisonService.listManual()
     Assertions.assertTrue(manualComparisonList.isNotEmpty())
@@ -94,12 +96,12 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       objectMapper.createObjectNode(),
       null,
-      true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
-    Mockito.`when`(comparisonRepository.findByManualInputAndComparisonShortReference(true, "ABCD1234")).thenReturn(comparison)
+    Mockito.`when`(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
 
     val numberOfPeople = manualComparisonService.getCountOfPersonsInComparisonByComparisonReference(comparison.comparisonShortReference)
     Assertions.assertEquals(7, numberOfPeople)
@@ -120,12 +122,12 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       "ABCD1234",
       objectMapper.createObjectNode(),
       null,
-      true,
+      ComparisonType.MANUAL,
       LocalDateTime.now(),
       USERNAME,
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
-    Mockito.`when`(comparisonRepository.findByManualInputAndComparisonShortReference(true, "ABCD1234")).thenReturn(comparison)
+    Mockito.`when`(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
     val result = manualComparisonService.getComparisonByComparisonReference("ABCD1234")
     Assertions.assertEquals(comparison.comparisonShortReference, result.comparisonShortReference)
   }

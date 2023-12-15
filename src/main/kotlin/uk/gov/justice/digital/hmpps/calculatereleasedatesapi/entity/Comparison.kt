@@ -6,6 +6,8 @@ import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -14,6 +16,7 @@ import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.Formula
 import org.hibernate.annotations.Type
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -39,7 +42,8 @@ class Comparison(
   val prison: String? = null,
 
   @NotNull
-  var manualInput: Boolean,
+  @Enumerated(EnumType.STRING)
+  var comparisonType: ComparisonType,
 
   @NotNull
   val calculatedAt: LocalDateTime = LocalDateTime.now(),
@@ -58,6 +62,6 @@ class Comparison(
   val numberOfMismatches: Long = 0,
 ) {
   override fun toString(): String {
-    return "Comparison(id=$id, comparisonReference=$comparisonReference, comparisonShortReference='$comparisonShortReference', criteria=$criteria, prison=$prison, manualInput=$manualInput, calculatedAt=$calculatedAt, calculatedByUsername='$calculatedByUsername')"
+    return "Comparison(id=$id, comparisonReference=$comparisonReference, comparisonShortReference='$comparisonShortReference', criteria=$criteria, prison=$prison, comparisonType=$comparisonType, calculatedAt=$calculatedAt, calculatedByUsername='$calculatedByUsername')"
   }
 }
