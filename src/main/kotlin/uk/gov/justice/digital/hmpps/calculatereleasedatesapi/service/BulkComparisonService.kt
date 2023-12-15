@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonSt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
@@ -19,11 +20,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
+import java.time.temporal.ChronoUnit
 
 @Service
 class BulkComparisonService(
@@ -51,7 +56,11 @@ class BulkComparisonService(
     calculableSentenceEnvelopes: List<CalculableSentenceEnvelope>,
     comparison: Comparison,
   ) {
-    val bookingIdToSDSMatchingSentencesAndOffences = pcscLookupService.populateSdsPlusMarkerForOffences(calculableSentenceEnvelopes.map { it.sentenceAndOffences }.flatten())
+    val bookingIdToSDSMatchingSentencesAndOffences =
+      pcscLookupService.populateSdsPlusMarkerForOffences(
+        calculableSentenceEnvelopes.map { it.sentenceAndOffences }
+          .flatten(),
+      )
     calculableSentenceEnvelopes.forEach { calculableSentenceEnvelope ->
       val mismatch = determineMismatchType(calculableSentenceEnvelope)
       comparisonPersonRepository.save(
@@ -72,7 +81,11 @@ class BulkComparisonService(
           breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) }
             ?: objectMapper.createObjectNode(),
           isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
-          sdsPlusSentencesIdentified = bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId]?.let { objectMapper.valueToTree(bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId]) }
+          sdsPlusSentencesIdentified = bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId]?.let {
+            objectMapper.valueToTree(
+              bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId],
+            )
+          }
             ?: objectMapper.createObjectNode(),
         ),
       )
@@ -83,14 +96,40 @@ class BulkComparisonService(
   }
 
   fun determineMismatchType(calculableSentenceEnvelope: CalculableSentenceEnvelope): Mismatch {
-    val mismatch = Mismatch(
-      isMatch = false,
-      isValid = false,
-      calculableSentenceEnvelope = calculableSentenceEnvelope,
-      calculatedReleaseDates = null,
-      type = MismatchType.NONE,
-    )
+    val mismatchType: MismatchType
 
+    val validationResult = validate(calculableSentenceEnvelope)
+    if (validationResult.messages.isEmpty()) {
+      mismatchType =
+        if (identifyMismatches(validationResult.calculatedReleaseDates, calculableSentenceEnvelope.sentenceCalcDates)) {
+          MismatchType.NONE
+        } else {
+          MismatchType.RELEASE_DATES_MISMATCH
+        }
+    } else {
+      val unsupportedSentenceType =
+        validationResult.messages.any { it.code == ValidationCode.UNSUPPORTED_SENTENCE_TYPE }
+      mismatchType = if (unsupportedSentenceType) {
+        MismatchType.UNSUPPORTED_SENTENCE_TYPE
+      } else if (isPotentialHdc4Plus(calculableSentenceEnvelope)) {
+        MismatchType.VALIDATION_ERROR_HDC4_PLUS
+      } else {
+        MismatchType.VALIDATION_ERROR
+      }
+    }
+
+    return Mismatch(
+      isMatch = mismatchType == MismatchType.NONE,
+      isValid = validationResult.messages.isEmpty(),
+      calculableSentenceEnvelope = calculableSentenceEnvelope,
+      calculatedReleaseDates = validationResult.calculatedReleaseDates,
+      calculationResult = validationResult.calculationResult,
+      type = mismatchType,
+      messages = validationResult.messages,
+    )
+  }
+
+  private fun validate(calculableSentenceEnvelope: CalculableSentenceEnvelope): ValidationResult {
     val calculationUserInput = CalculationUserInputs(
       listOf(),
       calculableSentenceEnvelope.sentenceCalcDates?.earlyRemovalSchemeEligibilityDate != null,
@@ -99,33 +138,12 @@ class BulkComparisonService(
 
     val prisonApiSourceData: PrisonApiSourceData = this.convert(calculableSentenceEnvelope)
 
-    val validationResult = calculationTransactionalService.validateAndCalculate(
+    return calculationTransactionalService.validateAndCalculate(
       calculableSentenceEnvelope.person.prisonerNumber,
       calculationUserInput,
       false,
       prisonApiSourceData,
     )
-    mismatch.messages = validationResult.messages
-    mismatch.isValid = validationResult.messages.isEmpty()
-    mismatch.calculatedReleaseDates = validationResult.calculatedReleaseDates
-    mismatch.calculationResult = validationResult.calculationResult
-
-    if (mismatch.isValid) {
-      val datesMatch =
-        identifyMismatches(validationResult.calculatedReleaseDates, calculableSentenceEnvelope.sentenceCalcDates)
-      if (datesMatch) {
-        mismatch.isMatch = true
-        mismatch.type = MismatchType.NONE
-      } else {
-        mismatch.type = MismatchType.RELEASE_DATES_MISMATCH
-      }
-    } else {
-      val unsupportedSentenceType = validationResult.messages.any { it.code == ValidationCode.UNSUPPORTED_SENTENCE_TYPE }
-      mismatch.type = if (unsupportedSentenceType) MismatchType.UNSUPPORTED_SENTENCE_TYPE else MismatchType.VALIDATION_ERROR
-      mismatch.isMatch = false
-    }
-
-    return mismatch
   }
 
   private fun identifyMismatches(
@@ -201,6 +219,97 @@ class BulkComparisonService(
       offenderFinePayments,
       returnToCustodyDate,
       fixedTermRecallDetails,
+    )
+  }
+
+  private fun isPotentialHdc4Plus(calculableSentenceEnvelope: CalculableSentenceEnvelope): Boolean {
+    if (calculableSentenceEnvelope.person.isActiveSexOffender()) {
+      return false
+    }
+
+    val sentenceAndOffences = calculableSentenceEnvelope.sentenceAndOffences
+    val applicableSentences =
+      sentenceAndOffences.filter { SentenceCalculationType.from(it.sentenceCalculationType) in HDC4_PLUS_SENTENCE_TYPES }
+    if (applicableSentences.isEmpty()) {
+      return false
+    }
+
+    if (!applicableSentences.any { sentence -> isValidHdc4PlusDuration(sentence) }) {
+      return false
+    }
+
+    if (hasEdsOrSopcConsecutiveToSds(sentenceAndOffences)) {
+      return false
+    }
+
+    return true
+  }
+
+  fun isValidHdc4PlusDuration(sentence: SentenceAndOffences): Boolean {
+    val daysInFourYears = 1460
+
+    val validDuration = sentence.terms.any { term ->
+      val duration = Duration(
+        mapOf(
+          ChronoUnit.YEARS to term.years.toLong(),
+          ChronoUnit.MONTHS to term.months.toLong(),
+          ChronoUnit.DAYS to term.days.toLong(),
+          ChronoUnit.WEEKS to term.weeks.toLong(),
+        ),
+      )
+      duration.getLengthInDays(sentence.sentenceDate) >= daysInFourYears
+    }
+    return validDuration
+  }
+
+  fun hasEdsOrSopcConsecutiveToSds(sentenceAndOffences: List<SentenceAndOffences>): Boolean {
+    val edsAndSopcSentenceTypes = EDS_SENTENCE_TYPES + SOPC_SENTENCE_TYPES
+
+    val consecutiveSentences = sentenceAndOffences.filter { it.consecutiveToSequence != null }
+    val consecutiveEdsOrSopcToSds =
+      consecutiveSentences.filter { consecutiveSentence ->
+        val consecutiveToSentence =
+          sentenceAndOffences.firstOrNull { it.sentenceSequence == consecutiveSentence.consecutiveToSequence }
+        if (consecutiveToSentence != null) {
+          val consecutiveSentenceType = SentenceCalculationType.from(consecutiveSentence.sentenceCalculationType)
+          val consecutiveToSentenceType = SentenceCalculationType.from(consecutiveToSentence.sentenceCalculationType)
+          if (consecutiveSentenceType in HDC4_PLUS_SENTENCE_TYPES && consecutiveToSentenceType in edsAndSopcSentenceTypes) {
+            return@filter true
+          }
+          if (consecutiveSentenceType in edsAndSopcSentenceTypes && consecutiveToSentenceType in HDC4_PLUS_SENTENCE_TYPES) {
+            return@filter true
+          }
+        }
+        return@filter false
+      }
+    return consecutiveEdsOrSopcToSds.isNotEmpty()
+  }
+
+  companion object {
+    val HDC4_PLUS_SENTENCE_TYPES = listOf(
+      SentenceCalculationType.ADIMP,
+      SentenceCalculationType.ADIMP_ORA,
+      SentenceCalculationType.SEC91_03,
+      SentenceCalculationType.SEC91_03_ORA,
+      SentenceCalculationType.SEC250,
+      SentenceCalculationType.SEC250_ORA,
+      SentenceCalculationType.YOI,
+      SentenceCalculationType.YOI_ORA,
+    )
+
+    val EDS_SENTENCE_TYPES = listOf(
+      SentenceCalculationType.LASPO_AR,
+      SentenceCalculationType.LASPO_DR,
+      SentenceCalculationType.EDS18,
+      SentenceCalculationType.EDS21,
+      SentenceCalculationType.EDSU18,
+    )
+
+    val SOPC_SENTENCE_TYPES = listOf(
+      SentenceCalculationType.SDOPCU18,
+      SentenceCalculationType.SOPC18,
+      SentenceCalculationType.SOPC21,
+      SentenceCalculationType.SEC236A,
     )
   }
 }
