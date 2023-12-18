@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Comparis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 import java.time.temporal.ChronoUnit
 
 @Service
@@ -111,7 +112,7 @@ class BulkComparisonService(
         }
     } else {
       val unsupportedSentenceType =
-        validationResult.messages.any { it.code == ValidationCode.UNSUPPORTED_SENTENCE_TYPE }
+        validationResult.messages.any { it.code == ValidationCode.UNSUPPORTED_SENTENCE_TYPE || it.code.validationType == ValidationType.UNSUPPORTED_CALCULATION }
       mismatchType = if (unsupportedSentenceType) {
         MismatchType.UNSUPPORTED_SENTENCE_TYPE
       } else if (isPotentialHdc4Plus(calculableSentenceEnvelope)) {
