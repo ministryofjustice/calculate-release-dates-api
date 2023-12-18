@@ -362,6 +362,30 @@ class BulkComparisonServiceTest {
   }
 
   @Test
+  fun `Determine if a mismatch is reported as an unsupported sentence type for an unsupported calculation validation`() {
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(
+      listOf(
+        ValidationMessage(ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL),
+      ),
+      booking,
+      calculatedReleaseDates,
+      null,
+    )
+
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+
+    val mismatch = bulkComparisonService.determineMismatchType(calculableSentenceEnvelope)
+
+    assertFalse(mismatch.isValid)
+    assertFalse(mismatch.isMatch)
+    assertEquals(MismatchType.UNSUPPORTED_SENTENCE_TYPE, mismatch.type)
+  }
+
+  @Test
   fun `Determine if a mismatch report isValid and not isMatch due to release dates mismatch`() {
     val duplicateReleaseDates = releaseDates.toMutableMap()
     duplicateReleaseDates[ReleaseDateType.SED] = LocalDate.of(2022, 1, 1)
