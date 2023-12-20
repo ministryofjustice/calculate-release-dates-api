@@ -145,7 +145,7 @@ class BulkComparisonServiceTest {
       ),
     )
 
-    bulkComparisonService.processPrisonComparison(comparison)
+    bulkComparisonService.processPrisonComparison(comparison, "")
 
     val comparisonPersonCaptor = ArgumentCaptor.forClass(ComparisonPerson::class.java)
     verify(comparisonPersonRepository).save(comparisonPersonCaptor.capture())

@@ -29,12 +29,12 @@ class ManualComparisonService(
   private val calculationTransactionalService: CalculationTransactionalService,
 ) {
 
-  fun create(manualComparison: ManualComparisonInput): Comparison {
+  fun create(manualComparison: ManualComparisonInput, token: String): Comparison {
     val comparisonToCreate = transform(objectMapper.valueToTree(manualComparison), serviceUserService.getUsername())
     val initialComparisonCreated = comparisonRepository.save(
       comparisonToCreate,
     )
-    bulkComparisonService.processManualComparison(initialComparisonCreated, manualComparison.prisonerIds)
+    bulkComparisonService.processManualComparison(initialComparisonCreated, manualComparison.prisonerIds, token)
 
     return initialComparisonCreated
   }

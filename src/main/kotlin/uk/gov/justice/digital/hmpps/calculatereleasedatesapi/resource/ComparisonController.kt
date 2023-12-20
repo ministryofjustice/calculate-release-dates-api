@@ -54,7 +54,7 @@ class ComparisonController(
     log.info("Request received to create a new Comparison -- $comparison")
     UserContext.setAuthToken(token)
     log.info("Set token {}", UserContext.getAuthToken())
-    return comparisonService.create(comparison)
+    return comparisonService.create(comparison, token)
   }
 
   @GetMapping

@@ -46,14 +46,16 @@ class BulkComparisonService(
 ) {
 
   @Async
-  fun processPrisonComparison(comparison: Comparison) {
+  fun processPrisonComparison(comparison: Comparison, token: String) {
+    UserContext.setAuthToken(token)
     log.info("Using token: {}", UserContext.getAuthToken())
     val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison!!)
     processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison)
   }
 
   @Async
-  fun processManualComparison(comparison: Comparison, prisonerIds: List<String>) {
+  fun processManualComparison(comparison: Comparison, prisonerIds: List<String>, token: String) {
+    UserContext.setAuthToken(token)
     log.info("Using token: {}", UserContext.getAuthToken())
     val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIds(prisonerIds)
     processCalculableSentenceEnvelopes(activeBookingsForPrisoners, comparison)
