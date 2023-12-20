@@ -58,7 +58,7 @@ class ComparisonControllerTest {
   fun `Test POST for creation of comparison`() {
     val comparisonInput = ComparisonInput(objectMapper.createObjectNode(), "ABC")
 
-    whenever(comparisonService.create(comparisonInput)).thenReturn(
+    whenever(comparisonService.create(comparisonInput, "Bearer token")).thenReturn(
       Comparison(
         1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "JAS", ComparisonType.ESTABLISHMENT_FULL, LocalDateTime.now(), "JOEL",
         ComparisonStatus(ComparisonStatusValue.PROCESSING),

@@ -57,7 +57,7 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
     Mockito.`when`(comparisonRepository.save(any())).thenReturn(outputComparison)
 
     val comparisonInput = ManualComparisonInput(listOf("ABC123"))
-    val comparison = manualComparisonService.create(comparisonInput)
+    val comparison = manualComparisonService.create(comparisonInput, "")
     Assertions.assertEquals(outputComparison, comparison)
   }
 

@@ -71,7 +71,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     whenever(comparisonRepository.save(any())).thenReturn(outputComparison)
 
     val comparisonInput = ComparisonInput(JsonNodeFactory.instance.objectNode(), prison = "ABC")
-    val comparison = comparisonService.create(comparisonInput)
+    val comparison = comparisonService.create(comparisonInput, "")
     assertEquals(outputComparison, comparison)
   }
 
@@ -94,7 +94,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     whenever(comparisonRepository.save(any())).thenReturn(outputComparison)
 
     val comparisonInput = ComparisonInput(null, prison = "ABC")
-    val comparison = comparisonService.create(comparisonInput)
+    val comparison = comparisonService.create(comparisonInput, "")
     assertEquals(outputComparison, comparison)
   }
 

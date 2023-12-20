@@ -139,13 +139,13 @@ class BulkComparisonServiceTest {
       validationResult,
     )
 
-    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!)).thenReturn(
+    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
       listOf(
         sexOffenderCalculableSentenceEnvelope,
       ),
     )
 
-    bulkComparisonService.processPrisonComparison(comparison)
+    bulkComparisonService.processPrisonComparison(comparison, "")
 
     val comparisonPersonCaptor = ArgumentCaptor.forClass(ComparisonPerson::class.java)
     verify(comparisonPersonRepository).save(comparisonPersonCaptor.capture())

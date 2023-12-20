@@ -26,6 +26,13 @@ class WebClientConfiguration(
       .build()
   }
 
+  @Bean
+  fun prisonApiAsyncWebClient(webClientBuilder: WebClient.Builder): WebClient {
+    return webClientBuilder
+      .baseUrl(prisonApiUri)
+      .build()
+  }
+
   private fun addAuthHeaderFilterFunction(): ExchangeFilterFunction {
     return ExchangeFilterFunction { request: ClientRequest, next: ExchangeFunction ->
       val filtered = ClientRequest.from(request)
