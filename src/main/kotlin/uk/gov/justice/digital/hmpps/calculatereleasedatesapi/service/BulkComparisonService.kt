@@ -1,8 +1,11 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
@@ -44,12 +47,14 @@ class BulkComparisonService(
 
   @Async
   fun processPrisonComparison(comparison: Comparison) {
+    log.info("Using token: {}", UserContext.getAuthToken())
     val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison!!)
     processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison)
   }
 
   @Async
   fun processManualComparison(comparison: Comparison, prisonerIds: List<String>) {
+    log.info("Using token: {}", UserContext.getAuthToken())
     val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIds(prisonerIds)
     processCalculableSentenceEnvelopes(activeBookingsForPrisoners, comparison)
   }
@@ -315,6 +320,7 @@ class BulkComparisonService(
       SentenceCalculationType.SOPC21,
       SentenceCalculationType.SEC236A,
     )
+    private val log: Logger = LoggerFactory.getLogger(BulkComparisonService::class.java)
   }
 
   private fun Comparison.shouldStoreMismatch(mismatch: Mismatch): Boolean {
