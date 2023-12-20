@@ -49,7 +49,7 @@ class BulkComparisonService(
   fun processPrisonComparison(comparison: Comparison, token: String) {
     UserContext.setAuthToken(token)
     log.info("Using token: {}", UserContext.getAuthToken())
-    val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison!!)
+    val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison!!, token)
     processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison)
   }
 
@@ -57,7 +57,7 @@ class BulkComparisonService(
   fun processManualComparison(comparison: Comparison, prisonerIds: List<String>, token: String) {
     UserContext.setAuthToken(token)
     log.info("Using token: {}", UserContext.getAuthToken())
-    val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIds(prisonerIds)
+    val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIds(prisonerIds, token)
     processCalculableSentenceEnvelopes(activeBookingsForPrisoners, comparison)
   }
 

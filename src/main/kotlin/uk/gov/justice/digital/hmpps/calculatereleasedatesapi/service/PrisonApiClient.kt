@@ -19,7 +19,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 import java.time.Duration
 
 @Service
-class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: WebClient) {
+class PrisonApiClient(
+  @Qualifier("prisonApiWebClient") private val webClient: WebClient,
+  @Qualifier("prisonApiAsyncWebClient") private val asyncWebClient: WebClient,
+) {
   private inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T>() {}
   private val log = LoggerFactory.getLogger(this::class.java)
 
@@ -91,10 +94,12 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
   fun getCalculableSentenceEnvelopesByEstablishment(
     establishmentId: String,
     pageNumber: Int,
+    token: String,
   ): RestResponsePage<CalculableSentenceEnvelope> {
     log.info("Requesting personId and booking details for latest booking of all offenders at establishment $establishmentId and page $pageNumber")
-    return webClient.get()
+    return asyncWebClient.get()
       .uri("/api/prison/$establishmentId/booking/latest/paged/calculable-sentence-envelope?page=$pageNumber")
+      .header("Authorization", token)
       .httpRequest { httpRequest ->
         run {
           val reactorRequest = httpRequest.getNativeRequest<HttpClientRequest>()
@@ -106,13 +111,14 @@ class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: We
       .block()!!
   }
 
-  fun getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds: List<String>): List<CalculableSentenceEnvelope> {
-    return webClient.get()
+  fun getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds: List<String>, token: String): List<CalculableSentenceEnvelope> {
+    return asyncWebClient.get()
       .uri { uriBuilder ->
         uriBuilder.path("/api/bookings/latest/calculable-sentence-envelope")
           .queryParam("offenderNo", prisonerIds)
           .build()
       }
+      .header("Authorization", token)
       .httpRequest { httpRequest ->
         run {
           val reactorRequest = httpRequest.getNativeRequest<HttpClientRequest>()

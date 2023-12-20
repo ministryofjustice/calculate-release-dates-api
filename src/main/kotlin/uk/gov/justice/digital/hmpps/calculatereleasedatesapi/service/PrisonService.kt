@@ -76,14 +76,14 @@ class PrisonService(
       ?: emptyList()
   }
 
-  fun getActiveBookingsByEstablishment(establishmentId: String): List<CalculableSentenceEnvelope> {
+  fun getActiveBookingsByEstablishment(establishmentId: String, token: String): List<CalculableSentenceEnvelope> {
     var isLastPage = false
     var pageNumber = 0
     val calculableSentenceEnvelope = mutableListOf<CalculableSentenceEnvelope>()
 
     while (!isLastPage) {
       val calculableSentenceEnvelopePage =
-        prisonApiClient.getCalculableSentenceEnvelopesByEstablishment(establishmentId, pageNumber)
+        prisonApiClient.getCalculableSentenceEnvelopesByEstablishment(establishmentId, pageNumber, token)
       calculableSentenceEnvelope.addAll(calculableSentenceEnvelopePage.content)
       isLastPage = calculableSentenceEnvelopePage.isLast
       pageNumber++
@@ -91,5 +91,5 @@ class PrisonService(
     return calculableSentenceEnvelope
   }
 
-  fun getActiveBookingsByPrisonerIds(prisonerIds: List<String>): List<CalculableSentenceEnvelope> = prisonApiClient.getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds)
+  fun getActiveBookingsByPrisonerIds(prisonerIds: List<String>, token: String): List<CalculableSentenceEnvelope> = prisonApiClient.getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds, token)
 }

@@ -139,7 +139,7 @@ class BulkComparisonServiceTest {
       validationResult,
     )
 
-    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!)).thenReturn(
+    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
       listOf(
         sexOffenderCalculableSentenceEnvelope,
       ),
