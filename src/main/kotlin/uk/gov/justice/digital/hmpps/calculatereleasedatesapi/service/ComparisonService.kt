@@ -43,6 +43,8 @@ class ComparisonService(
     val initialComparisonCreated = comparisonRepository.save(
       comparisonToCreate,
     )
+    log.info("500ms wait for $initialComparisonCreated")
+    Thread.sleep(500)
     bulkComparisonService.processPrisonComparison(initialComparisonCreated)
     return initialComparisonCreated
   }
