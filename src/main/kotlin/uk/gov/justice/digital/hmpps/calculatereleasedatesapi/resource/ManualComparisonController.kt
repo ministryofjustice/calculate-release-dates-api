@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
@@ -49,7 +48,6 @@ class ManualComparisonController(
     @RequestHeader("Authorization") token: String,
   ): Comparison {
     ComparisonController.log.info("Request received to create a new Comparison -- $manualComparison")
-    UserContext.setAuthToken(token)
     return manualComparisonService.create(manualComparison, token)
   }
 

@@ -5,7 +5,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
@@ -47,16 +46,12 @@ class BulkComparisonService(
 
   @Async
   fun processPrisonComparison(comparison: Comparison, token: String) {
-    UserContext.setAuthToken(token)
-    log.info("Using token: {}", UserContext.getAuthToken())
     val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison!!, token)
     processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison)
   }
 
   @Async
   fun processManualComparison(comparison: Comparison, prisonerIds: List<String>, token: String) {
-    UserContext.setAuthToken(token)
-    log.info("Using token: {}", UserContext.getAuthToken())
     val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIds(prisonerIds, token)
     processCalculableSentenceEnvelopes(activeBookingsForPrisoners, comparison)
   }
