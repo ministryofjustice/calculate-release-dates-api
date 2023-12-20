@@ -95,10 +95,11 @@ class PrisonApiClient(
     establishmentId: String,
     pageNumber: Int,
     token: String,
+    size: Int,
   ): RestResponsePage<CalculableSentenceEnvelope> {
     log.info("Requesting personId and booking details for latest booking of all offenders at establishment $establishmentId and page $pageNumber")
     return asyncWebClient.get()
-      .uri("/api/prison/$establishmentId/booking/latest/paged/calculable-sentence-envelope?page=$pageNumber")
+      .uri("/api/prison/$establishmentId/booking/latest/paged/calculable-sentence-envelope?page=$pageNumber&size=$size")
       .header("Authorization", token)
       .httpRequest { httpRequest ->
         run {

@@ -83,7 +83,7 @@ class PrisonService(
 
     while (!isLastPage) {
       val calculableSentenceEnvelopePage =
-        prisonApiClient.getCalculableSentenceEnvelopesByEstablishment(establishmentId, pageNumber, token)
+        prisonApiClient.getCalculableSentenceEnvelopesByEstablishment(establishmentId, pageNumber, token, 500)
       calculableSentenceEnvelope.addAll(calculableSentenceEnvelopePage.content)
       isLastPage = calculableSentenceEnvelopePage.isLast
       pageNumber++
