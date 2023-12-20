@@ -37,7 +37,7 @@ class ComparisonService(
   private val objectMapper: ObjectMapper,
 ) {
 
-  fun create(comparisonInput: ComparisonInput): Comparison {
+  fun create(comparisonInput: ComparisonInput, token: String): Comparison {
     val comparisonToCreate = transform(comparisonInput, serviceUserService.getUsername())
     log.info("Creating new comparison $comparisonToCreate")
     val initialComparisonCreated = comparisonRepository.save(
@@ -45,7 +45,7 @@ class ComparisonService(
     )
     log.info("500ms wait for $initialComparisonCreated")
     Thread.sleep(500)
-    bulkComparisonService.processPrisonComparison(initialComparisonCreated)
+    bulkComparisonService.processPrisonComparison(initialComparisonCreated, token)
     return initialComparisonCreated
   }
 
