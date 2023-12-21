@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.Precondi
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
@@ -88,18 +89,23 @@ class CalculationControllerTest {
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
     )
-    whenever(calculationTransactionalService.calculate(prisonerId, CalculationUserInputs())).thenReturn(calculatedReleaseDates)
+
+    val calculationRequestModel = CalculationRequestModel(CalculationUserInputs(), -1L, "")
+
+    whenever(calculationTransactionalService.calculate(prisonerId, calculationRequestModel)).thenReturn(calculatedReleaseDates)
 
     val result = mvc.perform(
       post("/calculation/$prisonerId")
-        .accept(APPLICATION_JSON),
+        .accept(APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .content(mapper.writeValueAsString(calculationRequestModel)),
     )
       .andExpect(status().isOk)
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
-    verify(calculationTransactionalService, times(1)).calculate(prisonerId, CalculationUserInputs())
+    verify(calculationTransactionalService, times(1)).calculate(prisonerId, calculationRequestModel)
   }
 
   @Test
@@ -115,20 +121,22 @@ class CalculationControllerTest {
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
     )
-    whenever(calculationTransactionalService.calculate(prisonerId, userInput)).thenReturn(calculatedReleaseDates)
+    val calculationRequestModel = CalculationRequestModel(CalculationUserInputs(), calculationReasonId = -1L)
+
+    whenever(calculationTransactionalService.calculate(prisonerId, calculationRequestModel)).thenReturn(calculatedReleaseDates)
 
     val result = mvc.perform(
       post("/calculation/$prisonerId")
         .accept(APPLICATION_JSON)
         .contentType(APPLICATION_JSON)
-        .content(mapper.writeValueAsString(userInput)),
+        .content(mapper.writeValueAsString(calculationRequestModel)),
     )
       .andExpect(status().isOk)
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
-    verify(calculationTransactionalService, times(1)).calculate(prisonerId, userInput)
+    verify(calculationTransactionalService, times(1)).calculate(prisonerId, calculationRequestModel)
   }
 
   @Test

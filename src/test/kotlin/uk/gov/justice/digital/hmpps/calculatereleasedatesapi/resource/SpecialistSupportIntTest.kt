@@ -7,6 +7,8 @@ import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideDateRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideDateResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideRequest
@@ -53,7 +55,9 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
     val responseBody = createGenuineOverrideDates(preliminaryCalculation)
     assertThat(responseBody!!.calculationReference).isNotNull
     assertThat(responseBody.originalCalculationReference).isEqualTo(preliminaryCalculation.calculationReference.toString())
-    val overrides = genuineOverrideRepository.findAllByOriginalCalculationRequestCalculationReferenceOrderBySavedAtDesc(preliminaryCalculation.calculationReference)
+    val overrides = genuineOverrideRepository.findAllByOriginalCalculationRequestCalculationReferenceOrderBySavedAtDesc(
+      preliminaryCalculation.calculationReference,
+    )
     assertThat(overrides.size).isEqualTo(1)
     assertThat(overrides[0].isOverridden).isTrue
     assertThat(overrides[0].savedCalculation).isNotNull
@@ -63,10 +67,16 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
   fun `Store an overridden calculation with the saved calculation`() {
     val preliminaryCalculation = createPreliminaryCalculation(CalculationIntTest.PRISONER_ID)
     val secondCalculation = createPreliminaryCalculation(CalculationIntTest.PRISONER_ID)
-    val responseBody = createGenuineOverride(preliminaryCalculation.calculationReference.toString(), true, secondCalculation.calculationReference.toString())
+    val responseBody = createGenuineOverride(
+      preliminaryCalculation.calculationReference.toString(),
+      true,
+      secondCalculation.calculationReference.toString(),
+    )
     assertThat(responseBody!!.savedCalculation).isNotNull
     assertThat(responseBody.originalCalculationRequest).isEqualTo(preliminaryCalculation.calculationReference.toString())
-    val overrides = genuineOverrideRepository.findAllByOriginalCalculationRequestCalculationReferenceOrderBySavedAtDesc(preliminaryCalculation.calculationReference)
+    val overrides = genuineOverrideRepository.findAllByOriginalCalculationRequestCalculationReferenceOrderBySavedAtDesc(
+      preliminaryCalculation.calculationReference,
+    )
     assertThat(overrides.size).isEqualTo(1)
     assertThat(overrides[0].isOverridden).isTrue
     assertThat(overrides[0].savedCalculation!!.calculationReference).isEqualTo(secondCalculation.calculationReference)
@@ -112,6 +122,8 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
             listOf(
               ManualEntrySelectedDate(ReleaseDateType.APD, "text", SubmittedDate(day = 1, month = 2, year = 2023)),
             ),
+            1L,
+            "",
           ),
         ),
       )
@@ -122,7 +134,11 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
       .expectBody(GenuineOverrideDateResponse::class.java)
       .returnResult().responseBody
 
-  private fun createGenuineOverride(calculationReference: String, isOverridden: Boolean, savedCalculationReference: String? = null) = webTestClient.post()
+  private fun createGenuineOverride(
+    calculationReference: String,
+    isOverridden: Boolean,
+    savedCalculationReference: String? = null,
+  ) = webTestClient.post()
     .uri("/specialist-support/genuine-override")
     .accept(MediaType.APPLICATION_JSON)
     .bodyValue(
@@ -144,6 +160,7 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
     .uri("/calculation/$prisonerid")
     .accept(MediaType.APPLICATION_JSON)
     .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .bodyValue(CalculationRequestModel(CalculationUserInputs(), 1L))
     .exchange()
     .expectStatus().isOk
     .expectHeader().contentType(MediaType.APPLICATION_JSON)

@@ -27,7 +27,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAd
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
-import java.util.*
+import java.util.UUID
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
