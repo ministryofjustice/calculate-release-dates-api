@@ -133,7 +133,7 @@ class CalculationTransactionalService(
     val calculationUserInputs = calculationRequestModel.calculationUserInputs ?: CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     val reasonForCalculation = calculationReasonRepository.findById(calculationRequestModel.calculationReasonId)
-      .orElseThrow { EntityNotFoundException("No calculation reason found for id: ${calculationRequestModel.calculationReasonId}") }
+      .orElse(null) //TODO: This should thrown an EntityNotFoundException when the reason is mandatory.
     try {
       return calculate(
         booking,
