@@ -196,9 +196,12 @@ class BulkComparisonServiceTest {
       null,
     )
 
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
     )
+
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+
 
     val mismatch = bulkComparisonService.determineMismatchType(sexOffenderCalculableSentenceEnvelope)
 
@@ -218,9 +221,12 @@ class BulkComparisonServiceTest {
       null,
     )
 
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
     )
+
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+
 
     val notHdc4SentenceTypeEnvelope = calculableSentenceEnvelope.copy(
       sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.SEC236A.name)),
@@ -243,9 +249,12 @@ class BulkComparisonServiceTest {
       null,
     )
 
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
     )
+
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+
 
     val threeYearSentenceEnvelope = calculableSentenceEnvelope.copy(
       sentenceAndOffences = listOf(sentenceAndOffence.copy(terms = listOf(SentenceTerms(years = 3)))),
@@ -268,9 +277,12 @@ class BulkComparisonServiceTest {
       null,
     )
 
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
     )
+
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+
 
     val sdsSentence =
       sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.ADIMP.name, sentenceSequence = 1)
@@ -301,9 +313,12 @@ class BulkComparisonServiceTest {
       null,
     )
 
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
     )
+
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+
 
     val sdsSentence =
       sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.SOPC21.name, sentenceSequence = 56)
@@ -361,9 +376,11 @@ class BulkComparisonServiceTest {
       null,
     )
 
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
     )
+
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
     val mismatch = bulkComparisonService.determineMismatchType(calculableSentenceEnvelope)
 
