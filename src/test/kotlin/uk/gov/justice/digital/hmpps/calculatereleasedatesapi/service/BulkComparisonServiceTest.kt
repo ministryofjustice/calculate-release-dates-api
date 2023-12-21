@@ -202,7 +202,6 @@ class BulkComparisonServiceTest {
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-
     val mismatch = bulkComparisonService.determineMismatchType(sexOffenderCalculableSentenceEnvelope)
 
     assertFalse(mismatch.isValid)
@@ -226,7 +225,6 @@ class BulkComparisonServiceTest {
     )
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
-
 
     val notHdc4SentenceTypeEnvelope = calculableSentenceEnvelope.copy(
       sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.SEC236A.name)),
@@ -255,7 +253,6 @@ class BulkComparisonServiceTest {
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-
     val threeYearSentenceEnvelope = calculableSentenceEnvelope.copy(
       sentenceAndOffences = listOf(sentenceAndOffence.copy(terms = listOf(SentenceTerms(years = 3)))),
     )
@@ -282,7 +279,6 @@ class BulkComparisonServiceTest {
     )
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
-
 
     val sdsSentence =
       sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.ADIMP.name, sentenceSequence = 1)
@@ -318,7 +314,6 @@ class BulkComparisonServiceTest {
     )
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
-
 
     val sdsSentence =
       sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.SOPC21.name, sentenceSequence = 56)

@@ -49,7 +49,7 @@ class ManualCalculationService(
     val booking = bookingService.getBooking(sourceData, CalculationUserInputs())
     val type =
       if (comment != null) CalculationType.MANUAL_OVERRIDE else if (hasIndeterminateSentences(booking.bookingId)) CalculationType.MANUAL_INDETERMINATE else CalculationType.MANUAL_DETERMINATE
-    val reasonForCalculation = calculationReasonRepository.findById(manualEntryRequest.reasonForCalculationId).orElse(null) //TODO: This should thrown an EntityNotFoundException when the reason is mandatory.
+    val reasonForCalculation = calculationReasonRepository.findById(manualEntryRequest.reasonForCalculationId).orElse(null) // TODO: This should thrown an EntityNotFoundException when the reason is mandatory.
 
     val calculationRequest = transform(
       booking,
