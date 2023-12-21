@@ -279,16 +279,16 @@ data class SentenceCalculation(
     }
     return if (days >= RELEASE_AT_TWO_THIRDS_ERSED_DAYS) {
       val release = extendedDeterminateParoleEligibilityDate ?: releaseDate
-      val ersed = release.minusYears(1)
+      val ersed = release.minusDays(MAX_ERSED_PERIOD_DAYS.toLong())
       ReleaseDateCalculationBreakdown(
-        rules = setOf(CalculationRule.ERSED_ONE_YEAR),
+        rules = setOf(CalculationRule.ERSED_MAX_PERIOD),
         releaseDate = ersed,
         unadjustedDate = unadjustedExtendedDeterminateParoleEligibilityDate ?: unadjustedDeterminateReleaseDate,
         adjustedDays = ChronoUnit.DAYS.between(
           unadjustedDeterminateReleaseDate,
           adjustedDeterminateReleaseDate,
         ).toInt(),
-        rulesWithExtraAdjustments = mapOf(CalculationRule.ERSED_ONE_YEAR to AdjustmentDuration(-12, ChronoUnit.MONTHS)),
+        rulesWithExtraAdjustments = mapOf(CalculationRule.ERSED_MAX_PERIOD to AdjustmentDuration(-MAX_ERSED_PERIOD_DAYS, ChronoUnit.DAYS)),
       )
     } else {
       val unadjustedErsed =
@@ -316,16 +316,16 @@ data class SentenceCalculation(
     }
     return if (days >= RELEASE_AT_HALFWAY_ERSED_DAYS) {
       val release = extendedDeterminateParoleEligibilityDate ?: releaseDate
-      val ersed = release.minusYears(1)
+      val ersed = release.minusDays(MAX_ERSED_PERIOD_DAYS.toLong())
       ReleaseDateCalculationBreakdown(
-        rules = setOf(CalculationRule.ERSED_ONE_YEAR),
+        rules = setOf(CalculationRule.ERSED_MAX_PERIOD),
         releaseDate = ersed,
         unadjustedDate = unadjustedExtendedDeterminateParoleEligibilityDate ?: unadjustedDeterminateReleaseDate,
         adjustedDays = ChronoUnit.DAYS.between(
           unadjustedDeterminateReleaseDate,
           adjustedDeterminateReleaseDate,
         ).toInt(),
-        rulesWithExtraAdjustments = mapOf(CalculationRule.ERSED_ONE_YEAR to AdjustmentDuration(-12, ChronoUnit.MONTHS)),
+        rulesWithExtraAdjustments = mapOf(CalculationRule.ERSED_MAX_PERIOD to AdjustmentDuration(-MAX_ERSED_PERIOD_DAYS, ChronoUnit.DAYS)),
       )
     } else {
       val unadjustedErsed =
@@ -433,7 +433,8 @@ data class SentenceCalculation(
 
   companion object {
     // These numbers are the point at which the calculated ERSED would be greater than a year before the release.
-    const val RELEASE_AT_HALFWAY_ERSED_DAYS = 1463
-    const val RELEASE_AT_TWO_THIRDS_ERSED_DAYS = 1097
+    const val RELEASE_AT_HALFWAY_ERSED_DAYS = 2180
+    const val RELEASE_AT_TWO_THIRDS_ERSED_DAYS = 1635
+    const val MAX_ERSED_PERIOD_DAYS = 544
   }
 }
