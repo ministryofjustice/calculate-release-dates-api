@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
@@ -28,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
@@ -43,6 +45,7 @@ class BulkComparisonService(
   private val objectMapper: ObjectMapper,
   private val comparisonRepository: ComparisonRepository,
   private val pcscLookupService: OffenceSdsPlusLookupService,
+  private val calculationReasonRepository: CalculationReasonRepository,
 ) {
 
   @Async
@@ -149,10 +152,15 @@ class BulkComparisonService(
 
     val prisonApiSourceData: PrisonApiSourceData = this.convert(calculableSentenceEnvelope)
 
+    val bulkCalculationReason = calculationReasonRepository.findTopByIsBulkTrue().orElseThrow {
+      EntityNotFoundException("The bulk calculation reason was not found.")
+    }
+
     return calculationTransactionalService.validateAndCalculate(
       calculableSentenceEnvelope.person.prisonerNumber,
       calculationUserInput,
       false,
+      bulkCalculationReason,
       prisonApiSourceData,
     )
   }

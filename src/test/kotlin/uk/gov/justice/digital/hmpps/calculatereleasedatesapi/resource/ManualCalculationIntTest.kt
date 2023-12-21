@@ -30,7 +30,7 @@ class ManualCalculationIntTest : IntegrationTestBase() {
   fun `Storing a no dates manual entry is successful`() {
     val response = webTestClient.post()
       .uri("/manual-calculation/$PRISONER_ID")
-      .bodyValue(ManualEntryRequest(listOf(ManualEntrySelectedDate(ReleaseDateType.None, "None", null))))
+      .bodyValue(ManualEntryRequest(listOf(ManualEntrySelectedDate(ReleaseDateType.None, "None", null)), 1L, ""))
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()

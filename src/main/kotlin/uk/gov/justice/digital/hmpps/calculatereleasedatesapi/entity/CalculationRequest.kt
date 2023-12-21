@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
@@ -101,6 +102,13 @@ data class CalculationRequest(
   @OneToMany
   @Fetch(FetchMode.JOIN)
   val approvedDatesSubmissions: List<ApprovedDatesSubmission> = ArrayList(),
+
+  @JoinColumn(name = "reasonForCalculation")
+  @ManyToOne
+  @NotNull
+  val reasonForCalculation: CalculationReason? = null,
+
+  val otherReasonForCalculation: String? = null,
 ) {
 
   init {
@@ -139,6 +147,8 @@ data class CalculationRequest(
       prisonerDetails = this.prisonerDetails,
       calculationType = calculationType,
       prisonerLocation = this.prisonerLocation,
+      reasonForCalculation = this.reasonForCalculation,
+      otherReasonForCalculation = this.otherReasonForCalculation,
     )
   }
 }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestUserInput
@@ -108,7 +109,10 @@ import java.util.UUID
 ** Sometimes a pass-thru but very useful when objects need to be altered or enriched
 */
 
-fun transform(sentence: SentenceAndOffences, calculationUserInputs: CalculationUserInputs?): MutableList<out AbstractSentence> {
+fun transform(
+  sentence: SentenceAndOffences,
+  calculationUserInputs: CalculationUserInputs?,
+): MutableList<out AbstractSentence> {
   // There shouldn't be multiple offences associated to a single sentence; however there are at the moment (NOMIS doesnt
   // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
   // treated as a separate sentence
@@ -292,7 +296,10 @@ fun transform(
   return adjustments
 }
 
-private fun findSentenceForAdjustment(adjustment: SentenceAdjustment, sentencesAndOffences: List<SentenceAndOffences>): SentenceAndOffences? {
+private fun findSentenceForAdjustment(
+  adjustment: SentenceAdjustment,
+  sentencesAndOffences: List<SentenceAndOffences>,
+): SentenceAndOffences? {
   val sentence = sentencesAndOffences.find { adjustment.sentenceSequence == it.sentenceSequence }
   if (sentence == null) {
     return null
@@ -349,7 +356,9 @@ fun transform(
   username: String,
   calculationStatus: CalculationStatus,
   sourceData: PrisonApiSourceData,
+  reasonForCalculation: CalculationReason?,
   objectMapper: ObjectMapper,
+  otherReasonDescription: String?,
   calculationUserInputs: CalculationUserInputs? = null,
   calculationFragments: CalculationFragments? = null,
   calculationType: CalculationType = CalculationType.CALCULATED,
@@ -369,10 +378,15 @@ fun transform(
     calculationRequestUserInput = transform(calculationUserInputs, sourceData),
     breakdownHtml = calculationFragments?.breakdownHtml,
     calculationType = calculationType,
+    reasonForCalculation = reasonForCalculation,
+    otherReasonForCalculation = otherReasonDescription,
   )
 }
 
-fun transform(calculationUserInputs: CalculationUserInputs?, sourceData: PrisonApiSourceData): CalculationRequestUserInput? {
+fun transform(
+  calculationUserInputs: CalculationUserInputs?,
+  sourceData: PrisonApiSourceData,
+): CalculationRequestUserInput? {
   if (calculationUserInputs == null) {
     return null
   }
@@ -385,7 +399,15 @@ fun transform(calculationUserInputs: CalculationUserInputs?, sourceData: PrisonA
         offenceCode = it.offenceCode,
         type = it.userInputType,
         userChoice = it.userChoice,
-        nomisMatches = sourceData.sentenceAndOffences.any { sentence -> sentence.sentenceSequence == it.sentenceSequence && sentence.offences.any { offence -> offence.offenceCode == it.offenceCode && offenceMatchesChoice(offence, it.userInputType, it.userChoice) } },
+        nomisMatches = sourceData.sentenceAndOffences.any { sentence ->
+          sentence.sentenceSequence == it.sentenceSequence && sentence.offences.any { offence ->
+            offence.offenceCode == it.offenceCode && offenceMatchesChoice(
+              offence,
+              it.userInputType,
+              it.userChoice,
+            )
+          }
+        },
       )
     },
   )
@@ -458,7 +480,11 @@ fun transform(firstOrNull: ApprovedDatesSubmission?): Map<ReleaseDateType, Local
   )?.toMutableMap()
 }
 
-fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>, otherDates: Map<ReleaseDateType, LocalDate>): CalculationBreakdown {
+fun transform(
+  booking: Booking,
+  breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+  otherDates: Map<ReleaseDateType, LocalDate>,
+): CalculationBreakdown {
   val concurrentSentences = booking.sentences.filter {
     booking.consecutiveSentences.none { consecutiveSentence ->
       consecutiveSentence.orderedSentences.contains(it)
@@ -524,7 +550,8 @@ fun transform(booking: Booking, breakdownByReleaseDateType: Map<ReleaseDateType,
 }
 
 fun transform(calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>?): OffenderKeyDates {
-  val groupedApprovedDates = approvedDates?.map { it.dateType to LocalDate.of(it.date!!.year, it.date.month, it.date.day) }?.toMap()
+  val groupedApprovedDates =
+    approvedDates?.map { it.dateType to LocalDate.of(it.date!!.year, it.date.month, it.date.day) }?.toMap()
   val hdcad = groupedApprovedDates?.get(HDCAD) ?: calculation.dates[HDCAD]
   val rotl = groupedApprovedDates?.get(ROTL) ?: calculation.dates[ROTL]
   val apd = groupedApprovedDates?.get(APD) ?: calculation.dates[APD]
@@ -590,9 +617,18 @@ fun transform(fixedTermRecallDetails: FixedTermRecallDetails): ReturnToCustodyDa
     returnToCustodyDate = fixedTermRecallDetails.returnToCustodyDate,
   )
 
-fun transform(calculationRequest: CalculationRequest, manualEntrySelectedDate: ManualEntrySelectedDate): CalculationOutcome {
+fun transform(
+  calculationRequest: CalculationRequest,
+  manualEntrySelectedDate: ManualEntrySelectedDate,
+): CalculationOutcome {
   if (manualEntrySelectedDate.date != null) {
-    val date = manualEntrySelectedDate.date.year.let { LocalDate.of(it, manualEntrySelectedDate.date.month, manualEntrySelectedDate.date.day) }
+    val date = manualEntrySelectedDate.date.year.let {
+      LocalDate.of(
+        it,
+        manualEntrySelectedDate.date.month,
+        manualEntrySelectedDate.date.day,
+      )
+    }
     return CalculationOutcome(
       calculationDateType = manualEntrySelectedDate.dateType.name,
       outcomeDate = date,
@@ -708,7 +744,14 @@ private fun transform(comparisonPerson: ComparisonPerson): ComparisonMismatchSum
   comparisonPerson.sdsPlusSentencesIdentified,
 )
 
-fun transform(comparisonPerson: ComparisonPerson, nomisDates: Map<ReleaseDateType, LocalDate?>, calculatedReleaseDates: CalculatedReleaseDates?, overrideDates: Map<ReleaseDateType, LocalDate?>, breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>, sdsSentencesIdentified: List<SentenceAndOffences>): ComparisonPersonOverview = ComparisonPersonOverview(
+fun transform(
+  comparisonPerson: ComparisonPerson,
+  nomisDates: Map<ReleaseDateType, LocalDate?>,
+  calculatedReleaseDates: CalculatedReleaseDates?,
+  overrideDates: Map<ReleaseDateType, LocalDate?>,
+  breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+  sdsSentencesIdentified: List<SentenceAndOffences>,
+): ComparisonPersonOverview = ComparisonPersonOverview(
   comparisonPerson.person,
   comparisonPerson.isValid,
   comparisonPerson.isMatch,
@@ -725,12 +768,35 @@ fun transform(comparisonPerson: ComparisonPerson, nomisDates: Map<ReleaseDateTyp
   sdsSentencesIdentified,
 )
 
-fun transform(sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis, sentencesAndOffences: List<SentenceAndOffences>): List<AnalyzedSentenceAndOffences> {
+fun transform(
+  sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
+  sentencesAndOffences: List<SentenceAndOffences>,
+): List<AnalyzedSentenceAndOffences> {
   return sentencesAndOffences.map {
     transform(sentenceAndOffences = it, sentenceAndOffenceAnalysis = sentenceAndOffenceAnalysis)
   }
 }
 
-fun transform(sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis, sentenceAndOffences: SentenceAndOffences): AnalyzedSentenceAndOffences {
-  return AnalyzedSentenceAndOffences(sentenceAndOffences.bookingId, sentenceAndOffences.sentenceSequence, sentenceAndOffences.lineSequence, sentenceAndOffences.caseSequence, sentenceAndOffences.consecutiveToSequence, sentenceAndOffences.sentenceStatus, sentenceAndOffences.sentenceCategory, sentenceAndOffences.sentenceCalculationType, sentenceAndOffences.sentenceTypeDescription, sentenceAndOffences.sentenceDate, sentenceAndOffences.terms, sentenceAndOffences.offences, sentenceAndOffences.caseReference, sentenceAndOffences.courtDescription, sentenceAndOffences.fineAmount, sentenceAndOffenceAnalysis)
+fun transform(
+  sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
+  sentenceAndOffences: SentenceAndOffences,
+): AnalyzedSentenceAndOffences {
+  return AnalyzedSentenceAndOffences(
+    sentenceAndOffences.bookingId,
+    sentenceAndOffences.sentenceSequence,
+    sentenceAndOffences.lineSequence,
+    sentenceAndOffences.caseSequence,
+    sentenceAndOffences.consecutiveToSequence,
+    sentenceAndOffences.sentenceStatus,
+    sentenceAndOffences.sentenceCategory,
+    sentenceAndOffences.sentenceCalculationType,
+    sentenceAndOffences.sentenceTypeDescription,
+    sentenceAndOffences.sentenceDate,
+    sentenceAndOffences.terms,
+    sentenceAndOffences.offences,
+    sentenceAndOffences.caseReference,
+    sentenceAndOffences.courtDescription,
+    sentenceAndOffences.fineAmount,
+    sentenceAndOffenceAnalysis,
+  )
 }
