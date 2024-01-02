@@ -14,7 +14,9 @@ class SentenceIdentificationServiceTest {
   private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
   private val workingDayService = mock<WorkingDayService>()
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator)
+  private val hdced4onfiguration = Hdced4Calculator.Hdced4Configuration(12, ChronoUnit.WEEKS, 14, 720, ChronoUnit.DAYS, 179)
+  private val hdced4Calculator = Hdced4Calculator(hdced4onfiguration)
+  private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
   private val offenderU18 = jsonTransformation.loadOffender("john_doe_under18")
@@ -39,7 +41,7 @@ class SentenceIdentificationServiceTest {
   fun `Identify before 2005 12-48M`() {
     val sentence = jsonTransformation.loadSentence("two_years_2003_mar")
     sentenceIdentificationService.identify(sentence, offender)
-    assertEquals("[LED, CRD, SED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[LED, CRD, SED, HDCED, HDCED4PLUS]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   // sentenced before: 03/12/2012
@@ -63,7 +65,7 @@ class SentenceIdentificationServiceTest {
   fun `Identify before 2005 48M- Section 15`() {
     val sentence = jsonTransformation.loadSentence("five_years_2003_mar_section15")
     sentenceIdentificationService.identify(sentence, offender)
-    assertEquals("[PED, NPD, LED, SED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[PED, NPD, LED, SED, HDCED4PLUS]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   // sentenced before: 03/12/2012
@@ -75,7 +77,7 @@ class SentenceIdentificationServiceTest {
   fun `Identify before 2005 48M-`() {
     val sentence = jsonTransformation.loadSentence("five_years_2003_mar")
     sentenceIdentificationService.identify(sentence, offender)
-    assertEquals("[CRD, SLED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[CRD, SLED, HDCED4PLUS]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   // sentenced after: 03/12/2012
@@ -97,7 +99,7 @@ class SentenceIdentificationServiceTest {
   fun `Identify Before 2015 (After 2005 and 2012) GT 2 Years`() {
     val sentence = jsonTransformation.loadSentence("three_years_2014_mar")
     sentenceIdentificationService.identify(sentence, offender)
-    assertEquals("[SLED, CRD, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[SLED, CRD, HDCED, HDCED4PLUS]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   // sentenced after: 03/12/2012
@@ -119,7 +121,7 @@ class SentenceIdentificationServiceTest {
   fun `Identify After 2015 18 Months`() {
     val sentence = jsonTransformation.loadSentence("eighteen_months_2018_mar")
     sentenceIdentificationService.identify(sentence, offender)
-    assertEquals("[SLED, CRD, TUSED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[SLED, CRD, TUSED, HDCED, HDCED4PLUS]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   // sentenced after: 03/12/2012
@@ -130,7 +132,7 @@ class SentenceIdentificationServiceTest {
   fun `Identify After 2005 18 Months`() {
     val sentence = jsonTransformation.loadSentence("eighteen_months_2006_mar")
     sentenceIdentificationService.identify(sentence, offender)
-    assertEquals("[SLED, CRD, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[SLED, CRD, HDCED, HDCED4PLUS]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   // sentenced after: 03/12/2012
@@ -164,6 +166,6 @@ class SentenceIdentificationServiceTest {
   fun `Identify After 2015 5 years`() {
     val sentence = jsonTransformation.loadSentence("five_years_2018_mar")
     sentenceIdentificationService.identify(sentence, offender)
-    assertEquals("[SLED, CRD]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[SLED, CRD, HDCED4PLUS]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 }

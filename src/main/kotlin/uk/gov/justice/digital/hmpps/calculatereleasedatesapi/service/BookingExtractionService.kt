@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ETD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED4PLUS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.MTD
@@ -87,6 +88,10 @@ class BookingExtractionService(
       dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
     }
 
+    if (sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate != null) {
+      dates[HDCED4PLUS] = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!
+    }
+
     if (sentenceCalculation.notionalConditionalReleaseDate != null) {
       dates[NCRD] = sentenceCalculation.notionalConditionalReleaseDate!!
     }
@@ -156,6 +161,8 @@ class BookingExtractionService(
         sentences,
         mostRecentSentencesByReleaseDate,
       )
+
+    val latestHDC4PLUSAndBreakdown = extractManyHomeDetentionCurfew4PlusEligibilityDate(sentences, mostRecentSentencesByReleaseDate)
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
       extractManyTopUpSuperVisionDate(sentences, latestLicenseExpiryDate)
@@ -271,6 +278,11 @@ class BookingExtractionService(
     if (latestHDCEDAndBreakdown != null) {
       dates[HDCED] = latestHDCEDAndBreakdown.first
       breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdown.second
+    }
+
+    if (latestHDC4PLUSAndBreakdown != null) {
+      dates[HDCED4PLUS] = latestHDC4PLUSAndBreakdown.first
+      breakdownByReleaseDateType[HDCED4PLUS] = latestHDC4PLUSAndBreakdown.second
     }
 
     if (latestNotionalConditionalReleaseDate != null) {
@@ -431,6 +443,47 @@ class BookingExtractionService(
             } else {
               hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
             }
+          }
+        }
+      }
+    }
+    return null
+  }
+
+  private fun extractManyHomeDetentionCurfew4PlusEligibilityDate(
+    sentences: List<CalculableSentence>,
+    mostRecentSentencesByReleaseDate: List<CalculableSentence>,
+  ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
+    val latestAdjustedReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
+    val mostRecentReleaseIsPrrd = mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.getReleaseDateTypes().contains(PRRD) }
+    // For now we can't calculate HDCED if there is a consecutive sentence with EDS or SOPC sentences
+    if (!mostRecentReleaseIsPrrd && sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
+      val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() && !it.isDto() }, SentenceCalculation::releaseDate)
+      if (latestNonRecallRelease?.sentenceCalculation?.homeDetentionCurfew4PlusEligibilityDate != null) {
+        val hdcedSentence = extractionService.mostRecentSentenceOrNull(
+          sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
+          SentenceCalculation::homeDetentionCurfew4PlusEligibilityDate,
+        )
+        val latestSopcOrEdsRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it.hasAnyEdsOrSopcSentence() && !it.sentenceCalculation.isImmediateRelease() }, SentenceCalculation::releaseDate)
+        val latestAFineRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it is AFineSentence && !it.sentenceCalculation.isImmediateRelease() }, SentenceCalculation::releaseDate)
+        val latestSdsArdRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it.releaseDateTypes.contains(ARD) && !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.homeDetentionCurfewEligibilityDate == null }, SentenceCalculation::releaseDate)
+        val latestSdsCrdRelease =
+          extractionService.mostRecentSentenceOrNull(sentences.filter { it.offence.isPcscSdsPlus && it.releaseDateTypes.contains(CRD) && !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.homeDetentionCurfewEligibilityDate == null }, SentenceCalculation::releaseDate)
+        val latestConcurrentReleaseSentence = listOfNotNull(latestSopcOrEdsRelease, latestSdsCrdRelease, latestAFineRelease, latestSdsArdRelease).maxByOrNull { it.sentenceCalculation.releaseDate }
+        val latestConcurrentRelease = latestConcurrentReleaseSentence?.sentenceCalculation?.releaseDate
+        if (hdcedSentence != null) {
+          return if (latestConcurrentRelease != null && hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!.isBefore(latestConcurrentRelease)) {
+            latestConcurrentRelease to ReleaseDateCalculationBreakdown(
+              rules = setOf(if (latestConcurrentReleaseSentence.releaseDateTypes.contains(ARD)) CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE else CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE),
+              releaseDate = latestConcurrentRelease,
+              unadjustedDate = hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
+              adjustedDays = ChronoUnit.DAYS.between(
+                latestConcurrentRelease,
+                hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
+              ).toInt(),
+            )
+          } else {
+            hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED4PLUS]!!
           }
         }
       }

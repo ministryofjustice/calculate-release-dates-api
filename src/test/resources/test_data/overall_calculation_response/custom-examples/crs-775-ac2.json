@@ -2,8 +2,9 @@
   "dates": {
     "SED": "2021-05-27",
     "ARD": "2020-12-04",
-    "HDCED": "2020-09-09",
     "TUSED": "2021-07-29",
+    "HDCED": "2020-09-09",
+    "HDCED4PLUS": "2020-09-09",
     "ESED": "2021-05-27"
   },
   "effectiveSentenceLength": "P1Y14D"

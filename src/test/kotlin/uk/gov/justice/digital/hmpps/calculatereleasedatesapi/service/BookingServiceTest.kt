@@ -2,6 +2,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
@@ -36,8 +40,13 @@ import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
 import java.util.UUID
 
+@ExtendWith(MockitoExtension::class)
 class BookingServiceTest {
-  private val bookingService = BookingService()
+  @Mock
+  lateinit var offenceSdsPlusLookupService: OffenceSdsPlusLookupService
+
+  @InjectMocks
+  lateinit var bookingService: BookingService
 
   private val prisonerId = "A123456A"
   private val sequence = 153

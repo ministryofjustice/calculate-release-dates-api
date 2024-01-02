@@ -19,7 +19,8 @@
         }
       },
       "lineSequence": 1,
-      "caseSequence": 1
+      "caseSequence": 1,
+      "caseReference": null
     }
   ],
   "consecutiveSentence": null,
@@ -65,6 +66,21 @@
       "adjustedDays": -21,
       "releaseDate": "2015-03-28",
       "unadjustedDate": "2015-02-16"
+    },
+    "HDCED4PLUS": {
+      "rules": [
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
+          "adjustmentValue": 61,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": -21,
+      "releaseDate": "2015-03-28",
+      "unadjustedDate": "2015-02-16"
     }
-  }
+  },
+  "otherDates": {}
 }

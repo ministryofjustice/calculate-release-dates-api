@@ -24,4 +24,5 @@ enum class ReleaseDateType {
   None,
   Tariff,
   ROTL,
+  HDCED4PLUS,
 }

@@ -361,7 +361,10 @@ data class SentenceCalculation(
 
   //  Home Detention Curfew Eligibility Date(HDCED)
   var numberOfDaysToHomeDetentionCurfewEligibilityDate: Long = 0
+  var numberOfDaysToHomeDetentionCurfew4PlusEligibilityDate: Long = 0
   var homeDetentionCurfewEligibilityDate: LocalDate? = null
+  var homeDetentionCurfew4PlusEligibilityDate: LocalDate? = null
+
   var breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
 
   // Notional Conditional Release Date (NCRD)
@@ -424,7 +427,10 @@ data class SentenceCalculation(
       "${numberOfDaysToHomeDetentionCurfewEligibilityDate}\n" +
       "Home Detention Curfew Eligibility Date (HDCED)\t:\t" +
       "${homeDetentionCurfewEligibilityDate?.format(formatter)}\n" +
-
+      "Number of days to Home Detention Curfew Eligibility Date 4+(HDCED4PLUS)\t:\t" +
+      "${numberOfDaysToHomeDetentionCurfew4PlusEligibilityDate}\n" +
+      "Home Detention Curfew Eligibility Date 4+(HDCED4PLUS)\t:\t" +
+      "${homeDetentionCurfew4PlusEligibilityDate?.format(formatter)}\n" +
       "Effective $expiryDateType\t:\t${expiryDate.format(formatter)}\n" +
       "Effective $releaseDateType\t:\t${releaseDate.format(formatter)}\n" +
       "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +

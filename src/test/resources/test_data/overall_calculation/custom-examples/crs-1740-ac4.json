@@ -1,0 +1,37 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2000-07-23"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2019-12-07",
+        "isPcscSdsPlus": true,
+        "isScheduleFifteenMaximumLife": true
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 7
+        }
+      },
+      "sentencedAt": "2020-07-15",
+      "sentenceType": "ADIMP"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-12-07"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 3,
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2023-11-23",
+      "sentenceType": "ADIMP"
+    }
+  ],
+  "adjustments": {
+  }
+}

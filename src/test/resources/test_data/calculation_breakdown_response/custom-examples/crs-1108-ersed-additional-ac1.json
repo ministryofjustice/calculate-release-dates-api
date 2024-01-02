@@ -62,6 +62,21 @@
       "adjustedDays": 0,
       "releaseDate": "2022-09-09",
       "unadjustedDate": "2022-08-26"
+    },
+    "HDCED4PLUS": {
+      "rules": [
+        "HDCED_MINIMUM_CUSTODIAL_PERIOD",
+        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_MINIMUM_CUSTODIAL_PERIOD": {
+          "adjustmentValue": 14,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": 0,
+      "releaseDate": "2022-09-09",
+      "unadjustedDate": "2022-08-26"
     }
   },
   "otherDates": {}

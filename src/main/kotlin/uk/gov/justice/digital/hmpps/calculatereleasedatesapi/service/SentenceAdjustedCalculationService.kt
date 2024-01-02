@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED4PLUS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
@@ -29,7 +30,7 @@ import kotlin.math.ceil
 import kotlin.math.floor
 
 @Service
-class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, val tusedCalculator: TusedCalculator) {
+class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, val tusedCalculator: TusedCalculator, val hdced4Calculator: Hdced4Calculator) {
   /*
     This function calculates dates after adjustments have been decided.
     It can be run many times to recalculate dates. It needs to be run if there is a change to adjustments.
@@ -86,7 +87,9 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
     if (sentence.releaseDateTypes.contains(HDCED)) {
       hdcedCalculator.calculateHdced(sentence, sentenceCalculation)
     }
-
+    if (sentence.releaseDateTypes.contains(HDCED4PLUS)) {
+      hdced4Calculator.calculateHdced4(sentence, sentenceCalculation)
+    }
     BookingCalculationService.log.info(sentence.buildString())
     return sentenceCalculation
   }

@@ -1,0 +1,25 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2000-07-23"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2021-12-07",
+        "isPcscSdsPlus": true,
+        "isScheduleFifteenMaximumLife": true
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 10,
+          "MONTHS": 4
+        }
+      },
+      "sentencedAt": "2022-05-10",
+      "sentenceType": "ADIMP"
+    }
+  ],
+  "adjustments": {
+  }
+}

@@ -1,79 +1,81 @@
 {
-  "concurrentSentences":[
+  "concurrentSentences": [
     {
-      "sentencedAt":"2010-08-31",
-      "sentenceLength":"1 year",
-      "sentenceLengthDays":365,
-      "dates":{
-        "SLED":{
-          "unadjusted":"2011-08-30",
-          "adjusted":"2011-08-30",
-          "daysFromSentenceStart":365,
-          "adjustedByDays":0
+      "sentencedAt": "2010-08-31",
+      "sentenceLength": "1 year",
+      "sentenceLengthDays": 365,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2011-08-30",
+          "adjusted": "2011-08-30",
+          "daysFromSentenceStart": 365,
+          "adjustedByDays": 0
         },
-        "CRD":{
-          "unadjusted":"2011-03-01",
-          "adjusted":"2011-03-01",
-          "daysFromSentenceStart":183,
-          "adjustedByDays":0
+        "CRD": {
+          "unadjusted": "2011-03-01",
+          "adjusted": "2011-03-01",
+          "daysFromSentenceStart": 183,
+          "adjustedByDays": 0
         }
       },
-      "lineSequence":0,
-      "caseSequence":0,
-      "caseReference":null
+      "lineSequence": 0,
+      "caseSequence": 0,
+      "caseReference": null
     }
   ],
-  "consecutiveSentence":null,
-  "breakdownByReleaseDateType":{
-    "CRD":{
-      "rules":[
-
-      ],
-      "rulesWithExtraAdjustments":{
-
-      },
-      "adjustedDays":0,
-      "releaseDate":"2011-03-01",
-      "unadjustedDate":"2011-03-01"
+  "consecutiveSentence": null,
+  "breakdownByReleaseDateType": {
+    "CRD": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2011-03-01",
+      "unadjustedDate": "2011-03-01"
     },
-    "SLED":{
-      "rules":[
-
-      ],
-      "rulesWithExtraAdjustments":{
-
-      },
-      "adjustedDays":0,
-      "releaseDate":"2011-08-30",
-      "unadjustedDate":"2011-08-30"
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2011-08-30",
+      "unadjustedDate": "2011-08-30"
     },
-    "ERSED":{
-      "rules":[
+    "ERSED": {
+      "rules": [
         "ERSED_HALFWAY"
       ],
-      "rulesWithExtraAdjustments":{
-
-      },
-      "adjustedDays":0,
-      "releaseDate":"2010-12-01",
-      "unadjustedDate":"2010-12-01"
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2010-12-01",
+      "unadjustedDate": "2010-12-01"
     },
-    "HDCED":{
-      "rules":[
+    "HDCED": {
+      "rules": [
         "HDCED_GE_MIN_PERIOD_LT_MIDPOINT"
       ],
-      "rulesWithExtraAdjustments":{
-        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT":{
-          "adjustmentValue":92,
-          "type":"DAYS"
+      "rulesWithExtraAdjustments": {
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
+          "adjustmentValue": 92,
+          "type": "DAYS"
         }
       },
-      "adjustedDays":0,
-      "releaseDate":"2010-12-01",
-      "unadjustedDate":"2010-08-31"
+      "adjustedDays": 0,
+      "releaseDate": "2010-12-01",
+      "unadjustedDate": "2010-08-31"
+    },
+    "HDCED4PLUS": {
+      "rules": [
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
+          "adjustmentValue": 92,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": 0,
+      "releaseDate": "2010-12-01",
+      "unadjustedDate": "2010-08-31"
     }
   },
-  "otherDates":{
-
-  }
+  "otherDates": {}
 }
