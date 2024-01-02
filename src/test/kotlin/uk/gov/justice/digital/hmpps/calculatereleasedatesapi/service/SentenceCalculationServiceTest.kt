@@ -27,9 +27,11 @@ class SentenceCalculationServiceTest {
   private val bankHolidayService = mock<BankHolidayService>()
   private val workingDayService = WorkingDayService(bankHolidayService)
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator)
+  private val hdced4onfiguration = Hdced4Calculator.Hdced4Configuration(12, ChronoUnit.WEEKS, 14, 720, ChronoUnit.DAYS, 179)
+  private val hdced4Calculator = Hdced4Calculator(hdced4onfiguration)
+  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
   private val sentenceCalculationService: SentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
-  private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator)
+  private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
 
@@ -43,7 +45,8 @@ class SentenceCalculationServiceTest {
     assertEquals(calculation.expiryDate, LocalDate.of(2015, 9, 20))
     assertEquals(calculation.releaseDate, LocalDate.of(2014, 9, 20))
     assertEquals(LocalDate.of(2014, 3, 25), calculation.homeDetentionCurfewEligibilityDate)
-    assertEquals("[SLED, CRD, HDCED]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals(LocalDate.of(2014, 3, 25), calculation.homeDetentionCurfew4PlusEligibilityDate)
+    assertEquals("[SLED, CRD, HDCED, HDCED4PLUS]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   @Test
@@ -60,7 +63,8 @@ class SentenceCalculationServiceTest {
     assertEquals(LocalDate.of(2015, 10, 30), calculation.expiryDate)
     assertEquals(LocalDate.of(2014, 5, 1), calculation.releaseDate)
     assertEquals(LocalDate.of(2013, 11, 3), calculation.homeDetentionCurfewEligibilityDate)
-    assertEquals("[SLED, CRD, HDCED]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals(LocalDate.of(2013, 11, 3), calculation.homeDetentionCurfew4PlusEligibilityDate)
+    assertEquals("[SLED, CRD, HDCED, HDCED4PLUS]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   @Test
@@ -75,7 +79,8 @@ class SentenceCalculationServiceTest {
     assertEquals(LocalDate.of(2013, 8, 6), calculation.expiryDate)
     assertEquals(LocalDate.of(2013, 4, 7), calculation.releaseDate)
     assertEquals(LocalDate.of(2013, 2, 6), calculation.homeDetentionCurfewEligibilityDate)
-    assertEquals("[ARD, SED, HDCED]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals(LocalDate.of(2013, 2, 6), calculation.homeDetentionCurfew4PlusEligibilityDate)
+    assertEquals("[ARD, SED, HDCED, HDCED4PLUS]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   @Test
@@ -92,7 +97,8 @@ class SentenceCalculationServiceTest {
     assertEquals(LocalDate.of(2015, 5, 26), calculation.releaseDate)
     assertEquals(LocalDate.of(2016, 5, 26), calculation.topUpSupervisionDate)
     assertEquals(LocalDate.of(2015, 3, 28), calculation.homeDetentionCurfewEligibilityDate)
-    assertEquals("[SLED, CRD, TUSED, HDCED]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals(LocalDate.of(2015, 3, 28), calculation.homeDetentionCurfew4PlusEligibilityDate)
+    assertEquals("[SLED, CRD, TUSED, HDCED, HDCED4PLUS]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   @Test
@@ -106,7 +112,7 @@ class SentenceCalculationServiceTest {
     val calculation = sentenceCalculationService.calculate(sentence, booking)
     assertEquals(LocalDate.of(2022, 2, 22), calculation.expiryDate)
     assertEquals(LocalDate.of(2019, 8, 24), calculation.releaseDate)
-    assertEquals("[SLED, CRD]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[SLED, CRD, HDCED4PLUS]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   @BeforeEach

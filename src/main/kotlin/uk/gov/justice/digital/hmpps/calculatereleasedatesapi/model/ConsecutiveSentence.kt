@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
-import java.lang.UnsupportedOperationException
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -42,21 +41,26 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
         is StandardDeterminateSentence -> {
           it.duration
         }
+
         is ExtendedDeterminateSentence -> {
           it.combinedDuration()
         }
+
         is SopcSentence -> {
           it.combinedDuration()
         }
+
         is DetentionAndTrainingOrderSentence -> {
           it.duration
         }
+
         else -> {
           throw UnsupportedOperationException("Unknown type of sentence in a consecutive sentence ${it.javaClass}")
         }
       }
     }.reduce { acc, duration -> acc.appendAll(duration.durationElements) }
   }
+
   override fun getLengthInDays(): Int {
     val duration = getCombinedDuration()
     if (isMadeUpOfOnlyDtos() && isMoreThanTwoYears(duration)) {
@@ -85,6 +89,7 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
   fun hasExtendedSentence(): Boolean {
     return orderedSentences.any { it is ExtendedDeterminateSentence }
   }
+
   fun hasSopcSentence(): Boolean {
     return orderedSentences.any { it is SopcSentence }
   }
@@ -164,6 +169,7 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
   override fun calculateErsedFromHalfway(): Boolean {
     return !calculateErsedFromTwoThirds() && orderedSentences.any { it.identificationTrack.calculateErsedFromHalfway() }
   }
+
   override fun calculateErsedFromTwoThirds(): Boolean {
     return orderedSentences.any { it.identificationTrack.calculateErsedFromTwoThirds() }
   }
@@ -174,5 +180,9 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
 
   override fun isIdentificationTrackInitialized(): Boolean {
     return this::identificationTrack.isInitialized
+  }
+
+  fun isMadeUpOfSdsAndSdsPlusSentences(): Boolean {
+    return (orderedSentences.any { it.offence.isPcscSdsPlus } || orderedSentences.any { it.offence.isPcscSds }) && orderedSentences.any { !it.offence.isPcscSdsPlus }
   }
 }

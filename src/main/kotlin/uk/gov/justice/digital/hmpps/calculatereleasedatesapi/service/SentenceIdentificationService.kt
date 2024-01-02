@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ETD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED4PLUS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.MTD
@@ -48,7 +49,7 @@ import java.math.BigDecimal
 import java.time.temporal.ChronoUnit
 
 @Service
-class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tusedCalculator: TusedCalculator) {
+class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tusedCalculator: TusedCalculator, val hdced4Calculator: Hdced4Calculator) {
 
   fun identify(sentence: CalculableSentence, offender: Offender) {
     val releaseDateTypes = mutableListOf<ReleaseDateType>()
@@ -80,6 +81,7 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
 
     if (sentence.recallType != null) {
       releaseDateTypes -= HDCED
+      releaseDateTypes -= HDCED4PLUS
       releaseDateTypes += PRRD
     }
     sentence.releaseDateTypes = ReleaseDateTypes(releaseDateTypes.toList(), sentence, offender)
@@ -220,6 +222,9 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
       if (hdcedCalculator.doesHdcedDateApply(sentence, offender, sentence.isMadeUpOfOnlyDtos())) {
         releaseDateTypes += HDCED
       }
+      if (hdced4Calculator.doesHdced4DateApply(sentence, offender, sentence.isMadeUpOfOnlyDtos())) {
+        releaseDateTypes += HDCED4PLUS
+      }
     }
     return releaseDateTypes
   }
@@ -301,6 +306,9 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
 
     if (hdcedCalculator.doesHdcedDateApply(sentence, offender, false)) {
       releaseDateTypes += HDCED
+    }
+    if (hdced4Calculator.doesHdced4DateApply(sentence, offender, false)) {
+      releaseDateTypes += HDCED4PLUS
     }
     return releaseDateTypes
   }
