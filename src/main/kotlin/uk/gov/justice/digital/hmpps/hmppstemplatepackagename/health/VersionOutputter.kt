@@ -15,7 +15,7 @@ class VersionOutputter(buildProperties: BuildProperties) {
     log.info("Version {} started", version)
   }
 
-  companion object {
+  private companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
   }
 }
