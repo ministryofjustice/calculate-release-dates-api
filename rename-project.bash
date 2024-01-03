@@ -60,15 +60,18 @@ mv "src/main/${BASE}/hmppstemplatepackagename" "src/main/$BASE/$PACKAGE_NAME"
 # and move helm stuff to new name
 mv "helm_deploy/hmpps-template-kotlin" "helm_deploy/$PROJECT_NAME"
 
-# Update helm values.yaml with product ID.
+# Update helm values.yaml with product ID.
 sed -i -z -E \
   -e "s/UNASSIGNED/$PRODUCT_ID/" \
   helm_deploy/$PROJECT_NAME/values.yaml
 
-# Update helm values files with correct slack channels.
+# Update helm values files with correct slack channels.
 sed -i -z -E \
   -e "s/NON_PROD_ALERTS_SEVERITY_LABEL/$NON_PROD_ALERTS_SEVERITY_LABEL/" \
   helm_deploy/values-dev.yaml helm_deploy/values-preprod.yaml
+
+sed -i -z -E \
+  -e "s/PROD_ALERTS_SEVERITY_LABEL/$PROD_ALERTS_SEVERITY_LABEL/" helm_deploy/values-prod.yaml
 
 # rename kotlin files
 mv "src/main/$BASE/$PACKAGE_NAME/HmppsTemplateKotlin.kt" "src/main/$BASE/$PACKAGE_NAME/$CLASS_NAME.kt"
