@@ -54,6 +54,14 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
       val nonSdsPlusSentences = sentence.orderedSentences.filter { !it.offence.isPcscSdsPlus || !it.offence.isPcscSds }
       sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate =
         latestNcrd.sentenceCalculation.releaseDate.plusDays(nonSdsPlusSentences.sumOf { it.getLengthInDays() + nonSdsPlusSentences.size }.toLong() / 4)!!.plusDays(1)
+      sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED4PLUS] =
+        ReleaseDateCalculationBreakdown(
+          rules = setOf(CalculationRule.CONSECUTIVE_SENTENCE_HDCED_MINIMUM_CUSTODIAL_PERIOD),
+          rulesWithExtraAdjustments = mapOf(CalculationRule.CONSECUTIVE_SENTENCE_HDCED_MINIMUM_CUSTODIAL_PERIOD to AdjustmentDuration(hdcedConfiguration.minimumCustodialPeriodDays.toInt())),
+          adjustedDays = 0,
+          releaseDate = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
+          unadjustedDate = sentence.sentencedAt,
+        )
     } else if (sentence is ConsecutiveSentence && sentence.isMadeUpOfSdsAndSdsPlusSentences() && nonSdsGreaterThanMidpoint(sentence) && lastSentenceIsSdsPlus(sentence)) {
       val sdsPlusSentences = sentence.orderedSentences.filter { it.offence.isPcscSdsPlus || it.offence.isPcscSds }
       val sdsPlusLengthInDays = sdsPlusSentences.sumOf { it.getLengthInDays() }.toLong()
@@ -71,6 +79,14 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
       log.info("Quarter sentence length: {}", quarterSentenceLength)
 
       sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sdsPlusNotionalCrd.plusDays(quarterSentenceLength).minusDays(sentence.sentenceCalculation.calculatedTotalDeductedDays.toLong())
+      sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED4PLUS] =
+        ReleaseDateCalculationBreakdown(
+          rules = setOf(CalculationRule.CONSECUTIVE_SENTENCE_HDCED_MINIMUM_CUSTODIAL_PERIOD_LAST_SENTENCE_SDS),
+          rulesWithExtraAdjustments = mapOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD to AdjustmentDuration(hdcedConfiguration.minimumCustodialPeriodDays.toInt())),
+          adjustedDays = 0,
+          releaseDate = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
+          unadjustedDate = sentence.sentencedAt,
+        )
     } else {
       if (sentence.durationIsLessThan(hdcedConfiguration.envelopeMidPoint, hdcedConfiguration.envelopeMidPointUnit)) {
         calculateHdcedUnderMidpoint(sentenceCalculation, sentence, adjustedDays)
