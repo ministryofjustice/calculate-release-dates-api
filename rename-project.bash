@@ -82,7 +82,7 @@ RANDOM_HOUR=$((RANDOM % (9 - 3 + 1) + 3))
 RANDOM_MINUTE=$(($RANDOM%60))
 RANDOM_MINUTE2=$(($RANDOM%60))
 sed -i -z -E \
-  -e "s/security:\n    triggers:\n      - schedule:\n          cron: \"11 5/security:\n    triggers:\n      - schedule:\n          cron: \"$RANDOM_MINUTE $RANDOM_HOUR/" \
+  -e "s/security:\n    triggers:\n      - schedule:\n          cron: \"15 7/security:\n    triggers:\n      - schedule:\n          cron: \"$RANDOM_MINUTE $RANDOM_HOUR/" \
   -e "s/security-weekly:\n    triggers:\n      - schedule:\n          cron: \"0 5/security-weekly:\n    triggers:\n      - schedule:\n          cron: \"$RANDOM_MINUTE2 $RANDOM_HOUR/" \
   -e "s/SLACK_RELEASES_CHANNEL/$SLACK_RELEASES_CHANNEL/" \
   -e "s/PIPELINE_SECURITY_SLACK_CHANNEL/$PIPELINE_SECURITY_SLACK_CHANNEL/" \

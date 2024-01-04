@@ -105,17 +105,18 @@ workflows:
   security:
     triggers:
       - schedule:
-          cron: "21 7 * * 1-5"
+          cron: "15 7 * * 1-5"
           filters:
             branches:
               only:
                 - main
     jobs:
       - hmpps/gradle_owasp_dependency_check:
+          jdk_tag: "21.0"
+          cache_key: "v3_0"
           slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
-          jdk_tag: "21.0"
       - hmpps/trivy_latest_scan:
           slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
