@@ -20,7 +20,10 @@ class SentenceAndOffenceService(
     val lastCalculation = calculationRequestRepository.findLatestCalculation(bookingId)
 
     return lastCalculation.map {
-      val lastSentenceAndOffences: List<SentenceAndOffences> = objectMapper.readValue(it.sentenceAndOffences!!.toString())
+      if (it.sentenceAndOffences == null) {
+        return@map transform(SentenceAndOffenceAnalysis.NEW, sentencesAndOffences)
+      }
+      val lastSentenceAndOffences: List<SentenceAndOffences> = objectMapper.readValue(it.sentenceAndOffences.toString())
       if (sentencesAndOffences == lastSentenceAndOffences) {
         return@map transform(SentenceAndOffenceAnalysis.SAME, sentencesAndOffences)
       } else {
