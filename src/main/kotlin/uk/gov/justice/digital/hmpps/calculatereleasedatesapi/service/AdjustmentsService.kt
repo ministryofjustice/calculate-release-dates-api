@@ -21,7 +21,10 @@ class AdjustmentsService(
 
     return calculationRequestRepository.findLatestCalculation(bookingId).map {
       val objectMapper = jacksonObjectMapper().findAndRegisterModules()
-      val lastAdjustments: BookingAndSentenceAdjustments = objectMapper.readValue(it.adjustments!!.toString())
+      if (it.adjustments == null) {
+        return@map newAnalyzedBookingAndSentenceAdjustments(bookingAndSentenceAdjustments)
+      }
+      val lastAdjustments: BookingAndSentenceAdjustments = objectMapper.readValue(it.adjustments.toString())
       val analyzedBookingAdjustment: List<AnalyzedBookingAdjustment> =
         bookingAndSentenceAdjustments.bookingAdjustments.map { bookingAdjustment ->
           val analysisResult = if (lastAdjustments.bookingAdjustments.contains(bookingAdjustment)) AdjustmentAnalysisResult.SAME else AdjustmentAnalysisResult.NEW
