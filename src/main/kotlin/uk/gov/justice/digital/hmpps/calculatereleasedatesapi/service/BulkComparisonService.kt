@@ -74,7 +74,7 @@ class BulkComparisonService(
           .flatten(),
       )
     calculableSentenceEnvelopes.forEach { calculableSentenceEnvelope ->
-      val mismatch = determineMismatchType(calculableSentenceEnvelope)
+      val mismatch = buildMismatch(calculableSentenceEnvelope)
       if (comparison.shouldStoreMismatch(mismatch)) {
         comparisonPersonRepository.save(
           ComparisonPerson(
@@ -109,28 +109,9 @@ class BulkComparisonService(
     comparisonRepository.save(comparison)
   }
 
-  fun determineMismatchType(calculableSentenceEnvelope: CalculableSentenceEnvelope): Mismatch {
-    val mismatchType: MismatchType
-
+  fun buildMismatch(calculableSentenceEnvelope: CalculableSentenceEnvelope): Mismatch {
     val validationResult = validate(calculableSentenceEnvelope)
-    if (validationResult.messages.isEmpty()) {
-      mismatchType =
-        if (identifyMismatches(validationResult.calculatedReleaseDates, calculableSentenceEnvelope.sentenceCalcDates)) {
-          MismatchType.NONE
-        } else {
-          MismatchType.RELEASE_DATES_MISMATCH
-        }
-    } else {
-      val unsupportedSentenceType =
-        validationResult.messages.any { it.code == ValidationCode.UNSUPPORTED_SENTENCE_TYPE || it.code.validationType == ValidationType.UNSUPPORTED_CALCULATION }
-      mismatchType = if (unsupportedSentenceType) {
-        MismatchType.UNSUPPORTED_SENTENCE_TYPE
-      } else if (isPotentialHdc4Plus(calculableSentenceEnvelope)) {
-        MismatchType.VALIDATION_ERROR_HDC4_PLUS
-      } else {
-        MismatchType.VALIDATION_ERROR
-      }
-    }
+    val mismatchType = determineMismatchType(validationResult, calculableSentenceEnvelope)
 
     return Mismatch(
       isMatch = mismatchType == MismatchType.NONE,
@@ -141,6 +122,28 @@ class BulkComparisonService(
       type = mismatchType,
       messages = validationResult.messages,
     )
+  }
+
+  fun determineMismatchType(validationResult: ValidationResult, calculableSentenceEnvelope: CalculableSentenceEnvelope): MismatchType {
+    if (validationResult.messages.isEmpty()) {
+      val datesMatch = doDatesMatch(validationResult.calculatedReleaseDates, calculableSentenceEnvelope.sentenceCalcDates)
+      return if (datesMatch) MismatchType.NONE else MismatchType.RELEASE_DATES_MISMATCH
+    }
+
+    val unsupportedSentenceType =
+      validationResult.messages.any { it.code == ValidationCode.UNSUPPORTED_SENTENCE_TYPE || it.code.validationType == ValidationType.UNSUPPORTED_CALCULATION }
+    if (unsupportedSentenceType) {
+      if (isPotentialHdc4PlusUnsupportedSentenceType(calculableSentenceEnvelope)) {
+        return MismatchType.UNSUPPORTED_SENTENCE_TYPE_FOR_HDC4_PLUS
+      }
+      return MismatchType.UNSUPPORTED_SENTENCE_TYPE
+    }
+
+    if (isPotentialHdc4Plus(calculableSentenceEnvelope)) {
+      return MismatchType.VALIDATION_ERROR_HDC4_PLUS
+    }
+
+    return MismatchType.VALIDATION_ERROR
   }
 
   private fun validate(calculableSentenceEnvelope: CalculableSentenceEnvelope): ValidationResult {
@@ -165,7 +168,7 @@ class BulkComparisonService(
     )
   }
 
-  private fun identifyMismatches(
+  private fun doDatesMatch(
     calculatedReleaseDates: CalculatedReleaseDates?,
     sentenceCalcDates: SentenceCalcDates?,
   ): Boolean {
@@ -264,7 +267,23 @@ class BulkComparisonService(
     return true
   }
 
-  fun isValidHdc4PlusDuration(sentence: SentenceAndOffences): Boolean {
+  private fun isPotentialHdc4PlusUnsupportedSentenceType(calculableSentenceEnvelope: CalculableSentenceEnvelope): Boolean {
+    if (calculableSentenceEnvelope.person.isActiveSexOffender()) {
+      return false
+    }
+
+    if (hasIndeterminateSentence(calculableSentenceEnvelope)) {
+      return false
+    }
+
+    if (!calculableSentenceEnvelope.sentenceAndOffences.any { sentence -> isValidHdc4PlusDuration(sentence) }) {
+      return false
+    }
+
+    return true
+  }
+
+  private fun isValidHdc4PlusDuration(sentence: SentenceAndOffences): Boolean {
     val daysInFourYears = 1460
 
     val validDuration = sentence.terms.any { term ->
@@ -281,7 +300,7 @@ class BulkComparisonService(
     return validDuration
   }
 
-  fun hasEdsOrSopcConsecutiveToSds(sentenceAndOffences: List<SentenceAndOffences>): Boolean {
+  private fun hasEdsOrSopcConsecutiveToSds(sentenceAndOffences: List<SentenceAndOffences>): Boolean {
     val edsAndSopcSentenceTypes = EDS_SENTENCE_TYPES + SOPC_SENTENCE_TYPES
 
     val consecutiveSentences = sentenceAndOffences.filter { it.consecutiveToSequence != null }
@@ -302,6 +321,10 @@ class BulkComparisonService(
         return@filter false
       }
     return consecutiveEdsOrSopcToSds.isNotEmpty()
+  }
+
+  private fun hasIndeterminateSentence(calculableSentenceEnvelope: CalculableSentenceEnvelope): Boolean {
+    return calculableSentenceEnvelope.sentenceAndOffences.any { SentenceCalculationType.isIndeterminate(it.sentenceCalculationType) }
   }
 
   companion object {
@@ -335,7 +358,7 @@ class BulkComparisonService(
 
   private fun Comparison.shouldStoreMismatch(mismatch: Mismatch): Boolean {
     if (comparisonType == ComparisonType.ESTABLISHMENT_HDCED4PLUS) {
-      return mismatch.type == MismatchType.VALIDATION_ERROR_HDC4_PLUS
+      return mismatch.type == MismatchType.VALIDATION_ERROR_HDC4_PLUS || mismatch.type == MismatchType.UNSUPPORTED_SENTENCE_TYPE_FOR_HDC4_PLUS
     }
 
     return true
