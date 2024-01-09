@@ -178,7 +178,7 @@ class BulkComparisonServiceTest {
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-    val mismatch = bulkComparisonService.determineMismatchType(calculableSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(calculableSentenceEnvelope)
 
     assertTrue(mismatch.isValid)
     assertTrue(mismatch.isMatch)
@@ -202,7 +202,7 @@ class BulkComparisonServiceTest {
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-    val mismatch = bulkComparisonService.determineMismatchType(sexOffenderCalculableSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(sexOffenderCalculableSentenceEnvelope)
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -229,7 +229,7 @@ class BulkComparisonServiceTest {
     val notHdc4SentenceTypeEnvelope = calculableSentenceEnvelope.copy(
       sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.SEC236A.name)),
     )
-    val mismatch = bulkComparisonService.determineMismatchType(notHdc4SentenceTypeEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(notHdc4SentenceTypeEnvelope)
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -256,7 +256,7 @@ class BulkComparisonServiceTest {
     val threeYearSentenceEnvelope = calculableSentenceEnvelope.copy(
       sentenceAndOffences = listOf(sentenceAndOffence.copy(terms = listOf(SentenceTerms(years = 3)))),
     )
-    val mismatch = bulkComparisonService.determineMismatchType(threeYearSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(threeYearSentenceEnvelope)
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -291,7 +291,7 @@ class BulkComparisonServiceTest {
       sentenceAndOffences = sentencesAndOffences,
     )
 
-    val mismatch = bulkComparisonService.determineMismatchType(consecutiveSentencesEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(consecutiveSentencesEnvelope)
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -326,7 +326,7 @@ class BulkComparisonServiceTest {
       sentenceAndOffences = sentencesAndOffences,
     )
 
-    val mismatch = bulkComparisonService.determineMismatchType(consecutiveSentencesEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(consecutiveSentencesEnvelope)
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -350,7 +350,7 @@ class BulkComparisonServiceTest {
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-    val mismatch = bulkComparisonService.determineMismatchType(calculableSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(calculableSentenceEnvelope)
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -377,11 +377,41 @@ class BulkComparisonServiceTest {
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-    val mismatch = bulkComparisonService.determineMismatchType(calculableSentenceEnvelope)
+    val indeterminateSentenceEnvelope = calculableSentenceEnvelope.copy(
+      sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = "LIFE")),
+    )
+    val mismatch = bulkComparisonService.buildMismatch(indeterminateSentenceEnvelope)
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
     assertEquals(MismatchType.UNSUPPORTED_SENTENCE_TYPE, mismatch.type)
+  }
+
+  @Test
+  fun `Determine if a mismatch report is not valid due to unsupported sentence type and potential HDC4+`() {
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(
+      listOf(
+        ValidationMessage(ValidationCode.FTR_28_DAYS_SENTENCE_LT_12_MONTHS),
+        ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE),
+      ),
+      booking,
+      calculatedReleaseDates,
+      null,
+    )
+
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+
+    val mismatch = bulkComparisonService.buildMismatch(calculableSentenceEnvelope)
+
+    assertFalse(mismatch.isValid)
+    assertFalse(mismatch.isMatch)
+    assertEquals(MismatchType.UNSUPPORTED_SENTENCE_TYPE_FOR_HDC4_PLUS, mismatch.type)
   }
 
   @Test
@@ -403,7 +433,10 @@ class BulkComparisonServiceTest {
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-    val mismatch = bulkComparisonService.determineMismatchType(calculableSentenceEnvelope)
+    val indeterminateSentenceEnvelope = calculableSentenceEnvelope.copy(
+      sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = "LIFE")),
+    )
+    val mismatch = bulkComparisonService.buildMismatch(indeterminateSentenceEnvelope)
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -434,7 +467,7 @@ class BulkComparisonServiceTest {
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-    val mismatch = bulkComparisonService.determineMismatchType(calculableSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(calculableSentenceEnvelope)
 
     assertTrue(mismatch.isValid)
     assertFalse(mismatch.isMatch)
