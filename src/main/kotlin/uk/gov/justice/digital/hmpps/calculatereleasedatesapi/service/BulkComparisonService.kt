@@ -131,7 +131,6 @@ class BulkComparisonService(
   }
 
   fun buildMismatch(calculableSentenceEnvelope: CalculableSentenceEnvelope): Mismatch {
-    val mismatchType: MismatchType
     val validationResult = validate(calculableSentenceEnvelope)
     val mismatchType = determineMismatchType(validationResult, calculableSentenceEnvelope)
 
