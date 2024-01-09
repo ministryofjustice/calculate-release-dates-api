@@ -1,0 +1,1 @@
+ALTER TABLE comparison_person ADD COLUMN hdced_four_plus_date timestamp with time zone;

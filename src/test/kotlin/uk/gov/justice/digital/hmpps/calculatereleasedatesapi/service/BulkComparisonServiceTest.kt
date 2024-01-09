@@ -474,6 +474,90 @@ class BulkComparisonServiceTest {
     assertEquals(MismatchType.RELEASE_DATES_MISMATCH, mismatch.type)
   }
 
+  @Test
+  fun `Should set HDCED4PLUS date if not the same as HDCED`() {
+    val comparison = Comparison(
+      1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "BMI", ComparisonType.ESTABLISHMENT_FULL, LocalDateTime.now(), "SOMEONE",
+      ComparisonStatus(ComparisonStatusValue.PROCESSING),
+    )
+    val duplicateReleaseDates = releaseDates.toMutableMap()
+    duplicateReleaseDates[ReleaseDateType.HDCED4PLUS] = LocalDate.of(2022, 1, 1)
+
+    val duplicatedReleaseDates = CalculatedReleaseDates(
+      dates = duplicateReleaseDates,
+      calculationRequestId = 123,
+      bookingId = 123,
+      prisonerId = "ABC123DEF",
+      calculationStatus = CalculationStatus.CONFIRMED,
+      calculationReference = UUID.randomUUID(),
+    )
+
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+
+    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
+      listOf(
+        sexOffenderCalculableSentenceEnvelope,
+      ),
+    )
+
+    bulkComparisonService.processPrisonComparison(comparison, "")
+
+    val comparisonPersonCaptor = ArgumentCaptor.forClass(ComparisonPerson::class.java)
+    verify(comparisonPersonRepository).save(comparisonPersonCaptor.capture())
+
+    val comparisonPerson = comparisonPersonCaptor.value
+    assertThat(comparisonPerson.hdcedFourPlusDate).isEqualTo(LocalDate.of(2022, 1, 1))
+  }
+
+  @Test
+  fun `Should set HDCED4PLUS date to null if same`() {
+    val comparison = Comparison(
+      1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "BMI", ComparisonType.ESTABLISHMENT_FULL, LocalDateTime.now(), "SOMEONE",
+      ComparisonStatus(ComparisonStatusValue.PROCESSING),
+    )
+    val duplicateReleaseDates = releaseDates.toMutableMap()
+    duplicateReleaseDates[ReleaseDateType.HDCED4PLUS] = LocalDate.of(2026, 1, 1)
+
+    val duplicatedReleaseDates = CalculatedReleaseDates(
+      dates = duplicateReleaseDates,
+      calculationRequestId = 123,
+      bookingId = 123,
+      prisonerId = "ABC123DEF",
+      calculationStatus = CalculationStatus.CONFIRMED,
+      calculationReference = UUID.randomUUID(),
+    )
+
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+
+    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
+      listOf(
+        sexOffenderCalculableSentenceEnvelope,
+      ),
+    )
+
+    bulkComparisonService.processPrisonComparison(comparison, "")
+
+    val comparisonPersonCaptor = ArgumentCaptor.forClass(ComparisonPerson::class.java)
+    verify(comparisonPersonRepository).save(comparisonPersonCaptor.capture())
+
+    val comparisonPerson = comparisonPersonCaptor.value
+    assertThat(comparisonPerson.hdcedFourPlusDate).isNull()
+  }
+
   private val BULK_CALCULATION_REASON = CalculationReason(1, true, false, "Bulk Calculation", true)
 
   private fun someReleaseDates(): MutableMap<ReleaseDateType, LocalDate> {

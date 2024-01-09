@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
@@ -35,6 +36,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Comparis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 @Service
@@ -75,6 +77,8 @@ class BulkComparisonService(
       )
     calculableSentenceEnvelopes.forEach { calculableSentenceEnvelope ->
       val mismatch = buildMismatch(calculableSentenceEnvelope)
+      val hdced4PlusDate = getHdced4PlusDate(mismatch)
+
       if (comparison.shouldStoreMismatch(mismatch)) {
         comparisonPersonRepository.save(
           ComparisonPerson(
@@ -100,6 +104,7 @@ class BulkComparisonService(
               )
             }
               ?: objectMapper.createObjectNode(),
+            hdcedFourPlusDate = hdced4PlusDate,
           ),
         )
       }
@@ -109,7 +114,24 @@ class BulkComparisonService(
     comparisonRepository.save(comparison)
   }
 
+  private fun getHdced4PlusDate(mismatch: Mismatch): LocalDate? {
+    val hdced4Plus = mismatch.calculatedReleaseDates?.dates?.getOrDefault(ReleaseDateType.HDCED4PLUS, null)
+    val hdced = mismatch.calculatedReleaseDates?.dates?.getOrDefault(ReleaseDateType.HDCED, null)
+    if (hdced4Plus == null && hdced == null) {
+      return null
+    }
+    if (hdced4Plus != null && hdced == null) {
+      return hdced4Plus
+    }
+    return if (hdced4Plus == hdced) {
+      null
+    } else {
+      hdced4Plus
+    }
+  }
+
   fun buildMismatch(calculableSentenceEnvelope: CalculableSentenceEnvelope): Mismatch {
+    val mismatchType: MismatchType
     val validationResult = validate(calculableSentenceEnvelope)
     val mismatchType = determineMismatchType(validationResult, calculableSentenceEnvelope)
 

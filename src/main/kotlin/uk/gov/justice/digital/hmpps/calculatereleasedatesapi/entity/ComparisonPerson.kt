@@ -14,6 +14,7 @@ import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.Type
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -77,4 +78,5 @@ class ComparisonPerson(
   @Column(columnDefinition = "jsonb")
   var sdsPlusSentencesIdentified: JsonNode,
 
+  var hdcedFourPlusDate: LocalDate? = null,
 )
