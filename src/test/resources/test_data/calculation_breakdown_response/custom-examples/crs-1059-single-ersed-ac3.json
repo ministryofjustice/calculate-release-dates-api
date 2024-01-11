@@ -28,10 +28,10 @@
     },
     "ERSED":{
       "rules":[
-        "ERSED_ONE_YEAR"
+        "ERSED_MAX_PERIOD"
       ],
       "rulesWithExtraAdjustments":{
-        "ERSED_ONE_YEAR":{
+        "ERSED_MAX_PERIOD":{
           "adjustmentValue":-12,
           "type":"MONTHS"
         }
