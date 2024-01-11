@@ -6,15 +6,16 @@
   },
   "sentences": [
     {
+      "type":"ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2020-01-03"
       },
-      "duration": {
-        "durationElements": {
+      "custodialDuration":{
+        "durationElements":{
           "YEARS": 3
         }
       },
-      "extensionDuration": {
+      "extensionDuration":{
         "durationElements": {
           "YEARS": 2
         }
