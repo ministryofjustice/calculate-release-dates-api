@@ -49,7 +49,7 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
       .minus(sentenceCalculation.calculatedUnusedReleaseAda)
 
     // Now that we have sentences > 4 years there are rules around how Consecutive sentences containing SDS+ are calculated
-    if (sentence is ConsecutiveSentence && sentence.isMadeUpOfSdsAndSdsPlusSentences() && nonSdsPlusGreaterThanMinimum(sentence) && nonSdsLessThanMidpoint(sentence) && !lastSentenceIsSdsPlus(sentence)) {
+    if (sentence is ConsecutiveSentence && sentence.orderedSentences.any { it.isSdsPlus() } && nonSdsPlusGreaterThanMinimum(sentence) && nonSdsLessThanMidpoint(sentence) && !lastSentenceIsSdsPlus(sentence)) {
       val latestNcrd = sentence.orderedSentences.filter { it.offence.isPcscSdsPlus || it.offence.isPcscSds }.maxBy { it.sentenceCalculation.releaseDate }
       val nonSdsPlusSentences = sentence.orderedSentences.filter { !it.offence.isPcscSdsPlus || !it.offence.isPcscSds }
       sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate =
@@ -62,7 +62,7 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
           releaseDate = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
           unadjustedDate = sentence.sentencedAt,
         )
-    } else if (sentence is ConsecutiveSentence && sentence.isMadeUpOfSdsAndSdsPlusSentences() && nonSdsGreaterThanMidpoint(sentence) && lastSentenceIsSdsPlus(sentence)) {
+    } else if (sentence is ConsecutiveSentence && sentence.orderedSentences.any { it.isSdsPlus() } && nonSdsGreaterThanMidpoint(sentence) && lastSentenceIsSdsPlus(sentence)) {
       val sdsPlusSentences = sentence.orderedSentences.filter { it.offence.isPcscSdsPlus || it.offence.isPcscSds }
       val sdsPlusLengthInDays = sdsPlusSentences.sumOf { it.getLengthInDays() }.toLong()
       log.info("Total sds plus length in days sentences: {}", sdsPlusLengthInDays)
