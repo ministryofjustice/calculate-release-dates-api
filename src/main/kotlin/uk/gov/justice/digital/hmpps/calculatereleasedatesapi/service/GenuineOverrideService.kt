@@ -65,6 +65,6 @@ class GenuineOverrideService(
   }
 
   companion object {
-    private const val MANUALLY_ENTERED_OVERRIDE = "The information shown was manually recorded in the Calculate release dates service by Specialist Support. The calculation ID is: %s"
+    private const val MANUALLY_ENTERED_OVERRIDE = "{%s} was manually recorded in the Calculate release dates service by Specialist Support. The calculation ID is: %s"
   }
 }

@@ -590,7 +590,7 @@ class BulkComparisonServiceTest {
     assertThat(comparisonPerson.hdcedFourPlusDate).isNull()
   }
 
-  private val BULK_CALCULATION_REASON = CalculationReason(1, true, false, "Bulk Calculation", true)
+  private val BULK_CALCULATION_REASON = CalculationReason(1, true, false, "Bulk Calculation", true, "UPDATE")
 
   private fun someReleaseDates(): MutableMap<ReleaseDateType, LocalDate> {
     val releaseDates = mutableMapOf<ReleaseDateType, LocalDate>()

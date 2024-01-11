@@ -8,4 +8,5 @@ data class UpdateOffenderDates(
   val keyDates: OffenderKeyDates,
   val noDates: Boolean,
   val comment: String? = null,
+  val reason: String? = "UPDATE",
 )

@@ -106,7 +106,8 @@ class ManualCalculationServiceTest {
       submissionUser = USERNAME,
       keyDates = OffenderKeyDates(),
       noDates = true,
-      comment = "An Indeterminate (Life) sentence was entered with no dates currently available. This was intentionally recorded as blank. It was entered using the Calculate release dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      comment = "{Reason} An Indeterminate (Life) sentence was entered using the Calculate Release Dates service and was intentionally recorded as blank. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      reason = "UPDATE",
     )
     verify(prisonService).postReleaseDates(BOOKING_ID, expectedUpdatedOffenderDates)
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
@@ -130,7 +131,8 @@ class ManualCalculationServiceTest {
       submissionUser = USERNAME,
       keyDates = OffenderKeyDates(conditionalReleaseDate = LocalDate.of(2023, 3, 3)),
       noDates = false,
-      comment = "The information shown was manually recorded in the Calculate release dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      comment = "{Reason} The information shown was manually recorded in the Calculate Release Dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      reason = "UPDATE",
     )
     verify(prisonService).postReleaseDates(BOOKING_ID, expectedUpdatedOffenderDates)
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
@@ -177,6 +179,7 @@ class ManualCalculationServiceTest {
       isOther = false,
       isBulk = false,
       displayName = "Reason",
+      nomisReason = "UPDATE",
     )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
@@ -193,6 +196,7 @@ class ManualCalculationServiceTest {
           "\"offence\":{" + "\"committedAt\":\"2013-09-19\"" + "}," + "\"duration\":{" +
           "\"durationElements\":{" + "\"YEARS\":2" + "}" + "}," + "\"sentencedAt\":\"2013-09-21\"" + "}" + "]" + "}",
       ),
+      reasonForCalculation = CALCULATION_REASON,
     )
     private val OFFENDER = Offender(PRISONER_ID, LocalDate.of(1980, 1, 1))
 

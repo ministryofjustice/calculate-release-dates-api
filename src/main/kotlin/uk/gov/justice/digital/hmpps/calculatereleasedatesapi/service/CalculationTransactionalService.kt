@@ -379,17 +379,20 @@ class CalculationTransactionalService(
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
     val commentToSave = if (isSpecialistSupport!!) {
-      "The information shown was calculated using the Calculate release dates service and submitted by Specialist Support. The calculation ID is: ${calculationRequest.calculationReference}"
+      "{${calculationRequest.reasonForCalculation?.displayName}} using the Calculate release dates service by Specialist Support. The calculation ID is: ${calculationRequest.calculationReference}"
     } else if (approvedDates?.isNotEmpty() == true) {
-      "The information shown was calculated using the Calculate Release Dates service with manually entered dates. The calculation ID is: ${calculationRequest.calculationReference}"
+      "{${calculationRequest.reasonForCalculation?.displayName}} using the Calculate Release Dates service with manually entered dates. The calculation ID is: ${calculationRequest.calculationReference}"
+    } else if (!calculationRequest.reasonForCalculation?.isOther!!) {
+      "{${calculationRequest.reasonForCalculation.displayName}} using the Calculate Release Dates service. The calculation ID is: ${calculationRequest.calculationReference}"
     } else {
-      "The information shown was calculated using the Calculate Release Dates service. The calculation ID is: ${calculationRequest.calculationReference}"
+      "Calculated using the Calculate Release Dates service. The calculation ID is: ${calculationRequest.calculationReference}"
     }
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = serviceUserService.getUsername(),
       keyDates = transform(calculation, approvedDates),
       noDates = false,
+      reason = calculationRequest.reasonForCalculation?.nomisReason,
       comment = commentToSave,
     )
     try {

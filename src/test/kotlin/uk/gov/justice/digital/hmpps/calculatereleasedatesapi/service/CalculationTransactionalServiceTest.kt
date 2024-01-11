@@ -176,10 +176,10 @@ class CalculationTransactionalServiceTest {
 
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculatedReleaseDates: CalculatedReleaseDates
-    val calculationReason = CalculationReason(-1, true, false, "", false)
+
     try {
       calculatedReleaseDates =
-        calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, calculationReason, null)
+        calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, null)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -370,7 +370,49 @@ class CalculationTransactionalServiceTest {
           effectiveSentenceEndDate = ESED_DATE,
           sentenceLength = "06/02/03",
         ),
-        comment = "The information shown was calculated using the Calculate Release Dates service. The calculation ID is: $CALCULATION_REFERENCE",
+        comment = "{Reason} using the Calculate Release Dates service. The calculation ID is: $CALCULATION_REFERENCE",
+        reason = "UPDATE",
+      ),
+    )
+    verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
+  }
+
+  @Test
+  fun `Test that when the reason is Other the correct comment is written to NOMIS`() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(
+      calculationRequestRepository.findById(CALCULATION_REQUEST_ID),
+    ).thenReturn(
+      Optional.of(CALCULATION_REQUEST.copy(reasonForCalculation = CALCULATION_REASON.copy(isOther = true))),
+    )
+
+    calculationTransactionalService.writeToNomisAndPublishEvent(
+      PRISONER_ID,
+      BOOKING.copy(sentences = listOf(StandardSENTENCE.copy(duration = ZERO_DURATION))),
+      BOOKING_CALCULATION.copy(
+        dates = mutableMapOf(
+          CRD to CALCULATION_OUTCOME_CRD.outcomeDate!!,
+          SED to THIRD_FEB_2021,
+          ERSED to FIFTH_APRIL_2021,
+          ESED to ESED_DATE,
+        ),
+        effectiveSentenceLength = Period.of(6, 2, 3),
+      ),
+      emptyList(),
+    )
+
+    verify(prisonService).postReleaseDates(
+      BOOKING_ID,
+      UPDATE_OFFENDER_DATES.copy(
+        keyDates = OffenderKeyDates(
+          conditionalReleaseDate = THIRD_FEB_2021,
+          sentenceExpiryDate = THIRD_FEB_2021,
+          earlyRemovalSchemeEligibilityDate = FIFTH_APRIL_2021,
+          effectiveSentenceEndDate = ESED_DATE,
+          sentenceLength = "06/02/03",
+        ),
+        comment = "Calculated using the Calculate Release Dates service. The calculation ID is: $CALCULATION_REFERENCE",
+        reason = "UPDATE",
       ),
     )
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
@@ -471,6 +513,16 @@ class CalculationTransactionalServiceTest {
         ),
       ),
     )
+
+    updatedOffenderDatesArgumentCaptor.apply {
+      verify(prisonService).postReleaseDates(eq(BOOKING.bookingId), capture(this))
+    }
+
+    assertEquals(
+      "{Reason} using the Calculate Release Dates service with manually entered dates. The calculation ID is: $CALCULATION_REFERENCE",
+      updatedOffenderDatesArgumentCaptor.value.comment,
+    )
+
     verify(approvedDatesSubmissionRepository).save(eq(submission))
   }
 
@@ -554,7 +606,8 @@ class CalculationTransactionalServiceTest {
           effectiveSentenceEndDate = ESED_DATE,
           sentenceLength = "06/02/03",
         ),
-        comment = "The information shown was calculated using the Calculate release dates service and submitted by Specialist Support. The calculation ID is: $CALCULATION_REFERENCE",
+        comment = "{Reason} using the Calculate release dates service by Specialist Support. The calculation ID is: $CALCULATION_REFERENCE",
+        reason = "UPDATE",
       ),
     )
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
@@ -677,7 +730,7 @@ class CalculationTransactionalServiceTest {
           "\"bookingId\":12345}",
       )
 
-    private val CALCULATION_REASON = CalculationReason(-1, true, false, "Reason", false)
+    val CALCULATION_REASON = CalculationReason(-1, true, false, "Reason", false, nomisReason = "UPDATE")
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
       id = CALCULATION_REQUEST_ID,
