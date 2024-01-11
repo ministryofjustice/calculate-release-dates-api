@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
@@ -80,8 +79,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-import java.io.File
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
@@ -212,7 +209,7 @@ class CalculationTransactionalServiceTest {
 
   @Test
   fun `Blah`() {
-    `Test Example`("custom-examples", "crs-876-eds-sds-ac7", null)
+    `Test Example`("custom-examples", "crs-1787-ac2", null)
   }
   data class Result(val expectedDates: Map<ReleaseDateType, LocalDate>, val calculatedDates: Map<ReleaseDateType, LocalDate?>)
 

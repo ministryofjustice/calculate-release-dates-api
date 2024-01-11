@@ -464,12 +464,12 @@ class BookingExtractionService(
           sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
           SentenceCalculation::homeDetentionCurfew4PlusEligibilityDate,
         )
-        val latestSopcOrEdsRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it.hasAnyEdsOrSopcSentence() && !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate == null }, SentenceCalculation::releaseDate)
-        val latestAFineRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it is AFineSentence && !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate == null }, SentenceCalculation::releaseDate)
+        val latestSopcOrEdsRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it.hasAnyEdsOrSopcSentence() && !it.sentenceCalculation.isImmediateRelease() }, SentenceCalculation::releaseDate)
+        val latestAFineRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it is AFineSentence && !it.sentenceCalculation.isImmediateRelease() }, SentenceCalculation::releaseDate)
         val latestSdsArdRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it.releaseDateTypes.contains(ARD) && !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate == null }, SentenceCalculation::releaseDate)
         val latestSdsCrdRelease =
-          extractionService.mostRecentSentenceOrNull(sentences.filter { it.isSdsPlus() && it.releaseDateTypes.contains(CRD) && !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate == null }, SentenceCalculation::releaseDate)
-        val latestConcurrentReleaseSentence = listOfNotNull(latestSopcOrEdsRelease, latestSdsCrdRelease, latestAFineRelease, latestSdsArdRelease).filter{ it.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate != null && !it.hasAnyEdsOrSopcSentence()}.maxByOrNull { it.sentenceCalculation.releaseDate }
+          extractionService.mostRecentSentenceOrNull(sentences.filter { it.releaseDateTypes.contains(CRD) && !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate == null }, SentenceCalculation::releaseDate)
+        val latestConcurrentReleaseSentence = listOfNotNull(latestSopcOrEdsRelease, latestSdsCrdRelease, latestAFineRelease, latestSdsArdRelease).maxByOrNull { it.sentenceCalculation.releaseDate }
         val latestConcurrentRelease = latestConcurrentReleaseSentence?.sentenceCalculation?.releaseDate
         if (hdcedSentence != null) {
           return if (latestConcurrentRelease != null && hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!.isBefore(latestConcurrentRelease)) {
@@ -489,7 +489,6 @@ class BookingExtractionService(
       }
     }
     return null
-
   }
 
   private fun getEffectiveSentenceLength(start: LocalDate, end: LocalDate): Period =

@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.roundToLong
@@ -208,37 +206,6 @@ interface CalculableSentence {
 
   @JsonIgnore
   fun isSdsPlus(): Boolean {
-    val sentenceIsAfterPcsc = sentencedAfterPcsc()
-    if (this is StandardDeterminateSentence) {
-      if (sentencedWithinOriginalSdsPlusWindow() && sevenYearsOrMore() && offence.isPcscSdsPlus) {
-        return true
-      } else if (sentenceIsAfterPcsc && sevenYearsOrMore() && offence.isPcscSdsPlus) {
-        return true
-      } else if (sentenceIsAfterPcsc && fourToUnderSeven() && offence.isPcscSdsPlus) {
-        return true
-      }
-    }
-    return false
-  }
-  private fun sentencedAfterPcsc(): Boolean {
-    return sentencedAt.isAfterOrEqualTo(
-      ImportantDates.PCSC_COMMENCEMENT_DATE,
-    )
-  }
-  private fun sentencedWithinOriginalSdsPlusWindow(): Boolean {
-    return sentencedAt.isAfterOrEqualTo(ImportantDates.SDS_PLUS_COMMENCEMENT_DATE) && !sentencedAfterPcsc()
-  }
-
-  private fun overFourYearsSentenceLength(): Boolean {
-    return durationIsGreaterThan(4, ChronoUnit.YEARS)
-  }
-
-
-  private fun sevenYearsOrMore(): Boolean {
-    return durationIsGreaterThan(7, ChronoUnit.YEARS)
-  }
-
-  private fun fourToUnderSeven(): Boolean {
-   return durationIsGreaterThan(4, ChronoUnit.YEARS) && durationIsLessThan(7, ChronoUnit.YEARS)
+    return this.identificationTrack == SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE
   }
 }
