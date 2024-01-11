@@ -169,7 +169,7 @@ class CalculationTransactionalServiceTest {
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculatedReleaseDates: CalculatedReleaseDates
     try {
-      calculatedReleaseDates = calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, null)
+      calculatedReleaseDates = calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, CalculationUserInputs(calculateErsed = true))
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)

@@ -1,0 +1,33 @@
+{
+  "calculateErsed": true,
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2005-04-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2022-06-27",
+        "isPcscSdsPlus" : true
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "sentencedAt": "2023-01-13",
+      "isDto": false,
+      "sentenceType": "ADIMP"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2022-06-10",
+        "numberOfDays": 217,
+        "fromDate": "2022-06-10",
+        "toDate": "2023-01-12"
+      }
+    ]
+  }
+}
