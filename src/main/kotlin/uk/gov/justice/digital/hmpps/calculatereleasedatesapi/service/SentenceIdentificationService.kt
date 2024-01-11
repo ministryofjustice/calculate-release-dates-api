@@ -331,7 +331,7 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
         sentence.durationIsLessThan(SEVEN, ChronoUnit.YEARS)
       val overEighteen = offender.getAgeOnDate(sentence.sentencedAt) > INT_EIGHTEEN
 
-      if (sentence is StandardDeterminateSentence && sentence.sentencedAt.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE)) {
+      if (sentence is StandardDeterminateSentence) {
         if (sentence.sentencedAt.isAfterOrEqualTo(PCSC_COMMENCEMENT_DATE)) {
           if (sentence.section250) {
             if (durationGreaterThanSevenYears && sentence.offence.isPcscSec250) {

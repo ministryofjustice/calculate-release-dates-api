@@ -32,7 +32,7 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
 
   fun doesHdced4DateApply(sentence: CalculableSentence, offender: Offender, isMadeUpOfOnlyDtos: Boolean): Boolean {
     return sentence.durationIsGreaterThanOrEqualTo(hdcedConfiguration.envelopeMinimum, hdcedConfiguration.envelopeMinimumUnit) &&
-      !offender.isActiveSexOffender && !isMadeUpOfOnlyDtos && ((sentence !is ConsecutiveSentence && !sentence.offence.isPcscSdsPlus) || (sentence is ConsecutiveSentence && sentence.isMadeUpOfSdsAndSdsPlusSentences()))
+      !offender.isActiveSexOffender && !isMadeUpOfOnlyDtos && ((sentence !is ConsecutiveSentence && !sentence.isSdsPlus()) || (sentence is ConsecutiveSentence && sentence.isMadeUpOfSdsAndSdsPlusSentences()))
   }
 
   fun calculateHdced4(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
@@ -50,8 +50,8 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
 
     // Now that we have sentences > 4 years there are rules around how Consecutive sentences containing SDS+ are calculated
     if (sentence is ConsecutiveSentence && sentence.orderedSentences.any { it.isSdsPlus() } && nonSdsPlusGreaterThanMinimum(sentence) && nonSdsLessThanMidpoint(sentence) && !lastSentenceIsSdsPlus(sentence)) {
-      val latestNcrd = sentence.orderedSentences.filter { it.offence.isPcscSdsPlus || it.offence.isPcscSds }.maxBy { it.sentenceCalculation.releaseDate }
-      val nonSdsPlusSentences = sentence.orderedSentences.filter { !it.offence.isPcscSdsPlus || !it.offence.isPcscSds }
+      val latestNcrd = sentence.orderedSentences.filter  { it.isSdsPlus() }.maxBy { it.sentenceCalculation.releaseDate }
+      val nonSdsPlusSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }
       sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate =
         latestNcrd.sentenceCalculation.releaseDate.plusDays(nonSdsPlusSentences.sumOf { it.getLengthInDays() + nonSdsPlusSentences.size }.toLong() / 4)!!.plusDays(1)
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED4PLUS] =
@@ -63,14 +63,14 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
           unadjustedDate = sentence.sentencedAt,
         )
     } else if (sentence is ConsecutiveSentence && sentence.orderedSentences.any { it.isSdsPlus() } && nonSdsGreaterThanMidpoint(sentence) && lastSentenceIsSdsPlus(sentence)) {
-      val sdsPlusSentences = sentence.orderedSentences.filter { it.offence.isPcscSdsPlus || it.offence.isPcscSds }
+      val sdsPlusSentences = sentence.orderedSentences.filter { it.isSdsPlus() }
       val sdsPlusLengthInDays = sdsPlusSentences.sumOf { it.getLengthInDays() }.toLong()
       log.info("Total sds plus length in days sentences: {}", sdsPlusLengthInDays)
       val sdsPlusNotionalSled = sentence.sentencedAt.plusDays(sdsPlusLengthInDays)
       log.info("Sds plus notional sled: {}", sdsPlusNotionalSled)
       val sdsPlusNotionalCrd = sentence.sentencedAt.minusDays(1).plusDays(ceil(sdsPlusLengthInDays * (2.0 / 3.0)).toLong())
       log.info("Sds plus notional crd: {}", sdsPlusNotionalCrd)
-      val lengthInDaysOfNonSdsPlusSentences = sentence.orderedSentences.filter { !it.offence.isPcscSdsPlus }.filter { !it.offence.isPcscSds }.sumOf { it.totalDuration().getLengthInDays(sdsPlusNotionalCrd) }.toLong()
+      val lengthInDaysOfNonSdsPlusSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }.sumOf { it.totalDuration().getLengthInDays(sdsPlusNotionalCrd) }.toLong()
       log.info("Length in days of non sds plus sentences: {}", lengthInDaysOfNonSdsPlusSentences)
 
       val sdsNotionalSled = sdsPlusNotionalCrd.plusDays(lengthInDaysOfNonSdsPlusSentences)
@@ -97,15 +97,15 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
   }
 
   private fun lastSentenceIsSdsPlus(sentence: ConsecutiveSentence) =
-    sentence.orderedSentences[sentence.orderedSentences.size - 1].offence.isPcscSdsPlus || sentence.orderedSentences[sentence.orderedSentences.size - 1].offence.isPcscSds
+    sentence.orderedSentences[sentence.orderedSentences.size - 1].isSdsPlus()
   private fun nonSdsLessThanMidpoint(sentence: ConsecutiveSentence) =
-    sentence.orderedSentences.filter { !it.offence.isPcscSdsPlus || !it.offence.isPcscSds }.sumOf { it.getLengthInDays() } < hdcedConfiguration.envelopeMidPoint
+    sentence.orderedSentences.filter { !it.isSdsPlus() }.sumOf { it.getLengthInDays() } < hdcedConfiguration.envelopeMidPoint
 
   private fun nonSdsGreaterThanMidpoint(sentence: ConsecutiveSentence) =
-    sentence.orderedSentences.filter { !it.offence.isPcscSdsPlus || !it.offence.isPcscSds }.sumOf { it.getLengthInDays() } > hdcedConfiguration.envelopeMidPoint
+    sentence.orderedSentences.filter { !it.isSdsPlus() }.sumOf { it.getLengthInDays() } > hdcedConfiguration.envelopeMidPoint
 
   private fun nonSdsPlusGreaterThanMinimum(sentence: ConsecutiveSentence) =
-    sentence.orderedSentences.filter { !it.offence.isPcscSdsPlus || !it.offence.isPcscSds }.sumOf { it.getLengthInDays() } >= 84
+    sentence.orderedSentences.filter { !it.isSdsPlus() }.sumOf { it.getLengthInDays() } >= 84
 
   private fun calculateHdcedUnderMidpoint(
     sentenceCalculation: SentenceCalculation,
