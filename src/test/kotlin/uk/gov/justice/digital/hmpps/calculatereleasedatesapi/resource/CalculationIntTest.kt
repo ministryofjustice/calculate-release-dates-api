@@ -631,7 +631,7 @@ class CalculationIntTest : IntegrationTestBase() {
       LocalDate.of(2027, 2, 26),
     )
     assertThat(calculation.dates[ERSED]).isEqualTo(
-      LocalDate.of(2026, 2, 26),
+      LocalDate.of(2025, 8, 31),
     )
   }
 
