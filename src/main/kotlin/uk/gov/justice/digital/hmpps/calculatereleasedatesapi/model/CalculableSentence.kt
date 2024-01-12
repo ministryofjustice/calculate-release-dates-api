@@ -188,7 +188,7 @@ interface CalculableSentence {
 
   fun calculateErsedFromHalfway(): Boolean
   fun calculateErsedFromTwoThirds(): Boolean
-  fun calculateMixed(): Boolean = false
+  fun calulateErsedMixed(): Boolean = false
   fun buildString(): String
 
   @JsonIgnore
