@@ -167,11 +167,16 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
   }
 
   override fun calculateErsedFromHalfway(): Boolean {
-    return !calculateErsedFromTwoThirds() && orderedSentences.any { it.identificationTrack.calculateErsedFromHalfway() }
+    return orderedSentences.all { it.identificationTrack.calculateErsedFromHalfway() }
   }
 
   override fun calculateErsedFromTwoThirds(): Boolean {
-    return orderedSentences.any { it.identificationTrack.calculateErsedFromTwoThirds() }
+    return orderedSentences.all { it.identificationTrack.calculateErsedFromTwoThirds() }
+  }
+
+  override fun calulateErsedMixed(): Boolean {
+    return orderedSentences.any { it.identificationTrack.calculateErsedFromHalfway() } &&
+      orderedSentences.any { it.identificationTrack.calculateErsedFromTwoThirds() }
   }
 
   fun isMadeUpOfOnlyDtos(): Boolean {
