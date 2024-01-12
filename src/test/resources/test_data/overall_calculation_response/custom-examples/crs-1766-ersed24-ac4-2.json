@@ -3,7 +3,8 @@
     "SLED": "2035-10-11",
     "CRD": "2031-06-11",
     "ERSED": "2029-12-14",
-    "ESED" : "2036-03-09"
+    "ESED": "2036-03-09",
+    "HDCED4PLUS": "2031-06-11"
   },
   "effectiveSentenceLength": "P13Y"
 }

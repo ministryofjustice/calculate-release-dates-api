@@ -8,7 +8,7 @@
     {
       "offence": {
         "committedAt": "2023-01-03",
-        "isPcscSdsPlus": true
+        "isPcscSds": true
       },
       "duration": {
         "durationElements": {

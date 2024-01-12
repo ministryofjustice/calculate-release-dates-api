@@ -6,10 +6,11 @@
   },
   "sentences":[
     {
+      "type": "SopcSentence",
       "offence":{
         "committedAt":"2021-04-27"
       },
-      "duration":{
+      "custodialDuration":{
         "durationElements":{
           "YEARS": 3,
           "MONTHS": 4

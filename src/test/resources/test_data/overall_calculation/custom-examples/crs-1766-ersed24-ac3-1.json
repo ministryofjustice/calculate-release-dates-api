@@ -6,10 +6,11 @@
   },
   "sentences": [
     {
+      "type": "ExtendedDeterminateSentence",
       "offence":{
         "committedAt":"2017-05-03"
       },
-      "duration":{
+      "custodialDuration":{
         "durationElements":{
           "MONTHS": 10
         }
@@ -24,10 +25,11 @@
       "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence":{
         "committedAt":"2017-05-03"
       },
-      "duration":{
+      "custodialDuration":{
         "durationElements":{
           "MONTHS": 10
         }
