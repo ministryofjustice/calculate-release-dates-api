@@ -312,8 +312,9 @@ data class SentenceCalculation(
       if (sentence.calculateErsedFromTwoThirds()) {
         return calculateErsedFromTwoThirds()
       }
-
-      return calculateErsedMixed()
+      if (sentence.calculateMixed()){
+        return calculateErsedMixed()
+      }
     }
     return null
   }

@@ -50,6 +50,7 @@ abstract class AbstractSentence(
   override fun calculateErsedFromTwoThirds(): Boolean {
     return identificationTrack.calculateErsedFromTwoThirds()
   }
+
   override fun isCalculationInitialised(): Boolean {
     return this::sentenceCalculation.isInitialized
   }

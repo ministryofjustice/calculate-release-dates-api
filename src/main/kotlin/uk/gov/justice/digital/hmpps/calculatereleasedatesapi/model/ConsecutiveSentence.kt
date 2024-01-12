@@ -174,6 +174,11 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
     return orderedSentences.all { it.identificationTrack.calculateErsedFromTwoThirds() }
   }
 
+  override fun calculateMixed(): Boolean {
+    return orderedSentences.any { it.identificationTrack.calculateErsedFromHalfway() } &&
+      orderedSentences.any { it.identificationTrack.calculateErsedFromTwoThirds() }
+  }
+
   fun isMadeUpOfOnlyDtos(): Boolean {
     return orderedSentences.all { it is DetentionAndTrainingOrderSentence }
   }

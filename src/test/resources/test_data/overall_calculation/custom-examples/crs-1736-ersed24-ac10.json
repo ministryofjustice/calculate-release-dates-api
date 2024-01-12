@@ -20,7 +20,7 @@
           "YEARS": 3
         }
       },
-      "automaticRelease": false,
+      "automaticRelease": true,
       "sentencedAt": "2015-03-05",
       "sentenceType": "LASPO_AR"
     }
