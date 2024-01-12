@@ -99,5 +99,4 @@ class DtoSingleTermSentence(
   override fun calculateErsedFromTwoThirds(): Boolean {
     return identificationTrack.calculateErsedFromTwoThirds()
   }
-
 }
