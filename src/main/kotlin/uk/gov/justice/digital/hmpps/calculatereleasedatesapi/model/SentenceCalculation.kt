@@ -318,15 +318,6 @@ data class SentenceCalculation(
   }
 
   private fun calculateErsedMixed(): ReleaseDateCalculationBreakdown? {
-    val days = if (sentence is ConsecutiveSentence) {
-      ConsecutiveSentenceAggregator((sentence as ConsecutiveSentence).orderedSentences.map { it.custodialDuration() }).calculateDays(
-        sentence.sentencedAt,
-      )
-    } else {
-      val custodialDuration = sentence.custodialDuration()
-      custodialDuration.getLengthInDays(sentence.sentencedAt)
-    }
-
     val effectiveRelease = extendedDeterminateParoleEligibilityDate ?: adjustedDeterminateReleaseDate
     val maxEffectiveErsed = effectiveRelease.minusDays(MAX_ERSED_PERIOD_DAYS.toLong())
     val maxEffectiveErsedReleaseCalcBreakdown = ReleaseDateCalculationBreakdown(
