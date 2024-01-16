@@ -31,6 +31,8 @@ class ComparisonPerson(
   @NotNull
   val person: String,
 
+  val lastName: String,
+
   @NotNull
   val latestBookingId: Long,
 
