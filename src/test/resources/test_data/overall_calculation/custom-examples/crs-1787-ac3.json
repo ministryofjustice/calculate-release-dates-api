@@ -8,12 +8,18 @@
       "offence": {
         "committedAt": "2010-06-28"
       },
-      "duration": {
+      "type": "ExtendedDeterminateSentence",
+      "custodialDuration": {
         "durationElements": {
-          "YEARS": 12
+          "YEARS": 6
         }
       },
-      "sentencedAt": "2017-03-17"
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "sentencedAt": "2020-02-21"
     },
     {
       "offence": {
@@ -21,11 +27,10 @@
       },
       "duration": {
         "durationElements": {
-          "YEARS": 12
+          "YEARS": 5
         }
       },
-      "sentencedAt": "2017-03-17",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      "sentencedAt": "2023-12-15"
     },
     {
       "offence": {
@@ -33,21 +38,12 @@
       },
       "duration": {
         "durationElements": {
-          "MONTHS": 2
+          "YEARS": 4
         }
       },
-      "sentencedAt": "2017-03-17",
-      "consecutiveSentenceUUIDs": ["5dfde034-b7d7-4c54-a86c-67d42a1fd669"]
+      "sentencedAt": "2023-12-15"
     }
   ],
   "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2017-03-17",
-        "numberOfDays": 78,
-        "fromDate": "2016-12-29",
-        "toDate": "2017-03-16"
-      }
-    ]
   }
 }

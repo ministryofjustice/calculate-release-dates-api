@@ -32,7 +32,7 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
 
   fun doesHdced4DateApply(sentence: CalculableSentence, offender: Offender, isMadeUpOfOnlyDtos: Boolean): Boolean {
     return sentence.durationIsGreaterThanOrEqualTo(hdcedConfiguration.envelopeMinimum, hdcedConfiguration.envelopeMinimumUnit) &&
-      !offender.isActiveSexOffender && !isMadeUpOfOnlyDtos && ((sentence !is ConsecutiveSentence && !sentence.isSdsPlus()) || (sentence is ConsecutiveSentence && sentence.isMadeUpOfSdsAndSdsPlusSentences()))
+      !offender.isActiveSexOffender && !isMadeUpOfOnlyDtos && !sentence.isSdsPlus()
   }
 
   fun calculateHdced4(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
@@ -49,8 +49,8 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
       .minus(sentenceCalculation.calculatedUnusedReleaseAda)
 
     // Now that we have sentences > 4 years there are rules around how Consecutive sentences containing SDS+ are calculated
-    if (sentence is ConsecutiveSentence && sentence.orderedSentences.any { it.isSdsPlus() } && nonSdsPlusGreaterThanMinimum(sentence) && nonSdsLessThanMidpoint(sentence) && !lastSentenceIsSdsPlus(sentence)) {
-      val latestNcrd = sentence.orderedSentences.filter  { it.isSdsPlus() }.maxBy { it.sentenceCalculation.releaseDate }
+    if (sentence is ConsecutiveSentence && sentence.isSdsPlus() && nonSdsPlusGreaterThanMinimum(sentence) && nonSdsLessThanMidpoint(sentence) && !lastSentenceIsSdsPlus(sentence)) {
+      val latestNcrd = sentence.orderedSentences.filter { it.isSdsPlus() }.maxBy { it.sentenceCalculation.releaseDate }
       val nonSdsPlusSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }
       sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate =
         latestNcrd.sentenceCalculation.releaseDate.plusDays(nonSdsPlusSentences.sumOf { it.getLengthInDays() + nonSdsPlusSentences.size }.toLong() / 4)!!.plusDays(1)
@@ -62,9 +62,11 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
           releaseDate = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
           unadjustedDate = sentence.sentencedAt,
         )
-    } else if (sentence is ConsecutiveSentence && sentence.orderedSentences.any { it.isSdsPlus() } && nonSdsGreaterThanMidpoint(sentence) && lastSentenceIsSdsPlus(sentence)) {
+    } else if (sentence is ConsecutiveSentence && !sentence.isSdsPlus() && lastSentenceIsSdsPlus(sentence)) {
       val sdsPlusSentences = sentence.orderedSentences.filter { it.isSdsPlus() }
+      val nonSdsPluSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }
       val sdsPlusLengthInDays = sdsPlusSentences.sumOf { it.getLengthInDays() }.toLong()
+      val nonSdsPlusSentenceLengthInDays = nonSdsPluSentences.sumOf { it.getLengthInDays() }.toLong()
       log.info("Total sds plus length in days sentences: {}", sdsPlusLengthInDays)
       val sdsPlusNotionalSled = sentence.sentencedAt.plusDays(sdsPlusLengthInDays)
       log.info("Sds plus notional sled: {}", sdsPlusNotionalSled)
@@ -75,10 +77,15 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
 
       val sdsNotionalSled = sdsPlusNotionalCrd.plusDays(lengthInDaysOfNonSdsPlusSentences)
       log.info("Sds notional sled: {}", sdsNotionalSled)
-      val quarterSentenceLength = ceil(lengthInDaysOfNonSdsPlusSentences / 4.0).toLong()
-      log.info("Quarter sentence length: {}", quarterSentenceLength)
+      if (nonSdsPlusSentenceLengthInDays < hdcedConfiguration.envelopeMidPoint) {
+        val quarterSentenceLengthOr28Days = if (ceil(lengthInDaysOfNonSdsPlusSentences / 4.0).toLong() > 28) ceil(lengthInDaysOfNonSdsPlusSentences / 4.0).toLong() else 28
+        log.info("Quarter sentence length: {}", quarterSentenceLengthOr28Days)
+        sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sdsPlusNotionalCrd.plusDays(quarterSentenceLengthOr28Days).minusDays(sentence.sentenceCalculation.calculatedTotalDeductedDays.toLong()).plusDays(sentence.sentenceCalculation.calculatedTotalAddedDays.toLong())
+      } else {
+        sdsPlusNotionalCrd.minusDays(hdcedConfiguration.deductionDays)
+      }
 
-      sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sdsPlusNotionalCrd.plusDays(quarterSentenceLength).minusDays(sentence.sentenceCalculation.calculatedTotalDeductedDays.toLong())
+
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED4PLUS] =
         ReleaseDateCalculationBreakdown(
           rules = setOf(CalculationRule.CONSECUTIVE_SENTENCE_HDCED_MINIMUM_CUSTODIAL_PERIOD_LAST_SENTENCE_SDS),

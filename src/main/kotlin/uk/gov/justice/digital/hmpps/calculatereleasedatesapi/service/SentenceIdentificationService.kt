@@ -43,6 +43,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_PLUS_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.math.BigDecimal
 import java.time.temporal.ChronoUnit
@@ -344,7 +345,7 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
             }
           }
         } else {
-          if (overEighteen && durationGreaterThanSevenYears && sentence.offence.isScheduleFifteenMaximumLife) {
+          if (sentence.sentencedAt.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE) && overEighteen && durationGreaterThanSevenYears && sentence.offence.isScheduleFifteenMaximumLife) {
             sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
           }
         }
