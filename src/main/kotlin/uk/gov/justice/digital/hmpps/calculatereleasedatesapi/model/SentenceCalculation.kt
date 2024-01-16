@@ -261,7 +261,7 @@ data class SentenceCalculation(
   var numberOfDaysToNonParoleDate: Long = 0
   var nonParoleDate: LocalDate? = null
 
-  private val unadjustedExtendedDeterminateParoleEligibilityDate: LocalDate?
+  val unadjustedExtendedDeterminateParoleEligibilityDate: LocalDate?
     get() {
       if (numberOfDaysToParoleEligibilityDate == null) {
         return null

@@ -340,7 +340,8 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
           } else if (overEighteen) {
             if (durationGreaterThanFourLessThanSevenYears && sentence.offence.isPcscSds) {
               sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
-            } else if (durationGreaterThanSevenYears && (sentence.offence.isPcscSdsPlus || sentence.offence.isScheduleFifteenMaximumLife)) {
+
+
               sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
             }
           }
