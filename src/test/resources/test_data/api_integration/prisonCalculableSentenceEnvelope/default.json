@@ -3,7 +3,8 @@
     {
       "person": {
         "prisonerNumber": "Z0020ZZ",
-        "dateOfBirth": "1966-01-01"
+        "dateOfBirth": "1966-01-01",
+        "lastName": "Jones"
       },
       "bookingId": -20,
       "sentenceAndOffences": [

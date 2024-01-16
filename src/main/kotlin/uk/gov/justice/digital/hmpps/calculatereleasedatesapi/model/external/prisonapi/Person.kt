@@ -12,6 +12,8 @@ data class Person(
 
   var dateOfBirth: LocalDate,
 
+  var lastName: String,
+
   val alerts: List<Alert>,
 ) {
   fun isActiveSexOffender(): Boolean {

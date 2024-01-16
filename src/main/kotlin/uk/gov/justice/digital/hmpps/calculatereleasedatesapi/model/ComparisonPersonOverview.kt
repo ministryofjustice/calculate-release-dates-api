@@ -8,6 +8,7 @@ import java.time.LocalDateTime
 
 data class ComparisonPersonOverview(
   val personId: String,
+  val lastName: String?,
   val isValid: Boolean,
   val isMatch: Boolean,
   val mismatchType: MismatchType,

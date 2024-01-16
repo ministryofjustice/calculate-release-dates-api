@@ -3,6 +3,7 @@
     "person": {
       "prisonerNumber": "Z0030ZZ",
       "dateOfBirth": "1972-11-14",
+      "lastName": "Smith",
       "alerts": []
     },
     "bookingId": 1205535,

@@ -736,6 +736,7 @@ fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>): Compa
 
 private fun transform(comparisonPerson: ComparisonPerson): ComparisonMismatchSummary = ComparisonMismatchSummary(
   comparisonPerson.person,
+  comparisonPerson.lastName,
   comparisonPerson.isValid,
   comparisonPerson.isMatch,
   comparisonPerson.validationMessages,
@@ -754,6 +755,7 @@ fun transform(
   sdsSentencesIdentified: List<SentenceAndOffences>,
 ): ComparisonPersonOverview = ComparisonPersonOverview(
   comparisonPerson.person,
+  comparisonPerson.lastName,
   comparisonPerson.isValid,
   comparisonPerson.isMatch,
   comparisonPerson.mismatchType,

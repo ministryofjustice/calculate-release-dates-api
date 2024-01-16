@@ -84,6 +84,7 @@ class BulkComparisonService(
           ComparisonPerson(
             comparisonId = comparison.id,
             person = calculableSentenceEnvelope.person.prisonerNumber,
+            lastName = calculableSentenceEnvelope.person.lastName,
             latestBookingId = calculableSentenceEnvelope.bookingId,
             isMatch = mismatch.isMatch,
             isValid = mismatch.isValid,

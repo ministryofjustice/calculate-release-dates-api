@@ -379,6 +379,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       id,
       comparisonId,
       person = person,
+      lastName = "Smith",
       latestBookingId = 25,
       isMatch = false,
       isValid = true,

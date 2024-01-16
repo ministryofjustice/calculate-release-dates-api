@@ -5,6 +5,7 @@ import java.time.LocalDate
 
 data class ComparisonMismatchSummary(
   val personId: String,
+  val lastName: String?,
   val isValid: Boolean,
   val isMatch: Boolean,
   val validationMessages: JsonNode,
