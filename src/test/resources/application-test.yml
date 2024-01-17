@@ -85,3 +85,12 @@ hdced:
   deduction:
     days: 179
 
+ersed:
+  envelope:
+    release:
+      halfway:
+        days: 2180
+      two-thirds:
+        days: 1635
+      max-period:
+        days: 544

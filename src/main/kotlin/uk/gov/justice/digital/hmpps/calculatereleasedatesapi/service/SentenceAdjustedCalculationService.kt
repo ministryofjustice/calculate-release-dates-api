@@ -30,7 +30,7 @@ import kotlin.math.ceil
 import kotlin.math.floor
 
 @Service
-class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, val tusedCalculator: TusedCalculator, val hdced4Calculator: Hdced4Calculator) {
+class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, val tusedCalculator: TusedCalculator, val hdced4Calculator: Hdced4Calculator, val ersedCalculator: ErsedCalculator) {
   /*
     This function calculates dates after adjustments have been decided.
     It can be run many times to recalculate dates. It needs to be run if there is a change to adjustments.
@@ -41,8 +41,10 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
     setCrdOrArdDetails(sentence, sentenceCalculation)
     setSedOrSledDetails(sentence, sentenceCalculation)
 
-    if (sentenceCalculation.earlyReleaseSchemeEligibilityDate != null) {
-      sentenceCalculation.breakdownByReleaseDateType[ERSED] = sentenceCalculation.earlyReleaseSchemeEligibilityDateBreakdown!!
+    if (sentenceCalculation.calculateErsed
+      && sentenceCalculation.earlyReleaseSchemeEligibilityDate == null) {
+      ersedCalculator.earlyReleaseSchemeEligibilityDateBreakdown(sentence, sentenceCalculation)
+      //sentenceCalculation.breakdownByReleaseDateType[ERSED] = sentenceCalculation.earlyReleaseSchemeEligibilityDateBreakdown!!
     }
 
     // PSI 03/2015: P53: The license period is one of at least 12 month.
@@ -133,8 +135,7 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
     val daysBetween = DAYS.between(
       sentenceCalculation.unadjustedDeterminateReleaseDate,
       sentenceCalculation.adjustedDeterminateReleaseDate,
-    )
-      .toInt()
+    ).toInt()
     return ReleaseDateCalculationBreakdown(
       releaseDate = sentenceCalculation.adjustedDeterminateReleaseDate,
       unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,

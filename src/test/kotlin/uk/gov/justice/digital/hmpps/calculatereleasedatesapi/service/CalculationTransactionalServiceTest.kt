@@ -96,9 +96,10 @@ class CalculationTransactionalServiceTest {
   private val workingDayService = WorkingDayService(bankHolidayService)
   private val tusedCalculator = TusedCalculator(workingDayService)
   private val hdced4configuration = Hdced4Calculator.Hdced4Configuration(12, WEEKS, 14, 720, DAYS, 179)
-
   private val hdced4Calculator = Hdced4Calculator(hdced4configuration)
-  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
+  private val ersedConfiguration = ErsedCalculator.ErsedConfiguration(2180,1635,544)
+  private val ersedCalculator = ErsedCalculator(ersedConfiguration)
+  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
   private val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
   private val sentencesExtractionService = SentencesExtractionService()
   private val sentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
