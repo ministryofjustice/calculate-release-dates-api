@@ -24,20 +24,24 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
     @Value("\${ersed.envelope.release.max-period.days}") val maxErsedPeriodDays: Int,
   )
 
-  fun earlyReleaseSchemeEligibilityDateBreakdown(
+  fun generateEarlyReleaseSchemeEligibilityDateBreakdown(
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation,
   ) {
     val ersed = calculateErsed(sentence, sentenceCalculation)
 
-    if (ersed != null && ersed.releaseDate.isBefore(sentence.sentencedAt)) {
-      sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] =
-        ReleaseDateCalculationBreakdown(
-          releaseDate = sentence.sentencedAt,
-          unadjustedDate = sentence.sentencedAt,
-          rules = setOf(CalculationRule.ERSED_BEFORE_SENTENCE_DATE),
-        )
-    } else if (ersed !== null) sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ersed
+    if (ersed != null) {
+      if (ersed.releaseDate.isBefore(sentence.sentencedAt)) {
+        sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] =
+          ReleaseDateCalculationBreakdown(
+            releaseDate = sentence.sentencedAt,
+            unadjustedDate = sentence.sentencedAt,
+            rules = setOf(CalculationRule.ERSED_BEFORE_SENTENCE_DATE),
+          )
+      } else {
+        sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ersed
+      }
+    }
   }
 
   private fun calculateErsed(
@@ -98,6 +102,9 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
       adjustedDays = ChronoUnit.DAYS.between(unadjustedErsed, minimumEffectiveErsed).toInt(),
     )
 
+    log.info("Minimum effective ERSED: $minimumEffectiveErsed")
+    log.info("Maximum effective ERSED $maxEffectiveErsed")
+
     return if (minimumEffectiveErsed.isAfter(maxEffectiveErsed)) {
       minimumEffectiveErsedReleaseCalcBreakdown
     } else {
@@ -127,6 +134,7 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
         .plusDays(sentenceCalculation.calculatedTotalAddedDays.toLong())
         .minusDays(sentenceCalculation.calculatedTotalDeductedDays.toLong())
         .plusDays(sentenceCalculation.calculatedTotalAwardedDays.toLong())
+
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.ERSED_TWO_THIRDS),
         releaseDate = ersed,
@@ -175,10 +183,12 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
       val unadjustedErsed =
         sentence.sentencedAt
           .plusDays(ceil(days.toDouble() / 4).toLong())
+
       val ersed = unadjustedErsed
         .plusDays(sentenceCalculation.calculatedTotalAddedDays.toLong())
         .minusDays(sentenceCalculation.calculatedTotalDeductedDays.toLong())
         .plusDays(sentenceCalculation.calculatedTotalAwardedDays.toLong())
+
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.ERSED_HALFWAY),
         releaseDate = ersed,

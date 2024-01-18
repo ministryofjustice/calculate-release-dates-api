@@ -41,7 +41,7 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
     setSedOrSledDetails(sentence, sentenceCalculation)
 
     if (sentenceCalculation.calculateErsed && sentenceCalculation.earlyReleaseSchemeEligibilityDate == null) {
-      ersedCalculator.earlyReleaseSchemeEligibilityDateBreakdown(sentence, sentenceCalculation)
+      ersedCalculator.generateEarlyReleaseSchemeEligibilityDateBreakdown(sentence, sentenceCalculation)
     }
 
     // PSI 03/2015: P53: The license period is one of at least 12 month.
