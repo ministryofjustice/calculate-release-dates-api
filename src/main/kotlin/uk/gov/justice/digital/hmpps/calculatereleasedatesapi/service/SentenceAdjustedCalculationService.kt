@@ -7,7 +7,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED4PLUS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
@@ -41,10 +40,8 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
     setCrdOrArdDetails(sentence, sentenceCalculation)
     setSedOrSledDetails(sentence, sentenceCalculation)
 
-    if (sentenceCalculation.calculateErsed
-      && sentenceCalculation.earlyReleaseSchemeEligibilityDate == null) {
+    if (sentenceCalculation.calculateErsed && sentenceCalculation.earlyReleaseSchemeEligibilityDate == null) {
       ersedCalculator.earlyReleaseSchemeEligibilityDateBreakdown(sentence, sentenceCalculation)
-      //sentenceCalculation.breakdownByReleaseDateType[ERSED] = sentenceCalculation.earlyReleaseSchemeEligibilityDateBreakdown!!
     }
 
     // PSI 03/2015: P53: The license period is one of at least 12 month.

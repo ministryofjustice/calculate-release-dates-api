@@ -28,16 +28,16 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation,
   ) {
-
     val ersed = calculateErsed(sentence, sentenceCalculation)
 
-    if (ersed != null && ersed.releaseDate.isBefore(sentence.sentencedAt))
+    if (ersed != null && ersed.releaseDate.isBefore(sentence.sentencedAt)) {
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] =
         ReleaseDateCalculationBreakdown(
           releaseDate = sentence.sentencedAt,
           unadjustedDate = sentence.sentencedAt,
           rules = setOf(CalculationRule.ERSED_BEFORE_SENTENCE_DATE),
-        ) else if (ersed !== null) sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ersed
+        )
+    } else if (ersed !== null) sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] = ersed
   }
 
   private fun calculateErsed(
@@ -187,7 +187,6 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
       )
     }
   }
-
 
   companion object {
     private val log: Logger = LoggerFactory.getLogger(ErsedCalculator::class.java)
