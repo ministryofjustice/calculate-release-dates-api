@@ -71,7 +71,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
@@ -102,7 +101,8 @@ class CalculationTransactionalServiceTest {
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
   private val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
   private val sentencesExtractionService = SentencesExtractionService()
-  private val sentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
+  private val sentenceIdentificationService =
+    SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
   private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
     sentenceIdentificationService,
@@ -131,7 +131,7 @@ class CalculationTransactionalServiceTest {
   private val validationService = mock<ValidationService>()
   private val serviceUserService = mock<ServiceUserService>()
   private val approvedDatesSubmissionRepository = mock<ApprovedDatesSubmissionRepository>()
-  private val approvedDatesRepository = mock<ApprovedDatesRepository>()
+  private val nomisCommentService = mock<NomisCommentService>()
 
   private val calculationTransactionalService =
     CalculationTransactionalService(
@@ -147,7 +147,7 @@ class CalculationTransactionalServiceTest {
       eventService,
       serviceUserService,
       approvedDatesSubmissionRepository,
-      approvedDatesRepository,
+      nomisCommentService,
     )
 
   private val fakeSourceData = PrisonApiSourceData(
@@ -344,6 +344,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA),
       ),
     )
+    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
     calculationTransactionalService.writeToNomisAndPublishEvent(
       PRISONER_ID,
@@ -370,48 +371,7 @@ class CalculationTransactionalServiceTest {
           effectiveSentenceEndDate = ESED_DATE,
           sentenceLength = "06/02/03",
         ),
-        comment = "{Reason} using the Calculate Release Dates service. The calculation ID is: $CALCULATION_REFERENCE",
-        reason = "UPDATE",
-      ),
-    )
-    verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
-  }
-
-  @Test
-  fun `Test that when the reason is Other the correct comment is written to NOMIS`() {
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-    whenever(
-      calculationRequestRepository.findById(CALCULATION_REQUEST_ID),
-    ).thenReturn(
-      Optional.of(CALCULATION_REQUEST.copy(reasonForCalculation = CALCULATION_REASON.copy(isOther = true))),
-    )
-
-    calculationTransactionalService.writeToNomisAndPublishEvent(
-      PRISONER_ID,
-      BOOKING.copy(sentences = listOf(StandardSENTENCE.copy(duration = ZERO_DURATION))),
-      BOOKING_CALCULATION.copy(
-        dates = mutableMapOf(
-          CRD to CALCULATION_OUTCOME_CRD.outcomeDate!!,
-          SED to THIRD_FEB_2021,
-          ERSED to FIFTH_APRIL_2021,
-          ESED to ESED_DATE,
-        ),
-        effectiveSentenceLength = Period.of(6, 2, 3),
-      ),
-      emptyList(),
-    )
-
-    verify(prisonService).postReleaseDates(
-      BOOKING_ID,
-      UPDATE_OFFENDER_DATES.copy(
-        keyDates = OffenderKeyDates(
-          conditionalReleaseDate = THIRD_FEB_2021,
-          sentenceExpiryDate = THIRD_FEB_2021,
-          earlyRemovalSchemeEligibilityDate = FIFTH_APRIL_2021,
-          effectiveSentenceEndDate = ESED_DATE,
-          sentenceLength = "06/02/03",
-        ),
-        comment = "Calculated using the Calculate Release Dates service. The calculation ID is: $CALCULATION_REFERENCE",
+        comment = "The NOMIS Reason",
         reason = "UPDATE",
       ),
     )
@@ -495,6 +455,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES,
       ),
     )
+    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
     val submission = ApprovedDatesSubmission(
       calculationRequest = CALCULATION_REQUEST,
       prisonerId = PRISONER_ID,
@@ -518,10 +479,7 @@ class CalculationTransactionalServiceTest {
       verify(prisonService).postReleaseDates(eq(BOOKING.bookingId), capture(this))
     }
 
-    assertEquals(
-      "{Reason} using the Calculate Release Dates service with manually entered dates. The calculation ID is: $CALCULATION_REFERENCE",
-      updatedOffenderDatesArgumentCaptor.value.comment,
-    )
+    assertEquals("The NOMIS Reason", updatedOffenderDatesArgumentCaptor.value.comment)
 
     verify(approvedDatesSubmissionRepository).save(eq(submission))
   }
@@ -579,6 +537,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA),
       ),
     )
+    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
     calculationTransactionalService.writeToNomisAndPublishEvent(
       PRISONER_ID,
@@ -606,7 +565,7 @@ class CalculationTransactionalServiceTest {
           effectiveSentenceEndDate = ESED_DATE,
           sentenceLength = "06/02/03",
         ),
-        comment = "{Reason} using the Calculate release dates service by Specialist Support. The calculation ID is: $CALCULATION_REFERENCE",
+        comment = "The NOMIS Reason",
         reason = "UPDATE",
       ),
     )

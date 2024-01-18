@@ -44,7 +44,7 @@ class GenuineOverrideService(
   fun storeGenuineOverrideDates(genuineOverrideRequest: GenuineOverrideDateRequest): GenuineOverrideDateResponse {
     val originalCalculation = calculationRequestRepository.findByCalculationReference(UUID.fromString(genuineOverrideRequest.originalCalculationReference))
     return originalCalculation.map { it ->
-      val storeManualCalculation = manualCalculationService.storeManualCalculation(it.prisonerId, genuineOverrideRequest.manualEntryRequest, MANUALLY_ENTERED_OVERRIDE)
+      val storeManualCalculation = manualCalculationService.storeManualCalculation(it.prisonerId, genuineOverrideRequest.manualEntryRequest, GENUINE_OVERRIDE)
       val overridesForCalculation = genuineOverrideRepository.findAllByOriginalCalculationRequestCalculationReferenceOrderBySavedAtDesc(UUID.fromString(genuineOverrideRequest.originalCalculationReference))
       if (overridesForCalculation.isNotEmpty()) {
         return@map calculationRequestRepository.findById(storeManualCalculation.calculationRequestId).map {
@@ -63,8 +63,7 @@ class GenuineOverrideService(
       GenuineOverrideResponse(it.reason, it.originalCalculationRequest.calculationReference.toString(), it.savedCalculation?.calculationReference.toString(), it.isOverridden)
     }.orElseThrow { GenuineOverrideNotFoundException("Could not find genuine override for reference: $calculationReference") }
   }
-
-  companion object {
-    private const val MANUALLY_ENTERED_OVERRIDE = "{%s} was manually recorded in the Calculate release dates service by Specialist Support. The calculation ID is: %s"
+  private companion object {
+    private const val GENUINE_OVERRIDE = true
   }
 }
