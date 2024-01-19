@@ -62,27 +62,43 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
           releaseDate = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
           unadjustedDate = sentence.sentencedAt,
         )
-    } else if (sentence is ConsecutiveSentence && !sentence.isSdsPlus() && lastSentenceIsSdsPlus(sentence)) {
-      val sdsPlusSentences = sentence.orderedSentences.filter { it.isSdsPlus() }
-      val nonSdsPluSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }
-      val sdsPlusLengthInDays = sdsPlusSentences.sumOf { it.getLengthInDays() }.toLong()
-      val nonSdsPlusSentenceLengthInDays = nonSdsPluSentences.sumOf { it.getLengthInDays() }.toLong()
-      log.info("Total sds plus length in days sentences: {}", sdsPlusLengthInDays)
-      val sdsPlusNotionalSled = sentence.sentencedAt.plusDays(sdsPlusLengthInDays)
-      log.info("Sds plus notional sled: {}", sdsPlusNotionalSled)
-      val sdsPlusNotionalCrd = sentence.sentencedAt.minusDays(1).plusDays(ceil(sdsPlusLengthInDays * (2.0 / 3.0)).toLong())
-      log.info("Sds plus notional crd: {}", sdsPlusNotionalCrd)
-      val lengthInDaysOfNonSdsPlusSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }.sumOf { it.totalDuration().getLengthInDays(sdsPlusNotionalCrd) }.toLong()
-      log.info("Length in days of non sds plus sentences: {}", lengthInDaysOfNonSdsPlusSentences)
+    } else if (sentence is ConsecutiveSentence && !sentence.isSdsPlus()) {
+      if (sentence.orderedSentences.any { it.isSdsPlus() }) {
+        val sdsPlusSentences = sentence.orderedSentences.filter { it.isSdsPlus() }
+        val nonSdsPluSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }
+        val sdsPlusLengthInDays = sdsPlusSentences.sumOf { it.getLengthInDays() }.toLong()
+        val nonSdsPlusSentenceLengthInDays = nonSdsPluSentences.sumOf { it.getLengthInDays() }.toLong()
+        log.info("Total sds plus length in days sentences: {}", sdsPlusLengthInDays)
+        val sdsPlusNotionalSled = sentence.sentencedAt.plusDays(sdsPlusLengthInDays)
+        log.info("Sds plus notional sled: {}", sdsPlusNotionalSled)
+        val sdsPlusNotionalCrd = sentence.sentencedAt.minusDays(1).plusDays(ceil(sdsPlusLengthInDays * (2.0 / 3.0)).toLong())
+        log.info("Sds plus notional crd: {}", sdsPlusNotionalCrd)
+        val lengthInDaysOfNonSdsPlusSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }.sumOf { it.totalDuration().getLengthInDays(sdsPlusNotionalCrd) }.toLong()
+        log.info("Length in days of non sds plus sentences: {}", lengthInDaysOfNonSdsPlusSentences)
 
-      val sdsNotionalSled = sdsPlusNotionalCrd.plusDays(lengthInDaysOfNonSdsPlusSentences)
-      log.info("Sds notional sled: {}", sdsNotionalSled)
-      if (nonSdsPlusSentenceLengthInDays < hdcedConfiguration.envelopeMidPoint) {
-        val quarterSentenceLengthOr28Days = if (ceil(lengthInDaysOfNonSdsPlusSentences / 4.0).toLong() > 28) ceil(lengthInDaysOfNonSdsPlusSentences / 4.0).toLong() else 28
-        log.info("Quarter sentence length: {}", quarterSentenceLengthOr28Days)
-        sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sdsPlusNotionalCrd.plusDays(quarterSentenceLengthOr28Days).minusDays(sentence.sentenceCalculation.calculatedTotalDeductedDays.toLong()).plusDays(sentence.sentenceCalculation.calculatedTotalAddedDays.toLong())
+        val sdsNotionalSled = sdsPlusNotionalCrd.plusDays(lengthInDaysOfNonSdsPlusSentences)
+        log.info("Sds notional sled: {}", sdsNotionalSled)
+        if (nonSdsPlusSentenceLengthInDays < hdcedConfiguration.envelopeMidPoint) {
+          val quarterSentenceLengthOr28Days = if (ceil(lengthInDaysOfNonSdsPlusSentences / 4.0).toLong() > 28) ceil(lengthInDaysOfNonSdsPlusSentences / 4.0).toLong() else 28
+          log.info("Quarter sentence length: {}", quarterSentenceLengthOr28Days)
+          sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sdsPlusNotionalCrd.plusDays(quarterSentenceLengthOr28Days).minusDays(sentence.sentenceCalculation.calculatedTotalDeductedDays.toLong()).plusDays(sentence.sentenceCalculation.calculatedTotalAddedDays.toLong())
+        } else {
+          sdsPlusNotionalCrd.minusDays(hdcedConfiguration.deductionDays)
+        }
       } else {
-        sdsPlusNotionalCrd.minusDays(hdcedConfiguration.deductionDays)
+        val nonSdsPluSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }
+        val nonSdsPlusSentenceLengthInDays = nonSdsPluSentences.sumOf { it.getLengthInDays() }.toLong()
+
+        if (nonSdsPlusSentenceLengthInDays < hdcedConfiguration.envelopeMidPoint) {
+          val quarterSentenceLengthOr28Days = if (ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate / 4.0).toLong() > 28) ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate / 4.0).toLong() else 28
+          log.info("Quarter sentence length: {}", quarterSentenceLengthOr28Days)
+          sentenceCalculation.numberOfDaysToHomeDetentionCurfew4PlusEligibilityDate = quarterSentenceLengthOr28Days.plus(adjustedDays)
+          sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate =
+            sentence.sentencedAt.plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfew4PlusEligibilityDate)
+        sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sentenceCalculation.adjustedDeterminateReleaseDate.plusDays(quarterSentenceLengthOr28Days)
+        } else {
+          sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sentenceCalculation.adjustedDeterminateReleaseDate.minusDays(hdcedConfiguration.deductionDays)
+        }
       }
 
 

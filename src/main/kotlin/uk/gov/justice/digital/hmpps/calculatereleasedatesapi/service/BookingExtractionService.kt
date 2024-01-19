@@ -88,7 +88,7 @@ class BookingExtractionService(
       dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
     }
 
-    if (sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate != null) {
+    if (sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
       dates[HDCED4PLUS] = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!
     }
 
@@ -408,8 +408,9 @@ class BookingExtractionService(
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
     val latestAdjustedReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
     val mostRecentReleaseIsPrrd = mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.getReleaseDateTypes().contains(PRRD) }
+    val mostRecentReleaseIsPed = mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.getReleaseDateTypes().contains(PED) }
     // For now we can't calculate HDCED if there is a consecutive sentence with EDS or SOPC sentences
-    if (!mostRecentReleaseIsPrrd && sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
+    if (!mostRecentReleaseIsPrrd && !mostRecentReleaseIsPed && sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
       val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() && !it.isDto() }, SentenceCalculation::releaseDate)
       if (latestNonRecallRelease?.sentenceCalculation?.homeDetentionCurfewEligibilityDate != null) {
         val earliestSentenceDate = sentences.filter { !it.isRecall() }.minOf { it.sentencedAt }
@@ -457,7 +458,8 @@ class BookingExtractionService(
     val latestAdjustedReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
     val mostRecentReleaseIsPrrd = mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.getReleaseDateTypes().contains(PRRD) }
     // For now we can't calculate HDCED if there is a consecutive sentence with EDS or SOPC sentences
-    if (!mostRecentReleaseIsPrrd && sentences.none { (it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence()) }) {
+    if (!mostRecentReleaseIsPrrd && sentences.none { (it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence()) }
+      && sentences.none { (it is ConsecutiveSentence && it.releaseDateTypes.contains(PED)) }) {
       val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() && !it.isDto() }, SentenceCalculation::releaseDate)
       if (latestNonRecallRelease?.sentenceCalculation?.homeDetentionCurfew4PlusEligibilityDate != null) {
         val hdcedSentence = extractionService.mostRecentSentenceOrNull(
@@ -469,7 +471,7 @@ class BookingExtractionService(
         val latestSdsArdRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { it.releaseDateTypes.contains(ARD) && !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate == null }, SentenceCalculation::releaseDate)
         val latestSdsCrdRelease =
           extractionService.mostRecentSentenceOrNull(sentences.filter { it.releaseDateTypes.contains(CRD) && !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate == null }, SentenceCalculation::releaseDate)
-        val latestConcurrentReleaseSentence = listOfNotNull(latestSopcOrEdsRelease, latestSdsCrdRelease, latestAFineRelease, latestSdsArdRelease).filter {it.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate == null}.maxByOrNull { it.sentenceCalculation.releaseDate }
+        val latestConcurrentReleaseSentence = listOfNotNull(latestSopcOrEdsRelease, latestSdsCrdRelease, latestAFineRelease, latestSdsArdRelease).filter {it.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate == null && !it.releaseDateTypes.contains(PRRD)}.maxByOrNull { it.sentenceCalculation.releaseDate }
         val latestConcurrentRelease = latestConcurrentReleaseSentence?.sentenceCalculation?.releaseDate
         if (hdcedSentence != null) {
           return if (latestConcurrentRelease != null && hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!.isBefore(latestConcurrentRelease)) {
