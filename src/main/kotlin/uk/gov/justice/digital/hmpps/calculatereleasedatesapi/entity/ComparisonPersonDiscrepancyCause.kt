@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Discre
 
 @Entity
 @Table
-class ComparisonPersonDiscrepancyCategory(
+class ComparisonPersonDiscrepancyCause(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long = -1,
@@ -32,5 +32,5 @@ class ComparisonPersonDiscrepancyCategory(
   @Enumerated(EnumType.STRING)
   val subCategory: DiscrepancySubCategory,
 
-  val other: String? = null,
+  val detail: String? = null,
 )

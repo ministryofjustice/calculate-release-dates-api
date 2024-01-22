@@ -18,7 +18,7 @@ create table comparison_person_discrepancy
     priority_id integer not null,
     detail text,
     action text,
-    created_by varchar(20) not null,
+    created_by varchar(40) not null,
     created_at timestamp with time zone not null,
     superseded_by_id integer,
     constraint fk_comparison_person foreign key (comparison_person_id) references comparison_person(id),
@@ -27,13 +27,13 @@ create table comparison_person_discrepancy
     constraint fk_discrepancy_superseded_by foreign key (superseded_by_id) references comparison_person_discrepancy(id)
 );
 
-create table comparison_person_discrepancy_category
+create table comparison_person_discrepancy_cause
 (
     id serial constraint discrepancy_category_pk primary key,
     discrepancy_id integer not null,
     category varchar(10) not null,
     sub_category varchar(30),
-    other text,
+    detail text,
     constraint fk_category_discrepancy foreign key (discrepancy_id) references comparison_person_discrepancy(id)
 );
 

@@ -32,7 +32,7 @@ class ComparisonPersonDiscrepancy(
 
   @NotNull
   @OneToMany(mappedBy = "discrepancy", fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
-  val categories: List<ComparisonPersonDiscrepancyCategory> = emptyList(),
+  val categories: List<ComparisonPersonDiscrepancyCause> = emptyList(),
 
   @NotNull
   @ManyToOne(optional = false)
