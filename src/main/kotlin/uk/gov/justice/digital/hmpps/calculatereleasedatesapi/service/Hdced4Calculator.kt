@@ -83,7 +83,7 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
           log.info("Quarter sentence length: {}", quarterSentenceLengthOr28Days)
           sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sdsPlusNotionalCrd.plusDays(quarterSentenceLengthOr28Days).minusDays(sentence.sentenceCalculation.calculatedTotalDeductedDays.toLong()).plusDays(sentence.sentenceCalculation.calculatedTotalAddedDays.toLong())
         } else {
-          sdsPlusNotionalCrd.minusDays(hdcedConfiguration.deductionDays)
+          sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sdsPlusNotionalCrd.minusDays(hdcedConfiguration.deductionDays)
         }
       } else {
         val nonSdsPluSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }
