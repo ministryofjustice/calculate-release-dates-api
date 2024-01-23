@@ -95,12 +95,11 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
           sentenceCalculation.numberOfDaysToHomeDetentionCurfew4PlusEligibilityDate = quarterSentenceLengthOr28Days.plus(adjustedDays)
           sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate =
             sentence.sentencedAt.plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfew4PlusEligibilityDate)
-        sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sentenceCalculation.adjustedDeterminateReleaseDate.plusDays(quarterSentenceLengthOr28Days)
+          sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sentenceCalculation.adjustedDeterminateReleaseDate.plusDays(quarterSentenceLengthOr28Days)
         } else {
           sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sentenceCalculation.adjustedDeterminateReleaseDate.minusDays(hdcedConfiguration.deductionDays)
         }
       }
-
 
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED4PLUS] =
         ReleaseDateCalculationBreakdown(

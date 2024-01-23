@@ -19,7 +19,8 @@
         }
       },
       "lineSequence": 2,
-      "caseSequence": 2
+      "caseSequence": 2,
+      "caseReference": null
     },
     {
       "sentencedAt": "2020-12-13",
@@ -40,7 +41,8 @@
         }
       },
       "lineSequence": 4,
-      "caseSequence": 4
+      "caseSequence": 4,
+      "caseReference": null
     }
   ],
   "consecutiveSentence": {
@@ -65,6 +67,7 @@
       {
         "lineSequence": 1,
         "caseSequence": 1,
+        "caseReference": null,
         "sentenceLength": "2 years",
         "sentenceLengthDays": 730,
         "consecutiveToLineSequence": null,
@@ -73,6 +76,7 @@
       {
         "lineSequence": 3,
         "caseSequence": 3,
+        "caseReference": null,
         "sentenceLength": "8 months",
         "sentenceLengthDays": 242,
         "consecutiveToLineSequence": 1,
@@ -81,6 +85,7 @@
       {
         "lineSequence": 5,
         "caseSequence": 5,
+        "caseReference": null,
         "sentenceLength": "3 years",
         "sentenceLengthDays": 1095,
         "consecutiveToLineSequence": 3,
@@ -102,6 +107,21 @@
       "adjustedDays": -9,
       "releaseDate": "2023-01-10",
       "unadjustedDate": "2023-01-19"
+    },
+    "HDCED4PLUS": {
+      "rules": [
+        "CONSECUTIVE_SENTENCE_HDCED_MINIMUM_CUSTODIAL_PERIOD_LAST_SENTENCE_SDS"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_MINIMUM_CUSTODIAL_PERIOD": {
+          "adjustmentValue": 14,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": 0,
+      "releaseDate": "2022-07-15",
+      "unadjustedDate": "2020-03-20"
     }
-  }
+  },
+  "otherDates": {}
 }

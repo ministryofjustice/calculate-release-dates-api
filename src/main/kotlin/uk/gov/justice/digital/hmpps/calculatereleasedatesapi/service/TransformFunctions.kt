@@ -1,4 +1,4 @@
-  package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper

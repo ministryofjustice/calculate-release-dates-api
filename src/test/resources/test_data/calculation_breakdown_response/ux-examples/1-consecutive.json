@@ -156,6 +156,20 @@
       "adjustedDays": -18,
       "releaseDate": "2022-09-06",
       "unadjustedDate": "2023-03-04"
+    },
+    "HDCED4PLUS": {
+      "rules": [
+        "CONSECUTIVE_SENTENCE_HDCED_MINIMUM_CUSTODIAL_PERIOD_LAST_SENTENCE_SDS"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_MINIMUM_CUSTODIAL_PERIOD": {
+          "adjustmentValue": 14,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": 0,
+      "releaseDate": "2022-09-06",
+      "unadjustedDate": "2021-09-21"
     }
   },
   "otherDates": {}

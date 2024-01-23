@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
@@ -36,7 +35,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.APD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ERSED
@@ -80,8 +78,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-import java.io.File
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
@@ -196,25 +192,10 @@ class CalculationTransactionalServiceTest {
       TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
     )
     val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
-    if (bookingData.dates != calculatedReleaseDates.dates) {
-      val file = File("tests/$exampleType/$exampleNumber.json")
-      file.printWriter().use {
-        val result = Result(bookingData.dates, calculatedReleaseDates.dates)
-        val objectMapper = jacksonObjectMapper().findAndRegisterModules()
-        objectMapper.setDateFormat(SimpleDateFormat("yyyy-MM-dd"))
-        it.println(objectMapper.writeValueAsString(result))
-      }
-    }
 
     assertEquals(bookingData.dates, calculatedReleaseDates.dates)
     assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
   }
-
-  @Test
-  fun `Blah`() {
-    `Test Example`("custom-examples", "crs-658-sds-plus-consecutive-to-sds", null)
-  }
-  data class Result(val expectedDates: Map<ReleaseDateType, LocalDate>, val calculatedDates: Map<ReleaseDateType, LocalDate?>)
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
