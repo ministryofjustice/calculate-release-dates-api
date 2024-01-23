@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -176,6 +177,7 @@ class TransformFunctionsTest {
         prisonerId = PRISONER_ID,
         calculationStatus = CalculationStatus.PRELIMINARY,
         calculationReference = CALCULATION_REFERENCE,
+        calculationReason = CALCULATION_REASON,
       ),
     )
   }
@@ -210,6 +212,7 @@ class TransformFunctionsTest {
         calculationStatus = CalculationStatus.PRELIMINARY,
         approvedDates = mapOf(ReleaseDateType.APD to LocalDate.of(2020, 3, 3)),
         calculationReference = CALCULATION_REFERENCE,
+        calculationReason = CALCULATION_REASON,
       ),
     )
   }
@@ -398,6 +401,7 @@ class TransformFunctionsTest {
     private const val BOOKING_ID = 12345L
     private val CALCULATION_REFERENCE: UUID = UUID.randomUUID()
     private const val CALCULATION_REQUEST_ID = 100011L
+    val CALCULATION_REASON = CalculationReason(-1, true, false, "Reason", false)
 
     val CALCULATION_REQUEST = CalculationRequest(
       id = CALCULATION_REQUEST_ID,
@@ -417,6 +421,7 @@ class TransformFunctionsTest {
           calculationDateType = "SED",
         ),
       ),
+      reasonForCalculation = CALCULATION_REASON,
     )
 
     val CRD_DATE: LocalDate = LocalDate.of(2021, 2, 3)
@@ -430,6 +435,7 @@ class TransformFunctionsTest {
       prisonerId = PRISONER_ID,
       calculationStatus = CalculationStatus.PRELIMINARY,
       calculationReference = UUID.randomUUID(),
+      calculationReason = CALCULATION_REASON,
     )
 
     val SEX_OFFENDER_ALERT = Alert(

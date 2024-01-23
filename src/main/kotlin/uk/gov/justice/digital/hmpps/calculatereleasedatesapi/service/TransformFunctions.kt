@@ -470,6 +470,8 @@ fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates {
     calculationType = calculationRequest.calculationType,
     approvedDates = transform(calculationRequest.approvedDatesSubmissions.firstOrNull()),
     calculationReference = calculationRequest.calculationReference,
+    calculationReason = calculationRequest.reasonForCalculation,
+    otherReasonDescription = calculationRequest.otherReasonForCalculation,
   )
 }
 

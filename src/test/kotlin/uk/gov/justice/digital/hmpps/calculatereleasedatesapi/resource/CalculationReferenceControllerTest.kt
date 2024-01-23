@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
@@ -67,6 +68,7 @@ class CalculationReferenceControllerTest {
       bookingId = 123L,
       prisonerId = "ASD",
       calculationReference = UUID.randomUUID(),
+      calculationReason = CalculationReason(-1, true, false, "Reason", false),
     )
 
     whenever(calculationTransactionalService.findCalculationResultsByCalculationReference(calculationReference.toString())).thenReturn(calculatedReleaseDates)

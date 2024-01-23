@@ -210,7 +210,15 @@ class CalculationTransactionalServiceTest {
     try {
       calculationBreakdown = calculationTransactionalService.calculateWithBreakdown(
         booking,
-        CalculatedReleaseDates(calculation.dates, -1, -1, "", PRELIMINARY, calculationReference = UUID.randomUUID()),
+        CalculatedReleaseDates(
+          calculation.dates,
+          -1,
+          -1,
+          "",
+          PRELIMINARY,
+          calculationReference = UUID.randomUUID(),
+          calculationReason = CALCULATION_REASON,
+        ),
       )
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
@@ -667,6 +675,8 @@ class CalculationTransactionalServiceTest {
           "\"bookingId\":12345}",
       )
 
+    private val CALCULATION_REASON = CalculationReason(-1, true, false, "Reason", false)
+
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
       id = CALCULATION_REQUEST_ID,
       calculationReference = CALCULATION_REFERENCE,
@@ -681,6 +691,7 @@ class CalculationTransactionalServiceTest {
           "\"offence\":{" + "\"committedAt\":\"2013-09-19\"" + "}," + "\"duration\":{" +
           "\"durationElements\":{" + "\"YEARS\":2" + "}" + "}," + "\"sentencedAt\":\"2013-09-21\"" + "}" + "]" + "}",
       ),
+      reasonForCalculation = CALCULATION_REASON,
     )
 
     val BOOKING_CALCULATION = CalculatedReleaseDates(
@@ -690,6 +701,7 @@ class CalculationTransactionalServiceTest {
       prisonerId = PRISONER_ID,
       calculationStatus = CONFIRMED,
       calculationReference = CALCULATION_REFERENCE,
+      calculationReason = CALCULATION_REASON,
     )
 
     val UPDATE_OFFENDER_DATES = UpdateOffenderDates(
