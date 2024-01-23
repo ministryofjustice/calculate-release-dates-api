@@ -273,6 +273,8 @@ class CalculationTransactionalService(
       calculationStatus = calculationStatus,
       approvedDates = null,
       calculationReference = calculationRequest.calculationReference,
+      calculationReason = reasonForCalculation,
+      otherReasonDescription = otherCalculationReason,
     )
   }
 

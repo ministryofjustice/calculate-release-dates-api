@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
@@ -88,6 +89,7 @@ class CalculationControllerTest {
       bookingId = bookingId,
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
+      calculationReason = CALCULATION_REASON,
     )
 
     val calculationRequestModel = CalculationRequestModel(CalculationUserInputs(), -1L, "")
@@ -120,6 +122,7 @@ class CalculationControllerTest {
       bookingId = bookingId,
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
+      calculationReason = CALCULATION_REASON,
     )
     val calculationRequestModel = CalculationRequestModel(CalculationUserInputs(), calculationReasonId = -1L)
 
@@ -152,6 +155,7 @@ class CalculationControllerTest {
       bookingId = bookingId,
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
+      calculationReason = CALCULATION_REASON,
     )
     whenever(calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, submitCalculationRequest)).thenReturn(calculatedReleaseDates)
 
@@ -204,6 +208,7 @@ class CalculationControllerTest {
       bookingId = 123L,
       prisonerId = "ASD",
       calculationReference = UUID.randomUUID(),
+      calculationReason = CALCULATION_REASON,
     )
 
     whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(calculatedReleaseDates)
@@ -228,6 +233,7 @@ class CalculationControllerTest {
       prisonerId = "ASD",
       approvedDates = mapOf(ReleaseDateType.APD to LocalDate.of(2020, 3, 3)),
       calculationReference = UUID.randomUUID(),
+      calculationReason = CALCULATION_REASON,
     )
     whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(calculatedReleaseDates)
 
@@ -253,4 +259,6 @@ class CalculationControllerTest {
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(breakdown))
   }
+
+  private val CALCULATION_REASON = CalculationReason(-1, false, false, "Reason", false)
 }
