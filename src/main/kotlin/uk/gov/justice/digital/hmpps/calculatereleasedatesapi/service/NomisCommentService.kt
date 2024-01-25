@@ -18,7 +18,7 @@ class NomisCommentService {
       SPECIALIST_SUPPORT_COMMENT
     } else if (approvedDates?.isNotEmpty() == true) {
       MANUAL_ENTERED_DATES_COMMENT
-    } else if (!calculationRequest.reasonForCalculation?.isOther!!) {
+    } else if (calculationRequest.reasonForCalculation?.isOther == false) {
       DEFAULT_COMMENT
     } else {
       OTHER_COMMENT
@@ -39,12 +39,14 @@ class NomisCommentService {
     dates: Map<ReleaseDateType, LocalDate?>,
     isGenuineOverride: Boolean,
   ): String {
-    var comment = if (dates.containsKey(ReleaseDateType.None)) INDETERMINATE_COMMENT else MANUAL_ENTRY_COMMENT
-    comment = if (isGenuineOverride) MANUALLY_ENTERED_OVERRIDE else comment
-    return comment.format(
-      calculationRequest.reasonForCalculation?.displayName,
-      calculationRequest.calculationReference,
-    )
+    val comment = if (isGenuineOverride) {
+      MANUALLY_ENTERED_OVERRIDE
+    } else if (dates.containsKey(ReleaseDateType.None)) {
+      INDETERMINATE_COMMENT
+    } else {
+      MANUAL_ENTRY_COMMENT
+    }
+    return comment.format(calculationRequest.reasonForCalculation?.displayName, calculationRequest.calculationReference)
   }
 
   private companion object {
