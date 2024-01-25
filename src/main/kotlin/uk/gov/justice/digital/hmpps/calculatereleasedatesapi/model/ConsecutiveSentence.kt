@@ -188,6 +188,10 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
   }
 
   fun isMadeUpOfSdsAndSdsPlusSentences(): Boolean {
-    return (orderedSentences.any { it.offence.isPcscSdsPlus } || orderedSentences.any { it.offence.isPcscSds }) && orderedSentences.any { !it.offence.isPcscSdsPlus }
+    return orderedSentences.any { it.isSdsPlus() } && orderedSentences.any { !it.isSdsPlus() }
+  }
+
+  override fun isSdsPlus(): Boolean {
+    return orderedSentences.all { it.isSdsPlus() }
   }
 }

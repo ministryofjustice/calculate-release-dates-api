@@ -3,14 +3,7 @@
     "SLED": "2015-02-01",
     "CRD": "2014-05-03",
     "HDCED": "2013-12-18",
-    "ESED": "2015-02-01"
-  },
-  "effectiveSentenceLength": "P1Y6M"
-}{
-  "dates": {
-    "SLED": "2015-02-01",
-    "CRD": "2014-05-03",
-    "HDCED": "2013-12-18",
+    "HDCED4PLUS": "2013-12-18",
     "ESED": "2015-02-01"
   },
   "effectiveSentenceLength": "P1Y6M"
