@@ -218,6 +218,7 @@ class CalculationTransactionalServiceTest {
           PRELIMINARY,
           calculationReference = UUID.randomUUID(),
           calculationReason = CALCULATION_REASON,
+          calculationDate = LocalDate.of(2024, 1, 1),
         ),
       )
     } catch (e: Exception) {
@@ -702,6 +703,7 @@ class CalculationTransactionalServiceTest {
       calculationStatus = CONFIRMED,
       calculationReference = CALCULATION_REFERENCE,
       calculationReason = CALCULATION_REASON,
+      calculationDate = LocalDate.now(),
     )
 
     val UPDATE_OFFENDER_DATES = UpdateOffenderDates(
