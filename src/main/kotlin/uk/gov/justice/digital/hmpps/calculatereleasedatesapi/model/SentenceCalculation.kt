@@ -352,7 +352,8 @@ data class SentenceCalculation(
       "PED"
     }
 
-    return "Date of $expiryDateType\t:\t${unadjustedExpiryDate.format(formatter)}\n" +
+    return "Sentence type: ${sentence.javaClass.name}\n" +
+      "Date of $expiryDateType\t:\t${unadjustedExpiryDate.format(formatter)}\n" +
       "Number of days to $releaseDateType\t:\t${numberOfDaysToDeterminateReleaseDate}\n" +
       "Date of $releaseDateType\t:\t${unadjustedDeterminateReleaseDate.format(formatter)}\n" +
       "Total number of days of deducted (remand / tagged bail)\t:" +

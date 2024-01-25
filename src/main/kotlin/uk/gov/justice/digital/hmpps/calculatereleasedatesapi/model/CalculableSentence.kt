@@ -203,4 +203,9 @@ interface CalculableSentence {
       (this is ConsecutiveSentence && this.orderedSentences.all { it is DetentionAndTrainingOrderSentence }) ||
       this is DtoSingleTermSentence
   }
+
+  @JsonIgnore
+  fun isSdsPlus(): Boolean {
+    return this.identificationTrack == SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE
+  }
 }

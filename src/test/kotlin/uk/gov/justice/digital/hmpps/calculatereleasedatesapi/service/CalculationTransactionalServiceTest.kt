@@ -193,6 +193,7 @@ class CalculationTransactionalServiceTest {
       TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
     )
     val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
+
     assertEquals(bookingData.dates, calculatedReleaseDates.dates)
     assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
   }
