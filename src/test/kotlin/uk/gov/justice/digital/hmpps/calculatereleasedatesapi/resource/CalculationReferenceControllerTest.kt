@@ -80,9 +80,6 @@ class CalculationReferenceControllerTest {
       .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
       .andReturn()
 
-    System.out.println(result.response.contentAsString)
-    System.out.println(calculatedReleaseDates)
-
     Assertions.assertThat(mapper.readValue(result.response.contentAsString, CalculatedReleaseDates::class.java)).isEqualTo(calculatedReleaseDates)
     verify(calculationTransactionalService, times(1)).findCalculationResultsByCalculationReference(eq(calculationReference.toString()), eq(false))
   }
