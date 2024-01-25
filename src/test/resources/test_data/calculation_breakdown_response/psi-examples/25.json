@@ -93,7 +93,7 @@
     },
     "HDCED4PLUS": {
       "rules": [
-        "CONSECUTIVE_SENTENCE_HDCED_MINIMUM_CUSTODIAL_PERIOD_LAST_SENTENCE_SDS"
+        "CONSECUTIVE_SENTENCE_HDCED_CALCULATION"
       ],
       "rulesWithExtraAdjustments": {
         "HDCED_MINIMUM_CUSTODIAL_PERIOD": {
@@ -102,7 +102,7 @@
         }
       },
       "adjustedDays": 0,
-      "releaseDate": "2015-10-07",
+      "releaseDate": "2015-05-09",
       "unadjustedDate": "2015-02-22"
     }
   },

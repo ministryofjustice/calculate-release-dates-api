@@ -159,7 +159,7 @@
     },
     "HDCED4PLUS": {
       "rules": [
-        "CONSECUTIVE_SENTENCE_HDCED_MINIMUM_CUSTODIAL_PERIOD_LAST_SENTENCE_SDS"
+        "CONSECUTIVE_SENTENCE_HDCED_CALCULATION"
       ],
       "rulesWithExtraAdjustments": {
         "HDCED_MINIMUM_CUSTODIAL_PERIOD": {

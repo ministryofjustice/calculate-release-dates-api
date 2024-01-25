@@ -222,7 +222,7 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
       if (hdcedCalculator.doesHdcedDateApply(sentence, offender, sentence.isMadeUpOfOnlyDtos())) {
         releaseDateTypes += HDCED
       }
-      if (hdced4Calculator.doesHdced4DateApply(sentence, offender, sentence.isMadeUpOfOnlyDtos())) {
+      if (hdced4Calculator.doesHdced4DateApply(sentence, offender)) {
         releaseDateTypes += HDCED4PLUS
       }
     }
@@ -307,7 +307,7 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
     if (hdcedCalculator.doesHdcedDateApply(sentence, offender, false)) {
       releaseDateTypes += HDCED
     }
-    if (hdced4Calculator.doesHdced4DateApply(sentence, offender, false)) {
+    if (hdced4Calculator.doesHdced4DateApply(sentence, offender)) {
       releaseDateTypes += HDCED4PLUS
     }
     return releaseDateTypes
@@ -331,7 +331,7 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
         sentence.durationIsLessThan(SEVEN, ChronoUnit.YEARS)
       val overEighteen = offender.getAgeOnDate(sentence.sentencedAt) > INT_EIGHTEEN
 
-      if (sentence is StandardDeterminateSentence) {
+      if (sentence is StandardDeterminateSentence && sentence.sentencedAt.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE)) {
         if (sentence.sentencedAt.isAfterOrEqualTo(PCSC_COMMENCEMENT_DATE)) {
           if (sentence.section250) {
             if (durationGreaterThanSevenYears && sentence.offence.isPcscSec250) {
@@ -345,7 +345,7 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
             }
           }
         } else {
-          if (sentence.sentencedAt.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE) && overEighteen && durationGreaterThanSevenYears && sentence.offence.isScheduleFifteenMaximumLife) {
+          if (overEighteen && durationGreaterThanSevenYears && sentence.offence.isScheduleFifteenMaximumLife) {
             sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
           }
         }
