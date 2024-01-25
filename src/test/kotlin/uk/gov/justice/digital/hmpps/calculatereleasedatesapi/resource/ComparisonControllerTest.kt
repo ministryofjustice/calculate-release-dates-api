@@ -22,7 +22,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyImpact
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyPriority
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ComparisonService
 import java.time.LocalDateTime
@@ -110,5 +114,45 @@ class ComparisonControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo("7")
+  }
+
+  @Test
+  fun `Test comparison person discrepancy`() {
+    val comparisonReference = "ABCD1234"
+    val comparisonPersonReference = "DFADSE4343"
+    val summary = ComparisonDiscrepancySummary(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION, emptyList(), "detail", DiscrepancyPriority.HIGH_RISK, "action")
+    whenever(comparisonService.getComparisonPersonDiscrepancy(comparisonReference, comparisonPersonReference)).thenReturn(summary)
+
+    val result = mvc.perform(
+      MockMvcRequestBuilders.get("/comparison/$comparisonReference/mismatch/$comparisonPersonReference/discrepancy")
+        .accept(MediaType.APPLICATION_JSON),
+    )
+      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(result.response.contentAsString).isEqualTo("""{"impact":"POTENTIAL_UNLAWFUL_DETENTION","causes":[],"detail":"detail","priority":"HIGH_RISK","action":"action"}""")
+  }
+
+  @Test
+  fun `Test creation of comparison person discrepancy`() {
+    val comparisonReference = "ABCD1234"
+    val comparisonPersonReference = "DFADSE4343"
+    val request = CreateComparisonDiscrepancyRequest(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION, emptyList(), "detail", DiscrepancyPriority.HIGH_RISK, "action")
+    val summary = ComparisonDiscrepancySummary(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION, emptyList(), "detail", DiscrepancyPriority.HIGH_RISK, "action")
+    whenever(comparisonService.createDiscrepancy(comparisonReference, comparisonPersonReference, request)).thenReturn(summary)
+
+    val result = mvc.perform(
+      MockMvcRequestBuilders
+        .post("/comparison/$comparisonReference/mismatch/$comparisonPersonReference/discrepancy")
+        .header("Authorization", "Bearer token")
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(request)),
+    )
+      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andReturn()
+
+    assertThat(result.response.contentAsString).contains("""{"impact":"POTENTIAL_UNLAWFUL_DETENTION","causes":[],"detail":"detail","priority":"HIGH_RISK","action":"action"}""")
   }
 }

@@ -28,20 +28,20 @@ class ComparisonPersonDiscrepancy(
   @NotNull
   @ManyToOne
   @JoinColumn(name = "impactId")
-  val impact: ComparisonPersonDiscrepancyImpact,
+  val discrepancyImpact: ComparisonPersonDiscrepancyImpact,
 
   @NotNull
   @OneToMany(mappedBy = "discrepancy", fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
-  val categories: List<ComparisonPersonDiscrepancyCause> = emptyList(),
+  val causes: List<ComparisonPersonDiscrepancyCause> = emptyList(),
 
   @NotNull
   @ManyToOne(optional = false)
   @JoinColumn(name = "priorityId")
-  val priority: ComparisonPersonDiscrepancyPriority,
+  val discrepancyPriority: ComparisonPersonDiscrepancyPriority,
 
-  val detail: String? = null,
+  val detail: String?,
 
-  val action: String? = null,
+  val action: String,
 
   @NotNull
   val createdBy: String,

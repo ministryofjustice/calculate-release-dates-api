@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
@@ -19,9 +20,11 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ComparisonService
 
@@ -145,6 +148,58 @@ class ComparisonController(
     mismatchReference: String,
   ): ComparisonPersonOverview {
     return comparisonService.getComparisonPersonByShortReference(comparisonReference, mismatchReference)
+  }
+
+  @PostMapping(value = ["{comparisonReference}/mismatch/{mismatchReference}/discrepancy"])
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER')")
+  @Operation(
+    summary = "Create a comparison person discrepancy record",
+    description = "This endpoint will create a new comparison person discrepancy and return a summary of it",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "New discrepancy created and summary returned"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun createComparisonPersonDiscrepancy(
+    @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the comparison")
+    @PathVariable("comparisonReference")
+    comparisonReference: String,
+    @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the mismatch")
+    @PathVariable("mismatchReference")
+    mismatchReference: String,
+    @Valid
+    @RequestBody
+    discrepancyInput: CreateComparisonDiscrepancyRequest,
+  ): ComparisonDiscrepancySummary {
+    log.info("Request received to create a new discrepancy -- $discrepancyInput")
+    return comparisonService.createDiscrepancy(comparisonReference, mismatchReference, discrepancyInput)
+  }
+
+  @GetMapping(value = ["{comparisonReference}/mismatch/{mismatchReference}/discrepancy"])
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER')")
+  @Operation(
+    summary = "Returns the latest discrepancy record for a comparison person",
+    description = "This endpoint returns the mismatch discrepancy for a particular mismatch",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns a summary of a comparison person discrepancy"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun getComparisonPersonDiscrepancy(
+    @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the comparison")
+    @PathVariable("comparisonReference")
+    comparisonReference: String,
+    @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the mismatch")
+    @PathVariable("mismatchReference")
+    mismatchReference: String,
+  ): ComparisonDiscrepancySummary {
+    return comparisonService.getComparisonPersonDiscrepancy(comparisonReference, mismatchReference)
   }
 
   companion object {

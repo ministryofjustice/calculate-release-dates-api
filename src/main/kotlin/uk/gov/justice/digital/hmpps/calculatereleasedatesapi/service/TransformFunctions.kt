@@ -13,6 +13,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancy
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyCause
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.GenuineOverride
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
@@ -62,6 +64,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonMismatchSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
@@ -71,6 +74,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentencePart
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DateBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideResponse
@@ -772,6 +776,22 @@ fun transform(
   breakdownByReleaseDateType,
   sdsSentencesIdentified,
 )
+
+fun transform(discrepancy: ComparisonPersonDiscrepancy): ComparisonDiscrepancySummary = transform(discrepancy, discrepancy.causes)
+
+fun transform(discrepancy: ComparisonPersonDiscrepancy, discrepancyCauses: List<ComparisonPersonDiscrepancyCause>): ComparisonDiscrepancySummary = ComparisonDiscrepancySummary(
+  impact = discrepancy.discrepancyImpact.impact,
+  causes = transform(discrepancyCauses),
+  detail = discrepancy.detail,
+  priority = discrepancy.discrepancyPriority.priority,
+  action = discrepancy.action,
+)
+
+fun transform(discrepancyCauses: List<ComparisonPersonDiscrepancyCause>): List<DiscrepancyCause> {
+  return discrepancyCauses.map {
+    DiscrepancyCause(it.category, it.subCategory, it.detail)
+  }
+}
 
 fun transform(
   sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
