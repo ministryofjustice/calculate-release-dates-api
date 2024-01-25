@@ -48,31 +48,17 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
       .minus(sentenceCalculation.calculatedTotalDeductedDays)
       .minus(sentenceCalculation.calculatedUnusedReleaseAda)
 
-    // Now that we have sentences > 4 years there are rules around how Consecutive sentences containing SDS+ are calculated
-    if (sentence is ConsecutiveSentence && sentence.isSdsPlus()) {
-      val latestReleaseDates = sentence.orderedSentences.filter { it.isSdsPlus() }.maxBy { it.sentenceCalculation.releaseDate }
-      val nonSdsPlusSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }
-      sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate =
-        latestReleaseDates.sentenceCalculation.releaseDate.plusDays(nonSdsPlusSentences.sumOf { it.getLengthInDays() + nonSdsPlusSentences.size }.toLong() / 4)!!.plusDays(1)
-      sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED4PLUS] =
-        ReleaseDateCalculationBreakdown(
-          rules = setOf(CalculationRule.CONSECUTIVE_SENTENCE_HDCED_MINIMUM_CUSTODIAL_PERIOD),
-          rulesWithExtraAdjustments = mapOf(CalculationRule.CONSECUTIVE_SENTENCE_HDCED_MINIMUM_CUSTODIAL_PERIOD to AdjustmentDuration(hdcedConfiguration.minimumCustodialPeriodDays.toInt())),
-          adjustedDays = 0,
-          releaseDate = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
-          unadjustedDate = sentence.sentencedAt,
-        )
-    } else if (sentence is ConsecutiveSentence && !sentence.isSdsPlus()) {
-      if (sentence.orderedSentences.any { it.isSdsPlus() }) {
-        val sdsPlusSentences = sentence.orderedSentences.filter { it.isSdsPlus() }
-        val nonSdsPlusSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }
-        val sdsPlusLengthInDays = sdsPlusSentences.sumOf { it.getLengthInDays() }.toLong()
-        val nonSdsPlusSentenceLengthInDays = nonSdsPlusSentences.sumOf { it.getLengthInDays() }.toLong()
-        log.info("Total sds plus length in days sentences: {}", sdsPlusLengthInDays)
-        val sdsPlusNotionalSled = sentence.sentencedAt.plusDays(sdsPlusLengthInDays)
-        log.info("Sds plus notional sled: {}", sdsPlusNotionalSled)
-        val sdsPlusNotionalCrd = sentence.sentencedAt.minusDays(1).plusDays(ceil(sdsPlusLengthInDays * (2.0 / 3.0)).toLong())
-        log.info("Sds plus notional crd: {}", sdsPlusNotionalCrd)
+      if (sentence is ConsecutiveSentence && !sentence.isSdsPlus()) {
+        if (sentence.orderedSentences.any { it.isSdsPlus() }) {
+          val sdsPlusSentences = sentence.orderedSentences.filter { it.isSdsPlus() }
+          val nonSdsPlusSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }
+          val sdsPlusLengthInDays = sdsPlusSentences.sumOf { it.getLengthInDays() }.toLong()
+          val nonSdsPlusSentenceLengthInDays = nonSdsPlusSentences.sumOf { it.getLengthInDays() }.toLong()
+          log.info("Total sds plus length in days sentences: {}", sdsPlusLengthInDays)
+          val sdsPlusNotionalSled = sentence.sentencedAt.plusDays(sdsPlusLengthInDays)
+          log.info("Sds plus notional sled: {}", sdsPlusNotionalSled)
+          val sdsPlusNotionalCrd = sentence.sentencedAt.minusDays(1).plusDays(ceil(sdsPlusLengthInDays * (2.0 / 3.0)).toLong())
+          log.info("Sds plus notional crd: {}", sdsPlusNotionalCrd)
         val lengthInDaysOfNonSdsPlusSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }.sumOf { it.totalDuration().getLengthInDays(sdsPlusNotionalCrd) }.toLong()
         log.info("Length in days of non sds plus sentences: {}", lengthInDaysOfNonSdsPlusSentences)
 
