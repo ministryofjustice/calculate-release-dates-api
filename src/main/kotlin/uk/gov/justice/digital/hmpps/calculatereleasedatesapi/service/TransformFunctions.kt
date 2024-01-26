@@ -759,11 +759,13 @@ fun transform(
   overrideDates: Map<ReleaseDateType, LocalDate?>,
   breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   sdsSentencesIdentified: List<SentenceAndOffences>,
+  hasDiscrepancyRecorded: Boolean,
 ): ComparisonPersonOverview = ComparisonPersonOverview(
   comparisonPerson.person,
   comparisonPerson.lastName,
   comparisonPerson.isValid,
   comparisonPerson.isMatch,
+  hasDiscrepancyRecorded,
   comparisonPerson.mismatchType,
   comparisonPerson.isActiveSexOffender,
   comparisonPerson.validationMessages,

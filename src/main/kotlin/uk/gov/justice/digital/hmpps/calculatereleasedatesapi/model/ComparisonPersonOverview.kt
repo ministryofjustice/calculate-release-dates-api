@@ -11,6 +11,7 @@ data class ComparisonPersonOverview(
   val lastName: String?,
   val isValid: Boolean,
   val isMatch: Boolean,
+  val hasDiscrepancyRecord: Boolean,
   val mismatchType: MismatchType,
   val isActiveSexOffender: Boolean?,
   val validationMessages: JsonNode,
