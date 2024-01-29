@@ -67,9 +67,9 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
         if (nonSdsPlusSentenceLengthInDays < hdcedConfiguration.envelopeMidPoint) {
           val hdcedDurationDays = max(TWENTY_EIGHT, ceil(lengthInDaysOfNonSdsPlusSentences.toDouble().div(FOUR)).toLong())
           log.info("HDCED Duration days: {}", hdcedDurationDays)
-          sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sdsPlusNotionalCrd.plusDays(hdcedDurationDays).minusDays(sentence.sentenceCalculation.calculatedTotalDeductedDays.toLong()).plusDays(sentence.sentenceCalculation.calculatedTotalAddedDays.toLong())
+          sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sdsPlusNotionalCrd.plusDays(1).plusDays(hdcedDurationDays).minusDays(sentence.sentenceCalculation.calculatedTotalDeductedDays.toLong()).plusDays(sentence.sentenceCalculation.calculatedTotalAddedDays.toLong())
         } else {
-          sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sdsPlusNotionalCrd.minusDays(hdcedConfiguration.deductionDays)
+          sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sentenceCalculation.releaseDate.minusDays(hdcedConfiguration.deductionDays)
         }
       } else {
         val nonSdsPluSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }
