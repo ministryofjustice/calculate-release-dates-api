@@ -10,10 +10,6 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancy
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyCause
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyImpact
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyPriority
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.nonManualComparisonTypes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
@@ -27,7 +23,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyCategoryRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
@@ -41,7 +36,6 @@ class ComparisonService(
   private var serviceUserService: ServiceUserService,
   private val comparisonPersonRepository: ComparisonPersonRepository,
   private val comparisonPersonDiscrepancyRepository: ComparisonPersonDiscrepancyRepository,
-  private val comparisonPersonDiscrepancyCategoryRepository: ComparisonPersonDiscrepancyCategoryRepository,
   private var bulkComparisonService: BulkComparisonService,
   private val calculationTransactionalService: CalculationTransactionalService,
   private val objectMapper: ObjectMapper,
@@ -77,7 +71,6 @@ class ComparisonService(
 
   fun getComparisonByComparisonReference(comparisonReference: String): ComparisonOverview {
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
-
     if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
       val mismatches = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)
 
@@ -130,53 +123,23 @@ class ComparisonService(
     log.info("creating discrepancy $discrepancyRequest for comparison $comparisonReference and comparison person $comparisonPersonReference")
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
       ?: throw EntityNotFoundException("Could not find comparison with reference: $comparisonReference ")
-    val comparisonPerson =
-      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference)
-        ?: throw EntityNotFoundException("Could not find comparison person with reference: $comparisonReference")
-
-    val existingDiscrepancy =
-      comparisonPersonDiscrepancyRepository.findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
-        comparisonPersonReference,
-      )
-
-    val impact = ComparisonPersonDiscrepancyImpact(discrepancyRequest.impact)
-    val priority = ComparisonPersonDiscrepancyPriority(discrepancyRequest.priority)
-    var discrepancy = ComparisonPersonDiscrepancy(
-      comparisonPerson = comparisonPerson,
-      discrepancyImpact = impact,
-      discrepancyPriority = priority,
-      action = discrepancyRequest.action,
-      detail = discrepancyRequest.detail,
-      createdBy = serviceUserService.getUsername(),
-    )
-    discrepancy = comparisonPersonDiscrepancyRepository.save(discrepancy)
-    if (existingDiscrepancy != null) {
-      existingDiscrepancy.supersededById = discrepancy.id
-      comparisonPersonDiscrepancyRepository.save(existingDiscrepancy)
+    if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
+      return bulkComparisonService.createDiscrepancy(comparisonReference, comparisonPersonReference, discrepancyRequest)
     }
-
-    val discrepancyCauses = discrepancyRequest.causes.map {
-      ComparisonPersonDiscrepancyCause(
-        category = it.category,
-        subCategory = it.subCategory,
-        detail = it.other,
-        discrepancy = discrepancy,
-      )
-    }
-    comparisonPersonDiscrepancyCategoryRepository.saveAll(discrepancyCauses)
-    return transform(discrepancy, discrepancyCauses)
+    throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
   }
 
   fun getComparisonPersonDiscrepancy(
     comparisonReference: String,
     comparisonPersonReference: String,
   ): ComparisonDiscrepancySummary {
-    val discrepancy =
-      comparisonPersonDiscrepancyRepository.findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
-        comparisonPersonReference,
-      ) ?: throw EntityNotFoundException("No comparison person discrepancy was found")
+    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
+      ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
+    if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
+      return bulkComparisonService.getComparisonPersonDiscrepancy(comparisonReference, comparisonPersonReference)
+    }
 
-    return transform(discrepancy)
+    throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
   }
 
   private fun releaseDateComparator(

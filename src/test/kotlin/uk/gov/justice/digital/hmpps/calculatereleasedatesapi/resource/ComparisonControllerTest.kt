@@ -117,7 +117,7 @@ class ComparisonControllerTest {
   }
 
   @Test
-  fun `Test comparison person discrepancy`() {
+  fun `Test get comparison person discrepancy`() {
     val comparisonReference = "ABCD1234"
     val comparisonPersonReference = "DFADSE4343"
     val summary = ComparisonDiscrepancySummary(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION, emptyList(), "detail", DiscrepancyPriority.HIGH_RISK, "action")

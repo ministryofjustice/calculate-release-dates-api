@@ -8,11 +8,9 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatchers.anyList
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
@@ -32,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Discre
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
@@ -65,7 +64,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
     serviceUserService,
     comparisonPersonRepository,
     comparisonPersonDiscrepancyRepository,
-    comparisonPersonDiscrepancyCategoryRepository,
     bulkComparisonService,
     calculationTransactionalService,
     objectMapper,
@@ -326,13 +324,19 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
     val discrepancyImpact = ComparisonPersonDiscrepancyImpact(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION)
     val discrepancyPriority = ComparisonPersonDiscrepancyPriority(DiscrepancyPriority.MEDIUM_RISK)
+    val discrepancySummary = ComparisonDiscrepancySummary(
+      impact = DiscrepancyImpact.OTHER,
+      causes = emptyList(),
+      detail = "detail",
+      priority = DiscrepancyPriority.HIGH_RISK,
+      action = "action",
+    )
     val discrepancy = ComparisonPersonDiscrepancy(1, comparisonPerson, discrepancyImpact, emptyList(), discrepancyPriority = discrepancyPriority, detail = "detail", action = "action", createdBy = USERNAME)
     whenever(
       comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
-    whenever(comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPerson.shortReference)).thenReturn(comparisonPerson)
-    whenever(comparisonPersonDiscrepancyRepository.save(any())).thenReturn(discrepancy)
-
+    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
+    whenever(bulkComparisonService.createDiscrepancy(any(), any(), any())).thenReturn(discrepancySummary)
     val discrepancyCause = DiscrepancyCause(DiscrepancyCategory.TUSED, DiscrepancySubCategory.REMAND_OR_UAL_RELATED)
     val discrepancyRequest = CreateComparisonDiscrepancyRequest(
       impact = discrepancyImpact.impact,
@@ -341,60 +345,10 @@ class ComparisonServiceTest : IntegrationTestBase() {
       priority = discrepancyPriority.priority,
       action = discrepancy.action,
     )
-    val discrepancySummary = comparisonService.createDiscrepancy(comparison.comparisonShortReference, comparisonPerson.shortReference, discrepancyRequest)
+    val returnedSummary = comparisonService.createDiscrepancy(comparison.comparisonShortReference, comparisonPerson.shortReference, discrepancyRequest)
 
-    verify(comparisonPersonDiscrepancyRepository).save(any())
-    verify(comparisonPersonDiscrepancyCategoryRepository).saveAll(anyList())
-    assertEquals(discrepancyRequest.impact, discrepancySummary.impact)
-    assertEquals(discrepancyRequest.priority, discrepancySummary.priority)
-    assertEquals(discrepancyRequest.action, discrepancySummary.action)
-    assertEquals(discrepancyRequest.detail, discrepancySummary.detail)
-    val causes = discrepancySummary.causes
-    assertEquals(1, causes.size)
-    assertEquals(discrepancyCause.category, causes[0].category)
-    assertEquals(discrepancyCause.subCategory, causes[0].subCategory)
-  }
-
-  @Test
-  fun `Sets superseded id on an existing discrepancy when creating a new discrepancy`() {
-    val comparison = aComparison()
-    val comparisonPerson = aComparisonPerson(
-      54,
-      comparison.id,
-      8923,
-      USERNAME,
-    )
-
-    val discrepancyImpact = ComparisonPersonDiscrepancyImpact(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION)
-    val discrepancyPriority = ComparisonPersonDiscrepancyPriority(DiscrepancyPriority.MEDIUM_RISK)
-    val discrepancy = ComparisonPersonDiscrepancy(2, comparisonPerson, discrepancyImpact, emptyList(), discrepancyPriority = discrepancyPriority, detail = "detail", action = "new action", createdBy = USERNAME)
-    val existingDiscrepancy = ComparisonPersonDiscrepancy(1, comparisonPerson, discrepancyImpact, emptyList(), discrepancyPriority = discrepancyPriority, detail = "detail", action = "exaction", createdBy = USERNAME)
-    whenever(
-      comparisonRepository.findByComparisonShortReference("ABCD1234"),
-    ).thenReturn(comparison)
-    whenever(comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPerson.shortReference)).thenReturn(comparisonPerson)
-    whenever(comparisonPersonDiscrepancyRepository.save(any())).thenReturn(discrepancy)
-    whenever(comparisonPersonDiscrepancyRepository.findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(comparisonPerson.shortReference)).thenReturn(existingDiscrepancy)
-
-    val discrepancyCause = DiscrepancyCause(DiscrepancyCategory.TUSED, DiscrepancySubCategory.REMAND_OR_UAL_RELATED)
-    val discrepancyRequest = CreateComparisonDiscrepancyRequest(
-      impact = discrepancyImpact.impact,
-      listOf(discrepancyCause),
-      detail = discrepancy.detail,
-      priority = discrepancyPriority.priority,
-      action = discrepancy.action,
-    )
-    val discrepancySummary = comparisonService.createDiscrepancy(comparison.comparisonShortReference, comparisonPerson.shortReference, discrepancyRequest)
-    verify(comparisonPersonDiscrepancyRepository, times(2)).save(any())
-    verify(comparisonPersonDiscrepancyCategoryRepository).saveAll(anyList())
-    assertEquals(discrepancyRequest.impact, discrepancySummary.impact)
-    assertEquals(discrepancyRequest.priority, discrepancySummary.priority)
-    assertEquals(discrepancyRequest.action, discrepancySummary.action)
-    assertEquals(discrepancyRequest.detail, discrepancySummary.detail)
-    val causes = discrepancySummary.causes
-    assertEquals(1, causes.size)
-    assertEquals(discrepancyCause.category, causes[0].category)
-    assertEquals(discrepancyCause.subCategory, causes[0].subCategory)
+    verify(bulkComparisonService).createDiscrepancy(any(), any(), any())
+    assertEquals(discrepancySummary, returnedSummary)
   }
 
   private fun aComparison() = Comparison(
