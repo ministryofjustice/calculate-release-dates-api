@@ -222,7 +222,7 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
       if (hdcedCalculator.doesHdcedDateApply(sentence, offender, sentence.isMadeUpOfOnlyDtos())) {
         releaseDateTypes += HDCED
       }
-      if (hdced4Calculator.doesHdced4DateApply(sentence, offender, sentence.isMadeUpOfOnlyDtos())) {
+      if (hdced4Calculator.doesHdced4DateApply(sentence, offender)) {
         releaseDateTypes += HDCED4PLUS
       }
     }
@@ -307,7 +307,7 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
     if (hdcedCalculator.doesHdcedDateApply(sentence, offender, false)) {
       releaseDateTypes += HDCED
     }
-    if (hdced4Calculator.doesHdced4DateApply(sentence, offender, false)) {
+    if (hdced4Calculator.doesHdced4DateApply(sentence, offender)) {
       releaseDateTypes += HDCED4PLUS
     }
     return releaseDateTypes

@@ -34,7 +34,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
@@ -58,7 +57,7 @@ class CalculationTransactionalService(
   private val eventService: EventService,
   private val serviceUserService: ServiceUserService,
   private val approvedDatesSubmissionRepository: ApprovedDatesSubmissionRepository,
-  private val approvedDatesRepository: ApprovedDatesRepository,
+  private val nomisCommentService: NomisCommentService,
 ) {
 
   /*
@@ -275,6 +274,7 @@ class CalculationTransactionalService(
       calculationReference = calculationRequest.calculationReference,
       calculationReason = reasonForCalculation,
       otherReasonDescription = otherCalculationReason,
+      calculationDate = calculationRequest.calculatedAt.toLocalDate(),
     )
   }
 
@@ -377,19 +377,14 @@ class CalculationTransactionalService(
   ) {
     val calculationRequest = calculationRequestRepository.findById(calculation.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
-    val commentToSave = if (isSpecialistSupport!!) {
-      "The information shown was calculated using the Calculate release dates service and submitted by Specialist Support. The calculation ID is: ${calculationRequest.calculationReference}"
-    } else if (approvedDates?.isNotEmpty() == true) {
-      "The information shown was calculated using the Calculate Release Dates service with manually entered dates. The calculation ID is: ${calculationRequest.calculationReference}"
-    } else {
-      "The information shown was calculated using the Calculate Release Dates service. The calculation ID is: ${calculationRequest.calculationReference}"
-    }
+
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = serviceUserService.getUsername(),
       keyDates = transform(calculation, approvedDates),
       noDates = false,
-      comment = commentToSave,
+      reason = calculationRequest.reasonForCalculation?.nomisReason,
+      comment = nomisCommentService.getNomisComment(calculationRequest, isSpecialistSupport!!, approvedDates),
     )
     try {
       prisonService.postReleaseDates(booking.bookingId, updateOffenderDates)

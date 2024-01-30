@@ -476,6 +476,7 @@ fun transform(calculationRequest: CalculationRequest): CalculatedReleaseDates {
     calculationReference = calculationRequest.calculationReference,
     calculationReason = calculationRequest.reasonForCalculation,
     otherReasonDescription = calculationRequest.otherReasonForCalculation,
+    calculationDate = calculationRequest.calculatedAt.toLocalDate(),
   )
 }
 

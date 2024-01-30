@@ -1,0 +1,53 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2010-06-28"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 12
+        }
+      },
+      "sentencedAt": "2017-03-17"
+    },
+    {
+      "offence": {
+        "committedAt": "2010-06-28"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 12
+        }
+      },
+      "sentencedAt": "2017-03-17",
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+    },
+    {
+      "offence": {
+        "committedAt": "2010-06-28"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 2
+        }
+      },
+      "sentencedAt": "2017-03-17",
+      "consecutiveSentenceUUIDs": ["5dfde034-b7d7-4c54-a86c-67d42a1fd669"]
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2017-03-17",
+        "numberOfDays": 78,
+        "fromDate": "2016-12-29",
+        "toDate": "2017-03-16"
+      }
+    ]
+  }
+}

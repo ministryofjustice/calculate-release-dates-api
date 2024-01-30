@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
+import java.time.LocalDate
 import java.util.UUID
 
 @ExtendWith(SpringExtension::class)
@@ -68,7 +69,8 @@ class CalculationReferenceControllerTest {
       bookingId = 123L,
       prisonerId = "ASD",
       calculationReference = UUID.randomUUID(),
-      calculationReason = CalculationReason(-1, true, false, "Reason", false),
+      calculationReason = CalculationReason(-1, false, false, "Reason", false, null),
+      calculationDate = LocalDate.of(2024, 1, 1),
     )
 
     whenever(calculationTransactionalService.findCalculationResultsByCalculationReference(calculationReference.toString())).thenReturn(calculatedReleaseDates)
@@ -78,7 +80,7 @@ class CalculationReferenceControllerTest {
       .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
       .andReturn()
 
-    Assertions.assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
+    Assertions.assertThat(mapper.readValue(result.response.contentAsString, CalculatedReleaseDates::class.java)).isEqualTo(calculatedReleaseDates)
     verify(calculationTransactionalService, times(1)).findCalculationResultsByCalculationReference(eq(calculationReference.toString()), eq(false))
   }
 }

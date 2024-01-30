@@ -71,7 +71,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
@@ -102,7 +101,8 @@ class CalculationTransactionalServiceTest {
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
   private val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
   private val sentencesExtractionService = SentencesExtractionService()
-  private val sentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
+  private val sentenceIdentificationService =
+    SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
   private val bookingCalculationService = BookingCalculationService(
     sentenceCalculationService,
     sentenceIdentificationService,
@@ -131,7 +131,7 @@ class CalculationTransactionalServiceTest {
   private val validationService = mock<ValidationService>()
   private val serviceUserService = mock<ServiceUserService>()
   private val approvedDatesSubmissionRepository = mock<ApprovedDatesSubmissionRepository>()
-  private val approvedDatesRepository = mock<ApprovedDatesRepository>()
+  private val nomisCommentService = mock<NomisCommentService>()
 
   private val calculationTransactionalService =
     CalculationTransactionalService(
@@ -147,7 +147,7 @@ class CalculationTransactionalServiceTest {
       eventService,
       serviceUserService,
       approvedDatesSubmissionRepository,
-      approvedDatesRepository,
+      nomisCommentService,
     )
 
   private val fakeSourceData = PrisonApiSourceData(
@@ -176,10 +176,10 @@ class CalculationTransactionalServiceTest {
 
     val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculatedReleaseDates: CalculatedReleaseDates
-    val calculationReason = CalculationReason(-1, true, false, "", false)
+
     try {
       calculatedReleaseDates =
-        calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, calculationReason, null)
+        calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, null)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -193,6 +193,7 @@ class CalculationTransactionalServiceTest {
       TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
     )
     val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
+
     assertEquals(bookingData.dates, calculatedReleaseDates.dates)
     assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
   }
@@ -218,6 +219,7 @@ class CalculationTransactionalServiceTest {
           PRELIMINARY,
           calculationReference = UUID.randomUUID(),
           calculationReason = CALCULATION_REASON,
+          calculationDate = LocalDate.of(2024, 1, 1),
         ),
       )
     } catch (e: Exception) {
@@ -342,6 +344,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA),
       ),
     )
+    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
     calculationTransactionalService.writeToNomisAndPublishEvent(
       PRISONER_ID,
@@ -368,7 +371,8 @@ class CalculationTransactionalServiceTest {
           effectiveSentenceEndDate = ESED_DATE,
           sentenceLength = "06/02/03",
         ),
-        comment = "The information shown was calculated using the Calculate Release Dates service. The calculation ID is: $CALCULATION_REFERENCE",
+        comment = "The NOMIS Reason",
+        reason = "UPDATE",
       ),
     )
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
@@ -451,6 +455,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES,
       ),
     )
+    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
     val submission = ApprovedDatesSubmission(
       calculationRequest = CALCULATION_REQUEST,
       prisonerId = PRISONER_ID,
@@ -469,6 +474,13 @@ class CalculationTransactionalServiceTest {
         ),
       ),
     )
+
+    updatedOffenderDatesArgumentCaptor.apply {
+      verify(prisonService).postReleaseDates(eq(BOOKING.bookingId), capture(this))
+    }
+
+    assertEquals("The NOMIS Reason", updatedOffenderDatesArgumentCaptor.value.comment)
+
     verify(approvedDatesSubmissionRepository).save(eq(submission))
   }
 
@@ -525,6 +537,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA),
       ),
     )
+    whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
     calculationTransactionalService.writeToNomisAndPublishEvent(
       PRISONER_ID,
@@ -552,7 +565,8 @@ class CalculationTransactionalServiceTest {
           effectiveSentenceEndDate = ESED_DATE,
           sentenceLength = "06/02/03",
         ),
-        comment = "The information shown was calculated using the Calculate release dates service and submitted by Specialist Support. The calculation ID is: $CALCULATION_REFERENCE",
+        comment = "The NOMIS Reason",
+        reason = "UPDATE",
       ),
     )
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
@@ -675,7 +689,7 @@ class CalculationTransactionalServiceTest {
           "\"bookingId\":12345}",
       )
 
-    private val CALCULATION_REASON = CalculationReason(-1, true, false, "Reason", false)
+    val CALCULATION_REASON = CalculationReason(-1, true, false, "Reason", false, nomisReason = "UPDATE")
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
       id = CALCULATION_REQUEST_ID,
@@ -702,6 +716,7 @@ class CalculationTransactionalServiceTest {
       calculationStatus = CONFIRMED,
       calculationReference = CALCULATION_REFERENCE,
       calculationReason = CALCULATION_REASON,
+      calculationDate = LocalDate.now(),
     )
 
     val UPDATE_OFFENDER_DATES = UpdateOffenderDates(
