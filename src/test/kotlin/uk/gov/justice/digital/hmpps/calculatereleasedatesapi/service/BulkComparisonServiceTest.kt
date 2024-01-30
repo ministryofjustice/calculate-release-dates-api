@@ -73,7 +73,7 @@ class BulkComparisonServiceTest {
     prisonerId = "ABC123DEF",
     calculationStatus = CalculationStatus.CONFIRMED,
     calculationReference = UUID.randomUUID(),
-    calculationReason = CalculationReason(1, true, false, "Bulk Calculation", true),
+    calculationReason = CalculationReason(1, true, false, "Bulk Calculation", true, "UPDATE"),
     calculationDate = LocalDate.of(2024, 1, 1),
   )
 
