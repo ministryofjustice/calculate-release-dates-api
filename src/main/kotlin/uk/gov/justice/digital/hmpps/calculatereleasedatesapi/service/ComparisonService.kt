@@ -49,14 +49,20 @@ class ComparisonService(
     )
     log.info("500ms wait for $initialComparisonCreated")
     Thread.sleep(500)
-    bulkComparisonService.processPrisonComparison(initialComparisonCreated, token)
+    if (comparisonInput.prison != "all") {
+      bulkComparisonService.processPrisonComparison(initialComparisonCreated, token)
+    } else {
+      bulkComparisonService.processFullCaseLoadComparison(initialComparisonCreated, token)
+    }
     return initialComparisonCreated
   }
 
   fun listComparisons(): List<ComparisonSummary> {
+    val prisons = prisonService.getCurrentUserPrisonsList().toMutableList()
+    prisons.add("all")
     return comparisonRepository.findAllByComparisonTypeIsInAndPrisonIsIn(
       nonManualComparisonTypes(),
-      prisonService.getCurrentUserPrisonsList(),
+      prisons,
     ).map { transform(it) }
   }
 
@@ -71,7 +77,7 @@ class ComparisonService(
 
   fun getComparisonByComparisonReference(comparisonReference: String): ComparisonOverview {
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
-    if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
+    if (comparison.prison != null && (prisonService.getCurrentUserPrisonsList().contains(comparison.prison) || comparison.prison == "all")) {
       val mismatches = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)
 
       val releaseMismatchCalculationRequests = mismatches
