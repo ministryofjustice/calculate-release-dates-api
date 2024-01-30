@@ -275,6 +275,7 @@ class CalculationTransactionalService(
       calculationReference = calculationRequest.calculationReference,
       calculationReason = reasonForCalculation,
       otherReasonDescription = otherCalculationReason,
+      calculationDate = calculationRequest.calculatedAt.toLocalDate(),
     )
   }
 

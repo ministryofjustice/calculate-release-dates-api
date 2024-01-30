@@ -65,14 +65,23 @@ class CalculationControllerTest {
   @Autowired
   private lateinit var mapper: ObjectMapper
 
-  private val submitCalculationRequest = SubmitCalculationRequest(calculationFragments = CalculationFragments(breakdownHtml = "<p>breakdown</p>"), approvedDates = null)
+  private val submitCalculationRequest = SubmitCalculationRequest(
+    calculationFragments = CalculationFragments(breakdownHtml = "<p>breakdown</p>"),
+    approvedDates = null,
+  )
 
   @BeforeEach
   fun reset() {
     reset(calculationTransactionalService)
 
     mvc = MockMvcBuilders
-      .standaloneSetup(CalculationController(calculationTransactionalService, calculationUserQuestionService, relevantRemandService))
+      .standaloneSetup(
+        CalculationController(
+          calculationTransactionalService,
+          calculationUserQuestionService,
+          relevantRemandService,
+        ),
+      )
       .setControllerAdvice(ControllerAdvice())
       .build()
   }
@@ -90,11 +99,14 @@ class CalculationControllerTest {
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
       calculationReason = CALCULATION_REASON,
+      calculationDate = LocalDate.of(2024, 1, 1),
     )
 
     val calculationRequestModel = CalculationRequestModel(CalculationUserInputs(), -1L, "")
 
-    whenever(calculationTransactionalService.calculate(prisonerId, calculationRequestModel)).thenReturn(calculatedReleaseDates)
+    whenever(calculationTransactionalService.calculate(prisonerId, calculationRequestModel)).thenReturn(
+      calculatedReleaseDates,
+    )
 
     val result = mvc.perform(
       post("/calculation/$prisonerId")
@@ -106,7 +118,9 @@ class CalculationControllerTest {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
 
-    assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
+    assertThat(mapper.readValue(result.response.contentAsString, CalculatedReleaseDates::class.java)).isEqualTo(
+      calculatedReleaseDates,
+    )
     verify(calculationTransactionalService, times(1)).calculate(prisonerId, calculationRequestModel)
   }
 
@@ -123,10 +137,13 @@ class CalculationControllerTest {
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
       calculationReason = CALCULATION_REASON,
+      calculationDate = LocalDate.of(2024, 1, 1),
     )
     val calculationRequestModel = CalculationRequestModel(CalculationUserInputs(), calculationReasonId = -1L)
 
-    whenever(calculationTransactionalService.calculate(prisonerId, calculationRequestModel)).thenReturn(calculatedReleaseDates)
+    whenever(calculationTransactionalService.calculate(prisonerId, calculationRequestModel)).thenReturn(
+      calculatedReleaseDates,
+    )
 
     val result = mvc.perform(
       post("/calculation/$prisonerId")
@@ -138,7 +155,9 @@ class CalculationControllerTest {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
 
-    assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
+    assertThat(mapper.readValue(result.response.contentAsString, CalculatedReleaseDates::class.java)).isEqualTo(
+      calculatedReleaseDates,
+    )
     verify(calculationTransactionalService, times(1)).calculate(prisonerId, calculationRequestModel)
   }
 
@@ -156,8 +175,14 @@ class CalculationControllerTest {
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
       calculationReason = CALCULATION_REASON,
+      calculationDate = LocalDate.of(2024, 1, 1),
     )
-    whenever(calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, submitCalculationRequest)).thenReturn(calculatedReleaseDates)
+    whenever(
+      calculationTransactionalService.validateAndConfirmCalculation(
+        calculationRequestId,
+        submitCalculationRequest,
+      ),
+    ).thenReturn(calculatedReleaseDates)
 
     val result = mvc.perform(
       post("/calculation/confirm/$calculationRequestId")
@@ -169,15 +194,25 @@ class CalculationControllerTest {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
 
-    assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
-    verify(calculationTransactionalService, times(1)).validateAndConfirmCalculation(calculationRequestId, submitCalculationRequest)
+    assertThat(mapper.readValue(result.response.contentAsString, CalculatedReleaseDates::class.java)).isEqualTo(
+      calculatedReleaseDates,
+    )
+    verify(calculationTransactionalService, times(1)).validateAndConfirmCalculation(
+      calculationRequestId,
+      submitCalculationRequest,
+    )
   }
 
   @Test
   fun `Test POST to confirm a calculation when the data has changed since the PRELIM calc - results in exception`() {
     val calculationRequestId = 12345L
 
-    whenever(calculationTransactionalService.validateAndConfirmCalculation(calculationRequestId, submitCalculationRequest)).then {
+    whenever(
+      calculationTransactionalService.validateAndConfirmCalculation(
+        calculationRequestId,
+        submitCalculationRequest,
+      ),
+    ).then {
       throw PreconditionFailedException(
         "The booking data used for the preliminary calculation has changed",
       )
@@ -209,16 +244,21 @@ class CalculationControllerTest {
       prisonerId = "ASD",
       calculationReference = UUID.randomUUID(),
       calculationReason = CALCULATION_REASON,
+      calculationDate = LocalDate.of(2024, 1, 1),
     )
 
-    whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(calculatedReleaseDates)
+    whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(
+      calculatedReleaseDates,
+    )
 
     val result = mvc.perform(get("/calculation/results/$calculationRequestId").accept(APPLICATION_JSON))
       .andExpect(status().isOk)
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
 
-    assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(calculatedReleaseDates))
+    assertThat(mapper.readValue(result.response.contentAsString, CalculatedReleaseDates::class.java)).isEqualTo(
+      calculatedReleaseDates,
+    )
     verify(calculationTransactionalService, times(1)).findCalculationResults(calculationRequestId)
   }
 
@@ -234,15 +274,20 @@ class CalculationControllerTest {
       approvedDates = mapOf(ReleaseDateType.APD to LocalDate.of(2020, 3, 3)),
       calculationReference = UUID.randomUUID(),
       calculationReason = CALCULATION_REASON,
+      calculationDate = LocalDate.of(2024, 1, 1),
     )
-    whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(calculatedReleaseDates)
+    whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(
+      calculatedReleaseDates,
+    )
 
     val result = mvc.perform(get("/calculation/results/$calculationRequestId").accept(APPLICATION_JSON))
       .andExpect(status().isOk)
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
 
-    assertThat(mapper.readValue(result.response.contentAsString, CalculatedReleaseDates::class.java)).isEqualTo(calculatedReleaseDates)
+    assertThat(mapper.readValue(result.response.contentAsString, CalculatedReleaseDates::class.java)).isEqualTo(
+      calculatedReleaseDates,
+    )
     verify(calculationTransactionalService, times(1)).findCalculationResults(calculationRequestId)
   }
 
