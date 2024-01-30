@@ -751,6 +751,7 @@ private fun transform(comparisonPerson: ComparisonPerson): ComparisonMismatchSum
   comparisonPerson.mismatchType,
   comparisonPerson.sdsPlusSentencesIdentified,
   comparisonPerson.hdcedFourPlusDate,
+  comparisonPerson.establishment,
 )
 
 fun transform(
