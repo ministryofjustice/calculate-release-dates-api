@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyImpact
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyPriority
@@ -16,14 +17,14 @@ data class CreateComparisonDiscrepancyRequest(
   val causes: List<DiscrepancyCause>,
 
   @Schema(description = "Any extra detail about the discrepancy")
-  @field:NotNull
-  val detail: String?,
+  @field:NotBlank
+  val detail: String,
 
   @Schema(description = "The priority of resolving the discrepancy")
   @field:NotNull
   val priority: DiscrepancyPriority,
 
   @Schema(description = "The recommended action that needs to be taken for this discrepancy")
-  @field:NotNull
+  @field:NotBlank
   val action: String,
 )
