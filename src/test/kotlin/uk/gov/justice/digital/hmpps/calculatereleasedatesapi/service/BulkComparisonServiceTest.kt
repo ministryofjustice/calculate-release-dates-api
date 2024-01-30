@@ -123,7 +123,7 @@ class BulkComparisonServiceTest {
   )
 
   private val calculableSentenceEnvelope = CalculableSentenceEnvelope(
-    person = Person("A", LocalDate.of(1990, 5, 1), "Morris", emptyList()),
+    person = Person("A", LocalDate.of(1990, 5, 1), "Morris", "HDR", emptyList()),
     bookingId = 12345,
     sentenceAndOffences = listOf(sentenceAndOffence),
     sentenceAdjustments = emptyList(),
@@ -138,6 +138,7 @@ class BulkComparisonServiceTest {
       "A",
       LocalDate.of(1990, 5, 1),
       "Rickman",
+      "KQR",
       alerts = listOf(Alert(LocalDate.now(), alertType = "S", alertCode = "SR")),
     ),
   )

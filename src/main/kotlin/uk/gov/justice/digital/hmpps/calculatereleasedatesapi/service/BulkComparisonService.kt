@@ -267,6 +267,7 @@ class BulkComparisonService(
       bookingId = source.bookingId,
       offenderNo = source.person.prisonerNumber,
       dateOfBirth = source.person.dateOfBirth,
+      agencyId = source.person.agencyId,
       alerts = source.person.alerts,
     )
 

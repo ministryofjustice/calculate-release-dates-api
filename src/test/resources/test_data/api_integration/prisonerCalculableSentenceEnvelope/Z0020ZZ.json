@@ -4,6 +4,7 @@
       "prisonerNumber": "Z0020ZZ",
       "dateOfBirth": "1966-01-01",
       "lastName": "Jones",
+      "agencyId": "BMI",
       "alerts": [
         {
           "alertId": 1,
