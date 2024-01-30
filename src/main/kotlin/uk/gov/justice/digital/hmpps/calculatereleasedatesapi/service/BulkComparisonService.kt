@@ -70,6 +70,16 @@ class BulkComparisonService(
   }
 
   @Async
+  fun processFullCaseLoadComparison(comparison: Comparison, token: String) {
+    val currentUserPrisonsList = prisonService.getCurrentUserPrisonsList()
+    log.info("Running case load comparison with prisons: {}", currentUserPrisonsList)
+    for (prison in currentUserPrisonsList) {
+      val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(prison, token)
+      processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison, prison)
+    }
+  }
+
+  @Async
   fun processManualComparison(comparison: Comparison, prisonerIds: List<String>, token: String) {
     UserContext.setAuthToken(token)
     log.info("Using token: {}", UserContext.getAuthToken())
@@ -128,6 +138,7 @@ class BulkComparisonService(
   private fun processCalculableSentenceEnvelopes(
     calculableSentenceEnvelopes: List<CalculableSentenceEnvelope>,
     comparison: Comparison,
+    establishment: String? = "",
   ) {
     val bookingIdToSDSMatchingSentencesAndOffences =
       pcscLookupService.populateSdsPlusMarkerForOffences(
@@ -139,6 +150,15 @@ class BulkComparisonService(
       val hdced4PlusDate = getHdced4PlusDate(mismatch)
 
       if (comparison.shouldStoreMismatch(mismatch)) {
+        val establishmentValue = if (comparison.comparisonType != ComparisonType.MANUAL) {
+          if (establishment == null || establishment == "") {
+            comparison.prison!!
+          } else {
+            establishment
+          }
+        } else {
+          null
+        }
         comparisonPersonRepository.save(
           ComparisonPerson(
             comparisonId = comparison.id,
@@ -165,6 +185,7 @@ class BulkComparisonService(
             }
               ?: objectMapper.createObjectNode(),
             hdcedFourPlusDate = hdced4PlusDate,
+            establishment = establishmentValue,
           ),
         )
       }

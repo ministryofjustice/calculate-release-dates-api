@@ -4,7 +4,10 @@ import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -12,6 +15,7 @@ import org.springframework.security.oauth2.jwt.Jwt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
@@ -60,6 +64,7 @@ class ManualCalculationServiceTest {
     serviceUserService,
     nomisCommentService,
   )
+  private val calculationRequestArgumentCaptor = argumentCaptor<CalculationRequest>()
 
   @Nested
   inner class IndeterminateSentencesTests {
@@ -140,6 +145,45 @@ class ManualCalculationServiceTest {
     )
     verify(prisonService).postReleaseDates(BOOKING_ID, expectedUpdatedOffenderDates)
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
+  }
+
+  @Test
+  fun `Check type is set to Genuine Override when its a genuine override`() {
+    whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+    whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
+    whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+
+    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
+    val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
+
+    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, true)
+    verify(calculationRequestRepository).save(calculationRequestArgumentCaptor.capture())
+    val actualRequest = calculationRequestArgumentCaptor.firstValue
+    assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_OVERRIDE)
+  }
+
+  @Test
+  fun `Check type is set to manual indeterminate when indeterminate sentences are present`() {
+    whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+    whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
+    whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(listOf(SentenceAndOffences(1, 1, 1, 1, null, "A", "A", "LIFE", "", LocalDate.now())))
+
+    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
+    val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
+
+    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
+    verify(calculationRequestRepository).save(calculationRequestArgumentCaptor.capture())
+    val actualRequest = calculationRequestArgumentCaptor.firstValue
+    assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_INDETERMINATE)
   }
 
   private companion object {

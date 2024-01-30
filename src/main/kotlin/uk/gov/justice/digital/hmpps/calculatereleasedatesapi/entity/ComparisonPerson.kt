@@ -81,4 +81,6 @@ class ComparisonPerson(
   var sdsPlusSentencesIdentified: JsonNode,
 
   var hdcedFourPlusDate: LocalDate? = null,
+
+  var establishment: String?,
 )

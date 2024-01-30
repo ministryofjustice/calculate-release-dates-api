@@ -386,6 +386,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       breakdownByReleaseDateType = emptyObjectNode,
       calculationRequestId = calculationRequestId,
       sdsPlusSentencesIdentified = emptyObjectNode,
+      establishment = "BMI",
     )
   }
 

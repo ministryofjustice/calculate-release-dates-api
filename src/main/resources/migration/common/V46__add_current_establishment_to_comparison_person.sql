@@ -1,0 +1,1 @@
+alter table comparison_person add column establishment text;
