@@ -74,6 +74,7 @@ class BulkComparisonServiceTest {
     calculationStatus = CalculationStatus.CONFIRMED,
     calculationReference = UUID.randomUUID(),
     calculationReason = CalculationReason(1, true, false, "Bulk Calculation", true),
+    calculationDate = LocalDate.of(2024, 1, 1),
   )
 
   private val offenderOffence = OffenderOffence(
@@ -124,7 +125,14 @@ class BulkComparisonServiceTest {
   @Test
   fun `Should create a prison comparison`() {
     val comparison = Comparison(
-      1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "BMI", ComparisonType.ESTABLISHMENT_FULL, LocalDateTime.now(), "SOMEONE",
+      1,
+      UUID.randomUUID(),
+      "ABCD1234",
+      objectMapper.createObjectNode(),
+      "BMI",
+      ComparisonType.ESTABLISHMENT_FULL,
+      LocalDateTime.now(),
+      "SOMEONE",
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     val duplicateReleaseDates = releaseDates.toMutableMap()
@@ -138,6 +146,7 @@ class BulkComparisonServiceTest {
       calculationStatus = CalculationStatus.CONFIRMED,
       calculationReference = UUID.randomUUID(),
       calculationReason = BULK_CALCULATION_REASON,
+      calculationDate = LocalDate.of(2024, 1, 1),
     )
 
     val booking =
@@ -459,6 +468,7 @@ class BulkComparisonServiceTest {
       calculationStatus = CalculationStatus.CONFIRMED,
       calculationReference = UUID.randomUUID(),
       calculationReason = BULK_CALCULATION_REASON,
+      calculationDate = LocalDate.of(2024, 1, 1),
     )
 
     val booking =
@@ -481,7 +491,14 @@ class BulkComparisonServiceTest {
   @Test
   fun `Should set HDCED4PLUS date if not the same as HDCED`() {
     val comparison = Comparison(
-      1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "BMI", ComparisonType.ESTABLISHMENT_FULL, LocalDateTime.now(), "SOMEONE",
+      1,
+      UUID.randomUUID(),
+      "ABCD1234",
+      objectMapper.createObjectNode(),
+      "BMI",
+      ComparisonType.ESTABLISHMENT_FULL,
+      LocalDateTime.now(),
+      "SOMEONE",
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     val duplicateReleaseDates = releaseDates.toMutableMap()
@@ -495,6 +512,7 @@ class BulkComparisonServiceTest {
       calculationStatus = CalculationStatus.CONFIRMED,
       calculationReference = UUID.randomUUID(),
       calculationReason = BULK_CALCULATION_REASON,
+      calculationDate = LocalDate.of(2024, 1, 1),
     )
 
     val booking =
@@ -524,7 +542,14 @@ class BulkComparisonServiceTest {
   @Test
   fun `Should set HDCED4PLUS date to null if same`() {
     val comparison = Comparison(
-      1, UUID.randomUUID(), "ABCD1234", objectMapper.createObjectNode(), "BMI", ComparisonType.ESTABLISHMENT_FULL, LocalDateTime.now(), "SOMEONE",
+      1,
+      UUID.randomUUID(),
+      "ABCD1234",
+      objectMapper.createObjectNode(),
+      "BMI",
+      ComparisonType.ESTABLISHMENT_FULL,
+      LocalDateTime.now(),
+      "SOMEONE",
       ComparisonStatus(ComparisonStatusValue.PROCESSING),
     )
     val duplicateReleaseDates = releaseDates.toMutableMap()
@@ -538,6 +563,7 @@ class BulkComparisonServiceTest {
       calculationStatus = CalculationStatus.CONFIRMED,
       calculationReference = UUID.randomUUID(),
       calculationReason = BULK_CALCULATION_REASON,
+      calculationDate = LocalDate.of(2024, 1, 1),
     )
 
     val booking =

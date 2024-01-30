@@ -178,6 +178,7 @@ class TransformFunctionsTest {
         calculationStatus = CalculationStatus.PRELIMINARY,
         calculationReference = CALCULATION_REFERENCE,
         calculationReason = CALCULATION_REASON,
+        calculationDate = LocalDate.of(2024, 1, 2),
       ),
     )
   }
@@ -213,6 +214,7 @@ class TransformFunctionsTest {
         approvedDates = mapOf(ReleaseDateType.APD to LocalDate.of(2020, 3, 3)),
         calculationReference = CALCULATION_REFERENCE,
         calculationReason = CALCULATION_REASON,
+        calculationDate = LocalDate.of(2024, 1, 2),
       ),
     )
   }
@@ -422,6 +424,7 @@ class TransformFunctionsTest {
         ),
       ),
       reasonForCalculation = CALCULATION_REASON,
+      calculatedAt = LocalDateTime.of(2024, 1, 2, 10, 0, 0),
     )
 
     val CRD_DATE: LocalDate = LocalDate.of(2021, 2, 3)
@@ -436,6 +439,7 @@ class TransformFunctionsTest {
       calculationStatus = CalculationStatus.PRELIMINARY,
       calculationReference = UUID.randomUUID(),
       calculationReason = CALCULATION_REASON,
+      calculationDate = LocalDate.of(2024, 1, 1),
     )
 
     val SEX_OFFENDER_ALERT = Alert(

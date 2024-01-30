@@ -24,6 +24,7 @@ data class CalculatedReleaseDates(
   val calculationReference: UUID,
   val calculationReason: CalculationReason?,
   val otherReasonDescription: String? = null,
+  val calculationDate: LocalDate?,
 ) {
   fun toSentenceCalcDates(): SentenceCalcDates {
     return SentenceCalcDates(
