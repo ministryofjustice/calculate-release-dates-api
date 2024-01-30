@@ -1,3 +1,5 @@
+DELETE FROM comparison_person_discrepancy_cause;
+DELETE FROM comparison_person_discrepancy;
 DELETE FROM comparison_person;
 DELETE FROM comparison;
 DELETE From genuine_override;
