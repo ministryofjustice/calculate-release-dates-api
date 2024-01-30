@@ -16,7 +16,7 @@ data class CreateComparisonDiscrepancyRequest(
   @field:NotNull
   val causes: List<DiscrepancyCause>,
 
-  @Schema(description = "Any extra detail about the discrepancy")
+  @Schema(description = "Detail about the discrepancy")
   @field:NotBlank
   val detail: String,
 

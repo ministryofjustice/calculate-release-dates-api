@@ -39,8 +39,10 @@ class ComparisonPersonDiscrepancy(
   @JoinColumn(name = "priorityId")
   val discrepancyPriority: ComparisonPersonDiscrepancyPriority,
 
-  val detail: String?,
+  @NotNull
+  val detail: String,
 
+  @NotNull
   val action: String,
 
   @NotNull
