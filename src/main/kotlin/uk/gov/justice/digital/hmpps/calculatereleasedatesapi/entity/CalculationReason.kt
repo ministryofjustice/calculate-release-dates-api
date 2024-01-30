@@ -23,4 +23,6 @@ data class CalculationReason(
   @NotNull
   @JsonIgnore
   val isBulk: Boolean,
+  @JsonIgnore
+  val nomisReason: String?,
 )

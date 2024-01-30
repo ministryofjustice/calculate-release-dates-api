@@ -48,6 +48,7 @@ class ManualCalculationServiceTest {
   private val objectMapper = TestUtil.objectMapper()
   private val eventService = mock<EventService>()
   private val serviceUserService = mock<ServiceUserService>()
+  private val nomisCommentService = mock<NomisCommentService>()
   private val manualCalculationService = ManualCalculationService(
     prisonService,
     bookingService,
@@ -57,6 +58,7 @@ class ManualCalculationServiceTest {
     objectMapper,
     eventService,
     serviceUserService,
+    nomisCommentService,
   )
 
   @Nested
@@ -98,6 +100,7 @@ class ManualCalculationServiceTest {
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
     val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.None, "None of the dates apply", null)
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest)
@@ -106,7 +109,8 @@ class ManualCalculationServiceTest {
       submissionUser = USERNAME,
       keyDates = OffenderKeyDates(),
       noDates = true,
-      comment = "An Indeterminate (Life) sentence was entered with no dates currently available. This was intentionally recorded as blank. It was entered using the Calculate release dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      comment = "The NOMIS Reason",
+      reason = "UPDATE",
     )
     verify(prisonService).postReleaseDates(BOOKING_ID, expectedUpdatedOffenderDates)
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
@@ -120,6 +124,7 @@ class ManualCalculationServiceTest {
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
     val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
@@ -130,7 +135,8 @@ class ManualCalculationServiceTest {
       submissionUser = USERNAME,
       keyDates = OffenderKeyDates(conditionalReleaseDate = LocalDate.of(2023, 3, 3)),
       noDates = false,
-      comment = "The information shown was manually recorded in the Calculate release dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      comment = "The NOMIS Reason",
+      reason = "UPDATE",
     )
     verify(prisonService).postReleaseDates(BOOKING_ID, expectedUpdatedOffenderDates)
     verify(eventService).publishReleaseDatesChangedEvent(PRISONER_ID, BOOKING_ID)
@@ -177,6 +183,7 @@ class ManualCalculationServiceTest {
       isOther = false,
       isBulk = false,
       displayName = "Reason",
+      nomisReason = "UPDATE",
     )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
@@ -193,6 +200,7 @@ class ManualCalculationServiceTest {
           "\"offence\":{" + "\"committedAt\":\"2013-09-19\"" + "}," + "\"duration\":{" +
           "\"durationElements\":{" + "\"YEARS\":2" + "}" + "}," + "\"sentencedAt\":\"2013-09-21\"" + "}" + "]" + "}",
       ),
+      reasonForCalculation = CALCULATION_REASON,
     )
     private val OFFENDER = Offender(PRISONER_ID, LocalDate.of(1980, 1, 1))
 

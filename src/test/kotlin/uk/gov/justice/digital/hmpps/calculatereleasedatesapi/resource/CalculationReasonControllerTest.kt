@@ -44,10 +44,10 @@ class CalculationReasonControllerTest {
       .build()
 
     val calculationReasons = listOf(
-      CalculationReason(1, isActive = true, isOther = false, isBulk = false, displayName = "Reason 1"),
-      CalculationReason(2, isActive = true, isOther = false, isBulk = false, displayName = "Reason 2"),
-      CalculationReason(3, isActive = true, isOther = true, isBulk = false, displayName = "Other"),
-      CalculationReason(4, isActive = false, isOther = false, isBulk = true, displayName = "Bulk Calculation"),
+      CalculationReason(1, isActive = true, isOther = false, isBulk = false, displayName = "Reason 1", nomisReason = "UPDATE"),
+      CalculationReason(2, isActive = true, isOther = false, isBulk = false, displayName = "Reason 2", nomisReason = "UPDATE"),
+      CalculationReason(3, isActive = true, isOther = true, isBulk = false, displayName = "Other", nomisReason = "UPDATE"),
+      CalculationReason(4, isActive = false, isOther = false, isBulk = true, displayName = "Bulk Calculation", nomisReason = "UPDATE"),
     )
 
     whenever(calculationReasonRepository.findAllByIsActiveTrueOrderById()).thenReturn(calculationReasons)
@@ -60,5 +60,7 @@ class CalculationReasonControllerTest {
     val returnedJson = result.response.contentAsString
     assertEquals(mapper.writeValueAsString(calculationReasons), returnedJson)
     assertFalse(returnedJson.contains("\"isActive\":"), "Active tags are not required as they will all be true")
+    assertFalse(returnedJson.contains("\"isBulk\":"), "Bulk tags are not required as they will all be true")
+    assertFalse(returnedJson.contains("\"reason\":"), "This is not needed the UI")
   }
 }
