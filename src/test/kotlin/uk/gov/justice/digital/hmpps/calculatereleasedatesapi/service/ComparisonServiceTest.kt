@@ -5,26 +5,39 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import jakarta.persistence.EntityNotFoundException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancy
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyImpact
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyPriority
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyCategory
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyImpact
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyPriority
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancySubCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyCategoryRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import java.time.LocalDate
@@ -37,6 +50,8 @@ class ComparisonServiceTest : IntegrationTestBase() {
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val comparisonRepository = mock<ComparisonRepository>()
   private val comparisonPersonRepository = mock<ComparisonPersonRepository>()
+  private val comparisonPersonDiscrepancyRepository = mock<ComparisonPersonDiscrepancyRepository>()
+  private val comparisonPersonDiscrepancyCategoryRepository = mock<ComparisonPersonDiscrepancyCategoryRepository>()
   private var serviceUserService = mock<ServiceUserService>()
   private var bulkComparisonService = mock<BulkComparisonService>()
   private val calculationTransactionalService = mock<CalculationTransactionalService>()
@@ -48,26 +63,20 @@ class ComparisonServiceTest : IntegrationTestBase() {
     prisonService,
     serviceUserService,
     comparisonPersonRepository,
+    comparisonPersonDiscrepancyRepository,
     bulkComparisonService,
     calculationTransactionalService,
     objectMapper,
   )
 
+  @BeforeEach
+  fun beforeAll() {
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+  }
+
   @Test
   fun `A Comparison is created when create is called`() {
-    val outputComparison = Comparison(
-      1,
-      UUID.randomUUID(),
-      "ABCD1234",
-      JsonNodeFactory.instance.objectNode(),
-      "ABC",
-      ComparisonType.ESTABLISHMENT_FULL,
-      LocalDateTime.now(),
-      USERNAME,
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
-    )
-
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    val outputComparison = aComparison()
     whenever(comparisonRepository.save(any())).thenReturn(outputComparison)
 
     val comparisonInput = ComparisonInput(JsonNodeFactory.instance.objectNode(), prison = "ABC")
@@ -77,20 +86,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
   @Test
   fun `A Comparison is created and results returned when create is called on AUTO`() {
-    val outputComparison = Comparison(
-      1,
-      UUID.randomUUID(),
-      "ABCD1234",
-      JsonNodeFactory.instance.objectNode(),
-      "ABC",
-      ComparisonType.ESTABLISHMENT_FULL,
-      LocalDateTime.now(),
-      USERNAME,
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
-      2,
-    )
-
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    val outputComparison = aComparison()
     whenever(comparisonRepository.save(any())).thenReturn(outputComparison)
 
     val comparisonInput = ComparisonInput(null, prison = "ABC")
@@ -100,7 +96,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
   @Test
   fun `Get a list of comparisons`() {
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
     whenever(comparisonRepository.findAllByComparisonTypeIsInAndPrisonIsIn(any(), any())).thenReturn(
       listOf(
@@ -131,19 +126,9 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
   @Test
   fun `Get a count of people associated with a single calculation reference in a different prison`() {
-    val prison = "ABC"
-    Mockito.`when`(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ADIFFERENTPRISON"))
-    val comparison = Comparison(
-      1,
-      UUID.randomUUID(),
-      "ABCD1234",
-      JsonNodeFactory.instance.objectNode(),
-      prison,
-      ComparisonType.MANUAL,
-      LocalDateTime.now(),
-      USERNAME,
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
-    )
+    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ADIFFERENTPRISON"))
+    val comparison = aComparison()
+
     whenever(
       comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
@@ -157,17 +142,8 @@ class ComparisonServiceTest : IntegrationTestBase() {
     val prison = "ABC"
     whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf(prison))
     whenever(comparisonPersonRepository.countByComparisonId(1)).thenReturn(7)
-    val comparison = Comparison(
-      1,
-      UUID.randomUUID(),
-      "ABCD1234",
-      JsonNodeFactory.instance.objectNode(),
-      prison,
-      ComparisonType.MANUAL,
-      LocalDateTime.now(),
-      USERNAME,
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
-    )
+
+    val comparison = aComparison()
     whenever(
       comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
@@ -186,22 +162,12 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
   @Test
   fun `Get a comparison for a different prison`() {
-    val prison = "ABC"
     whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ADIFFERENTPRISON"))
-    val comparison = Comparison(
-      1,
-      UUID.randomUUID(),
-      "ABCD1234",
-      JsonNodeFactory.instance.objectNode(),
-      prison,
-      ComparisonType.MANUAL,
-      LocalDateTime.now(),
-      USERNAME,
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
-    )
+    val comparison = aComparison()
     whenever(
       comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
+
     assertThrows(CrdWebException::class.java) {
       comparisonService.getComparisonByComparisonReference("ABCD1234")
     }
@@ -209,42 +175,20 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
   @Test
   fun `Get a comparison with valid reference`() {
-    val prison = "ABC"
-    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf(prison))
-    val comparison = Comparison(
-      1,
-      UUID.randomUUID(),
-      "ABCD1234",
-      JsonNodeFactory.instance.objectNode(),
-      prison,
-      ComparisonType.MANUAL,
-      LocalDateTime.now(),
-      USERNAME,
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
-    )
+    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
+    val comparison = aComparison()
     whenever(
       comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
+
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
     assertEquals(comparison.comparisonShortReference, result.comparisonShortReference)
   }
 
   @Test
   fun `Sorts comparison mismatches by earliest release date`() {
-    val prison = "ABC"
-    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf(prison))
-    val comparison = Comparison(
-      1,
-      UUID.randomUUID(),
-      "ABCD1234",
-      JsonNodeFactory.instance.objectNode(),
-      prison,
-      ComparisonType.MANUAL,
-      LocalDateTime.now(),
-      USERNAME,
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
-    )
-
+    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
+    val comparison = aComparison()
     val comparisonPerson1 = aComparisonPerson(
       1,
       comparison.id,
@@ -367,6 +311,57 @@ class ComparisonServiceTest : IntegrationTestBase() {
     assertEquals(comparisonPerson1.person, result.mismatches[5].personId)
     assertEquals(comparisonPerson3.person, result.mismatches[6].personId)
   }
+
+  @Test
+  fun `Creates a comparison person discrepancy`() {
+    val comparison = aComparison()
+    val comparisonPerson = aComparisonPerson(
+      54,
+      comparison.id,
+      8923,
+      USERNAME,
+    )
+
+    val discrepancyImpact = ComparisonPersonDiscrepancyImpact(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION)
+    val discrepancyPriority = ComparisonPersonDiscrepancyPriority(DiscrepancyPriority.MEDIUM_RISK)
+    val discrepancySummary = ComparisonDiscrepancySummary(
+      impact = DiscrepancyImpact.OTHER,
+      causes = emptyList(),
+      detail = "detail",
+      priority = DiscrepancyPriority.HIGH_RISK,
+      action = "action",
+    )
+    val discrepancy = ComparisonPersonDiscrepancy(1, comparisonPerson, discrepancyImpact, emptyList(), discrepancyPriority = discrepancyPriority, detail = "detail", action = "action", createdBy = USERNAME)
+    whenever(
+      comparisonRepository.findByComparisonShortReference("ABCD1234"),
+    ).thenReturn(comparison)
+    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
+    whenever(bulkComparisonService.createDiscrepancy(any(), any(), any())).thenReturn(discrepancySummary)
+    val discrepancyCause = DiscrepancyCause(DiscrepancyCategory.TUSED, DiscrepancySubCategory.REMAND_OR_UAL_RELATED)
+    val discrepancyRequest = CreateComparisonDiscrepancyRequest(
+      impact = discrepancyImpact.impact,
+      listOf(discrepancyCause),
+      detail = discrepancy.detail,
+      priority = discrepancyPriority.priority,
+      action = discrepancy.action,
+    )
+    val returnedSummary = comparisonService.createDiscrepancy(comparison.comparisonShortReference, comparisonPerson.shortReference, discrepancyRequest)
+
+    verify(bulkComparisonService).createDiscrepancy(any(), any(), any())
+    assertEquals(discrepancySummary, returnedSummary)
+  }
+
+  private fun aComparison() = Comparison(
+    1,
+    UUID.randomUUID(),
+    "ABCD1234",
+    JsonNodeFactory.instance.objectNode(),
+    "ABC",
+    ComparisonType.MANUAL,
+    LocalDateTime.now(),
+    USERNAME,
+    ComparisonStatus(ComparisonStatusValue.PROCESSING),
+  )
 
   private fun aComparisonPerson(
     id: Long,

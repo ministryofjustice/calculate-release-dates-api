@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
+import jakarta.transaction.Transactional
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
@@ -9,12 +10,18 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancy
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyCause
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyImpact
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyPriority
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
@@ -31,6 +38,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyCategoryRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
@@ -48,8 +57,10 @@ class BulkComparisonService(
   private val comparisonRepository: ComparisonRepository,
   private val pcscLookupService: OffenceSdsPlusLookupService,
   private val calculationReasonRepository: CalculationReasonRepository,
+  private val comparisonPersonDiscrepancyRepository: ComparisonPersonDiscrepancyRepository,
+  private val comparisonPersonDiscrepancyCategoryRepository: ComparisonPersonDiscrepancyCategoryRepository,
+  private var serviceUserService: ServiceUserService,
 ) {
-
   @Async
   fun processPrisonComparison(comparison: Comparison, token: String) {
     UserContext.setAuthToken(token)
@@ -64,6 +75,54 @@ class BulkComparisonService(
     log.info("Using token: {}", UserContext.getAuthToken())
     val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIds(prisonerIds, token)
     processCalculableSentenceEnvelopes(activeBookingsForPrisoners, comparison)
+  }
+
+  @Transactional
+  fun createDiscrepancy(comparisonReference: String, comparisonPersonReference: String, discrepancyRequest: CreateComparisonDiscrepancyRequest): ComparisonDiscrepancySummary {
+    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
+    val comparisonPerson =
+      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference)
+        ?: throw EntityNotFoundException("Could not find comparison person with reference: $comparisonReference")
+
+    val existingDiscrepancy =
+      comparisonPersonDiscrepancyRepository.findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
+        comparisonPersonReference,
+      )
+
+    val impact = ComparisonPersonDiscrepancyImpact(discrepancyRequest.impact)
+    val priority = ComparisonPersonDiscrepancyPriority(discrepancyRequest.priority)
+    var discrepancy = ComparisonPersonDiscrepancy(
+      comparisonPerson = comparisonPerson,
+      discrepancyImpact = impact,
+      discrepancyPriority = priority,
+      action = discrepancyRequest.action,
+      detail = discrepancyRequest.detail,
+      createdBy = serviceUserService.getUsername(),
+    )
+    discrepancy = comparisonPersonDiscrepancyRepository.save(discrepancy)
+    if (existingDiscrepancy != null) {
+      existingDiscrepancy.supersededById = discrepancy.id
+      comparisonPersonDiscrepancyRepository.save(existingDiscrepancy)
+    }
+
+    val discrepancyCauses = discrepancyRequest.causes.map {
+      ComparisonPersonDiscrepancyCause(
+        category = it.category,
+        subCategory = it.subCategory,
+        detail = it.other,
+        discrepancy = discrepancy,
+      )
+    }
+    comparisonPersonDiscrepancyCategoryRepository.saveAll(discrepancyCauses)
+    return transform(discrepancy, discrepancyCauses)
+  }
+
+  fun getComparisonPersonDiscrepancy(comparisonReference: String, comparisonPersonReference: String): ComparisonDiscrepancySummary {
+    val discrepancy =
+      comparisonPersonDiscrepancyRepository.findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
+        comparisonPersonReference,
+      ) ?: throw EntityNotFoundException("No comparison person discrepancy was found")
+    return transform(discrepancy)
   }
 
   private fun processCalculableSentenceEnvelopes(
