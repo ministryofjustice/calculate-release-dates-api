@@ -4,6 +4,7 @@
       "prisonerNumber": "Z0030ZZ",
       "dateOfBirth": "1972-11-14",
       "lastName": "Smith",
+      "agencyId": "BMI",
       "alerts": []
     },
     "bookingId": 1205535,
