@@ -62,10 +62,11 @@ dist
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
-# AWS Docker build
+# AWS DOcker build
 ecr.repo
-/dps-gradle-spring-boot-suppressions.xml
+dps-gradle-spring-boot-suppressions.xml
 .editorconfig
+sonar-project.properties
 
 #Helm
 **/Chart.lock

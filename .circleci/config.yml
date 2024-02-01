@@ -18,7 +18,7 @@ jobs:
   validate:
     executor:
       name: hmpps/java
-      tag: "19.0"
+      tag: "21.0"
     steps:
       - checkout
       - restore_cache:
@@ -97,7 +97,7 @@ workflows:
             - generate-api-docs
       - hmpps/helm_lint:
           name: helm_lint
-      - hmpps/build_docker:
+      - hmpps/build_multiplatform_docker:
           name: build_docker
           filters:
             branches:
@@ -163,11 +163,11 @@ workflows:
                 - main
     jobs:
       - hmpps/gradle_owasp_dependency_check:
+          cache_key: "v2_0"
+          jdk_tag: "21.0"
           slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
-          jdk_tag: "19.0"
-          cache_key: "v2_0"
       - hmpps/trivy_latest_scan:
           slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:

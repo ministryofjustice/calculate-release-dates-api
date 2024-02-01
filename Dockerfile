@@ -1,13 +1,13 @@
-FROM eclipse-temurin:19-jdk-jammy AS builder
+FROM --platform=$BUILDPLATFORM eclipse-temurin:21-jre-jammy AS builder
 
 ARG BUILD_NUMBER
 ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
 
 WORKDIR /app
 ADD . .
-RUN ./gradlew assemble -Dorg.gradle.daemon=false
+RUN ./gradlew --no-daemon assemble
 
-FROM eclipse-temurin:19-jre-jammy
+FROM eclipse-temurin:21-jre-jammy
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 ARG BUILD_NUMBER
@@ -37,4 +37,4 @@ COPY --from=builder --chown=appuser:appgroup /app/applicationinsights.dev.json /
 
 USER 2000
 
-ENTRYPOINT ["java", "-javaagent:/app/agent.jar", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-XX:+AlwaysActAsServerClassMachine", "-javaagent:/app/agent.jar", "-jar", "/app/app.jar"]
