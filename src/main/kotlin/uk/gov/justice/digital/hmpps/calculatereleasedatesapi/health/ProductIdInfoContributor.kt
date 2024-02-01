@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppstemplatepackagename.health
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.health
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.actuate.info.Info
