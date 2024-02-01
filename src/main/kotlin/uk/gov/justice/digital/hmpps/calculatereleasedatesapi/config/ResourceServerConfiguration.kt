@@ -38,6 +38,7 @@ private class ResourceServerConfiguration {
         authorize(AntPathRequestMatcher("/swagger-ui/**", HttpMethod.GET.name()), permitAll)
         authorize(AntPathRequestMatcher("/swagger-ui.html", HttpMethod.GET.name()), permitAll)
         authorize(AntPathRequestMatcher("/h2-console/**", HttpMethod.POST.name()), permitAll)
+        authorize(AntPathRequestMatcher("/some-url-not-found", HttpMethod.GET.name()), permitAll)
         authorize(anyRequest, authenticated)
       }
       oauth2ResourceServer {

@@ -13,12 +13,15 @@ parameters:
   node-version:
     type: string
     default: 19.3-browsers
+  java-version:
+    type: string
+    default: 21.0
 
 jobs:
   validate:
     executor:
       name: hmpps/java
-      tag: "21.0"
+      tag: << pipeline.parameters.java-version >>
     steps:
       - checkout
       - restore_cache:
@@ -39,7 +42,7 @@ jobs:
   generate-api-docs:
     executor:
       name: hmpps/java
-      tag: "19.0"
+      tag: << pipeline.parameters.java-version >>
     steps:
       - checkout
       - restore_cache:
@@ -164,7 +167,7 @@ workflows:
     jobs:
       - hmpps/gradle_owasp_dependency_check:
           cache_key: "v2_0"
-          jdk_tag: "21.0"
+          jdk_tag: << pipeline.parameters.java-version >>
           slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
