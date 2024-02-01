@@ -15,7 +15,7 @@ parameters:
     default: 19.3-browsers
   java-version:
     type: string
-    default: 21.0
+    default: "21.0"
 
 jobs:
   validate:
