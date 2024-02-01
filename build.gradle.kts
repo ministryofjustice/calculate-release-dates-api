@@ -92,9 +92,6 @@ tasks {
       jvmTarget = "21"
     }
   }
-  forkedSpringBootRun {
-    doNotTrackState("See https://github.com/springdoc/springdoc-openapi-gradle-plugin/issues/102")
-  }
 }
 
 dependencyCheck {
@@ -105,4 +102,19 @@ openApi {
   outputDir.set(file("${layout.buildDirectory}/docs"))
   outputFileName.set("openapi.json")
   customBootRun.args.set(listOf("--spring.profiles.active=dev,localstack,docs"))
+}
+
+afterEvaluate {
+  tasks.named("forkedSpringBootRun") {
+    dependsOn("inspectClassesForKotlinIC")
+    notCompatibleWithConfigurationCache(
+      "See https://github.com/springdoc/springdoc-openapi-gradle-plugin/issues/102"
+    )
+  }
+
+  tasks.named("forkedSpringBootStop") {
+    notCompatibleWithConfigurationCache(
+      "See https://github.com/springdoc/springdoc-openapi-gradle-plugin/issues/102"
+    )
+  }
 }
