@@ -92,6 +92,9 @@ tasks {
       jvmTarget = "21"
     }
   }
+  forkedSpringBootRun {
+    doNotTrackState("See https://github.com/springdoc/springdoc-openapi-gradle-plugin/issues/102")
+  }
 }
 
 dependencyCheck {
