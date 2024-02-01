@@ -99,7 +99,7 @@ dependencyCheck {
 }
 
 openApi {
-  outputDir.set(file("${layout.buildDirectory}/docs"))
+  outputDir.set(layout.buildDirectory.dir("docs"))
   outputFileName.set("openapi.json")
   customBootRun.args.set(listOf("--spring.profiles.active=dev,localstack,docs"))
 }
