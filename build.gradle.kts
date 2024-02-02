@@ -1,8 +1,8 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.4.0"
-  id("org.springdoc.openapi-gradle-plugin") version "1.6.0"
-  kotlin("plugin.spring") version "1.9.10"
-  kotlin("plugin.jpa") version "1.9.10"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.13.0"
+  id("org.springdoc.openapi-gradle-plugin") version "1.8.0"
+  kotlin("plugin.spring") version "1.9.22"
+  kotlin("plugin.jpa") version "1.9.22"
   id("jacoco")
 }
 
@@ -82,14 +82,14 @@ jacoco {
   toolVersion = "0.8.8"
 }
 
-java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(19))
+kotlin {
+  jvmToolchain(21)
 }
 
 tasks {
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-      jvmTarget = "19"
+      jvmTarget = "21"
     }
   }
 }
@@ -99,7 +99,22 @@ dependencyCheck {
 }
 
 openApi {
-  outputDir.set(file("$buildDir/docs"))
+  outputDir.set(layout.buildDirectory.dir("docs"))
   outputFileName.set("openapi.json")
   customBootRun.args.set(listOf("--spring.profiles.active=dev,localstack,docs"))
+}
+
+afterEvaluate {
+  tasks.named("forkedSpringBootRun") {
+    dependsOn("inspectClassesForKotlinIC")
+    notCompatibleWithConfigurationCache(
+      "See https://github.com/springdoc/springdoc-openapi-gradle-plugin/issues/102"
+    )
+  }
+
+  tasks.named("forkedSpringBootStop") {
+    notCompatibleWithConfigurationCache(
+      "See https://github.com/springdoc/springdoc-openapi-gradle-plugin/issues/102"
+    )
+  }
 }
