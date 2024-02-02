@@ -375,15 +375,31 @@ class BulkComparisonService(
       return false
     }
 
-    if (hasIndeterminateSentence(calculableSentenceEnvelope)) {
+    val unsupportedSentences = calculableSentenceEnvelope.sentenceAndOffences.filter {
+      !SentenceCalculationType.isSupported(it.sentenceCalculationType)
+    }
+
+    val unsupportedDeterminateSentences = unsupportedSentences.filter {
+      !SentenceCalculationType.isIndeterminate(it.sentenceCalculationType)
+    }
+
+    if (unsupportedDeterminateSentences.isEmpty()) {
       return false
     }
 
-    if (!calculableSentenceEnvelope.sentenceAndOffences.any { sentence -> isValidHdc4PlusDuration(sentence) }) {
+    val sdsSentencesWithValidDuration = unsupportedDeterminateSentences
+      .filter { SentenceCalculationType.isStandardDeterminate(it.sentenceCalculationType) }
+      .filter { sentence -> isValidHdc4PlusDuration(sentence) }
+
+    if (sdsSentencesWithValidDuration.isEmpty()) {
       return false
     }
 
-    return true
+    val nonSdsPlusSentences = sdsSentencesWithValidDuration.filter { sentence ->
+      sentence.offences.none { it.isPcscSdsPlus }
+    }
+
+    return nonSdsPlusSentences.isNotEmpty()
   }
 
   private fun isValidHdc4PlusDuration(sentence: SentenceAndOffences): Boolean {
@@ -424,10 +440,6 @@ class BulkComparisonService(
         return@filter false
       }
     return consecutiveEdsOrSopcToSds.isNotEmpty()
-  }
-
-  private fun hasIndeterminateSentence(calculableSentenceEnvelope: CalculableSentenceEnvelope): Boolean {
-    return calculableSentenceEnvelope.sentenceAndOffences.any { SentenceCalculationType.isIndeterminate(it.sentenceCalculationType) }
   }
 
   companion object {

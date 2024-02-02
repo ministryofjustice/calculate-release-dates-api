@@ -380,7 +380,6 @@ class BulkComparisonServiceTest {
     whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
     )
-
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
     val mismatch = bulkComparisonService.buildMismatch(calculableSentenceEnvelope)
@@ -391,7 +390,30 @@ class BulkComparisonServiceTest {
   }
 
   @Test
-  fun `Determine if a mismatch report is not valid due to unsupported sentence type`() {
+  fun `Determine unsupported sentence type not HDC4+ because active sex offender`() {
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(
+      listOf(ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)),
+      booking,
+      calculatedReleaseDates,
+      null,
+    )
+
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+
+    val mismatch = bulkComparisonService.buildMismatch(sexOffenderCalculableSentenceEnvelope)
+
+    assertFalse(mismatch.isValid)
+    assertFalse(mismatch.isMatch)
+    assertEquals(MismatchType.UNSUPPORTED_SENTENCE_TYPE, mismatch.type)
+  }
+
+  @Test
+  fun `Determine unsupported sentence type not HDC4+ because indeterminate sentence type`() {
     val booking =
       Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
     val validationResult = ValidationResult(
@@ -411,9 +433,80 @@ class BulkComparisonServiceTest {
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
     val indeterminateSentenceEnvelope = calculableSentenceEnvelope.copy(
-      sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = "LIFE")),
+      sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.LIFE.name)),
     )
     val mismatch = bulkComparisonService.buildMismatch(indeterminateSentenceEnvelope)
+
+    assertFalse(mismatch.isValid)
+    assertFalse(mismatch.isMatch)
+    assertEquals(MismatchType.UNSUPPORTED_SENTENCE_TYPE, mismatch.type)
+  }
+
+  @Test
+  fun `Determine unsupported sentence type not HDC4+ because duration less than 4 years`() {
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(
+      listOf(
+        ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE),
+      ),
+      booking,
+      calculatedReleaseDates,
+      null,
+    )
+
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+
+    val unsupportedSdsThreeYearsSentenceEnvelope = calculableSentenceEnvelope.copy(
+      sentenceAndOffences = listOf(
+        sentenceAndOffence.copy(
+          sentenceCalculationType = SentenceCalculationType.LR_EPP.name,
+          terms = listOf(
+            SentenceTerms(years = 3),
+          ),
+        ),
+      ),
+    )
+
+    val mismatch = bulkComparisonService.buildMismatch(unsupportedSdsThreeYearsSentenceEnvelope)
+
+    assertFalse(mismatch.isValid)
+    assertFalse(mismatch.isMatch)
+    assertEquals(MismatchType.UNSUPPORTED_SENTENCE_TYPE, mismatch.type)
+  }
+
+  @Test
+  fun `Determine unsupported sentence type not HDC4+ because of SDS+ offence`() {
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(
+      listOf(
+        ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE),
+      ),
+      booking,
+      calculatedReleaseDates,
+      null,
+    )
+
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+
+    val sdsPlusOffence = offenderOffence.copy(indicators = listOf(OffenderOffence.PCSC_SDS_PLUS))
+    val unsupportedSdsPlusSentenceEnvelope = calculableSentenceEnvelope.copy(
+      sentenceAndOffences = listOf(
+        sentenceAndOffence.copy(
+          sentenceCalculationType = SentenceCalculationType.CIVIL.name,
+          offences = listOf(sdsPlusOffence),
+        ),
+      ),
+    )
+
+    val mismatch = bulkComparisonService.buildMismatch(unsupportedSdsPlusSentenceEnvelope)
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -440,7 +533,10 @@ class BulkComparisonServiceTest {
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-    val mismatch = bulkComparisonService.buildMismatch(calculableSentenceEnvelope)
+    val unsupportedSdsFiveYearsSentenceEnvelope = calculableSentenceEnvelope.copy(
+      sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.LR_EPP.name)),
+    )
+    val mismatch = bulkComparisonService.buildMismatch(unsupportedSdsFiveYearsSentenceEnvelope)
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)

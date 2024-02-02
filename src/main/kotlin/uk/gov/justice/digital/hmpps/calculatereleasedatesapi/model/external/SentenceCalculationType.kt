@@ -112,7 +112,7 @@ enum class SentenceCalculationType(
 
   companion object {
     fun from(sentenceCalculationType: String): SentenceCalculationType =
-      values().firstOrNull { it.primaryName == sentenceCalculationType } ?: valueOf(sentenceCalculationType)
+      entries.firstOrNull { it.primaryName == sentenceCalculationType } ?: valueOf(sentenceCalculationType)
 
     fun isSupported(sentenceCalculationType: String): Boolean =
       try {
@@ -124,6 +124,13 @@ enum class SentenceCalculationType(
     fun isIndeterminate(sentenceCalculationType: String): Boolean =
       try {
         from(sentenceCalculationType).isIndeterminate
+      } catch (error: IllegalArgumentException) {
+        false
+      }
+
+    fun isStandardDeterminate(sentenceCalculationType: String): Boolean =
+      try {
+        from(sentenceCalculationType).sentenceClazz == StandardDeterminateSentence::class.java
       } catch (error: IllegalArgumentException) {
         false
       }
