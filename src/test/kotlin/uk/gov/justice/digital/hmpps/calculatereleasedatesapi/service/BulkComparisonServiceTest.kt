@@ -561,6 +561,55 @@ class BulkComparisonServiceTest {
   }
 
   @Test
+  fun `Should record HDCED4PLUS date mismatch for ESTABLISHMENT_HDCED4PLUS comparison type`() {
+    val comparison = Comparison(
+      1,
+      UUID.randomUUID(),
+      "ABCD1234",
+      objectMapper.createObjectNode(),
+      "BMI",
+      ComparisonType.ESTABLISHMENT_HDCED4PLUS,
+      LocalDateTime.now(),
+      "SOMEONE",
+      ComparisonStatus(ComparisonStatusValue.PROCESSING),
+    )
+    val duplicateReleaseDates = releaseDates.toMutableMap()
+    duplicateReleaseDates[ReleaseDateType.HDCED4PLUS] = LocalDate.of(2022, 1, 1)
+
+    val duplicatedReleaseDates = CalculatedReleaseDates(
+      dates = duplicateReleaseDates,
+      calculationRequestId = 123,
+      bookingId = 123,
+      prisonerId = "ABC123DEF",
+      calculationStatus = CalculationStatus.CONFIRMED,
+      calculationReference = UUID.randomUUID(),
+      calculationReason = BULK_CALCULATION_REASON,
+      calculationDate = LocalDate.of(2024, 1, 1),
+    )
+
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
+      listOf(
+        sexOffenderCalculableSentenceEnvelope,
+      ),
+    )
+
+    bulkComparisonService.processPrisonComparison(comparison, "")
+
+    val comparisonPersonCaptor = ArgumentCaptor.forClass(ComparisonPerson::class.java)
+    verify(comparisonPersonRepository).save(comparisonPersonCaptor.capture())
+
+    val comparisonPerson = comparisonPersonCaptor.value
+    assertThat(comparisonPerson.hdcedFourPlusDate).isEqualTo(LocalDate.of(2022, 1, 1))
+  }
+
+  @Test
   fun `Should set HDCED4PLUS date to null if same`() {
     val comparison = Comparison(
       1,
