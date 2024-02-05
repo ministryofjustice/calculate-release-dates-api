@@ -149,7 +149,7 @@ class BulkComparisonService(
       val mismatch = buildMismatch(calculableSentenceEnvelope)
       val hdced4PlusDate = getHdced4PlusDate(mismatch)
 
-      if (comparison.shouldStoreMismatch(mismatch)) {
+      if (comparison.shouldStoreMismatch(mismatch, hdced4PlusDate != null)) {
         val establishmentValue = if (comparison.comparisonType != ComparisonType.MANUAL) {
           if (establishment == null || establishment == "") {
             comparison.prison!!
@@ -471,9 +471,9 @@ class BulkComparisonService(
     private val log: Logger = LoggerFactory.getLogger(BulkComparisonService::class.java)
   }
 
-  private fun Comparison.shouldStoreMismatch(mismatch: Mismatch): Boolean {
+  private fun Comparison.shouldStoreMismatch(mismatch: Mismatch, hasHdced: Boolean): Boolean {
     if (comparisonType == ComparisonType.ESTABLISHMENT_HDCED4PLUS) {
-      return mismatch.type == MismatchType.VALIDATION_ERROR_HDC4_PLUS || mismatch.type == MismatchType.UNSUPPORTED_SENTENCE_TYPE_FOR_HDC4_PLUS
+      return mismatch.type == MismatchType.VALIDATION_ERROR_HDC4_PLUS || mismatch.type == MismatchType.UNSUPPORTED_SENTENCE_TYPE_FOR_HDC4_PLUS || hasHdced
     }
 
     return true
