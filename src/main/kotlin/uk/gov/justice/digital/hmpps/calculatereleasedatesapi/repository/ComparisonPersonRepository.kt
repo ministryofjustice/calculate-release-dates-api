@@ -10,4 +10,6 @@ interface ComparisonPersonRepository : JpaRepository<ComparisonPerson, Long> {
   fun findByComparisonIdIsAndIsMatchFalse(comparisonId: Long): List<ComparisonPerson>
 
   fun findByComparisonIdAndShortReference(comparisonId: Long, shortReference: String): ComparisonPerson?
+
+  fun findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(id: Long): List<ComparisonPerson>
 }

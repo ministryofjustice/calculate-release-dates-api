@@ -99,8 +99,9 @@ class ComparisonService(
         }
       }
 
+      val hdc4PlusResults = comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)
       val mismatchesSortedByReleaseDate = mismatchesAndCrdsDates.sortedWith(::releaseDateComparator)
-      return transform(comparison, mismatchesSortedByReleaseDate.map { it.first })
+      return transform(comparison, mismatchesSortedByReleaseDate.map { it.first }, hdc4PlusResults)
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
   }

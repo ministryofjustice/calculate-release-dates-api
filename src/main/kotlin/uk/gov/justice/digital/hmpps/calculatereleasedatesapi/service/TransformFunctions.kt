@@ -729,6 +729,19 @@ fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
   comparison.numberOfPeopleCompared,
 )
 
+fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4PlusResults: List<ComparisonPerson>): ComparisonOverview = ComparisonOverview(
+  comparison.comparisonShortReference,
+  comparison.prison,
+  comparison.comparisonType,
+  comparison.calculatedAt,
+  comparison.calculatedByUsername,
+  comparison.numberOfMismatches,
+  comparison.numberOfPeopleCompared,
+  mismatches.map { transform(it) },
+  comparison.comparisonStatus.name,
+  hdc4PlusResults.map { transform(it) },
+)
+
 fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>): ComparisonOverview = ComparisonOverview(
   comparison.comparisonShortReference,
   comparison.prison,
@@ -739,6 +752,7 @@ fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>): Compa
   comparison.numberOfPeopleCompared,
   mismatches.map { transform(it) },
   comparison.comparisonStatus.name,
+  emptyList(),
 )
 
 private fun transform(comparisonPerson: ComparisonPerson): ComparisonMismatchSummary = ComparisonMismatchSummary(
