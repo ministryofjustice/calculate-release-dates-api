@@ -127,12 +127,5 @@ enum class SentenceCalculationType(
       } catch (error: IllegalArgumentException) {
         false
       }
-
-    fun isStandardDeterminate(sentenceCalculationType: String): Boolean =
-      try {
-        from(sentenceCalculationType).sentenceClazz == StandardDeterminateSentence::class.java
-      } catch (error: IllegalArgumentException) {
-        false
-      }
   }
 }

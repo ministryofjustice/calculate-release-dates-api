@@ -354,7 +354,7 @@ class BulkComparisonService(
 
     val sentenceAndOffences = calculableSentenceEnvelope.sentenceAndOffences
     val applicableSentences =
-      sentenceAndOffences.filter { SentenceCalculationType.from(it.sentenceCalculationType) in HDC4_PLUS_SENTENCE_TYPES }
+      sentenceAndOffences.filter { isHdc4PlusSentenceType(it.sentenceCalculationType) }
     if (applicableSentences.isEmpty()) {
       return false
     }
@@ -387,8 +387,8 @@ class BulkComparisonService(
       return false
     }
 
-    val sdsSentencesWithValidDuration = unsupportedDeterminateSentences
-      .filter { SentenceCalculationType.isStandardDeterminate(it.sentenceCalculationType) }
+    val sdsSentencesWithValidDuration = calculableSentenceEnvelope.sentenceAndOffences
+      .filter { isHdc4PlusSentenceType(it.sentenceCalculationType) }
       .filter { sentence -> isValidHdc4PlusDuration(sentence) }
 
     if (sdsSentencesWithValidDuration.isEmpty()) {
@@ -400,6 +400,14 @@ class BulkComparisonService(
     }
 
     return nonSdsPlusSentences.isNotEmpty()
+  }
+
+  private fun isHdc4PlusSentenceType(sentenceCalculationType: String): Boolean {
+    return try {
+      return SentenceCalculationType.from(sentenceCalculationType) in HDC4_PLUS_SENTENCE_TYPES
+    } catch (error: IllegalArgumentException) {
+      false
+    }
   }
 
   private fun isValidHdc4PlusDuration(sentence: SentenceAndOffences): Boolean {
