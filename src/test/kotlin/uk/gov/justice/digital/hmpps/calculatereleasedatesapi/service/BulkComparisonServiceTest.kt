@@ -501,6 +501,9 @@ class BulkComparisonServiceTest {
       sentenceAndOffences = listOf(
         sentenceAndOffence.copy(
           sentenceCalculationType = SentenceCalculationType.CIVIL.name,
+        ),
+        sentenceAndOffence.copy(
+          sentenceCalculationType = SentenceCalculationType.SEC91_03.name,
           offences = listOf(sdsPlusOffence),
         ),
       ),
@@ -533,10 +536,10 @@ class BulkComparisonServiceTest {
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-    val unsupportedSdsFiveYearsSentenceEnvelope = calculableSentenceEnvelope.copy(
-      sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.LR_EPP.name)),
+    val unsupportedAndSdsFiveYearsSentenceEnvelope = calculableSentenceEnvelope.copy(
+      sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.LR_EPP.name), sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.ADIMP.name)),
     )
-    val mismatch = bulkComparisonService.buildMismatch(unsupportedSdsFiveYearsSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(unsupportedAndSdsFiveYearsSentenceEnvelope)
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
