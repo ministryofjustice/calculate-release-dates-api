@@ -36,7 +36,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyCategoryRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
@@ -51,7 +50,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
   private val comparisonRepository = mock<ComparisonRepository>()
   private val comparisonPersonRepository = mock<ComparisonPersonRepository>()
   private val comparisonPersonDiscrepancyRepository = mock<ComparisonPersonDiscrepancyRepository>()
-  private val comparisonPersonDiscrepancyCategoryRepository = mock<ComparisonPersonDiscrepancyCategoryRepository>()
   private var serviceUserService = mock<ServiceUserService>()
   private var bulkComparisonService = mock<BulkComparisonService>()
   private val calculationTransactionalService = mock<CalculationTransactionalService>()
@@ -186,7 +184,141 @@ class ComparisonServiceTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `Sorts comparison mismatches by earliest release date`() {
+  fun `Sorts comparison mismatches by establishment and release date`() {
+    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
+    val comparison = aComparison()
+    val comparisonPerson1 = aComparisonPerson(
+      1,
+      comparison.id,
+      1,
+      "person 1",
+      establishment = "BMI",
+    )
+    val calculationOutcomePerson1Crd = CalculationOutcome(
+      calculationDateType = ReleaseDateType.CRD.name,
+      outcomeDate = LocalDate.of(2036, 2, 20),
+      calculationRequestId = 1,
+    )
+    val calculationOutcomePerson1Esed = CalculationOutcome(
+      calculationDateType = ReleaseDateType.ESED.name,
+      outcomeDate = LocalDate.of(2024, 5, 13),
+      calculationRequestId = 1,
+    )
+    val comparisonPerson2 = aComparisonPerson(
+      2,
+      comparison.id,
+      2,
+      "person 2",
+      establishment = "BMI",
+    )
+    val calculationOutcomePerson2Ard = CalculationOutcome(
+      calculationDateType = ReleaseDateType.ARD.name,
+      outcomeDate = LocalDate.of(2032, 4, 24),
+      calculationRequestId = 2,
+    )
+    val comparisonPerson3 = aComparisonPerson(
+      3,
+      comparison.id,
+      3,
+      "person 3",
+      establishment = "ABC",
+    )
+    val comparisonPerson4 = aComparisonPerson(
+      4,
+      comparison.id,
+      4,
+      "person 4",
+      establishment = "BMI",
+    )
+    val calculationOutcomePerson4Crd = CalculationOutcome(
+      calculationDateType = ReleaseDateType.CRD.name,
+      outcomeDate = LocalDate.of(2034, 6, 15),
+      calculationRequestId = 4,
+    )
+
+    val comparisonPerson5 = aComparisonPerson(
+      5,
+      comparison.id,
+      5,
+      "person 5",
+      establishment = "BMI",
+    )
+    val calculationOutcomePerson5Crd = CalculationOutcome(
+      calculationDateType = ReleaseDateType.CRD.name,
+      outcomeDate = LocalDate.of(2028, 6, 19),
+      calculationRequestId = 5,
+    )
+    val calculationOutcomePerson5Hdced = CalculationOutcome(
+      calculationDateType = ReleaseDateType.HDCED.name,
+      outcomeDate = LocalDate.of(2028, 6, 19),
+      calculationRequestId = 5,
+    )
+
+    val comparisonPerson6 = aComparisonPerson(
+      6,
+      comparison.id,
+      6,
+      "person 6",
+      establishment = "DEF",
+    )
+    val calculationOutcomePerson6Prrd = CalculationOutcome(
+      calculationDateType = ReleaseDateType.PRRD.name,
+      outcomeDate = LocalDate.of(2029, 6, 15),
+      calculationRequestId = 6,
+    )
+    val comparisonPerson7 = aComparisonPerson(
+      7,
+      comparison.id,
+      7,
+      "person 7",
+      establishment = "ABC",
+    )
+    val calculationOutcomePerson7Mtd = CalculationOutcome(
+      calculationDateType = ReleaseDateType.MTD.name,
+      outcomeDate = LocalDate.of(2033, 4, 25),
+      calculationRequestId = 7,
+    )
+    val comparisonPersons = listOf(
+      comparisonPerson1,
+      comparisonPerson2,
+      comparisonPerson3,
+      comparisonPerson4,
+      comparisonPerson5,
+      comparisonPerson6,
+      comparisonPerson7,
+    )
+    val calculationOutcomes = listOf(
+      calculationOutcomePerson2Ard,
+      calculationOutcomePerson6Prrd,
+      calculationOutcomePerson1Crd,
+      calculationOutcomePerson4Crd,
+      calculationOutcomePerson5Crd,
+      calculationOutcomePerson1Esed,
+      calculationOutcomePerson5Hdced,
+      calculationOutcomePerson7Mtd,
+    )
+    whenever(
+      comparisonRepository.findByComparisonShortReference("ABCD1234"),
+    ).thenReturn(comparison)
+    whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(comparisonPersons)
+
+    whenever(calculationOutcomeRepository.findByCalculationRequestIdIn(any())).thenReturn(calculationOutcomes)
+
+    val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
+
+    assertEquals(comparison.comparisonShortReference, result.comparisonShortReference)
+    assertEquals(comparisonPersons.size, result.mismatches.size)
+    assertEquals(comparisonPerson7.person, result.mismatches[0].personId)
+    assertEquals(comparisonPerson3.person, result.mismatches[1].personId)
+    assertEquals(comparisonPerson5.person, result.mismatches[2].personId)
+    assertEquals(comparisonPerson2.person, result.mismatches[3].personId)
+    assertEquals(comparisonPerson4.person, result.mismatches[4].personId)
+    assertEquals(comparisonPerson1.person, result.mismatches[5].personId)
+    assertEquals(comparisonPerson6.person, result.mismatches[6].personId)
+  }
+
+  @Test
+  fun `Sorts comparison mismatches by earliest release date if establishment not populated`() {
     whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
     val comparison = aComparison()
     val comparisonPerson1 = aComparisonPerson(
@@ -368,6 +500,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     comparisonId: Long,
     calculationRequestId: Long,
     person: String,
+    establishment: String? = null,
   ): ComparisonPerson {
     val emptyObjectNode = objectMapper.createObjectNode()
     return ComparisonPerson(
@@ -386,7 +519,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       breakdownByReleaseDateType = emptyObjectNode,
       calculationRequestId = calculationRequestId,
       sdsPlusSentencesIdentified = emptyObjectNode,
-      establishment = "BMI",
+      establishment = establishment,
     )
   }
 
