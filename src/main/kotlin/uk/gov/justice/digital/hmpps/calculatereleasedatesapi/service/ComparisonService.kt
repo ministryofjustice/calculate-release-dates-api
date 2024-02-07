@@ -100,7 +100,7 @@ class ComparisonService(
       }
 
       val hdc4PlusResults = comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)
-      val mismatchesSortedByReleaseDate = mismatchesAndCrdsDates.sortedWith(::releaseDateComparator)
+      val mismatchesSortedByReleaseDate = mismatchesAndCrdsDates.sortedWith(::establishmentAndReleaseDateComparator)
       return transform(comparison, mismatchesSortedByReleaseDate.map { it.first }, hdc4PlusResults)
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
@@ -109,7 +109,7 @@ class ComparisonService(
   fun getComparisonPersonByShortReference(comparisonReference: String, comparisonPersonReference: String): ComparisonPersonOverview {
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
 
-    if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
+    if (comparison.prison != null && (prisonService.getCurrentUserPrisonsList().contains(comparison.prison) || comparison.prison == "all")) {
       val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
       val hasDiscrepancyRecorded = comparisonPersonDiscrepancyRepository.existsByComparisonPerson(comparisonPerson)
       val calculatedReleaseDates = comparisonPerson.calculationRequestId?.let { calculationTransactionalService.findCalculationResults(it) }
@@ -149,10 +149,19 @@ class ComparisonService(
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
   }
 
-  private fun releaseDateComparator(
+  private fun establishmentAndReleaseDateComparator(
     mismatchA: Pair<ComparisonPerson, List<CalculationOutcome>>,
     mismatchB: Pair<ComparisonPerson, List<CalculationOutcome>>,
   ): Int {
+    val establishmentA = mismatchA.first.establishment
+    val establishmentB = mismatchB.first.establishment
+    if (establishmentA != null && establishmentB != null) {
+      val establishmentComparison = establishmentA.compareTo(establishmentB)
+      if (establishmentComparison != 0) {
+        return establishmentComparison
+      }
+    }
+
     val releaseDatesA = mismatchA.second
     val releaseDatesB = mismatchB.second
 
