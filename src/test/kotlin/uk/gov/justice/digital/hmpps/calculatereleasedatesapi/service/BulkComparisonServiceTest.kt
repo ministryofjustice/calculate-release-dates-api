@@ -898,7 +898,7 @@ class BulkComparisonServiceTest {
       isMatch = false,
       isValid = true,
       mismatchType = MismatchType.RELEASE_DATES_MISMATCH,
-      validationMessages = emptyList(),
+      validationMessages = emptyObjectNode,
       calculatedByUsername = USERNAME,
       nomisDates = emptyObjectNode,
       overrideDates = emptyObjectNode,
