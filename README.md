@@ -33,7 +33,7 @@ values required.
 # Instructions
 
 If this is a HMPPS project then the project will be created as part of bootstrapping -
-see https://github.com/ministryofjustice/dps-project-bootstrap.
+see https://github.com/ministryofjustice/hmpps-project-bootstrap.
 
 `$ ./run-full.sh`
 +Or, to run with default properties set in the docker-compose file
