@@ -168,7 +168,7 @@ class BulkComparisonService(
             isMatch = mismatch.isMatch,
             isValid = mismatch.isValid,
             mismatchType = mismatch.type,
-            validationMessages = mismatch.messages,
+            validationMessages = objectMapper.valueToTree(mismatch.messages),
             calculatedByUsername = comparison.calculatedByUsername,
             calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
             nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) }

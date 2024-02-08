@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import com.fasterxml.jackson.databind.JsonNode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -14,7 +14,7 @@ data class ComparisonPersonOverview(
   val hasDiscrepancyRecord: Boolean,
   val mismatchType: MismatchType,
   val isActiveSexOffender: Boolean?,
-  val validationMessages: List<ValidationMessage>,
+  val validationMessages: JsonNode,
   val shortReference: String,
   val bookingId: Long,
   val calculatedAt: LocalDateTime,
