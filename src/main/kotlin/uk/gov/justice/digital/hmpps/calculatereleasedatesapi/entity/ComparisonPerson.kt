@@ -14,7 +14,6 @@ import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.Type
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
@@ -47,7 +46,7 @@ class ComparisonPerson(
 
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
-  val validationMessages: List<ValidationMessage>,
+  val validationMessages: JsonNode,
 
   @JsonIgnore
   @NotNull
