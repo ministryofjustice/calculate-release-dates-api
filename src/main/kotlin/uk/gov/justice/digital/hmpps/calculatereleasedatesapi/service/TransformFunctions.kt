@@ -762,7 +762,7 @@ private fun transform(comparisonPerson: ComparisonPerson, objectMapper: ObjectMa
   comparisonPerson.lastName,
   comparisonPerson.isValid,
   comparisonPerson.isMatch,
-  transform( comparisonPerson.validationMessages,objectMapper),
+  transform(comparisonPerson.validationMessages, objectMapper),
   comparisonPerson.shortReference,
   comparisonPerson.mismatchType,
   comparisonPerson.sdsPlusSentencesIdentified,
