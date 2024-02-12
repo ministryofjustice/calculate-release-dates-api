@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
@@ -27,9 +29,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPer
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
+import java.time.LocalDate
 
 class ComparisonIntTest : IntegrationTestBase() {
 
@@ -100,6 +104,32 @@ class ComparisonIntTest : IntegrationTestBase() {
     assertTrue(result.mismatches[0].isValid)
     assertFalse(result.mismatches[0].isMatch)
     assertEquals("Z0020ZZ", result.mismatches[0].personId)
+  }
+
+  @ParameterizedTest
+  @EnumSource(ComparisonType::class, names = ["ESTABLISHMENT_FULL", "ESTABLISHMENT_HDCED4PLUS"], mode = EnumSource.Mode.INCLUDE)
+  fun `Retrieve comparison for HDC4+ must populate all HDC4+ dates on relevant comparison types`(comparisonType: ComparisonType) {
+    val comparison = createComparison("HDC4P", comparisonType)
+    val result = webTestClient.get()
+      .uri("/comparison/{comparisonId}", comparison.comparisonShortReference)
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ComparisonOverview::class.java)
+      .returnResult().responseBody!!
+
+    assertEquals(comparison.prison, result.prison)
+    assertEquals(1, result.hdc4PlusCalculated.size)
+    assertTrue(result.hdc4PlusCalculated[0].isValid)
+    assertFalse(result.hdc4PlusCalculated[0].isMatch)
+
+    assertEquals("HDC4PNO", result.hdc4PlusCalculated[0].personId)
+    assertEquals("HDC4PMistmatch", result.hdc4PlusCalculated[0].lastName)
+    assertEquals("HDC4P", result.hdc4PlusCalculated[0].establishment)
+    assertEquals(MismatchType.RELEASE_DATES_MISMATCH, result.hdc4PlusCalculated[0].misMatchType)
+    assertEquals(LocalDate.of(2021, 9, 19), result.hdc4PlusCalculated[0].hdcedFourPlusDate)
   }
 
   @Test
