@@ -130,8 +130,6 @@ class ComparisonIntTest(private val mockPrisonClient: MockPrisonClient) : Integr
 
     assertEquals(comparison.prison, result.prison)
     assertEquals(1, result.hdc4PlusCalculated.size)
-    assertTrue(result.hdc4PlusCalculated[0].isValid)
-    assertFalse(result.hdc4PlusCalculated[0].isMatch)
 
     assertEquals("HDC4PNO", result.hdc4PlusCalculated[0].personId)
     assertEquals("HDC4PMistmatch", result.hdc4PlusCalculated[0].lastName)
