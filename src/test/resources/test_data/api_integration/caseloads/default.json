@@ -4,11 +4,5 @@
     "description": "ABC",
     "type": "INST",
     "currentlyActive": true
-  },
-  {
-    "caseLoadId": "HDC4P",
-    "description": "HDC4P",
-    "type": "INST",
-    "currentlyActive": true
   }
 ]

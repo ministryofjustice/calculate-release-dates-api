@@ -16,6 +16,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyCategory
@@ -23,6 +24,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Discre
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyPriority
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancySubCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
@@ -35,7 +38,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Comparis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import java.time.LocalDate
 
-class ComparisonIntTest : IntegrationTestBase() {
+class ComparisonIntTest(private val mockPrisonClient: MockPrisonClient) : IntegrationTestBase() {
 
   @Autowired
   lateinit var comparisonPersonRepository: ComparisonPersonRepository
@@ -50,6 +53,7 @@ class ComparisonIntTest : IntegrationTestBase() {
   fun clearTables() {
     comparisonPersonRepository.deleteAll()
     comparisonRepository.deleteAll()
+    mockPrisonClient.withPrisonCalculableSentences("ABC", "ABC")
   }
 
   @Test
@@ -109,6 +113,10 @@ class ComparisonIntTest : IntegrationTestBase() {
   @ParameterizedTest
   @EnumSource(ComparisonType::class, names = ["ESTABLISHMENT_FULL", "ESTABLISHMENT_HDCED4PLUS"], mode = EnumSource.Mode.INCLUDE)
   fun `Retrieve comparison for HDC4+ must populate all HDC4+ dates on relevant comparison types`(comparisonType: ComparisonType) {
+    mockPrisonClient
+      .withCaseLoadsForMe(CaseLoad("HDC4P", "HDC4P", CaseLoadType.INST, null, currentlyActive = true))
+      .withPrisonCalculableSentences("HDC4P", "PrisonWithSomeHDC4+CasesForBulkLoad")
+
     val comparison = createComparison("HDC4P", comparisonType)
     val result = webTestClient.get()
       .uri("/comparison/{comparisonId}", comparison.comparisonShortReference)
