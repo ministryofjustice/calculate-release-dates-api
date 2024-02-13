@@ -1,14 +1,22 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
@@ -16,7 +24,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -32,6 +42,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Period
@@ -42,6 +54,8 @@ import java.time.temporal.ChronoUnit.YEARS
 import java.util.UUID
 
 class TransformFunctionsTest {
+
+  private val objectMapper: ObjectMapper = TestUtil.objectMapper()
 
   @Test
   fun `Transform an offenders Sentence and offences into a Sentence correctly where there are multiple offences`() {
@@ -390,6 +404,51 @@ class TransformFunctionsTest {
     assertThat(additionalDays[0].appliesToSentencesFrom).isEqualTo(fromDate)
     assertThat(additionalDays[0].fromDate).isEqualTo(fromDate)
     assertThat(additionalDays[0].toDate).isEqualTo(toDate)
+  }
+
+  @Test
+  fun `Transform ComparisonPerson with correct validation messages`() {
+    val comparison: Comparison = Comparison(
+      1, UUID.randomUUID(), "ref", objectMapper.createObjectNode(),
+      "ABC", ComparisonType.MANUAL, LocalDateTime.now(), "User",
+      ComparisonStatus(ComparisonStatusValue.COMPLETED),
+    )
+
+    var comparisonMismatchSummary: ComparisonOverview =
+      transform(comparison, listOf(getComparisonPerson()), objectMapper)
+
+    assertThat(comparisonMismatchSummary.mismatches[0].validationMessages.size).isEqualTo(0)
+
+    val validationMessages = listOf(
+      ValidationMessage(ValidationCode.DTO_RECALL),
+      ValidationMessage(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE),
+    )
+    comparisonMismatchSummary = transform(comparison, listOf(getComparisonPerson(validationMessages)), objectMapper)
+    assertThat(comparisonMismatchSummary.mismatches[0].validationMessages.size).isEqualTo(2)
+    assertTrue(comparisonMismatchSummary.mismatches[0].validationMessages.contains(ValidationMessage(ValidationCode.DTO_RECALL)))
+    assertTrue(comparisonMismatchSummary.mismatches[0].validationMessages.contains(ValidationMessage(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE)))
+  }
+
+  private fun getComparisonPerson(validationMessages: List<ValidationMessage>? = emptyList()): ComparisonPerson {
+    val comparisonPerson = ComparisonPerson(
+      id = 1,
+      comparisonId = 1,
+      person = "person",
+      lastName = "Smith",
+      latestBookingId = 25,
+      isMatch = false,
+      isValid = true,
+      mismatchType = MismatchType.RELEASE_DATES_MISMATCH,
+      validationMessages = objectMapper.valueToTree(validationMessages),
+      calculatedByUsername = ComparisonServiceTest.USERNAME,
+      nomisDates = objectMapper.createObjectNode(),
+      overrideDates = objectMapper.createObjectNode(),
+      breakdownByReleaseDateType = objectMapper.createObjectNode(),
+      calculationRequestId = 1,
+      sdsPlusSentencesIdentified = objectMapper.createObjectNode(),
+      establishment = "ABC",
+    )
+    return comparisonPerson
   }
 
   private companion object {
