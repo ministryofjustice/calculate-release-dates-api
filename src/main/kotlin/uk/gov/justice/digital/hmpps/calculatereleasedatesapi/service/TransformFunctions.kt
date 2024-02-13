@@ -732,7 +732,7 @@ fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
   comparison.numberOfPeopleCompared,
 )
 
-fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4PlusResults: List<ComparisonPerson>, objectMapper: ObjectMapper): ComparisonOverview = ComparisonOverview(
+fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4PlusResults: List<HdcFourPlusComparisonMismatch>, objectMapper: ObjectMapper): ComparisonOverview = ComparisonOverview(
   comparison.comparisonShortReference,
   comparison.prison,
   comparison.comparisonType,
@@ -742,12 +742,8 @@ fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4Pl
   comparison.numberOfPeopleCompared,
   mismatches.map { transform(it, objectMapper) },
   comparison.comparisonStatus.name,
-  transformToHdcFourPlusComparisonMismatch(hdc4PlusResults),
+  hdc4PlusResults,
 )
-
-fun transformToHdcFourPlusComparisonMismatch(hdc4PlusResults: List<ComparisonPerson>): List<HdcFourPlusComparisonMismatch> = hdc4PlusResults.map {
-  HdcFourPlusComparisonMismatch(it.person, it.lastName, it.mismatchType, it.hdcedFourPlusDate!!, it.establishment)
-}
 
 fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, objectMapper: ObjectMapper): ComparisonOverview = ComparisonOverview(
   comparison.comparisonShortReference,

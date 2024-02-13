@@ -8,4 +8,5 @@ data class HdcFourPlusComparisonMismatch(
   val misMatchType: MismatchType,
   val hdcedFourPlusDate: LocalDate,
   val establishment: String?,
+  val releaseDate: ReleaseDate? = null,
 )

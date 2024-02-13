@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Discre
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyImpact
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyPriority
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancySubCategory
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
@@ -33,6 +34,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSum
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
@@ -131,11 +133,13 @@ class ComparisonIntTest(private val mockPrisonClient: MockPrisonClient) : Integr
     assertEquals(comparison.prison, result.prison)
     assertEquals(1, result.hdc4PlusCalculated.size)
 
-    assertEquals("HDC4PNO", result.hdc4PlusCalculated[0].personId)
-    assertEquals("HDC4PMistmatch", result.hdc4PlusCalculated[0].lastName)
-    assertEquals("HDC4P", result.hdc4PlusCalculated[0].establishment)
-    assertEquals(MismatchType.RELEASE_DATES_MISMATCH, result.hdc4PlusCalculated[0].misMatchType)
-    assertEquals(LocalDate.of(2021, 9, 19), result.hdc4PlusCalculated[0].hdcedFourPlusDate)
+    val hdcFourPlusComparisonMismatch = result.hdc4PlusCalculated[0]
+    assertEquals("HDC4PNO", hdcFourPlusComparisonMismatch.personId)
+    assertEquals("HDC4PMistmatch", hdcFourPlusComparisonMismatch.lastName)
+    assertEquals("HDC4P", hdcFourPlusComparisonMismatch.establishment)
+    assertEquals(MismatchType.RELEASE_DATES_MISMATCH, hdcFourPlusComparisonMismatch.misMatchType)
+    assertEquals(LocalDate.of(2021, 9, 19), hdcFourPlusComparisonMismatch.hdcedFourPlusDate)
+    assertEquals(hdcFourPlusComparisonMismatch.releaseDate, ReleaseDate(LocalDate.of(2022, 3, 17), ReleaseDateType.CRD))
   }
 
   @Test
