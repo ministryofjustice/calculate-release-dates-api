@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -100,6 +101,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit.DAYS
@@ -729,7 +731,7 @@ fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
   comparison.numberOfPeopleCompared,
 )
 
-fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4PlusResults: List<ComparisonPerson>): ComparisonOverview = ComparisonOverview(
+fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4PlusResults: List<ComparisonPerson>, objectMapper: ObjectMapper): ComparisonOverview = ComparisonOverview(
   comparison.comparisonShortReference,
   comparison.prison,
   comparison.comparisonType,
@@ -737,12 +739,12 @@ fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4Pl
   comparison.calculatedByUsername,
   comparison.numberOfMismatches,
   comparison.numberOfPeopleCompared,
-  mismatches.map { transform(it) },
+  mismatches.map { transform(it, objectMapper) },
   comparison.comparisonStatus.name,
-  hdc4PlusResults.map { transform(it) },
+  hdc4PlusResults.map { transform(it, objectMapper) },
 )
 
-fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>): ComparisonOverview = ComparisonOverview(
+fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, objectMapper: ObjectMapper): ComparisonOverview = ComparisonOverview(
   comparison.comparisonShortReference,
   comparison.prison,
   comparison.comparisonType,
@@ -750,23 +752,28 @@ fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>): Compa
   comparison.calculatedByUsername,
   comparison.numberOfMismatches,
   comparison.numberOfPeopleCompared,
-  mismatches.map { transform(it) },
+  mismatches.map { transform(it, objectMapper) },
   comparison.comparisonStatus.name,
   emptyList(),
 )
 
-private fun transform(comparisonPerson: ComparisonPerson): ComparisonMismatchSummary = ComparisonMismatchSummary(
+private fun transform(comparisonPerson: ComparisonPerson, objectMapper: ObjectMapper): ComparisonMismatchSummary = ComparisonMismatchSummary(
   comparisonPerson.person,
   comparisonPerson.lastName,
   comparisonPerson.isValid,
   comparisonPerson.isMatch,
-  comparisonPerson.validationMessages,
+  transform(comparisonPerson.validationMessages, objectMapper),
   comparisonPerson.shortReference,
   comparisonPerson.mismatchType,
   comparisonPerson.sdsPlusSentencesIdentified,
   comparisonPerson.hdcedFourPlusDate,
   comparisonPerson.establishment,
 )
+
+private fun transform(validationMessageJsonNode: JsonNode, objectMapper: ObjectMapper): List<ValidationMessage> {
+  val validationMessages: List<ValidationMessage> = objectMapper.readValue(validationMessageJsonNode.toString())
+  return validationMessages
+}
 
 fun transform(
   comparisonPerson: ComparisonPerson,
@@ -776,6 +783,7 @@ fun transform(
   breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   sdsSentencesIdentified: List<SentenceAndOffences>,
   hasDiscrepancyRecorded: Boolean,
+  objectMapper: ObjectMapper,
 ): ComparisonPersonOverview = ComparisonPersonOverview(
   comparisonPerson.person,
   comparisonPerson.lastName,
@@ -784,7 +792,7 @@ fun transform(
   hasDiscrepancyRecorded,
   comparisonPerson.mismatchType,
   comparisonPerson.isActiveSexOffender,
-  comparisonPerson.validationMessages,
+  transform(comparisonPerson.validationMessages, objectMapper),
   comparisonPerson.shortReference,
   comparisonPerson.latestBookingId,
   comparisonPerson.calculatedAt,

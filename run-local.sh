@@ -24,6 +24,9 @@ export DB_PASS=calculate-release-dates
 # export HMPPS_AUTH_URL=https://sign-in-dev.hmpps.service.justice.gov.uk/auth
 export HMPPS_AUTH_URL=http://localhost:9090/auth
 
+# export PRISON_API_URL=https://prison-api-dev.prison.service.justice.gov.uk
+export PRISON_API_URL=http://localhost:8080
+
 # Make the connection without specifying the sslmode=verify-full requirement
 export SPRING_DATASOURCE_URL='jdbc:postgresql://${DB_SERVER}/${DB_NAME}'
 

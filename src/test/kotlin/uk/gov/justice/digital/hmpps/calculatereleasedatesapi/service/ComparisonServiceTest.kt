@@ -39,6 +39,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
@@ -503,6 +504,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     establishment: String? = null,
   ): ComparisonPerson {
     val emptyObjectNode = objectMapper.createObjectNode()
+    val emptyList: List<ValidationMessage> = emptyList()
     return ComparisonPerson(
       id,
       comparisonId,
@@ -512,7 +514,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       isMatch = false,
       isValid = true,
       mismatchType = MismatchType.RELEASE_DATES_MISMATCH,
-      validationMessages = emptyObjectNode,
+      validationMessages = objectMapper.valueToTree(emptyList),
       calculatedByUsername = USERNAME,
       nomisDates = emptyObjectNode,
       overrideDates = emptyObjectNode,

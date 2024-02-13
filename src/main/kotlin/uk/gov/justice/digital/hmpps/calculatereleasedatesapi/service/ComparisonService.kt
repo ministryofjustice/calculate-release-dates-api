@@ -101,7 +101,7 @@ class ComparisonService(
 
       val hdc4PlusResults = comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)
       val mismatchesSortedByReleaseDate = mismatchesAndCrdsDates.sortedWith(::establishmentAndReleaseDateComparator)
-      return transform(comparison, mismatchesSortedByReleaseDate.map { it.first }, hdc4PlusResults)
+      return transform(comparison, mismatchesSortedByReleaseDate.map { it.first }, hdc4PlusResults, objectMapper)
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
   }
@@ -117,7 +117,7 @@ class ComparisonService(
       val overrideDates = objectMapper.convertValue(comparisonPerson.overrideDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
       val breakdownByReleaseDateType = objectMapper.convertValue(comparisonPerson.breakdownByReleaseDateType, object : TypeReference<Map<ReleaseDateType, ReleaseDateCalculationBreakdown>>() {})
       val sdsPlusSentences = if (comparisonPerson.sdsPlusSentencesIdentified.isEmpty) emptyList<SentenceAndOffences>() else objectMapper.convertValue(comparisonPerson.sdsPlusSentencesIdentified, object : TypeReference<List<SentenceAndOffences>>() {})
-      return transform(comparisonPerson, nomisDates, calculatedReleaseDates, overrideDates, breakdownByReleaseDateType, sdsPlusSentences, hasDiscrepancyRecorded)
+      return transform(comparisonPerson, nomisDates, calculatedReleaseDates, overrideDates, breakdownByReleaseDateType, sdsPlusSentences, hasDiscrepancyRecorded, objectMapper)
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
   }
