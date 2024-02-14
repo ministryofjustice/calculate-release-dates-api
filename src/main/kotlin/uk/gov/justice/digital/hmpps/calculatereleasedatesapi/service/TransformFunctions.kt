@@ -79,6 +79,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideResponse
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HdcFourPlusComparisonMismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -731,7 +732,7 @@ fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
   comparison.numberOfPeopleCompared,
 )
 
-fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4PlusResults: List<ComparisonPerson>, objectMapper: ObjectMapper): ComparisonOverview = ComparisonOverview(
+fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4PlusResults: List<HdcFourPlusComparisonMismatch>, objectMapper: ObjectMapper): ComparisonOverview = ComparisonOverview(
   comparison.comparisonShortReference,
   comparison.prison,
   comparison.comparisonType,
@@ -741,7 +742,7 @@ fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4Pl
   comparison.numberOfPeopleCompared,
   mismatches.map { transform(it, objectMapper) },
   comparison.comparisonStatus.name,
-  hdc4PlusResults.map { transform(it, objectMapper) },
+  hdc4PlusResults,
 )
 
 fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, objectMapper: ObjectMapper): ComparisonOverview = ComparisonOverview(
@@ -766,7 +767,6 @@ private fun transform(comparisonPerson: ComparisonPerson, objectMapper: ObjectMa
   comparisonPerson.shortReference,
   comparisonPerson.mismatchType,
   comparisonPerson.sdsPlusSentencesIdentified,
-  comparisonPerson.hdcedFourPlusDate,
   comparisonPerson.establishment,
 )
 

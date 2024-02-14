@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
@@ -7,13 +8,18 @@ import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
+import org.junit.jupiter.api.extension.ParameterContext
+import org.junit.jupiter.api.extension.ParameterResolver
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 
 /*
@@ -24,15 +30,18 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransf
     Once a file is added to any of the directories, all calls will be stubbed, if not all directories have an
     entry for the given prisoner id, the mock will fallback to a default json file.
  */
-class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback, ParameterResolver {
   companion object {
     @JvmField
     val prisonApi = PrisonApiMockServer()
     const val DEFAULT = "default"
     val log: Logger = LoggerFactory.getLogger(this::class.java)
+    private val DEFAULT_CASELOAD = CaseLoad("ABC", "ABC", CaseLoadType.INST, null, currentlyActive = true)
   }
+
   private val jsonTransformation = JsonTransformation()
   private val objectMapper = TestUtil.objectMapper()
+  private val mockPrisonClient = MockPrisonClient(prisonApi, objectMapper, jsonTransformation)
 
   override fun beforeAll(context: ExtensionContext) {
     prisonApi.start()
@@ -50,12 +59,6 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
     val defaultFinePayment = finePayments[DEFAULT]!!
 
     val returnToCustodyDates = jsonTransformation.getAllReturnToCustodyDatesJson()
-
-    val prisonCalculableSentenceEnvelopes = jsonTransformation.getAllPrisonCalculableSentenceEnvelopesJson()
-
-    val prisonerCalculableSentenceEnvelopes = jsonTransformation.getAllPrisonerCalculableSentenceEnvelopesJson()
-
-    val caseloads = jsonTransformation.getAllCaseloads()
 
     val allPrisoners = (adjustments.keys + sentences.keys + prisoners.keys).distinct()
     allPrisoners.forEach {
@@ -105,25 +108,50 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
       prisonApi.stubOffenderFinePayments(it.hashCode().toLong(), finePayment)
 
       prisonApi.stubPostOffenderDates(it.hashCode().toLong())
-    }
 
-    prisonCalculableSentenceEnvelopes.forEach { (key, value) ->
-      prisonApi.stubPrisonCalculableSentenceEnvelope(key, value)
-    }
+      val prisonerCalculableSentenceEnvelopes = jsonTransformation.getAllPrisonerCalculableSentenceEnvelopesJson()
 
-    prisonerCalculableSentenceEnvelopes.forEach { (key, value) ->
-      prisonApi.stubPrisonerCalculableSentenceEnvelope(listOf(key), value)
+      prisonerCalculableSentenceEnvelopes.forEach { (key, value) ->
+        prisonApi.stubPrisonerCalculableSentenceEnvelope(listOf(key), value)
+      }
     }
-
-    prisonApi.stubCaseloads(caseloads[DEFAULT]!!)
   }
 
   override fun beforeEach(context: ExtensionContext) {
+    mockPrisonClient
+      .withCaseLoadsForMe(DEFAULT_CASELOAD)
+      .withPrisonCalculableSentences("ABC", "default")
     prisonApi.resetRequests()
   }
 
   override fun afterAll(context: ExtensionContext) {
     prisonApi.stop()
+  }
+
+  override fun supportsParameter(parameterContext: ParameterContext, context: ExtensionContext): Boolean {
+    return parameterContext.parameter.type == MockPrisonClient::class.java
+  }
+
+  override fun resolveParameter(parameterContext: ParameterContext, context: ExtensionContext): Any {
+    return MockPrisonClient(prisonApi, objectMapper, jsonTransformation)
+  }
+}
+
+class MockPrisonClient(
+  private val prisonApi: PrisonApiMockServer,
+  private val objectMapper: ObjectMapper,
+  private val jsonTransformation: JsonTransformation,
+) {
+  fun withCaseLoadsForMe(vararg caseloads: CaseLoad): MockPrisonClient {
+    prisonApi.stubCaseloads(objectMapper.writeValueAsString(caseloads.toList()))
+    return this
+  }
+
+  fun withPrisonCalculableSentences(establishmentId: String, keyInPrisonCalculableSentenceEnvelopeFolder: String): MockPrisonClient {
+    val json = jsonTransformation.getApiIntegrationJson(keyInPrisonCalculableSentenceEnvelopeFolder, "prisonCalculableSentenceEnvelope")
+    assertNotNull(json, "Expected there to be source file in prisonCalculableSentenceEnvelope called $keyInPrisonCalculableSentenceEnvelopeFolder.json")
+    prisonApi.stubPrisonCalculableSentenceEnvelope(establishmentId, json)
+    return this
   }
 }
 

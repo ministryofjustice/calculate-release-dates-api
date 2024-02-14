@@ -13,5 +13,5 @@ data class ComparisonOverview(
   val numberOfPeopleCompared: Long,
   val mismatches: List<ComparisonMismatchSummary>,
   val status: String,
-  val hdc4PlusCalculated: List<ComparisonMismatchSummary>,
+  val hdc4PlusCalculated: List<HdcFourPlusComparisonMismatch>,
 )

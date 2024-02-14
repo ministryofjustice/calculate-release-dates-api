@@ -9,29 +9,38 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyImpact
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyPriority
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancySubCategory
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
+import java.time.LocalDate
 
-class ComparisonIntTest : IntegrationTestBase() {
+class ComparisonIntTest(private val mockPrisonClient: MockPrisonClient) : IntegrationTestBase() {
 
   @Autowired
   lateinit var comparisonPersonRepository: ComparisonPersonRepository
@@ -46,6 +55,7 @@ class ComparisonIntTest : IntegrationTestBase() {
   fun clearTables() {
     comparisonPersonRepository.deleteAll()
     comparisonRepository.deleteAll()
+    mockPrisonClient.withPrisonCalculableSentences("ABC", "ABC")
   }
 
   @Test
@@ -100,6 +110,36 @@ class ComparisonIntTest : IntegrationTestBase() {
     assertTrue(result.mismatches[0].isValid)
     assertFalse(result.mismatches[0].isMatch)
     assertEquals("Z0020ZZ", result.mismatches[0].personId)
+  }
+
+  @ParameterizedTest
+  @EnumSource(ComparisonType::class, names = ["ESTABLISHMENT_FULL", "ESTABLISHMENT_HDCED4PLUS"], mode = EnumSource.Mode.INCLUDE)
+  fun `Retrieve comparison for HDC4+ must populate all HDC4+ dates on relevant comparison types`(comparisonType: ComparisonType) {
+    mockPrisonClient
+      .withCaseLoadsForMe(CaseLoad("HDC4P", "HDC4P", CaseLoadType.INST, null, currentlyActive = true))
+      .withPrisonCalculableSentences("HDC4P", "PrisonWithSomeHDC4+CasesForBulkLoad")
+
+    val comparison = createComparison("HDC4P", comparisonType)
+    val result = webTestClient.get()
+      .uri("/comparison/{comparisonId}", comparison.comparisonShortReference)
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ComparisonOverview::class.java)
+      .returnResult().responseBody!!
+
+    assertEquals(comparison.prison, result.prison)
+    assertEquals(1, result.hdc4PlusCalculated.size)
+
+    val hdcFourPlusComparisonMismatch = result.hdc4PlusCalculated[0]
+    assertEquals("HDC4PNO", hdcFourPlusComparisonMismatch.personId)
+    assertEquals("HDC4PMistmatch", hdcFourPlusComparisonMismatch.lastName)
+    assertEquals("HDC4P", hdcFourPlusComparisonMismatch.establishment)
+    assertEquals(MismatchType.RELEASE_DATES_MISMATCH, hdcFourPlusComparisonMismatch.misMatchType)
+    assertEquals(LocalDate.of(2021, 9, 19), hdcFourPlusComparisonMismatch.hdcedFourPlusDate)
+    assertEquals(hdcFourPlusComparisonMismatch.releaseDate, ReleaseDate(LocalDate.of(2022, 3, 17), ReleaseDateType.CRD))
   }
 
   @Test
