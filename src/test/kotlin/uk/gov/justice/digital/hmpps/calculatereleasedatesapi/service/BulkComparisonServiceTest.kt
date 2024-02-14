@@ -211,7 +211,7 @@ class BulkComparisonServiceTest {
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-    val mismatch = bulkComparisonService.buildMismatch(calculableSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(calculableSentenceEnvelope, emptyList())
 
     assertTrue(mismatch.isValid)
     assertTrue(mismatch.isMatch)
@@ -235,7 +235,7 @@ class BulkComparisonServiceTest {
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-    val mismatch = bulkComparisonService.buildMismatch(sexOffenderCalculableSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(sexOffenderCalculableSentenceEnvelope, emptyList())
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -262,7 +262,7 @@ class BulkComparisonServiceTest {
     val notHdc4SentenceTypeEnvelope = calculableSentenceEnvelope.copy(
       sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.SEC236A.name)),
     )
-    val mismatch = bulkComparisonService.buildMismatch(notHdc4SentenceTypeEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(notHdc4SentenceTypeEnvelope, emptyList())
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -289,7 +289,7 @@ class BulkComparisonServiceTest {
     val threeYearSentenceEnvelope = calculableSentenceEnvelope.copy(
       sentenceAndOffences = listOf(sentenceAndOffence.copy(terms = listOf(SentenceTerms(years = 3)))),
     )
-    val mismatch = bulkComparisonService.buildMismatch(threeYearSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(threeYearSentenceEnvelope, emptyList())
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -324,7 +324,7 @@ class BulkComparisonServiceTest {
       sentenceAndOffences = sentencesAndOffences,
     )
 
-    val mismatch = bulkComparisonService.buildMismatch(consecutiveSentencesEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(consecutiveSentencesEnvelope, emptyList())
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -359,7 +359,7 @@ class BulkComparisonServiceTest {
       sentenceAndOffences = sentencesAndOffences,
     )
 
-    val mismatch = bulkComparisonService.buildMismatch(consecutiveSentencesEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(consecutiveSentencesEnvelope, emptyList())
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -382,7 +382,7 @@ class BulkComparisonServiceTest {
     )
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-    val mismatch = bulkComparisonService.buildMismatch(calculableSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(calculableSentenceEnvelope, emptyList())
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -405,7 +405,7 @@ class BulkComparisonServiceTest {
     )
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-    val mismatch = bulkComparisonService.buildMismatch(sexOffenderCalculableSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(sexOffenderCalculableSentenceEnvelope, emptyList())
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -435,7 +435,7 @@ class BulkComparisonServiceTest {
     val indeterminateSentenceEnvelope = calculableSentenceEnvelope.copy(
       sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.LIFE.name)),
     )
-    val mismatch = bulkComparisonService.buildMismatch(indeterminateSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(indeterminateSentenceEnvelope, emptyList())
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -471,7 +471,7 @@ class BulkComparisonServiceTest {
       ),
     )
 
-    val mismatch = bulkComparisonService.buildMismatch(unsupportedSdsThreeYearsSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(unsupportedSdsThreeYearsSentenceEnvelope, emptyList())
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -497,19 +497,22 @@ class BulkComparisonServiceTest {
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
     val sdsPlusOffence = offenderOffence.copy(indicators = listOf(OffenderOffence.PCSC_SDS_PLUS))
+    val sdsPlusSentence = sentenceAndOffence.copy(
+      sentenceCalculationType = SentenceCalculationType.SEC91_03.name,
+      offences = listOf(sdsPlusOffence),
+    )
+
     val unsupportedSdsPlusSentenceEnvelope = calculableSentenceEnvelope.copy(
       sentenceAndOffences = listOf(
         sentenceAndOffence.copy(
           sentenceCalculationType = SentenceCalculationType.CIVIL.name,
         ),
-        sentenceAndOffence.copy(
-          sentenceCalculationType = SentenceCalculationType.SEC91_03.name,
-          offences = listOf(sdsPlusOffence),
-        ),
+        sdsPlusSentence,
       ),
     )
 
-    val mismatch = bulkComparisonService.buildMismatch(unsupportedSdsPlusSentenceEnvelope)
+    val sdsPlusSentenceAndOffences = listOf(sdsPlusSentence)
+    val mismatch = bulkComparisonService.buildMismatch(unsupportedSdsPlusSentenceEnvelope, sdsPlusSentenceAndOffences)
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -537,13 +540,101 @@ class BulkComparisonServiceTest {
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
     val unsupportedAndSdsFiveYearsSentenceEnvelope = calculableSentenceEnvelope.copy(
-      sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.LR_EPP.name), sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.ADIMP.name)),
+      sentenceAndOffences = listOf(
+        sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.LR_EPP.name),
+        sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.ADIMP.name),
+      ),
     )
-    val mismatch = bulkComparisonService.buildMismatch(unsupportedAndSdsFiveYearsSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(unsupportedAndSdsFiveYearsSentenceEnvelope, emptyList())
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
     assertEquals(MismatchType.UNSUPPORTED_SENTENCE_TYPE_FOR_HDC4_PLUS, mismatch.type)
+  }
+
+  @Test
+  fun `should be unsupported sentence type for HDC4+ when unsupported sentence and consecutive SDS sentences of more than 4 years`() {
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(
+      listOf(
+        ValidationMessage(ValidationCode.FTR_28_DAYS_SENTENCE_LT_12_MONTHS),
+        ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE),
+      ),
+      booking,
+      calculatedReleaseDates,
+      null,
+    )
+
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+
+    val sentence1 =
+      sentenceAndOffence.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+        sentenceSequence = 1,
+        terms = listOf(
+          SentenceTerms(months = 4),
+        ),
+      )
+    val sentence2 = sentenceAndOffence.copy(
+      sentenceCalculationType = SentenceCalculationType.SEC91_03.name,
+      sentenceSequence = 2,
+      terms = listOf(
+        SentenceTerms(years = 1),
+      ),
+    )
+    val sentence3 =
+      sentenceAndOffence.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+        sentenceSequence = 3,
+        consecutiveToSequence = 1,
+        terms = listOf(
+          SentenceTerms(years = 3),
+        ),
+      )
+    val sentence4 =
+      sentenceAndOffence.copy(
+        sentenceCalculationType = SentenceCalculationType.YOI_ORA.name,
+        sentenceSequence = 4,
+        consecutiveToSequence = 2,
+        terms = listOf(
+          SentenceTerms(months = 3),
+        ),
+      )
+    val sentence5 =
+      sentenceAndOffence.copy(
+        sentenceCalculationType = SentenceCalculationType.SEC250.name,
+        sentenceSequence = 5,
+        terms = listOf(
+          SentenceTerms(days = 5),
+        ),
+      )
+    val sentence6 =
+      sentenceAndOffence.copy(
+        sentenceCalculationType = SentenceCalculationType.SEC91_03.name,
+        sentenceSequence = 6,
+        consecutiveToSequence = 3,
+        terms = listOf(
+          SentenceTerms(years = 1),
+        ),
+      )
+    val sentence7 =
+      sentenceAndOffence.copy(
+        sentenceCalculationType = SentenceCalculationType.LR_EPP.name,
+        sentenceSequence = 7,
+        consecutiveToSequence = 6,
+      )
+    val sentencesAndOffences = listOf(sentence1, sentence2, sentence3, sentence4, sentence5, sentence6, sentence7)
+    val consecutiveSentencesEnvelope = calculableSentenceEnvelope.copy(
+      sentenceAndOffences = sentencesAndOffences,
+    )
+
+    val mismatch = bulkComparisonService.buildMismatch(consecutiveSentencesEnvelope, emptyList())
+    assertThat(mismatch.type).isEqualTo(MismatchType.UNSUPPORTED_SENTENCE_TYPE_FOR_HDC4_PLUS)
   }
 
   @Test
@@ -568,7 +659,7 @@ class BulkComparisonServiceTest {
     val indeterminateSentenceEnvelope = calculableSentenceEnvelope.copy(
       sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = "LIFE")),
     )
-    val mismatch = bulkComparisonService.buildMismatch(indeterminateSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(indeterminateSentenceEnvelope, emptyList())
 
     assertFalse(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -601,7 +692,7 @@ class BulkComparisonServiceTest {
 
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
-    val mismatch = bulkComparisonService.buildMismatch(calculableSentenceEnvelope)
+    val mismatch = bulkComparisonService.buildMismatch(calculableSentenceEnvelope, emptyList())
 
     assertTrue(mismatch.isValid)
     assertFalse(mismatch.isMatch)
@@ -771,12 +862,26 @@ class BulkComparisonServiceTest {
 
     val discrepancyImpact = ComparisonPersonDiscrepancyImpact(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION)
     val discrepancyPriority = ComparisonPersonDiscrepancyPriority(DiscrepancyPriority.MEDIUM_RISK)
-    val discrepancy = ComparisonPersonDiscrepancy(1, comparisonPerson, discrepancyImpact, emptyList(), discrepancyPriority = discrepancyPriority, detail = "detail", action = "action", createdBy = USERNAME)
+    val discrepancy = ComparisonPersonDiscrepancy(
+      1,
+      comparisonPerson,
+      discrepancyImpact,
+      emptyList(),
+      discrepancyPriority = discrepancyPriority,
+      detail = "detail",
+      action = "action",
+      createdBy = USERNAME,
+    )
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(
       comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
-    whenever(comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPerson.shortReference)).thenReturn(comparisonPerson)
+    whenever(
+      comparisonPersonRepository.findByComparisonIdAndShortReference(
+        comparison.id,
+        comparisonPerson.shortReference,
+      ),
+    ).thenReturn(comparisonPerson)
     whenever(comparisonPersonDiscrepancyRepository.save(any())).thenReturn(discrepancy)
     val discrepancyCause = DiscrepancyCause(DiscrepancyCategory.TUSED, DiscrepancySubCategory.REMAND_OR_UAL_RELATED)
     val discrepancyRequest = CreateComparisonDiscrepancyRequest(
@@ -786,7 +891,11 @@ class BulkComparisonServiceTest {
       priority = discrepancyPriority.priority,
       action = discrepancy.action,
     )
-    val discrepancySummary = bulkComparisonService.createDiscrepancy(comparison.comparisonShortReference, comparisonPerson.shortReference, discrepancyRequest)
+    val discrepancySummary = bulkComparisonService.createDiscrepancy(
+      comparison.comparisonShortReference,
+      comparisonPerson.shortReference,
+      discrepancyRequest,
+    )
 
     verify(comparisonPersonDiscrepancyRepository).save(any())
     verify(comparisonPersonDiscrepancyCategoryRepository).saveAll(ArgumentMatchers.anyList())
@@ -812,15 +921,42 @@ class BulkComparisonServiceTest {
 
     val discrepancyImpact = ComparisonPersonDiscrepancyImpact(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION)
     val discrepancyPriority = ComparisonPersonDiscrepancyPriority(DiscrepancyPriority.MEDIUM_RISK)
-    val discrepancy = ComparisonPersonDiscrepancy(2, comparisonPerson, discrepancyImpact, emptyList(), discrepancyPriority = discrepancyPriority, detail = "detail", action = "new action", createdBy = USERNAME)
-    val existingDiscrepancy = ComparisonPersonDiscrepancy(1, comparisonPerson, discrepancyImpact, emptyList(), discrepancyPriority = discrepancyPriority, detail = "detail", action = "exaction", createdBy = USERNAME)
+    val discrepancy = ComparisonPersonDiscrepancy(
+      2,
+      comparisonPerson,
+      discrepancyImpact,
+      emptyList(),
+      discrepancyPriority = discrepancyPriority,
+      detail = "detail",
+      action = "new action",
+      createdBy = USERNAME,
+    )
+    val existingDiscrepancy = ComparisonPersonDiscrepancy(
+      1,
+      comparisonPerson,
+      discrepancyImpact,
+      emptyList(),
+      discrepancyPriority = discrepancyPriority,
+      detail = "detail",
+      action = "exaction",
+      createdBy = USERNAME,
+    )
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(
       comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
-    whenever(comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPerson.shortReference)).thenReturn(comparisonPerson)
+    whenever(
+      comparisonPersonRepository.findByComparisonIdAndShortReference(
+        comparison.id,
+        comparisonPerson.shortReference,
+      ),
+    ).thenReturn(comparisonPerson)
     whenever(comparisonPersonDiscrepancyRepository.save(any())).thenReturn(discrepancy)
-    whenever(comparisonPersonDiscrepancyRepository.findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(comparisonPerson.shortReference)).thenReturn(existingDiscrepancy)
+    whenever(
+      comparisonPersonDiscrepancyRepository.findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
+        comparisonPerson.shortReference,
+      ),
+    ).thenReturn(existingDiscrepancy)
 
     val discrepancyCause = DiscrepancyCause(DiscrepancyCategory.TUSED, DiscrepancySubCategory.REMAND_OR_UAL_RELATED)
     val discrepancyRequest = CreateComparisonDiscrepancyRequest(
@@ -830,7 +966,11 @@ class BulkComparisonServiceTest {
       priority = discrepancyPriority.priority,
       action = discrepancy.action,
     )
-    val discrepancySummary = bulkComparisonService.createDiscrepancy(comparison.comparisonShortReference, comparisonPerson.shortReference, discrepancyRequest)
+    val discrepancySummary = bulkComparisonService.createDiscrepancy(
+      comparison.comparisonShortReference,
+      comparisonPerson.shortReference,
+      discrepancyRequest,
+    )
     verify(comparisonPersonDiscrepancyRepository, times(2)).save(any())
     verify(comparisonPersonDiscrepancyCategoryRepository).saveAll(ArgumentMatchers.anyList())
     assertEquals(discrepancyRequest.impact, discrepancySummary.impact)
