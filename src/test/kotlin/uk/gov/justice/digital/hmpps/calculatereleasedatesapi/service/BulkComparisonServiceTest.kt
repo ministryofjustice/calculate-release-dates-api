@@ -540,7 +540,10 @@ class BulkComparisonServiceTest {
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
     val unsupportedAndSdsFiveYearsSentenceEnvelope = calculableSentenceEnvelope.copy(
-      sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.LR_EPP.name), sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.ADIMP.name)),
+      sentenceAndOffences = listOf(
+        sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.LR_EPP.name),
+        sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.ADIMP.name),
+      ),
     )
     val mismatch = bulkComparisonService.buildMismatch(unsupportedAndSdsFiveYearsSentenceEnvelope, emptyList())
 
@@ -570,33 +573,53 @@ class BulkComparisonServiceTest {
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
 
     val sentence1 =
-      sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.ADIMP.name, sentenceSequence = 1)
+      sentenceAndOffence.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name, sentenceSequence = 1,
+        terms = listOf(
+          SentenceTerms(months = 4),
+        ),
+      )
     val sentence2 = sentenceAndOffence.copy(
       sentenceCalculationType = SentenceCalculationType.SEC91_03.name,
       sentenceSequence = 2,
+      terms = listOf(
+        SentenceTerms(years = 1),
+      ),
     )
     val sentence3 =
       sentenceAndOffence.copy(
         sentenceCalculationType = SentenceCalculationType.ADIMP.name,
         sentenceSequence = 3,
         consecutiveToSequence = 1,
+        terms = listOf(
+          SentenceTerms(years = 3),
+        ),
       )
     val sentence4 =
       sentenceAndOffence.copy(
         sentenceCalculationType = SentenceCalculationType.YOI_ORA.name,
         sentenceSequence = 4,
         consecutiveToSequence = 2,
+        terms = listOf(
+          SentenceTerms(months = 3),
+        ),
       )
     val sentence5 =
       sentenceAndOffence.copy(
         sentenceCalculationType = SentenceCalculationType.SEC250.name,
         sentenceSequence = 5,
+        terms = listOf(
+          SentenceTerms(days = 5),
+        ),
       )
     val sentence6 =
       sentenceAndOffence.copy(
         sentenceCalculationType = SentenceCalculationType.SEC91_03.name,
         sentenceSequence = 6,
         consecutiveToSequence = 3,
+        terms = listOf(
+          SentenceTerms(years = 1),
+        ),
       )
     val sentence7 =
       sentenceAndOffence.copy(
@@ -838,12 +861,26 @@ class BulkComparisonServiceTest {
 
     val discrepancyImpact = ComparisonPersonDiscrepancyImpact(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION)
     val discrepancyPriority = ComparisonPersonDiscrepancyPriority(DiscrepancyPriority.MEDIUM_RISK)
-    val discrepancy = ComparisonPersonDiscrepancy(1, comparisonPerson, discrepancyImpact, emptyList(), discrepancyPriority = discrepancyPriority, detail = "detail", action = "action", createdBy = USERNAME)
+    val discrepancy = ComparisonPersonDiscrepancy(
+      1,
+      comparisonPerson,
+      discrepancyImpact,
+      emptyList(),
+      discrepancyPriority = discrepancyPriority,
+      detail = "detail",
+      action = "action",
+      createdBy = USERNAME,
+    )
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(
       comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
-    whenever(comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPerson.shortReference)).thenReturn(comparisonPerson)
+    whenever(
+      comparisonPersonRepository.findByComparisonIdAndShortReference(
+        comparison.id,
+        comparisonPerson.shortReference,
+      ),
+    ).thenReturn(comparisonPerson)
     whenever(comparisonPersonDiscrepancyRepository.save(any())).thenReturn(discrepancy)
     val discrepancyCause = DiscrepancyCause(DiscrepancyCategory.TUSED, DiscrepancySubCategory.REMAND_OR_UAL_RELATED)
     val discrepancyRequest = CreateComparisonDiscrepancyRequest(
@@ -853,7 +890,11 @@ class BulkComparisonServiceTest {
       priority = discrepancyPriority.priority,
       action = discrepancy.action,
     )
-    val discrepancySummary = bulkComparisonService.createDiscrepancy(comparison.comparisonShortReference, comparisonPerson.shortReference, discrepancyRequest)
+    val discrepancySummary = bulkComparisonService.createDiscrepancy(
+      comparison.comparisonShortReference,
+      comparisonPerson.shortReference,
+      discrepancyRequest,
+    )
 
     verify(comparisonPersonDiscrepancyRepository).save(any())
     verify(comparisonPersonDiscrepancyCategoryRepository).saveAll(ArgumentMatchers.anyList())
@@ -879,15 +920,42 @@ class BulkComparisonServiceTest {
 
     val discrepancyImpact = ComparisonPersonDiscrepancyImpact(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION)
     val discrepancyPriority = ComparisonPersonDiscrepancyPriority(DiscrepancyPriority.MEDIUM_RISK)
-    val discrepancy = ComparisonPersonDiscrepancy(2, comparisonPerson, discrepancyImpact, emptyList(), discrepancyPriority = discrepancyPriority, detail = "detail", action = "new action", createdBy = USERNAME)
-    val existingDiscrepancy = ComparisonPersonDiscrepancy(1, comparisonPerson, discrepancyImpact, emptyList(), discrepancyPriority = discrepancyPriority, detail = "detail", action = "exaction", createdBy = USERNAME)
+    val discrepancy = ComparisonPersonDiscrepancy(
+      2,
+      comparisonPerson,
+      discrepancyImpact,
+      emptyList(),
+      discrepancyPriority = discrepancyPriority,
+      detail = "detail",
+      action = "new action",
+      createdBy = USERNAME,
+    )
+    val existingDiscrepancy = ComparisonPersonDiscrepancy(
+      1,
+      comparisonPerson,
+      discrepancyImpact,
+      emptyList(),
+      discrepancyPriority = discrepancyPriority,
+      detail = "detail",
+      action = "exaction",
+      createdBy = USERNAME,
+    )
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(
       comparisonRepository.findByComparisonShortReference("ABCD1234"),
     ).thenReturn(comparison)
-    whenever(comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPerson.shortReference)).thenReturn(comparisonPerson)
+    whenever(
+      comparisonPersonRepository.findByComparisonIdAndShortReference(
+        comparison.id,
+        comparisonPerson.shortReference,
+      ),
+    ).thenReturn(comparisonPerson)
     whenever(comparisonPersonDiscrepancyRepository.save(any())).thenReturn(discrepancy)
-    whenever(comparisonPersonDiscrepancyRepository.findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(comparisonPerson.shortReference)).thenReturn(existingDiscrepancy)
+    whenever(
+      comparisonPersonDiscrepancyRepository.findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
+        comparisonPerson.shortReference,
+      ),
+    ).thenReturn(existingDiscrepancy)
 
     val discrepancyCause = DiscrepancyCause(DiscrepancyCategory.TUSED, DiscrepancySubCategory.REMAND_OR_UAL_RELATED)
     val discrepancyRequest = CreateComparisonDiscrepancyRequest(
@@ -897,7 +965,11 @@ class BulkComparisonServiceTest {
       priority = discrepancyPriority.priority,
       action = discrepancy.action,
     )
-    val discrepancySummary = bulkComparisonService.createDiscrepancy(comparison.comparisonShortReference, comparisonPerson.shortReference, discrepancyRequest)
+    val discrepancySummary = bulkComparisonService.createDiscrepancy(
+      comparison.comparisonShortReference,
+      comparisonPerson.shortReference,
+      discrepancyRequest,
+    )
     verify(comparisonPersonDiscrepancyRepository, times(2)).save(any())
     verify(comparisonPersonDiscrepancyCategoryRepository).saveAll(ArgumentMatchers.anyList())
     assertEquals(discrepancyRequest.impact, discrepancySummary.impact)
