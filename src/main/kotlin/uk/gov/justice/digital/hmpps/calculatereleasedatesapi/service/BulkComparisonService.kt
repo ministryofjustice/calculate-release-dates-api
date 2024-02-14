@@ -454,7 +454,6 @@ class BulkComparisonService(
       .filter { sentence -> sentenceHasValidHdc4PlusDuration(sentence) }
       .filter { sentence -> sentence !in sdsPlusSentenceAndOffences }
 
-    // is it ok to have one none sds plus sentence or
     return sdsSentencesWithValidDuration.isNotEmpty()
   }
 
