@@ -574,7 +574,8 @@ class BulkComparisonServiceTest {
 
     val sentence1 =
       sentenceAndOffence.copy(
-        sentenceCalculationType = SentenceCalculationType.ADIMP.name, sentenceSequence = 1,
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+        sentenceSequence = 1,
         terms = listOf(
           SentenceTerms(months = 4),
         ),
