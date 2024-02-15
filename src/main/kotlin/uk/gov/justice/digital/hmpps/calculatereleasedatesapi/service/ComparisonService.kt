@@ -201,7 +201,9 @@ class ComparisonService(
   }
 
   private fun transformToHdcFourPlusComparisonMismatch(hdc4PlusResults: List<ComparisonPerson>, hdc4PlusCalculationOutcomes: List<CalculationOutcome>): List<HdcFourPlusComparisonMismatch> = hdc4PlusResults.map { comparisonPerson ->
-    val releaseDate = hdc4PlusCalculationOutcomes.filter { outcome -> outcome.outcomeDate != null }.maxByOrNull { outcome -> outcome.outcomeDate!! }
+    val releaseDate = hdc4PlusCalculationOutcomes
+      .filter { outcome -> comparisonPerson.calculationRequestId?.let { id -> id == outcome.calculationRequestId } ?: false }
+      .filter { outcome -> outcome.outcomeDate != null }.maxByOrNull { outcome -> outcome.outcomeDate!! }
       ?.let { nonNullOutcome -> ReleaseDate(nonNullOutcome.outcomeDate!!, ReleaseDateType.valueOf(nonNullOutcome.calculationDateType)) }
     HdcFourPlusComparisonMismatch(comparisonPerson.person, comparisonPerson.lastName, comparisonPerson.mismatchType, comparisonPerson.hdcedFourPlusDate!!, comparisonPerson.establishment, releaseDate)
   }

@@ -473,8 +473,8 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
-    assertEquals(result.hdc4PlusCalculated.size, 1)
-    assertEquals(result.hdc4PlusCalculated[0].releaseDate, ReleaseDate(LocalDate.of(2036, 2, 20), ReleaseDateType.CRD))
+    assertEquals(1, result.hdc4PlusCalculated.size)
+    assertEquals(ReleaseDate(LocalDate.of(2036, 2, 20), ReleaseDateType.CRD), result.hdc4PlusCalculated[0].releaseDate)
   }
 
   @Test
@@ -503,8 +503,8 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
-    assertEquals(result.hdc4PlusCalculated.size, 1)
-    assertEquals(result.hdc4PlusCalculated[0].releaseDate, ReleaseDate(LocalDate.of(2036, 2, 21), ReleaseDateType.ARD))
+    assertEquals(1, result.hdc4PlusCalculated.size)
+    assertEquals(ReleaseDate(LocalDate.of(2036, 2, 21), ReleaseDateType.ARD), result.hdc4PlusCalculated[0].releaseDate)
   }
 
   @Test
@@ -538,8 +538,8 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
-    assertEquals(result.hdc4PlusCalculated.size, 1)
-    assertEquals(result.hdc4PlusCalculated[0].releaseDate, ReleaseDate(LocalDate.of(2036, 2, 21), ReleaseDateType.CRD))
+    assertEquals(1, result.hdc4PlusCalculated.size)
+    assertEquals(ReleaseDate(LocalDate.of(2036, 2, 21), ReleaseDateType.CRD), result.hdc4PlusCalculated[0].releaseDate)
   }
 
   @Test
@@ -562,8 +562,51 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
-    assertEquals(result.hdc4PlusCalculated.size, 1)
+    assertEquals(1, result.hdc4PlusCalculated.size)
     assertNull(result.hdc4PlusCalculated[0].releaseDate)
+  }
+
+  @Test
+  fun `Matches the date to the person`() {
+    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
+    val comparison = aComparison()
+    val comparisonPersonWithARD = aComparisonPerson(
+      1,
+      comparison.id,
+      1,
+      "person 1",
+      hdcedFourPlusDate = LocalDate.of(2028, 6, 19),
+    )
+    val comparisonPersonWithCRD = aComparisonPerson(
+      2,
+      comparison.id,
+      2,
+      "person 2",
+      hdcedFourPlusDate = LocalDate.of(2028, 6, 19),
+    )
+    val calculationOutcomeARD = CalculationOutcome(
+      calculationDateType = ReleaseDateType.ARD.name,
+      outcomeDate = LocalDate.of(2036, 2, 20),
+      calculationRequestId = 1,
+    )
+    val calculationOutcomeCRD = CalculationOutcome(
+      calculationDateType = ReleaseDateType.CRD.name,
+      outcomeDate = LocalDate.of(2036, 2, 21),
+      calculationRequestId = 2,
+    )
+
+    val comparisonPersons = listOf(comparisonPersonWithARD, comparisonPersonWithCRD)
+    val calculationOutcomes = listOf(calculationOutcomeARD, calculationOutcomeCRD)
+    whenever(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
+    whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(emptyList())
+    whenever(comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)).thenReturn(comparisonPersons)
+    whenever(calculationOutcomeRepository.findByCalculationRequestIdIn(any())).thenReturn(calculationOutcomes)
+
+    val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
+
+    assertEquals(2, result.hdc4PlusCalculated.size)
+    assertEquals(ReleaseDate(LocalDate.of(2036, 2, 20), ReleaseDateType.ARD), result.hdc4PlusCalculated[0].releaseDate)
+    assertEquals(ReleaseDate(LocalDate.of(2036, 2, 21), ReleaseDateType.CRD), result.hdc4PlusCalculated[1].releaseDate)
   }
 
   @Test
