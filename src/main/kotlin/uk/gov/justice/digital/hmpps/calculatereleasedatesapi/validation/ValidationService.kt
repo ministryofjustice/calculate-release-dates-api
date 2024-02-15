@@ -318,6 +318,10 @@ class ValidationService(
     return validationMessages
   }
 
+  fun validateSentenceForManualEntry(sentences: List<SentenceAndOffences>): MutableList<ValidationMessage>{
+    return sentences.map { validateSentenceForManualEntry(it) }.flatten().toMutableList()
+  }
+
   private fun validateConsecutiveSentenceUnique(sentences: List<SentenceAndOffences>): List<ValidationMessage> {
     val consecutiveSentences = sentences.filter { it.consecutiveToSequence != null }
     val sentencesGroupedByConsecutiveTo = consecutiveSentences.groupBy { it.consecutiveToSequence }
@@ -397,6 +401,12 @@ class ValidationService(
       validateEdsSentenceTypesCorrectlyApplied(it),
       validateSopcSentenceTypesCorrectlyApplied(it),
       validateFineAmount(it),
+    )
+  }
+
+  private fun validateSentenceForManualEntry(it: SentenceAndOffences): List<ValidationMessage> {
+    return listOfNotNull(
+      validateWithoutOffenceDate(it)
     )
   }
 

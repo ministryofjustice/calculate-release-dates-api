@@ -76,6 +76,31 @@ class ValidationController(
     return calculationTransactionalService.supportedValidation(prisonerId)
   }
 
+  @GetMapping(value = ["/{prisonerId}/manual-entry-validation"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Validates that the sentences for the given prisoner in NOMIS are ok adequate to record a manual date against for unsupported types",
+    description = "This endpoint will validate that the data for the given prisoner in NOMIS is of sufficient quality " +
+      "to allow a manual date to be recorded via CRD",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Validation job has run successfully, the response indicates if there are any errors"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun validateForManualEntry(
+    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomisId)")
+    @PathVariable("prisonerId")
+    prisonerId: String,
+  ): List<ValidationMessage> {
+    log.info("Request received to validate prisonerId for manual date entry $prisonerId")
+    val errorMessages = calculationTransactionalService.validateForManualBooking(prisonerId)
+    return errorMessages
+  }
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
