@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingServ
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import java.time.temporal.ChronoUnit
 import kotlin.math.max
 
 @Service
@@ -45,14 +46,27 @@ class UnusedDeductionsCalculationService(
     val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.MTD)
     val calculationResult = result.second
     val releaseDate = calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOfOrNull { it.value }
-    val releaseDateSentence = result.first.getAllExtractableSentences().find { it.sentenceCalculation.releaseDate == releaseDate }
-    val unusedDeductions = if (releaseDateSentence != null) { // The release date will be a PRRD, no unused deductions.
-      val allAdjustmentDaysExceptDeductions =
-        releaseDateSentence.sentenceCalculation.calculatedTotalAwardedDays + releaseDateSentence.sentenceCalculation.calculatedTotalAddedDays
-      val maxDeductions =
-        releaseDateSentence.sentenceCalculation.numberOfDaysToDeterminateReleaseDate + allAdjustmentDaysExceptDeductions
-      val remand = adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.REMAND }.map { it.daysBetween!! }.reduceOrNull { acc, it -> acc + it } ?: 0
-      val taggedBail = adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.TAGGED_BAIL }.map { it.days!! }.reduceOrNull { acc, it -> acc + it } ?: 0
+    val unusedDeductions = if (releaseDate != null) {
+      val maxNonDeductionAdjustedReleaseDateSentence = result.first.getAllExtractableSentences().maxBy {
+        it.sentenceCalculation.releaseDateWithoutDeductions
+      }
+      val maxNonDeductionAdjustedReleaseDate = maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.releaseDateWithoutDeductions
+
+      val maxSentenceDate = result.first.getAllExtractableSentences().maxOf { it.sentencedAt }
+      val maxDeductions = if (maxSentenceDate != maxNonDeductionAdjustedReleaseDateSentence.sentencedAt) {
+        ChronoUnit.DAYS.between(maxSentenceDate, maxNonDeductionAdjustedReleaseDate).toInt()
+      } else {
+        val allAdjustmentDaysExceptDeductions =
+          maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.calculatedTotalAwardedDays + maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.calculatedTotalAddedDays
+        maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.numberOfDaysToDeterminateReleaseDate + allAdjustmentDaysExceptDeductions
+      }
+
+      val remand =
+        adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.REMAND }.map { it.daysBetween!! }
+          .reduceOrNull { acc, it -> acc + it } ?: 0
+      val taggedBail =
+        adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.TAGGED_BAIL }.map { it.days!! }
+          .reduceOrNull { acc, it -> acc + it } ?: 0
       val deductions = taggedBail + remand
       max(0, deductions - maxDeductions)
     } else { 0 }
@@ -83,7 +97,7 @@ class UnusedDeductionsCalculationService(
       bookingAdjustments = adjustments.filter { mapToBookingAdjustmentType(it.adjustmentType) != null }
         .map { BookingAdjustment(active = true, fromDate = it.fromDate!!, toDate = it.toDate, numberOfDays = it.effectiveDays!!, type = mapToBookingAdjustmentType(it.adjustmentType)!!) },
       sentenceAdjustments = adjustments.filter { mapToSentenceAdjustmentType(it.adjustmentType) != null }
-        .map { SentenceAdjustment(active = true, fromDate = it.fromDate, toDate = it.toDate, numberOfDays = it.effectiveDays!!, sentenceSequence = it.sentenceSequence!!, type = mapToSentenceAdjustmentType(it.adjustmentType)!!) },
+        .map { SentenceAdjustment(active = true, fromDate = it.fromDate, toDate = it.toDate, numberOfDays = it.days ?: it.daysBetween ?: it.effectiveDays!!, sentenceSequence = it.sentenceSequence!!, type = mapToSentenceAdjustmentType(it.adjustmentType)!!) },
 
     )
   }
