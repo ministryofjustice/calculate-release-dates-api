@@ -1,0 +1,77 @@
+[
+  {
+    "bookingId": 1212774,
+    "sentenceSequence": 1,
+    "lineSequence": 1,
+    "caseSequence": 1,
+    "caseReference": "2584456A",
+    "courtDescription": "Beverley Magistrates Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
+    "sentenceDate": "2024-01-01",
+    "sentenceStartDate": "2024-01-01",
+    "sentenceEndDate": "2024-05-31",
+    "terms": [
+      {
+        "years": 0,
+        "months": 5,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3934662,
+        "offenceStartDate": "2023-11-11",
+        "offenceStatute": "TH68",
+        "offenceCode": "TH68037",
+        "offenceDescription": "Burglary other than dwelling - theft",
+        "indicators": [
+          "D",
+          "50",
+          "S15/CJIB"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1212774,
+    "sentenceSequence": 2,
+    "lineSequence": 2,
+    "caseSequence": 2,
+    "caseReference": "8564742A",
+    "courtDescription": "Gloucester County Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
+    "sentenceDate": "2024-01-15",
+    "sentenceStartDate": "2024-06-01",
+    "sentenceEndDate": "2024-06-30",
+    "terms": [
+      {
+        "years": 0,
+        "months": 1,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3934663,
+        "offenceStartDate": "2023-11-12",
+        "offenceStatute": "TH68",
+        "offenceCode": "TH68010A",
+        "offenceDescription": "Attempt theft from shop",
+        "indicators": [
+          "D",
+          "50"
+        ]
+      }
+    ]
+  }
+]
