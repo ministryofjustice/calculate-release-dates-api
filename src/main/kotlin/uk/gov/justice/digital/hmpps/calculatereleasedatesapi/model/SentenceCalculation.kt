@@ -323,7 +323,6 @@ data class SentenceCalculation(
       }
     }
 
-
   val releaseDateWithoutDeductions: LocalDate
     get() {
       return unadjustedDeterminateReleaseDate.plusDays(

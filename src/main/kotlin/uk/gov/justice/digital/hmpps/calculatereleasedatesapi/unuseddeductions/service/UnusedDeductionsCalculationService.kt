@@ -56,8 +56,8 @@ class UnusedDeductionsCalculationService(
       val maxDeductions = if (maxSentenceDate != maxNonDeductionAdjustedReleaseDateSentence.sentencedAt) {
         ChronoUnit.DAYS.between(maxSentenceDate, maxNonDeductionAdjustedReleaseDate).toInt()
       } else {
-         val allAdjustmentDaysExceptDeductions =
-           maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.calculatedTotalAwardedDays + maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.calculatedTotalAddedDays
+        val allAdjustmentDaysExceptDeductions =
+          maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.calculatedTotalAwardedDays + maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.calculatedTotalAddedDays
         maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.numberOfDaysToDeterminateReleaseDate + allAdjustmentDaysExceptDeductions
       }
 
@@ -97,7 +97,7 @@ class UnusedDeductionsCalculationService(
       bookingAdjustments = adjustments.filter { mapToBookingAdjustmentType(it.adjustmentType) != null }
         .map { BookingAdjustment(active = true, fromDate = it.fromDate!!, toDate = it.toDate, numberOfDays = it.effectiveDays!!, type = mapToBookingAdjustmentType(it.adjustmentType)!!) },
       sentenceAdjustments = adjustments.filter { mapToSentenceAdjustmentType(it.adjustmentType) != null }
-        .map { SentenceAdjustment(active = true, fromDate = it.fromDate, toDate = it.toDate, numberOfDays = it.days?: it.daysBetween ?: it.effectiveDays!!, sentenceSequence = it.sentenceSequence!!, type = mapToSentenceAdjustmentType(it.adjustmentType)!!) },
+        .map { SentenceAdjustment(active = true, fromDate = it.fromDate, toDate = it.toDate, numberOfDays = it.days ?: it.daysBetween ?: it.effectiveDays!!, sentenceSequence = it.sentenceSequence!!, type = mapToSentenceAdjustmentType(it.adjustmentType)!!) },
 
     )
   }

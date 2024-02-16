@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.controller
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -14,7 +13,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.util.UUID
-import com.fasterxml.jackson.module.kotlin.readValue
 
 class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
 
@@ -51,6 +49,7 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
 
     Assertions.assertThat(calculation.unusedDeductions).isEqualTo(305)
   }
+
   @Test
   fun `Run unused deductions calculation (not enough deductions)`() {
     val adjustments = listOf(
@@ -185,8 +184,8 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     Assertions.assertThat(calculation.unusedDeductions).isEqualTo(9)
-
   }
+
   @Test
   fun `Run unused deductions calculation where there is a later sentence date than the one producing the release date (not enough adjustment)`() {
     val adjustments = listOf(
@@ -216,6 +215,5 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
       .returnResult().responseBody!!
 
     Assertions.assertThat(calculation.unusedDeductions).isEqualTo(0)
-
   }
 }
