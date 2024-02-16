@@ -323,6 +323,14 @@ data class SentenceCalculation(
       }
     }
 
+
+  val releaseDateWithoutDeductions: LocalDate
+    get() {
+      return unadjustedDeterminateReleaseDate.plusDays(
+        calculatedDeterminateTotalAddedDays.toLong(),
+      ).plusDays(calculatedTotalAwardedDays.toLong())
+    }
+
   val releaseDateWithoutAdditions: LocalDate
     get() {
       return if (sentence.recallType == RecallType.STANDARD_RECALL) {
