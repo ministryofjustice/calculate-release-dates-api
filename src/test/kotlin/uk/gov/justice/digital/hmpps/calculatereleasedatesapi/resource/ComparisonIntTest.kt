@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPer
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HdcFourPlusComparisonMismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
@@ -131,15 +132,16 @@ class ComparisonIntTest(private val mockPrisonClient: MockPrisonClient) : Integr
       .returnResult().responseBody!!
 
     assertEquals(comparison.prison, result.prison)
-    assertEquals(1, result.hdc4PlusCalculated.size)
+    assertEquals(3, result.hdc4PlusCalculated.size)
 
-    val hdcFourPlusComparisonMismatch = result.hdc4PlusCalculated[0]
-    assertEquals("HDC4PNO", hdcFourPlusComparisonMismatch.personId)
-    assertEquals("HDC4PMistmatch", hdcFourPlusComparisonMismatch.lastName)
-    assertEquals("HDC4P", hdcFourPlusComparisonMismatch.establishment)
-    assertEquals(MismatchType.RELEASE_DATES_MISMATCH, hdcFourPlusComparisonMismatch.misMatchType)
-    assertEquals(LocalDate.of(2021, 9, 19), hdcFourPlusComparisonMismatch.hdcedFourPlusDate)
-    assertEquals(hdcFourPlusComparisonMismatch.releaseDate, ReleaseDate(LocalDate.of(2022, 3, 17), ReleaseDateType.CRD))
+    assertEquals(
+      listOf(
+        HdcFourPlusComparisonMismatch("G6390GH", "Darlonne", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2020, 5, 13), "HDC4P", ReleaseDate(LocalDate.of(2020, 11, 8), ReleaseDateType.CRD)),
+        HdcFourPlusComparisonMismatch("G3229GA", "Britteman", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2016, 11, 4), "HDC4P", ReleaseDate(LocalDate.of(2017, 5, 2), ReleaseDateType.CRD)),
+        HdcFourPlusComparisonMismatch("G5243GX", "Khalifer", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2017, 8, 7), "HDC4P", ReleaseDate(LocalDate.of(2018, 2, 2), ReleaseDateType.CRD)),
+      ),
+      result.hdc4PlusCalculated,
+    )
   }
 
   @Test
