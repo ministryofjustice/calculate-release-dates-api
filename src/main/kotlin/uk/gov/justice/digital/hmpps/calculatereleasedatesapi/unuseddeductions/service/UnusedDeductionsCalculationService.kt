@@ -62,10 +62,10 @@ class UnusedDeductionsCalculationService(
       }
 
       val remand =
-        adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.REMAND }.map { it.daysBetween!! }
+        adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.REMAND }.map { it.daysTotal }
           .reduceOrNull { acc, it -> acc + it } ?: 0
       val taggedBail =
-        adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.TAGGED_BAIL }.map { it.days!! }
+        adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.TAGGED_BAIL }.map { it.daysTotal }
           .reduceOrNull { acc, it -> acc + it } ?: 0
       val deductions = taggedBail + remand
       max(0, deductions - maxDeductions)
