@@ -305,7 +305,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     ).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(comparisonPersons)
 
-    whenever(calculationOutcomeRepository.findByCalculationRequestIdIn(any())).thenReturn(calculationOutcomes)
+    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(calculationOutcomes)
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
@@ -432,7 +432,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     ).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(comparisonPersons)
 
-    whenever(calculationOutcomeRepository.findByCalculationRequestIdIn(any())).thenReturn(calculationOutcomes)
+    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(calculationOutcomes)
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
@@ -469,7 +469,8 @@ class ComparisonServiceTest : IntegrationTestBase() {
     whenever(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(emptyList())
     whenever(comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)).thenReturn(comparisonPersons)
-    whenever(calculationOutcomeRepository.findByCalculationRequestIdIn(any())).thenReturn(calculationOutcomes)
+    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(calculationOutcomes)
+    whenever(calculationOutcomeRepository.findForComparisonAndHdcedFourPlusDateIsNotNull(any())).thenReturn(calculationOutcomes)
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
@@ -499,7 +500,8 @@ class ComparisonServiceTest : IntegrationTestBase() {
     whenever(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(emptyList())
     whenever(comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)).thenReturn(comparisonPersons)
-    whenever(calculationOutcomeRepository.findByCalculationRequestIdIn(any())).thenReturn(calculationOutcomes)
+    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(calculationOutcomes)
+    whenever(calculationOutcomeRepository.findForComparisonAndHdcedFourPlusDateIsNotNull(any())).thenReturn(calculationOutcomes)
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
@@ -534,7 +536,8 @@ class ComparisonServiceTest : IntegrationTestBase() {
     whenever(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(emptyList())
     whenever(comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)).thenReturn(comparisonPersons)
-    whenever(calculationOutcomeRepository.findByCalculationRequestIdIn(any())).thenReturn(calculationOutcomes)
+    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(calculationOutcomes)
+    whenever(calculationOutcomeRepository.findForComparisonAndHdcedFourPlusDateIsNotNull(any())).thenReturn(calculationOutcomes)
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
@@ -558,7 +561,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     whenever(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(emptyList())
     whenever(comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)).thenReturn(comparisonPersons)
-    whenever(calculationOutcomeRepository.findByCalculationRequestIdIn(any())).thenReturn(emptyList())
+    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(emptyList())
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
@@ -600,7 +603,8 @@ class ComparisonServiceTest : IntegrationTestBase() {
     whenever(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(emptyList())
     whenever(comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)).thenReturn(comparisonPersons)
-    whenever(calculationOutcomeRepository.findByCalculationRequestIdIn(any())).thenReturn(calculationOutcomes)
+    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(calculationOutcomes)
+    whenever(calculationOutcomeRepository.findForComparisonAndHdcedFourPlusDateIsNotNull(any())).thenReturn(calculationOutcomes)
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
