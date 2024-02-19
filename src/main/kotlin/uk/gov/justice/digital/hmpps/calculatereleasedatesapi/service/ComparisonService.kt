@@ -87,7 +87,7 @@ class ComparisonService(
         .mapNotNull { it.calculationRequestId }
 
       val calculationOutcomes = if (releaseMismatchCalculationRequests.isNotEmpty()) {
-        calculationOutcomeRepository.findByCalculationRequestIdIn(releaseMismatchCalculationRequests)
+        calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(comparison.id)
       } else {
         emptyList()
       }
@@ -103,7 +103,7 @@ class ComparisonService(
 
       val hdc4PlusResults = comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)
       val hdc4PlusCalculationOutcomes = calculationOutcomeRepository
-        .findByCalculationRequestIdIn(hdc4PlusResults.mapNotNull { it.calculationRequestId })
+        .findForComparisonAndHdcedFourPlusDateIsNotNull(comparison.id)
         .filter { it.calculationDateType in listOf(ReleaseDateType.CRD.name, ReleaseDateType.ARD.name) }
 
       val mismatchesSortedByReleaseDate = mismatchesAndCrdsDates.sortedWith(::establishmentAndReleaseDateComparator)
