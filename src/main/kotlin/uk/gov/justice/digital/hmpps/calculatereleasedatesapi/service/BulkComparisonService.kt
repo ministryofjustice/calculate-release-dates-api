@@ -67,6 +67,7 @@ class BulkComparisonService(
     log.info("Using token: {}", UserContext.getAuthToken())
     val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison!!, token)
     processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison)
+    completeComparison(comparison)
   }
 
   @Async
@@ -77,6 +78,7 @@ class BulkComparisonService(
       val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(prison, token)
       processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison, prison)
     }
+    completeComparison(comparison)
   }
 
   @Async
@@ -85,6 +87,7 @@ class BulkComparisonService(
     log.info("Using token: {}", UserContext.getAuthToken())
     val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIds(prisonerIds, token)
     processCalculableSentenceEnvelopes(activeBookingsForPrisoners, comparison)
+    completeComparison(comparison)
   }
 
   @Transactional
@@ -146,54 +149,57 @@ class BulkComparisonService(
           .flatten(),
       )
     calculableSentenceEnvelopes.forEach { calculableSentenceEnvelope ->
-      val sdsPlusSentenceAndOffences =
-        bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId] ?: emptyList()
-      val mismatch = buildMismatch(calculableSentenceEnvelope, sdsPlusSentenceAndOffences)
-      val hdced4PlusDate = getHdced4PlusDate(mismatch)
+      try {
+        val sdsPlusSentenceAndOffences =
+          bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId] ?: emptyList()
+        val mismatch = buildMismatch(calculableSentenceEnvelope, sdsPlusSentenceAndOffences)
+        val hdced4PlusDate = getHdced4PlusDate(mismatch)
 
-      if (comparison.shouldStoreMismatch(mismatch, hdced4PlusDate != null)) {
-        val establishmentValue = if (comparison.comparisonType != ComparisonType.MANUAL) {
-          if (establishment == null || establishment == "") {
-            comparison.prison!!
-          } else {
-            establishment
-          }
-        } else {
-          null
-        }
-        comparisonPersonRepository.save(
-          ComparisonPerson(
-            comparisonId = comparison.id,
-            person = calculableSentenceEnvelope.person.prisonerNumber,
-            lastName = calculableSentenceEnvelope.person.lastName,
-            latestBookingId = calculableSentenceEnvelope.bookingId,
-            isMatch = mismatch.isMatch,
-            isValid = mismatch.isValid,
-            mismatchType = mismatch.type,
-            validationMessages = objectMapper.valueToTree(mismatch.messages),
-            calculatedByUsername = comparison.calculatedByUsername,
-            calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
-            nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) }
-              ?: objectMapper.createObjectNode(),
-            overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) }
-              ?: objectMapper.createObjectNode(),
-            breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) }
-              ?: objectMapper.createObjectNode(),
-            isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
-            sdsPlusSentencesIdentified = bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId]?.let {
-              objectMapper.valueToTree(
-                bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId],
-              )
+        if (comparison.shouldStoreMismatch(mismatch, hdced4PlusDate != null)) {
+          val establishmentValue = if (comparison.comparisonType != ComparisonType.MANUAL) {
+            if (establishment == null || establishment == "") {
+              comparison.prison!!
+            } else {
+              establishment
             }
-              ?: objectMapper.createObjectNode(),
-            hdcedFourPlusDate = hdced4PlusDate,
-            establishment = establishmentValue,
-          ),
-        )
+          } else {
+            null
+          }
+          comparisonPersonRepository.save(
+            ComparisonPerson(
+              comparisonId = comparison.id,
+              person = calculableSentenceEnvelope.person.prisonerNumber,
+              lastName = calculableSentenceEnvelope.person.lastName,
+              latestBookingId = calculableSentenceEnvelope.bookingId,
+              isMatch = mismatch.isMatch,
+              isValid = mismatch.isValid,
+              mismatchType = mismatch.type,
+              validationMessages = objectMapper.valueToTree(mismatch.messages),
+              calculatedByUsername = comparison.calculatedByUsername,
+              calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
+              nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) }
+                ?: objectMapper.createObjectNode(),
+              overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) }
+                ?: objectMapper.createObjectNode(),
+              breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) }
+                ?: objectMapper.createObjectNode(),
+              isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
+              sdsPlusSentencesIdentified = bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId]?.let {
+                objectMapper.valueToTree(
+                  bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId],
+                )
+              }
+                ?: objectMapper.createObjectNode(),
+              hdcedFourPlusDate = hdced4PlusDate,
+              establishment = establishmentValue,
+            ),
+          )
+        }
+      } catch (e: Exception) {
+        println("something failed: $e")
       }
     }
-    comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
-    comparison.numberOfPeopleCompared = calculableSentenceEnvelopes.size.toLong()
+    comparison.numberOfPeopleCompared += calculableSentenceEnvelopes.size.toLong()
     comparisonRepository.save(comparison)
   }
 
@@ -563,6 +569,11 @@ class BulkComparisonService(
         createSentenceChain(it, chainCopy, baseSentencesToConsecutiveSentencesMap, chains)
       }
     }
+  }
+
+  private fun completeComparison(comparison: Comparison) {
+    comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
+    comparisonRepository.save(comparison)
   }
 
   companion object {
