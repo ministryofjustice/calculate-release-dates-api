@@ -149,54 +149,50 @@ class BulkComparisonService(
           .flatten(),
       )
     calculableSentenceEnvelopes.forEach { calculableSentenceEnvelope ->
-      try {
-        val sdsPlusSentenceAndOffences =
-          bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId] ?: emptyList()
-        val mismatch = buildMismatch(calculableSentenceEnvelope, sdsPlusSentenceAndOffences)
-        val hdced4PlusDate = getHdced4PlusDate(mismatch)
+      val sdsPlusSentenceAndOffences =
+        bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId] ?: emptyList()
+      val mismatch = buildMismatch(calculableSentenceEnvelope, sdsPlusSentenceAndOffences)
+      val hdced4PlusDate = getHdced4PlusDate(mismatch)
 
-        if (comparison.shouldStoreMismatch(mismatch, hdced4PlusDate != null)) {
-          val establishmentValue = if (comparison.comparisonType != ComparisonType.MANUAL) {
-            if (establishment == null || establishment == "") {
-              comparison.prison!!
-            } else {
-              establishment
-            }
+      if (comparison.shouldStoreMismatch(mismatch, hdced4PlusDate != null)) {
+        val establishmentValue = if (comparison.comparisonType != ComparisonType.MANUAL) {
+          if (establishment == null || establishment == "") {
+            comparison.prison!!
           } else {
-            null
+            establishment
           }
-          comparisonPersonRepository.save(
-            ComparisonPerson(
-              comparisonId = comparison.id,
-              person = calculableSentenceEnvelope.person.prisonerNumber,
-              lastName = calculableSentenceEnvelope.person.lastName,
-              latestBookingId = calculableSentenceEnvelope.bookingId,
-              isMatch = mismatch.isMatch,
-              isValid = mismatch.isValid,
-              mismatchType = mismatch.type,
-              validationMessages = objectMapper.valueToTree(mismatch.messages),
-              calculatedByUsername = comparison.calculatedByUsername,
-              calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
-              nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) }
-                ?: objectMapper.createObjectNode(),
-              overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) }
-                ?: objectMapper.createObjectNode(),
-              breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) }
-                ?: objectMapper.createObjectNode(),
-              isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
-              sdsPlusSentencesIdentified = bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId]?.let {
-                objectMapper.valueToTree(
-                  bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId],
-                )
-              }
-                ?: objectMapper.createObjectNode(),
-              hdcedFourPlusDate = hdced4PlusDate,
-              establishment = establishmentValue,
-            ),
-          )
+        } else {
+          null
         }
-      } catch (e: Exception) {
-        println("something failed: $e")
+        comparisonPersonRepository.save(
+          ComparisonPerson(
+            comparisonId = comparison.id,
+            person = calculableSentenceEnvelope.person.prisonerNumber,
+            lastName = calculableSentenceEnvelope.person.lastName,
+            latestBookingId = calculableSentenceEnvelope.bookingId,
+            isMatch = mismatch.isMatch,
+            isValid = mismatch.isValid,
+            mismatchType = mismatch.type,
+            validationMessages = objectMapper.valueToTree(mismatch.messages),
+            calculatedByUsername = comparison.calculatedByUsername,
+            calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
+            nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) }
+              ?: objectMapper.createObjectNode(),
+            overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) }
+              ?: objectMapper.createObjectNode(),
+            breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) }
+              ?: objectMapper.createObjectNode(),
+            isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
+            sdsPlusSentencesIdentified = bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId]?.let {
+              objectMapper.valueToTree(
+                bookingIdToSDSMatchingSentencesAndOffences[calculableSentenceEnvelope.bookingId],
+              )
+            }
+              ?: objectMapper.createObjectNode(),
+            hdcedFourPlusDate = hdced4PlusDate,
+            establishment = establishmentValue,
+          ),
+        )
       }
     }
     comparison.numberOfPeopleCompared += calculableSentenceEnvelopes.size.toLong()
