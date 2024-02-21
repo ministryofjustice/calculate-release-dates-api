@@ -11,7 +11,6 @@ data class AdjustmentServiceAdjustment(
   val adjustmentType: AdjustmentServiceAdjustmentType,
   val toDate: LocalDate?,
   val fromDate: LocalDate?,
-  val days: Int?,
-  val daysBetween: Int?,
-  val effectiveDays: Int? = null,
+  val daysTotal: Int,
+  val effectiveDays: Int,
 )
