@@ -67,6 +67,7 @@ class BulkComparisonService(
     log.info("Using token: {}", UserContext.getAuthToken())
     val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison!!, token)
     processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison)
+    completeComparison(comparison)
   }
 
   @Async
@@ -77,6 +78,7 @@ class BulkComparisonService(
       val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(prison, token)
       processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison, prison)
     }
+    completeComparison(comparison)
   }
 
   @Async
@@ -85,6 +87,7 @@ class BulkComparisonService(
     log.info("Using token: {}", UserContext.getAuthToken())
     val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIds(prisonerIds, token)
     processCalculableSentenceEnvelopes(activeBookingsForPrisoners, comparison)
+    completeComparison(comparison)
   }
 
   @Transactional
@@ -192,8 +195,7 @@ class BulkComparisonService(
         )
       }
     }
-    comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
-    comparison.numberOfPeopleCompared = calculableSentenceEnvelopes.size.toLong()
+    comparison.numberOfPeopleCompared += calculableSentenceEnvelopes.size.toLong()
     comparisonRepository.save(comparison)
   }
 
@@ -563,6 +565,11 @@ class BulkComparisonService(
         createSentenceChain(it, chainCopy, baseSentencesToConsecutiveSentencesMap, chains)
       }
     }
+  }
+
+  private fun completeComparison(comparison: Comparison) {
+    comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
+    comparisonRepository.save(comparison)
   }
 
   companion object {
