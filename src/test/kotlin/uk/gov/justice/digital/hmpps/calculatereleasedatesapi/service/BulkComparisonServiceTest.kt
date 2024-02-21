@@ -247,6 +247,51 @@ class BulkComparisonServiceTest {
   }
 
   @Test
+  fun `Should create a manual comparison`() {
+    val comparison = Comparison(
+      1,
+      UUID.randomUUID(),
+      "ABCD1234",
+      objectMapper.createObjectNode(),
+      "BNI",
+      ComparisonType.MANUAL,
+      LocalDateTime.now(),
+      "SOMEONE",
+      ComparisonStatus(ComparisonStatusValue.PROCESSING),
+    )
+
+    val prisonerIds = listOf("A7542DZ")
+    val token = "a-token"
+    whenever(prisonService.getActiveBookingsByPrisonerIds(prisonerIds, token)).thenReturn(
+      listOf(
+        calculableSentenceEnvelope,
+      ),
+    )
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(emptyList(), booking, null, null)
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+
+    bulkComparisonService.processManualComparison(comparison, prisonerIds, token)
+
+    val comparisonStatus = comparison.comparisonStatus
+    assertThat(comparisonStatus.name).isEqualTo(ComparisonStatusValue.COMPLETED.name)
+    assertThat(comparison.numberOfPeopleCompared).isEqualTo(1)
+    val comparisonPersonCaptor = ArgumentCaptor.forClass(ComparisonPerson::class.java)
+    verify(comparisonPersonRepository).save(comparisonPersonCaptor.capture())
+
+    val comparisonPerson = comparisonPersonCaptor.value
+    assertThat(comparisonPerson.person).isEqualTo(calculableSentenceEnvelope.person.prisonerNumber)
+    assertThat(comparisonPerson.latestBookingId).isEqualTo(calculableSentenceEnvelope.bookingId)
+    assertThat(comparisonPerson.isMatch).isEqualTo(true)
+    assertThat(comparisonPerson.isValid).isEqualTo(true)
+    assertThat(comparisonPerson.calculatedByUsername).isEqualTo(comparison.calculatedByUsername)
+    assertThat(comparisonPerson.isActiveSexOffender).isEqualTo(false)
+  }
+
+  @Test
   fun `Determine if a mismatch report is valid and is a match`() {
     val booking =
       Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
