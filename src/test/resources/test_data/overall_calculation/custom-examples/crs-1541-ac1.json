@@ -1,0 +1,153 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2000-04-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2021-09-11"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 2
+        }
+      },
+      "sentencedAt": "2022-03-08",
+      "sentenceType": "LR_ORA",
+      "lineSequence": 1,
+      "caseSequence": 1
+    },
+    {
+      "offence": {
+        "committedAt": "2021-08-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 2
+        }
+      },
+      "sentencedAt": "2022-03-08",
+      "sentenceType": "LR_ORA",
+      "lineSequence": 2,
+      "caseSequence": 1
+    },
+    {
+      "offence": {
+        "committedAt": "2022-03-07"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 4
+        }
+      },
+      "sentencedAt": "2022-03-08",
+      "sentenceType": "LR_ORA",
+      "lineSequence": 3,
+      "caseSequence": 1
+    },
+    {
+      "offence": {
+        "committedAt": "2021-08-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 1
+        }
+      },
+      "sentencedAt": "2022-03-08",
+      "sentenceType": "LR_ORA",
+      "lineSequence": 4,
+      "caseSequence": 1
+    },
+    {
+      "offence": {
+        "committedAt": "2021-08-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 2
+        }
+      },
+      "sentencedAt": "2022-03-08",
+      "sentenceType": "LR_ORA",
+      "lineSequence": 5,
+      "caseSequence": 1
+    },
+    {
+      "offence": {
+        "committedAt": "2022-03-07"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 4
+        }
+      },
+      "sentencedAt": "2022-03-08",
+      "sentenceType": "LR_ORA",
+      "lineSequence": 6,
+      "caseSequence": 1
+    },
+    {
+      "offence": {
+        "committedAt": "2022-04-14"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 1
+        }
+      },
+      "sentencedAt": "2022-03-08",
+      "sentenceType": "LR_ORA",
+      "lineSequence": 7,
+      "caseSequence": 2
+    },
+    {
+      "offence": {
+        "committedAt": "2022-08-08"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 14
+        }
+      },
+      "sentencedAt": "2023-06-05",
+      "sentenceType": "ADIMP_ORA",
+      "lineSequence": 8,
+      "caseSequence": 5
+    },
+    {
+      "offence": {
+        "committedAt": "2022-10-19"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 8
+        }
+      },
+      "sentencedAt": "2023-06-28",
+      "sentenceType": "ADIMP_ORA",
+      "lineSequence": 9,
+      "caseSequence": 6
+    }
+  ],
+  "adjustments": {
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "numberOfDays": 39,
+        "appliesToSentencesFrom": "2015-01-10",
+        "fromDate": "2022-12-03",
+        "toDate": "2023-01-10"
+      }
+    ],
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2023-06-05",
+        "numberOfDays": 140,
+        "fromDate": "2023-01-16",
+        "toDate": "2023-06-04"
+      }
+    ]
+  }
+}
+
