@@ -62,10 +62,10 @@ class UnusedDeductionsCalculationService(
       }
 
       val remand =
-        adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.REMAND }.map { it.daysTotal }
+        adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.REMAND }.map { it.days }
           .reduceOrNull { acc, it -> acc + it } ?: 0
       val taggedBail =
-        adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.TAGGED_BAIL }.map { it.daysTotal }
+        adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.TAGGED_BAIL }.map { it.days }
           .reduceOrNull { acc, it -> acc + it } ?: 0
       val deductions = taggedBail + remand
       max(0, deductions - maxDeductions)
@@ -97,7 +97,7 @@ class UnusedDeductionsCalculationService(
       bookingAdjustments = adjustments.filter { mapToBookingAdjustmentType(it.adjustmentType) != null }
         .map { BookingAdjustment(active = true, fromDate = it.fromDate!!, toDate = it.toDate, numberOfDays = it.effectiveDays!!, type = mapToBookingAdjustmentType(it.adjustmentType)!!) },
       sentenceAdjustments = adjustments.filter { mapToSentenceAdjustmentType(it.adjustmentType) != null }
-        .map { SentenceAdjustment(active = true, fromDate = it.fromDate, toDate = it.toDate, numberOfDays = it.daysTotal, sentenceSequence = it.sentenceSequence!!, type = mapToSentenceAdjustmentType(it.adjustmentType)!!) },
+        .map { SentenceAdjustment(active = true, fromDate = it.fromDate, toDate = it.toDate, numberOfDays = it.days, sentenceSequence = it.sentenceSequence!!, type = mapToSentenceAdjustmentType(it.adjustmentType)!!) },
 
     )
   }
