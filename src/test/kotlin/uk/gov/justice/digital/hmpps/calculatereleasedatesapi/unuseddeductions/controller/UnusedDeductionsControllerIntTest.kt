@@ -25,7 +25,7 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
       AdjustmentServiceAdjustment(
         fromDate = LocalDate.of(2020, 2, 1),
         toDate = LocalDate.of(2021, 1, 31),
-        daysTotal = 396,
+        days = 396,
         effectiveDays = 396,
         bookingId = "UNUSED".hashCode().toLong(),
         sentenceSequence = 4,
@@ -55,7 +55,7 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
       AdjustmentServiceAdjustment(
         fromDate = LocalDate.of(2020, 2, 1),
         toDate = LocalDate.of(2021, 1, 31),
-        daysTotal = 10,
+        days = 10,
         effectiveDays = 10,
         bookingId = "UNUSED".hashCode().toLong(),
         sentenceSequence = 4,
@@ -85,7 +85,7 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
       AdjustmentServiceAdjustment(
         fromDate = LocalDate.of(2020, 2, 1),
         toDate = LocalDate.of(2021, 1, 31),
-        daysTotal = 396,
+        days = 396,
         effectiveDays = 396,
         bookingId = "UNUSED".hashCode().toLong(),
         sentenceSequence = 4,
@@ -96,7 +96,7 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
       AdjustmentServiceAdjustment(
         fromDate = LocalDate.of(2020, 5, 1),
         toDate = LocalDate.of(2021, 6, 1),
-        daysTotal = 31,
+        days = 31,
         effectiveDays = 31,
         bookingId = "UNUSED".hashCode().toLong(),
         sentenceSequence = 4,
@@ -126,7 +126,7 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
       AdjustmentServiceAdjustment(
         fromDate = LocalDate.of(2021, 1, 1),
         toDate = LocalDate.of(2021, 2, 20),
-        daysTotal = 50,
+        days = 50,
         effectiveDays = 50,
         bookingId = "UNUSED".hashCode().toLong(),
         sentenceSequence = 4,
@@ -159,7 +159,7 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
         bookingId = "UNUSED-C".hashCode().toLong(),
         sentenceSequence = 2,
         adjustmentType = AdjustmentServiceAdjustmentType.TAGGED_BAIL,
-        daysTotal = 70,
+        days = 70,
         effectiveDays = 70,
         person = "UNUSED-C",
         id = UUID.randomUUID(),
@@ -189,7 +189,7 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
         bookingId = "UNUSED-C".hashCode().toLong(),
         sentenceSequence = 2,
         adjustmentType = AdjustmentServiceAdjustmentType.TAGGED_BAIL,
-        daysTotal = 10,
+        days = 10,
         effectiveDays = 10,
         person = "UNUSED-C",
         id = UUID.randomUUID(),
