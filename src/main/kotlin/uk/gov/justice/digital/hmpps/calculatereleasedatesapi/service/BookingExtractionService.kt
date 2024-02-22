@@ -158,6 +158,7 @@ class BookingExtractionService(
 
     val latestHDCEDAndBreakdown =
       extractManyHomeDetentionCurfewEligibilityDate(
+        booking.sentenceGroups,
         sentences,
         mostRecentSentencesByReleaseDate,
       )
@@ -403,6 +404,7 @@ class BookingExtractionService(
   }
 
   private fun extractManyHomeDetentionCurfewEligibilityDate(
+    sentenceGroups: List<List<CalculableSentence>>,
     sentences: List<CalculableSentence>,
     mostRecentSentencesByReleaseDate: List<CalculableSentence>,
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
@@ -413,9 +415,10 @@ class BookingExtractionService(
     if (!mostRecentReleaseIsPrrd && !mostRecentReleaseIsPed && sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
       val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() && !it.isDto() }, SentenceCalculation::releaseDate)
       if (latestNonRecallRelease?.sentenceCalculation?.homeDetentionCurfewEligibilityDate != null) {
-        val earliestSentenceDate = sentences.filter { !it.isRecall() }.minOf { it.sentencedAt }
+        val sentenceGroup = sentenceGroups.find { it.contains(mostRecentSentencesByReleaseDate[0]) }!!
+        val earliestSentenceDate = sentenceGroup.filter { !it.isRecall() }.minOf { it.sentencedAt }
         val latestUnadjustedExpiryDate =
-          extractionService.mostRecent(sentences.filter { !it.isRecall() }, SentenceCalculation::unadjustedExpiryDate)
+          extractionService.mostRecent(sentenceGroup.filter { !it.isRecall() }, SentenceCalculation::unadjustedExpiryDate)
         val effectiveSentenceLength = getEffectiveSentenceLength(
           earliestSentenceDate,
           latestUnadjustedExpiryDate,
