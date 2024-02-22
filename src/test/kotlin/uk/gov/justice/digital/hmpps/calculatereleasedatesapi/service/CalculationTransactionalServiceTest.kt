@@ -167,6 +167,10 @@ class CalculationTransactionalServiceTest {
   @Captor
   lateinit var approvedDatesArgumentCaptor: ArgumentCaptor<List<ApprovedDates>>
 
+  @Test
+  fun blah() {
+    `Test Example`("custom-examples", "crs-1828-hdced-with-long-concurrent-license", null)
+  }
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
   fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {
