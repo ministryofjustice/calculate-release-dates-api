@@ -155,9 +155,39 @@ class ValidationIntTest : IntegrationTestBase() {
     runValidationAndCheckMessages("CRS-1191-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
   }
 
+  @Test
+  fun `Run validate for manual entry missing offence start date`() {
+    runValidateForManualEntry(
+      MISSING_OFFENCE_START_DATE_SENTENCE,
+       listOf(ValidationMessage(OFFENCE_MISSING_DATE, listOf("1", "1"))),
+    )
+  }
+
+  @Test
+  fun `Run validate for manual entry missing offence end date`() {
+    runValidateForManualEntry(
+      MISSING_OFFENCE_END_DATE_SENTENCE,
+      listOf(ValidationMessage(OFFENCE_MISSING_DATE, listOf("1", "1"))),
+    )
+  }
+
   private fun runSupportedValidationAndCheckMessages(prisonerId: String, messages: List<ValidationMessage>) {
     val validationMessages = webTestClient.get()
       .uri("/validation/$prisonerId/supported-validation")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBodyList(ValidationMessage::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(validationMessages).isEqualTo(messages)
+  }
+
+  private fun runValidateForManualEntry(prisonerId: String, messages: List<ValidationMessage>) {
+    val validationMessages = webTestClient.get()
+      .uri("/validation/$prisonerId/manual-entry-validation")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
@@ -190,5 +220,7 @@ class ValidationIntTest : IntegrationTestBase() {
     const val UNSUPPORTED_SENTENCE_PRISONER_ID = "UNSUPP_SENT"
     const val UNSUPPORTED_PRISONER_PRISONER_ID = "UNSUPP_PRIS"
     const val INACTIVE_PRISONER_ID = "INACTIVE"
+    const val MISSING_OFFENCE_START_DATE_SENTENCE = "CRS-1634-no-offence-start-date"
+    const val MISSING_OFFENCE_END_DATE_SENTENCE = "CRS-1634-no-offence-end-date"
   }
 }

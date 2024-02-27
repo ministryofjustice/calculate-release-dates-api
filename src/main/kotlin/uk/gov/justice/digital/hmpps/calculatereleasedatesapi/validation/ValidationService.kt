@@ -318,7 +318,7 @@ class ValidationService(
     return validationMessages
   }
 
-  fun validateSentenceForManualEntry(sentences: List<SentenceAndOffences>): MutableList<ValidationMessage>{
+  fun validateSentenceForManualEntry(sentences: List<SentenceAndOffences>): MutableList<ValidationMessage> {
     return sentences.map { validateSentenceForManualEntry(it) }.flatten().toMutableList()
   }
 
@@ -406,7 +406,7 @@ class ValidationService(
 
   private fun validateSentenceForManualEntry(it: SentenceAndOffences): List<ValidationMessage> {
     return listOfNotNull(
-      validateWithoutOffenceDate(it)
+      validateWithoutOffenceDate(it),
     )
   }
 
@@ -619,7 +619,7 @@ class ValidationService(
   }
 
   private fun validateWithoutOffenceDate(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
-    val invalid = sentencesAndOffence.offences.any { it.offenceEndDate == null && it.offenceStartDate == null }
+    val invalid = sentencesAndOffence.offences.any { it.offenceEndDate == null || it.offenceStartDate == null }
     if (invalid) {
       return ValidationMessage(OFFENCE_MISSING_DATE, getCaseSeqAndLineSeq(sentencesAndOffence))
     }

@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -101,6 +102,30 @@ class ValidationServiceTest {
     sentenceTypeDescription = "This is a sentence type",
     offences = listOf(),
   )
+  private val sentenceWithMissingOffenceDates = SentenceAndOffences(
+    bookingId = 1L,
+    sentenceSequence = 7,
+    lineSequence = LINE_SEQ,
+    caseSequence = CASE_SEQ,
+    sentenceDate = FIRST_MAY_2018,
+    terms = listOf(
+      SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+    ),
+    sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+    sentenceCategory = "2003",
+    sentenceStatus = "a",
+    sentenceTypeDescription = "This is a sentence type",
+    offences = listOf(
+      OffenderOffence(
+        offenderChargeId = 1L,
+        offenceStartDate = null,
+        offenceEndDate = null,
+        offenceCode = "Dummy Offence",
+        offenceDescription = "A Dummy description",
+      ),
+    ),
+  )
+
   private val validSopcSentence = validSdsSentence.copy(
     terms = listOf(
       SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
@@ -1021,7 +1046,10 @@ class ValidationServiceTest {
   @Test
   fun `Test 14 day FTR sentence type and 28 day recall`() {
     val result = validationService.validateBeforeCalculation(
-      VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE), fixedTermRecallDetails = FTR_DETAILS_28),
+      VALID_FTR_SOURCE_DATA.copy(
+        sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE),
+        fixedTermRecallDetails = FTR_DETAILS_28,
+      ),
       USER_INPUTS,
     )
 
@@ -1031,7 +1059,10 @@ class ValidationServiceTest {
   @Test
   fun `Test 28 day FTR sentence type and 14 day recall`() {
     val result = validationService.validateBeforeCalculation(
-      VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE), fixedTermRecallDetails = FTR_DETAILS_14),
+      VALID_FTR_SOURCE_DATA.copy(
+        sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE),
+        fixedTermRecallDetails = FTR_DETAILS_14,
+      ),
       USER_INPUTS,
     )
 
@@ -1070,7 +1101,10 @@ class ValidationServiceTest {
       @Test
       fun `Test 14 day FTR sentence type and 28 day recall`() {
         val result = validationService.validateBeforeCalculation(
-          VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE), fixedTermRecallDetails = FTR_DETAILS_28),
+          VALID_FTR_SOURCE_DATA.copy(
+            sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE),
+            fixedTermRecallDetails = FTR_DETAILS_28,
+          ),
           USER_INPUTS,
         )
 
@@ -1080,7 +1114,10 @@ class ValidationServiceTest {
       @Test
       fun `Test 28 day FTR sentence type and 14 day recall`() {
         val result = validationService.validateBeforeCalculation(
-          VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE), fixedTermRecallDetails = FTR_DETAILS_14),
+          VALID_FTR_SOURCE_DATA.copy(
+            sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE),
+            fixedTermRecallDetails = FTR_DETAILS_14,
+          ),
           USER_INPUTS,
         )
 
@@ -1108,7 +1145,13 @@ class ValidationServiceTest {
         val result = validationService.validateBeforeCalculation(
           BOOKING.copy(
             fixedTermRecallDetails = FTR_DETAILS_28,
-            sentences = listOf(FTR_SDS_SENTENCE.copy(duration = NINE_MONTH_DURATION, identifier = UUID.randomUUID(), consecutiveSentenceUUIDs = emptyList())),
+            sentences = listOf(
+              FTR_SDS_SENTENCE.copy(
+                duration = NINE_MONTH_DURATION,
+                identifier = UUID.randomUUID(),
+                consecutiveSentenceUUIDs = emptyList(),
+              ),
+            ),
           ),
         )
 
@@ -1151,8 +1194,16 @@ class ValidationServiceTest {
 
       @Test
       fun `Test 14 day FTR sentence and aggregate duration greater than 12 months`() {
-        val consecutiveSentenceOne = FTR_SDS_SENTENCE.copy(recallType = FIXED_TERM_RECALL_14, duration = FIVE_YEAR_DURATION, consecutiveSentenceUUIDs = emptyList())
-        val consecutiveSentenceTwo = FTR_SDS_SENTENCE.copy(identifier = UUID.randomUUID(), recallType = FIXED_TERM_RECALL_14, consecutiveSentenceUUIDs = listOf(FTR_SDS_SENTENCE.identifier))
+        val consecutiveSentenceOne = FTR_SDS_SENTENCE.copy(
+          recallType = FIXED_TERM_RECALL_14,
+          duration = FIVE_YEAR_DURATION,
+          consecutiveSentenceUUIDs = emptyList(),
+        )
+        val consecutiveSentenceTwo = FTR_SDS_SENTENCE.copy(
+          identifier = UUID.randomUUID(),
+          recallType = FIXED_TERM_RECALL_14,
+          consecutiveSentenceUUIDs = listOf(FTR_SDS_SENTENCE.identifier),
+        )
         consecutiveSentenceOne.sentenceCalculation = SENTENCE_CALCULATION
         consecutiveSentenceTwo.sentenceCalculation = SENTENCE_CALCULATION
         var workingBooking = BOOKING.copy(
@@ -1167,13 +1218,27 @@ class ValidationServiceTest {
           workingBooking,
         )
 
-        assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_14_DAYS_AGGREGATE_GE_12_MONTHS), ValidationMessage(FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS)))
+        assertThat(result).isEqualTo(
+          listOf(
+            ValidationMessage(FTR_14_DAYS_AGGREGATE_GE_12_MONTHS),
+            ValidationMessage(FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS),
+          ),
+        )
       }
 
       @Test
       fun `Test 28 day FTR sentence and aggregate duration less than 12 months`() {
-        val consecutiveSentenceOne = FTR_SDS_SENTENCE.copy(recallType = FIXED_TERM_RECALL_14, duration = ONE_MONTH_DURATION, consecutiveSentenceUUIDs = emptyList())
-        val consecutiveSentenceTwo = FTR_SDS_SENTENCE.copy(recallType = FIXED_TERM_RECALL_14, identifier = UUID.randomUUID(), duration = ONE_MONTH_DURATION, consecutiveSentenceUUIDs = listOf(FTR_SDS_SENTENCE.identifier))
+        val consecutiveSentenceOne = FTR_SDS_SENTENCE.copy(
+          recallType = FIXED_TERM_RECALL_14,
+          duration = ONE_MONTH_DURATION,
+          consecutiveSentenceUUIDs = emptyList(),
+        )
+        val consecutiveSentenceTwo = FTR_SDS_SENTENCE.copy(
+          recallType = FIXED_TERM_RECALL_14,
+          identifier = UUID.randomUUID(),
+          duration = ONE_MONTH_DURATION,
+          consecutiveSentenceUUIDs = listOf(FTR_SDS_SENTENCE.identifier),
+        )
         consecutiveSentenceOne.sentenceCalculation = SENTENCE_CALCULATION
         consecutiveSentenceTwo.sentenceCalculation = SENTENCE_CALCULATION
         var workingBooking = BOOKING.copy(
@@ -1193,8 +1258,17 @@ class ValidationServiceTest {
 
       @Test
       fun `Test 28 day FTR type sentence and aggregate duration less than 12 months`() {
-        val consecutiveSentenceOne = FTR_SDS_SENTENCE.copy(recallType = FIXED_TERM_RECALL_28, duration = ONE_MONTH_DURATION, consecutiveSentenceUUIDs = emptyList())
-        val consecutiveSentenceTwo = FTR_SDS_SENTENCE.copy(recallType = FIXED_TERM_RECALL_28, duration = ONE_MONTH_DURATION, identifier = UUID.randomUUID(), consecutiveSentenceUUIDs = listOf(FTR_SDS_SENTENCE.identifier))
+        val consecutiveSentenceOne = FTR_SDS_SENTENCE.copy(
+          recallType = FIXED_TERM_RECALL_28,
+          duration = ONE_MONTH_DURATION,
+          consecutiveSentenceUUIDs = emptyList(),
+        )
+        val consecutiveSentenceTwo = FTR_SDS_SENTENCE.copy(
+          recallType = FIXED_TERM_RECALL_28,
+          duration = ONE_MONTH_DURATION,
+          identifier = UUID.randomUUID(),
+          consecutiveSentenceUUIDs = listOf(FTR_SDS_SENTENCE.identifier),
+        )
         consecutiveSentenceOne.sentenceCalculation = SENTENCE_CALCULATION
         consecutiveSentenceTwo.sentenceCalculation = SENTENCE_CALCULATION
         var workingBooking = BOOKING.copy(
@@ -1209,13 +1283,27 @@ class ValidationServiceTest {
           workingBooking,
         )
 
-        assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_28_DAYS_AGGREGATE_LT_12_MONTHS), ValidationMessage(FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS)))
+        assertThat(result).isEqualTo(
+          listOf(
+            ValidationMessage(FTR_28_DAYS_AGGREGATE_LT_12_MONTHS),
+            ValidationMessage(FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS),
+          ),
+        )
       }
 
       @Test
       fun `Test 14 day aggregate Type sentence and aggregate duration greater than 12 months`() {
-        val consecutiveSentenceOne = FTR_SDS_SENTENCE.copy(recallType = FIXED_TERM_RECALL_14, duration = ONE_MONTH_DURATION, consecutiveSentenceUUIDs = emptyList())
-        val consecutiveSentenceTwo = FTR_SDS_SENTENCE.copy(recallType = FIXED_TERM_RECALL_14, duration = FIVE_YEAR_DURATION, identifier = UUID.randomUUID(), consecutiveSentenceUUIDs = listOf(FTR_SDS_SENTENCE.identifier))
+        val consecutiveSentenceOne = FTR_SDS_SENTENCE.copy(
+          recallType = FIXED_TERM_RECALL_14,
+          duration = ONE_MONTH_DURATION,
+          consecutiveSentenceUUIDs = emptyList(),
+        )
+        val consecutiveSentenceTwo = FTR_SDS_SENTENCE.copy(
+          recallType = FIXED_TERM_RECALL_14,
+          duration = FIVE_YEAR_DURATION,
+          identifier = UUID.randomUUID(),
+          consecutiveSentenceUUIDs = listOf(FTR_SDS_SENTENCE.identifier),
+        )
         consecutiveSentenceOne.sentenceCalculation = SENTENCE_CALCULATION
         consecutiveSentenceTwo.sentenceCalculation = SENTENCE_CALCULATION
         var workingBooking = BOOKING.copy(
@@ -1499,6 +1587,16 @@ class ValidationServiceTest {
     }
   }
 
+  //  fun validateSentenceForManualEntry(sentences: List<SentenceAndOffences>): MutableList<ValidationMessage>{
+  //    return sentences.map { validateSentenceForManualEntry(it) }.flatten().toMutableList()
+  //  }
+  @Test
+  fun `Test that a validation error is generated for sentences with missing offence dates when validating for manual entry`() {
+    val sentenceAndOffences = sentenceWithMissingOffenceDates.copy()
+    val result = validationService.validateSentenceForManualEntry(listOf(sentenceWithMissingOffenceDates))
+    assertThat(result).containsExactly(ValidationMessage(ValidationCode.OFFENCE_MISSING_DATE, listOf("1", "2")))
+  }
+
   fun createConsecutiveSentences(booking: Booking): Booking {
     val (baseSentences, consecutiveSentences) = booking.sentences.partition { it.consecutiveSentenceUUIDs.isEmpty() }
     val sentencesByPrevious = consecutiveSentences.groupBy {
@@ -1640,7 +1738,16 @@ class ValidationServiceTest {
       1,
       FIRST_MAY_2018,
       false,
-      Adjustments(mutableMapOf(REMAND to mutableListOf(Adjustment(numberOfDays = 1, appliesToSentencesFrom = FIRST_MAY_2018)))),
+      Adjustments(
+        mutableMapOf(
+          REMAND to mutableListOf(
+            Adjustment(
+              numberOfDays = 1,
+              appliesToSentencesFrom = FIRST_MAY_2018,
+            ),
+          ),
+        ),
+      ),
       FIRST_MAY_2018,
     )
     private val BOOKING = Booking(

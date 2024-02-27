@@ -38,7 +38,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Approved
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
@@ -508,8 +507,8 @@ class CalculationTransactionalService(
   }
 
   fun validateForManualBooking(prisonerId: String): List<ValidationMessage> {
-      val sourceData = prisonService.getPrisonApiSourceData(prisonerId, true)
-      return validationService.validateSentenceForManualEntry(sourceData.sentenceAndOffences)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, true)
+    return validationService.validateSentenceForManualEntry(sourceData.sentenceAndOffences)
   }
 
   companion object {
