@@ -619,7 +619,9 @@ class ValidationService(
   }
 
   private fun validateWithoutOffenceDate(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
-    val invalid = sentencesAndOffence.offences.any { it.offenceEndDate == null || it.offenceStartDate == null }
+    // It's valid to not have an end date for many offence types, but the start date must always be present in
+    // either case. If an end date is null it will be set to the start date in the transformation.
+    val invalid = sentencesAndOffence.offences.any { it.offenceStartDate == null }
     if (invalid) {
       return ValidationMessage(OFFENCE_MISSING_DATE, getCaseSeqAndLineSeq(sentencesAndOffence))
     }

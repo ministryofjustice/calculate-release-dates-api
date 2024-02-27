@@ -159,14 +159,6 @@ class ValidationIntTest : IntegrationTestBase() {
   fun `Run validate for manual entry missing offence start date`() {
     runValidateForManualEntry(
       MISSING_OFFENCE_START_DATE_SENTENCE,
-       listOf(ValidationMessage(OFFENCE_MISSING_DATE, listOf("1", "1"))),
-    )
-  }
-
-  @Test
-  fun `Run validate for manual entry missing offence end date`() {
-    runValidateForManualEntry(
-      MISSING_OFFENCE_END_DATE_SENTENCE,
       listOf(ValidationMessage(OFFENCE_MISSING_DATE, listOf("1", "1"))),
     )
   }

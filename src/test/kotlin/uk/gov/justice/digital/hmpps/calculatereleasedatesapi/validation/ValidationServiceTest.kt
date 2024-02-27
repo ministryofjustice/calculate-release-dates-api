@@ -1587,9 +1587,6 @@ class ValidationServiceTest {
     }
   }
 
-  //  fun validateSentenceForManualEntry(sentences: List<SentenceAndOffences>): MutableList<ValidationMessage>{
-  //    return sentences.map { validateSentenceForManualEntry(it) }.flatten().toMutableList()
-  //  }
   @Test
   fun `Test that a validation error is generated for sentences with missing offence dates when validating for manual entry`() {
     val sentenceAndOffences = sentenceWithMissingOffenceDates.copy()
