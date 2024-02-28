@@ -1,0 +1,35 @@
+[
+  {
+    "bookingId": 8202231,
+    "sentenceSequence": 1,
+    "lineSequence": 1,
+    "caseSequence": 1,
+    "courtDescription": "Amersham Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "ORA Sentencing Code Standard Determinate Sentence",
+    "sentenceDate": "2022-05-05",
+    "terms": [
+      {
+        "years": 0,
+        "months": 3,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3932966,
+        "offenceStartDate": "2022-05-04",
+        "offenceCode": "TH68007A",
+        "offenceDescription": "Attempt theft from motor vehicle",
+        "indicators": [
+          "D",
+          "50"
+        ]
+      }
+    ]
+  }
+]
