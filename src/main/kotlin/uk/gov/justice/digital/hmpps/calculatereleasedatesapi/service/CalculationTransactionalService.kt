@@ -506,6 +506,11 @@ class CalculationTransactionalService(
     }
   }
 
+  fun validateForManualBooking(prisonerId: String): List<ValidationMessage> {
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, true)
+    return validationService.validateSentenceForManualEntry(sourceData.sentenceAndOffences)
+  }
+
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }

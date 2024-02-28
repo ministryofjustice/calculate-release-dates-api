@@ -318,6 +318,10 @@ class ValidationService(
     return validationMessages
   }
 
+  fun validateSentenceForManualEntry(sentences: List<SentenceAndOffences>): MutableList<ValidationMessage> {
+    return sentences.map { validateSentenceForManualEntry(it) }.flatten().toMutableList()
+  }
+
   private fun validateConsecutiveSentenceUnique(sentences: List<SentenceAndOffences>): List<ValidationMessage> {
     val consecutiveSentences = sentences.filter { it.consecutiveToSequence != null }
     val sentencesGroupedByConsecutiveTo = consecutiveSentences.groupBy { it.consecutiveToSequence }
@@ -397,6 +401,12 @@ class ValidationService(
       validateEdsSentenceTypesCorrectlyApplied(it),
       validateSopcSentenceTypesCorrectlyApplied(it),
       validateFineAmount(it),
+    )
+  }
+
+  private fun validateSentenceForManualEntry(it: SentenceAndOffences): List<ValidationMessage> {
+    return listOfNotNull(
+      validateWithoutOffenceDate(it),
     )
   }
 
@@ -609,7 +619,9 @@ class ValidationService(
   }
 
   private fun validateWithoutOffenceDate(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
-    val invalid = sentencesAndOffence.offences.any { it.offenceEndDate == null && it.offenceStartDate == null }
+    // It's valid to not have an end date for many offence types, but the start date must always be present in
+    // either case. If an end date is null it will be set to the start date in the transformation.
+    val invalid = sentencesAndOffence.offences.any { it.offenceStartDate == null }
     if (invalid) {
       return ValidationMessage(OFFENCE_MISSING_DATE, getCaseSeqAndLineSeq(sentencesAndOffence))
     }
