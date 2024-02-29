@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClientRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RestResponsePage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
@@ -130,14 +130,14 @@ class PrisonApiClient(
       .block()!!
   }
 
-  fun getCalculationsForAPrisonerId(prisonerId: String): List<OffenderSentenceCalculation> {
+  fun getCalculationsForAPrisonerId(prisonerId: String): List<SentenceCalculationSummary> {
     return webClient.get()
       .uri { uriBuilder ->
         uriBuilder.path("/api/offender-dates/calculations/$prisonerId")
           .build()
       }
       .retrieve()
-      .bodyToMono(typeReference<List<OffenderSentenceCalculation>>())
+      .bodyToMono(typeReference<List<SentenceCalculationSummary>>())
       .block()!!
   }
 }

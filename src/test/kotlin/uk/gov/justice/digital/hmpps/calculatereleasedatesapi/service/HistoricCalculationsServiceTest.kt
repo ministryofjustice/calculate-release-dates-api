@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationViewConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderSentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDateTime
 import java.util.UUID
@@ -32,25 +32,25 @@ class HistoricCalculationsServiceTest {
   @Test
   fun `Test source set to CRDS if calculation found in database`() {
     whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calculationRequest()))
-    whenever(prisonApiClient.getCalculationsForAPrisonerId(anyString())).thenReturn(listOf(offenderSentenceCalculation("comment $reference")))
+    whenever(prisonApiClient.getCalculationsForAPrisonerId(anyString())).thenReturn(listOf(sentenceCalculationSummary("comment $reference")))
     val result = underTest.getHistoricCalculationsForPrisoner("123")
     assertThat(result).hasSize(1)
-    assertThat(result.get(0).calculationSource).isEqualTo(CalculationSource.CRDS)
-    assertThat(result.get(0).calculationViewConfiguration).isEqualTo(CalculationViewConfiguration(reference.toString(), 1))
+    assertThat(result[0].calculationSource).isEqualTo(CalculationSource.CRDS)
+    assertThat(result[0].calculationViewConfiguration).isEqualTo(CalculationViewConfiguration(reference.toString(), 1))
   }
 
   @Test
   fun `Test source set to NOMIS if calculation not found in database`() {
     whenever(calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(anyString(), anyString())).thenReturn(listOf(calculationRequest()))
-    whenever(prisonApiClient.getCalculationsForAPrisonerId(anyString())).thenReturn(listOf(offenderSentenceCalculation("comment")))
+    whenever(prisonApiClient.getCalculationsForAPrisonerId(anyString())).thenReturn(listOf(sentenceCalculationSummary("comment")))
     val result = underTest.getHistoricCalculationsForPrisoner("123")
     assertThat(result).hasSize(1)
-    assertThat(result.get(0).calculationSource).isEqualTo(CalculationSource.NOMIS)
-    assertThat(result.get(0).calculationViewConfiguration).isNull()
+    assertThat(result[0].calculationSource).isEqualTo(CalculationSource.NOMIS)
+    assertThat(result[0].calculationViewConfiguration).isNull()
   }
 
-  private fun offenderSentenceCalculation(comment: String): OffenderSentenceCalculation {
-    return OffenderSentenceCalculation(456, "123", "test", "prison", "KMI", 1, LocalDateTime.now(), commentText = comment)
+  private fun sentenceCalculationSummary(comment: String): SentenceCalculationSummary {
+    return SentenceCalculationSummary(456, "123", "bob", "davies", "RNI", "Ranby (HMP)", 1, LocalDateTime.now(), 4, comment, "reason", "user")
   }
 
   private fun calculationRequest(): CalculationRequest {
