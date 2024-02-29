@@ -28,7 +28,7 @@ class NomisCommentService {
       comment.format(calculationRequest.calculationReference)
     } else {
       comment.format(
-        calculationRequest.reasonForCalculation?.displayName,
+        calculationRequest.reasonForCalculation?.nomisComment,
         calculationRequest.calculationReference,
       )
     }
@@ -46,7 +46,7 @@ class NomisCommentService {
     } else {
       MANUAL_ENTRY_COMMENT
     }
-    return comment.format(calculationRequest.reasonForCalculation?.displayName, calculationRequest.calculationReference)
+    return comment.format(calculationRequest.reasonForCalculation?.nomisComment, calculationRequest.calculationReference)
   }
 
   private companion object {

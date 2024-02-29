@@ -44,13 +44,49 @@ class CalculationReasonControllerTest {
       .build()
 
     val calculationReasons = listOf(
-      CalculationReason(1, isActive = true, isOther = false, isBulk = false, displayName = "Reason 1", nomisReason = "UPDATE"),
-      CalculationReason(2, isActive = true, isOther = false, isBulk = false, displayName = "Reason 2", nomisReason = "UPDATE"),
-      CalculationReason(3, isActive = true, isOther = true, isBulk = false, displayName = "Other", nomisReason = "UPDATE"),
-      CalculationReason(4, isActive = false, isOther = false, isBulk = true, displayName = "Bulk Calculation", nomisReason = "UPDATE"),
+      CalculationReason(
+        1,
+        isActive = true,
+        isOther = false,
+        isBulk = false,
+        displayName = "Reason 1",
+        nomisReason = "UPDATE",
+        nomisComment = "NOMIS_COMMENT",
+        displayRank = 10,
+      ),
+      CalculationReason(
+        2,
+        isActive = true,
+        isOther = false,
+        isBulk = false,
+        displayName = "Reason 2",
+        nomisReason = "UPDATE",
+        nomisComment = "NOMIS_COMMENT",
+        displayRank = 20,
+      ),
+      CalculationReason(
+        3,
+        isActive = true,
+        isOther = true,
+        isBulk = false,
+        displayName = "Other",
+        nomisReason = "UPDATE",
+        nomisComment = "NOMIS_COMMENT",
+        displayRank = 10,
+      ),
+      CalculationReason(
+        4,
+        isActive = false,
+        isOther = false,
+        isBulk = true,
+        displayName = "Bulk Calculation",
+        nomisReason = "UPDATE",
+        nomisComment = "NOMIS_COMMENT",
+        displayRank = 10,
+      ),
     )
 
-    whenever(calculationReasonRepository.findAllByIsActiveTrueOrderById()).thenReturn(calculationReasons)
+    whenever(calculationReasonRepository.findAllByIsActiveTrueOrderByDisplayRankAsc()).thenReturn(calculationReasons)
 
     val result = mvc.perform(get("/calculation-reasons/").accept(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk)

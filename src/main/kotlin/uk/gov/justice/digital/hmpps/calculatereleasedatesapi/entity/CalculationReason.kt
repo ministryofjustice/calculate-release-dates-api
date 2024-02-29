@@ -25,4 +25,16 @@ data class CalculationReason(
   val isBulk: Boolean,
   @JsonIgnore
   val nomisReason: String?,
+  /**
+   * A shortened version (sub 40 character) of the displayName to allow the comment to be meaningful in NOMIS.
+   */
+  @NotNull
+  @JsonIgnore
+  val nomisComment: String?,
+  /**
+   * Determines the order of the active reasons on the page, repository sorts on this field ascending.
+   */
+  @NotNull
+  @JsonIgnore
+  val displayRank: Int?,
 )

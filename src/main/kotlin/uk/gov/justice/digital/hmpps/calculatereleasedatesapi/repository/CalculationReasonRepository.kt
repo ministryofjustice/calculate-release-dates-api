@@ -5,7 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import java.util.Optional
 
 interface CalculationReasonRepository : JpaRepository<CalculationReason, Long> {
-  fun findAllByIsActiveTrueOrderById(): List<CalculationReason>
+  fun findAllByIsActiveTrueOrderByDisplayRankAsc(): List<CalculationReason>
 
   fun findTopByIsBulkTrue(): Optional<CalculationReason>
 }
