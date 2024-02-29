@@ -34,7 +34,7 @@ class CalculationReasonController(
   )
   fun getActiveCalculationReasons(): List<CalculationReason> {
     log.info("Request for active calculation reasons received")
-    return calculationReasonRepository.findAllByIsActiveTrueOrderById()
+    return calculationReasonRepository.findAllByIsActiveTrueOrderByDisplayRankAsc()
   }
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

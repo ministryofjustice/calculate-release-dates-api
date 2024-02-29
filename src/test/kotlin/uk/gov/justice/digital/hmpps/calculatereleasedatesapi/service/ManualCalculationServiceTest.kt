@@ -228,6 +228,8 @@ class ManualCalculationServiceTest {
       isBulk = false,
       displayName = "Reason",
       nomisReason = "UPDATE",
+      nomisComment = "NOMIS_COMMENT",
+      displayRank = null,
     )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(

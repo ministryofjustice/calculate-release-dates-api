@@ -305,5 +305,5 @@ class CalculationControllerTest {
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(breakdown))
   }
 
-  private val CALCULATION_REASON = CalculationReason(-1, false, false, "Reason", false, null)
+  private val CALCULATION_REASON = CalculationReason(-1, false, false, "Reason", false, null, null, null)
 }

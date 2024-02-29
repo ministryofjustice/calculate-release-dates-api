@@ -94,7 +94,7 @@ class BulkComparisonServiceTest {
     prisonerId = "ABC123DEF",
     calculationStatus = CalculationStatus.CONFIRMED,
     calculationReference = UUID.randomUUID(),
-    calculationReason = CalculationReason(1, true, false, "Bulk Calculation", true, "UPDATE"),
+    calculationReason = CalculationReason(1, true, false, "Bulk Calculation", true, "UPDATE", nomisComment = "NOMIS_COMMENT", null),
     calculationDate = LocalDate.of(2024, 1, 1),
   )
 
@@ -1057,7 +1057,7 @@ class BulkComparisonServiceTest {
     assertEquals(discrepancyCause.subCategory, causes[0].subCategory)
   }
 
-  private val BULK_CALCULATION_REASON = CalculationReason(1, true, false, "Bulk Calculation", true, "UPDATE")
+  private val BULK_CALCULATION_REASON = CalculationReason(1, true, false, "Bulk Calculation", true, "UPDATE", nomisComment = "NOMIS_COMMENT", null)
 
   private fun someReleaseDates(): MutableMap<ReleaseDateType, LocalDate> {
     val releaseDates = mutableMapOf<ReleaseDateType, LocalDate>()

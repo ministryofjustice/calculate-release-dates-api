@@ -17,19 +17,19 @@ class NomisCommentServiceTest {
   @Test
   fun `Tests for comments produced on the regular route`() {
     assertEquals(
-      "{Reason} using the Calculate Release Dates service. The calculation ID is: The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      "{NOMIS_COMMENT} using the Calculate Release Dates service. The calculation ID is: The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
       nomisCommentService.getNomisComment(CALCULATION_REQUEST, isSpecialistSupport = false, approvedDates = null),
       "If the default comment is selected the reason is captured in the NOMIS comment",
     )
 
     assertEquals(
-      "{Reason} using the Calculate release dates service by Specialist Support. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      "{NOMIS_COMMENT} using the Calculate release dates service by Specialist Support. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
       nomisCommentService.getNomisComment(CALCULATION_REQUEST, isSpecialistSupport = true, approvedDates = null),
       "If the calculation was created by specialist support this is captured in the NOMIS comment",
     )
 
     assertEquals(
-      "{Reason} using the Calculate Release Dates service with manually entered dates. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      "{NOMIS_COMMENT} using the Calculate Release Dates service with manually entered dates. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
       nomisCommentService.getNomisComment(
         CALCULATION_REQUEST,
         isSpecialistSupport = false,
@@ -48,6 +48,7 @@ class NomisCommentServiceTest {
           reasonForCalculation = CALCULATION_REASON.copy(
             isOther = true,
             displayName = "Other",
+            nomisComment = "Other",
           ),
         ),
         isSpecialistSupport = true,
@@ -66,7 +67,7 @@ class NomisCommentServiceTest {
         isSpecialistSupport = false,
         approvedDates = null,
       ),
-      "If the calculation ",
+      "If the calculation is not created by specialist support the comment is correct.",
     )
   }
 
@@ -75,13 +76,13 @@ class NomisCommentServiceTest {
     val releaseDates = mutableMapOf<ReleaseDateType, LocalDate?>()
     releaseDates[ReleaseDateType.SED] = LocalDate.of(2026, 1, 1)
     assertEquals(
-      "{Reason} was manually recorded in the Calculate release dates service by Specialist Support. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      "{NOMIS_COMMENT} was manually recorded in the Calculate release dates service by Specialist Support. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
       nomisCommentService.getManualNomisComment(CALCULATION_REQUEST, releaseDates, isGenuineOverride = true),
       "If the calculation request is a Genuine Override then it has the correct comment",
     )
 
     assertEquals(
-      "{Reason} The information shown was manually recorded in the Calculate Release Dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      "{NOMIS_COMMENT} The information shown was manually recorded in the Calculate Release Dates service. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
       nomisCommentService.getManualNomisComment(CALCULATION_REQUEST, releaseDates, isGenuineOverride = false),
       "If the calculation request is manually entered then it has the correct comment",
     )
@@ -89,7 +90,7 @@ class NomisCommentServiceTest {
     releaseDates.clear()
     releaseDates[ReleaseDateType.None] = null
     assertEquals(
-      "{Reason} An Indeterminate (Life) sentence was entered using the Calculate Release Dates service and was intentionally recorded as blank. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
+      "{NOMIS_COMMENT} An Indeterminate (Life) sentence was entered using the Calculate Release Dates service and was intentionally recorded as blank. The calculation ID is: 219db65e-d7b7-4c70-9239-98babff7bcd5",
       nomisCommentService.getManualNomisComment(CALCULATION_REQUEST, releaseDates, isGenuineOverride = false),
       "If the calculation request is indeterminate then it is reflected in the comment",
     )
@@ -102,6 +103,8 @@ class NomisCommentServiceTest {
       isOther = false,
       displayName = "Reason",
       nomisReason = "REASON",
+      nomisComment = "NOMIS_COMMENT",
+      displayRank = 10,
     )
 
     private val CALCULATION_REQUEST = CalculationRequest(
