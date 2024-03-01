@@ -6,6 +6,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClientRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RestResponsePage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
@@ -138,6 +139,15 @@ class PrisonApiClient(
       }
       .retrieve()
       .bodyToMono(typeReference<List<SentenceCalculationSummary>>())
+      .block()!!
+  }
+
+  fun getAgenciesByType(agencyType: String): List<Agency> {
+    log.info("Requesting agencies with type: $agencyType")
+    return webClient.get()
+      .uri("/api/agencies/type/$agencyType")
+      .retrieve()
+      .bodyToMono(typeReference<List<Agency>>())
       .block()!!
   }
 }

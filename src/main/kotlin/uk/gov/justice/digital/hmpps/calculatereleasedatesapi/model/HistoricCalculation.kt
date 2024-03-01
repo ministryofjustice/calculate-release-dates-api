@@ -12,7 +12,7 @@ data class HistoricCalculation(
   val calculationViewConfiguration: CalculationViewConfiguration?,
   val commentText: String?,
   val calculationType: CalculationType?,
-  val establishment: String,
+  val establishment: String?,
   val calculationRequestId: Long?,
   val calculationReason: String?,
 )

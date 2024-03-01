@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
@@ -92,4 +93,8 @@ class PrisonService(
   }
 
   fun getActiveBookingsByPrisonerIds(prisonerIds: List<String>, token: String): List<CalculableSentenceEnvelope> = prisonApiClient.getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds, token)
+
+  fun getCalculationsForAPrisonerId(prisonerId: String): List<SentenceCalculationSummary> = prisonApiClient.getCalculationsForAPrisonerId(prisonerId)
+
+  fun getAgenciesByType(type: String) = prisonApiClient.getAgenciesByType(type)
 }
