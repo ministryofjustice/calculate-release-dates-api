@@ -32,7 +32,6 @@ class HistoricCalculationsService(
           source = CalculationSource.CRDS
           calculationType = calculation.calculationType
           calculationViewData = CalculationViewConfiguration(calculation.calculationReference.toString(), calculation.id)
-          calculation.calculationReference
           calculationRequestId = calculation.id
           if (calculation.reasonForCalculation != null) {
             calculationReason = calculation.reasonForCalculation.displayName

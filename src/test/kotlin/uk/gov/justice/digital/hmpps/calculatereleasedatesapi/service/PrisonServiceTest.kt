@@ -1,13 +1,17 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RestResponsePage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
+import java.time.LocalDateTime
 
 class PrisonServiceTest {
   private val prisonApiClient = mock<PrisonApiClient>()
@@ -25,6 +29,29 @@ class PrisonServiceTest {
     verifyNoMoreInteractions(prisonApiClient)
   }
 
+  @Test
+  fun `should get calculation history for an offender`() {
+    val prisonId = "G0127UG"
+    val agencyDescription = "Cookham Wood (HMP)"
+    val sentenceCalculationSummary = SentenceCalculationSummary(47, prisonId, "first name", "last name", "CKI", agencyDescription, 28, LocalDateTime.now(), 4, "comment", "Lodged warrant", "user")
+    whenever(prisonApiClient.getCalculationsForAPrisonerId(prisonId)).thenReturn(listOf(sentenceCalculationSummary))
+
+    val history = prisonService.getCalculationsForAPrisonerId(prisonId)
+
+    assertThat(history).isNotNull()
+    assertThat(history).hasSize(1)
+    assertThat(history[0].offenderNo).isEqualTo(prisonId)
+    assertThat(history[0].agencyDescription).isEqualTo(agencyDescription)
+  }
+
+  @Test
+  fun `should get agencies by type`() {
+    val prisonApiAgencies = listOf(Agency("LWI", "Lewes (HMP)"), Agency("RSI", "Risley (HMP)"))
+    whenever(prisonApiClient.getAgenciesByType("INST")).thenReturn(prisonApiAgencies)
+    val returnedAgencies = prisonService.getAgenciesByType("INST")
+
+    assertThat(returnedAgencies).isEqualTo(prisonApiAgencies)
+  }
   companion object {
     private val mapper = ObjectMapper()
 
