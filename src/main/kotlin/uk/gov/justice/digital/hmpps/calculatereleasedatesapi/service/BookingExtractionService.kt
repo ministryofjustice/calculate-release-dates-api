@@ -486,24 +486,6 @@ class BookingExtractionService(
             sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
             SentenceCalculation::homeDetentionCurfewEligibilityDate,
           )
-          val latestSopcOrEdsRelease = extractionService.mostRecentSentenceOrNull(
-            sentences.filter { it.hasAnyEdsOrSopcSentence() && !it.sentenceCalculation.isImmediateRelease() },
-            SentenceCalculation::releaseDate,
-          )
-          val latestAFineRelease = extractionService.mostRecentSentenceOrNull(
-            sentences.filter { it is AFineSentence && !it.sentenceCalculation.isImmediateRelease() },
-            SentenceCalculation::releaseDate,
-          )
-          val latestSdsArdRelease = extractionService.mostRecentSentenceOrNull(
-            sentences.filter { it.releaseDateTypes.contains(ARD) && !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.homeDetentionCurfewEligibilityDate == null },
-            SentenceCalculation::releaseDate,
-          )
-          val latestConcurrentReleaseSentence = listOfNotNull(
-            latestSopcOrEdsRelease,
-            latestAFineRelease,
-            latestSdsArdRelease,
-          ).maxByOrNull { it.sentenceCalculation.releaseDate }
-          val latestConcurrentRelease = latestConcurrentReleaseSentence?.sentenceCalculation?.releaseDate
           val latestConflictingNonHdcCrd = getLatestConflictingNonHdcSentence(
             sentenceGroup,
             hdcedSentence?.sentenceCalculation?.homeDetentionCurfewEligibilityDate,
@@ -548,24 +530,23 @@ class BookingExtractionService(
         && it != hdcSentence
         && it.sentenceCalculation.releaseDate.isAfter(calculatedHDCED)
         && !it.isDto()
-        && it !is AFineSentence
         && !it.releaseDateTypes.contains(
         PRRD)
       }
     val containsOnlyImmediateRelease = otherNonSentencesInGroup.all { it.sentenceCalculation.isImmediateRelease() }
 
-    //If all other sentences in the group are immediate release use the HDCED calculated for the HDC eligible sentence
-    if (containsOnlyImmediateRelease) {
-      return hdcSentence to calculatedHDCED
+    val nextApplicableSentence =
+      extractionService.mostRecentSentenceOrNull(
+        otherNonSentencesInGroup,
+        SentenceCalculation::releaseDate,
+      )
+
+    if(nextApplicableSentence != null) {
+      if (!containsOnlyImmediateRelease || nextApplicableSentence.sentenceCalculation.isImmediateCustodyRelease())
+        return nextApplicableSentence to nextApplicableSentence.sentenceCalculation.releaseDate
     }
 
-    val selectedSentence =
-    extractionService.mostRecentSentenceOrNull(
-      otherNonSentencesInGroup,
-      SentenceCalculation::releaseDate,
-    )
-
-    return selectedSentence to selectedSentence?.sentenceCalculation?.releaseDate
+    return hdcSentence to calculatedHDCED
   }
 
   private fun extractManyHomeDetentionCurfew4PlusEligibilityDate(
