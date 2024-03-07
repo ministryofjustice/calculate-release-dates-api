@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -50,7 +50,7 @@ class HistoricCalculationsControllerTest {
 
   @BeforeEach
   fun reset() {
-    Mockito.reset(historicCalculationsService)
+    reset(historicCalculationsService)
 
     mvc = MockMvcBuilders
       .standaloneSetup(HistoricCalculationsController(historicCalculationsService))
@@ -62,11 +62,15 @@ class HistoricCalculationsControllerTest {
   @Test
   fun `Test GET of calculation results by calculationReference`() {
     val historicCalculation = HistoricCalculation(
+      "G5556UH",
       LocalDateTime.now(),
       CalculationSource.CRDS,
       CalculationViewConfiguration("ref", 1),
       "Comment",
       CalculationType.CALCULATED,
+      "Ranby (HMP)",
+      48,
+      "Adding more sentences or terms",
     )
 
     whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(anyString())).thenReturn(listOf(historicCalculation))
