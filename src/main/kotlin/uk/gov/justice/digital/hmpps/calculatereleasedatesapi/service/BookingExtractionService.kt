@@ -493,22 +493,15 @@ class BookingExtractionService(
             hdcedSentence?.sentenceCalculation?.homeDetentionCurfewEligibilityDate,
             hdcedSentence,
           )
-          log.info("Latest Conflicting CRD is : $latestConflictingNonHdcCrd")
 
           if (hdcedSentence != null) {
-            var adjustedReleaseDate: LocalDate? = null
-
-            if (latestConflictingNonHdcCrd.first != null && latestConflictingNonHdcCrd.second != null) {
-              adjustedReleaseDate = latestConflictingNonHdcCrd.second!!
-
-              return adjustedReleaseDate to ReleaseDateCalculationBreakdown(
-                rules = setOf(if (latestConflictingNonHdcCrd.first!!.releaseDateTypes.contains(ARD)) CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE else CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE),
-                releaseDate = adjustedReleaseDate,
-                unadjustedDate = hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
-                adjustedDays = ChronoUnit.DAYS.between(
-                  adjustedReleaseDate,
-                  hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
-                ).toInt(),
+            return if (latestConflictingNonHdcCrd.first != hdcedSentence &&
+              latestConflictingNonHdcCrd.first != null &&
+              latestConflictingNonHdcCrd.second != null
+            ) {
+              getReleaseDateCalculationBreakDownFromLatestConflictingSentence(
+                latestConflictingNonHdcCrd,
+                hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
               )
             } else {
               hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
@@ -518,6 +511,19 @@ class BookingExtractionService(
       }
     }
     return null
+  }
+
+  private fun getReleaseDateCalculationBreakDownFromLatestConflictingSentence(
+    latestConflictingSentence: Pair<CalculableSentence?, LocalDate?>,
+    hdcedSentenceDate: LocalDate,
+  ): Pair<LocalDate, ReleaseDateCalculationBreakdown> {
+    val adjustedReleaseDate = latestConflictingSentence.second!!
+    return adjustedReleaseDate to ReleaseDateCalculationBreakdown(
+      rules = setOf(if (latestConflictingSentence.first!!.releaseDateTypes.contains(ARD)) CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE else CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE),
+      releaseDate = adjustedReleaseDate,
+      unadjustedDate = hdcedSentenceDate,
+      adjustedDays = ChronoUnit.DAYS.between(adjustedReleaseDate, hdcedSentenceDate).toInt(),
+    )
   }
 
   private fun getLatestConflictingNonHdcOrHdc4Sentence(
@@ -576,22 +582,16 @@ class BookingExtractionService(
         )
 
         if (hdcedSentence != null) {
-          var adjustedReleaseDate: LocalDate? = null
-
-          if (latestConflictingNonHdcCrd.first != null && latestConflictingNonHdcCrd.second != null) {
-            adjustedReleaseDate = latestConflictingNonHdcCrd.second!!
-
-            return adjustedReleaseDate to ReleaseDateCalculationBreakdown(
-              rules = setOf(if (latestConflictingNonHdcCrd.first!!.releaseDateTypes.contains(ARD)) CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE else CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE),
-              releaseDate = adjustedReleaseDate,
-              unadjustedDate = hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
-              adjustedDays = ChronoUnit.DAYS.between(
-                adjustedReleaseDate,
-                hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
-              ).toInt(),
+          return if (hdcedSentence != latestConflictingNonHdcCrd.first &&
+            latestConflictingNonHdcCrd.first != null &&
+            latestConflictingNonHdcCrd.second != null
+          ) {
+            getReleaseDateCalculationBreakDownFromLatestConflictingSentence(
+              latestConflictingNonHdcCrd,
+              hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
             )
           } else {
-            return hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED4PLUS]!!
+            hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED4PLUS]!!
           }
         }
       }
