@@ -86,7 +86,7 @@ data class SentenceCalculation(
       ADDITIONAL_DAYS_AWARDED,
       REMAND,
       TAGGED_BAIL,
-    ) +1 == numberOfDaysToDeterminateReleaseDate
+    ) + 1 == numberOfDaysToDeterminateReleaseDate
   }
 
   private fun getAdjustmentTypes(): Array<AdjustmentType> {
@@ -179,8 +179,7 @@ data class SentenceCalculation(
         0,
         getAdjustmentDuringSentence(ADDITIONAL_DAYS_AWARDED) -
           getAdjustmentDuringSentence(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, ADDITIONAL_DAYS_SERVED),
-
-        )
+      )
     }
 
   val calculatedUnusedReleaseAda: Int

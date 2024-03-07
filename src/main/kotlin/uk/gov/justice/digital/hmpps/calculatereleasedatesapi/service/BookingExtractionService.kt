@@ -197,7 +197,7 @@ class BookingExtractionService(
     )
 
     if (latestExpiryDate == latestLicenseExpiryDate && mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes()
-        .contains(SLED)
+      .contains(SLED)
     ) {
       dates[SLED] = latestExpiryDate
       breakdownByReleaseDateType[SLED] =
@@ -324,9 +324,11 @@ class BookingExtractionService(
             dates[PED] = latestNonPedRelease
             breakdownByReleaseDateType[PED] = ReleaseDateCalculationBreakdown(
               rules = setOf(
-                if (latestNonPedReleaseSentence.releaseDateTypes.getReleaseDateTypes()
-                    .contains(ARD)
-                ) CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_ACTUAL_RELEASE else CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE,
+                if (latestNonPedReleaseSentence.releaseDateTypes.getReleaseDateTypes().contains(ARD)) {
+                  CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_ACTUAL_RELEASE
+                } else {
+                  CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE
+                },
               ),
               releaseDate = dates[PED]!!,
               unadjustedDate = latestExtendedDeterminateParoleEligibilityDate,
@@ -486,8 +488,8 @@ class BookingExtractionService(
             sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
             SentenceCalculation::homeDetentionCurfewEligibilityDate,
           )
-          val latestConflictingNonHdcCrd = getLatestConflictingNonHdcSentence(
-            sentenceGroup,
+          val latestConflictingNonHdcCrd = getLatestConflictingNonHdcOrHdc4Sentence(
+            sentenceGroup.filter { it.sentenceCalculation.homeDetentionCurfewEligibilityDate == null },
             hdcedSentence?.sentenceCalculation?.homeDetentionCurfewEligibilityDate,
             hdcedSentence,
           )
@@ -497,20 +499,18 @@ class BookingExtractionService(
             var adjustedReleaseDate: LocalDate? = null
 
             if (latestConflictingNonHdcCrd.first != null && latestConflictingNonHdcCrd.second != null) {
-
               adjustedReleaseDate = latestConflictingNonHdcCrd.second!!
 
               return adjustedReleaseDate to ReleaseDateCalculationBreakdown(
-                  rules = setOf(if (latestConflictingNonHdcCrd.first!!.releaseDateTypes.contains(ARD)) CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE else CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE),
-                  releaseDate = adjustedReleaseDate,
-                  unadjustedDate = hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
-                  adjustedDays = ChronoUnit.DAYS.between(
-                    adjustedReleaseDate,
-                    hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
-                  ).toInt(),
-                )
-            }
-            else {
+                rules = setOf(if (latestConflictingNonHdcCrd.first!!.releaseDateTypes.contains(ARD)) CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE else CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE),
+                releaseDate = adjustedReleaseDate,
+                unadjustedDate = hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
+                adjustedDays = ChronoUnit.DAYS.between(
+                  adjustedReleaseDate,
+                  hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
+                ).toInt(),
+              )
+            } else {
               hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
             }
           }
@@ -520,18 +520,17 @@ class BookingExtractionService(
     return null
   }
 
-  private fun getLatestConflictingNonHdcSentence(
-    sentenceGroup: List<CalculableSentence>, calculatedHDCED: LocalDate?,
+  private fun getLatestConflictingNonHdcOrHdc4Sentence(
+    sentenceGroup: List<CalculableSentence>,
+    calculatedHDCED: LocalDate?,
     hdcSentence: CalculableSentence?,
   ): Pair<CalculableSentence?, LocalDate?> {
-
     val otherNonSentencesInGroup =
-      sentenceGroup.filter { it.sentenceCalculation.homeDetentionCurfewEligibilityDate == null
-        && it != hdcSentence
-        && it.sentenceCalculation.releaseDate.isAfter(calculatedHDCED)
-        && !it.isDto()
-        && !it.releaseDateTypes.contains(
-        PRRD)
+      sentenceGroup.filter {
+        it != hdcSentence &&
+          it.sentenceCalculation.releaseDate.isAfter(calculatedHDCED) &&
+          !it.isDto() &&
+          !it.releaseDateTypes.contains(PRRD)
       }
     val containsOnlyImmediateRelease = otherNonSentencesInGroup.all { it.sentenceCalculation.isImmediateRelease() }
 
@@ -541,9 +540,10 @@ class BookingExtractionService(
         SentenceCalculation::releaseDate,
       )
 
-    if(nextApplicableSentence != null) {
-      if (!containsOnlyImmediateRelease || nextApplicableSentence.sentenceCalculation.isImmediateCustodyRelease())
+    if (nextApplicableSentence != null) {
+      if (!containsOnlyImmediateRelease || nextApplicableSentence.sentenceCalculation.isImmediateCustodyRelease()) {
         return nextApplicableSentence to nextApplicableSentence.sentenceCalculation.releaseDate
+      }
     }
 
     return hdcSentence to calculatedHDCED
@@ -569,50 +569,29 @@ class BookingExtractionService(
           sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
           SentenceCalculation::homeDetentionCurfew4PlusEligibilityDate,
         )
-        val latestSopcOrEdsRelease = extractionService.mostRecentSentenceOrNull(
-          sentences.filter { it.hasAnyEdsOrSopcSentence() && !it.sentenceCalculation.isImmediateRelease() },
-          SentenceCalculation::releaseDate,
+        val latestConflictingNonHdcCrd = getLatestConflictingNonHdcOrHdc4Sentence(
+          sentences.filter { it.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate == null },
+          hdcedSentence?.sentenceCalculation?.homeDetentionCurfew4PlusEligibilityDate,
+          hdcedSentence,
         )
-        val latestAFineRelease = extractionService.mostRecentSentenceOrNull(
-          sentences.filter { it is AFineSentence && !it.sentenceCalculation.isImmediateRelease() },
-          SentenceCalculation::releaseDate,
-        )
-        val latestSdsArdRelease = extractionService.mostRecentSentenceOrNull(
-          sentences.filter { it.releaseDateTypes.contains(ARD) && !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate == null },
-          SentenceCalculation::releaseDate,
-        )
-        val latestSdsCrdRelease =
-          extractionService.mostRecentSentenceOrNull(
-            sentences.filter { it.releaseDateTypes.contains(CRD) && !it.sentenceCalculation.isImmediateRelease() && it.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate == null },
-            SentenceCalculation::releaseDate,
-          )
-        val latestConcurrentReleaseSentence = listOfNotNull(
-          latestSopcOrEdsRelease,
-          latestSdsCrdRelease,
-          latestAFineRelease,
-          latestSdsArdRelease,
-        ).filter {
-          it.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate == null && !it.releaseDateTypes.contains(
-            PRRD,
-          )
-        }.maxByOrNull { it.sentenceCalculation.releaseDate }
-        val latestConcurrentRelease = latestConcurrentReleaseSentence?.sentenceCalculation?.releaseDate
+
         if (hdcedSentence != null) {
-          return if (latestConcurrentRelease != null && hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!.isBefore(
-              latestConcurrentRelease,
-            )
-          ) {
-            latestConcurrentRelease to ReleaseDateCalculationBreakdown(
-              rules = setOf(if (latestConcurrentReleaseSentence.releaseDateTypes.contains(ARD)) CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE else CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE),
-              releaseDate = latestConcurrentRelease,
+          var adjustedReleaseDate: LocalDate? = null
+
+          if (latestConflictingNonHdcCrd.first != null && latestConflictingNonHdcCrd.second != null) {
+            adjustedReleaseDate = latestConflictingNonHdcCrd.second!!
+
+            return adjustedReleaseDate to ReleaseDateCalculationBreakdown(
+              rules = setOf(if (latestConflictingNonHdcCrd.first!!.releaseDateTypes.contains(ARD)) CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE else CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE),
+              releaseDate = adjustedReleaseDate,
               unadjustedDate = hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
               adjustedDays = ChronoUnit.DAYS.between(
-                latestConcurrentRelease,
+                adjustedReleaseDate,
                 hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
               ).toInt(),
             )
           } else {
-            hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED4PLUS]!!
+            return hdcedSentence.sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!! to hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED4PLUS]!!
           }
         }
       }
