@@ -81,6 +81,14 @@ data class SentenceCalculation(
     return sentence.sentencedAt == adjustedDeterminateReleaseDate
   }
 
+  fun isImmediateCustodyRelease(): Boolean {
+    return sentence.sentencedAt == adjustedDeterminateReleaseDate && getAdjustmentBeforeSentence(
+      ADDITIONAL_DAYS_AWARDED,
+      REMAND,
+      TAGGED_BAIL,
+    ) + 1 == numberOfDaysToDeterminateReleaseDate
+  }
+
   private fun getAdjustmentTypes(): Array<AdjustmentType> {
     return if (sentence is AFineSentence && sentence.offence.isCivilOffence()) {
       emptyArray()
@@ -171,7 +179,6 @@ data class SentenceCalculation(
         0,
         getAdjustmentDuringSentence(ADDITIONAL_DAYS_AWARDED) -
           getAdjustmentDuringSentence(RESTORATION_OF_ADDITIONAL_DAYS_AWARDED, ADDITIONAL_DAYS_SERVED),
-
       )
     }
 
