@@ -10,25 +10,35 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 
 @Service
 class HistoricCalculationsService(
-  private val prisonApiClient: PrisonApiClient,
+  private val prisonService: PrisonService,
   private val calculationRequestRepository: CalculationRequestRepository,
 ) {
 
   fun getHistoricCalculationsForPrisoner(prisonerId: String): List<HistoricCalculation> {
     val calculations = calculationRequestRepository.findAllByPrisonerIdAndCalculationStatus(prisonerId, CONFIRMED.name)
-    val nomisCalculations = prisonApiClient.getCalculationsForAPrisonerId(prisonerId)
+    val nomisCalculations = prisonService.getCalculationsForAPrisonerId(prisonerId)
+    val agencyIdToDescriptionMap = prisonService.getAgenciesByType("INST").associateBy { it.agencyId }
     val historicCalculations = nomisCalculations.map { nomisCalculation ->
       var source = CalculationSource.NOMIS
       var calculationViewData: CalculationViewConfiguration? = null
       var calculationType: CalculationType? = null
+      var calculationRequestId: Long? = null
+      var calculationReason = nomisCalculation.calculationReason
+      var establishment: String? = null
       for (calculation in calculations) {
-        if (nomisCalculation.commentText.contains(calculation.calculationReference.toString())) {
+        val nomisComment = nomisCalculation.commentText
+        if (nomisComment != null && nomisCalculation.commentText.contains(calculation.calculationReference.toString())) {
+          establishment = agencyIdToDescriptionMap[calculation.prisonerLocation]?.description
           source = CalculationSource.CRDS
           calculationType = calculation.calculationType
           calculationViewData = CalculationViewConfiguration(calculation.calculationReference.toString(), calculation.id)
+          calculationRequestId = calculation.id
+          if (calculation.reasonForCalculation != null) {
+            calculationReason = calculation.reasonForCalculation.displayName
+          }
         }
       }
-      HistoricCalculation(nomisCalculation.calculationDate, source, calculationViewData, nomisCalculation.commentText, calculationType)
+      HistoricCalculation(prisonerId, nomisCalculation.calculationDate, source, calculationViewData, nomisCalculation.commentText, calculationType, establishment, calculationRequestId, calculationReason)
     }
     return historicCalculations
   }

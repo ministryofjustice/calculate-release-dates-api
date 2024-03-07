@@ -5,10 +5,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationT
 import java.time.LocalDateTime
 
 data class HistoricCalculation(
+  val offenderNo: String,
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
   val calculationDate: LocalDateTime,
   val calculationSource: CalculationSource,
   val calculationViewConfiguration: CalculationViewConfiguration?,
-  val commentText: String,
+  val commentText: String?,
   val calculationType: CalculationType?,
+  val establishment: String?,
+  val calculationRequestId: Long?,
+  val calculationReason: String?,
 )
