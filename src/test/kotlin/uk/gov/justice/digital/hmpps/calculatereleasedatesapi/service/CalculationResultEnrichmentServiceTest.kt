@@ -1,12 +1,16 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
+import net.bytebuddy.asm.Advice.Local
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.EnumSource
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -18,13 +22,16 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedRelea
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NonFridayReleaseDay
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.WorkingDay
+import java.time.Clock
 import java.time.LocalDate
+import java.time.ZoneId
 import java.util.*
 
 class CalculationResultEnrichmentServiceTest {
 
   private val nonFridayReleaseService = mock<NonFridayReleaseService>()
-  private val service = CalculationResultEnrichmentService(nonFridayReleaseService)
+  private val workingDayService = mock<WorkingDayService>()
 
   private val CALCULATION_REQUEST_ID = 123456L
   private val CALCULATION_REFERENCE: UUID = UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5")
@@ -39,11 +46,13 @@ class CalculationResultEnrichmentServiceTest {
 
     whenever(nonFridayReleaseService.getDate(ReleaseDate(sedDate, ReleaseDateType.SED))).thenReturn(NonFridayReleaseDay(sedDate, false))
     whenever(nonFridayReleaseService.getDate(ReleaseDate(crdDate, ReleaseDateType.CRD))).thenReturn(NonFridayReleaseDay(crdDate, false))
+    whenever(workingDayService.previousWorkingDay(sedDate)).thenReturn(WorkingDay(sedDate, adjustedForWeekend = false, adjustedForBankHoliday = false))
+    whenever(workingDayService.previousWorkingDay(crdDate)).thenReturn(WorkingDay(crdDate, adjustedForWeekend = false, adjustedForBankHoliday = false))
 
     val sedOutcome = calculationOutcome(ReleaseDateType.SED, sedDate)
     val crdOutcome = calculationOutcome(ReleaseDateType.CRD, crdDate)
     val calculationRequest = calculationRequest(listOf(sedOutcome, crdOutcome))
-    val results = service.addDetailToCalculationResults(calculationRequest)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest)
     assertThat(results).isEqualTo(
       DetailedCalculationResults(
         calculationRequest.id,
@@ -60,9 +69,10 @@ class CalculationResultEnrichmentServiceTest {
   fun `every release date type has a description`(type: ReleaseDateType) {
     val date = LocalDate.of(2021, 2, 3)
     whenever(nonFridayReleaseService.getDate(ReleaseDate(date, type))).thenReturn(NonFridayReleaseDay(date, false))
+    whenever(workingDayService.previousWorkingDay(date)).thenReturn(WorkingDay(date, adjustedForWeekend = false, adjustedForBankHoliday = false))
     val outcome = calculationOutcome(type, date)
     val calculationRequest = calculationRequest(listOf(outcome))
-    val results = service.addDetailToCalculationResults(calculationRequest)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest)
     assertThat(results.dates[type]?.releaseDateTypeFullName).isNotBlank()
   }
 
@@ -76,15 +86,63 @@ class CalculationResultEnrichmentServiceTest {
 
     val outcome = calculationOutcome(type, originalDate)
     val calculationRequest = calculationRequest(listOf(outcome))
-    val results = service.addDetailToCalculationResults(calculationRequest)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest)
     assertThat(results.dates[type]?.hints).isEqualTo(
-        listOf(
-            ReleaseDateHint(
-                "The Discretionary Friday/Pre-Bank Holiday Release Scheme Policy applies to this release date.",
-                "https://www.gov.uk/government/publications/discretionary-fridaypre-bank-holiday-release-scheme-policy-framework",
-            ),
+      listOf(
+        ReleaseDateHint(
+          "The Discretionary Friday/Pre-Bank Holiday Release Scheme Policy applies to this release date.",
+          "https://www.gov.uk/government/publications/discretionary-fridaypre-bank-holiday-release-scheme-policy-framework",
         ),
+      ),
     )
+    verify(workingDayService, never()).previousWorkingDay(any()) /* Only checks weekend if non-working day doesn't apply */
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    "CRD,true",
+    "ARD,true",
+    "PRRD,true",
+    "HDCED,true",
+    "PED,true",
+    "ETD,true",
+    "MTD,true",
+    "LTD,true",
+    "LED,false",
+  )
+  fun `should calculate weekend adjustments for relevant dates`(type: ReleaseDateType, expected: Boolean) {
+    val originalDate = LocalDate.of(2021, 2, 3)
+    val adjustedDate = LocalDate.of(2021, 2, 1)
+
+    whenever(nonFridayReleaseService.getDate(ReleaseDate(originalDate, type))).thenReturn(NonFridayReleaseDay(originalDate, false))
+    whenever(workingDayService.previousWorkingDay(originalDate)).thenReturn(WorkingDay(adjustedDate, adjustedForWeekend = false, adjustedForBankHoliday = false))
+
+    val outcome = calculationOutcome(type, originalDate)
+    val calculationRequest = calculationRequest(listOf(outcome))
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest)
+    assertThat(results.dates[type]?.hints).isEqualTo(
+        if (expected) {
+            listOf(ReleaseDateHint("Monday, 01 February 2021 when adjusted to a working day"))
+        } else {
+            emptyList()
+        },
+    )
+  }
+
+  @Test
+  fun `should not calculate weekend adjustments for past dates`() {
+    val type = ReleaseDateType.CRD
+    val originalDate = LocalDate.of(2021, 2, 3)
+    val adjustedDate = LocalDate.of(2021, 2, 1)
+    val today = LocalDate.of(2021, 2, 4)
+
+    whenever(nonFridayReleaseService.getDate(ReleaseDate(originalDate, type))).thenReturn(NonFridayReleaseDay(originalDate, false))
+    whenever(workingDayService.previousWorkingDay(originalDate)).thenReturn(WorkingDay(adjustedDate, adjustedForWeekend = false, adjustedForBankHoliday = false))
+
+    val outcome = calculationOutcome(type, originalDate)
+    val calculationRequest = calculationRequest(listOf(outcome))
+    val results = calculationResultEnrichmentService(today).addDetailToCalculationResults(calculationRequest)
+    assertThat(results.dates[type]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   private fun calculationOutcome(type: ReleaseDateType, date: LocalDate) = CalculationOutcome(
@@ -109,4 +167,10 @@ class CalculationResultEnrichmentServiceTest {
     ),
     reasonForCalculation = CALCULATION_REASON,
   )
+
+  private fun calculationResultEnrichmentService(today: LocalDate = LocalDate.of(2000, 1, 1)): CalculationResultEnrichmentService {
+    val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
+    return CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock)
+  }
+
 }
