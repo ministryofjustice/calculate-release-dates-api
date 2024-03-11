@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
-import net.bytebuddy.asm.Advice.Local
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -121,11 +120,11 @@ class CalculationResultEnrichmentServiceTest {
     val calculationRequest = calculationRequest(listOf(outcome))
     val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest)
     assertThat(results.dates[type]?.hints).isEqualTo(
-        if (expected) {
-            listOf(ReleaseDateHint("Monday, 01 February 2021 when adjusted to a working day"))
-        } else {
-            emptyList()
-        },
+      if (expected) {
+        listOf(ReleaseDateHint("Monday, 01 February 2021 when adjusted to a working day"))
+      } else {
+        emptyList()
+      },
     )
   }
 
@@ -172,5 +171,4 @@ class CalculationResultEnrichmentServiceTest {
     val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
     return CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock)
   }
-
 }

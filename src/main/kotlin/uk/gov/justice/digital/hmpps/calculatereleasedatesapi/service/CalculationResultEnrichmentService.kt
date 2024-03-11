@@ -57,7 +57,7 @@ class CalculationResultEnrichmentService(private val nonFridayReleaseService: No
   }
 
   private fun weekendAdjustmentHintOrNull(type: ReleaseDateType, date: LocalDate): ReleaseDateHint? {
-    if(type !in typesAllowedWeekendAdjustment || date.isBefore(LocalDate.now(clock))) {
+    if (type !in typesAllowedWeekendAdjustment || date.isBefore(LocalDate.now(clock))) {
       return null
     }
     val previousWorkingDay = workingDayService.previousWorkingDay(date)
@@ -67,5 +67,4 @@ class CalculationResultEnrichmentService(private val nonFridayReleaseService: No
       null
     }
   }
-
 }

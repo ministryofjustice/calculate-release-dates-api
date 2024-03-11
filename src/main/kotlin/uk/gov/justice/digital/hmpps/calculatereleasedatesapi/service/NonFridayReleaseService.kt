@@ -19,11 +19,11 @@ class NonFridayReleaseService(
   }
 
   fun getDate(date: ReleaseDate): NonFridayReleaseDay {
-    return if (date.type in supportedTypes) getDate(date.date) else  NonFridayReleaseDay(date.date, false)
+    return if (date.type in supportedTypes) getDate(date.date) else NonFridayReleaseDay(date.date, false)
   }
 
   fun getDate(date: LocalDate): NonFridayReleaseDay {
-    if(date.isBefore(LocalDate.now(clock))) {
+    if (date.isBefore(LocalDate.now(clock))) {
       return NonFridayReleaseDay(date, false)
     }
     var usePolicy = false

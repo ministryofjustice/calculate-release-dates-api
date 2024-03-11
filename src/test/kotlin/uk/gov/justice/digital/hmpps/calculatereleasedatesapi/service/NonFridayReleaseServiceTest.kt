@@ -25,6 +25,7 @@ class NonFridayReleaseServiceTest {
     private val aDayBeforeTheConfiguredHolidays = LocalDate.of(2023, 4, 1)
   }
   private val bankHolidayService = mock<BankHolidayService>()
+
   @BeforeEach
   fun reset() {
     reset(bankHolidayService)

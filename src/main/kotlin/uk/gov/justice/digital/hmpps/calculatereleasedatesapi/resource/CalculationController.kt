@@ -196,7 +196,6 @@ class CalculationController(
     return calculationTransactionalService.findCalculationResults(calculationRequestId)
   }
 
-
   @GetMapping(value = ["/detailed-results/{calculationRequestId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody
