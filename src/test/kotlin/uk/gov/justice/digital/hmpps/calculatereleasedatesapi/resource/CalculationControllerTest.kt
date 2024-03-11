@@ -35,6 +35,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
@@ -303,6 +304,28 @@ class CalculationControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(breakdown))
+  }
+
+  @Test
+  fun `Test GET of calculation detailed results`() {
+    val calculationRequestId = 9995L
+    val calculatedReleaseDates = DetailedCalculationResults(
+      calculationRequestId = calculationRequestId,
+      dates = mapOf(),
+    )
+    whenever(calculationTransactionalService.findDetailedCalculationResults(calculationRequestId)).thenReturn(
+      calculatedReleaseDates,
+    )
+
+    val result = mvc.perform(get("/calculation/detailed-results/$calculationRequestId").accept(APPLICATION_JSON))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(mapper.readValue(result.response.contentAsString, DetailedCalculationResults::class.java)).isEqualTo(
+      calculatedReleaseDates,
+    )
+    verify(calculationTransactionalService, times(1)).findDetailedCalculationResults(calculationRequestId)
   }
 
   private val CALCULATION_REASON = CalculationReason(-1, false, false, "Reason", false, null, null, null)

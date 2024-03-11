@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserQuestions
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
@@ -193,6 +194,31 @@ class CalculationController(
   ): CalculatedReleaseDates {
     log.info("Request received return calculation results for calculationRequestId {}", calculationRequestId)
     return calculationTransactionalService.findCalculationResults(calculationRequestId)
+  }
+
+
+  @GetMapping(value = ["/detailed-results/{calculationRequestId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Get release dates for a calculationRequestId with additional details",
+    description = "This endpoint will return the release dates based on a calculationRequestId along with hints and full descriptions.",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns calculated dates"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId"),
+    ],
+  )
+  fun getDetailedResults(
+    @Parameter(required = true, example = "123456", description = "The calculationRequestId of the results")
+    @PathVariable("calculationRequestId")
+    calculationRequestId: Long,
+  ): DetailedCalculationResults {
+    log.info("Request received return calculation results for calculationRequestId {}", calculationRequestId)
+    return calculationTransactionalService.findDetailedCalculationResults(calculationRequestId)
   }
 
   @GetMapping(value = ["/breakdown/{calculationRequestId}"])

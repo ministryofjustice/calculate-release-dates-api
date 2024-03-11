@@ -36,7 +36,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremoc
 @ExtendWith(OAuthExtension::class, PrisonApiExtension::class, BankHolidayApiExtension::class, ManageOffensesApiExtension::class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
-class IntegrationTestBase internal constructor() {
+open class IntegrationTestBase internal constructor() {
 
   @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired

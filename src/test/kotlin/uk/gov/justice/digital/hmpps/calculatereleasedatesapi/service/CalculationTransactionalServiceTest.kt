@@ -50,6 +50,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
@@ -132,6 +133,7 @@ class CalculationTransactionalServiceTest {
   private val serviceUserService = mock<ServiceUserService>()
   private val approvedDatesSubmissionRepository = mock<ApprovedDatesSubmissionRepository>()
   private val nomisCommentService = mock<NomisCommentService>()
+  private val calculationResultEnrichmentService = mock<CalculationResultEnrichmentService>()
 
   private val calculationTransactionalService =
     CalculationTransactionalService(
@@ -148,6 +150,7 @@ class CalculationTransactionalServiceTest {
       serviceUserService,
       approvedDatesSubmissionRepository,
       nomisCommentService,
+      calculationResultEnrichmentService,
     )
 
   private val fakeSourceData = PrisonApiSourceData(
@@ -585,6 +588,23 @@ class CalculationTransactionalServiceTest {
         UUID.randomUUID().toString(),
         true,
       )
+    }
+  }
+
+  @Test
+  fun `find detailed results should load the calculation request with outcomes and enrich it`() {
+    val detailedCalculationResults = DetailedCalculationResults(CALCULATION_REQUEST_ID, mapOf())
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+    whenever(calculationResultEnrichmentService.addDetailToCalculationResults(CALCULATION_REQUEST_WITH_OUTCOMES)).thenReturn(detailedCalculationResults)
+    val results = calculationTransactionalService.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
+    assertThat(results).isEqualTo(detailedCalculationResults)
+  }
+
+  @Test
+  fun `find detailed results should throw exception if the calculation can't be found`() {
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.empty())
+    assertThrows<EntityNotFoundException>("No calculation results exist for calculationRequestId $CALCULATION_REQUEST_ID") {
+      calculationTransactionalService.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
     }
   }
 
