@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
@@ -63,7 +64,7 @@ class CalculationResultEnrichmentService(
     hints += nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type, date)
     hints += ardHints(type, date, sentencesAndOffences, releaseDates)
     hints += crdHints(type, date, sentencesAndOffences, releaseDates)
-    hints += pedHints(type, date, sentencesAndOffences, releaseDates)
+    hints += pedHints(type, date, sentencesAndOffences, releaseDates, calculationBreakdown)
     return hints.filterNotNull()
   }
 
@@ -78,13 +79,15 @@ class CalculationResultEnrichmentService(
     }
   }
 
+  private val longFormat = DateTimeFormatter.ofPattern("cccc, dd LLLL yyyy")
+
   private fun weekendAdjustmentHintOrNull(type: ReleaseDateType, date: LocalDate): ReleaseDateHint? {
     if (type !in typesAllowedWeekendAdjustment || date.isBefore(LocalDate.now(clock))) {
       return null
     }
     val previousWorkingDay = workingDayService.previousWorkingDay(date)
     return if (previousWorkingDay.date != date) {
-      ReleaseDateHint("${previousWorkingDay.date.format(DateTimeFormatter.ofPattern("cccc, dd LLLL yyyy"))} when adjusted to a working day")
+      ReleaseDateHint("${previousWorkingDay.date.format(longFormat)} when adjusted to a working day")
     } else {
       null
     }
@@ -106,11 +109,25 @@ class CalculationResultEnrichmentService(
     }
   }
 
-  private fun pedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
-    return if (type == ReleaseDateType.PED && displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
-      ReleaseDateHint("The Detention and training order (DTO) release date is later than the Parole Eligibility Date (PED)")
+  private fun pedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> {
+    return if (type == ReleaseDateType.PED) {
+      val hints = mutableListOf<ReleaseDateHint>()
+      if (displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
+        hints += ReleaseDateHint("The Detention and training order (DTO) release date is later than the Parole Eligibility Date (PED)")
+      }
+      if(calculationBreakdown?.breakdownByReleaseDateType?.containsKey(ReleaseDateType.PED) == true) {
+        if(CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE in calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.PED]!!.rules) {
+          hints += ReleaseDateHint("PED adjusted for the CRD of a concurrent sentence or default term")
+        }else if(CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_ACTUAL_RELEASE in calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.PED]!!.rules){
+          hints += ReleaseDateHint("PED adjusted for the ARD of a concurrent sentence or default term")
+        }
+      }
+      if(calculationBreakdown?.otherDates?.containsKey(ReleaseDateType.PRRD) == true && calculationBreakdown.otherDates[ReleaseDateType.PRRD]!!.isAfter(date)) {
+        hints += ReleaseDateHint("The post recall release date (PRRD) of ${calculationBreakdown.otherDates[ReleaseDateType.PRRD]!!.format(longFormat)} is later than the PED")
+      }
+      hints
     } else {
-      null
+      emptyList()
     }
   }
 
@@ -119,6 +136,7 @@ class CalculationResultEnrichmentService(
       releaseDates.containsKey(ReleaseDateType.MTD) &&
       dateBeforeAnother(date, releaseDates[ReleaseDateType.MTD]!!.date)
   }
+
   private fun dateBeforeAnother(dateA: LocalDate, dateB: LocalDate): Boolean = dateA < dateB
   private fun hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences: List<SentenceAndOffences>?): Boolean {
     return sentencesAndOffences != null &&
