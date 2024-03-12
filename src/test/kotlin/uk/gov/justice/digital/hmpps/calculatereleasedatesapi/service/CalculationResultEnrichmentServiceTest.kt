@@ -620,6 +620,7 @@ class CalculationResultEnrichmentServiceTest {
       listOf(ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Conditional release date)")),
     )
   }
+
   @Test
   fun `should add MTD hint if PED before MTD and MTD before CRD`() {
     val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, LocalDate.of(2021, 1, 3))
@@ -637,6 +638,7 @@ class CalculationResultEnrichmentServiceTest {
       listOf(ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Conditional release date)")),
     )
   }
+
   @Test
   fun `should add MTD hint if HDCED before MTD and MTD before ARD`() {
     val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, LocalDate.of(2021, 1, 3))
@@ -654,6 +656,7 @@ class CalculationResultEnrichmentServiceTest {
       listOf(ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Automatic release date)")),
     )
   }
+
   @Test
   fun `should add MTD hint if PED before MTD and MTD before ARD`() {
     val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, LocalDate.of(2021, 1, 3))
@@ -689,6 +692,7 @@ class CalculationResultEnrichmentServiceTest {
       listOf(ReleaseDateHint("Release from the Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Home Detention Curfew Eligibility Date)")),
     )
   }
+
   @Test
   fun `should add MTD hint if MTD before HDCED and HDCED before ARD`() {
     val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, LocalDate.of(2021, 1, 3))
@@ -725,6 +729,52 @@ class CalculationResultEnrichmentServiceTest {
     )
   }
 
+  @Test
+  fun `should add ERSED adjusted for the ARD of a concurrent default term`() {
+    val (ersedDate, ersedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ERSED, LocalDate.of(2021, 2, 3))
+
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(ersedType, ersedDate)))
+    val calculationBreakdown = CalculationBreakdown(
+      emptyList(),
+      null,
+      mapOf(ReleaseDateType.ERSED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM))),
+    )
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[ersedType]?.hints).isEqualTo(listOf(ReleaseDateHint("ERSED adjusted for the ARD of a concurrent default term")))
+  }
+
+  @Test
+  fun `should add ERSED adjusted to MTD of the DTO hint`() {
+    val (ersedDate, ersedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ERSED, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, LocalDate.of(2021, 2, 5))
+    val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 7))
+
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(ersedType, ersedDate), calculationOutcome(mtdType, mtdDate), calculationOutcome(crdType, crdDate)))
+    val calculationBreakdown = CalculationBreakdown(emptyList(), null)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[ersedType]?.hints).isEqualTo(listOf(ReleaseDateHint("Adjusted to Mid term date (MTD) of the Detention and training order (DTO)")))
+  }
+
+  @Test
+  fun `should add all applicable ERSED hints`() {
+    val (ersedDate, ersedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ERSED, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, LocalDate.of(2021, 2, 5))
+    val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 7))
+
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(ersedType, ersedDate), calculationOutcome(mtdType, mtdDate), calculationOutcome(crdType, crdDate)))
+    val calculationBreakdown = CalculationBreakdown(
+      emptyList(),
+      null,
+      mapOf(ReleaseDateType.ERSED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM))),
+    )
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[ersedType]?.hints).isEqualTo(
+        listOf(
+            ReleaseDateHint("ERSED adjusted for the ARD of a concurrent default term"),
+            ReleaseDateHint("Adjusted to Mid term date (MTD) of the Detention and training order (DTO)"),
+        ),
+    )
+  }
 
   private fun getReleaseDateAndStubAdjustments(type: ReleaseDateType, date: LocalDate): ReleaseDate {
     whenever(nonFridayReleaseService.getDate(ReleaseDate(date, type))).thenReturn(NonFridayReleaseDay(date, false))
