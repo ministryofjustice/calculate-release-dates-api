@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -8,12 +9,18 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import java.time.Clock
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Service
-class CalculationResultEnrichmentService(private val nonFridayReleaseService: NonFridayReleaseService, val workingDayService: WorkingDayService, val clock: Clock) {
+class CalculationResultEnrichmentService(
+  private val nonFridayReleaseService: NonFridayReleaseService,
+  private val workingDayService: WorkingDayService,
+  private val clock: Clock,
+  private val objectMapper: ObjectMapper,
+) {
   companion object {
     private val typesAllowedWeekendAdjustment = listOf(
       ReleaseDateType.CRD,
@@ -25,24 +32,37 @@ class CalculationResultEnrichmentService(private val nonFridayReleaseService: No
       ReleaseDateType.MTD,
       ReleaseDateType.LTD,
     )
+    private val dtoSentenceTypes = listOf("DTO_ORA", "DTO")
   }
 
   fun addDetailToCalculationResults(calculationRequest: CalculationRequest, calculationBreakdown: CalculationBreakdown?): DetailedCalculationResults {
+    val releaseDates = calculationRequest.calculationOutcomes
+      .filter { it.outcomeDate != null }
+      .map { ReleaseDateType.valueOf(it.calculationDateType) to it.outcomeDate!! }
+      .associateBy(
+        { (type, _) -> type },
+        { (type, date) -> ReleaseDate(date, type) },
+      )
     return DetailedCalculationResults(
       calculationRequest.id,
-      calculationRequest.calculationOutcomes
-        .filter { it.outcomeDate != null }
-        .map { ReleaseDateType.valueOf(it.calculationDateType) to it.outcomeDate!! }
-        .associateBy(
-          { (type, _) -> type },
-          { (type, date) -> DetailedReleaseDate(type, type.fullName, date, getHints(type, date)) },
-        ),
+      releaseDates.mapValues { (_, releaseDate) ->
+        DetailedReleaseDate(
+          releaseDate.type,
+          releaseDate.type.fullName,
+          releaseDate.date,
+          getHints(releaseDate.type, releaseDate.date, calculationRequest, calculationBreakdown, releaseDates),
+        )
+      },
     )
   }
 
-  private fun getHints(type: ReleaseDateType, date: LocalDate): List<ReleaseDateHint> {
+  private fun getHints(type: ReleaseDateType, date: LocalDate, calculationRequest: CalculationRequest, calculationBreakdown: CalculationBreakdown?, releaseDates: Map<ReleaseDateType, ReleaseDate>): List<ReleaseDateHint> {
+    val sentencesAndOffences = calculationRequest.sentenceAndOffences?.map { element -> objectMapper.treeToValue(element, SentenceAndOffences::class.java) }
+
     val hints = mutableListOf<ReleaseDateHint?>()
     hints += nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type, date)
+    hints += ardHints(type, date, sentencesAndOffences, releaseDates)
+    hints += crdHints(type, date, sentencesAndOffences, releaseDates)
     return hints.filterNotNull()
   }
 
@@ -67,5 +87,33 @@ class CalculationResultEnrichmentService(private val nonFridayReleaseService: No
     } else {
       null
     }
+  }
+
+  private fun ardHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
+    return if (type == ReleaseDateType.ARD && displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
+      ReleaseDateHint("The Detention and training order (DTO) release date is later than the Automatic Release Date (ARD)")
+    } else {
+      null
+    }
+  }
+
+  private fun crdHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
+    return if (type == ReleaseDateType.CRD && displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
+      ReleaseDateHint("The Detention and training order (DTO) release date is later than the Conditional Release Date (CRD)")
+    } else {
+      null
+    }
+  }
+
+  private fun displayDateBeforeMtd(date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): Boolean {
+    return hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences) &&
+      releaseDates.containsKey(ReleaseDateType.MTD) &&
+      dateBeforeAnother(date, releaseDates[ReleaseDateType.MTD]!!.date)
+  }
+  private fun dateBeforeAnother(dateA: LocalDate, dateB: LocalDate): Boolean = dateA < dateB
+  private fun hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences: List<SentenceAndOffences>?): Boolean {
+    return sentencesAndOffences != null &&
+      sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType in dtoSentenceTypes } &&
+      sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType !in dtoSentenceTypes }
   }
 }
