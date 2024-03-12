@@ -63,6 +63,7 @@ class CalculationResultEnrichmentService(
     hints += nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type, date)
     hints += ardHints(type, date, sentencesAndOffences, releaseDates)
     hints += crdHints(type, date, sentencesAndOffences, releaseDates)
+    hints += pedHints(type, date, sentencesAndOffences, releaseDates)
     return hints.filterNotNull()
   }
 
@@ -100,6 +101,14 @@ class CalculationResultEnrichmentService(
   private fun crdHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
     return if (type == ReleaseDateType.CRD && displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
       ReleaseDateHint("The Detention and training order (DTO) release date is later than the Conditional Release Date (CRD)")
+    } else {
+      null
+    }
+  }
+
+  private fun pedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
+    return if (type == ReleaseDateType.PED && displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
+      ReleaseDateHint("The Detention and training order (DTO) release date is later than the Parole Eligibility Date (PED)")
     } else {
       null
     }

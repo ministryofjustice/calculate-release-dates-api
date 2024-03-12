@@ -150,8 +150,8 @@ class CalculationResultEnrichmentServiceTest {
 
   @Test
   fun `should add DTO later than ARD hint if has DTO and non DTO sentence and MTD is after ARD`() {
-    val (ardDate, ardType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.ARD, LocalDate.of(2021, 2, 3))
-    val (mtdDate, mtdType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.MTD, ardDate.plusDays(1))
+    val (ardDate, ardType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ARD, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, ardDate.plusDays(1))
 
     val sentencesAndOffences = listOf(
       sentenceAndOffence("DTO"),
@@ -164,7 +164,7 @@ class CalculationResultEnrichmentServiceTest {
 
   @Test
   fun `should not add DTO later than ARD hint if has DTO and non DTO sentence if there is no MTD date`() {
-    val (ardDate, ardType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.ARD, LocalDate.of(2021, 2, 3))
+    val (ardDate, ardType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ARD, LocalDate.of(2021, 2, 3))
 
     val sentencesAndOffences = listOf(
       sentenceAndOffence("DTO"),
@@ -177,8 +177,8 @@ class CalculationResultEnrichmentServiceTest {
 
   @Test
   fun `should not add DTO later than ARD hint if has DTO and no non-DTO sentence and MTD is after ARD`() {
-    val (ardDate, ardType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.ARD, LocalDate.of(2021, 2, 3))
-    val (mtdDate, mtdType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.MTD, ardDate.plusDays(1))
+    val (ardDate, ardType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ARD, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, ardDate.plusDays(1))
 
     val sentencesAndOffences = listOf(
       sentenceAndOffence("DTO"),
@@ -190,8 +190,8 @@ class CalculationResultEnrichmentServiceTest {
 
   @Test
   fun `should not add DTO later than ARD hint if has no DTO but no non-DTO sentence and MTD is after ARD`() {
-    val (ardDate, ardType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.ARD, LocalDate.of(2021, 2, 3))
-    val (mtdDate, mtdType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.MTD, ardDate.plusDays(1))
+    val (ardDate, ardType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ARD, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, ardDate.plusDays(1))
 
     val sentencesAndOffences = listOf(
       sentenceAndOffence("LR"),
@@ -203,8 +203,8 @@ class CalculationResultEnrichmentServiceTest {
 
   @Test
   fun `should not add DTO later than ARD hint if has DTO and a non-DTO sentence but MTD is before ARD`() {
-    val (ardDate, ardType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.ARD, LocalDate.of(2021, 2, 3))
-    val (mtdDate, mtdType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.MTD, ardDate.minusDays(1))
+    val (ardDate, ardType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ARD, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, ardDate.minusDays(1))
 
     val sentencesAndOffences = listOf(
       sentenceAndOffence("DTO"),
@@ -217,8 +217,8 @@ class CalculationResultEnrichmentServiceTest {
 
   @Test
   fun `should add DTO later than CRD hint if has DTO and non DTO sentence and MTD is after CRD`() {
-    val (crdDate, crdType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
-    val (mtdDate, mtdType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.MTD, crdDate.plusDays(1))
+    val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, crdDate.plusDays(1))
 
     val sentencesAndOffences = listOf(
       sentenceAndOffence("DTO"),
@@ -231,7 +231,7 @@ class CalculationResultEnrichmentServiceTest {
 
   @Test
   fun `should not add DTO later than CRD hint if has DTO and non DTO sentence if there is no MTD date`() {
-    val (crdDate, crdType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
+    val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
 
     val sentencesAndOffences = listOf(
       sentenceAndOffence("DTO"),
@@ -244,8 +244,8 @@ class CalculationResultEnrichmentServiceTest {
 
   @Test
   fun `should not add DTO later than ARD hint if has DTO and no non-DTO sentence and MTD is after CRD`() {
-    val (crdDate, crdType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
-    val (mtdDate, mtdType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.MTD, crdDate.plusDays(1))
+    val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, crdDate.plusDays(1))
 
     val sentencesAndOffences = listOf(
       sentenceAndOffence("DTO"),
@@ -257,8 +257,8 @@ class CalculationResultEnrichmentServiceTest {
 
   @Test
   fun `should not add DTO later than ARD hint if has no DTO but no non-DTO sentence and MTD is after CRD`() {
-    val (crdDate, crdType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
-    val (mtdDate, mtdType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.MTD, crdDate.plusDays(1))
+    val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, crdDate.plusDays(1))
 
     val sentencesAndOffences = listOf(
       sentenceAndOffence("LR"),
@@ -270,8 +270,8 @@ class CalculationResultEnrichmentServiceTest {
 
   @Test
   fun `should not add DTO later than ARD hint if has DTO and a non-DTO sentence but MTD is before CRD`() {
-    val (crdDate, crdType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
-    val (mtdDate, mtdType) = getReleaseDateAndStubMockAdjustments(ReleaseDateType.MTD, crdDate.minusDays(1))
+    val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, crdDate.minusDays(1))
 
     val sentencesAndOffences = listOf(
       sentenceAndOffence("DTO"),
@@ -282,7 +282,74 @@ class CalculationResultEnrichmentServiceTest {
     assertThat(results.dates[crdType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
-  private fun getReleaseDateAndStubMockAdjustments(type: ReleaseDateType, date: LocalDate): ReleaseDate {
+  @Test
+  fun `should add DTO later than PED hint if has DTO and non DTO sentence and MTD is after PED`() {
+    val (pedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.PED, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, pedDate.plusDays(1))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, null)
+    assertThat(results.dates[pedType]?.hints).isEqualTo(listOf(ReleaseDateHint("The Detention and training order (DTO) release date is later than the Parole Eligibility Date (PED)")))
+  }
+
+  @Test
+  fun `should not add DTO later than PED hint if has DTO and non DTO sentence if there is no MTD date`() {
+    val (pedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.PED, LocalDate.of(2021, 2, 3))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate)), sentencesAndOffences)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, null)
+    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+  }
+
+  @Test
+  fun `should not add DTO later than ARD hint if has DTO and no non-DTO sentence and MTD is after PED`() {
+    val (pedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.PED, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, pedDate.plusDays(1))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, null)
+    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+  }
+
+  @Test
+  fun `should not add DTO later than ARD hint if has no DTO but no non-DTO sentence and MTD is after PED`() {
+    val (pedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.PED, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, pedDate.plusDays(1))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, null)
+    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+  }
+
+  @Test
+  fun `should not add DTO later than ARD hint if has DTO and a non-DTO sentence but MTD is before PED`() {
+    val (pedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.PED, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, pedDate.minusDays(1))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, null)
+    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+  }
+
+  private fun getReleaseDateAndStubAdjustments(type: ReleaseDateType, date: LocalDate): ReleaseDate {
     whenever(nonFridayReleaseService.getDate(ReleaseDate(date, type))).thenReturn(NonFridayReleaseDay(date, false))
     whenever(workingDayService.previousWorkingDay(date)).thenReturn(WorkingDay(date, adjustedForWeekend = false, adjustedForBankHoliday = false))
     return ReleaseDate(date, type)
