@@ -437,9 +437,9 @@ class CalculationResultEnrichmentServiceTest {
     val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
     assertThat(results.dates[pedType]?.hints).isEqualTo(
       listOf(
-          ReleaseDateHint("The Detention and training order (DTO) release date is later than the Parole Eligibility Date (PED)"),
           ReleaseDateHint("PED adjusted for the CRD of a concurrent sentence or default term"),
           ReleaseDateHint("The post recall release date (PRRD) of Tuesday, 02 February 2021 is later than the PED"),
+          ReleaseDateHint("The Detention and training order (DTO) release date is later than the Parole Eligibility Date (PED)"),
       ),
     )
   }

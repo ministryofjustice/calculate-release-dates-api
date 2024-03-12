@@ -112,9 +112,6 @@ class CalculationResultEnrichmentService(
   private fun pedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> {
     return if (type == ReleaseDateType.PED) {
       val hints = mutableListOf<ReleaseDateHint>()
-      if (displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
-        hints += ReleaseDateHint("The Detention and training order (DTO) release date is later than the Parole Eligibility Date (PED)")
-      }
       if(calculationBreakdown?.breakdownByReleaseDateType?.containsKey(ReleaseDateType.PED) == true) {
         if(CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE in calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.PED]!!.rules) {
           hints += ReleaseDateHint("PED adjusted for the CRD of a concurrent sentence or default term")
@@ -124,6 +121,9 @@ class CalculationResultEnrichmentService(
       }
       if(calculationBreakdown?.otherDates?.containsKey(ReleaseDateType.PRRD) == true && calculationBreakdown.otherDates[ReleaseDateType.PRRD]!!.isAfter(date)) {
         hints += ReleaseDateHint("The post recall release date (PRRD) of ${calculationBreakdown.otherDates[ReleaseDateType.PRRD]!!.format(longFormat)} is later than the PED")
+      }
+      if (displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
+        hints += ReleaseDateHint("The Detention and training order (DTO) release date is later than the Parole Eligibility Date (PED)")
       }
       hints
     } else {
