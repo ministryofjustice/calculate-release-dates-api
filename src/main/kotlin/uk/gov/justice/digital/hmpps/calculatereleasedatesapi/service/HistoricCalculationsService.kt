@@ -23,7 +23,7 @@ class HistoricCalculationsService(
       var calculationViewData: CalculationViewConfiguration? = null
       var calculationType: CalculationType? = null
       var calculationRequestId: Long? = null
-      var calculationReason = nomisCalculation.calculationReason
+      var calculationReason: String? = nomisCalculation.calculationReason
       var establishment: String? = null
       for (calculation in calculations) {
         val nomisComment = nomisCalculation.commentText
@@ -33,9 +33,7 @@ class HistoricCalculationsService(
           calculationType = calculation.calculationType
           calculationViewData = CalculationViewConfiguration(calculation.calculationReference.toString(), calculation.id)
           calculationRequestId = calculation.id
-          if (calculation.reasonForCalculation != null) {
-            calculationReason = calculation.reasonForCalculation.displayName
-          }
+          calculationReason = calculation.reasonForCalculation?.displayName
         }
       }
       HistoricCalculation(prisonerId, nomisCalculation.calculationDate, source, calculationViewData, nomisCalculation.commentText, calculationType, establishment, calculationRequestId, calculationReason)
