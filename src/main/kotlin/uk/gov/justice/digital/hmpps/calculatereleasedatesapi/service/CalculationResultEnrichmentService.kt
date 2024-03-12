@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
@@ -26,7 +27,7 @@ class CalculationResultEnrichmentService(private val nonFridayReleaseService: No
     )
   }
 
-  fun addDetailToCalculationResults(calculationRequest: CalculationRequest): DetailedCalculationResults {
+  fun addDetailToCalculationResults(calculationRequest: CalculationRequest, calculationBreakdown: CalculationBreakdown?): DetailedCalculationResults {
     return DetailedCalculationResults(
       calculationRequest.id,
       calculationRequest.calculationOutcomes

@@ -22,6 +22,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.same
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.slf4j.Logger
@@ -594,9 +595,23 @@ class CalculationTransactionalServiceTest {
   @Test
   fun `find detailed results should load the calculation request with outcomes and enrich it`() {
     val detailedCalculationResults = DetailedCalculationResults(CALCULATION_REQUEST_ID, mapOf())
-    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
-    whenever(calculationResultEnrichmentService.addDetailToCalculationResults(CALCULATION_REQUEST_WITH_OUTCOMES)).thenReturn(detailedCalculationResults)
+    val objectMapper = TestUtil.objectMapper()
+    val calculationRequestWithEverythingForBreakdown = CALCULATION_REQUEST_WITH_OUTCOMES.copy(
+      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
+      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
+      adjustments = objectToJson(adjustments, objectMapper),
+      calculationOutcomes = listOf(
+        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
+        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "SLED", outcomeDate = LocalDate.of(2030, 6, 26)),
+        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "HDCED4PLUS", outcomeDate = LocalDate.of(2025, 12, 29)),
+        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "ESED", outcomeDate = LocalDate.of(2030, 6, 26)),
+      ),
+    )
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithEverythingForBreakdown))
+    whenever(calculationResultEnrichmentService.addDetailToCalculationResults(same(calculationRequestWithEverythingForBreakdown), any())).thenReturn(detailedCalculationResults)
+
     val results = calculationTransactionalService.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
+
     assertThat(results).isEqualTo(detailedCalculationResults)
   }
 

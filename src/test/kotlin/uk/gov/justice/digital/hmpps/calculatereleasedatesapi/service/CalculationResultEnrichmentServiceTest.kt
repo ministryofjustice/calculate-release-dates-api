@@ -51,7 +51,7 @@ class CalculationResultEnrichmentServiceTest {
     val sedOutcome = calculationOutcome(ReleaseDateType.SED, sedDate)
     val crdOutcome = calculationOutcome(ReleaseDateType.CRD, crdDate)
     val calculationRequest = calculationRequest(listOf(sedOutcome, crdOutcome))
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, null)
     assertThat(results).isEqualTo(
       DetailedCalculationResults(
         calculationRequest.id,
@@ -71,7 +71,7 @@ class CalculationResultEnrichmentServiceTest {
     whenever(workingDayService.previousWorkingDay(date)).thenReturn(WorkingDay(date, adjustedForWeekend = false, adjustedForBankHoliday = false))
     val outcome = calculationOutcome(type, date)
     val calculationRequest = calculationRequest(listOf(outcome))
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, null)
     assertThat(results.dates[type]?.releaseDateTypeFullName).isNotBlank()
   }
 
@@ -85,7 +85,7 @@ class CalculationResultEnrichmentServiceTest {
 
     val outcome = calculationOutcome(type, originalDate)
     val calculationRequest = calculationRequest(listOf(outcome))
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, null)
     assertThat(results.dates[type]?.hints).isEqualTo(
       listOf(
         ReleaseDateHint(
@@ -118,7 +118,7 @@ class CalculationResultEnrichmentServiceTest {
 
     val outcome = calculationOutcome(type, originalDate)
     val calculationRequest = calculationRequest(listOf(outcome))
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, null)
     assertThat(results.dates[type]?.hints).isEqualTo(
       if (expected) {
         listOf(ReleaseDateHint("Monday, 01 February 2021 when adjusted to a working day"))
@@ -140,7 +140,7 @@ class CalculationResultEnrichmentServiceTest {
 
     val outcome = calculationOutcome(type, originalDate)
     val calculationRequest = calculationRequest(listOf(outcome))
-    val results = calculationResultEnrichmentService(today).addDetailToCalculationResults(calculationRequest)
+    val results = calculationResultEnrichmentService(today).addDetailToCalculationResults(calculationRequest, null)
     assertThat(results.dates[type]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 

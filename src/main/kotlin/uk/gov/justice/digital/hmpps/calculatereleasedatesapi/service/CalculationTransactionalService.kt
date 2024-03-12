@@ -317,7 +317,9 @@ class CalculationTransactionalService(
 
   @Transactional(readOnly = true)
   fun findDetailedCalculationResults(calculationRequestId: Long): DetailedCalculationResults {
-    return calculationResultEnrichmentService.addDetailToCalculationResults(getCalculationRequest(calculationRequestId))
+    val calculationRequest = getCalculationRequest(calculationRequestId)
+    val calculationBreakdown = getCalculationBreakdown(calculationRequestId)
+    return calculationResultEnrichmentService.addDetailToCalculationResults(calculationRequest, calculationBreakdown)
   }
 
   @Transactional(readOnly = true)
