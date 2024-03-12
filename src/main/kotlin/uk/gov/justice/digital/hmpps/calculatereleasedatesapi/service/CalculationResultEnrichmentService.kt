@@ -65,6 +65,7 @@ class CalculationResultEnrichmentService(
     hints += ardHints(type, date, sentencesAndOffences, releaseDates)
     hints += crdHints(type, date, sentencesAndOffences, releaseDates)
     hints += pedHints(type, date, sentencesAndOffences, releaseDates, calculationBreakdown)
+    hints += hdcedHints(type, date, sentencesAndOffences, releaseDates, calculationBreakdown)
     return hints.filterNotNull()
   }
 
@@ -130,6 +131,29 @@ class CalculationResultEnrichmentService(
       emptyList()
     }
   }
+
+  private fun hdcedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> {
+    return if (type == ReleaseDateType.HDCED) {
+      val hints = mutableListOf<ReleaseDateHint>()
+      if(calculationBreakdown?.breakdownByReleaseDateType?.containsKey(ReleaseDateType.HDCED) == true) {
+        if(CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE in calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.HDCED]!!.rules) {
+          hints += ReleaseDateHint("HDCED adjusted for the CRD of a concurrent sentence or default term")
+        }else if(CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE in calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.HDCED]!!.rules){
+          hints += ReleaseDateHint("HDCED adjusted for the ARD of a concurrent sentence or default term")
+        }
+      }
+      if(calculationBreakdown?.otherDates?.containsKey(ReleaseDateType.PRRD) == true && calculationBreakdown.otherDates[ReleaseDateType.PRRD]!!.isAfter(date)) {
+        hints += ReleaseDateHint("Release on HDC must not take place before the PRRD ${calculationBreakdown.otherDates[ReleaseDateType.PRRD]!!.format(longFormat)}")
+      }
+      if (displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
+        hints += ReleaseDateHint("The Detention and training order (DTO) release date is later than the Home detention curfew eligibility date (HDCED)")
+      }
+      hints
+    } else {
+      emptyList()
+    }
+  }
+
 
   private fun displayDateBeforeMtd(date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): Boolean {
     return hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences) &&

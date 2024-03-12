@@ -246,7 +246,7 @@ class CalculationResultEnrichmentServiceTest {
   }
 
   @Test
-  fun `should not add DTO later than ARD hint if has DTO and no non-DTO sentence and MTD is after CRD`() {
+  fun `should not add DTO later than CRD hint if has DTO and no non-DTO sentence and MTD is after CRD`() {
     val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
     val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, crdDate.plusDays(1))
 
@@ -259,7 +259,7 @@ class CalculationResultEnrichmentServiceTest {
   }
 
   @Test
-  fun `should not add DTO later than ARD hint if has no DTO but no non-DTO sentence and MTD is after CRD`() {
+  fun `should not add DTO later than CRD hint if has no DTO but no non-DTO sentence and MTD is after CRD`() {
     val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
     val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, crdDate.plusDays(1))
 
@@ -272,7 +272,7 @@ class CalculationResultEnrichmentServiceTest {
   }
 
   @Test
-  fun `should not add DTO later than ARD hint if has DTO and a non-DTO sentence but MTD is before CRD`() {
+  fun `should not add DTO later than CRD hint if has DTO and a non-DTO sentence but MTD is before CRD`() {
     val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
     val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, crdDate.minusDays(1))
 
@@ -313,7 +313,7 @@ class CalculationResultEnrichmentServiceTest {
   }
 
   @Test
-  fun `should not add DTO later than ARD hint if has DTO and no non-DTO sentence and MTD is after PED`() {
+  fun `should not add DTO later than PED hint if has DTO and no non-DTO sentence and MTD is after PED`() {
     val (pedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.PED, LocalDate.of(2021, 2, 3))
     val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, pedDate.plusDays(1))
 
@@ -326,7 +326,7 @@ class CalculationResultEnrichmentServiceTest {
   }
 
   @Test
-  fun `should not add DTO later than ARD hint if has no DTO but no non-DTO sentence and MTD is after PED`() {
+  fun `should not add DTO later than PED hint if has no DTO but no non-DTO sentence and MTD is after PED`() {
     val (pedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.PED, LocalDate.of(2021, 2, 3))
     val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, pedDate.plusDays(1))
 
@@ -339,7 +339,7 @@ class CalculationResultEnrichmentServiceTest {
   }
 
   @Test
-  fun `should not add DTO later than ARD hint if has DTO and a non-DTO sentence but MTD is before PED`() {
+  fun `should not add DTO later than PED hint if has DTO and a non-DTO sentence but MTD is before PED`() {
     val (pedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.PED, LocalDate.of(2021, 2, 3))
     val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, pedDate.minusDays(1))
 
@@ -444,6 +444,163 @@ class CalculationResultEnrichmentServiceTest {
     )
   }
 
+  @Test
+  fun `should add DTO later than HDCED hint if has DTO and non DTO sentence and MTD is after HDCED`() {
+    val (hdcedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, hdcedDate.plusDays(1))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, hdcedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results.dates[pedType]?.hints).isEqualTo(listOf(ReleaseDateHint("The Detention and training order (DTO) release date is later than the Home detention curfew eligibility date (HDCED)")))
+  }
+
+  @Test
+  fun `should not add DTO later than HDCED hint if has DTO and non DTO sentence if there is no MTD date`() {
+    val (hdcedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 2, 3))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, hdcedDate)), sentencesAndOffences)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+  }
+
+  @Test
+  fun `should not add DTO later than HDCED hint if has DTO and no non-DTO sentence and MTD is after HDCED`() {
+    val (hdcedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, hdcedDate.plusDays(1))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, hdcedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+  }
+
+  @Test
+  fun `should not add DTO later than HDCED hint if has no DTO but no non-DTO sentence and MTD is after HDCED`() {
+    val (hdcedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, hdcedDate.plusDays(1))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, hdcedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+  }
+
+  @Test
+  fun `should not add DTO later than HDCED hint if has DTO and a non-DTO sentence but MTD is before HDCED`() {
+    val (hdcedDate, hdcedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 2, 3))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, hdcedDate.minusDays(1))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(hdcedType, hdcedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results.dates[hdcedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+  }
+  @ParameterizedTest
+  @CsvSource(
+    "CRD,HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE",
+    "ARD,HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE",
+  )
+  fun `should add HDCED adjustment hint for CRD or ARD`(releaseDateType: ReleaseDateType, rule: CalculationRule) {
+    val (hdcedDate, hdcedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 2, 3))
+
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(hdcedType, hdcedDate)))
+    val calculationBreakdown = CalculationBreakdown(
+      emptyList(), null,
+      mapOf(
+        ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(
+          setOf(rule),
+        ),
+      ),
+    )
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[hdcedType]?.hints).isEqualTo(listOf(ReleaseDateHint("HDCED adjusted for the ${releaseDateType.name} of a concurrent sentence or default term")))
+  }
+
+  @Test
+  fun `should add HDCED adjustment hint for CRD if rules for CRD and ARD are both present`() {
+    val (hdcedDate, hdcedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 2, 3))
+
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(hdcedType, hdcedDate)))
+    val calculationBreakdown = CalculationBreakdown(
+      emptyList(), null,
+      mapOf(
+        ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(
+          setOf(CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE, CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE),
+        ),
+      ),
+    )
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[hdcedType]?.hints).isEqualTo(listOf(ReleaseDateHint("HDCED adjusted for the CRD of a concurrent sentence or default term")))
+  }
+
+  @Test
+  fun `should add HDCED before PRRD hint if PRRD is present in other dates and is after HDCED`() {
+    val (hdcedDate, hdcedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 2, 1))
+
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(hdcedType, hdcedDate)))
+    val calculationBreakdown = CalculationBreakdown(
+      emptyList(), null,
+      emptyMap(),
+      mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 2)),
+    )
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[hdcedType]?.hints).isEqualTo(listOf(ReleaseDateHint("Release on HDC must not take place before the PRRD Tuesday, 02 February 2021")))
+  }
+
+  @Test
+  fun `should not add HDCED before PRRD hint if PRRD is present in other dates but is before HDCED`() {
+    val (hdcedDate, hdcedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 2, 1))
+
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(hdcedType, hdcedDate)))
+    val calculationBreakdown = CalculationBreakdown(
+      emptyList(), null,
+      emptyMap(),
+      mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 1)),
+    )
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[hdcedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+  }
+
+  @Test
+  fun `should add all HDCED hints if they all apply`() {
+    val (hdcedDate, hdcedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 2, 1))
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, hdcedDate.plusDays(1))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(hdcedType, hdcedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
+    val calculationBreakdown = CalculationBreakdown(
+      emptyList(),
+      null,
+      mapOf(ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE))),
+      mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 2)),
+    )
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[hdcedType]?.hints).isEqualTo(
+      listOf(
+        ReleaseDateHint("HDCED adjusted for the CRD of a concurrent sentence or default term"),
+        ReleaseDateHint("Release on HDC must not take place before the PRRD Tuesday, 02 February 2021"),
+        ReleaseDateHint("The Detention and training order (DTO) release date is later than the Home detention curfew eligibility date (HDCED)"),
+      ),
+    )
+  }
   private fun getReleaseDateAndStubAdjustments(type: ReleaseDateType, date: LocalDate): ReleaseDate {
     whenever(nonFridayReleaseService.getDate(ReleaseDate(date, type))).thenReturn(NonFridayReleaseDay(date, false))
     whenever(workingDayService.previousWorkingDay(date)).thenReturn(WorkingDay(date, adjustedForWeekend = false, adjustedForBankHoliday = false))
