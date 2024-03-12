@@ -396,9 +396,9 @@ class CalculationResultEnrichmentServiceTest {
 
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate)))
     val calculationBreakdown = CalculationBreakdown(
-        emptyList(), null,
-        emptyMap(),
-        mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 2)),
+      emptyList(), null,
+      emptyMap(),
+      mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 2)),
     )
     val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
     assertThat(results.dates[pedType]?.hints).isEqualTo(listOf(ReleaseDateHint("The post recall release date (PRRD) of Tuesday, 02 February 2021 is later than the PED")))
@@ -410,9 +410,9 @@ class CalculationResultEnrichmentServiceTest {
 
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate)))
     val calculationBreakdown = CalculationBreakdown(
-        emptyList(), null,
-        emptyMap(),
-        mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 1)),
+      emptyList(), null,
+      emptyMap(),
+      mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 1)),
     )
     val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
     assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
@@ -429,17 +429,17 @@ class CalculationResultEnrichmentServiceTest {
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
     val calculationBreakdown = CalculationBreakdown(
-        emptyList(),
-        null,
-        mapOf(ReleaseDateType.PED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE))),
-        mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 2)),
+      emptyList(),
+      null,
+      mapOf(ReleaseDateType.PED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE))),
+      mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 2)),
     )
     val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
     assertThat(results.dates[pedType]?.hints).isEqualTo(
       listOf(
-          ReleaseDateHint("PED adjusted for the CRD of a concurrent sentence or default term"),
-          ReleaseDateHint("The post recall release date (PRRD) of Tuesday, 02 February 2021 is later than the PED"),
-          ReleaseDateHint("The Detention and training order (DTO) release date is later than the Parole Eligibility Date (PED)"),
+        ReleaseDateHint("PED adjusted for the CRD of a concurrent sentence or default term"),
+        ReleaseDateHint("The post recall release date (PRRD) of Tuesday, 02 February 2021 is later than the PED"),
+        ReleaseDateHint("The Detention and training order (DTO) release date is later than the Parole Eligibility Date (PED)"),
       ),
     )
   }
@@ -510,6 +510,7 @@ class CalculationResultEnrichmentServiceTest {
     val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
     assertThat(results.dates[hdcedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
+
   @ParameterizedTest
   @CsvSource(
     "CRD,HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE",
@@ -601,6 +602,130 @@ class CalculationResultEnrichmentServiceTest {
       ),
     )
   }
+
+  @Test
+  fun `should add MTD hint if HDCED before MTD and MTD before CRD`() {
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, LocalDate.of(2021, 1, 3))
+    val (hdcedDate, hdcedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 1, 1))
+    val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 1, 5))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(mtdType, mtdDate), calculationOutcome(hdcedType, hdcedDate), calculationOutcome(crdType, crdDate)), sentencesAndOffences)
+    val calculationBreakdown = CalculationBreakdown(emptyList(), null)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[mtdType]?.hints).isEqualTo(
+      listOf(ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Conditional release date)")),
+    )
+  }
+  @Test
+  fun `should add MTD hint if PED before MTD and MTD before CRD`() {
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, LocalDate.of(2021, 1, 3))
+    val (pedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.PED, LocalDate.of(2021, 1, 1))
+    val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 1, 5))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(mtdType, mtdDate), calculationOutcome(pedType, pedDate), calculationOutcome(crdType, crdDate)), sentencesAndOffences)
+    val calculationBreakdown = CalculationBreakdown(emptyList(), null)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[mtdType]?.hints).isEqualTo(
+      listOf(ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Conditional release date)")),
+    )
+  }
+  @Test
+  fun `should add MTD hint if HDCED before MTD and MTD before ARD`() {
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, LocalDate.of(2021, 1, 3))
+    val (hdcedDate, hdcedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 1, 1))
+    val (ardDate, ardType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ARD, LocalDate.of(2021, 1, 5))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(mtdType, mtdDate), calculationOutcome(hdcedType, hdcedDate), calculationOutcome(ardType, ardDate)), sentencesAndOffences)
+    val calculationBreakdown = CalculationBreakdown(emptyList(), null)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[mtdType]?.hints).isEqualTo(
+      listOf(ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Automatic release date)")),
+    )
+  }
+  @Test
+  fun `should add MTD hint if PED before MTD and MTD before ARD`() {
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, LocalDate.of(2021, 1, 3))
+    val (pedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.PED, LocalDate.of(2021, 1, 1))
+    val (ardDate, ardType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ARD, LocalDate.of(2021, 1, 5))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(mtdType, mtdDate), calculationOutcome(pedType, pedDate), calculationOutcome(ardType, ardDate)), sentencesAndOffences)
+    val calculationBreakdown = CalculationBreakdown(emptyList(), null)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[mtdType]?.hints).isEqualTo(
+      listOf(ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Automatic release date)")),
+    )
+  }
+
+  @Test
+  fun `should add MTD hint if MTD before HDCED and HDCED before CRD`() {
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, LocalDate.of(2021, 1, 3))
+    val (hdcedDate, hdcedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 1, 5))
+    val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 1, 7))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(mtdType, mtdDate), calculationOutcome(hdcedType, hdcedDate), calculationOutcome(crdType, crdDate)), sentencesAndOffences)
+    val calculationBreakdown = CalculationBreakdown(emptyList(), null)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[mtdType]?.hints).isEqualTo(
+      listOf(ReleaseDateHint("Release from the Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Home Detention Curfew Eligibility Date)")),
+    )
+  }
+  @Test
+  fun `should add MTD hint if MTD before HDCED and HDCED before ARD`() {
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, LocalDate.of(2021, 1, 3))
+    val (hdcedDate, hdcedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 1, 5))
+    val (ardDate, ardType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ARD, LocalDate.of(2021, 1, 7))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(mtdType, mtdDate), calculationOutcome(hdcedType, hdcedDate), calculationOutcome(ardType, ardDate)), sentencesAndOffences)
+    val calculationBreakdown = CalculationBreakdown(emptyList(), null)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[mtdType]?.hints).isEqualTo(
+      listOf(ReleaseDateHint("Release from the Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Home Detention Curfew Eligibility Date)")),
+    )
+  }
+
+  @Test
+  fun `should add MTD hint if MTD before PED and PED before CRD`() {
+    val (mtdDate, mtdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.MTD, LocalDate.of(2021, 1, 3))
+    val (pedDate, pedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.PED, LocalDate.of(2021, 1, 5))
+    val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 1, 7))
+
+    val sentencesAndOffences = listOf(
+      sentenceAndOffence("DTO"),
+      sentenceAndOffence("LR"),
+    )
+    val calculationRequest = calculationRequest(listOf(calculationOutcome(mtdType, mtdDate), calculationOutcome(pedType, pedDate), calculationOutcome(crdType, crdDate)), sentencesAndOffences)
+    val calculationBreakdown = CalculationBreakdown(emptyList(), null)
+    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
+    assertThat(results.dates[mtdType]?.hints).isEqualTo(
+      listOf(ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Parole Eligibility Date)")),
+    )
+  }
+
+
   private fun getReleaseDateAndStubAdjustments(type: ReleaseDateType, date: LocalDate): ReleaseDate {
     whenever(nonFridayReleaseService.getDate(ReleaseDate(date, type))).thenReturn(NonFridayReleaseDay(date, false))
     whenever(workingDayService.previousWorkingDay(date)).thenReturn(WorkingDay(date, adjustedForWeekend = false, adjustedForBankHoliday = false))

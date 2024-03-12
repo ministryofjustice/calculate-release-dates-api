@@ -66,6 +66,7 @@ class CalculationResultEnrichmentService(
     hints += crdHints(type, date, sentencesAndOffences, releaseDates)
     hints += pedHints(type, date, sentencesAndOffences, releaseDates, calculationBreakdown)
     hints += hdcedHints(type, date, sentencesAndOffences, releaseDates, calculationBreakdown)
+    hints += mtdHints(type, date, sentencesAndOffences, releaseDates)
     return hints.filterNotNull()
   }
 
@@ -153,15 +154,47 @@ class CalculationResultEnrichmentService(
       emptyList()
     }
   }
-
+  private fun mtdHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
+    if (type == ReleaseDateType.MTD && hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences)) {
+      val hdcedBeforeMtd = dateBeforeAnother(releaseDates[ReleaseDateType.HDCED]?.date, releaseDates[ReleaseDateType.MTD]?.date)
+      val pedBeforeMtd = dateBeforeAnother(releaseDates[ReleaseDateType.PED]?.date, releaseDates[ReleaseDateType.MTD]?.date)
+      val mtdBeforeCrd = dateBeforeAnother(releaseDates[ReleaseDateType.MTD]?.date, releaseDates[ReleaseDateType.CRD]?.date)
+      val mtdBeforeArd = dateBeforeAnother(releaseDates[ReleaseDateType.MTD]?.date, releaseDates[ReleaseDateType.ARD]?.date)
+      val mtdBeforeHdced = dateBeforeAnother(releaseDates[ReleaseDateType.MTD]?.date, releaseDates[ReleaseDateType.HDCED]?.date)
+      val hdcedBeforeCrd = dateBeforeAnother(releaseDates[ReleaseDateType.HDCED]?.date, releaseDates[ReleaseDateType.CRD]?.date)
+      val hdcedBeforeArd = dateBeforeAnother(releaseDates[ReleaseDateType.HDCED]?.date, releaseDates[ReleaseDateType.ARD]?.date)
+      val mtdBeforePed = dateBeforeAnother(releaseDates[ReleaseDateType.MTD]?.date, releaseDates[ReleaseDateType.PED]?.date)
+      val pedBeforeCrd = dateBeforeAnother(releaseDates[ReleaseDateType.PED]?.date, releaseDates[ReleaseDateType.CRD]?.date)
+      if (hdcedBeforeMtd || pedBeforeMtd) {
+        if (mtdBeforeCrd) {
+          return ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Conditional release date)")
+        }
+        if (mtdBeforeArd) {
+          return ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Automatic release date)")
+        }
+      }
+      if (mtdBeforeHdced && (hdcedBeforeCrd || hdcedBeforeArd)) {
+        return ReleaseDateHint("Release from the Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Home Detention Curfew Eligibility Date)")
+      }
+      if (mtdBeforePed && pedBeforeCrd) {
+        return ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Parole Eligibility Date)")
+      }
+    }
+    return null
+  }
 
   private fun displayDateBeforeMtd(date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): Boolean {
     return hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences) &&
       releaseDates.containsKey(ReleaseDateType.MTD) &&
-      dateBeforeAnother(date, releaseDates[ReleaseDateType.MTD]!!.date)
+      date < releaseDates[ReleaseDateType.MTD]!!.date
   }
 
-  private fun dateBeforeAnother(dateA: LocalDate, dateB: LocalDate): Boolean = dateA < dateB
+  private fun dateBeforeAnother(dateA: LocalDate?, dateB: LocalDate?): Boolean {
+    if(dateA == null || dateB == null) {
+      return false
+    }
+    return dateA < dateB
+  }
   private fun hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences: List<SentenceAndOffences>?): Boolean {
     return sentencesAndOffences != null &&
       sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType in dtoSentenceTypes } &&
