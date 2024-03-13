@@ -218,7 +218,7 @@ class CalculationController(
     @PathVariable("calculationRequestId")
     calculationRequestId: Long,
   ): DetailedCalculationResults {
-    log.info("Request received return calculation results for calculationRequestId {}", calculationRequestId)
+    log.info("Request received return detailed results for calculationRequestId {}", calculationRequestId)
     return detailedCalculationResultsService.findDetailedCalculationResults(calculationRequestId)
   }
 
