@@ -26,7 +26,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -42,7 +41,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-import java.util.UUID
+import java.util.*
 
 @Service
 class CalculationTransactionalService(
@@ -59,7 +58,6 @@ class CalculationTransactionalService(
   private val serviceUserService: ServiceUserService,
   private val approvedDatesSubmissionRepository: ApprovedDatesSubmissionRepository,
   private val nomisCommentService: NomisCommentService,
-  private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
 ) {
 
   /*
@@ -313,13 +311,6 @@ class CalculationTransactionalService(
   @Transactional(readOnly = true)
   fun findCalculationResults(calculationRequestId: Long): CalculatedReleaseDates {
     return transform(getCalculationRequest(calculationRequestId))
-  }
-
-  @Transactional(readOnly = true)
-  fun findDetailedCalculationResults(calculationRequestId: Long): DetailedCalculationResults {
-    val calculationRequest = getCalculationRequest(calculationRequestId)
-    val calculationBreakdown = getCalculationBreakdown(calculationRequestId)
-    return calculationResultEnrichmentService.addDetailToCalculationResults(calculationRequest, calculationBreakdown)
   }
 
   @Transactional(readOnly = true)

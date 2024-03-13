@@ -5,7 +5,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
@@ -36,7 +35,7 @@ class CalculationResultEnrichmentService(
     private val dtoSentenceTypes = listOf(SentenceCalculationType.DTO_ORA.name, SentenceCalculationType.DTO.name)
   }
 
-  fun addDetailToCalculationResults(calculationRequest: CalculationRequest, calculationBreakdown: CalculationBreakdown?): DetailedCalculationResults {
+  fun addDetailToCalculationDates(calculationRequest: CalculationRequest, calculationBreakdown: CalculationBreakdown?): Map<ReleaseDateType, DetailedReleaseDate> {
     val releaseDates = calculationRequest.calculationOutcomes
       .filter { it.outcomeDate != null }
       .map { ReleaseDateType.valueOf(it.calculationDateType) to it.outcomeDate!! }
@@ -44,17 +43,14 @@ class CalculationResultEnrichmentService(
         { (type, _) -> type },
         { (type, date) -> ReleaseDate(date, type) },
       )
-    return DetailedCalculationResults(
-      calculationRequest.id,
-      releaseDates.mapValues { (_, releaseDate) ->
-        DetailedReleaseDate(
-          releaseDate.type,
-          releaseDate.type.fullName,
-          releaseDate.date,
-          getHints(releaseDate.type, releaseDate.date, calculationRequest, calculationBreakdown, releaseDates),
-        )
-      },
-    )
+    return releaseDates.mapValues { (_, releaseDate) ->
+      DetailedReleaseDate(
+        releaseDate.type,
+        releaseDate.type.fullName,
+        releaseDate.date,
+        getHints(releaseDate.type, releaseDate.date, calculationRequest, calculationBreakdown, releaseDates),
+      )
+    }
   }
 
   private fun getHints(type: ReleaseDateType, date: LocalDate, calculationRequest: CalculationRequest, calculationBreakdown: CalculationBreakdown?, releaseDates: Map<ReleaseDateType, ReleaseDate>): List<ReleaseDateHint> {
@@ -67,7 +63,7 @@ class CalculationResultEnrichmentService(
     hints += pedHints(type, date, sentencesAndOffences, releaseDates, calculationBreakdown)
     hints += hdcedHints(type, date, sentencesAndOffences, releaseDates, calculationBreakdown)
     hints += mtdHints(type, date, sentencesAndOffences, releaseDates)
-    hints += ersedHints(type, date, sentencesAndOffences, releaseDates, calculationBreakdown)
+    hints += ersedHints(type, releaseDates, calculationBreakdown)
     return hints.filterNotNull()
   }
 
@@ -160,12 +156,12 @@ class CalculationResultEnrichmentService(
     if (type == ReleaseDateType.MTD && hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences)) {
       val hdcedBeforeMtd = dateBeforeAnother(releaseDates[ReleaseDateType.HDCED]?.date, releaseDates[ReleaseDateType.MTD]?.date)
       val pedBeforeMtd = dateBeforeAnother(releaseDates[ReleaseDateType.PED]?.date, releaseDates[ReleaseDateType.MTD]?.date)
-      val mtdBeforeCrd = dateBeforeAnother(releaseDates[ReleaseDateType.MTD]?.date, releaseDates[ReleaseDateType.CRD]?.date)
-      val mtdBeforeArd = dateBeforeAnother(releaseDates[ReleaseDateType.MTD]?.date, releaseDates[ReleaseDateType.ARD]?.date)
-      val mtdBeforeHdced = dateBeforeAnother(releaseDates[ReleaseDateType.MTD]?.date, releaseDates[ReleaseDateType.HDCED]?.date)
+      val mtdBeforeCrd = dateBeforeAnother(date, releaseDates[ReleaseDateType.CRD]?.date)
+      val mtdBeforeArd = dateBeforeAnother(date, releaseDates[ReleaseDateType.ARD]?.date)
+      val mtdBeforeHdced = dateBeforeAnother(date, releaseDates[ReleaseDateType.HDCED]?.date)
       val hdcedBeforeCrd = dateBeforeAnother(releaseDates[ReleaseDateType.HDCED]?.date, releaseDates[ReleaseDateType.CRD]?.date)
       val hdcedBeforeArd = dateBeforeAnother(releaseDates[ReleaseDateType.HDCED]?.date, releaseDates[ReleaseDateType.ARD]?.date)
-      val mtdBeforePed = dateBeforeAnother(releaseDates[ReleaseDateType.MTD]?.date, releaseDates[ReleaseDateType.PED]?.date)
+      val mtdBeforePed = dateBeforeAnother(date, releaseDates[ReleaseDateType.PED]?.date)
       val pedBeforeCrd = dateBeforeAnother(releaseDates[ReleaseDateType.PED]?.date, releaseDates[ReleaseDateType.CRD]?.date)
       if (hdcedBeforeMtd || pedBeforeMtd) {
         if (mtdBeforeCrd) {
@@ -185,15 +181,15 @@ class CalculationResultEnrichmentService(
     return null
   }
 
-  private fun ersedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> {
+  private fun ersedHints(type: ReleaseDateType, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> {
     return if (type == ReleaseDateType.ERSED) {
       val hints = mutableListOf<ReleaseDateHint>()
       if (calculationBreakdown?.breakdownByReleaseDateType?.containsKey(ReleaseDateType.ERSED) == true && CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM in calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.ERSED]!!.rules) {
         hints += ReleaseDateHint("ERSED adjusted for the ARD of a concurrent default term")
       }
-       if(dateBeforeAnother(releaseDates[ReleaseDateType.MTD]?.date, releaseDates[ReleaseDateType.CRD]?.date) && dateBeforeAnother(releaseDates[ReleaseDateType.ERSED]?.date, releaseDates[ReleaseDateType.MTD]?.date)) {
-         hints += ReleaseDateHint("Adjusted to Mid term date (MTD) of the Detention and training order (DTO)")
-       }
+      if (dateBeforeAnother(releaseDates[ReleaseDateType.MTD]?.date, releaseDates[ReleaseDateType.CRD]?.date) && dateBeforeAnother(releaseDates[ReleaseDateType.ERSED]?.date, releaseDates[ReleaseDateType.MTD]?.date)) {
+        hints += ReleaseDateHint("Adjusted to Mid term date (MTD) of the Detention and training order (DTO)")
+      }
       hints
     } else {
       emptyList()

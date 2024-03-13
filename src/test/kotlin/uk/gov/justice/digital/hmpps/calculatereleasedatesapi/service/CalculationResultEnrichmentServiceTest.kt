@@ -18,7 +18,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NonFridayReleaseDay
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
@@ -58,14 +57,11 @@ class CalculationResultEnrichmentServiceTest {
     val sedOutcome = calculationOutcome(ReleaseDateType.SED, sedDate)
     val crdOutcome = calculationOutcome(ReleaseDateType.CRD, crdDate)
     val calculationRequest = calculationRequest(listOf(sedOutcome, crdOutcome))
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
     assertThat(results).isEqualTo(
-      DetailedCalculationResults(
-        calculationRequest.id,
-        mapOf(
-          ReleaseDateType.SED to DetailedReleaseDate(ReleaseDateType.SED, "Sentence expiry date", sedDate, emptyList()),
-          ReleaseDateType.CRD to DetailedReleaseDate(ReleaseDateType.CRD, "Conditional release date", crdDate, emptyList()),
-        ),
+      mapOf(
+        ReleaseDateType.SED to DetailedReleaseDate(ReleaseDateType.SED, "Sentence expiry date", sedDate, emptyList()),
+        ReleaseDateType.CRD to DetailedReleaseDate(ReleaseDateType.CRD, "Conditional release date", crdDate, emptyList()),
       ),
     )
   }
@@ -78,8 +74,8 @@ class CalculationResultEnrichmentServiceTest {
     whenever(workingDayService.previousWorkingDay(date)).thenReturn(WorkingDay(date, adjustedForWeekend = false, adjustedForBankHoliday = false))
     val outcome = calculationOutcome(type, date)
     val calculationRequest = calculationRequest(listOf(outcome))
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[type]?.releaseDateTypeFullName).isNotBlank()
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[type]?.releaseDateTypeFullName).isNotBlank()
   }
 
   @Test
@@ -92,8 +88,8 @@ class CalculationResultEnrichmentServiceTest {
 
     val outcome = calculationOutcome(type, originalDate)
     val calculationRequest = calculationRequest(listOf(outcome))
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[type]?.hints).isEqualTo(
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[type]?.hints).isEqualTo(
       listOf(
         ReleaseDateHint(
           "The Discretionary Friday/Pre-Bank Holiday Release Scheme Policy applies to this release date.",
@@ -125,8 +121,8 @@ class CalculationResultEnrichmentServiceTest {
 
     val outcome = calculationOutcome(type, originalDate)
     val calculationRequest = calculationRequest(listOf(outcome))
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[type]?.hints).isEqualTo(
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[type]?.hints).isEqualTo(
       if (expected) {
         listOf(ReleaseDateHint("Monday, 01 February 2021 when adjusted to a working day"))
       } else {
@@ -147,8 +143,8 @@ class CalculationResultEnrichmentServiceTest {
 
     val outcome = calculationOutcome(type, originalDate)
     val calculationRequest = calculationRequest(listOf(outcome))
-    val results = calculationResultEnrichmentService(today).addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[type]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService(today).addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[type]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -161,8 +157,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(ardType, ardDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[ardType]?.hints).isEqualTo(listOf(ReleaseDateHint("The Detention and training order (DTO) release date is later than the Automatic Release Date (ARD)")))
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[ardType]?.hints).isEqualTo(listOf(ReleaseDateHint("The Detention and training order (DTO) release date is later than the Automatic Release Date (ARD)")))
   }
 
   @Test
@@ -174,8 +170,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(ardType, ardDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[ardType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[ardType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -187,8 +183,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("DTO"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(ardType, ardDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[ardType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[ardType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -200,8 +196,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(ardType, ardDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[ardType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[ardType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -214,8 +210,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(ardType, ardDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[ardType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[ardType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -228,8 +224,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(crdType, crdDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[crdType]?.hints).isEqualTo(listOf(ReleaseDateHint("The Detention and training order (DTO) release date is later than the Conditional Release Date (CRD)")))
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[crdType]?.hints).isEqualTo(listOf(ReleaseDateHint("The Detention and training order (DTO) release date is later than the Conditional Release Date (CRD)")))
   }
 
   @Test
@@ -241,8 +237,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(crdType, crdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[crdType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[crdType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -254,8 +250,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("DTO"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(crdType, crdDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[crdType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[crdType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -267,8 +263,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(crdType, crdDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[crdType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[crdType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -281,8 +277,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(crdType, crdDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[crdType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[crdType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -295,8 +291,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[pedType]?.hints).isEqualTo(listOf(ReleaseDateHint("The Detention and training order (DTO) release date is later than the Parole Eligibility Date (PED)")))
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[pedType]?.hints).isEqualTo(listOf(ReleaseDateHint("The Detention and training order (DTO) release date is later than the Parole Eligibility Date (PED)")))
   }
 
   @Test
@@ -308,8 +304,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -321,8 +317,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("DTO"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -334,8 +330,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -348,8 +344,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @ParameterizedTest
@@ -362,15 +358,16 @@ class CalculationResultEnrichmentServiceTest {
 
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate)))
     val calculationBreakdown = CalculationBreakdown(
-      emptyList(), null,
+      emptyList(),
+      null,
       mapOf(
         ReleaseDateType.PED to ReleaseDateCalculationBreakdown(
           setOf(rule),
         ),
       ),
     )
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[pedType]?.hints).isEqualTo(listOf(ReleaseDateHint("PED adjusted for the ${releaseDateType.name} of a concurrent sentence or default term")))
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[pedType]?.hints).isEqualTo(listOf(ReleaseDateHint("PED adjusted for the ${releaseDateType.name} of a concurrent sentence or default term")))
   }
 
   @Test
@@ -379,15 +376,16 @@ class CalculationResultEnrichmentServiceTest {
 
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate)))
     val calculationBreakdown = CalculationBreakdown(
-      emptyList(), null,
+      emptyList(),
+      null,
       mapOf(
         ReleaseDateType.PED to ReleaseDateCalculationBreakdown(
           setOf(CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE, CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_ACTUAL_RELEASE),
         ),
       ),
     )
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[pedType]?.hints).isEqualTo(listOf(ReleaseDateHint("PED adjusted for the CRD of a concurrent sentence or default term")))
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[pedType]?.hints).isEqualTo(listOf(ReleaseDateHint("PED adjusted for the CRD of a concurrent sentence or default term")))
   }
 
   @Test
@@ -396,12 +394,13 @@ class CalculationResultEnrichmentServiceTest {
 
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate)))
     val calculationBreakdown = CalculationBreakdown(
-      emptyList(), null,
+      emptyList(),
+      null,
       emptyMap(),
       mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 2)),
     )
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[pedType]?.hints).isEqualTo(listOf(ReleaseDateHint("The post recall release date (PRRD) of Tuesday, 02 February 2021 is later than the PED")))
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[pedType]?.hints).isEqualTo(listOf(ReleaseDateHint("The post recall release date (PRRD) of Tuesday, 02 February 2021 is later than the PED")))
   }
 
   @Test
@@ -410,12 +409,13 @@ class CalculationResultEnrichmentServiceTest {
 
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, pedDate)))
     val calculationBreakdown = CalculationBreakdown(
-      emptyList(), null,
+      emptyList(),
+      null,
       emptyMap(),
       mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 1)),
     )
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -434,8 +434,8 @@ class CalculationResultEnrichmentServiceTest {
       mapOf(ReleaseDateType.PED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE))),
       mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 2)),
     )
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[pedType]?.hints).isEqualTo(
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[pedType]?.hints).isEqualTo(
       listOf(
         ReleaseDateHint("PED adjusted for the CRD of a concurrent sentence or default term"),
         ReleaseDateHint("The post recall release date (PRRD) of Tuesday, 02 February 2021 is later than the PED"),
@@ -454,8 +454,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, hdcedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[pedType]?.hints).isEqualTo(listOf(ReleaseDateHint("The Detention and training order (DTO) release date is later than the Home detention curfew eligibility date (HDCED)")))
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[pedType]?.hints).isEqualTo(listOf(ReleaseDateHint("The Detention and training order (DTO) release date is later than the Home detention curfew eligibility date (HDCED)")))
   }
 
   @Test
@@ -467,8 +467,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, hdcedDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -480,8 +480,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("DTO"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, hdcedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -493,8 +493,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(pedType, hdcedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[pedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -507,8 +507,8 @@ class CalculationResultEnrichmentServiceTest {
       sentenceAndOffence("LR"),
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(hdcedType, hdcedDate), calculationOutcome(mtdType, mtdDate)), sentencesAndOffences)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results.dates[hdcedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
+    assertThat(results[hdcedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @ParameterizedTest
@@ -521,15 +521,16 @@ class CalculationResultEnrichmentServiceTest {
 
     val calculationRequest = calculationRequest(listOf(calculationOutcome(hdcedType, hdcedDate)))
     val calculationBreakdown = CalculationBreakdown(
-      emptyList(), null,
+      emptyList(),
+      null,
       mapOf(
         ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(
           setOf(rule),
         ),
       ),
     )
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[hdcedType]?.hints).isEqualTo(listOf(ReleaseDateHint("HDCED adjusted for the ${releaseDateType.name} of a concurrent sentence or default term")))
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[hdcedType]?.hints).isEqualTo(listOf(ReleaseDateHint("HDCED adjusted for the ${releaseDateType.name} of a concurrent sentence or default term")))
   }
 
   @Test
@@ -538,15 +539,16 @@ class CalculationResultEnrichmentServiceTest {
 
     val calculationRequest = calculationRequest(listOf(calculationOutcome(hdcedType, hdcedDate)))
     val calculationBreakdown = CalculationBreakdown(
-      emptyList(), null,
+      emptyList(),
+      null,
       mapOf(
         ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(
           setOf(CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE, CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE),
         ),
       ),
     )
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[hdcedType]?.hints).isEqualTo(listOf(ReleaseDateHint("HDCED adjusted for the CRD of a concurrent sentence or default term")))
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[hdcedType]?.hints).isEqualTo(listOf(ReleaseDateHint("HDCED adjusted for the CRD of a concurrent sentence or default term")))
   }
 
   @Test
@@ -555,12 +557,13 @@ class CalculationResultEnrichmentServiceTest {
 
     val calculationRequest = calculationRequest(listOf(calculationOutcome(hdcedType, hdcedDate)))
     val calculationBreakdown = CalculationBreakdown(
-      emptyList(), null,
+      emptyList(),
+      null,
       emptyMap(),
       mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 2)),
     )
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[hdcedType]?.hints).isEqualTo(listOf(ReleaseDateHint("Release on HDC must not take place before the PRRD Tuesday, 02 February 2021")))
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[hdcedType]?.hints).isEqualTo(listOf(ReleaseDateHint("Release on HDC must not take place before the PRRD Tuesday, 02 February 2021")))
   }
 
   @Test
@@ -569,12 +572,13 @@ class CalculationResultEnrichmentServiceTest {
 
     val calculationRequest = calculationRequest(listOf(calculationOutcome(hdcedType, hdcedDate)))
     val calculationBreakdown = CalculationBreakdown(
-      emptyList(), null,
+      emptyList(),
+      null,
       emptyMap(),
       mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 1)),
     )
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[hdcedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[hdcedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
   }
 
   @Test
@@ -593,8 +597,8 @@ class CalculationResultEnrichmentServiceTest {
       mapOf(ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE))),
       mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 2)),
     )
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[hdcedType]?.hints).isEqualTo(
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[hdcedType]?.hints).isEqualTo(
       listOf(
         ReleaseDateHint("HDCED adjusted for the CRD of a concurrent sentence or default term"),
         ReleaseDateHint("Release on HDC must not take place before the PRRD Tuesday, 02 February 2021"),
@@ -615,8 +619,8 @@ class CalculationResultEnrichmentServiceTest {
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(mtdType, mtdDate), calculationOutcome(hdcedType, hdcedDate), calculationOutcome(crdType, crdDate)), sentencesAndOffences)
     val calculationBreakdown = CalculationBreakdown(emptyList(), null)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[mtdType]?.hints).isEqualTo(
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[mtdType]?.hints).isEqualTo(
       listOf(ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Conditional release date)")),
     )
   }
@@ -633,8 +637,8 @@ class CalculationResultEnrichmentServiceTest {
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(mtdType, mtdDate), calculationOutcome(pedType, pedDate), calculationOutcome(crdType, crdDate)), sentencesAndOffences)
     val calculationBreakdown = CalculationBreakdown(emptyList(), null)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[mtdType]?.hints).isEqualTo(
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[mtdType]?.hints).isEqualTo(
       listOf(ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Conditional release date)")),
     )
   }
@@ -651,8 +655,8 @@ class CalculationResultEnrichmentServiceTest {
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(mtdType, mtdDate), calculationOutcome(hdcedType, hdcedDate), calculationOutcome(ardType, ardDate)), sentencesAndOffences)
     val calculationBreakdown = CalculationBreakdown(emptyList(), null)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[mtdType]?.hints).isEqualTo(
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[mtdType]?.hints).isEqualTo(
       listOf(ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Automatic release date)")),
     )
   }
@@ -669,8 +673,8 @@ class CalculationResultEnrichmentServiceTest {
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(mtdType, mtdDate), calculationOutcome(pedType, pedDate), calculationOutcome(ardType, ardDate)), sentencesAndOffences)
     val calculationBreakdown = CalculationBreakdown(emptyList(), null)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[mtdType]?.hints).isEqualTo(
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[mtdType]?.hints).isEqualTo(
       listOf(ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Automatic release date)")),
     )
   }
@@ -687,8 +691,8 @@ class CalculationResultEnrichmentServiceTest {
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(mtdType, mtdDate), calculationOutcome(hdcedType, hdcedDate), calculationOutcome(crdType, crdDate)), sentencesAndOffences)
     val calculationBreakdown = CalculationBreakdown(emptyList(), null)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[mtdType]?.hints).isEqualTo(
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[mtdType]?.hints).isEqualTo(
       listOf(ReleaseDateHint("Release from the Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Home Detention Curfew Eligibility Date)")),
     )
   }
@@ -705,8 +709,8 @@ class CalculationResultEnrichmentServiceTest {
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(mtdType, mtdDate), calculationOutcome(hdcedType, hdcedDate), calculationOutcome(ardType, ardDate)), sentencesAndOffences)
     val calculationBreakdown = CalculationBreakdown(emptyList(), null)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[mtdType]?.hints).isEqualTo(
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[mtdType]?.hints).isEqualTo(
       listOf(ReleaseDateHint("Release from the Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Home Detention Curfew Eligibility Date)")),
     )
   }
@@ -723,8 +727,8 @@ class CalculationResultEnrichmentServiceTest {
     )
     val calculationRequest = calculationRequest(listOf(calculationOutcome(mtdType, mtdDate), calculationOutcome(pedType, pedDate), calculationOutcome(crdType, crdDate)), sentencesAndOffences)
     val calculationBreakdown = CalculationBreakdown(emptyList(), null)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[mtdType]?.hints).isEqualTo(
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[mtdType]?.hints).isEqualTo(
       listOf(ReleaseDateHint("Release from Detention and training order (DTO) cannot happen until release from the sentence (earliest would be the Parole Eligibility Date)")),
     )
   }
@@ -739,8 +743,8 @@ class CalculationResultEnrichmentServiceTest {
       null,
       mapOf(ReleaseDateType.ERSED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM))),
     )
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[ersedType]?.hints).isEqualTo(listOf(ReleaseDateHint("ERSED adjusted for the ARD of a concurrent default term")))
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[ersedType]?.hints).isEqualTo(listOf(ReleaseDateHint("ERSED adjusted for the ARD of a concurrent default term")))
   }
 
   @Test
@@ -751,8 +755,8 @@ class CalculationResultEnrichmentServiceTest {
 
     val calculationRequest = calculationRequest(listOf(calculationOutcome(ersedType, ersedDate), calculationOutcome(mtdType, mtdDate), calculationOutcome(crdType, crdDate)))
     val calculationBreakdown = CalculationBreakdown(emptyList(), null)
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[ersedType]?.hints).isEqualTo(listOf(ReleaseDateHint("Adjusted to Mid term date (MTD) of the Detention and training order (DTO)")))
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[ersedType]?.hints).isEqualTo(listOf(ReleaseDateHint("Adjusted to Mid term date (MTD) of the Detention and training order (DTO)")))
   }
 
   @Test
@@ -767,12 +771,12 @@ class CalculationResultEnrichmentServiceTest {
       null,
       mapOf(ReleaseDateType.ERSED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM))),
     )
-    val results = calculationResultEnrichmentService().addDetailToCalculationResults(calculationRequest, calculationBreakdown)
-    assertThat(results.dates[ersedType]?.hints).isEqualTo(
-        listOf(
-            ReleaseDateHint("ERSED adjusted for the ARD of a concurrent default term"),
-            ReleaseDateHint("Adjusted to Mid term date (MTD) of the Detention and training order (DTO)"),
-        ),
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, calculationBreakdown)
+    assertThat(results[ersedType]?.hints).isEqualTo(
+      listOf(
+        ReleaseDateHint("ERSED adjusted for the ARD of a concurrent default term"),
+        ReleaseDateHint("Adjusted to Mid term date (MTD) of the Detention and training order (DTO)"),
+      ),
     )
   }
 

@@ -40,6 +40,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalcula
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 import java.time.LocalDate
 import java.util.UUID
@@ -56,6 +57,9 @@ class CalculationControllerTest {
 
   @MockBean
   private lateinit var calculationUserQuestionService: CalculationUserQuestionService
+
+  @MockBean
+  private lateinit var detailedCalculationResultsService: DetailedCalculationResultsService
 
   @MockBean
   private lateinit var relevantRemandService: RelevantRemandService
@@ -81,6 +85,7 @@ class CalculationControllerTest {
           calculationTransactionalService,
           calculationUserQuestionService,
           relevantRemandService,
+          detailedCalculationResultsService,
         ),
       )
       .setControllerAdvice(ControllerAdvice())
@@ -312,8 +317,10 @@ class CalculationControllerTest {
     val calculatedReleaseDates = DetailedCalculationResults(
       calculationRequestId = calculationRequestId,
       dates = mapOf(),
+      null,
+      null,
     )
-    whenever(calculationTransactionalService.findDetailedCalculationResults(calculationRequestId)).thenReturn(
+    whenever(detailedCalculationResultsService.findDetailedCalculationResults(calculationRequestId)).thenReturn(
       calculatedReleaseDates,
     )
 
@@ -325,7 +332,7 @@ class CalculationControllerTest {
     assertThat(mapper.readValue(result.response.contentAsString, DetailedCalculationResults::class.java)).isEqualTo(
       calculatedReleaseDates,
     )
-    verify(calculationTransactionalService, times(1)).findDetailedCalculationResults(calculationRequestId)
+    verify(detailedCalculationResultsService, times(1)).findDetailedCalculationResults(calculationRequestId)
   }
 
   private val CALCULATION_REASON = CalculationReason(-1, false, false, "Reason", false, null, null, null)
