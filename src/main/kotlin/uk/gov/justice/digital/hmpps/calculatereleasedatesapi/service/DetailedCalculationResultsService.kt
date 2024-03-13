@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 @Service
 @Transactional(readOnly = true)
 open class DetailedCalculationResultsService(
-  var calculationTransactionalService: CalculationTransactionalService? = null,
+  private val calculationTransactionalService: CalculationTransactionalService,
   private val prisonApiDataMapper: PrisonApiDataMapper,
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
@@ -39,7 +39,7 @@ open class DetailedCalculationResultsService(
         calculateErsed = calculationUserInputs.calculateErsed,
       )
       try {
-        calculationTransactionalService!!.calculateWithBreakdown(booking, calculation)
+        calculationTransactionalService.calculateWithBreakdown(booking, calculation)
       } catch (e: BreakdownChangedSinceLastCalculation) {
         breakdownMissingReason = BreakdownMissingReason.BREAKDOWN_CHANGED_SINCE_LAST_CALCULATION
         null
