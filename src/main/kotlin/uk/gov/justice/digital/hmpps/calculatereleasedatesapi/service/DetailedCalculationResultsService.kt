@@ -51,6 +51,7 @@ open class DetailedCalculationResultsService(
     return DetailedCalculationResults(
       calculationRequestId,
       calculationResultEnrichmentService.addDetailToCalculationDates(calculationRequest, calculationBreakdown),
+      prisonerDetails,
       sentenceAndOffences,
       calculationBreakdown,
       breakdownMissingReason,

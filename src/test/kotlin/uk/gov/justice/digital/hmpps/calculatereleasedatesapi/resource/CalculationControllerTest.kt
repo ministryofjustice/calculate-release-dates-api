@@ -319,6 +319,7 @@ class CalculationControllerTest {
       dates = mapOf(),
       null,
       null,
+      null,
     )
     whenever(detailedCalculationResultsService.findDetailedCalculationResults(calculationRequestId)).thenReturn(
       calculatedReleaseDates,

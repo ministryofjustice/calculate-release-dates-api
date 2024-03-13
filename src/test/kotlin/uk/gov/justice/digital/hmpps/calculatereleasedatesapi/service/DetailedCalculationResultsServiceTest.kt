@@ -67,6 +67,7 @@ class DetailedCalculationResultsServiceTest {
     )
     val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedReleaseDate(ReleaseDateType.CRD, ReleaseDateType.CRD.fullName, LocalDate.of(2026, 6, 26), emptyList()))
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithEverythingForBreakdown))
+    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
     whenever(calculationResultEnrichmentService.addDetailToCalculationDates(calculationRequestWithEverythingForBreakdown, null)).thenReturn(enrichedReleaseDates)
 
@@ -75,6 +76,7 @@ class DetailedCalculationResultsServiceTest {
       DetailedCalculationResults(
         CALCULATION_REQUEST_ID,
         enrichedReleaseDates,
+        prisonerDetails,
         null,
         null,
         BreakdownMissingReason.PRISON_API_DATA_MISSING,
@@ -103,6 +105,7 @@ class DetailedCalculationResultsServiceTest {
       DetailedCalculationResults(
         CALCULATION_REQUEST_ID,
         enrichedReleaseDates,
+        null,
         listOf(originalSentence),
         null,
         BreakdownMissingReason.PRISON_API_DATA_MISSING,
@@ -132,6 +135,7 @@ class DetailedCalculationResultsServiceTest {
       DetailedCalculationResults(
         CALCULATION_REQUEST_ID,
         enrichedReleaseDates,
+        prisonerDetails,
         listOf(originalSentence),
         null,
         BreakdownMissingReason.PRISON_API_DATA_MISSING,
@@ -165,6 +169,7 @@ class DetailedCalculationResultsServiceTest {
       DetailedCalculationResults(
         CALCULATION_REQUEST_ID,
         enrichedReleaseDates,
+        prisonerDetails,
         listOf(originalSentence),
         null,
         BreakdownMissingReason.BREAKDOWN_CHANGED_SINCE_LAST_CALCULATION,
@@ -195,6 +200,7 @@ class DetailedCalculationResultsServiceTest {
       DetailedCalculationResults(
         CALCULATION_REQUEST_ID,
         enrichedReleaseDates,
+        prisonerDetails,
         listOf(originalSentence),
         expectedBreakdown,
         null,
