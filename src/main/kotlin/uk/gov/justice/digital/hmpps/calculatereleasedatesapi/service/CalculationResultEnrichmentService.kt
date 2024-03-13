@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
@@ -11,6 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedRelea
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import java.time.Clock
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -20,7 +20,7 @@ class CalculationResultEnrichmentService(
   private val nonFridayReleaseService: NonFridayReleaseService,
   private val workingDayService: WorkingDayService,
   private val clock: Clock,
-  private val objectMapper: ObjectMapper,
+  private val prisonApiDataMapper: PrisonApiDataMapper,
 ) {
   companion object {
     private val typesAllowedWeekendAdjustment = listOf(
@@ -33,7 +33,7 @@ class CalculationResultEnrichmentService(
       ReleaseDateType.MTD,
       ReleaseDateType.LTD,
     )
-    private val dtoSentenceTypes = listOf("DTO_ORA", "DTO")
+    private val dtoSentenceTypes = listOf(SentenceCalculationType.DTO_ORA.name, SentenceCalculationType.DTO.name)
   }
 
   fun addDetailToCalculationResults(calculationRequest: CalculationRequest, calculationBreakdown: CalculationBreakdown?): DetailedCalculationResults {
@@ -58,7 +58,7 @@ class CalculationResultEnrichmentService(
   }
 
   private fun getHints(type: ReleaseDateType, date: LocalDate, calculationRequest: CalculationRequest, calculationBreakdown: CalculationBreakdown?, releaseDates: Map<ReleaseDateType, ReleaseDate>): List<ReleaseDateHint> {
-    val sentencesAndOffences = calculationRequest.sentenceAndOffences?.map { element -> objectMapper.treeToValue(element, SentenceAndOffences::class.java) }
+    val sentencesAndOffences = calculationRequest.sentenceAndOffences?.let { prisonApiDataMapper.mapSentencesAndOffences(calculationRequest) }
 
     val hints = mutableListOf<ReleaseDateHint?>()
     hints += nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type, date)

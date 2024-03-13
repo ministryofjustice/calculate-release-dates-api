@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -38,6 +37,7 @@ class CalculationResultEnrichmentServiceTest {
 
   private val nonFridayReleaseService = mock<NonFridayReleaseService>()
   private val workingDayService = mock<WorkingDayService>()
+  private val prisonApiDataMapper = mock<PrisonApiDataMapper>()
 
   private val CALCULATION_REQUEST_ID = 123456L
   private val CALCULATION_REFERENCE: UUID = UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5")
@@ -788,23 +788,19 @@ class CalculationResultEnrichmentServiceTest {
     calculationRequestId = CALCULATION_REQUEST_ID,
   )
 
-  private fun calculationRequest(calculationOutcomes: List<CalculationOutcome>, sentenceAndOffences: List<SentenceAndOffences>? = null) = CalculationRequest(
-    id = CALCULATION_REQUEST_ID,
-    calculationReference = CALCULATION_REFERENCE,
-    prisonerId = PRISONER_ID,
-    bookingId = BOOKING_ID,
-    calculationOutcomes = calculationOutcomes,
-    calculationStatus = CalculationStatus.CONFIRMED.name,
-    sentenceAndOffences = sentenceAndOffences?.let { objectToJson(sentenceAndOffences, TestUtil.objectMapper()) },
-    inputData = JacksonUtil.toJsonNode(
-      "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +
-        "\"dateOfBirth\":\"1970-03-03\"" + "}," + "\"sentences\":[" +
-        "{" + "\"caseSequence\":1," + "\"lineSequence\":2," +
-        "\"offence\":{" + "\"committedAt\":\"2013-09-19\"" + "}," + "\"duration\":{" +
-        "\"durationElements\":{" + "\"YEARS\":2" + "}" + "}," + "\"sentencedAt\":\"2013-09-21\"" + "}" + "]" + "}",
-    ),
-    reasonForCalculation = CALCULATION_REASON,
-  )
+  private fun calculationRequest(calculationOutcomes: List<CalculationOutcome>, sentenceAndOffences: List<SentenceAndOffences>? = null): CalculationRequest {
+    whenever(prisonApiDataMapper.mapSentencesAndOffences(any())).thenReturn(sentenceAndOffences)
+    return CalculationRequest(
+      id = CALCULATION_REQUEST_ID,
+      calculationReference = CALCULATION_REFERENCE,
+      prisonerId = PRISONER_ID,
+      bookingId = BOOKING_ID,
+      calculationOutcomes = calculationOutcomes,
+      calculationStatus = CalculationStatus.CONFIRMED.name,
+      sentenceAndOffences = sentenceAndOffences?.let { objectToJson(sentenceAndOffences, TestUtil.objectMapper()) },
+      reasonForCalculation = CALCULATION_REASON,
+    )
+  }
 
   private fun sentenceAndOffence(sentenceCalculationType: String, sentenceDate: LocalDate = LocalDate.of(2020, 1, 2), bookingId: Long = 0, sentenceSequence: Int = 0, lineSequence: Int = 0, sentenceTerm: Int = 5) = SentenceAndOffences(
     bookingId = bookingId,
@@ -833,6 +829,6 @@ class CalculationResultEnrichmentServiceTest {
 
   private fun calculationResultEnrichmentService(today: LocalDate = LocalDate.of(2000, 1, 1)): CalculationResultEnrichmentService {
     val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-    return CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock, TestUtil.objectMapper())
+    return CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock, prisonApiDataMapper)
   }
 }
