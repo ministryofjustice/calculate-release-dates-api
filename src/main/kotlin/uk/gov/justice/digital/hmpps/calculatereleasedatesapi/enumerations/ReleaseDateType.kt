@@ -3,9 +3,9 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations
 enum class ReleaseDateType(val fullName: String) {
   CRD("Conditional release date"),
   LED("Licence expiry date"),
-  ARD("Automatic release date"),
   SED("Sentence expiry date"),
   NPD("Non-parole date"),
+  ARD("Automatic release date"),
   TUSED("Top up supervision expiry date"),
   PED("Parole eligibility date"),
   SLED("Sentence and licence expiry date"),
