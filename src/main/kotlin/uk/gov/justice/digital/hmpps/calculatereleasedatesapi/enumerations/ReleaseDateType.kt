@@ -9,7 +9,7 @@ enum class ReleaseDateType(val fullName: String) {
   TUSED("Top up supervision expiry date"),
   PED("Parole eligibility date"),
   SLED("Sentence and licence expiry date"),
-  HDCED("Home detention curfew release date"),
+  HDCED("Home detention curfew eligibility date"),
   NCRD("Notional conditional release date"),
   ETD("Early transfer date"),
   MTD("Mid transfer date"),
