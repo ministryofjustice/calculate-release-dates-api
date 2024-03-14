@@ -83,8 +83,7 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.Optional
-import java.util.UUID
+import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceTest {
@@ -132,6 +131,7 @@ class CalculationTransactionalServiceTest {
   private val serviceUserService = mock<ServiceUserService>()
   private val approvedDatesSubmissionRepository = mock<ApprovedDatesSubmissionRepository>()
   private val nomisCommentService = mock<NomisCommentService>()
+  private val calculationResultEnrichmentService = mock<CalculationResultEnrichmentService>()
 
   private val calculationTransactionalService =
     CalculationTransactionalService(

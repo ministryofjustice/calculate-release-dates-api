@@ -26,19 +26,24 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 import java.time.LocalDate
 import java.util.UUID
@@ -55,6 +60,9 @@ class CalculationControllerTest {
 
   @MockBean
   private lateinit var calculationUserQuestionService: CalculationUserQuestionService
+
+  @MockBean
+  private lateinit var detailedCalculationResultsService: DetailedCalculationResultsService
 
   @MockBean
   private lateinit var relevantRemandService: RelevantRemandService
@@ -80,6 +88,7 @@ class CalculationControllerTest {
           calculationTransactionalService,
           calculationUserQuestionService,
           relevantRemandService,
+          detailedCalculationResultsService,
         ),
       )
       .setControllerAdvice(ControllerAdvice())
@@ -303,6 +312,32 @@ class CalculationControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).isEqualTo(mapper.writeValueAsString(breakdown))
+  }
+
+  @Test
+  fun `Test GET of calculation detailed results`() {
+    val calculationRequestId = 9995L
+    val calculatedReleaseDates = DetailedCalculationResults(
+      CalculationContext(calculationRequestId, 1, "A", CONFIRMED, UUID.randomUUID(), null, null, null, CalculationType.CALCULATED),
+      dates = mapOf(),
+      null,
+      null,
+      null,
+      null,
+    )
+    whenever(detailedCalculationResultsService.findDetailedCalculationResults(calculationRequestId)).thenReturn(
+      calculatedReleaseDates,
+    )
+
+    val result = mvc.perform(get("/calculation/detailed-results/$calculationRequestId").accept(APPLICATION_JSON))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(mapper.readValue(result.response.contentAsString, DetailedCalculationResults::class.java)).isEqualTo(
+      calculatedReleaseDates,
+    )
+    verify(detailedCalculationResultsService, times(1)).findDetailedCalculationResults(calculationRequestId)
   }
 
   private val CALCULATION_REASON = CalculationReason(-1, false, false, "Reason", false, null, null, null)
