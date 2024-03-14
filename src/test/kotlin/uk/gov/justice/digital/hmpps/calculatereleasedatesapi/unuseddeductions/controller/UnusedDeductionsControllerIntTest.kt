@@ -209,4 +209,34 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
 
     Assertions.assertThat(calculation.unusedDeductions).isEqualTo(0)
   }
+
+  @Test
+  fun `Run unused deductions calculation with unsupported adjustment type`() {
+    val adjustments = listOf(
+      AdjustmentServiceAdjustment(
+        fromDate = LocalDate.of(2020, 2, 1),
+        toDate = LocalDate.of(2021, 1, 31),
+        days = 396,
+        effectiveDays = 396,
+        bookingId = "UNUSED".hashCode().toLong(),
+        sentenceSequence = 4,
+        adjustmentType = AdjustmentServiceAdjustmentType.LAWFULLY_AT_LARGE,
+        person = "UNUSED",
+        id = UUID.randomUUID(),
+      ),
+    )
+    val calculation: UnusedDeductionCalculationResponse = webTestClient.post()
+      .uri("/unused-deductions/UNUSED/calculation")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(adjustments))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(UnusedDeductionCalculationResponse::class.java)
+      .returnResult().responseBody!!
+
+    Assertions.assertThat(calculation.validationMessages).contains(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE))
+  }
 }
