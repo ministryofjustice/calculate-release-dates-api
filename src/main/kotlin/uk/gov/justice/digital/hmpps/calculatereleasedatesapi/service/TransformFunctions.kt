@@ -59,6 +59,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -193,6 +194,15 @@ fun transform(
         lineSequence = sentence.lineSequence,
         caseReference = sentence.caseReference,
         recallType = sentenceCalculationType.recallType,
+      )
+    } else if (sentenceCalculationType.sentenceClazz == BotusSentence::class.java) {
+      BotusSentence(sentencedAt = sentence.sentenceDate,
+        duration = transform(sentence.terms[0]),
+        offence = offence,
+        identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+        consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+        caseSequence = sentence.caseSequence,
+        lineSequence = sentence.lineSequence,
       )
     } else {
       val imprisonmentTerm = sentence.terms.first { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }

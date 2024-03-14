@@ -111,7 +111,10 @@ class BookingExtractionService(
     if (sentenceCalculation.latestTransferDate != null) {
       dates[LTD] = sentenceCalculation.latestTransferDate!!
     }
-    dates[ESED] = sentenceCalculation.unadjustedExpiryDate
+
+    if (!sentence.isBotus()){
+      dates[ESED] = sentenceCalculation.unadjustedExpiryDate
+    }
 
     return CalculationResult(
       dates,

@@ -198,6 +198,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       -> 1.toDouble()
       SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE -> 2 / 3.toDouble()
       SentenceIdentificationTrack.AFINE_ARD_AT_FULL_TERM -> 1.toDouble()
+      SentenceIdentificationTrack.BOTUS -> 1.toDouble()
       else -> 1 / 2.toDouble()
     }
   }

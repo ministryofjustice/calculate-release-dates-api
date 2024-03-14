@@ -6,6 +6,7 @@ import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
@@ -478,7 +479,8 @@ class ValidationService(
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
     return if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java ||
       sentenceCalculationType.sentenceClazz == AFineSentence::class.java ||
-      sentenceCalculationType.sentenceClazz == DetentionAndTrainingOrderSentence::class.java
+      sentenceCalculationType.sentenceClazz == DetentionAndTrainingOrderSentence::class.java ||
+      sentenceCalculationType.sentenceClazz == BotusSentence::class.java
     ) {
       validateSingleTermDuration(sentencesAndOffence)
     } else {

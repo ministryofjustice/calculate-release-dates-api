@@ -97,6 +97,10 @@ interface CalculableSentence {
   fun isRecall(): Boolean {
     return recallType != null
   }
+  @JsonIgnore
+  fun isBotus(): Boolean {
+    return false
+  }
 
   @JsonIgnore
   fun hasAnyEdsOrSopcSentence(): Boolean
@@ -177,6 +181,9 @@ interface CalculableSentence {
       }
 
       is DetentionAndTrainingOrderSentence -> {
+        this.duration
+      }
+      is BotusSentence -> {
         this.duration
       }
 
