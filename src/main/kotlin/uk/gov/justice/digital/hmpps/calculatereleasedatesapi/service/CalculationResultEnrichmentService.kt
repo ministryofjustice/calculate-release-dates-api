@@ -46,7 +46,7 @@ class CalculationResultEnrichmentService(
     return releaseDates.mapValues { (_, releaseDate) ->
       DetailedDate(
         releaseDate.type,
-        releaseDate.type.fullName,
+        releaseDate.type.description,
         releaseDate.date,
         getHints(releaseDate.type, releaseDate.date, calculationRequest, calculationBreakdown, releaseDates),
       )

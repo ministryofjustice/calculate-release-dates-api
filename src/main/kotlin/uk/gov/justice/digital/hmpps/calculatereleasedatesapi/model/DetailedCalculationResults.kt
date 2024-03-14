@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 data class DetailedCalculationResults(
   val context: CalculationContext,
   val dates: Map<ReleaseDateType, DetailedDate>,
+  val approvedDates: Map<ReleaseDateType, DetailedDate>?,
   val prisonerDetails: PrisonerDetails?,
   val sentencesAndOffences: List<SentenceAndOffences>?,
   val calculationBreakdown: CalculationBreakdown?,

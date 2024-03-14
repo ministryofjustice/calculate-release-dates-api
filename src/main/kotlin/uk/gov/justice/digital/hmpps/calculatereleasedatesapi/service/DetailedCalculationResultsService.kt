@@ -3,14 +3,17 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 
 @Service
@@ -55,24 +58,38 @@ open class DetailedCalculationResultsService(
       null
     }
     return DetailedCalculationResults(
-      CalculationContext(
-        calculationRequestId,
-        calculationRequest.bookingId,
-        calculationRequest.prisonerId,
-        CalculationStatus.valueOf(calculationRequest.calculationStatus),
-        calculationRequest.calculationReference,
-        calculationRequest.reasonForCalculation,
-        calculationRequest.otherReasonForCalculation,
-        calculationRequest.calculatedAt.toLocalDate(),
-        calculationRequest.calculationType,
-      ),
+      calculationContext(calculationRequestId, calculationRequest),
       calculationResultEnrichmentService.addDetailToCalculationDates(calculationRequest, calculationBreakdown),
+      approvedDates(calculationRequest.approvedDatesSubmissions.firstOrNull()),
       prisonerDetails,
       sentenceAndOffences,
       calculationBreakdown,
       breakdownMissingReason,
     )
   }
+
+  private fun calculationContext(
+    calculationRequestId: Long,
+    calculationRequest: CalculationRequest,
+  ) = CalculationContext(
+    calculationRequestId,
+    calculationRequest.bookingId,
+    calculationRequest.prisonerId,
+    CalculationStatus.valueOf(calculationRequest.calculationStatus),
+    calculationRequest.calculationReference,
+    calculationRequest.reasonForCalculation,
+    calculationRequest.otherReasonForCalculation,
+    calculationRequest.calculatedAt.toLocalDate(),
+    calculationRequest.calculationType,
+  )
+
+  private fun approvedDates(latestApprovedDatesSubmission: ApprovedDatesSubmission?): Map<ReleaseDateType, DetailedDate>? {
+    return latestApprovedDatesSubmission?.approvedDates?.associate {
+      val type = ReleaseDateType.valueOf(it.calculationDateType)
+      type to DetailedDate(type, type.description, it.outcomeDate, emptyList())
+    }
+  }
+
   private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest {
     return calculationRequestRepository.findById(calculationRequestId).orElseThrow {
       EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId")

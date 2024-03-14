@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations
 
-enum class ReleaseDateType(val fullName: String) {
+enum class ReleaseDateType(val description: String) {
   CRD("Conditional release date"),
   LED("Licence expiry date"),
   SED("Sentence expiry date"),

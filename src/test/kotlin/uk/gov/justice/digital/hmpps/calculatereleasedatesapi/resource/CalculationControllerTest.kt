@@ -323,6 +323,7 @@ class CalculationControllerTest {
       null,
       null,
       null,
+      null,
     )
     whenever(detailedCalculationResultsService.findDetailedCalculationResults(calculationRequestId)).thenReturn(
       calculatedReleaseDates,
