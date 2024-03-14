@@ -53,7 +53,7 @@ dependencies {
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.0.3")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
-  implementation("org.springframework:spring-jms:5.3.26")
+  implementation("org.springframework:spring-jms:6.1.5")
   implementation("com.google.code.gson:gson:2.10.1")
 
   // SQS
