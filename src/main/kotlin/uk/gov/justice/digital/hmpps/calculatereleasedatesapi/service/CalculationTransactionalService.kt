@@ -41,7 +41,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-import java.util.*
+import java.util.UUID
 
 @Service
 class CalculationTransactionalService(
