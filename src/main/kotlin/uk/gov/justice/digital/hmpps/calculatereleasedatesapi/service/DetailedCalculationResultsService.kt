@@ -4,10 +4,12 @@ import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 
@@ -44,7 +46,7 @@ open class DetailedCalculationResultsService(
       } catch (e: BreakdownChangedSinceLastCalculation) {
         breakdownMissingReason = BreakdownMissingReason.BREAKDOWN_CHANGED_SINCE_LAST_CALCULATION
         null
-      } catch(e: UnsupportedCalculationBreakdown) {
+      } catch (e: UnsupportedCalculationBreakdown) {
         breakdownMissingReason = BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN
         null
       }
@@ -53,7 +55,17 @@ open class DetailedCalculationResultsService(
       null
     }
     return DetailedCalculationResults(
-      calculationRequestId,
+      CalculationContext(
+        calculationRequestId,
+        calculationRequest.bookingId,
+        calculationRequest.prisonerId,
+        CalculationStatus.valueOf(calculationRequest.calculationStatus),
+        calculationRequest.calculationReference,
+        calculationRequest.reasonForCalculation,
+        calculationRequest.otherReasonForCalculation,
+        calculationRequest.calculatedAt.toLocalDate(),
+        calculationRequest.calculationType,
+      ),
       calculationResultEnrichmentService.addDetailToCalculationDates(calculationRequest, calculationBreakdown),
       prisonerDetails,
       sentenceAndOffences,

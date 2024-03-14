@@ -5,7 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedReleaseDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
@@ -35,7 +35,7 @@ class CalculationResultEnrichmentService(
     private val dtoSentenceTypes = listOf(SentenceCalculationType.DTO_ORA.name, SentenceCalculationType.DTO.name)
   }
 
-  fun addDetailToCalculationDates(calculationRequest: CalculationRequest, calculationBreakdown: CalculationBreakdown?): Map<ReleaseDateType, DetailedReleaseDate> {
+  fun addDetailToCalculationDates(calculationRequest: CalculationRequest, calculationBreakdown: CalculationBreakdown?): Map<ReleaseDateType, DetailedDate> {
     val releaseDates = calculationRequest.calculationOutcomes
       .filter { it.outcomeDate != null }
       .map { ReleaseDateType.valueOf(it.calculationDateType) to it.outcomeDate!! }
@@ -44,7 +44,7 @@ class CalculationResultEnrichmentService(
         { (type, date) -> ReleaseDate(date, type) },
       )
     return releaseDates.mapValues { (_, releaseDate) ->
-      DetailedReleaseDate(
+      DetailedDate(
         releaseDate.type,
         releaseDate.type.fullName,
         releaseDate.date,

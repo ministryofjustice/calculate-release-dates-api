@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedReleaseDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NonFridayReleaseDay
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
@@ -60,8 +60,8 @@ class CalculationResultEnrichmentServiceTest {
     val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
     assertThat(results).isEqualTo(
       mapOf(
-        ReleaseDateType.SED to DetailedReleaseDate(ReleaseDateType.SED, "Sentence expiry date", sedDate, emptyList()),
-        ReleaseDateType.CRD to DetailedReleaseDate(ReleaseDateType.CRD, "Conditional release date", crdDate, emptyList()),
+        ReleaseDateType.SED to DetailedDate(ReleaseDateType.SED, "Sentence expiry date", sedDate, emptyList()),
+        ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, "Conditional release date", crdDate, emptyList()),
       ),
     )
   }
@@ -75,7 +75,7 @@ class CalculationResultEnrichmentServiceTest {
     val outcome = calculationOutcome(type, date)
     val calculationRequest = calculationRequest(listOf(outcome))
     val results = calculationResultEnrichmentService().addDetailToCalculationDates(calculationRequest, CalculationBreakdown(emptyList(), null))
-    assertThat(results[type]?.releaseDateTypeFullName).isNotBlank()
+    assertThat(results[type]?.description).isNotBlank()
   }
 
   @Test

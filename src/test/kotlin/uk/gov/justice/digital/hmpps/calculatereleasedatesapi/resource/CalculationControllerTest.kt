@@ -26,11 +26,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
@@ -315,7 +318,7 @@ class CalculationControllerTest {
   fun `Test GET of calculation detailed results`() {
     val calculationRequestId = 9995L
     val calculatedReleaseDates = DetailedCalculationResults(
-      calculationRequestId = calculationRequestId,
+      CalculationContext(calculationRequestId, 1, "A", CONFIRMED, UUID.randomUUID(), null, null, null, CalculationType.CALCULATED),
       dates = mapOf(),
       null,
       null,
