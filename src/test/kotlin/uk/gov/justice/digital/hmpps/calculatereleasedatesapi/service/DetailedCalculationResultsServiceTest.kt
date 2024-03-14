@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
@@ -173,6 +174,38 @@ class DetailedCalculationResultsServiceTest {
         listOf(originalSentence),
         null,
         BreakdownMissingReason.BREAKDOWN_CHANGED_SINCE_LAST_CALCULATION,
+      ),
+    )
+  }
+  @Test
+  fun `should return missing breakdown if breakdown generation is unsupported`() {
+    val calculationRequestWithEverythingForBreakdown = calculationRequestWithOutcomes().copy(
+      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
+      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
+      adjustments = objectToJson(adjustments, objectMapper),
+      calculationOutcomes = listOf(
+        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
+      ),
+    )
+    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedReleaseDate(ReleaseDateType.CRD, ReleaseDateType.CRD.fullName, LocalDate.of(2026, 6, 26), emptyList()))
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithEverythingForBreakdown))
+    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
+    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
+    whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(calculationRequestWithEverythingForBreakdown, null)).thenReturn(enrichedReleaseDates)
+    whenever(calculationTransactionalService.calculateWithBreakdown(any(), any())).then {
+      throw UnsupportedCalculationBreakdown("Bang!")
+    }
+
+    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
+    assertThat(results).isEqualTo(
+      DetailedCalculationResults(
+        CALCULATION_REQUEST_ID,
+        enrichedReleaseDates,
+        prisonerDetails,
+        listOf(originalSentence),
+        null,
+        BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN,
       ),
     )
   }
