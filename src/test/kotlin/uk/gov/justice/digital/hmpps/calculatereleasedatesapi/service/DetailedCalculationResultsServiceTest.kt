@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.Unsuppor
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOriginalData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
@@ -84,8 +85,10 @@ class DetailedCalculationResultsServiceTest {
         expectedCalcContext,
         enrichedReleaseDates,
         null,
-        prisonerDetails,
-        null,
+        CalculationOriginalData(
+          prisonerDetails,
+          null,
+        ),
         null,
         BreakdownMissingReason.PRISON_API_DATA_MISSING,
       ),
@@ -114,8 +117,10 @@ class DetailedCalculationResultsServiceTest {
         expectedCalcContext,
         enrichedReleaseDates,
         null,
-        null,
-        listOf(originalSentence),
+        CalculationOriginalData(
+          null,
+          listOf(originalSentence),
+        ),
         null,
         BreakdownMissingReason.PRISON_API_DATA_MISSING,
       ),
@@ -145,8 +150,10 @@ class DetailedCalculationResultsServiceTest {
         expectedCalcContext,
         enrichedReleaseDates,
         null,
-        prisonerDetails,
-        listOf(originalSentence),
+        CalculationOriginalData(
+          prisonerDetails,
+          listOf(originalSentence),
+        ),
         null,
         BreakdownMissingReason.PRISON_API_DATA_MISSING,
       ),
@@ -180,8 +187,10 @@ class DetailedCalculationResultsServiceTest {
         expectedCalcContext,
         enrichedReleaseDates,
         null,
-        prisonerDetails,
-        listOf(originalSentence),
+        CalculationOriginalData(
+          prisonerDetails,
+          listOf(originalSentence),
+        ),
         null,
         BreakdownMissingReason.BREAKDOWN_CHANGED_SINCE_LAST_CALCULATION,
       ),
@@ -214,8 +223,10 @@ class DetailedCalculationResultsServiceTest {
         expectedCalcContext,
         enrichedReleaseDates,
         null,
-        prisonerDetails,
-        listOf(originalSentence),
+        CalculationOriginalData(
+          prisonerDetails,
+          listOf(originalSentence),
+        ),
         null,
         BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN,
       ),
@@ -246,8 +257,10 @@ class DetailedCalculationResultsServiceTest {
         expectedCalcContext,
         enrichedReleaseDates,
         null,
-        prisonerDetails,
-        listOf(originalSentence),
+        CalculationOriginalData(
+          prisonerDetails,
+          listOf(originalSentence),
+        ),
         expectedBreakdown,
         null,
       ),
@@ -309,8 +322,10 @@ class DetailedCalculationResultsServiceTest {
           ReleaseDateType.HDCAD to DetailedDate(ReleaseDateType.HDCAD, ReleaseDateType.HDCAD.description, LocalDate.of(2024, 1, 2), emptyList()),
           ReleaseDateType.ROTL to DetailedDate(ReleaseDateType.ROTL, ReleaseDateType.ROTL.description, LocalDate.of(2024, 1, 2), emptyList()),
         ),
-        prisonerDetails,
-        listOf(originalSentence),
+        CalculationOriginalData(
+          prisonerDetails,
+          listOf(originalSentence),
+        ),
         expectedBreakdown,
         null,
       ),
