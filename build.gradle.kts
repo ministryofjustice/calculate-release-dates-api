@@ -57,7 +57,7 @@ dependencies {
   implementation("com.google.code.gson:gson:2.10.1")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:2.0.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.1")
 
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
