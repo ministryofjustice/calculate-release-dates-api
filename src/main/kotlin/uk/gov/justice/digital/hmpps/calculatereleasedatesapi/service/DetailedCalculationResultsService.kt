@@ -12,12 +12,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.Unsuppor
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOriginalData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 
 @Service
 @Transactional(readOnly = true)
+@Suppress("RedundantModalityModifier") // required for spring @Transactional
 open class DetailedCalculationResultsService(
   private val calculationTransactionalService: CalculationTransactionalService,
   private val prisonApiDataMapper: PrisonApiDataMapper,
@@ -61,8 +63,10 @@ open class DetailedCalculationResultsService(
       calculationContext(calculationRequestId, calculationRequest),
       calculationResultEnrichmentService.addDetailToCalculationDates(calculationRequest, calculationBreakdown),
       approvedDates(calculationRequest.approvedDatesSubmissions.firstOrNull()),
-      prisonerDetails,
-      sentenceAndOffences,
+      CalculationOriginalData(
+        prisonerDetails,
+        sentenceAndOffences,
+      ),
       calculationBreakdown,
       breakdownMissingReason,
     )
