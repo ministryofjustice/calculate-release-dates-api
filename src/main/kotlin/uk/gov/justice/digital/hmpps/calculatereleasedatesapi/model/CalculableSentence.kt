@@ -147,6 +147,10 @@ interface CalculableSentence {
         this.duration
       }
 
+      is BotusSentence -> {
+        this.duration
+      }
+
       else -> {
         throw UnknownError("Unknown sentence")
       }
