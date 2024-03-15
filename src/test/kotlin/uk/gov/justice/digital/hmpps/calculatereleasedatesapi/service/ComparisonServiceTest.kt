@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Discre
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
@@ -224,7 +225,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       comparison.id,
       3,
       "person 3",
-      establishment = "ABC",
+      establishment = "AYI",
     )
     val comparisonPerson4 = aComparisonPerson(
       4,
@@ -262,7 +263,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       comparison.id,
       6,
       "person 6",
-      establishment = "DEF",
+      establishment = "DAI",
     )
     val calculationOutcomePerson6Prrd = CalculationOutcome(
       calculationDateType = ReleaseDateType.PRRD.name,
@@ -274,7 +275,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       comparison.id,
       7,
       "person 7",
-      establishment = "ABC",
+      establishment = "AYI",
     )
     val calculationOutcomePerson7Mtd = CalculationOutcome(
       calculationDateType = ReleaseDateType.MTD.name,
@@ -306,6 +307,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(comparisonPersons)
 
     whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(calculationOutcomes)
+    whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("AYI", "Aylesbury (HMP)"), Agency("BMI", "Birmingham (HMP)"), Agency("DAI", "Dartmoor (HMP)")))
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
