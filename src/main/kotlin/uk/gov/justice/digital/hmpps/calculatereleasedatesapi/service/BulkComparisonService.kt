@@ -75,10 +75,8 @@ class BulkComparisonService(
     val currentUserPrisonsList = prisonService.getCurrentUserPrisonsList()
     log.info("Running case load comparison with prisons: {}", currentUserPrisonsList)
     for (prison in currentUserPrisonsList) {
-      if (prison != "KMI" && prison != "CADM_I") {
-        val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(prison, token)
-        processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison, prison)
-      }
+      val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(prison, token)
+      processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison, prison)
     }
     completeComparison(comparison)
   }
