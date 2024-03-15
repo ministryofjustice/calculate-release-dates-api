@@ -47,6 +47,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_CONSECUTIVE_TO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_MISSING_FINE_AMOUNT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_CONSECUTIVE_TO_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT
@@ -684,6 +685,56 @@ class ValidationServiceTest {
         ValidationMessage(DTO_CONSECUTIVE_TO_SENTENCE),
       ),
     )
+  }
+
+  @Test
+  fun `Test A Botus sentence consecutive to unsupported`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceSequence = 1,
+      ),
+      validSdsSentence.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        sentenceCalculationType = "BOTUS",
+        terms = listOf(SentenceTerms(days = 7, code = "IMP")),
+      ),
+    )
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        USER_INPUTS,
+      )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE),
+      ),
+    )
+  }
+
+  @Test
+  fun `Test Two Botus sentence consecutive are supported`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceSequence = 1,
+        sentenceCalculationType = "BOTUS",
+        terms = listOf(SentenceTerms(days = 7, code = "IMP")),
+      ),
+      validSdsSentence.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        sentenceCalculationType = "BOTUS",
+        terms = listOf(SentenceTerms(days = 7, code = "IMP")),
+      ),
+    )
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        USER_INPUTS,
+      )
+
+    assertThat(result).isEmpty()
   }
 
   @Test
