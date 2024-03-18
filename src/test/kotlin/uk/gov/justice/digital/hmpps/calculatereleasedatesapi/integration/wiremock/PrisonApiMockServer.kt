@@ -19,6 +19,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 
@@ -153,6 +154,11 @@ class MockPrisonClient(
     prisonApi.stubPrisonCalculableSentenceEnvelope(establishmentId, json)
     return this
   }
+
+  fun withInstAgencies(agencies: List<Agency>): MockPrisonClient {
+    prisonApi.stubAgencies("INST", objectMapper.writeValueAsString(agencies))
+    return this
+  }
 }
 
 class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
@@ -250,6 +256,16 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubCaseloads(json: String): StubMapping = stubFor(
     get(urlPathEqualTo("/api/users/me/caseLoads"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(json)
+          .withStatus(200),
+      ),
+  )
+
+  fun stubAgencies(agencyType: String, json: String): StubMapping = stubFor(
+    get(urlPathEqualTo("/api/agencies/type/$agencyType"))
       .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")
