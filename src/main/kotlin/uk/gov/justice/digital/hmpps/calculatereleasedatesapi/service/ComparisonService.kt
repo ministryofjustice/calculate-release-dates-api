@@ -92,8 +92,10 @@ class ComparisonService(
         emptyList()
       }
 
+      val agencyIdToDescriptionMap = prisonService.getAgenciesByType("INST").associateBy { it.agencyId }
       val requestIdsToCalculationOutcomes = calculationOutcomes.groupBy { it.calculationRequestId }
       val mismatchesAndCrdsDates = mismatches.map { mismatch ->
+        mismatch.establishment = agencyIdToDescriptionMap[mismatch.establishment]?.description
         if (requestIdsToCalculationOutcomes[mismatch.calculationRequestId] != null) {
           Pair(mismatch, requestIdsToCalculationOutcomes[mismatch.calculationRequestId]!!)
         } else {
@@ -101,7 +103,12 @@ class ComparisonService(
         }
       }
 
-      val hdc4PlusResults = comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)
+      val hdc4PlusResults =
+        comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id).map { mismatch ->
+          mismatch.establishment = agencyIdToDescriptionMap[mismatch.establishment]?.description
+          mismatch
+        }
+
       val hdc4PlusCalculationOutcomes = calculationOutcomeRepository
         .findForComparisonAndHdcedFourPlusDateIsNotNull(comparison.id)
         .filter { it.calculationDateType in listOf(ReleaseDateType.CRD.name, ReleaseDateType.ARD.name) }

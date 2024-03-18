@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Discre
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
@@ -57,6 +58,7 @@ class ComparisonIntTest(private val mockPrisonClient: MockPrisonClient) : Integr
     comparisonPersonRepository.deleteAll()
     comparisonRepository.deleteAll()
     mockPrisonClient.withPrisonCalculableSentences("ABC", "ABC")
+    mockPrisonClient.withInstAgencies(listOf(Agency("ABC", "prison ABC"), Agency("HDC4P", "prison HDC4P")))
   }
 
   @Test
@@ -111,6 +113,7 @@ class ComparisonIntTest(private val mockPrisonClient: MockPrisonClient) : Integr
     assertTrue(result.mismatches[0].isValid)
     assertFalse(result.mismatches[0].isMatch)
     assertEquals("Z0020ZZ", result.mismatches[0].personId)
+    assertEquals("prison ABC", result.mismatches[0].establishment)
   }
 
   @ParameterizedTest
@@ -136,9 +139,9 @@ class ComparisonIntTest(private val mockPrisonClient: MockPrisonClient) : Integr
 
     assertEquals(
       listOf(
-        HdcFourPlusComparisonMismatch("G6390GH", "Darlonne", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2020, 5, 13), "HDC4P", ReleaseDate(LocalDate.of(2020, 11, 8), ReleaseDateType.CRD)),
-        HdcFourPlusComparisonMismatch("G3229GA", "Britteman", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2016, 11, 4), "HDC4P", ReleaseDate(LocalDate.of(2017, 5, 2), ReleaseDateType.CRD)),
-        HdcFourPlusComparisonMismatch("G5243GX", "Khalifer", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2017, 8, 7), "HDC4P", ReleaseDate(LocalDate.of(2018, 2, 2), ReleaseDateType.CRD)),
+        HdcFourPlusComparisonMismatch("G6390GH", "Darlonne", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2020, 5, 13), "prison HDC4P", ReleaseDate(LocalDate.of(2020, 11, 8), ReleaseDateType.CRD)),
+        HdcFourPlusComparisonMismatch("G3229GA", "Britteman", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2016, 11, 4), "prison HDC4P", ReleaseDate(LocalDate.of(2017, 5, 2), ReleaseDateType.CRD)),
+        HdcFourPlusComparisonMismatch("G5243GX", "Khalifer", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2017, 8, 7), "prison HDC4P", ReleaseDate(LocalDate.of(2018, 2, 2), ReleaseDateType.CRD)),
       ),
       result.hdc4PlusCalculated,
     )
