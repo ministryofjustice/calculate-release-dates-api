@@ -47,7 +47,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
@@ -394,12 +393,12 @@ class CalculationControllerTest {
 
     assertThat(mapper.readValue(result.response.contentAsString, ErrorResponse::class.java))
       .isEqualTo(
-          ErrorResponse(
-              HttpStatus.NOT_FOUND,
-              null,
-              errorMessage,
-              errorMessage,
-          ),
+        ErrorResponse(
+          HttpStatus.NOT_FOUND,
+          null,
+          errorMessage,
+          errorMessage,
+        ),
       )
   }
 

@@ -229,5 +229,4 @@ class CalculationBreakdownServiceTest {
     calculatedAt = LocalDateTime.of(2021, 1, 1, 10, 30),
     calculationType = CalculationType.CALCULATED,
   )
-
 }

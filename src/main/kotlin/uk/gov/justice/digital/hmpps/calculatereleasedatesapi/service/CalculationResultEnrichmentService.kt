@@ -46,7 +46,11 @@ class CalculationResultEnrichmentService(
   }
 
   private fun getHints(
-    type: ReleaseDateType, date: LocalDate, calculationBreakdown: CalculationBreakdown?, releaseDates: Map<ReleaseDateType, ReleaseDate>, sentenceAndOffences: List<SentenceAndOffences>?,
+    type: ReleaseDateType,
+    date: LocalDate,
+    calculationBreakdown: CalculationBreakdown?,
+    releaseDates: Map<ReleaseDateType, ReleaseDate>,
+    sentenceAndOffences: List<SentenceAndOffences>?,
   ): List<ReleaseDateHint> {
     val hints = mutableListOf<ReleaseDateHint?>()
     hints += nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type, date)

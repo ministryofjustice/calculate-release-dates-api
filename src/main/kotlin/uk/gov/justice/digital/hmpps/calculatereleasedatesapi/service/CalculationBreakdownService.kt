@@ -47,5 +47,4 @@ open class CalculationBreakdownService(
       BreakdownMissingReason.PRISON_API_DATA_MISSING.left()
     }
   }
-
 }

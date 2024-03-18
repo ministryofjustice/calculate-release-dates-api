@@ -154,7 +154,6 @@ class PrisonApiClient(
       .block()!!
   }
 
-
   fun getAgenciesByType(agencyType: String): List<Agency> {
     log.info("Requesting agencies with type: $agencyType")
     return webClient.get()

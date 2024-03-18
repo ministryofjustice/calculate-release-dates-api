@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
 import arrow.core.getOrElse
-import arrow.core.getOrHandle
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -51,7 +50,7 @@ class CalculationController(
   private val calculationUserQuestionService: CalculationUserQuestionService,
   private val relevantRemandService: RelevantRemandService,
   private val detailedCalculationResultsService: DetailedCalculationResultsService,
-  private val latestCalculationService: LatestCalculationService
+  private val latestCalculationService: LatestCalculationService,
 ) {
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
