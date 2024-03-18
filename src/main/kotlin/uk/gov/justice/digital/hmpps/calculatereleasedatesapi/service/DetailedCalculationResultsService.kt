@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationCo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOriginalData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 
 @Service
@@ -59,9 +60,13 @@ open class DetailedCalculationResultsService(
       breakdownMissingReason = BreakdownMissingReason.PRISON_API_DATA_MISSING
       null
     }
+    val releaseDates = calculation.dates
+      .filter { it.value != null }
+      .mapValues { ReleaseDate(it.value!!, it.key) }
+      .values.toList()
     return DetailedCalculationResults(
       calculationContext(calculationRequestId, calculationRequest),
-      calculationResultEnrichmentService.addDetailToCalculationDates(calculationRequest, calculationBreakdown),
+      calculationResultEnrichmentService.addDetailToCalculationDates(releaseDates, sentenceAndOffences, calculationBreakdown),
       approvedDates(calculationRequest.approvedDatesSubmissions.firstOrNull()),
       CalculationOriginalData(
         prisonerDetails,

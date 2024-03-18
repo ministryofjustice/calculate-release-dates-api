@@ -27,11 +27,12 @@ class LatestCalculationService(private val prisonService: PrisonService, private
         if (latestCrdsCalc.isEmpty || !isSameCalc(prisonerCalculation, latestCrdsCalc.get())) {
           toLatestCalculation(CalculationSource.NOMIS, prisonerId, prisonerCalculation, prisonerCalculation.reasonCode, null, null)
         } else {
-          var location = latestCrdsCalc.get().prisonerLocation
-          if(latestCrdsCalc.get().prisonerLocation != null) {
+          val crdsCalc = latestCrdsCalc.get()
+          var location = crdsCalc.prisonerLocation
+          if(crdsCalc.prisonerLocation != null) {
               location = prisonService.getAgenciesByType("INST").firstOrNull { it.agencyId == location }?.description ?: location
           }
-          toLatestCalculation(CalculationSource.CRDS, prisonerId, prisonerCalculation, latestCrdsCalc.get().reasonForCalculation?.displayName, latestCrdsCalc.get().calculatedAt, location)
+          toLatestCalculation(CalculationSource.CRDS, prisonerId, prisonerCalculation, crdsCalc.reasonForCalculation?.displayName, crdsCalc.calculatedAt, location)
         }
       }
   }
@@ -73,13 +74,8 @@ class LatestCalculationService(private val prisonService: PrisonService, private
     reason: String?,
     calculatedAt: LocalDateTime?,
     location: String?,
-  ) = LatestCalculation(
-    prisonerId,
-    calculatedAt,
-    location,
-    reason,
-    calculationSource,
-    listOfNotNull(
+  ): LatestCalculation {
+    val dates = listOfNotNull(
       prisonerCalculation.sentenceExpiryDate?.let { ReleaseDate(it, ReleaseDateType.SED) },
       prisonerCalculation.licenceExpiryDate?.let { ReleaseDate(it, ReleaseDateType.LED) },
       prisonerCalculation.paroleEligibilityDate?.let { ReleaseDate(it, ReleaseDateType.PED) },
@@ -99,7 +95,15 @@ class LatestCalculationService(private val prisonService: PrisonService, private
       prisonerCalculation.earlyRemovalSchemeEligibilityDate?.let { ReleaseDate(it, ReleaseDateType.ERSED) },
       prisonerCalculation.tariffExpiredRemovalSchemeEligibilityDate?.let { ReleaseDate(it, ReleaseDateType.TERSED) },
       prisonerCalculation.dtoPostRecallReleaseDate?.let { ReleaseDate(it, ReleaseDateType.DPRRD) },
-    ),
-  )
+    )
+    return LatestCalculation(
+      prisonerId,
+      calculatedAt,
+      location,
+      reason,
+      calculationSource,
+      dates,
+    )
+  }
 
 }
