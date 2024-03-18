@@ -25,14 +25,28 @@ class LatestCalculationService(private val prisonService: PrisonService, private
       .map { prisonerCalculation ->
         val latestCrdsCalc = calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)
         if (latestCrdsCalc.isEmpty || !isSameCalc(prisonerCalculation, latestCrdsCalc.get())) {
-          toLatestCalculation(CalculationSource.NOMIS, prisonerId, prisonerCalculation, prisonerCalculation.reasonCode, null, null)
+          toLatestCalculation(
+            CalculationSource.NOMIS,
+            prisonerId,
+            prisonerCalculation,
+            prisonerCalculation.reasonCode,
+            null,
+            null,
+          )
         } else {
-          val crdsCalc = latestCrdsCalc.get()
-          var location = crdsCalc.prisonerLocation
-          if (crdsCalc.prisonerLocation != null) {
+          val calculationRequest = latestCrdsCalc.get()
+          var location = calculationRequest.prisonerLocation
+          if (calculationRequest.prisonerLocation != null) {
             location = prisonService.getAgenciesByType("INST").firstOrNull { it.agencyId == location }?.description ?: location
           }
-          toLatestCalculation(CalculationSource.CRDS, prisonerId, prisonerCalculation, crdsCalc.reasonForCalculation?.displayName, crdsCalc.calculatedAt, location)
+          toLatestCalculation(
+            CalculationSource.CRDS,
+            prisonerId,
+            prisonerCalculation,
+            calculationRequest.reasonForCalculation?.displayName,
+            calculationRequest.calculatedAt,
+            location,
+          )
         }
       }
   }

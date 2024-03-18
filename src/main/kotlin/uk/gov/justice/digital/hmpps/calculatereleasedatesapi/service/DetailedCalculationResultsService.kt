@@ -22,7 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 @Transactional(readOnly = true)
 @Suppress("RedundantModalityModifier") // required for spring @Transactional
 open class DetailedCalculationResultsService(
-  private val calculationTransactionalService: CalculationTransactionalService,
+  private val calculationBreakdownService: CalculationBreakdownService,
   private val prisonApiDataMapper: PrisonApiDataMapper,
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
@@ -31,39 +31,16 @@ open class DetailedCalculationResultsService(
   @Transactional(readOnly = true)
   fun findDetailedCalculationResults(calculationRequestId: Long): DetailedCalculationResults {
     val calculationRequest = getCalculationRequest(calculationRequestId)
-    val calculationUserInputs = transform(calculationRequest.calculationRequestUserInput)
-    val prisonerDetails = calculationRequest.prisonerDetails?.let { prisonApiDataMapper.mapPrisonerDetails(calculationRequest) }
     val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { prisonApiDataMapper.mapSentencesAndOffences(calculationRequest) }
-    val bookingAndSentenceAdjustments = calculationRequest.adjustments?.let { prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequest) }
-    val returnToCustodyDate = calculationRequest.returnToCustodyDate?.let { prisonApiDataMapper.mapReturnToCustodyDate(calculationRequest) }
-    val calculation = transform(calculationRequest)
-    var breakdownMissingReason: BreakdownMissingReason? = null
-    val calculationBreakdown = if (sentenceAndOffences != null && prisonerDetails != null && bookingAndSentenceAdjustments != null) {
-      val booking = Booking(
-        offender = transform(prisonerDetails),
-        sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) }.flatten(),
-        adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
-        bookingId = prisonerDetails.bookingId,
-        returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,
-        calculateErsed = calculationUserInputs.calculateErsed,
-      )
-      try {
-        calculationTransactionalService.calculateWithBreakdown(booking, calculation)
-      } catch (e: BreakdownChangedSinceLastCalculation) {
-        breakdownMissingReason = BreakdownMissingReason.BREAKDOWN_CHANGED_SINCE_LAST_CALCULATION
-        null
-      } catch (e: UnsupportedCalculationBreakdown) {
-        breakdownMissingReason = BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN
-        null
-      }
-    } else {
-      breakdownMissingReason = BreakdownMissingReason.PRISON_API_DATA_MISSING
-      null
-    }
-    val releaseDates = calculation.dates
-      .filter { it.value != null }
-      .mapValues { ReleaseDate(it.value!!, it.key) }
-      .values.toList()
+    val prisonerDetails = calculationRequest.prisonerDetails?.let { prisonApiDataMapper.mapPrisonerDetails(calculationRequest) }
+    val (breakdownMissingReason, calculationBreakdown) = calculationBreakdownService.getBreakdownSafely(calculationRequest).fold(
+      { it to null },
+      { null to it }
+    )
+    val releaseDates = calculationRequest.calculationOutcomes
+      .filter { it.outcomeDate != null }
+      .map { ReleaseDate(it.outcomeDate!!, ReleaseDateType.valueOf(it.calculationDateType)) }
+
     return DetailedCalculationResults(
       calculationContext(calculationRequestId, calculationRequest),
       calculationResultEnrichmentService.addDetailToCalculationDates(releaseDates, sentenceAndOffences, calculationBreakdown),
