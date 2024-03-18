@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -9,5 +10,5 @@ data class LatestCalculation(
   val location: String?,
   val reason: String?,
   val source: CalculationSource,
-  val dates: List<ReleaseDate>,
+  val dates: Map<ReleaseDateType, DetailedDate>,
 )

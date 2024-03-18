@@ -17,20 +17,20 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import java.time.LocalDateTime
 
 @Component
-class LatestCalculationService(private val prisonService: PrisonService, private val calculationRequestRepository: CalculationRequestRepository) {
+class LatestCalculationService(private val prisonService: PrisonService, private val calculationRequestRepository: CalculationRequestRepository, private val calculationResultEnrichmentService: CalculationResultEnrichmentService) {
 
   fun latestCalculationForPrisoner(prisonerId: String): Either<String, LatestCalculation> {
     return getLatestBookingFromPrisoner(prisonerId)
       .flatMap { bookingId -> getOffenderKeyDates(bookingId) }
-      .map {prisonerCalculation ->
+      .map { prisonerCalculation ->
         val latestCrdsCalc = calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)
         if (latestCrdsCalc.isEmpty || !isSameCalc(prisonerCalculation, latestCrdsCalc.get())) {
           toLatestCalculation(CalculationSource.NOMIS, prisonerId, prisonerCalculation, prisonerCalculation.reasonCode, null, null)
         } else {
           val crdsCalc = latestCrdsCalc.get()
           var location = crdsCalc.prisonerLocation
-          if(crdsCalc.prisonerLocation != null) {
-              location = prisonService.getAgenciesByType("INST").firstOrNull { it.agencyId == location }?.description ?: location
+          if (crdsCalc.prisonerLocation != null) {
+            location = prisonService.getAgenciesByType("INST").firstOrNull { it.agencyId == location }?.description ?: location
           }
           toLatestCalculation(CalculationSource.CRDS, prisonerId, prisonerCalculation, crdsCalc.reasonForCalculation?.displayName, crdsCalc.calculatedAt, location)
         }
@@ -45,10 +45,10 @@ class LatestCalculationService(private val prisonService: PrisonService, private
     }
   }
 
-  private fun getLatestBookingFromPrisoner(prisonerId: String) : Either<String, Long> {
+  private fun getLatestBookingFromPrisoner(prisonerId: String): Either<String, Long> {
     return try {
       prisonService.getOffenderDetail(prisonerId).bookingId.right()
-    }  catch (e: WebClientResponseException) {
+    } catch (e: WebClientResponseException) {
       if (HttpStatus.NOT_FOUND.isSameCodeAs(e.statusCode)) {
         "Prisoner (${prisonerId}) could not be found".left()
       } else {
@@ -58,7 +58,7 @@ class LatestCalculationService(private val prisonService: PrisonService, private
   }
 
   private fun getOffenderKeyDates(bookingId: Long): Either<String, OffenderKeyDates> = try {
-     prisonService.getOffenderKeyDates(bookingId).right()
+    prisonService.getOffenderKeyDates(bookingId).right()
   } catch (e: WebClientResponseException) {
     if (HttpStatus.NOT_FOUND.isSameCodeAs(e.statusCode)) {
       "Key dates for booking (${bookingId}) could not be found".left()
@@ -102,7 +102,7 @@ class LatestCalculationService(private val prisonService: PrisonService, private
       location,
       reason,
       calculationSource,
-      dates,
+      calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null),
     )
   }
 

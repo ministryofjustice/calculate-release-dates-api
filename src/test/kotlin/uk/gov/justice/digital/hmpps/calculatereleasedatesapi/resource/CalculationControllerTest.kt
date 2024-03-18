@@ -45,6 +45,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
@@ -365,7 +366,7 @@ class CalculationControllerTest {
       "HMP Belfast",
       "Other",
       CalculationSource.CRDS,
-      listOf(ReleaseDate(LocalDate.of(2024, 1, 1), ReleaseDateType.CRD)),
+      mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2024, 1, 1), emptyList())),
     )
 
     whenever(latestCalculationService.latestCalculationForPrisoner(prisonerId)).thenReturn(expected.right())

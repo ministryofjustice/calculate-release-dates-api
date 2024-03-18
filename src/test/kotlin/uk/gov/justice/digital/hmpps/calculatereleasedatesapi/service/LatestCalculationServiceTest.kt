@@ -13,10 +13,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
@@ -27,7 +27,8 @@ class LatestCalculationServiceTest {
 
   private val prisonService: PrisonService = mock()
   private val calculationRequestRepository: CalculationRequestRepository = mock()
-  private val service = LatestCalculationService(prisonService, calculationRequestRepository)
+  private val calculationResultEnrichmentService: CalculationResultEnrichmentService = mock()
+  private val service = LatestCalculationService(prisonService, calculationRequestRepository, calculationResultEnrichmentService)
   private val prisonerId = "ABC123"
   private val bookingId = 123456L
   private val prisonerDetails = PrisonerDetails(
@@ -85,7 +86,7 @@ class LatestCalculationServiceTest {
         null,
         null,
         CalculationSource.NOMIS,
-        emptyList(),
+        emptyMap(),
       ).right(),
     )
   }
@@ -103,7 +104,7 @@ class LatestCalculationServiceTest {
         null,
         null,
         CalculationSource.NOMIS,
-        emptyList(),
+        emptyMap(),
       ).right(),
     )
   }
@@ -121,7 +122,7 @@ class LatestCalculationServiceTest {
         null,
         null,
         CalculationSource.NOMIS,
-        emptyList(),
+        emptyMap(),
       ).right(),
     )
   }
@@ -139,7 +140,7 @@ class LatestCalculationServiceTest {
         null,
         "NEW",
         CalculationSource.NOMIS,
-        emptyList(),
+        emptyMap(),
       ).right(),
     )
   }
@@ -173,6 +174,30 @@ class LatestCalculationServiceTest {
     )
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.empty())
 
+    val dates = listOf(
+      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
+      ReleaseDate(LocalDate.of(2025, 1, 2), ReleaseDateType.LED),
+      ReleaseDate(LocalDate.of(2025, 1, 3), ReleaseDateType.PED),
+      ReleaseDate(LocalDate.of(2025, 1, 4), ReleaseDateType.HDCED),
+      ReleaseDate(LocalDate.of(2025, 1, 5), ReleaseDateType.HDCAD),
+      ReleaseDate(LocalDate.of(2025, 1, 6), ReleaseDateType.ARD),
+      ReleaseDate(LocalDate.of(2025, 1, 7), ReleaseDateType.CRD),
+      ReleaseDate(LocalDate.of(2025, 1, 8), ReleaseDateType.NPD),
+      ReleaseDate(LocalDate.of(2025, 1, 9), ReleaseDateType.PRRD),
+      ReleaseDate(LocalDate.of(2025, 1, 10), ReleaseDateType.APD),
+      ReleaseDate(LocalDate.of(2025, 1, 11), ReleaseDateType.TUSED),
+      ReleaseDate(LocalDate.of(2025, 1, 12), ReleaseDateType.ETD),
+      ReleaseDate(LocalDate.of(2025, 1, 13), ReleaseDateType.MTD),
+      ReleaseDate(LocalDate.of(2025, 1, 14), ReleaseDateType.LTD),
+      ReleaseDate(LocalDate.of(2025, 1, 15), ReleaseDateType.Tariff),
+      ReleaseDate(LocalDate.of(2025, 1, 16), ReleaseDateType.ROTL),
+      ReleaseDate(LocalDate.of(2025, 1, 17), ReleaseDateType.ERSED),
+      ReleaseDate(LocalDate.of(2025, 1, 18), ReleaseDateType.TERSED),
+      ReleaseDate(LocalDate.of(2025, 1, 19), ReleaseDateType.DPRRD),
+    )
+    val detailedDates = toDetailedDates(dates)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates)
+
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
@@ -180,27 +205,7 @@ class LatestCalculationServiceTest {
         null,
         "NEW",
         CalculationSource.NOMIS,
-        listOfNotNull(
-          ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
-          ReleaseDate(LocalDate.of(2025, 1, 2), ReleaseDateType.LED),
-          ReleaseDate(LocalDate.of(2025, 1, 3), ReleaseDateType.PED),
-          ReleaseDate(LocalDate.of(2025, 1, 4), ReleaseDateType.HDCED),
-          ReleaseDate(LocalDate.of(2025, 1, 5), ReleaseDateType.HDCAD),
-          ReleaseDate(LocalDate.of(2025, 1, 6), ReleaseDateType.ARD),
-          ReleaseDate(LocalDate.of(2025, 1, 7), ReleaseDateType.CRD),
-          ReleaseDate(LocalDate.of(2025, 1, 8), ReleaseDateType.NPD),
-          ReleaseDate(LocalDate.of(2025, 1, 9), ReleaseDateType.PRRD),
-          ReleaseDate(LocalDate.of(2025, 1, 10), ReleaseDateType.APD),
-          ReleaseDate(LocalDate.of(2025, 1, 11), ReleaseDateType.TUSED),
-          ReleaseDate(LocalDate.of(2025, 1, 12), ReleaseDateType.ETD),
-          ReleaseDate(LocalDate.of(2025, 1, 13), ReleaseDateType.MTD),
-          ReleaseDate(LocalDate.of(2025, 1, 14), ReleaseDateType.LTD),
-          ReleaseDate(LocalDate.of(2025, 1, 15), ReleaseDateType.Tariff),
-          ReleaseDate(LocalDate.of(2025, 1, 16), ReleaseDateType.ROTL),
-          ReleaseDate(LocalDate.of(2025, 1, 17), ReleaseDateType.ERSED),
-          ReleaseDate(LocalDate.of(2025, 1, 18), ReleaseDateType.TERSED),
-          ReleaseDate(LocalDate.of(2025, 1, 19), ReleaseDateType.DPRRD),
-        ),
+        detailedDates,
       ).right(),
     )
   }
@@ -217,19 +222,26 @@ class LatestCalculationServiceTest {
         licenceExpiryDate = LocalDate.of(2025, 1, 2),
         conditionalReleaseDate = LocalDate.of(2025, 1, 7),
         reasonCode = "NEW",
-        comment = "Some stuff and then the ref: $calculationReference"
-        ),
+        comment = "Some stuff and then the ref: $calculationReference",
+      ),
     )
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
       Optional.of(
         CalculationRequest(
           calculationReference = calculationReference,
           calculatedAt = calculatedAt,
-          reasonForCalculation = CalculationReason(0, false, false,  "Some reason", false, null, null, null)
+          reasonForCalculation = CalculationReason(0, false, false, "Some reason", false, null, null, null),
         ),
       ),
     )
 
+    val dates = listOf(
+      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
+      ReleaseDate(LocalDate.of(2025, 1, 2), ReleaseDateType.LED),
+      ReleaseDate(LocalDate.of(2025, 1, 7), ReleaseDateType.CRD),
+    )
+    val detailedDates = toDetailedDates(dates)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates)
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
@@ -237,11 +249,7 @@ class LatestCalculationServiceTest {
         null,
         "Some reason",
         CalculationSource.CRDS,
-        listOfNotNull(
-          ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
-          ReleaseDate(LocalDate.of(2025, 1, 2), ReleaseDateType.LED),
-          ReleaseDate(LocalDate.of(2025, 1, 7), ReleaseDateType.CRD),
-        ),
+        detailedDates,
       ).right(),
     )
   }
@@ -256,13 +264,18 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
       OffenderKeyDates(
         sentenceExpiryDate = LocalDate.of(2025, 1, 1),
-        comment = "Some stuff and then the ref: $calculationReference"
-        ),
+        comment = "Some stuff and then the ref: $calculationReference",
+      ),
     )
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
       Optional.of(CalculationRequest(calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC")),
     )
 
+    val dates = listOf(
+      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
+    )
+    val detailedDates = toDetailedDates(dates)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates)
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
@@ -270,9 +283,7 @@ class LatestCalculationServiceTest {
         "HMP ABC",
         null,
         CalculationSource.CRDS,
-        listOfNotNull(
-          ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
-        ),
+        detailedDates,
       ).right(),
     )
   }
@@ -287,13 +298,18 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
       OffenderKeyDates(
         sentenceExpiryDate = LocalDate.of(2025, 1, 1),
-        comment = "Some stuff and then the ref: $calculationReference"
+        comment = "Some stuff and then the ref: $calculationReference",
       ),
     )
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
       Optional.of(CalculationRequest(calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "XYZ")),
     )
 
+    val dates = listOf(
+      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
+    )
+    val detailedDates = toDetailedDates(dates)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates)
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
@@ -301,11 +317,10 @@ class LatestCalculationServiceTest {
         "XYZ",
         null,
         CalculationSource.CRDS,
-        listOfNotNull(
-          ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
-        ),
+        detailedDates,
       ).right(),
     )
   }
 
+  private fun toDetailedDates(dates: List<ReleaseDate>): Map<ReleaseDateType, DetailedDate> = dates.map { DetailedDate(it.type, it.type.description, it.date, emptyList()) }.associateBy { it.type }
 }
