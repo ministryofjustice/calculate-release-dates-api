@@ -9,15 +9,23 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDateTime
 
 @Component
-class LatestCalculationService(private val prisonService: PrisonService, private val calculationRequestRepository: CalculationRequestRepository, private val calculationResultEnrichmentService: CalculationResultEnrichmentService) {
+class LatestCalculationService(
+  private val prisonService: PrisonService,
+  private val calculationRequestRepository: CalculationRequestRepository,
+  private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
+  private val calculationBreakdownService: CalculationBreakdownService,
+  private val prisonApiDataMapper: PrisonApiDataMapper,
+) {
 
   fun latestCalculationForPrisoner(prisonerId: String): Either<String, LatestCalculation> {
     return getLatestBookingFromPrisoner(prisonerId)
@@ -32,6 +40,8 @@ class LatestCalculationService(private val prisonService: PrisonService, private
             prisonerCalculation.reasonCode,
             null,
             null,
+            null,
+            null,
           )
         } else {
           val calculationRequest = latestCrdsCalc.get()
@@ -39,6 +49,8 @@ class LatestCalculationService(private val prisonService: PrisonService, private
           if (calculationRequest.prisonerLocation != null) {
             location = prisonService.getAgenciesByType("INST").firstOrNull { it.agencyId == location }?.description ?: location
           }
+          val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { prisonApiDataMapper.mapSentencesAndOffences(calculationRequest) }
+          val breakdown = calculationBreakdownService.getBreakdownSafely(calculationRequest).getOrNull()
           toLatestCalculation(
             CalculationSource.CRDS,
             prisonerId,
@@ -46,6 +58,8 @@ class LatestCalculationService(private val prisonService: PrisonService, private
             calculationRequest.reasonForCalculation?.displayName,
             calculationRequest.calculatedAt,
             location,
+            sentenceAndOffences,
+            breakdown,
           )
         }
       }
@@ -64,7 +78,7 @@ class LatestCalculationService(private val prisonService: PrisonService, private
       prisonService.getOffenderDetail(prisonerId).bookingId.right()
     } catch (e: WebClientResponseException) {
       if (HttpStatus.NOT_FOUND.isSameCodeAs(e.statusCode)) {
-        "Prisoner (${prisonerId}) could not be found".left()
+        "Prisoner ($prisonerId) could not be found".left()
       } else {
         throw e
       }
@@ -75,7 +89,7 @@ class LatestCalculationService(private val prisonService: PrisonService, private
     prisonService.getOffenderKeyDates(bookingId).right()
   } catch (e: WebClientResponseException) {
     if (HttpStatus.NOT_FOUND.isSameCodeAs(e.statusCode)) {
-      "Key dates for booking (${bookingId}) could not be found".left()
+      "Key dates for booking ($bookingId) could not be found".left()
     } else {
       throw e
     }
@@ -88,6 +102,8 @@ class LatestCalculationService(private val prisonService: PrisonService, private
     reason: String?,
     calculatedAt: LocalDateTime?,
     location: String?,
+    sentenceAndOffences: List<SentenceAndOffences>?,
+    breakdown: CalculationBreakdown?,
   ): LatestCalculation {
     val dates = listOfNotNull(
       prisonerCalculation.sentenceExpiryDate?.let { ReleaseDate(it, ReleaseDateType.SED) },
@@ -116,8 +132,7 @@ class LatestCalculationService(private val prisonService: PrisonService, private
       location,
       reason,
       calculationSource,
-      calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null),
+      calculationResultEnrichmentService.addDetailToCalculationDates(dates, sentenceAndOffences, breakdown),
     )
   }
-
 }
