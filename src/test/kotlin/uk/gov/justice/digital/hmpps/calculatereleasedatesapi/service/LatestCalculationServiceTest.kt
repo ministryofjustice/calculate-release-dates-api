@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
@@ -233,13 +234,75 @@ class LatestCalculationServiceTest {
       LatestCalculation(
         prisonerId,
         calculatedAt,
-        null, //TODO location proper mapping
+        null,
         "Some reason",
         CalculationSource.CRDS,
         listOfNotNull(
           ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
           ReleaseDate(LocalDate.of(2025, 1, 2), ReleaseDateType.LED),
           ReleaseDate(LocalDate.of(2025, 1, 7), ReleaseDateType.CRD),
+        ),
+      ).right(),
+    )
+  }
+
+  @Test
+  fun `Should lookup the location if there is one set on CRDS`() {
+    val calculationReference = UUID.randomUUID()
+    val calculatedAt = LocalDateTime.now()
+
+    whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
+    whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
+      OffenderKeyDates(
+        sentenceExpiryDate = LocalDate.of(2025, 1, 1),
+        comment = "Some stuff and then the ref: $calculationReference"
+        ),
+    )
+    whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
+      Optional.of(CalculationRequest(calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC")),
+    )
+
+    assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
+      LatestCalculation(
+        prisonerId,
+        calculatedAt,
+        "HMP ABC",
+        null,
+        CalculationSource.CRDS,
+        listOfNotNull(
+          ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
+        ),
+      ).right(),
+    )
+  }
+
+  @Test
+  fun `Should default to location code if it's not in agency lookup`() {
+    val calculationReference = UUID.randomUUID()
+    val calculatedAt = LocalDateTime.now()
+
+    whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
+    whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
+      OffenderKeyDates(
+        sentenceExpiryDate = LocalDate.of(2025, 1, 1),
+        comment = "Some stuff and then the ref: $calculationReference"
+      ),
+    )
+    whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
+      Optional.of(CalculationRequest(calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "XYZ")),
+    )
+
+    assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
+      LatestCalculation(
+        prisonerId,
+        calculatedAt,
+        "XYZ",
+        null,
+        CalculationSource.CRDS,
+        listOfNotNull(
+          ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
         ),
       ).right(),
     )

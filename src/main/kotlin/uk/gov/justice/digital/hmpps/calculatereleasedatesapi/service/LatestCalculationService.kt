@@ -27,7 +27,11 @@ class LatestCalculationService(private val prisonService: PrisonService, private
         if (latestCrdsCalc.isEmpty || !isSameCalc(prisonerCalculation, latestCrdsCalc.get())) {
           toLatestCalculation(CalculationSource.NOMIS, prisonerId, prisonerCalculation, prisonerCalculation.reasonCode, null, null)
         } else {
-          toLatestCalculation(CalculationSource.CRDS, prisonerId, prisonerCalculation, latestCrdsCalc.get().reasonForCalculation?.displayName, latestCrdsCalc.get().calculatedAt, null)
+          var location = latestCrdsCalc.get().prisonerLocation
+          if(latestCrdsCalc.get().prisonerLocation != null) {
+              location = prisonService.getAgenciesByType("INST").firstOrNull { it.agencyId == location }?.description ?: location
+          }
+          toLatestCalculation(CalculationSource.CRDS, prisonerId, prisonerCalculation, latestCrdsCalc.get().reasonForCalculation?.displayName, latestCrdsCalc.get().calculatedAt, location)
         }
       }
   }
