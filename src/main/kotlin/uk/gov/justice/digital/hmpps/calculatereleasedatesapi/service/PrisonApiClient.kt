@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClientRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RestResponsePage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -141,6 +142,18 @@ class PrisonApiClient(
       .bodyToMono(typeReference<List<SentenceCalculationSummary>>())
       .block()!!
   }
+
+  fun getOffenderKeyDates(bookingId: Long): OffenderKeyDates {
+    return webClient.get()
+      .uri { uriBuilder ->
+        uriBuilder.path("/api/offender-dates/$bookingId")
+          .build()
+      }
+      .retrieve()
+      .bodyToMono(typeReference<OffenderKeyDates>())
+      .block()!!
+  }
+
 
   fun getAgenciesByType(agencyType: String): List<Agency> {
     log.info("Requesting agencies with type: $agencyType")
