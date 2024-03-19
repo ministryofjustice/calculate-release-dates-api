@@ -74,3 +74,5 @@ sonar-project.properties
 #Mac System Files
 .DS_Store
 /qodana.yaml
+
+.run/
