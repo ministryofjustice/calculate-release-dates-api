@@ -41,14 +41,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationCo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOriginalData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
@@ -80,6 +79,9 @@ class CalculationControllerTest {
   @MockBean
   private lateinit var latestCalculationService: LatestCalculationService
 
+  @MockBean
+  private lateinit var calculationBreakdownService: CalculationBreakdownService
+
   @Autowired
   private lateinit var mvc: MockMvc
 
@@ -103,6 +105,7 @@ class CalculationControllerTest {
           relevantRemandService,
           detailedCalculationResultsService,
           latestCalculationService,
+          calculationBreakdownService,
         ),
       )
       .setControllerAdvice(ControllerAdvice())
@@ -151,7 +154,6 @@ class CalculationControllerTest {
   fun `Test POST of a PRELIMINARY calculation with user input`() {
     val prisonerId = "A1234AB"
     val bookingId = 9995L
-    val userInput = CalculationUserInputs(listOf(CalculationSentenceUserInput(1, "ABC", UserInputType.ORIGINAL, true)))
     val calculatedReleaseDates = CalculatedReleaseDates(
       calculationRequestId = 9991L,
       dates = mapOf(),
@@ -318,7 +320,7 @@ class CalculationControllerTest {
   fun `Test GET of calculation breakdown by calculationRequestId`() {
     val calculationRequestId = 9995L
     val breakdown = CalculationBreakdown(listOf(), null)
-    whenever(calculationTransactionalService.getCalculationBreakdown(calculationRequestId)).thenReturn(breakdown)
+    whenever(calculationBreakdownService.getBreakdownUnsafely(calculationRequestId)).thenReturn(breakdown)
 
     val result = mvc.perform(get("/calculation/breakdown/$calculationRequestId").accept(APPLICATION_JSON))
       .andExpect(status().isOk)

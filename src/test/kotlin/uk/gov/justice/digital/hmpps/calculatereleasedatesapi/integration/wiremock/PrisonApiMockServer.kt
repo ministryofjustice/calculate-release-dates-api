@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremo
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
@@ -42,7 +43,7 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
 
   private val jsonTransformation = JsonTransformation()
   private val objectMapper = TestUtil.objectMapper()
-  private val mockPrisonClient = MockPrisonClient(prisonApi, objectMapper, jsonTransformation)
+  private val mockPrisonService = MockPrisonService(prisonApi, objectMapper, jsonTransformation)
 
   override fun beforeAll(context: ExtensionContext) {
     prisonApi.start()
@@ -119,7 +120,7 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
   }
 
   override fun beforeEach(context: ExtensionContext) {
-    mockPrisonClient
+    mockPrisonService
       .withCaseLoadsForMe(DEFAULT_CASELOAD)
       .withPrisonCalculableSentences("ABC", "default")
     prisonApi.resetRequests()
@@ -130,34 +131,38 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
   }
 
   override fun supportsParameter(parameterContext: ParameterContext, context: ExtensionContext): Boolean {
-    return parameterContext.parameter.type == MockPrisonClient::class.java
+    return parameterContext.parameter.type == MockPrisonService::class.java
   }
 
   override fun resolveParameter(parameterContext: ParameterContext, context: ExtensionContext): Any {
-    return MockPrisonClient(prisonApi, objectMapper, jsonTransformation)
+    return MockPrisonService(prisonApi, objectMapper, jsonTransformation)
   }
 }
 
-class MockPrisonClient(
+class MockPrisonService(
   private val prisonApi: PrisonApiMockServer,
   private val objectMapper: ObjectMapper,
   private val jsonTransformation: JsonTransformation,
 ) {
-  fun withCaseLoadsForMe(vararg caseloads: CaseLoad): MockPrisonClient {
+  fun withCaseLoadsForMe(vararg caseloads: CaseLoad): MockPrisonService {
     prisonApi.stubCaseloads(objectMapper.writeValueAsString(caseloads.toList()))
     return this
   }
 
-  fun withPrisonCalculableSentences(establishmentId: String, keyInPrisonCalculableSentenceEnvelopeFolder: String): MockPrisonClient {
+  fun withPrisonCalculableSentences(establishmentId: String, keyInPrisonCalculableSentenceEnvelopeFolder: String): MockPrisonService {
     val json = jsonTransformation.getApiIntegrationJson(keyInPrisonCalculableSentenceEnvelopeFolder, "prisonCalculableSentenceEnvelope")
     assertNotNull(json, "Expected there to be source file in prisonCalculableSentenceEnvelope called $keyInPrisonCalculableSentenceEnvelopeFolder.json")
     prisonApi.stubPrisonCalculableSentenceEnvelope(establishmentId, json)
     return this
   }
 
-  fun withInstAgencies(agencies: List<Agency>): MockPrisonClient {
+  fun withInstAgencies(agencies: List<Agency>): MockPrisonService {
     prisonApi.stubAgencies("INST", objectMapper.writeValueAsString(agencies))
     return this
+  }
+
+  fun withStub(mappingBuilder: MappingBuilder): StubMapping {
+    return prisonApi.stubFor(mappingBuilder)
   }
 }
 

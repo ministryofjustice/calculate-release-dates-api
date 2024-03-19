@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.right
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -57,10 +58,10 @@ class PrisonServiceTest {
   @Test
   fun `should get offender key dates`() {
     val bookingId = 123456L
-    val expected = OffenderKeyDates()
-    whenever(prisonApiClient.getOffenderKeyDates(bookingId)).thenReturn(expected)
+    val expected = OffenderKeyDates(reasonCode = "NEW")
+    whenever(prisonApiClient.getOffenderKeyDates(bookingId)).thenReturn(expected.right())
     val keyDates = prisonService.getOffenderKeyDates(bookingId)
-    assertThat(keyDates).isEqualTo(expected)
+    assertThat(keyDates).isEqualTo(expected.right())
   }
 
   companion object {

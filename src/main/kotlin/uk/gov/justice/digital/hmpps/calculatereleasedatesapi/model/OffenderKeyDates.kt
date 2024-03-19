@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import java.time.LocalDate
 
 data class OffenderKeyDates(
+  val reasonCode: String,
+  val comment: String? = null,
   val homeDetentionCurfewEligibilityDate: LocalDate? = null,
   val earlyTermDate: LocalDate? = null,
   val midTermDate: LocalDate? = null,
@@ -25,6 +27,4 @@ data class OffenderKeyDates(
   val approvedParoleDate: LocalDate? = null,
   val releaseOnTemporaryLicenceDate: LocalDate? = null,
   val judiciallyImposedSentenceLength: String? = null,
-  val comment: String? = null,
-  val reasonCode: String? = null,
 )

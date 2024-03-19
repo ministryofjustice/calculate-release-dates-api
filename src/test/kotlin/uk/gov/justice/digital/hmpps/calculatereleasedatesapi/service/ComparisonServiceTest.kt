@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import jakarta.persistence.EntityNotFoundException
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -57,7 +56,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
   private var serviceUserService = mock<ServiceUserService>()
   private var bulkComparisonService = mock<BulkComparisonService>()
   private val calculationTransactionalService = mock<CalculationTransactionalService>()
-  private val objectMapper: ObjectMapper = TestUtil.objectMapper()
 
   private val comparisonService = ComparisonService(
     calculationOutcomeRepository,
@@ -68,7 +66,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     comparisonPersonDiscrepancyRepository,
     bulkComparisonService,
     calculationTransactionalService,
-    objectMapper,
+    TestUtil.objectMapper(),
   )
 
   @BeforeEach

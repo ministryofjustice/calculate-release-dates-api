@@ -32,7 +32,7 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
   lateinit var manualComparisonService: ManualComparisonService
 
   @Autowired
-  var objectMapper: ObjectMapper = spy<ObjectMapper>()
+  var spyMapper: ObjectMapper = spy<ObjectMapper>()
 
   private val comparisonRepository = mock<ComparisonRepository>()
   private val comparisonPersonRepository = mock<ComparisonPersonRepository>()
@@ -47,7 +47,7 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       1,
       UUID.randomUUID(),
       "ABCD1234",
-      objectMapper.createObjectNode(),
+      spyMapper.createObjectNode(),
       null,
       ComparisonType.MANUAL,
       LocalDateTime.now(),
@@ -70,7 +70,7 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       1,
       UUID.randomUUID(),
       "ABCD1234",
-      objectMapper.createObjectNode(),
+      spyMapper.createObjectNode(),
       "ABC",
       ComparisonType.MANUAL,
       LocalDateTime.now(),
@@ -96,7 +96,7 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       1,
       UUID.randomUUID(),
       "ABCD1234",
-      objectMapper.createObjectNode(),
+      spyMapper.createObjectNode(),
       null,
       ComparisonType.MANUAL,
       LocalDateTime.now(),
@@ -122,7 +122,7 @@ class ManualComparisonServiceTest : IntegrationTestBase() {
       1,
       UUID.randomUUID(),
       "ABCD1234",
-      objectMapper.createObjectNode(),
+      spyMapper.createObjectNode(),
       null,
       ComparisonType.MANUAL,
       LocalDateTime.now(),

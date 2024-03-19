@@ -47,4 +47,24 @@ open class CalculationBreakdownService(
       BreakdownMissingReason.PRISON_API_DATA_MISSING.left()
     }
   }
+
+  fun getBreakdownUnsafely(
+    calculationRequestId: Long,
+  ): CalculationBreakdown {
+    val calculationUserInputs = calculationTransactionalService.findUserInput(calculationRequestId)
+    val prisonerDetails = calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId)
+    val sentenceAndOffences = calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)
+    val bookingAndSentenceAdjustments = calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
+    val returnToCustodyDate = calculationTransactionalService.findReturnToCustodyDateFromCalculation(calculationRequestId)
+    val calculation = calculationTransactionalService.findCalculationResults(calculationRequestId)
+    val booking = Booking(
+      offender = transform(prisonerDetails),
+      sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) }.flatten(),
+      adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
+      bookingId = prisonerDetails.bookingId,
+      returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,
+      calculateErsed = calculationUserInputs.calculateErsed,
+    )
+    return calculationTransactionalService.calculateWithBreakdown(booking, calculation)
+  }
 }

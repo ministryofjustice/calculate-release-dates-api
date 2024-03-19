@@ -428,27 +428,6 @@ class CalculationTransactionalService(
     )
   }
 
-  @Transactional(readOnly = true)
-  fun getCalculationBreakdown(
-    calculationRequestId: Long,
-  ): CalculationBreakdown {
-    val calculationUserInputs = findUserInput(calculationRequestId)
-    val prisonerDetails = findPrisonerDetailsFromCalculation(calculationRequestId)
-    val sentenceAndOffences = findSentenceAndOffencesFromCalculation(calculationRequestId)
-    val bookingAndSentenceAdjustments = findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
-    val returnToCustodyDate = findReturnToCustodyDateFromCalculation(calculationRequestId)
-    val calculation = findCalculationResults(calculationRequestId)
-    val booking = Booking(
-      offender = transform(prisonerDetails),
-      sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) }.flatten(),
-      adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
-      bookingId = prisonerDetails.bookingId,
-      returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,
-      calculateErsed = calculationUserInputs.calculateErsed,
-    )
-    return calculateWithBreakdown(booking, calculation)
-  }
-
   @Transactional
   fun storeApprovedDates(calculation: CalculatedReleaseDates, approvedDates: List<ManualEntrySelectedDate>) {
     val foundCalculation = calculationRequestRepository.findById(calculation.calculationRequestId)

@@ -7,8 +7,6 @@ import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideDateRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideDateResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideRequest
@@ -154,17 +152,6 @@ class SpecialistSupportIntTest() : IntegrationTestBase() {
     .expectStatus().isOk
     .expectHeader().contentType(MediaType.APPLICATION_JSON)
     .expectBody(GenuineOverrideResponse::class.java)
-    .returnResult().responseBody
-
-  private fun createPreliminaryCalculation(prisonerid: String): CalculatedReleaseDates = webTestClient.post()
-    .uri("/calculation/$prisonerid")
-    .accept(MediaType.APPLICATION_JSON)
-    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-    .bodyValue(CalculationRequestModel(CalculationUserInputs(), 1L))
-    .exchange()
-    .expectStatus().isOk
-    .expectHeader().contentType(MediaType.APPLICATION_JSON)
-    .expectBody(CalculatedReleaseDates::class.java)
     .returnResult().responseBody
 
   companion object {
