@@ -928,9 +928,7 @@ class BulkComparisonServiceTest {
   fun `Creates a comparison person discrepancy`() {
     val comparison = aComparison()
     val comparisonPerson = aComparisonPerson(
-      54,
       comparison.id,
-      8923,
       USERNAME,
     )
 
@@ -966,8 +964,8 @@ class BulkComparisonServiceTest {
       action = discrepancy.action,
     )
     val discrepancySummary = bulkComparisonService.createDiscrepancy(
-      comparison.comparisonShortReference,
-      comparisonPerson.shortReference,
+      comparison,
+      comparisonPerson,
       discrepancyRequest,
     )
 
@@ -987,9 +985,7 @@ class BulkComparisonServiceTest {
   fun `Sets superseded id on an existing discrepancy when creating a new discrepancy`() {
     val comparison = aComparison()
     val comparisonPerson = aComparisonPerson(
-      54,
       comparison.id,
-      8923,
       ComparisonServiceTest.USERNAME,
     )
 
@@ -1041,8 +1037,8 @@ class BulkComparisonServiceTest {
       action = discrepancy.action,
     )
     val discrepancySummary = bulkComparisonService.createDiscrepancy(
-      comparison.comparisonShortReference,
-      comparisonPerson.shortReference,
+      comparison,
+      comparisonPerson,
       discrepancyRequest,
     )
     verify(comparisonPersonDiscrepancyRepository, times(2)).save(any())
@@ -1097,14 +1093,12 @@ class BulkComparisonServiceTest {
   )
 
   private fun aComparisonPerson(
-    id: Long,
     comparisonId: Long,
-    calculationRequestId: Long,
     person: String,
   ): ComparisonPerson {
     val emptyObjectNode = objectMapper.createObjectNode()
     return ComparisonPerson(
-      id,
+      1,
       comparisonId,
       person = person,
       lastName = "Smith",
@@ -1117,7 +1111,6 @@ class BulkComparisonServiceTest {
       nomisDates = emptyObjectNode,
       overrideDates = emptyObjectNode,
       breakdownByReleaseDateType = emptyObjectNode,
-      calculationRequestId = calculationRequestId,
       sdsPlusSentencesIdentified = emptyObjectNode,
       establishment = "BMI",
     )

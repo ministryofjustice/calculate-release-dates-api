@@ -72,11 +72,15 @@ class ManualComparisonService(
   }
 
   fun createDiscrepancy(comparisonReference: String, comparisonPersonReference: String, discrepancyInput: CreateComparisonDiscrepancyRequest): ComparisonDiscrepancySummary {
-    return bulkComparisonService.createDiscrepancy(comparisonReference, comparisonPersonReference, discrepancyInput)
+    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
+    val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
+    return bulkComparisonService.createDiscrepancy(comparison, comparisonPerson, discrepancyInput)
   }
 
   fun getComparisonPersonDiscrepancy(comparisonReference: String, comparisonPersonReference: String): ComparisonDiscrepancySummary {
-    return bulkComparisonService.getComparisonPersonDiscrepancy(comparisonReference, comparisonPersonReference)
+    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
+    val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
+    return bulkComparisonService.getComparisonPersonDiscrepancy(comparison, comparisonPerson)
   }
 
   companion object {

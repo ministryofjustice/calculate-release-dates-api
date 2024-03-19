@@ -623,6 +623,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       comparison.id,
       8923,
       USERNAME,
+      establishment = "ABC",
     )
 
     val discrepancyImpact = ComparisonPersonDiscrepancyImpact(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION)
@@ -636,8 +637,12 @@ class ComparisonServiceTest : IntegrationTestBase() {
     )
     val discrepancy = ComparisonPersonDiscrepancy(1, comparisonPerson, discrepancyImpact, emptyList(), discrepancyPriority = discrepancyPriority, detail = "detail", action = "action", createdBy = USERNAME)
     whenever(
-      comparisonRepository.findByComparisonShortReference("ABCD1234"),
+      comparisonRepository.findByComparisonShortReference(comparison.comparisonShortReference),
     ).thenReturn(comparison)
+    whenever(
+      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPerson.shortReference),
+    ).thenReturn(comparisonPerson)
+
     whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
     whenever(bulkComparisonService.createDiscrepancy(any(), any(), any())).thenReturn(discrepancySummary)
     val discrepancyCause = DiscrepancyCause(DiscrepancyCategory.TUSED, DiscrepancySubCategory.REMAND_OR_UAL_RELATED)

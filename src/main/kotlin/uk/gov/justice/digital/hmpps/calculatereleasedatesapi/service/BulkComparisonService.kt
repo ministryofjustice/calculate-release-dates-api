@@ -91,15 +91,10 @@ class BulkComparisonService(
   }
 
   @Transactional
-  fun createDiscrepancy(comparisonReference: String, comparisonPersonReference: String, discrepancyRequest: CreateComparisonDiscrepancyRequest): ComparisonDiscrepancySummary {
-    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
-    val comparisonPerson =
-      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference)
-        ?: throw EntityNotFoundException("Could not find comparison person with reference: $comparisonReference")
-
+  fun createDiscrepancy(comparison: Comparison, comparisonPerson: ComparisonPerson, discrepancyRequest: CreateComparisonDiscrepancyRequest): ComparisonDiscrepancySummary {
     val existingDiscrepancy =
       comparisonPersonDiscrepancyRepository.findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
-        comparisonPersonReference,
+        comparisonPerson.shortReference,
       )
 
     val impact = ComparisonPersonDiscrepancyImpact(discrepancyRequest.impact)
@@ -130,10 +125,10 @@ class BulkComparisonService(
     return transform(discrepancy, discrepancyCauses)
   }
 
-  fun getComparisonPersonDiscrepancy(comparisonReference: String, comparisonPersonReference: String): ComparisonDiscrepancySummary {
+  fun getComparisonPersonDiscrepancy(comparison: Comparison, comparisonPerson: ComparisonPerson): ComparisonDiscrepancySummary {
     val discrepancy =
       comparisonPersonDiscrepancyRepository.findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
-        comparisonPersonReference,
+        comparisonPerson.shortReference,
       ) ?: throw EntityNotFoundException("No comparison person discrepancy was found")
     return transform(discrepancy)
   }

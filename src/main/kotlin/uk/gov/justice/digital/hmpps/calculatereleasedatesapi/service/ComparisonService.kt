@@ -148,8 +148,10 @@ class ComparisonService(
     log.info("creating discrepancy $discrepancyRequest for comparison $comparisonReference and comparison person $comparisonPersonReference")
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
       ?: throw EntityNotFoundException("Could not find comparison with reference: $comparisonReference ")
-    if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
-      return bulkComparisonService.createDiscrepancy(comparisonReference, comparisonPersonReference, discrepancyRequest)
+    val comparisonPerson =
+      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("Could not find comparison person with reference: $comparisonPersonReference")
+    if (comparisonPerson.establishment != null && prisonService.getCurrentUserPrisonsList().contains(comparisonPerson.establishment)) {
+      return bulkComparisonService.createDiscrepancy(comparison, comparisonPerson, discrepancyRequest)
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
   }
@@ -160,8 +162,10 @@ class ComparisonService(
   ): ComparisonDiscrepancySummary {
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
       ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
+    val comparisonPerson =
+      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("Could not find comparison person with reference: $comparisonPersonReference")
     if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
-      return bulkComparisonService.getComparisonPersonDiscrepancy(comparisonReference, comparisonPersonReference)
+      return bulkComparisonService.getComparisonPersonDiscrepancy(comparison, comparisonPerson)
     }
 
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
