@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -19,7 +18,6 @@ class CalculationResultEnrichmentService(
   private val nonFridayReleaseService: NonFridayReleaseService,
   private val workingDayService: WorkingDayService,
   private val clock: Clock,
-  private val prisonApiDataMapper: PrisonApiDataMapper,
 ) {
   companion object {
     private val typesAllowedWeekendAdjustment = listOf(
@@ -35,34 +33,32 @@ class CalculationResultEnrichmentService(
     private val dtoSentenceTypes = listOf(SentenceCalculationType.DTO_ORA.name, SentenceCalculationType.DTO.name)
   }
 
-  fun addDetailToCalculationDates(calculationRequest: CalculationRequest, calculationBreakdown: CalculationBreakdown?): Map<ReleaseDateType, DetailedDate> {
-    val releaseDates = calculationRequest.calculationOutcomes
-      .filter { it.outcomeDate != null }
-      .map { ReleaseDateType.valueOf(it.calculationDateType) to it.outcomeDate!! }
-      .associateBy(
-        { (type, _) -> type },
-        { (type, date) -> ReleaseDate(date, type) },
-      )
-    return releaseDates.mapValues { (_, releaseDate) ->
+  fun addDetailToCalculationDates(releaseDates: List<ReleaseDate>, sentenceAndOffences: List<SentenceAndOffences>?, calculationBreakdown: CalculationBreakdown?): Map<ReleaseDateType, DetailedDate> {
+    val releaseDatesMap = releaseDates.associateBy { it.type }
+    return releaseDatesMap.mapValues { (_, releaseDate) ->
       DetailedDate(
         releaseDate.type,
         releaseDate.type.description,
         releaseDate.date,
-        getHints(releaseDate.type, releaseDate.date, calculationRequest, calculationBreakdown, releaseDates),
+        getHints(releaseDate.type, releaseDate.date, calculationBreakdown, releaseDatesMap, sentenceAndOffences),
       )
     }
   }
 
-  private fun getHints(type: ReleaseDateType, date: LocalDate, calculationRequest: CalculationRequest, calculationBreakdown: CalculationBreakdown?, releaseDates: Map<ReleaseDateType, ReleaseDate>): List<ReleaseDateHint> {
-    val sentencesAndOffences = calculationRequest.sentenceAndOffences?.let { prisonApiDataMapper.mapSentencesAndOffences(calculationRequest) }
-
+  private fun getHints(
+    type: ReleaseDateType,
+    date: LocalDate,
+    calculationBreakdown: CalculationBreakdown?,
+    releaseDates: Map<ReleaseDateType, ReleaseDate>,
+    sentenceAndOffences: List<SentenceAndOffences>?,
+  ): List<ReleaseDateHint> {
     val hints = mutableListOf<ReleaseDateHint?>()
     hints += nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type, date)
-    hints += ardHints(type, date, sentencesAndOffences, releaseDates)
-    hints += crdHints(type, date, sentencesAndOffences, releaseDates)
-    hints += pedHints(type, date, sentencesAndOffences, releaseDates, calculationBreakdown)
-    hints += hdcedHints(type, date, sentencesAndOffences, releaseDates, calculationBreakdown)
-    hints += mtdHints(type, date, sentencesAndOffences, releaseDates)
+    hints += ardHints(type, date, sentenceAndOffences, releaseDates)
+    hints += crdHints(type, date, sentenceAndOffences, releaseDates)
+    hints += pedHints(type, date, sentenceAndOffences, releaseDates, calculationBreakdown)
+    hints += hdcedHints(type, date, sentenceAndOffences, releaseDates, calculationBreakdown)
+    hints += mtdHints(type, date, sentenceAndOffences, releaseDates)
     hints += ersedHints(type, releaseDates, calculationBreakdown)
     return hints.filterNotNull()
   }

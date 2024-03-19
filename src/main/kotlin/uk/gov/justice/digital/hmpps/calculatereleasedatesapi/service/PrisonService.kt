@@ -97,4 +97,6 @@ class PrisonService(
   fun getCalculationsForAPrisonerId(prisonerId: String): List<SentenceCalculationSummary> = prisonApiClient.getCalculationsForAPrisonerId(prisonerId)
 
   fun getAgenciesByType(type: String) = prisonApiClient.getAgenciesByType(type)
+
+  fun getOffenderKeyDates(bookingId: Long) = prisonApiClient.getOffenderKeyDates(bookingId)
 }
