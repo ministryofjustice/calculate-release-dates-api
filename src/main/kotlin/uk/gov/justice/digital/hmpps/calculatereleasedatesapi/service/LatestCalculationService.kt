@@ -29,7 +29,7 @@ class LatestCalculationService(
 
   fun latestCalculationForPrisoner(prisonerId: String): Either<String, LatestCalculation> {
     return getLatestBookingFromPrisoner(prisonerId)
-      .flatMap { bookingId -> getOffenderKeyDates(bookingId) }
+      .flatMap { bookingId -> prisonService.getOffenderKeyDates(bookingId) }
       .map { prisonerCalculation ->
         val latestCrdsCalc = calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)
         if (latestCrdsCalc.isEmpty || !isSameCalc(prisonerCalculation, latestCrdsCalc.get())) {
@@ -55,7 +55,7 @@ class LatestCalculationService(
             CalculationSource.CRDS,
             prisonerId,
             prisonerCalculation,
-            calculationRequest.reasonForCalculation?.displayName,
+            calculationRequest.reasonForCalculation?.displayName ?: prisonerCalculation.reasonCode,
             calculationRequest.calculatedAt,
             location,
             sentenceAndOffences,
@@ -85,21 +85,11 @@ class LatestCalculationService(
     }
   }
 
-  private fun getOffenderKeyDates(bookingId: Long): Either<String, OffenderKeyDates> = try {
-    prisonService.getOffenderKeyDates(bookingId).right()
-  } catch (e: WebClientResponseException) {
-    if (HttpStatus.NOT_FOUND.isSameCodeAs(e.statusCode)) {
-      "Key dates for booking ($bookingId) could not be found".left()
-    } else {
-      throw e
-    }
-  }
-
   private fun toLatestCalculation(
     calculationSource: CalculationSource,
     prisonerId: String,
     prisonerCalculation: OffenderKeyDates,
-    reason: String?,
+    reason: String,
     calculatedAt: LocalDateTime?,
     location: String?,
     sentenceAndOffences: List<SentenceAndOffences>?,
