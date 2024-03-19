@@ -12,6 +12,7 @@ generic-service:
     PRISON_API_URL: https://api.prison.service.justice.gov.uk
     ADJUSTMENTS_API_URL: https://adjustments-api.hmpps.service.justice.gov.uk
     MANAGE-OFFENCES_API_URL: https://manage-offences-api.hmpps.service.justice.gov.uk
+    BOTUS_FEATURE_TOGGLE: "false"
 
   serviceAccountName: calculate-release-dates-api-prod
 

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.context.annotation.Profile
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
@@ -87,7 +88,7 @@ import java.util.UUID
 
 @Profile("tests")
 class ValidationServiceTest {
-  private var validationService = ValidationService(SentencesExtractionService())
+  private var validationService = ValidationService(SentencesExtractionService(), FeatureToggles(botus = true))
   private val validSdsSentence = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 7,
@@ -735,6 +736,27 @@ class ValidationServiceTest {
       )
 
     assertThat(result).isEmpty()
+  }
+
+  @Test
+  fun `Test BOTUS feature toggle results in unsupported sentence type if disabled`() {
+    val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(botus = false))
+    val sentenceAndOffences = validSdsSentence.copy(
+      sentenceCalculationType = SentenceCalculationType.BOTUS.name,
+      terms = listOf(
+        SentenceTerms(0, 0, 0, 10, SentenceTerms.LICENCE_TERM_CODE),
+      ),
+    )
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(
+        sentenceAndOffences = listOf(sentenceAndOffences),
+        prisonerDetails = VALID_PRISONER,
+        bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+        returnToCustodyDate = null,
+      ),
+      USER_INPUTS,
+    )
+    assertThat(result).containsExactly(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This is a sentence type")))
   }
 
   @Test

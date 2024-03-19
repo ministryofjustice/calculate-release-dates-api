@@ -112,7 +112,7 @@ class BookingExtractionService(
       dates[LTD] = sentenceCalculation.latestTransferDate!!
     }
 
-    if (!sentence.isBotus()){
+    if (!sentence.isBotus()) {
       dates[ESED] = sentenceCalculation.unadjustedExpiryDate
     }
 

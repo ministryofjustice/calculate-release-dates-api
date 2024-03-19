@@ -126,6 +126,9 @@ domain-events-sns:
     topic:
       arn: topic_arn
 
+feature-toggles:
+  botus: ${BOTUS_FEATURE_TOGGLE}
+
 hdced:
   envelope:
     minimum:

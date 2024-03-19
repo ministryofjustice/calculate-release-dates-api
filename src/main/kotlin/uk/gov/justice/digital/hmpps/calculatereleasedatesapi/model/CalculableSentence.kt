@@ -97,6 +97,7 @@ interface CalculableSentence {
   fun isRecall(): Boolean {
     return recallType != null
   }
+
   @JsonIgnore
   fun isBotus(): Boolean {
     return false

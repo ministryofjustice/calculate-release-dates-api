@@ -196,7 +196,8 @@ fun transform(
         recallType = sentenceCalculationType.recallType,
       )
     } else if (sentenceCalculationType.sentenceClazz == BotusSentence::class.java) {
-      BotusSentence(sentencedAt = sentence.sentenceDate,
+      BotusSentence(
+        sentencedAt = sentence.sentenceDate,
         duration = transform(sentence.terms[0]),
         offence = offence,
         identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
