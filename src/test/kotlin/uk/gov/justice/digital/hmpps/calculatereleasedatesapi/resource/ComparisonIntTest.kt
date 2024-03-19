@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
@@ -25,7 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Discre
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancySubCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
@@ -42,7 +41,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Comparis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import java.time.LocalDate
 
-class ComparisonIntTest(private val mockPrisonClient: MockPrisonClient) : IntegrationTestBase() {
+class ComparisonIntTest(private val mockPrisonService: MockPrisonService) : IntegrationTestBase() {
 
   @Autowired
   lateinit var comparisonPersonRepository: ComparisonPersonRepository
@@ -50,15 +49,12 @@ class ComparisonIntTest(private val mockPrisonClient: MockPrisonClient) : Integr
   @Autowired
   lateinit var comparisonRepository: ComparisonRepository
 
-  @Autowired
-  lateinit var objectMapper: ObjectMapper
-
   @BeforeEach
   fun clearTables() {
     comparisonPersonRepository.deleteAll()
     comparisonRepository.deleteAll()
-    mockPrisonClient.withPrisonCalculableSentences("ABC", "ABC")
-    mockPrisonClient.withInstAgencies(listOf(Agency("ABC", "prison ABC"), Agency("HDC4P", "prison HDC4P")))
+    mockPrisonService.withPrisonCalculableSentences("ABC", "ABC")
+    mockPrisonService.withInstAgencies(listOf(Agency("ABC", "prison ABC"), Agency("HDC4P", "prison HDC4P")))
   }
 
   @Test
@@ -119,7 +115,7 @@ class ComparisonIntTest(private val mockPrisonClient: MockPrisonClient) : Integr
   @ParameterizedTest
   @EnumSource(ComparisonType::class, names = ["ESTABLISHMENT_FULL", "ESTABLISHMENT_HDCED4PLUS"], mode = EnumSource.Mode.INCLUDE)
   fun `Retrieve comparison for HDC4+ must populate all HDC4+ dates on relevant comparison types`(comparisonType: ComparisonType) {
-    mockPrisonClient
+    mockPrisonService
       .withCaseLoadsForMe(CaseLoad("HDC4P", "HDC4P", CaseLoadType.INST, null, currentlyActive = true))
       .withPrisonCalculableSentences("HDC4P", "PrisonWithSomeHDC4+CasesForBulkLoad")
 

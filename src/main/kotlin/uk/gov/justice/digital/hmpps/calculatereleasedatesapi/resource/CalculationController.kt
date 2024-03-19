@@ -36,6 +36,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
@@ -51,6 +52,7 @@ class CalculationController(
   private val relevantRemandService: RelevantRemandService,
   private val detailedCalculationResultsService: DetailedCalculationResultsService,
   private val latestCalculationService: LatestCalculationService,
+  private val calculationBreakdownService: CalculationBreakdownService,
 ) {
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -249,7 +251,7 @@ class CalculationController(
     calculationRequestId: Long,
   ): CalculationBreakdown {
     log.info("Request received return calculation breakdown for calculationRequestId {}", calculationRequestId)
-    return calculationTransactionalService.getCalculationBreakdown(calculationRequestId)
+    return calculationBreakdownService.getBreakdownUnsafely(calculationRequestId)
   }
 
   @GetMapping(value = ["/sentence-and-offences/{calculationRequestId}"])

@@ -1,10 +1,16 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToMono
+import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClientRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
@@ -143,14 +149,20 @@ class PrisonApiClient(
       .block()!!
   }
 
-  fun getOffenderKeyDates(bookingId: Long): OffenderKeyDates {
+  fun getOffenderKeyDates(bookingId: Long): Either<String, OffenderKeyDates> {
     return webClient.get()
       .uri { uriBuilder ->
         uriBuilder.path("/api/offender-dates/$bookingId")
           .build()
       }
-      .retrieve()
-      .bodyToMono(typeReference<OffenderKeyDates>())
+      .exchangeToMono { response ->
+        when (response.statusCode()) {
+          HttpStatus.OK -> response.bodyToMono(typeReference<OffenderKeyDates>()).map { it.right() }
+          HttpStatus.NOT_FOUND -> Mono.just("Booking ($bookingId) not found or has no calculations".left())
+          HttpStatus.FORBIDDEN -> Mono.just("User is not allowed to view the booking ($bookingId)".left())
+          else -> Mono.just("Booking ($bookingId) could not be loaded for an unknown reason. Status ${response.statusCode().value()}".left())
+        }
+      }
       .block()!!
   }
 

@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.entry
@@ -56,9 +55,6 @@ import java.time.LocalDate
 class CalculationIntTest : IntegrationTestBase() {
   @Autowired
   lateinit var calculationRequestRepository: CalculationRequestRepository
-
-  @Autowired
-  lateinit var objectMapper: ObjectMapper
 
   @Test
   fun `Run calculation for a prisoner (based on example 13 from the unit tests) + test input JSON in DB`() {
@@ -964,39 +960,6 @@ class CalculationIntTest : IntegrationTestBase() {
   }
 
   val CALCULATION_REQUEST_MODEL = CalculationRequestModel(CalculationUserInputs(), 1L)
-  private fun createPreliminaryCalculation(prisonerid: String): CalculatedReleaseDates = webTestClient.post()
-    .uri("/calculation/$prisonerid")
-    .accept(MediaType.APPLICATION_JSON)
-    .bodyValue(CalculationRequestModel(CalculationUserInputs(), 1L))
-    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-    .exchange()
-    .expectStatus().isOk
-    .expectHeader().contentType(MediaType.APPLICATION_JSON)
-    .expectBody(CalculatedReleaseDates::class.java)
-    .returnResult().responseBody
-
-  private fun createConfirmCalculationForPrisoner(
-    calculationRequestId: Long,
-  ): CalculatedReleaseDates {
-    return createConfirmCalculationForPrisoner(calculationRequestId, emptyList())
-  }
-
-  private fun createConfirmCalculationForPrisoner(
-    calculationRequestId: Long,
-    approvedDates: List<ManualEntrySelectedDate>,
-  ): CalculatedReleaseDates {
-    return webTestClient.post()
-      .uri("/calculation/confirm/$calculationRequestId")
-      .accept(MediaType.APPLICATION_JSON)
-      .contentType(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(objectMapper.writeValueAsString(SubmitCalculationRequest(CalculationFragments("<p>BREAKDOWN</p>"), approvedDates)))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculatedReleaseDates::class.java)
-      .returnResult().responseBody!!
-  }
 
   companion object {
     const val PRISONER_ID = "default"

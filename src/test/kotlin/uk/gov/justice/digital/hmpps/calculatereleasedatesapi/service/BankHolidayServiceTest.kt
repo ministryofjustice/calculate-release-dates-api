@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,9 +19,6 @@ class BankHolidayServiceTest : IntegrationTestBase() {
 
   @Autowired
   lateinit var bankHolidayCacheRepository: BankHolidayCacheRepository
-
-  @Autowired
-  lateinit var objectMapper: ObjectMapper
 
   @Test
   fun `Test refreshing cache will create an entry in the cache table for the first time`() {
