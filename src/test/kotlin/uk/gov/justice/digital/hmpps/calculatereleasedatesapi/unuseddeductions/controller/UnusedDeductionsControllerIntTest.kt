@@ -1,9 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.AdjustmentServiceAdjustment
@@ -15,9 +13,6 @@ import java.time.LocalDate
 import java.util.UUID
 
 class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
-
-  @Autowired
-  lateinit var objectMapper: ObjectMapper
 
   @Test
   fun `Run unused deductions calculation`() {

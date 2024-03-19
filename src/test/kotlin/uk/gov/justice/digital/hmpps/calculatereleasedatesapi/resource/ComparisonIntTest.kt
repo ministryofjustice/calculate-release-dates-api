@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
@@ -49,9 +48,6 @@ class ComparisonIntTest(private val mockPrisonService: MockPrisonService) : Inte
 
   @Autowired
   lateinit var comparisonRepository: ComparisonRepository
-
-  @Autowired
-  lateinit var objectMapper: ObjectMapper
 
   @BeforeEach
   fun clearTables() {
