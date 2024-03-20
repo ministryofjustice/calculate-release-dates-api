@@ -365,7 +365,7 @@ class CalculationControllerTest {
       prisonerId,
       123456,
       LocalDateTime.now(),
-      UUID.randomUUID().toString(),
+      654321,
       "HMP Belfast",
       "Other",
       CalculationSource.CRDS,
