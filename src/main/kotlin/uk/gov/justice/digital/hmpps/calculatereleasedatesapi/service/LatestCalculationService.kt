@@ -30,13 +30,14 @@ class LatestCalculationService(
   @Transactional(readOnly = true)
   fun latestCalculationForPrisoner(prisonerId: String): Either<String, LatestCalculation> {
     return getLatestBookingFromPrisoner(prisonerId)
-      .flatMap { bookingId -> prisonService.getOffenderKeyDates(bookingId) }
-      .map { prisonerCalculation ->
+      .flatMap { bookingId -> prisonService.getOffenderKeyDates(bookingId).map { bookingId to it } }
+      .map { (bookingId, prisonerCalculation) ->
         val latestCrdsCalc = calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)
         if (latestCrdsCalc.isEmpty || !isSameCalc(prisonerCalculation, latestCrdsCalc.get())) {
           toLatestCalculation(
             CalculationSource.NOMIS,
             prisonerId,
+            bookingId,
             prisonerCalculation,
             prisonerCalculation.reasonCode,
             null,
@@ -54,6 +55,7 @@ class LatestCalculationService(
           toLatestCalculation(
             CalculationSource.CRDS,
             prisonerId,
+            bookingId,
             prisonerCalculation,
             calculationRequest.reasonForCalculation?.displayName ?: prisonerCalculation.reasonCode,
             location,
@@ -87,6 +89,7 @@ class LatestCalculationService(
   private fun toLatestCalculation(
     calculationSource: CalculationSource,
     prisonerId: String,
+    bookingId: Long,
     prisonerCalculation: OffenderKeyDates,
     reason: String,
     location: String?,
@@ -117,6 +120,7 @@ class LatestCalculationService(
     )
     return LatestCalculation(
       prisonerId,
+      bookingId,
       prisonerCalculation.calculatedAt,
       location,
       reason,

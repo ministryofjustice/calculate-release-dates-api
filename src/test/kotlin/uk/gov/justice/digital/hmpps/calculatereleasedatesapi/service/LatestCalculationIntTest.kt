@@ -55,6 +55,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
     assertThat(latestCalculation).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         now,
         null,
         "NEW",
@@ -112,6 +113,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
     assertThat(latestCalculation.copy(calculatedAt = calculatedAtOverrideForComparison)).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         calculatedAtOverrideForComparison,
         "",
         "Initial calculation",
