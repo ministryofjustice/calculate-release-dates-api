@@ -6,7 +6,7 @@ data class LatestCalculation(
   val prisonerId: String,
   val bookingId: Long,
   val calculatedAt: LocalDateTime,
-  val calculationReference: String?,
+  val calculationRequestId: Long?,
   val establishment: String?,
   val reason: String,
   val source: CalculationSource,

@@ -290,6 +290,7 @@ class LatestCalculationServiceTest {
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
       Optional.of(
         CalculationRequest(
+          id = 654321,
           calculationReference = calculationReference,
           calculatedAt = calculatedAt,
           reasonForCalculation = CalculationReason(0, false, false, "Some reason", false, null, null, null),
@@ -310,7 +311,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
-        calculationReference.toString(),
+        654321,
         null,
         "Some reason",
         CalculationSource.CRDS,
@@ -337,6 +338,7 @@ class LatestCalculationServiceTest {
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
       Optional.of(
         CalculationRequest(
+          id = 654321,
           calculationReference = calculationReference,
           calculatedAt = calculatedAt,
           reasonForCalculation = CalculationReason(0, false, false, "Some reason", false, null, null, null),
@@ -358,7 +360,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
-        calculationReference.toString(),
+        654321,
         null,
         "Some reason",
         CalculationSource.CRDS,
@@ -383,7 +385,7 @@ class LatestCalculationServiceTest {
       ).right(),
     )
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
-      Optional.of(CalculationRequest(calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC")),
+      Optional.of(CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC")),
     )
 
     val dates = listOf(
@@ -397,7 +399,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
-        calculationReference.toString(),
+        654321,
         "HMP ABC",
         "NEW",
         CalculationSource.CRDS,
@@ -422,7 +424,7 @@ class LatestCalculationServiceTest {
       ).right(),
     )
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
-      Optional.of(CalculationRequest(calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "XYZ")),
+      Optional.of(CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "XYZ")),
     )
 
     val dates = listOf(
@@ -436,7 +438,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
-        calculationReference.toString(),
+        654321,
         "XYZ",
         "NEW",
         CalculationSource.CRDS,
@@ -460,7 +462,7 @@ class LatestCalculationServiceTest {
         sentenceExpiryDate = LocalDate.of(2025, 1, 1),
       ).right(),
     )
-    val calculationRequest = CalculationRequest(calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", sentenceAndOffences = objectToJson(listOf(someSentence), objectMapper))
+    val calculationRequest = CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", sentenceAndOffences = objectToJson(listOf(someSentence), objectMapper))
     val expectedBreakdown = CalculationBreakdown(emptyList(), null)
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.of(calculationRequest))
     whenever(calculationBreakdownService.getBreakdownSafely(calculationRequest)).thenReturn(expectedBreakdown.right())
@@ -474,7 +476,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
-        calculationReference.toString(),
+        654321,
         "HMP ABC",
         "NEW",
         CalculationSource.CRDS,
@@ -498,7 +500,7 @@ class LatestCalculationServiceTest {
         sentenceExpiryDate = LocalDate.of(2025, 1, 1),
       ).right(),
     )
-    val calculationRequest = CalculationRequest(calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", sentenceAndOffences = objectToJson(listOf(someSentence), objectMapper))
+    val calculationRequest = CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", sentenceAndOffences = objectToJson(listOf(someSentence), objectMapper))
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.of(calculationRequest))
     whenever(calculationBreakdownService.getBreakdownSafely(calculationRequest)).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(someSentence))
@@ -511,7 +513,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
-        calculationReference.toString(),
+        654321,
         "HMP ABC",
         "NEW",
         CalculationSource.CRDS,
@@ -535,7 +537,7 @@ class LatestCalculationServiceTest {
         sentenceExpiryDate = LocalDate.of(2025, 1, 1),
       ).right(),
     )
-    val calculationRequest = CalculationRequest(calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", sentenceAndOffences = null)
+    val calculationRequest = CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", sentenceAndOffences = null)
     val expectedBreakdown = CalculationBreakdown(emptyList(), null)
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.of(calculationRequest))
     whenever(calculationBreakdownService.getBreakdownSafely(calculationRequest)).thenReturn(expectedBreakdown.right())
@@ -548,7 +550,7 @@ class LatestCalculationServiceTest {
         prisonerId,
         bookingId,
         calculatedAt,
-        calculationReference.toString(),
+        654321,
         "HMP ABC",
         "NEW",
         CalculationSource.CRDS,

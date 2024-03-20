@@ -116,7 +116,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
         prisonerId,
         bookingId,
         calculatedAtOverrideForComparison,
-        confirmed.calculationReference.toString(),
+        confirmed.calculationRequestId,
         "",
         "Initial calculation",
         CalculationSource.CRDS,
