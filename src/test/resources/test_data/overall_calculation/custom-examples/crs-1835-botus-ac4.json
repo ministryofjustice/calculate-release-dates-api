@@ -1,0 +1,37 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "type": "BotusSentence",
+      "offence": {
+        "committedAt": "2024-02-25"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 7
+        }
+      },
+      "sentencedAt": "2024-03-01",
+      "lineSequence": 1,
+      "caseSequence": 1,
+      "identifier": "8c4ba56a-0eac-4641-b7e8-ae4c1498069d"
+    },{
+      "type": "BotusSentence",
+      "offence": {
+        "committedAt": "2024-02-25"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 7
+        }
+      },
+      "sentencedAt": "2024-03-05",
+      "lineSequence": 2,
+      "caseSequence": 1,
+      "consecutiveSentenceUUIDs": ["8c4ba56a-0eac-4641-b7e8-ae4c1498069d"]
+    }
+  ]
+}

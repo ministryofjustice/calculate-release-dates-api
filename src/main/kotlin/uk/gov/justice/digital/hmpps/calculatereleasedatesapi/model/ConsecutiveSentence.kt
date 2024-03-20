@@ -54,6 +54,10 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
           it.duration
         }
 
+        is BotusSentence -> {
+          it.duration
+        }
+
         else -> {
           throw UnsupportedOperationException("Unknown type of sentence in a consecutive sentence ${it.javaClass}")
         }
@@ -193,5 +197,8 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
 
   override fun isSdsPlus(): Boolean {
     return orderedSentences.all { it.isSdsPlus() }
+  }
+  override fun isBotus(): Boolean {
+    return orderedSentences.all { it.isBotus() }
   }
 }

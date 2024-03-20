@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.AFINE_ARD_AT_FULL_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.AFINE_ARD_AT_HALFWAY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.BOTUS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.DTO_AFTER_PCSC
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.DTO_BEFORE_PCSC
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE
@@ -29,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
@@ -49,7 +51,11 @@ import java.math.BigDecimal
 import java.time.temporal.ChronoUnit
 
 @Service
-class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tusedCalculator: TusedCalculator, val hdced4Calculator: Hdced4Calculator) {
+class SentenceIdentificationService(
+  val hdcedCalculator: HdcedCalculator,
+  val tusedCalculator: TusedCalculator,
+  val hdced4Calculator: Hdced4Calculator,
+) {
 
   fun identify(sentence: CalculableSentence, offender: Offender) {
     val releaseDateTypes = mutableListOf<ReleaseDateType>()
@@ -77,6 +83,10 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
       is DetentionAndTrainingOrderSentence, is DtoSingleTermSentence -> {
         releaseDateTypes.addAll(identifyDtoSentence(sentence))
       }
+
+      is BotusSentence -> {
+        releaseDateTypes.addAll(identifyBotusSentence(sentence))
+      }
     }
 
     if (sentence.recallType != null) {
@@ -85,6 +95,11 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
       releaseDateTypes += PRRD
     }
     sentence.releaseDateTypes = ReleaseDateTypes(releaseDateTypes.toList(), sentence, offender)
+  }
+
+  private fun identifyBotusSentence(sentence: CalculableSentence): List<ReleaseDateType> {
+    sentence.identificationTrack = BOTUS
+    return listOf(ARD, SED)
   }
 
   private fun identifyDtoSentence(sentence: CalculableSentence): List<ReleaseDateType> {
@@ -313,7 +328,11 @@ class SentenceIdentificationService(val hdcedCalculator: HdcedCalculator, val tu
     return releaseDateTypes
   }
 
-  private fun afterCJAAndLASPOorSDSPlus(sentence: CalculableSentence, offender: Offender, releaseDateTypes: MutableList<ReleaseDateType>) {
+  private fun afterCJAAndLASPOorSDSPlus(
+    sentence: CalculableSentence,
+    offender: Offender,
+    releaseDateTypes: MutableList<ReleaseDateType>,
+  ) {
     sentence.identificationTrack = SDS_AFTER_CJA_LASPO
 
     if (sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) &&
