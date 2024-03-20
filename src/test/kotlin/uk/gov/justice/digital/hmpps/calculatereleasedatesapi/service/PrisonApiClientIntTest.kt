@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
+import java.time.LocalDateTime
 
 class PrisonApiClientIntTest(private val mockPrisonService: MockPrisonService) : IntegrationTestBase() {
 
@@ -36,11 +37,11 @@ class PrisonApiClientIntTest(private val mockPrisonService: MockPrisonService) :
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
-            .withBody("""{ "reasonCode": "NEW" }""")
+            .withBody("""{ "reasonCode": "NEW", "calculatedAt": "2025-01-02T10:30:00" }""")
             .withStatus(200),
         ),
     )
-    assertThat(prisonApiClient.getOffenderKeyDates(bookingId)).isEqualTo(OffenderKeyDates("NEW").right())
+    assertThat(prisonApiClient.getOffenderKeyDates(bookingId)).isEqualTo(OffenderKeyDates("NEW", LocalDateTime.of(2025, 1, 2, 10, 30, 0)).right())
   }
 
   @ParameterizedTest

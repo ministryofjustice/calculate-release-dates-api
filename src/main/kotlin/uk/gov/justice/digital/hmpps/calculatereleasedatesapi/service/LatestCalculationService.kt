@@ -17,7 +17,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
-import java.time.LocalDateTime
 
 @Component
 class LatestCalculationService(
@@ -43,7 +42,6 @@ class LatestCalculationService(
             null,
             null,
             null,
-            null,
           )
         } else {
           val calculationRequest = latestCrdsCalc.get()
@@ -58,7 +56,6 @@ class LatestCalculationService(
             prisonerId,
             prisonerCalculation,
             calculationRequest.reasonForCalculation?.displayName ?: prisonerCalculation.reasonCode,
-            calculationRequest.calculatedAt,
             location,
             sentenceAndOffences,
             breakdown,
@@ -92,7 +89,6 @@ class LatestCalculationService(
     prisonerId: String,
     prisonerCalculation: OffenderKeyDates,
     reason: String,
-    calculatedAt: LocalDateTime?,
     location: String?,
     sentenceAndOffences: List<SentenceAndOffences>?,
     breakdown: CalculationBreakdown?,
@@ -121,11 +117,11 @@ class LatestCalculationService(
     )
     return LatestCalculation(
       prisonerId,
-      calculatedAt,
+      prisonerCalculation.calculatedAt,
       location,
       reason,
       calculationSource,
-      calculationResultEnrichmentService.addDetailToCalculationDates(dates, sentenceAndOffences, breakdown),
+      calculationResultEnrichmentService.addDetailToCalculationDates(dates, sentenceAndOffences, breakdown).values.toList(),
     )
   }
 
