@@ -4,8 +4,9 @@ import java.time.LocalDateTime
 
 data class LatestCalculation(
   val prisonerId: String,
+  val bookingId: Long,
   val calculatedAt: LocalDateTime,
-  val location: String?,
+  val establishment: String?,
   val reason: String,
   val source: CalculationSource,
   val dates: List<DetailedDate>,

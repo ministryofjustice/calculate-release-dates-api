@@ -97,6 +97,7 @@ class LatestCalculationServiceTest {
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         now,
         null,
         "NEW",
@@ -115,6 +116,7 @@ class LatestCalculationServiceTest {
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         now,
         null,
         "NEW",
@@ -133,6 +135,7 @@ class LatestCalculationServiceTest {
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         now,
         null,
         "NEW",
@@ -151,6 +154,7 @@ class LatestCalculationServiceTest {
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         now,
         null,
         "NEW",
@@ -217,6 +221,7 @@ class LatestCalculationServiceTest {
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         now,
         null,
         "NEW",
@@ -250,6 +255,7 @@ class LatestCalculationServiceTest {
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         now,
         null,
         "NEW",
@@ -296,6 +302,7 @@ class LatestCalculationServiceTest {
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         calculatedAt,
         null,
         "Some reason",
@@ -342,6 +349,7 @@ class LatestCalculationServiceTest {
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         calculatedAt,
         null,
         "Some reason",
@@ -379,6 +387,7 @@ class LatestCalculationServiceTest {
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         calculatedAt,
         "HMP ABC",
         "NEW",
@@ -416,6 +425,7 @@ class LatestCalculationServiceTest {
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         calculatedAt,
         "XYZ",
         "NEW",
@@ -452,6 +462,7 @@ class LatestCalculationServiceTest {
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         calculatedAt,
         "HMP ABC",
         "NEW",
@@ -487,6 +498,7 @@ class LatestCalculationServiceTest {
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         calculatedAt,
         "HMP ABC",
         "NEW",
@@ -522,6 +534,7 @@ class LatestCalculationServiceTest {
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
         prisonerId,
+        bookingId,
         calculatedAt,
         "HMP ABC",
         "NEW",

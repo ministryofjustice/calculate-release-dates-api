@@ -363,6 +363,7 @@ class CalculationControllerTest {
     val prisonerId = "ABC123"
     val expected = LatestCalculation(
       prisonerId,
+      123456,
       LocalDateTime.now(),
       "HMP Belfast",
       "Other",
