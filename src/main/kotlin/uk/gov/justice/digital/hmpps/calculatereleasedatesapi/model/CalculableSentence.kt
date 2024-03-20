@@ -99,6 +99,11 @@ interface CalculableSentence {
   }
 
   @JsonIgnore
+  fun isBotus(): Boolean {
+    return false
+  }
+
+  @JsonIgnore
   fun hasAnyEdsOrSopcSentence(): Boolean
 
   @JsonIgnore
@@ -143,6 +148,10 @@ interface CalculableSentence {
         this.duration
       }
 
+      is BotusSentence -> {
+        this.duration
+      }
+
       else -> {
         throw UnknownError("Unknown sentence")
       }
@@ -177,6 +186,9 @@ interface CalculableSentence {
       }
 
       is DetentionAndTrainingOrderSentence -> {
+        this.duration
+      }
+      is BotusSentence -> {
         this.duration
       }
 

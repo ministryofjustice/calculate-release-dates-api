@@ -69,6 +69,9 @@ manage-offences:
 domain-events-sns:
   provider: localstack
 
+feature-toggles:
+  botus: true
+
 hdced:
   envelope:
     minimum:

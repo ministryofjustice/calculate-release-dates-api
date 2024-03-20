@@ -1,0 +1,22 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "type": "BotusSentence",
+      "offence": {
+        "committedAt": "2021-01-18"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 7
+        }
+      },
+      "sentencedAt": "2021-02-01",
+      "lineSequence": 1,
+      "caseSequence": 1
+    }
+  ]
+}

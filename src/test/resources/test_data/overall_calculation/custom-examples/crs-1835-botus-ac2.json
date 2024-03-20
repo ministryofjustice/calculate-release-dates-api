@@ -1,0 +1,32 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "type": "BotusSentence",
+      "offence": {
+        "committedAt": "2020-02-27"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 12
+        }
+      },
+      "sentencedAt": "2020-03-30",
+      "lineSequence": 1,
+      "caseSequence": 1
+    }
+  ],
+  "adjustments": {
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "numberOfDays": 4,
+        "appliesToSentencesFrom": "2020-03-31",
+        "fromDate": "2020-04-01",
+        "toDate": "2020-04-04"
+      }
+    ]
+  }
+}
