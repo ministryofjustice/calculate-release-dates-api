@@ -21,6 +21,8 @@ import java.time.LocalDateTime
 
 class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService) : IntegrationTestBase() {
 
+  private val now = LocalDateTime.now()
+
   @BeforeEach
   fun setUp() {
     mockPrisonService.withInstAgencies(
@@ -36,7 +38,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
     val bookingId = 123456L
     val prisonerId = "ABC123"
     val prisonerDetails = PrisonerDetails(bookingId, prisonerId, "Joe", "Bloggs", LocalDate.of(1970, 1, 1))
-    val offenderKeyDates = OffenderKeyDates("NEW", "From NOMIS", conditionalReleaseDate = LocalDate.of(2030, 1, 6), sentenceExpiryDate = LocalDate.of(2025, 2, 14))
+    val offenderKeyDates = OffenderKeyDates("NEW", now, "From NOMIS", conditionalReleaseDate = LocalDate.of(2030, 1, 6), sentenceExpiryDate = LocalDate.of(2025, 2, 14))
     stubPrisoner(prisonerDetails)
     stubKeyDates(bookingId, offenderKeyDates)
 
@@ -53,13 +55,13 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
     assertThat(latestCalculation).isEqualTo(
       LatestCalculation(
         prisonerId,
-        null,
+        now,
         null,
         "NEW",
         CalculationSource.NOMIS,
-        mapOf(
-          ReleaseDateType.SED to DetailedDate(ReleaseDateType.SED, ReleaseDateType.SED.description, LocalDate.of(2025, 2, 14), emptyList()),
-          ReleaseDateType.CRD to DetailedDate(
+        listOf(
+          DetailedDate(ReleaseDateType.SED, ReleaseDateType.SED.description, LocalDate.of(2025, 2, 14), emptyList()),
+          DetailedDate(
             ReleaseDateType.CRD,
             ReleaseDateType.CRD.description,
             LocalDate.of(2030, 1, 6),
@@ -84,6 +86,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
 
     val offenderKeyDates = OffenderKeyDates(
       "NEW",
+      now,
       "From CRDS: ${confirmed.calculationReference}",
       conditionalReleaseDate = LocalDate.of(2016, 1, 6),
       topupSupervisionExpiryDate = LocalDate.of(2017, 1, 6),
@@ -113,13 +116,13 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
         "",
         "Initial calculation",
         CalculationSource.CRDS,
-        mapOf(
-          ReleaseDateType.SLED to DetailedDate(ReleaseDateType.SLED, ReleaseDateType.SLED.description, LocalDate.of(2016, 11, 6), emptyList()),
-          ReleaseDateType.SED to DetailedDate(ReleaseDateType.SED, ReleaseDateType.SED.description, LocalDate.of(2016, 11, 6), emptyList()),
-          ReleaseDateType.LED to DetailedDate(ReleaseDateType.LED, ReleaseDateType.LED.description, LocalDate.of(2016, 11, 6), emptyList()),
-          ReleaseDateType.HDCED to DetailedDate(ReleaseDateType.HDCED, ReleaseDateType.HDCED.description, LocalDate.of(2015, 8, 7), emptyList()),
-          ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2016, 1, 6), emptyList()),
-          ReleaseDateType.TUSED to DetailedDate(ReleaseDateType.TUSED, ReleaseDateType.TUSED.description, LocalDate.of(2017, 1, 6), emptyList()),
+        listOf(
+          DetailedDate(ReleaseDateType.SLED, ReleaseDateType.SLED.description, LocalDate.of(2016, 11, 6), emptyList()),
+          DetailedDate(ReleaseDateType.SED, ReleaseDateType.SED.description, LocalDate.of(2016, 11, 6), emptyList()),
+          DetailedDate(ReleaseDateType.LED, ReleaseDateType.LED.description, LocalDate.of(2016, 11, 6), emptyList()),
+          DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2016, 1, 6), emptyList()),
+          DetailedDate(ReleaseDateType.HDCED, ReleaseDateType.HDCED.description, LocalDate.of(2015, 8, 7), emptyList()),
+          DetailedDate(ReleaseDateType.TUSED, ReleaseDateType.TUSED.description, LocalDate.of(2017, 1, 6), emptyList()),
         ),
       ),
     )
