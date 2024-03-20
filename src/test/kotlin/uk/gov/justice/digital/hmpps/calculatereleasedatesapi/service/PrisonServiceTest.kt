@@ -58,7 +58,7 @@ class PrisonServiceTest {
   @Test
   fun `should get offender key dates`() {
     val bookingId = 123456L
-    val expected = OffenderKeyDates(reasonCode = "NEW")
+    val expected = OffenderKeyDates(reasonCode = "NEW", calculatedAt = LocalDateTime.now())
     whenever(prisonApiClient.getOffenderKeyDates(bookingId)).thenReturn(expected.right())
     val keyDates = prisonService.getOffenderKeyDates(bookingId)
     assertThat(keyDates).isEqualTo(expected.right())
