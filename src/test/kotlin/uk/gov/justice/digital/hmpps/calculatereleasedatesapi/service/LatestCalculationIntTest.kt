@@ -58,6 +58,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
         bookingId,
         now,
         null,
+        null,
         "NEW",
         CalculationSource.NOMIS,
         listOf(
@@ -115,6 +116,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
         prisonerId,
         bookingId,
         calculatedAtOverrideForComparison,
+        confirmed.calculationReference.toString(),
         "",
         "Initial calculation",
         CalculationSource.CRDS,
