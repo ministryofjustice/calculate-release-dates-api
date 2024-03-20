@@ -38,6 +38,7 @@ enum class SentenceCalculationType(
   FTR_14_HDC_ORA(recallType = FIXED_TERM_RECALL_14, primaryName = "14FTRHDC_ORA", isFixedTermRecall = true, isSupported = false, isIndeterminate = false),
   FTR(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
   FTR_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
+  FTR_HDC_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true, isSupported = false),
   FTR_SCH15(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
   FTRSCH15_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
   FTRSCH18(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
