@@ -16,6 +16,12 @@ generic-service:
 
   serviceAccountName: calculate-release-dates-api-prod
 
+  resources:
+    requests:
+      memory: 2G
+    limits:
+      memory: 4G
+
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
