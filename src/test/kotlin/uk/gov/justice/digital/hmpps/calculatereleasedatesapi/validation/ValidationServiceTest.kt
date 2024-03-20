@@ -689,7 +689,7 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test A Botus sentence consecutive to unsupported`() {
+  fun `Test A Botus sentence consecutive to another sentenceType is unsupported`() {
     val sentences = listOf(
       validSdsSentence.copy(
         sentenceSequence = 1,

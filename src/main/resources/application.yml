@@ -127,7 +127,7 @@ domain-events-sns:
       arn: topic_arn
 
 feature-toggles:
-  botus: ${BOTUS_FEATURE_TOGGLE}
+  botus: ${BOTUS_FEATURE_TOGGLE:false}
 
 hdced:
   envelope:
