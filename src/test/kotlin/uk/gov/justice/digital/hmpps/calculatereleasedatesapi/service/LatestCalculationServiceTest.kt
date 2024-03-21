@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -91,6 +92,7 @@ class LatestCalculationServiceTest {
   @Test
   fun `if there are no CRDS calcs then return as NOMIS`() {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
+    whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason("NEW", "New Sentence")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(OffenderKeyDates(reasonCode = "NEW", calculatedAt = now).right())
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.empty())
 
@@ -101,7 +103,7 @@ class LatestCalculationServiceTest {
         now,
         null,
         null,
-        "NEW",
+        "New Sentence",
         CalculationSource.NOMIS,
         emptyList(),
       ).right(),
@@ -111,6 +113,7 @@ class LatestCalculationServiceTest {
   @Test
   fun `Should use the NOMIS calculation if the comment doesn't contain the CRDS calc reference`() {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
+    whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason("NEW", "New Sentence")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(OffenderKeyDates(reasonCode = "NEW", calculatedAt = now, comment = "Not this one").right())
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.of(CalculationRequest(calculationReference = UUID.randomUUID())))
 
@@ -121,7 +124,7 @@ class LatestCalculationServiceTest {
         now,
         null,
         null,
-        "NEW",
+        "New Sentence",
         CalculationSource.NOMIS,
         emptyList(),
       ).right(),
@@ -131,6 +134,7 @@ class LatestCalculationServiceTest {
   @Test
   fun `Should use the NOMIS calculation if the comment is null`() {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
+    whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason("NEW", "New Sentence")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(OffenderKeyDates(reasonCode = "NEW", calculatedAt = now).right())
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.of(CalculationRequest(calculationReference = UUID.randomUUID())))
 
@@ -141,7 +145,7 @@ class LatestCalculationServiceTest {
         now,
         null,
         null,
-        "NEW",
+        "New Sentence",
         CalculationSource.NOMIS,
         emptyList(),
       ).right(),
@@ -149,9 +153,9 @@ class LatestCalculationServiceTest {
   }
 
   @Test
-  fun `Should use the NOMIS reason code for reason if it's set`() {
+  fun `Should use the NOMIS reason code for reason if we can't find the looked up code`() {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
-    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(OffenderKeyDates(reasonCode = "NEW", calculatedAt = now).right())
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(OffenderKeyDates(reasonCode = "FOO", calculatedAt = now).right())
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.of(CalculationRequest(calculationReference = UUID.randomUUID())))
 
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
@@ -161,7 +165,7 @@ class LatestCalculationServiceTest {
         now,
         null,
         null,
-        "NEW",
+        "FOO",
         CalculationSource.NOMIS,
         emptyList(),
       ).right(),
@@ -171,6 +175,7 @@ class LatestCalculationServiceTest {
   @Test
   fun `Should map all possible NOMIS dates`() {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
+    whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason("NEW", "New Sentence")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
       OffenderKeyDates(
         sentenceExpiryDate = LocalDate.of(2025, 1, 1),
@@ -229,7 +234,7 @@ class LatestCalculationServiceTest {
         now,
         null,
         null,
-        "NEW",
+        "New Sentence",
         CalculationSource.NOMIS,
         detailedDates,
       ).right(),
@@ -326,6 +331,40 @@ class LatestCalculationServiceTest {
         detailedDates,
       ).right(),
     )
+  }
+
+  @Test
+  fun `Should default to Not entered if reason for calc was not enabled on CRDS`() {
+    val calculationReference = UUID.randomUUID()
+    val calculatedAt = LocalDateTime.now()
+
+    whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
+      OffenderKeyDates(
+        conditionalReleaseDate = LocalDate.of(2025, 1, 7),
+        reasonCode = "NEW",
+        calculatedAt = calculatedAt,
+        comment = "Some stuff and then the ref: $calculationReference",
+      ).right(),
+    )
+    whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
+      Optional.of(
+        CalculationRequest(
+          id = 654321,
+          calculationReference = calculationReference,
+          calculatedAt = calculatedAt,
+          reasonForCalculation = null,
+        ),
+      ),
+    )
+
+    val dates = listOf(
+      ReleaseDate(LocalDate.of(2025, 1, 7), ReleaseDateType.CRD),
+    )
+    val detailedDates = toDetailedDates(dates)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates.associateBy { it.type })
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
+    assertThat(service.latestCalculationForPrisoner(prisonerId).getOrNull()!!.reason).isEqualTo("Not entered")
   }
 
   @Test
@@ -432,7 +471,7 @@ class LatestCalculationServiceTest {
         calculatedAt,
         654321,
         "HMP ABC",
-        "NEW",
+        "Not entered",
         CalculationSource.CRDS,
         detailedDates,
       ).right(),
@@ -471,7 +510,7 @@ class LatestCalculationServiceTest {
         calculatedAt,
         654321,
         "XYZ",
-        "NEW",
+        "Not entered",
         CalculationSource.CRDS,
         detailedDates,
       ).right(),
@@ -509,7 +548,7 @@ class LatestCalculationServiceTest {
         calculatedAt,
         654321,
         "HMP ABC",
-        "NEW",
+        "Not entered",
         CalculationSource.CRDS,
         detailedDates,
       ).right(),
@@ -546,7 +585,7 @@ class LatestCalculationServiceTest {
         calculatedAt,
         654321,
         "HMP ABC",
-        "NEW",
+        "Not entered",
         CalculationSource.CRDS,
         detailedDates,
       ).right(),
@@ -583,7 +622,7 @@ class LatestCalculationServiceTest {
         calculatedAt,
         654321,
         "HMP ABC",
-        "NEW",
+        "Not entered",
         CalculationSource.CRDS,
         detailedDates,
       ).right(),

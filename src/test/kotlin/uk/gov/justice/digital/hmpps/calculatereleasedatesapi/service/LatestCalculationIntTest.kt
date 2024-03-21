@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -29,6 +30,11 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
       listOf(
         Agency("ABC", "prison ABC"),
         Agency("HDC4P", "prison HDC4P"),
+      ),
+    )
+    mockPrisonService.withNomisCalculationReasons(
+      listOf(
+        NomisCalculationReason("NEW", "New Sentence"),
       ),
     )
   }
@@ -59,7 +65,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
         now,
         null,
         null,
-        "NEW",
+        "New Sentence",
         CalculationSource.NOMIS,
         listOf(
           DetailedDate(ReleaseDateType.SED, ReleaseDateType.SED.description, LocalDate.of(2025, 2, 14), emptyList()),
