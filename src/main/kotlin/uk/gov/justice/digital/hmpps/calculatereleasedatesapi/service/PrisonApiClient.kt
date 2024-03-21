@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClientRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RestResponsePage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
@@ -172,6 +173,14 @@ class PrisonApiClient(
       .uri("/api/agencies/type/$agencyType")
       .retrieve()
       .bodyToMono(typeReference<List<Agency>>())
+      .block()!!
+  }
+
+  fun getNOMISCalcReasons(): List<NomisCalculationReason> {
+    return webClient.get()
+      .uri("/api/reference-domains/domains/CALC_REASON/codes")
+      .retrieve()
+      .bodyToMono(typeReference<List<NomisCalculationReason>>())
       .block()!!
   }
 }

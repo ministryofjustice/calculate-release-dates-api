@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 
 /*
@@ -161,6 +162,11 @@ class MockPrisonService(
     return this
   }
 
+  fun withNomisCalculationReasons(reasons: List<NomisCalculationReason>): MockPrisonService {
+    prisonApi.stubNomisCalculationReason(objectMapper.writeValueAsString(reasons))
+    return this
+  }
+
   fun withStub(mappingBuilder: MappingBuilder): StubMapping {
     return prisonApi.stubFor(mappingBuilder)
   }
@@ -271,6 +277,16 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubAgencies(agencyType: String, json: String): StubMapping = stubFor(
     get(urlPathEqualTo("/api/agencies/type/$agencyType"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(json)
+          .withStatus(200),
+      ),
+  )
+
+  fun stubNomisCalculationReason(json: String): StubMapping = stubFor(
+    get(urlPathEqualTo("/api/reference-domains/domains/CALC_REASON/codes"))
       .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")
