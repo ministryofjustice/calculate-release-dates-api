@@ -237,7 +237,7 @@ class LatestCalculationServiceTest {
   }
 
   @Test
-  fun `Should create SLED for NOMIS if SED and LED are the same`() {
+  fun `Should replace SED and LED with SLED for NOMIS if SED and LED are the same`() {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
       OffenderKeyDates(
@@ -251,24 +251,32 @@ class LatestCalculationServiceTest {
 
     val dates = listOf(
       ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SLED),
-      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
-      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.LED),
+    )
+    val detailedDates = toDetailedDates(dates)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates.associateBy { it.type })
+    val generatedDates = service.latestCalculationForPrisoner(prisonerId).map { it.dates }.getOrNull()
+    assertThat(generatedDates).anyMatch { it.type == ReleaseDateType.SLED && it.date == LocalDate.of(2025, 1, 1) }
+    assertThat(generatedDates).noneMatch { it.type == ReleaseDateType.SED || it.type == ReleaseDateType.LED }
+  }
+
+  @Test
+  fun `Should not create SLED for NOMIS if SED and LED are both absent`() {
+    whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
+      OffenderKeyDates(
+        reasonCode = "NEW",
+        calculatedAt = now,
+      ).right(),
+    )
+    whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.empty())
+
+    val dates = listOf(
+      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SLED),
     )
     val detailedDates = toDetailedDates(dates)
     whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates.associateBy { it.type })
 
-    assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
-      LatestCalculation(
-        prisonerId,
-        bookingId,
-        now,
-        null,
-        null,
-        "NEW",
-        CalculationSource.NOMIS,
-        detailedDates,
-      ).right(),
-    )
+    assertThat(service.latestCalculationForPrisoner(prisonerId).map { it.dates }.getOrNull()).noneMatch { it.type == ReleaseDateType.SLED }
   }
 
   @Test
@@ -348,25 +356,48 @@ class LatestCalculationServiceTest {
 
     val dates = listOf(
       ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SLED),
-      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
-      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.LED),
     )
     val detailedDates = toDetailedDates(dates)
     whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates.associateBy { it.type })
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
 
-    assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
-      LatestCalculation(
-        prisonerId,
-        bookingId,
-        calculatedAt,
-        654321,
-        null,
-        "Some reason",
-        CalculationSource.CRDS,
-        detailedDates,
+    val generatedDates = service.latestCalculationForPrisoner(prisonerId).map { it.dates }.getOrNull()
+    assertThat(generatedDates).anyMatch { it.type == ReleaseDateType.SLED && it.date == LocalDate.of(2025, 1, 1) }
+    assertThat(generatedDates).noneMatch { it.type == ReleaseDateType.SED || it.type == ReleaseDateType.LED }
+  }
+
+  @Test
+  fun `Should not create SLED for CRDS if SED and LED are both absent`() {
+    val calculationReference = UUID.randomUUID()
+    val calculatedAt = LocalDateTime.now()
+    whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
+    whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
+      OffenderKeyDates(
+        reasonCode = "NEW",
+        calculatedAt = calculatedAt,
+        comment = "Some stuff and then the ref: $calculationReference",
       ).right(),
     )
+    whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
+      Optional.of(
+        CalculationRequest(
+          id = 654321,
+          calculationReference = calculationReference,
+          calculatedAt = calculatedAt,
+          reasonForCalculation = CalculationReason(0, false, false, "Some reason", false, null, null, null),
+        ),
+      ),
+    )
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
+
+    val dates = listOf(
+      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SLED),
+    )
+    val detailedDates = toDetailedDates(dates)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates.associateBy { it.type })
+
+    assertThat(service.latestCalculationForPrisoner(prisonerId).map { it.dates }.getOrNull()).noneMatch { it.type == ReleaseDateType.SLED }
   }
 
   @Test
