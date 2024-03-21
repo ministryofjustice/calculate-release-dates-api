@@ -34,13 +34,14 @@ class LatestCalculationService(
       .map { (bookingId, prisonerCalculation) ->
         val latestCrdsCalc = calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)
         if (latestCrdsCalc.isEmpty || !isSameCalc(prisonerCalculation, latestCrdsCalc.get())) {
+          val nomisReason = prisonService.getNOMISCalcReasons().find { it.code == prisonerCalculation.reasonCode }?.description ?: prisonerCalculation.reasonCode
           toLatestCalculation(
             CalculationSource.NOMIS,
             prisonerId,
             bookingId,
             null,
             prisonerCalculation,
-            prisonerCalculation.reasonCode,
+            nomisReason,
             null,
             null,
             null,
