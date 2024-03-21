@@ -99,10 +99,11 @@ class LatestCalculationService(
     sentenceAndOffences: List<SentenceAndOffences>?,
     breakdown: CalculationBreakdown?,
   ): LatestCalculation {
+    val sled = createASLEDIfWeCan(prisonerCalculation)
     val dates = listOfNotNull(
-      createASLEDIfWeCan(prisonerCalculation),
-      prisonerCalculation.sentenceExpiryDate?.let { ReleaseDate(it, ReleaseDateType.SED) },
-      prisonerCalculation.licenceExpiryDate?.let { ReleaseDate(it, ReleaseDateType.LED) },
+      sled,
+      if (sled != null) null else prisonerCalculation.sentenceExpiryDate?.let { ReleaseDate(it, ReleaseDateType.SED) },
+      if (sled != null) null else prisonerCalculation.licenceExpiryDate?.let { ReleaseDate(it, ReleaseDateType.LED) },
       prisonerCalculation.conditionalReleaseDate?.let { ReleaseDate(it, ReleaseDateType.CRD) },
       prisonerCalculation.automaticReleaseDate?.let { ReleaseDate(it, ReleaseDateType.ARD) },
       prisonerCalculation.homeDetentionCurfewEligibilityDate?.let { ReleaseDate(it, ReleaseDateType.HDCED) },
