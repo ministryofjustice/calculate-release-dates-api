@@ -329,6 +329,40 @@ class LatestCalculationServiceTest {
   }
 
   @Test
+  fun `Should default to Not entered if reason for calc was not enabled on CRDS`() {
+    val calculationReference = UUID.randomUUID()
+    val calculatedAt = LocalDateTime.now()
+
+    whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
+      OffenderKeyDates(
+        conditionalReleaseDate = LocalDate.of(2025, 1, 7),
+        reasonCode = "NEW",
+        calculatedAt = calculatedAt,
+        comment = "Some stuff and then the ref: $calculationReference",
+      ).right(),
+    )
+    whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
+      Optional.of(
+        CalculationRequest(
+          id = 654321,
+          calculationReference = calculationReference,
+          calculatedAt = calculatedAt,
+          reasonForCalculation = null,
+        ),
+      ),
+    )
+
+    val dates = listOf(
+      ReleaseDate(LocalDate.of(2025, 1, 7), ReleaseDateType.CRD),
+    )
+    val detailedDates = toDetailedDates(dates)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates.associateBy { it.type })
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
+    assertThat(service.latestCalculationForPrisoner(prisonerId).getOrNull()!!.reason).isEqualTo("Not entered")
+  }
+
+  @Test
   fun `Should create SLED for CRDS if LED and SED are the same`() {
     val calculationReference = UUID.randomUUID()
     val calculatedAt = LocalDateTime.now()
@@ -432,7 +466,7 @@ class LatestCalculationServiceTest {
         calculatedAt,
         654321,
         "HMP ABC",
-        "NEW",
+        "Not entered",
         CalculationSource.CRDS,
         detailedDates,
       ).right(),
@@ -471,7 +505,7 @@ class LatestCalculationServiceTest {
         calculatedAt,
         654321,
         "XYZ",
-        "NEW",
+        "Not entered",
         CalculationSource.CRDS,
         detailedDates,
       ).right(),
@@ -509,7 +543,7 @@ class LatestCalculationServiceTest {
         calculatedAt,
         654321,
         "HMP ABC",
-        "NEW",
+        "Not entered",
         CalculationSource.CRDS,
         detailedDates,
       ).right(),
@@ -546,7 +580,7 @@ class LatestCalculationServiceTest {
         calculatedAt,
         654321,
         "HMP ABC",
-        "NEW",
+        "Not entered",
         CalculationSource.CRDS,
         detailedDates,
       ).right(),
@@ -583,7 +617,7 @@ class LatestCalculationServiceTest {
         calculatedAt,
         654321,
         "HMP ABC",
-        "NEW",
+        "Not entered",
         CalculationSource.CRDS,
         detailedDates,
       ).right(),

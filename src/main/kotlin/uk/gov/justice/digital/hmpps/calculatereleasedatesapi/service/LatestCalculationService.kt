@@ -59,7 +59,7 @@ class LatestCalculationService(
             bookingId,
             calculationRequest.id,
             prisonerCalculation,
-            calculationRequest.reasonForCalculation?.displayName ?: prisonerCalculation.reasonCode,
+            calculationRequest.reasonForCalculation?.displayName ?: "Not entered",
             location,
             sentenceAndOffences,
             breakdown,
