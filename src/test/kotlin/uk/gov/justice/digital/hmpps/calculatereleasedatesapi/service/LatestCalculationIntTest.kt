@@ -88,7 +88,8 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
   @Test
   fun `should be able to get latest calculation when it is from CRDS`() {
     val bookingId = 1544803905L
-    val prisonerId = "default" /* stubs from JSON for sentence and offences, etc. */
+    // stubs from JSON for sentence and offences, etc.
+    val prisonerId = "default"
     val prelim = createPreliminaryCalculation(prisonerId)
     val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId)
 

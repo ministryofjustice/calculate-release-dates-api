@@ -9,5 +9,5 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPe
 interface ComparisonPersonDiscrepancyRepository : JpaRepository<ComparisonPersonDiscrepancy, Long> {
   fun existsByComparisonPerson(comparisonPerson: ComparisonPerson): Boolean
 
-  fun findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(comparisonPersonShortReference: String): ComparisonPersonDiscrepancy?
+  fun findTopByComparisonPersonShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(comparisonPersonShortReference: String): ComparisonPersonDiscrepancy?
 }
