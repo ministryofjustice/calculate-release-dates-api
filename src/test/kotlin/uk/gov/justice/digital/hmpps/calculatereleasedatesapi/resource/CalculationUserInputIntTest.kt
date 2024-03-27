@@ -12,7 +12,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserQuestions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -158,36 +157,5 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
     assertThat(dbRequest.calculationRequestUserInput!!.calculateErsed).isFalse
     assertThat(dbRequest.calculationRequestUserInput!!.useOffenceIndicators).isTrue
     assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs).isEmpty()
-  }
-
-  @Test
-  fun `Service will return which sentences may fall under SDS+ and need user input`() {
-    val response = webTestClient.get()
-      .uri("/calculation/USERINPUT/user-questions")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculationUserQuestions::class.java)
-      .returnResult().responseBody!!
-
-    assertThat(response.sentenceQuestions.size).isEqualTo(1)
-    assertThat(response.sentenceQuestions[0].userInputType).isEqualTo(UserInputType.ORIGINAL)
-  }
-
-  @Test
-  fun `Service will return which sentences may fall under SDS+ and with an unknown sentence type`() {
-    val response = webTestClient.get()
-      .uri("/calculation/UNSUPP_SENT/user-questions")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculationUserQuestions::class.java)
-      .returnResult().responseBody!!
-
-    assertThat(response.sentenceQuestions.size).isEqualTo(0)
   }
 }
