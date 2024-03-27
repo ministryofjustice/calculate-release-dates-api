@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
-import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
@@ -42,8 +41,6 @@ import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class BookingServiceTest {
-  @Mock
-  lateinit var offenceSdsPlusLookupService: OffenceSdsPlusLookupService
 
   @InjectMocks
   lateinit var bookingService: BookingService
@@ -229,10 +226,12 @@ class BookingServiceTest {
     )
   }
 
+  // User inputs for offence indicators can still be provided to the calculation engine, however the default is to use
+  // those obtained from ManagedOffences and the original NOMIS data.
   @Test
   @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input of UPDATED`() {
-    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.UPDATED, true))))
+    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.UPDATED, true)), calculateErsed = false, useOffenceIndicators = false))
 
     assertThat(result).isEqualTo(
       Booking(
@@ -287,7 +286,7 @@ class BookingServiceTest {
   @Test
   @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input of SECTION 250`() {
-    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.SECTION_250, true))))
+    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.SECTION_250, true)), calculateErsed = false, useOffenceIndicators = false))
 
     assertThat(result).isEqualTo(
       Booking(
@@ -342,7 +341,7 @@ class BookingServiceTest {
   @Test
   @Suppress("LongMethod")
   fun `A booking object is generated correctly when requesting a booking for a prisonerId with user input of FOUR_TO_UNDER_SEVEN`() {
-    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.FOUR_TO_UNDER_SEVEN, true))))
+    val result = bookingService.getBooking(sourceData, CalculationUserInputs(listOf(CalculationSentenceUserInput(sequence, offenceCode, UserInputType.FOUR_TO_UNDER_SEVEN, true)), calculateErsed = false, useOffenceIndicators = false))
 
     assertThat(result).isEqualTo(
       Booking(

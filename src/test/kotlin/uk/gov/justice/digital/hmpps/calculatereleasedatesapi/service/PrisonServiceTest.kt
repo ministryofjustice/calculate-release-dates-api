@@ -15,7 +15,8 @@ import java.time.LocalDateTime
 
 class PrisonServiceTest {
   private val prisonApiClient = mock<PrisonApiClient>()
-  private val prisonService = PrisonService(prisonApiClient)
+  private val offenceSdsPlusLookupService = mock<OffenceSdsPlusLookupService>()
+  private val prisonService = PrisonService(prisonApiClient, offenceSdsPlusLookupService)
 
   @Test
   fun `The request to fetch Calculable Sentences is sent once per page until the last page is retrieved`() {

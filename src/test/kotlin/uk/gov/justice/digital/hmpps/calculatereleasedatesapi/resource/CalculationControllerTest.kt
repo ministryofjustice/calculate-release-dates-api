@@ -86,7 +86,6 @@ class CalculationControllerTest {
       .standaloneSetup(
         CalculationController(
           calculationTransactionalService,
-          calculationUserQuestionService,
           relevantRemandService,
           detailedCalculationResultsService,
         ),
