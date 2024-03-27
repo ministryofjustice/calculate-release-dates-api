@@ -16,5 +16,4 @@ enum class BookingAdjustmentType {
   RESTORED_ADDITIONAL_DAYS_AWARDED,
   SPECIAL_REMISSION,
   UNLAWFULLY_AT_LARGE,
-  ;
 }

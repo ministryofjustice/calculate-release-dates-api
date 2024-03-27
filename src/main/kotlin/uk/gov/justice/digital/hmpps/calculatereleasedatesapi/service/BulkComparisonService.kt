@@ -93,7 +93,7 @@ class BulkComparisonService(
   @Transactional
   fun createDiscrepancy(comparison: Comparison, comparisonPerson: ComparisonPerson, discrepancyRequest: CreateComparisonDiscrepancyRequest): ComparisonDiscrepancySummary {
     val existingDiscrepancy =
-      comparisonPersonDiscrepancyRepository.findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
+      comparisonPersonDiscrepancyRepository.findTopByComparisonPersonShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
         comparisonPerson.shortReference,
       )
 
@@ -127,7 +127,7 @@ class BulkComparisonService(
 
   fun getComparisonPersonDiscrepancy(comparison: Comparison, comparisonPerson: ComparisonPerson): ComparisonDiscrepancySummary {
     val discrepancy =
-      comparisonPersonDiscrepancyRepository.findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
+      comparisonPersonDiscrepancyRepository.findTopByComparisonPersonShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
         comparisonPerson.shortReference,
       ) ?: throw EntityNotFoundException("No comparison person discrepancy was found")
     return transform(discrepancy)

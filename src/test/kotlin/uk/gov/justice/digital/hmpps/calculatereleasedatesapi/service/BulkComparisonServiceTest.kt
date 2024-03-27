@@ -57,8 +57,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.Optional
-import java.util.UUID
+import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class BulkComparisonServiceTest {
@@ -146,7 +145,7 @@ class BulkComparisonServiceTest {
 
   @BeforeEach
   fun beforeEach() {
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
   }
 
   @Test
@@ -172,7 +171,7 @@ class BulkComparisonServiceTest {
       prisonerId = "ABC123DEF",
       calculationStatus = CalculationStatus.CONFIRMED,
       calculationReference = UUID.randomUUID(),
-      calculationReason = BULK_CALCULATION_REASON,
+      calculationReason = bulkCalculationReason,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 
@@ -568,7 +567,7 @@ class BulkComparisonServiceTest {
     whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
     )
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
 
     val sdsPlusOffence = offenderOffence.copy(indicators = listOf(OffenderOffence.PCSC_SDS_PLUS))
     val sdsPlusSentence = sentenceAndOffence.copy(
@@ -611,7 +610,7 @@ class BulkComparisonServiceTest {
       validationResult,
     )
 
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
 
     val unsupportedAndSdsFiveYearsSentenceEnvelope = calculableSentenceEnvelope.copy(
       sentenceAndOffences = listOf(
@@ -644,7 +643,7 @@ class BulkComparisonServiceTest {
       validationResult,
     )
 
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
 
     val sentence1 =
       sentenceAndOffence.copy(
@@ -728,7 +727,7 @@ class BulkComparisonServiceTest {
       validationResult,
     )
 
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
 
     val indeterminateSentenceEnvelope = calculableSentenceEnvelope.copy(
       sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = "LIFE")),
@@ -752,7 +751,7 @@ class BulkComparisonServiceTest {
       prisonerId = "ABC123DEF",
       calculationStatus = CalculationStatus.CONFIRMED,
       calculationReference = UUID.randomUUID(),
-      calculationReason = BULK_CALCULATION_REASON,
+      calculationReason = bulkCalculationReason,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 
@@ -764,7 +763,7 @@ class BulkComparisonServiceTest {
       validationResult,
     )
 
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
 
     val mismatch = bulkComparisonService.buildMismatch(calculableSentenceEnvelope, emptyList())
 
@@ -796,7 +795,7 @@ class BulkComparisonServiceTest {
       prisonerId = "ABC123DEF",
       calculationStatus = CalculationStatus.CONFIRMED,
       calculationReference = UUID.randomUUID(),
-      calculationReason = BULK_CALCULATION_REASON,
+      calculationReason = bulkCalculationReason,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 
@@ -807,7 +806,7 @@ class BulkComparisonServiceTest {
       validationResult,
     )
 
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
 
     whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
       listOf(
@@ -847,7 +846,7 @@ class BulkComparisonServiceTest {
       prisonerId = "ABC123DEF",
       calculationStatus = CalculationStatus.CONFIRMED,
       calculationReference = UUID.randomUUID(),
-      calculationReason = BULK_CALCULATION_REASON,
+      calculationReason = bulkCalculationReason,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 
@@ -857,7 +856,7 @@ class BulkComparisonServiceTest {
     whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
     )
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
     whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
       listOf(
         sexOffenderCalculableSentenceEnvelope,
@@ -896,7 +895,7 @@ class BulkComparisonServiceTest {
       prisonerId = "ABC123DEF",
       calculationStatus = CalculationStatus.CONFIRMED,
       calculationReference = UUID.randomUUID(),
-      calculationReason = BULK_CALCULATION_REASON,
+      calculationReason = bulkCalculationReason,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 
@@ -907,7 +906,7 @@ class BulkComparisonServiceTest {
       validationResult,
     )
 
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(BULK_CALCULATION_REASON))
+    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
 
     whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
       listOf(
@@ -1023,7 +1022,7 @@ class BulkComparisonServiceTest {
     ).thenReturn(comparisonPerson)
     whenever(comparisonPersonDiscrepancyRepository.save(any())).thenReturn(discrepancy)
     whenever(
-      comparisonPersonDiscrepancyRepository.findTopByComparisonPerson_ShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
+      comparisonPersonDiscrepancyRepository.findTopByComparisonPersonShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
         comparisonPerson.shortReference,
       ),
     ).thenReturn(existingDiscrepancy)
@@ -1053,7 +1052,7 @@ class BulkComparisonServiceTest {
     assertEquals(discrepancyCause.subCategory, causes[0].subCategory)
   }
 
-  private val BULK_CALCULATION_REASON = CalculationReason(1, true, false, "Bulk Calculation", true, "UPDATE", nomisComment = "NOMIS_COMMENT", null)
+  private val bulkCalculationReason = CalculationReason(1, true, false, "Bulk Calculation", true, "UPDATE", nomisComment = "NOMIS_COMMENT", null)
 
   private fun someReleaseDates(): MutableMap<ReleaseDateType, LocalDate> {
     val releaseDates = mutableMapOf<ReleaseDateType, LocalDate>()

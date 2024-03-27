@@ -4,17 +4,36 @@ import io.swagger.v3.oas.annotations.media.Schema
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import java.time.LocalDate
 
+/*
+  Calculated Dates:
+    automaticReleaseDate
+    conditionalReleaseDate
+    nonParoleDate
+    postRecallReleaseDate
+    dtoPostRecallReleaseDate
+  Manual Dates:
+    homeDetentionCurfewActualDate
+    actualParoleDate
+    releaseOnTemporaryLicenceDate
+    earlyRemovalSchemeEligibilityDate
+    tariffEarlyRemovalSchemeEligibilityDate
+    tariffDate
+ */
 @Schema(description = "Sentence Calculation Dates")
 data class SentenceCalcDates(
   val sentenceExpiryCalculatedDate: LocalDate?,
   val sentenceExpiryOverrideDate: LocalDate?,
-  val automaticReleaseDate: LocalDate?, // calculated date
+  // calculated date
+  val automaticReleaseDate: LocalDate?,
   val automaticReleaseOverrideDate: LocalDate?,
-  val conditionalReleaseDate: LocalDate?, // calculated date
+  // calculated date
+  val conditionalReleaseDate: LocalDate?,
   val conditionalReleaseOverrideDate: LocalDate?,
-  val nonParoleDate: LocalDate?, // calculated date
+  // calculated date
+  val nonParoleDate: LocalDate?,
   val nonParoleOverrideDate: LocalDate?,
-  val postRecallReleaseDate: LocalDate?, // calculated date
+  // calculated date
+  val postRecallReleaseDate: LocalDate?,
   val postRecallReleaseOverrideDate: LocalDate?,
   val licenceExpiryCalculatedDate: LocalDate?,
   val licenceExpiryOverrideDate: LocalDate?,
@@ -22,12 +41,18 @@ data class SentenceCalcDates(
   val homeDetentionCurfewEligibilityOverrideDate: LocalDate?,
   val paroleEligibilityCalculatedDate: LocalDate?,
   val paroleEligibilityOverrideDate: LocalDate?,
-  val homeDetentionCurfewActualDate: LocalDate?, // manual date
-  val actualParoleDate: LocalDate?, // manual date
-  val releaseOnTemporaryLicenceDate: LocalDate?, // manual date
-  val earlyRemovalSchemeEligibilityDate: LocalDate?, // manual date
-  val tariffEarlyRemovalSchemeEligibilityDate: LocalDate?, // manual date
-  val tariffDate: LocalDate?, // manual date
+  // manual date
+  val homeDetentionCurfewActualDate: LocalDate?,
+  // manual date
+  val actualParoleDate: LocalDate?,
+  // manual date
+  val releaseOnTemporaryLicenceDate: LocalDate?,
+  // manual date
+  val earlyRemovalSchemeEligibilityDate: LocalDate?,
+  // manual date
+  val tariffEarlyRemovalSchemeEligibilityDate: LocalDate?,
+  // manual date
+  val tariffDate: LocalDate?,
   val etdCalculatedDate: LocalDate?,
   val etdOverrideDate: LocalDate?,
   val mtdCalculatedDate: LocalDate?,
@@ -36,7 +61,8 @@ data class SentenceCalcDates(
   val ltdOverrideDate: LocalDate?,
   val topupSupervisionExpiryCalculatedDate: LocalDate?,
   val topupSupervisionExpiryOverrideDate: LocalDate?,
-  val dtoPostRecallReleaseDate: LocalDate?, // calculated date
+  // calculated date
+  val dtoPostRecallReleaseDate: LocalDate?,
   val dtoPostRecallReleaseDateOverride: LocalDate?,
   val effectiveSentenceEndDate: LocalDate?,
 ) {

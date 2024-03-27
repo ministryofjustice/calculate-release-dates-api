@@ -84,7 +84,8 @@ class CalculationResultEnrichmentServiceTest {
         ),
       ),
     )
-    verify(workingDayService, never()).previousWorkingDay(any()) /* Only checks weekend if non-working day doesn't apply */
+    // Only checks weekend if non-working day doesn't apply
+    verify(workingDayService, never()).previousWorkingDay(any())
   }
 
   @ParameterizedTest

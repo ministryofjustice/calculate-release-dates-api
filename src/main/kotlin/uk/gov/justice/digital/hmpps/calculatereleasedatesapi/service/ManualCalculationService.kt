@@ -74,7 +74,7 @@ class ManualCalculationService(
           booking,
           savedCalculationRequest.id,
           calculationOutcomes,
-          isGenuineOverride!!,
+          isGenuineOverride,
         )
           ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
       ManualCalculationResponse(enteredDates, savedCalculationRequest.id)

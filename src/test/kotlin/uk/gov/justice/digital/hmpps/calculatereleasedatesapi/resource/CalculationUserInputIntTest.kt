@@ -34,7 +34,8 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
           sentenceSequence = 1,
           offenceCode = "SX03014",
           userInputType = UserInputType.ORIGINAL,
-          userChoice = false, // difference to NOMIS.
+          // difference to NOMIS.
+          userChoice = false,
         ),
       ),
     )
@@ -99,7 +100,8 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
           sentenceSequence = 1,
           offenceCode = "SX03014",
           userInputType = UserInputType.ORIGINAL,
-          userChoice = true, // same as NOMIS.
+          // same as NOMIS.
+          userChoice = true,
         ),
       ),
     )

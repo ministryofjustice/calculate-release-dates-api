@@ -68,7 +68,9 @@ class RelevantRemandService(
       val remand = request.relevantRemands.map { it.days }.reduceOrNull { acc, it -> acc + it } ?: 0
       val deductions = taggedBail + remand
       max(0, deductions - maxDeductions)
-    } else { 0 }
+    } else {
+      0
+    }
 
     return RelevantRemandCalculationResult(
       releaseDate = releaseDate,

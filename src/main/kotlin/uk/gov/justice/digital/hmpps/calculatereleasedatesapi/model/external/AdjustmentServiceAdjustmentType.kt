@@ -9,5 +9,4 @@ enum class AdjustmentServiceAdjustmentType {
   RESTORATION_OF_ADDITIONAL_DAYS_AWARDED,
   SPECIAL_REMISSION,
   UNUSED_DEDUCTIONS,
-  ;
 }

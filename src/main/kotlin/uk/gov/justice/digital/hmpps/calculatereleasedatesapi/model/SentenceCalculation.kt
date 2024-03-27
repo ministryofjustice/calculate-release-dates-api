@@ -18,7 +18,8 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.max
 
 data class SentenceCalculation(
-  var sentence: CalculableSentence, // values here are used to store working values
+  // values here are used to store working values
+  var sentence: CalculableSentence,
   val numberOfDaysToSentenceExpiryDate: Int,
   val numberOfDaysToDeterminateReleaseDateDouble: Double,
   val numberOfDaysToDeterminateReleaseDate: Int,

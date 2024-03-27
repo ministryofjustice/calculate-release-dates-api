@@ -84,7 +84,7 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.UUID
+import java.util.*
 
 @Profile("tests")
 class ValidationServiceTest {
@@ -1727,14 +1727,14 @@ class ValidationServiceTest {
     val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     val DOB: LocalDate = LocalDate.of(1980, 1, 1)
 
-    const val prisonerId = "A123456A"
-    const val sequence = 153
-    const val lineSequence = 154
-    const val caseSequence = 155
-    const val bookingId = 123456L
-    const val consecutiveTo = 99
-    const val offenceCode = "RR1"
-    val returnToCustodyDate = ReturnToCustodyDate(bookingId, LocalDate.of(2022, 3, 15))
+    const val PRISONER_ID = "A123456A"
+    const val SEQUENCE = 153
+    const val LINE_SEQUENCE = 154
+    const val CASE_SEQUENCE = 155
+    const val COMPANION_BOOKING_ID = 123456L
+    const val CONSECUTIVE_TO = 99
+    const val OFFENCE_CODE = "RR1"
+    val returnToCustodyDate = ReturnToCustodyDate(COMPANION_BOOKING_ID, LocalDate.of(2022, 3, 15))
     private val USER_INPUTS = CalculationUserInputs()
     private val VALID_PRISONER = PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
     private val VALID_ADJUSTMENTS = BookingAndSentenceAdjustments(emptyList(), emptyList())
@@ -1785,14 +1785,14 @@ class ValidationServiceTest {
       offence = Offence(
         committedAt = FIRST_JAN_2015,
         isScheduleFifteenMaximumLife = true,
-        offenceCode = offenceCode,
+        offenceCode = OFFENCE_CODE,
       ),
-      identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
+      identifier = UUID.nameUUIDFromBytes(("$COMPANION_BOOKING_ID-$SEQUENCE").toByteArray()),
       consecutiveSentenceUUIDs = mutableListOf(
-        UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray()),
+        UUID.nameUUIDFromBytes(("$COMPANION_BOOKING_ID-$CONSECUTIVE_TO").toByteArray()),
       ),
-      lineSequence = lineSequence,
-      caseSequence = caseSequence,
+      lineSequence = LINE_SEQUENCE,
+      caseSequence = CASE_SEQUENCE,
       recallType = FIXED_TERM_RECALL_28,
     )
     val ONE_DAY_DURATION = Duration(mapOf(DAYS to 1L))
@@ -1825,7 +1825,7 @@ class ValidationServiceTest {
       returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
       offender = Offender(
         dateOfBirth = DOB,
-        reference = prisonerId,
+        reference = PRISONER_ID,
       ),
       sentences = mutableListOf(
         FTR_SDS_SENTENCE,
