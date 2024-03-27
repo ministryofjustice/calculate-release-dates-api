@@ -1,8 +1,8 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.13.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.5"
   id("org.springdoc.openapi-gradle-plugin") version "1.8.0"
-  kotlin("plugin.spring") version "1.9.22"
-  kotlin("plugin.jpa") version "1.9.22"
+  kotlin("plugin.spring") version "1.9.23"
+  kotlin("plugin.jpa") version "1.9.23"
   id("jacoco")
 }
 
@@ -29,7 +29,7 @@ dependencies {
   implementation("uk.gov.service.notify:notifications-java-client:5.0.0-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.21")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.23")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.7.2")
@@ -38,20 +38,20 @@ dependencies {
 
   // Database dependencies
   runtimeOnly("org.flywaydb:flyway-core")
-  runtimeOnly("org.postgresql:postgresql:42.6.0")
+  runtimeOnly("org.postgresql:postgresql:42.7.3")
 
   // JWT
-  implementation("io.jsonwebtoken:jjwt-api:0.11.5")
-  runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
-  runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+  implementation("io.jsonwebtoken:jjwt-api:0.12.5")
+  runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
+  runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
-  implementation("io.arrow-kt:arrow-core:1.1.5")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.3.2")
+  implementation("io.arrow-kt:arrow-core:1.2.3")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.7.3")
 
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0")
 
-  implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.0.3")
+  implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.2")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
   implementation("org.springframework:spring-jms:6.1.5")
   implementation("com.google.code.gson:gson:2.10.1")
@@ -62,11 +62,11 @@ dependencies {
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.2")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.13")
+  testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.7")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.21")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
   testImplementation("com.h2database:h2")
 
   if (project.hasProperty("docs")) {
