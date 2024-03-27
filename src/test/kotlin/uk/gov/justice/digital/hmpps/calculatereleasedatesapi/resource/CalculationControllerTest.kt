@@ -124,7 +124,7 @@ class CalculationControllerTest {
       bookingId = bookingId,
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
-      calculationReason = CALCULATION_REASON,
+      calculationReason = calculationReason,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 
@@ -161,7 +161,7 @@ class CalculationControllerTest {
       bookingId = bookingId,
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
-      calculationReason = CALCULATION_REASON,
+      calculationReason = calculationReason,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
     val calculationRequestModel = CalculationRequestModel(CalculationUserInputs(), calculationReasonId = -1L)
@@ -199,7 +199,7 @@ class CalculationControllerTest {
       bookingId = bookingId,
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
-      calculationReason = CALCULATION_REASON,
+      calculationReason = calculationReason,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
     whenever(
@@ -268,7 +268,7 @@ class CalculationControllerTest {
       bookingId = 123L,
       prisonerId = "ASD",
       calculationReference = UUID.randomUUID(),
-      calculationReason = CALCULATION_REASON,
+      calculationReason = calculationReason,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 
@@ -298,7 +298,7 @@ class CalculationControllerTest {
       prisonerId = "ASD",
       approvedDates = mapOf(ReleaseDateType.APD to LocalDate.of(2020, 3, 3)),
       calculationReference = UUID.randomUUID(),
-      calculationReason = CALCULATION_REASON,
+      calculationReason = calculationReason,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
     whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(
@@ -406,5 +406,5 @@ class CalculationControllerTest {
       )
   }
 
-  private val CALCULATION_REASON = CalculationReason(-1, false, false, "Reason", false, null, null, null)
+  private val calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null)
 }

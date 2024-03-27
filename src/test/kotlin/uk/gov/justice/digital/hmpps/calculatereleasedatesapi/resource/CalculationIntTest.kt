@@ -179,7 +179,7 @@ class CalculationIntTest : IntegrationTestBase() {
   fun `Get the results for a calc that causes an error `() {
     val result = webTestClient.post()
       .uri("/calculation/$PRISONER_ERROR_ID")
-      .accept(MediaType.APPLICATION_JSON).bodyValue(CALCULATION_REQUEST_MODEL)
+      .accept(MediaType.APPLICATION_JSON).bodyValue(calculationRequestModel)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().is5xxServerError
@@ -321,7 +321,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .uri("/calculation/$INACTIVE_PRISONER_ID")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -416,7 +416,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .uri("/calculation/RECALL")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -434,7 +434,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .uri("/calculation/14FTR")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -452,7 +452,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .uri("/calculation/28FTR")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -470,7 +470,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .uri("/calculation/CRS-829-1")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -491,7 +491,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .uri("/calculation/CRS-829-2")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -538,7 +538,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .uri("/calculation/EDS")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -562,7 +562,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .uri("/calculation/SOPC")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -585,7 +585,7 @@ class CalculationIntTest : IntegrationTestBase() {
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-892")
       .accept(MediaType.APPLICATION_JSON)
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
       .expectStatus().isOk
@@ -637,7 +637,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .uri("/calculation/OUT_CALC/test")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -655,7 +655,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .uri("/calculation/default/test")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -672,7 +672,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .uri("/calculation/CRS-1184")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -691,7 +691,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .uri("/calculation/AFINE")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -712,7 +712,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .uri("/calculation/EDSRECALL")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -733,7 +733,7 @@ class CalculationIntTest : IntegrationTestBase() {
       .uri("/calculation/SDSPERR")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(CALCULATION_REQUEST_MODEL)
+      .bodyValue(calculationRequestModel)
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -959,7 +959,7 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(calculation.validationMessages).isEmpty()
   }
 
-  val CALCULATION_REQUEST_MODEL = CalculationRequestModel(CalculationUserInputs(), 1L)
+  val calculationRequestModel = CalculationRequestModel(CalculationUserInputs(), 1L)
 
   companion object {
     const val PRISONER_ID = "default"

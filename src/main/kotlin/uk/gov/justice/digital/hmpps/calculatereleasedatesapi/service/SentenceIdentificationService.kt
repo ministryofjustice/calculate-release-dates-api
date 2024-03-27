@@ -183,7 +183,7 @@ class SentenceIdentificationService(
         )
       } else if (sentence.isMadeUpOfBeforeAndAfterCjaLaspoSentences()) {
         // This consecutive sentence is made up of pre and post laspo date sentences. (Old and new style)
-        val hasScheduleFifteen = sentence.orderedSentences.any() { it.offence.isScheduleFifteen }
+        val hasScheduleFifteen = sentence.orderedSentences.any { it.offence.isScheduleFifteen }
         if (hasScheduleFifteen) {
           // PSI example 40
           releaseDateTypes.addAll(
