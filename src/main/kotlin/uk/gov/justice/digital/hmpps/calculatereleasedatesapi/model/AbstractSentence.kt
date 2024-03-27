@@ -23,6 +23,7 @@ import java.util.UUID
   JsonSubTypes.Type(value = SopcSentence::class, name = "SopcSentence"),
   JsonSubTypes.Type(value = AFineSentence::class, name = "AFineSentence"),
   JsonSubTypes.Type(value = DetentionAndTrainingOrderSentence::class, name = "DetentionAndTrainingOrderSentence"),
+  JsonSubTypes.Type(value = BotusSentence::class, name = "BotusSentence"),
 )
 abstract class AbstractSentence(
   override val offence: Offence,

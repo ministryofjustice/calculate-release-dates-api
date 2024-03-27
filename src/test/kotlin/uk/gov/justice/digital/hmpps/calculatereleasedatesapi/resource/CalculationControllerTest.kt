@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
+import arrow.core.left
+import arrow.core.right
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
@@ -25,6 +28,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ControllerAdvice
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
@@ -35,18 +39,23 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOriginalData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 import java.time.LocalDate
-import java.util.UUID
+import java.time.LocalDateTime
+import java.util.*
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
@@ -66,6 +75,12 @@ class CalculationControllerTest {
 
   @MockBean
   private lateinit var relevantRemandService: RelevantRemandService
+
+  @MockBean
+  private lateinit var latestCalculationService: LatestCalculationService
+
+  @MockBean
+  private lateinit var calculationBreakdownService: CalculationBreakdownService
 
   @Autowired
   private lateinit var mvc: MockMvc
@@ -89,6 +104,8 @@ class CalculationControllerTest {
           calculationUserQuestionService,
           relevantRemandService,
           detailedCalculationResultsService,
+          latestCalculationService,
+          calculationBreakdownService,
         ),
       )
       .setControllerAdvice(ControllerAdvice())
@@ -107,7 +124,7 @@ class CalculationControllerTest {
       bookingId = bookingId,
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
-      calculationReason = calculationReason,
+      calculationReason = CALCULATION_REASON,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 
@@ -137,7 +154,6 @@ class CalculationControllerTest {
   fun `Test POST of a PRELIMINARY calculation with user input`() {
     val prisonerId = "A1234AB"
     val bookingId = 9995L
-    val userInput = CalculationUserInputs(listOf(CalculationSentenceUserInput(1, "ABC", UserInputType.ORIGINAL, true)))
     val calculatedReleaseDates = CalculatedReleaseDates(
       calculationRequestId = 9991L,
       dates = mapOf(),
@@ -145,7 +161,7 @@ class CalculationControllerTest {
       bookingId = bookingId,
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
-      calculationReason = calculationReason,
+      calculationReason = CALCULATION_REASON,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
     val calculationRequestModel = CalculationRequestModel(CalculationUserInputs(), calculationReasonId = -1L)
@@ -183,7 +199,7 @@ class CalculationControllerTest {
       bookingId = bookingId,
       prisonerId = prisonerId,
       calculationReference = UUID.randomUUID(),
-      calculationReason = calculationReason,
+      calculationReason = CALCULATION_REASON,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
     whenever(
@@ -252,7 +268,7 @@ class CalculationControllerTest {
       bookingId = 123L,
       prisonerId = "ASD",
       calculationReference = UUID.randomUUID(),
-      calculationReason = calculationReason,
+      calculationReason = CALCULATION_REASON,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
 
@@ -282,7 +298,7 @@ class CalculationControllerTest {
       prisonerId = "ASD",
       approvedDates = mapOf(ReleaseDateType.APD to LocalDate.of(2020, 3, 3)),
       calculationReference = UUID.randomUUID(),
-      calculationReason = calculationReason,
+      calculationReason = CALCULATION_REASON,
       calculationDate = LocalDate.of(2024, 1, 1),
     )
     whenever(calculationTransactionalService.findCalculationResults(calculationRequestId)).thenReturn(
@@ -304,7 +320,7 @@ class CalculationControllerTest {
   fun `Test GET of calculation breakdown by calculationRequestId`() {
     val calculationRequestId = 9995L
     val breakdown = CalculationBreakdown(listOf(), null)
-    whenever(calculationTransactionalService.getCalculationBreakdown(calculationRequestId)).thenReturn(breakdown)
+    whenever(calculationBreakdownService.getBreakdownUnsafely(calculationRequestId)).thenReturn(breakdown)
 
     val result = mvc.perform(get("/calculation/breakdown/$calculationRequestId").accept(APPLICATION_JSON))
       .andExpect(status().isOk)
@@ -321,8 +337,10 @@ class CalculationControllerTest {
       CalculationContext(calculationRequestId, 1, "A", CONFIRMED, UUID.randomUUID(), null, null, null, CalculationType.CALCULATED),
       dates = mapOf(),
       null,
-      null,
-      null,
+      CalculationOriginalData(
+        null,
+        null,
+      ),
       null,
     )
     whenever(detailedCalculationResultsService.findDetailedCalculationResults(calculationRequestId)).thenReturn(
@@ -340,5 +358,53 @@ class CalculationControllerTest {
     verify(detailedCalculationResultsService, times(1)).findDetailedCalculationResults(calculationRequestId)
   }
 
-  private val calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null)
+  @Test
+  fun `Test GET of latest calculation successfully`() {
+    val prisonerId = "ABC123"
+    val expected = LatestCalculation(
+      prisonerId,
+      123456,
+      LocalDateTime.now(),
+      654321,
+      "HMP Belfast",
+      "Other",
+      CalculationSource.CRDS,
+      listOf(DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2024, 1, 1), emptyList())),
+    )
+
+    whenever(latestCalculationService.latestCalculationForPrisoner(prisonerId)).thenReturn(expected.right())
+
+    val result = mvc.perform(get("/calculation/$prisonerId/latest").accept(APPLICATION_JSON))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(mapper.readValue(result.response.contentAsString, LatestCalculation::class.java))
+      .isEqualTo(expected)
+  }
+
+  @Test
+  fun `Test GET of latest calculation when there is a problem getting the latest calc`() {
+    val prisonerId = "ABC123"
+    val errorMessage = "There isn't one"
+
+    whenever(latestCalculationService.latestCalculationForPrisoner(prisonerId)).thenReturn(errorMessage.left())
+
+    val result = mvc.perform(get("/calculation/$prisonerId/latest").accept(APPLICATION_JSON))
+      .andExpect(status().isNotFound)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(mapper.readValue(result.response.contentAsString, ErrorResponse::class.java))
+      .isEqualTo(
+        ErrorResponse(
+          HttpStatus.NOT_FOUND,
+          null,
+          errorMessage,
+          errorMessage,
+        ),
+      )
+  }
+
+  private val CALCULATION_REASON = CalculationReason(-1, false, false, "Reason", false, null, null, null)
 }

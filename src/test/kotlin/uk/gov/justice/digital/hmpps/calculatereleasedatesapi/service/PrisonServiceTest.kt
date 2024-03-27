@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.right
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -8,6 +9,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RestResponsePage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
@@ -52,6 +54,16 @@ class PrisonServiceTest {
 
     assertThat(returnedAgencies).isEqualTo(prisonApiAgencies)
   }
+
+  @Test
+  fun `should get offender key dates`() {
+    val bookingId = 123456L
+    val expected = OffenderKeyDates(reasonCode = "NEW", calculatedAt = LocalDateTime.now())
+    whenever(prisonApiClient.getOffenderKeyDates(bookingId)).thenReturn(expected.right())
+    val keyDates = prisonService.getOffenderKeyDates(bookingId)
+    assertThat(keyDates).isEqualTo(expected.right())
+  }
+
   companion object {
     private val mapper = ObjectMapper()
 

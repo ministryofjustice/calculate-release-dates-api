@@ -3,9 +3,11 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
@@ -30,6 +32,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.BOTUS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.DTO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.DTO_ORA
@@ -48,6 +51,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_CONSECUTIVE_TO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_MISSING_FINE_AMOUNT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_CONSECUTIVE_TO_SENTENCE
@@ -97,6 +101,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 @Service
 class ValidationService(
   private val extractionService: SentencesExtractionService,
+  private val featureToggles: FeatureToggles,
 ) {
   fun validateBeforeCalculation(
     sourceData: PrisonApiSourceData,
@@ -287,7 +292,18 @@ class ValidationService(
     messages += validateSupportedAdjustments(sourceData.bookingAndSentenceAdjustments.bookingAdjustments)
     messages += validateDtoIsNotRecall(sourceData)
     messages += validateDtoIsNotConsecutiveToSentence(sourceData)
+    messages += validateBotusWithOtherSentence(sourceData)
     return messages
+  }
+
+  private fun validateBotusWithOtherSentence(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+    val validationMessages = mutableListOf<ValidationMessage>()
+    val botusSentences =
+      sourceData.sentenceAndOffences.filter { SentenceCalculationType.from(it.sentenceCalculationType) == BOTUS }
+    if (botusSentences.size > 0 && botusSentences.size != sourceData.sentenceAndOffences.size) {
+      validationMessages.add(ValidationMessage(code = BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE))
+    }
+    return validationMessages
   }
 
   private fun validateDtoIsNotConsecutiveToSentence(sourceData: PrisonApiSourceData): List<ValidationMessage> {
@@ -478,7 +494,8 @@ class ValidationService(
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
     return if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java ||
       sentenceCalculationType.sentenceClazz == AFineSentence::class.java ||
-      sentenceCalculationType.sentenceClazz == DetentionAndTrainingOrderSentence::class.java
+      sentenceCalculationType.sentenceClazz == DetentionAndTrainingOrderSentence::class.java ||
+      sentenceCalculationType.sentenceClazz == BotusSentence::class.java
     ) {
       validateSingleTermDuration(sentencesAndOffence)
     } else {
@@ -648,7 +665,12 @@ class ValidationService(
   private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
     val supportedCategories = listOf("2003", "2020")
     val validationMessages = sentencesAndOffences.filter {
-      !(SentenceCalculationType.isSupported(it.sentenceCalculationType) && supportedCategories.contains(it.sentenceCategory))
+      if (SentenceCalculationType.isSupported(it.sentenceCalculationType) && supportedCategories.contains(it.sentenceCategory)) {
+        val type = from(it.sentenceCalculationType)
+        !featureToggles.botus && type.sentenceClazz == BotusSentence::class.java
+      } else {
+        true
+      }
     }
       .map {
         ValidationMessage(

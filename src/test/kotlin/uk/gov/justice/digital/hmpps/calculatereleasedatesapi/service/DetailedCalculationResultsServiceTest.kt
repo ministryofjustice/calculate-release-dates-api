@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.left
+import arrow.core.right
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
@@ -7,7 +9,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
@@ -19,13 +20,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.UnsupportedCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOriginalData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -42,12 +43,12 @@ import java.util.*
 
 class DetailedCalculationResultsServiceTest {
 
-  private val calculationTransactionalService = mock<CalculationTransactionalService>()
+  private val calculationBreakdownService = mock<CalculationBreakdownService>()
   private val prisonApiDataMapper = mock<PrisonApiDataMapper>()
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationResultEnrichmentService = mock<CalculationResultEnrichmentService>()
   private val service = DetailedCalculationResultsService(
-    calculationTransactionalService,
+    calculationBreakdownService,
     prisonApiDataMapper,
     calculationRequestRepository,
     calculationResultEnrichmentService,
@@ -60,199 +61,6 @@ class DetailedCalculationResultsServiceTest {
     assertThrows<EntityNotFoundException>("No calculation results exist for calculationRequestId $CALCULATION_REQUEST_ID") {
       service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
     }
-  }
-
-  @Test
-  fun `should return missing breakdown and sentences and offences if sentences and offences are missing`() {
-    val calculationRequestWithEverythingForBreakdown = calculationRequestWithOutcomes().copy(
-      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
-      sentenceAndOffences = null,
-      adjustments = objectToJson(adjustments, objectMapper),
-      calculationOutcomes = listOf(
-        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
-      ),
-    )
-    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
-    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithEverythingForBreakdown))
-    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(calculationRequestWithEverythingForBreakdown, null)).thenReturn(enrichedReleaseDates)
-
-    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
-    assertThat(results).isEqualTo(
-      DetailedCalculationResults(
-        expectedCalcContext,
-        enrichedReleaseDates,
-        null,
-        prisonerDetails,
-        null,
-        null,
-        BreakdownMissingReason.PRISON_API_DATA_MISSING,
-      ),
-    )
-    verify(prisonApiDataMapper, never()).mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)
-  }
-
-  @Test
-  fun `should return missing breakdown if prisoner details are missing`() {
-    val calculationRequestWithEverythingForBreakdown = calculationRequestWithOutcomes().copy(
-      prisonerDetails = null,
-      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
-      adjustments = objectToJson(adjustments, objectMapper),
-      calculationOutcomes = listOf(
-        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
-      ),
-    )
-    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
-    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithEverythingForBreakdown))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(calculationRequestWithEverythingForBreakdown, null)).thenReturn(enrichedReleaseDates)
-
-    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
-    assertThat(results).isEqualTo(
-      DetailedCalculationResults(
-        expectedCalcContext,
-        enrichedReleaseDates,
-        null,
-        null,
-        listOf(originalSentence),
-        null,
-        BreakdownMissingReason.PRISON_API_DATA_MISSING,
-      ),
-    )
-    verify(prisonApiDataMapper, never()).mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)
-  }
-
-  @Test
-  fun `should return missing breakdown if adjustments are missing`() {
-    val calculationRequestWithEverythingForBreakdown = calculationRequestWithOutcomes().copy(
-      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
-      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
-      adjustments = null,
-      calculationOutcomes = listOf(
-        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
-      ),
-    )
-    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
-    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithEverythingForBreakdown))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(calculationRequestWithEverythingForBreakdown, null)).thenReturn(enrichedReleaseDates)
-
-    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
-    assertThat(results).isEqualTo(
-      DetailedCalculationResults(
-        expectedCalcContext,
-        enrichedReleaseDates,
-        null,
-        prisonerDetails,
-        listOf(originalSentence),
-        null,
-        BreakdownMissingReason.PRISON_API_DATA_MISSING,
-      ),
-    )
-    verify(prisonApiDataMapper, never()).mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)
-  }
-
-  @Test
-  fun `should return missing breakdown if algorithm has changed and breakdown can't be generated`() {
-    val calculationRequestWithEverythingForBreakdown = calculationRequestWithOutcomes().copy(
-      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
-      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
-      adjustments = objectToJson(adjustments, objectMapper),
-      calculationOutcomes = listOf(
-        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
-      ),
-    )
-    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
-    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithEverythingForBreakdown))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
-    whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(calculationRequestWithEverythingForBreakdown, null)).thenReturn(enrichedReleaseDates)
-    whenever(calculationTransactionalService.calculateWithBreakdown(any(), any())).then {
-      throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")
-    }
-
-    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
-    assertThat(results).isEqualTo(
-      DetailedCalculationResults(
-        expectedCalcContext,
-        enrichedReleaseDates,
-        null,
-        prisonerDetails,
-        listOf(originalSentence),
-        null,
-        BreakdownMissingReason.BREAKDOWN_CHANGED_SINCE_LAST_CALCULATION,
-      ),
-    )
-  }
-
-  @Test
-  fun `should return missing breakdown if breakdown generation is unsupported`() {
-    val calculationRequestWithEverythingForBreakdown = calculationRequestWithOutcomes().copy(
-      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
-      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
-      adjustments = objectToJson(adjustments, objectMapper),
-      calculationOutcomes = listOf(
-        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
-      ),
-    )
-    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
-    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithEverythingForBreakdown))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
-    whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(calculationRequestWithEverythingForBreakdown, null)).thenReturn(enrichedReleaseDates)
-    whenever(calculationTransactionalService.calculateWithBreakdown(any(), any())).then {
-      throw UnsupportedCalculationBreakdown("Bang!")
-    }
-
-    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
-    assertThat(results).isEqualTo(
-      DetailedCalculationResults(
-        expectedCalcContext,
-        enrichedReleaseDates,
-        null,
-        prisonerDetails,
-        listOf(originalSentence),
-        null,
-        BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN,
-      ),
-    )
-  }
-
-  @Test
-  fun `should return breakdown if we have all the data and it hasn't changed`() {
-    val calculationRequestWithEverythingForBreakdown = calculationRequestWithOutcomes().copy(
-      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
-      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
-      adjustments = objectToJson(adjustments, objectMapper),
-      calculationOutcomes = listOf(
-        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
-      ),
-    )
-    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
-    val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
-    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithEverythingForBreakdown))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
-    whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(calculationRequestWithEverythingForBreakdown, expectedBreakdown)).thenReturn(enrichedReleaseDates)
-    whenever(calculationTransactionalService.calculateWithBreakdown(any(), any())).thenReturn(expectedBreakdown)
-    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
-    assertThat(results).isEqualTo(
-      DetailedCalculationResults(
-        expectedCalcContext,
-        enrichedReleaseDates,
-        null,
-        prisonerDetails,
-        listOf(originalSentence),
-        expectedBreakdown,
-        null,
-      ),
-    )
-    verify(calculationResultEnrichmentService).addDetailToCalculationDates(calculationRequestWithEverythingForBreakdown, expectedBreakdown)
   }
 
   @Test
@@ -298,8 +106,8 @@ class DetailedCalculationResultsServiceTest {
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithApprovedDates)).thenReturn(listOf(originalSentence))
     whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithApprovedDates)).thenReturn(prisonerDetails)
     whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithApprovedDates)).thenReturn(adjustments)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(calculationRequestWithApprovedDates, expectedBreakdown)).thenReturn(enrichedReleaseDates)
-    whenever(calculationTransactionalService.calculateWithBreakdown(any(), any())).thenReturn(expectedBreakdown)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(toReleaseDates(calculationRequestWithApprovedDates), listOf(originalSentence), expectedBreakdown)).thenReturn(enrichedReleaseDates)
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
     val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
     assertThat(results).isEqualTo(
       DetailedCalculationResults(
@@ -309,13 +117,79 @@ class DetailedCalculationResultsServiceTest {
           ReleaseDateType.HDCAD to DetailedDate(ReleaseDateType.HDCAD, ReleaseDateType.HDCAD.description, LocalDate.of(2024, 1, 2), emptyList()),
           ReleaseDateType.ROTL to DetailedDate(ReleaseDateType.ROTL, ReleaseDateType.ROTL.description, LocalDate.of(2024, 1, 2), emptyList()),
         ),
-        prisonerDetails,
-        listOf(originalSentence),
+        CalculationOriginalData(
+          prisonerDetails,
+          listOf(originalSentence),
+        ),
         expectedBreakdown,
         null,
       ),
     )
-    verify(calculationResultEnrichmentService).addDetailToCalculationDates(calculationRequestWithApprovedDates, expectedBreakdown)
+    verify(calculationResultEnrichmentService).addDetailToCalculationDates(toReleaseDates(calculationRequestWithApprovedDates), listOf(originalSentence), expectedBreakdown)
+  }
+
+  @Test
+  fun `if breakdown can't be generated then don't pass through but don't blow up either`() {
+    val base = calculationRequestWithOutcomes().copy(
+      prisonerDetails = objectToJson(prisonerDetails, objectMapper),
+      sentenceAndOffences = objectToJson(listOf(originalSentence), objectMapper),
+      adjustments = objectToJson(adjustments, objectMapper),
+      calculationOutcomes = listOf(
+        CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
+      ),
+    )
+    val calculationRequestWithApprovedDates = base.copy(
+      approvedDatesSubmissions = listOf(
+        ApprovedDatesSubmission(
+          2,
+          base,
+          base.prisonerId,
+          base.bookingId,
+          LocalDateTime.now(),
+          "foo",
+          listOf(
+            ApprovedDates(calculationDateType = ReleaseDateType.HDCAD.name, outcomeDate = LocalDate.of(2024, 1, 2)),
+            ApprovedDates(calculationDateType = ReleaseDateType.ROTL.name, outcomeDate = LocalDate.of(2024, 1, 2)),
+          ),
+        ),
+        ApprovedDatesSubmission(
+          1,
+          base,
+          base.prisonerId,
+          base.bookingId,
+          LocalDateTime.now(),
+          "foo",
+          listOf(
+            ApprovedDates(calculationDateType = ReleaseDateType.HDCAD.name, outcomeDate = LocalDate.of(2024, 1, 1)),
+          ),
+        ),
+      ),
+    )
+    val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
+    whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithApprovedDates))
+    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithApprovedDates)).thenReturn(listOf(originalSentence))
+    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithApprovedDates)).thenReturn(prisonerDetails)
+    whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithApprovedDates)).thenReturn(adjustments)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(toReleaseDates(calculationRequestWithApprovedDates), listOf(originalSentence), null)).thenReturn(enrichedReleaseDates)
+    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
+    val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
+    assertThat(results).isEqualTo(
+      DetailedCalculationResults(
+        expectedCalcContext,
+        enrichedReleaseDates,
+        mapOf(
+          ReleaseDateType.HDCAD to DetailedDate(ReleaseDateType.HDCAD, ReleaseDateType.HDCAD.description, LocalDate.of(2024, 1, 2), emptyList()),
+          ReleaseDateType.ROTL to DetailedDate(ReleaseDateType.ROTL, ReleaseDateType.ROTL.description, LocalDate.of(2024, 1, 2), emptyList()),
+        ),
+        CalculationOriginalData(
+          prisonerDetails,
+          listOf(originalSentence),
+        ),
+        null,
+        BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN,
+      ),
+    )
+    verify(calculationResultEnrichmentService).addDetailToCalculationDates(toReleaseDates(calculationRequestWithApprovedDates), listOf(originalSentence), null)
   }
 
   companion object {
@@ -339,6 +213,7 @@ class DetailedCalculationResultsServiceTest {
     sentenceTypeDescription = "ADMIP",
     offences = listOf(OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A"))),
   )
+
   private val prisonerDetails = PrisonerDetails(
     1,
     "asd",
@@ -391,7 +266,6 @@ class DetailedCalculationResultsServiceTest {
     calculatedAt = LocalDateTime.of(2021, 1, 1, 10, 30),
     calculationType = CalculationType.CALCULATED,
   )
-
   private val expectedCalcContext = CalculationContext(
     CALCULATION_REQUEST_ID,
     BOOKING_ID,
@@ -403,4 +277,8 @@ class DetailedCalculationResultsServiceTest {
     LocalDate.of(2021, 1, 1),
     CalculationType.CALCULATED,
   )
+
+  private fun toReleaseDates(request: CalculationRequest): List<ReleaseDate> = request.calculationOutcomes
+    .filter { it.outcomeDate != null }
+    .map { ReleaseDate(it.outcomeDate!!, ReleaseDateType.valueOf(it.calculationDateType)) }
 }

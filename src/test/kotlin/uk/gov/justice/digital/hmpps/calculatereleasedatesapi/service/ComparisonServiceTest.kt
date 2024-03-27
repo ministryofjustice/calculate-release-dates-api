@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import jakarta.persistence.EntityNotFoundException
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -31,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Discre
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
@@ -56,7 +56,6 @@ class ComparisonServiceTest : IntegrationTestBase() {
   private var serviceUserService = mock<ServiceUserService>()
   private var bulkComparisonService = mock<BulkComparisonService>()
   private val calculationTransactionalService = mock<CalculationTransactionalService>()
-  private val objectMapper: ObjectMapper = TestUtil.objectMapper()
 
   private val comparisonService = ComparisonService(
     calculationOutcomeRepository,
@@ -67,7 +66,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     comparisonPersonDiscrepancyRepository,
     bulkComparisonService,
     calculationTransactionalService,
-    objectMapper,
+    TestUtil.objectMapper(),
   )
 
   @BeforeEach
@@ -224,7 +223,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       comparison.id,
       3,
       "person 3",
-      establishment = "ABC",
+      establishment = "AYI",
     )
     val comparisonPerson4 = aComparisonPerson(
       4,
@@ -262,7 +261,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       comparison.id,
       6,
       "person 6",
-      establishment = "DEF",
+      establishment = "DAI",
     )
     val calculationOutcomePerson6Prrd = CalculationOutcome(
       calculationDateType = ReleaseDateType.PRRD.name,
@@ -274,7 +273,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       comparison.id,
       7,
       "person 7",
-      establishment = "ABC",
+      establishment = "AYI",
     )
     val calculationOutcomePerson7Mtd = CalculationOutcome(
       calculationDateType = ReleaseDateType.MTD.name,
@@ -306,6 +305,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(comparisonPersons)
 
     whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(calculationOutcomes)
+    whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("AYI", "Aylesbury (HMP)"), Agency("BMI", "Birmingham (HMP)"), Agency("DAI", "Dartmoor (HMP)")))
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
@@ -621,6 +621,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
       comparison.id,
       8923,
       USERNAME,
+      establishment = "ABC",
     )
 
     val discrepancyImpact = ComparisonPersonDiscrepancyImpact(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION)
@@ -634,8 +635,12 @@ class ComparisonServiceTest : IntegrationTestBase() {
     )
     val discrepancy = ComparisonPersonDiscrepancy(1, comparisonPerson, discrepancyImpact, emptyList(), discrepancyPriority = discrepancyPriority, detail = "detail", action = "action", createdBy = USERNAME)
     whenever(
-      comparisonRepository.findByComparisonShortReference("ABCD1234"),
+      comparisonRepository.findByComparisonShortReference(comparison.comparisonShortReference),
     ).thenReturn(comparison)
+    whenever(
+      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPerson.shortReference),
+    ).thenReturn(comparisonPerson)
+
     whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
     whenever(bulkComparisonService.createDiscrepancy(any(), any(), any())).thenReturn(discrepancySummary)
     val discrepancyCause = DiscrepancyCause(DiscrepancyCategory.TUSED, DiscrepancySubCategory.REMAND_OR_UAL_RELATED)

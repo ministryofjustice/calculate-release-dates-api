@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.context.annotation.Profile
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
@@ -47,6 +48,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_CONSECUTIVE_TO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_MISSING_FINE_AMOUNT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_CONSECUTIVE_TO_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT
@@ -86,7 +88,7 @@ import java.util.UUID
 
 @Profile("tests")
 class ValidationServiceTest {
-  private var validationService = ValidationService(SentencesExtractionService())
+  private var validationService = ValidationService(SentencesExtractionService(), FeatureToggles(botus = true))
   private val validSdsSentence = SentenceAndOffences(
     bookingId = 1L,
     sentenceSequence = 7,
@@ -684,6 +686,77 @@ class ValidationServiceTest {
         ValidationMessage(DTO_CONSECUTIVE_TO_SENTENCE),
       ),
     )
+  }
+
+  @Test
+  fun `Test A Botus sentence consecutive to another sentenceType is unsupported`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceSequence = 1,
+      ),
+      validSdsSentence.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        sentenceCalculationType = "BOTUS",
+        terms = listOf(SentenceTerms(days = 7, code = "IMP")),
+      ),
+    )
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        USER_INPUTS,
+      )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE),
+      ),
+    )
+  }
+
+  @Test
+  fun `Test Two Botus sentence consecutive are supported`() {
+    val sentences = listOf(
+      validSdsSentence.copy(
+        sentenceSequence = 1,
+        sentenceCalculationType = "BOTUS",
+        terms = listOf(SentenceTerms(days = 7, code = "IMP")),
+      ),
+      validSdsSentence.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        sentenceCalculationType = "BOTUS",
+        terms = listOf(SentenceTerms(days = 7, code = "IMP")),
+      ),
+    )
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(sentences, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        USER_INPUTS,
+      )
+
+    assertThat(result).isEmpty()
+  }
+
+  @Test
+  fun `Test BOTUS feature toggle results in unsupported sentence type if disabled`() {
+    val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(botus = false))
+    val sentenceAndOffences = validSdsSentence.copy(
+      sentenceCalculationType = SentenceCalculationType.BOTUS.name,
+      terms = listOf(
+        SentenceTerms(0, 0, 0, 10, SentenceTerms.LICENCE_TERM_CODE),
+      ),
+    )
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(
+        sentenceAndOffences = listOf(sentenceAndOffences),
+        prisonerDetails = VALID_PRISONER,
+        bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
+        returnToCustodyDate = null,
+      ),
+      USER_INPUTS,
+    )
+    assertThat(result).containsExactly(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This is a sentence type")))
   }
 
   @Test

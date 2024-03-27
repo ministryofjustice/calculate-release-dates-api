@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
@@ -37,6 +38,7 @@ enum class SentenceCalculationType(
   FTR_14_HDC_ORA(recallType = FIXED_TERM_RECALL_14, primaryName = "14FTRHDC_ORA", isFixedTermRecall = true, isSupported = false, isIndeterminate = false),
   FTR(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
   FTR_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
+  FTR_HDC_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true, isSupported = false),
   FTR_SCH15(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
   FTRSCH15_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
   FTRSCH18(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
@@ -92,7 +94,7 @@ enum class SentenceCalculationType(
   NP(isSupported = false, isIndeterminate = false),
   LR_EPP(isSupported = false, isIndeterminate = false),
   CR(isSupported = false, isIndeterminate = false),
-  BOTUS(isSupported = false, isIndeterminate = false),
+  BOTUS(isSupported = true, isIndeterminate = false, sentenceClazz = BotusSentence::class.java),
   AR(isSupported = false, isIndeterminate = false),
   EPP(isSupported = false, isIndeterminate = false),
   CUR_ORA(isSupported = false, isIndeterminate = false),

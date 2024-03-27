@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,9 +22,6 @@ import java.time.LocalDate
 class CalculationUserInputIntTest : IntegrationTestBase() {
   @Autowired
   lateinit var calculationRequestRepository: CalculationRequestRepository
-
-  @Autowired
-  lateinit var objectMapper: ObjectMapper
 
   @Test
   @Transactional(readOnly = true)
