@@ -8,7 +8,8 @@ data class Booking(
   var offender: Offender,
   val sentences: List<AbstractSentence>,
   val adjustments: Adjustments = Adjustments(),
-  val returnToCustodyDate: LocalDate? = null, // TODO remove and replace with fixedTermRecallDetails
+  // TODO remove and replace with fixedTermRecallDetails
+  val returnToCustodyDate: LocalDate? = null,
   val fixedTermRecallDetails: FixedTermRecallDetails? = null,
   val bookingId: Long = -1L,
   val calculateErsed: Boolean = false,
