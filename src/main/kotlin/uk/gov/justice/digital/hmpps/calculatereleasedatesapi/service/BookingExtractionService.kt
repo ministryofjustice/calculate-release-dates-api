@@ -197,7 +197,7 @@ class BookingExtractionService(
     )
 
     if (latestExpiryDate == latestLicenseExpiryDate && mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes()
-      .contains(SLED)
+        .contains(SLED)
     ) {
       dates[SLED] = latestExpiryDate
       breakdownByReleaseDateType[SLED] =
@@ -683,7 +683,7 @@ class BookingExtractionService(
         }
       }
     }
-    val hasLicence = sentences.any() {
+    val hasLicence = sentences.any {
       it.sentenceCalculation.licenceExpiryDate != null && it.sentenceCalculation.licenceExpiryDate!!.isAfterOrEqualTo(
         latestReleaseDate,
       )

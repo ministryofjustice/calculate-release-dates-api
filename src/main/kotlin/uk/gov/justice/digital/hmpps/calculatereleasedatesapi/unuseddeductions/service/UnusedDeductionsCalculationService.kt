@@ -69,7 +69,9 @@ class UnusedDeductionsCalculationService(
           .reduceOrNull { acc, it -> acc + it } ?: 0
       val deductions = taggedBail + remand
       max(0, deductions - maxDeductions)
-    } else { 0 }
+    } else {
+      0
+    }
 
     validationMessages = validationService.validateBookingAfterCalculation(result.first)
     return UnusedDeductionCalculationResponse(unusedDeductions, validationMessages)

@@ -439,8 +439,8 @@ class ValidationService(
         SentenceCalculationType.EDS21,
         SentenceCalculationType.EDSU18,
       ).contains(
-          sentenceCalculationType,
-        )
+        sentenceCalculationType,
+      )
     ) {
       if (sentencesAndOffence.sentenceDate.isBefore(ImportantDates.EDS18_SENTENCE_TYPES_START_DATE)) {
         return ValidationMessage(
@@ -664,7 +664,7 @@ class ValidationService(
     val validationMessages = mutableListOf<ValidationMessage>()
     var bookingHasDto = false
     var bookingHasRecall = false
-    prisonApiSourceData.sentenceAndOffences.forEach() {
+    prisonApiSourceData.sentenceAndOffences.forEach {
       val sentenceCalculationType = SentenceCalculationType.from(it.sentenceCalculationType)
       val hasDtoRecall = it.terms.any { terms ->
         terms.code == SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE || terms.code == SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE
@@ -699,8 +699,8 @@ class ValidationService(
       }
       val sequenceToSentenceMap = prisonApiSourceData.sentenceAndOffences.associateBy { it.sentenceSequence }
       if (prisonApiSourceData.sentenceAndOffences.any {
-        it.consecutiveToSequence != null && fineSentences.contains(sequenceToSentenceMap[(it.consecutiveToSequence)])
-      }
+          it.consecutiveToSequence != null && fineSentences.contains(sequenceToSentenceMap[(it.consecutiveToSequence)])
+        }
       ) {
         validationMessages.add(ValidationMessage(A_FINE_SENTENCE_CONSECUTIVE))
       }
@@ -792,7 +792,7 @@ class ValidationService(
         SentenceCalculation::adjustedUncappedDeterminateReleaseDate,
       )
       if (earliestSentenceDate.minusDays(1)
-        .isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate)
+          .isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate)
       ) {
         val hasRemand =
           latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND) != 0

@@ -38,11 +38,11 @@ class CalculationResultEnrichmentServiceTest {
   private val workingDayService = mock<WorkingDayService>()
   private val prisonApiDataMapper = mock<PrisonApiDataMapper>()
 
-  private val CALCULATION_REQUEST_ID = 123456L
-  private val CALCULATION_REFERENCE: UUID = UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5")
-  private val PRISONER_ID = "A1234AJ"
-  private val BOOKING_ID = 12345L
-  private val CALCULATION_REASON = CalculationReason(-1, true, false, "Reason", false, nomisReason = "UPDATE", nomisComment = "NOMIS_COMMENT", null)
+  private val calculationRequestId = 123456L
+  private val calculationReference: UUID = UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5")
+  private val prisonerId = "A1234AJ"
+  private val bookingId = 12345L
+  private val calculationReason = CalculationReason(-1, true, false, "Reason", false, nomisReason = "UPDATE", nomisComment = "NOMIS_COMMENT", null)
 
   @Test
   fun `should add the full release date type name for all release dates`() {
@@ -789,20 +789,20 @@ class CalculationResultEnrichmentServiceTest {
   private fun calculationOutcome(type: ReleaseDateType, date: LocalDate) = CalculationOutcome(
     calculationDateType = type.name,
     outcomeDate = date,
-    calculationRequestId = CALCULATION_REQUEST_ID,
+    calculationRequestId = calculationRequestId,
   )
 
   private fun calculationRequest(calculationOutcomes: List<CalculationOutcome>, sentenceAndOffences: List<SentenceAndOffences>? = null): CalculationRequest {
     whenever(prisonApiDataMapper.mapSentencesAndOffences(any())).thenReturn(sentenceAndOffences)
     return CalculationRequest(
-      id = CALCULATION_REQUEST_ID,
-      calculationReference = CALCULATION_REFERENCE,
-      prisonerId = PRISONER_ID,
+      id = calculationRequestId,
+      calculationReference = calculationReference,
+      prisonerId = prisonerId,
       bookingId = BOOKING_ID,
       calculationOutcomes = calculationOutcomes,
       calculationStatus = CalculationStatus.CONFIRMED.name,
       sentenceAndOffences = sentenceAndOffences?.let { objectToJson(sentenceAndOffences, TestUtil.objectMapper()) },
-      reasonForCalculation = CALCULATION_REASON,
+      reasonForCalculation = calculationReason,
     )
   }
 

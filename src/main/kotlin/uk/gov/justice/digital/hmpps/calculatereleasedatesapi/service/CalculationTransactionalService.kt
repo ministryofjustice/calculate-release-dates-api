@@ -94,8 +94,7 @@ class CalculationTransactionalService(
     calculationReason: CalculationReason,
     providedSourceData: PrisonApiSourceData,
     calculationType: CalculationStatus = PRELIMINARY,
-  ):
-    ValidationResult {
+  ): ValidationResult {
     var messages =
       validationService.validateBeforeCalculation(providedSourceData, calculationUserInputs) // Validation stage 1 of 3
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)

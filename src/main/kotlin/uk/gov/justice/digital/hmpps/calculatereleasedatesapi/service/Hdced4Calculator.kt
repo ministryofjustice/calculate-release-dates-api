@@ -112,7 +112,7 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
       sentence.sentencedAt.plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfew4PlusEligibilityDate)
 
     if (sentence.sentencedAt.plusDays(hdcedConfiguration.minimumCustodialPeriodDays)
-      .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!)
+        .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!)
     ) {
       calculateHdcedMinimumCustodialPeriod(sentence, sentenceCalculation, CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT)
     } else {
@@ -140,7 +140,7 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
       .plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfew4PlusEligibilityDate)
 
     if (sentence.sentencedAt.plusDays(hdcedConfiguration.minimumCustodialPeriodDays)
-      .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!)
+        .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!)
     ) {
       calculateHdcedMinimumCustodialPeriod(sentence, sentenceCalculation, CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD)
     } else {
