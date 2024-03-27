@@ -23,7 +23,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserQuestions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
@@ -33,7 +32,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 
@@ -42,7 +40,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRem
 @Tag(name = "calculation-controller", description = "Operations involving a calculation")
 class CalculationController(
   private val calculationTransactionalService: CalculationTransactionalService,
-  private val calculationUserQuestionService: CalculationUserQuestionService,
   private val relevantRemandService: RelevantRemandService,
   private val detailedCalculationResultsService: DetailedCalculationResultsService,
 ) {
@@ -365,30 +362,6 @@ class CalculationController(
   ): BookingAndSentenceAdjustments {
     log.info("Request received to get booking and sentence adjustments from $calculationRequestId calculation")
     return calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
-  }
-
-  @GetMapping(value = ["/{prisonerId}/user-questions"])
-  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
-  @ResponseBody
-  @Operation(
-    summary = "Return which sentences and offences may be considered for different calculation rules",
-    description = "This endpoint will return which sentences and offences may be considered for different calculation rules." +
-      "We will have to ask the user for clarification if any of the rules apply beacuse we cannot trust input data from NOMIS",
-  )
-  @ApiResponses(
-    value = [
-      ApiResponse(responseCode = "200", description = "Returns questions for a calculation"),
-      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
-      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
-    ],
-  )
-  fun getCalculationUserQuestions(
-    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
-    @PathVariable("prisonerId")
-    prisonerId: String,
-  ): CalculationUserQuestions {
-    log.info("Request received to get sentences which require user input $prisonerId")
-    return calculationUserQuestionService.getQuestionsForSentences(prisonerId)
   }
 
   @PostMapping(value = ["/relevant-remand/{prisonerId}"])
