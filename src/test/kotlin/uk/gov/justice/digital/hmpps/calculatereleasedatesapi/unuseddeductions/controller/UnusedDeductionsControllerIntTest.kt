@@ -146,6 +146,36 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `Run unused deductions calculation returning validation messages for remand overlapping sentence remand starts after sentence date`() {
+    val adjustments = listOf(
+      AdjustmentServiceAdjustment(
+        fromDate = LocalDate.of(2021, 2, 2),
+        toDate = LocalDate.of(2021, 2, 20),
+        days = 12,
+        effectiveDays = 12,
+        bookingId = "UNUSED".hashCode().toLong(),
+        sentenceSequence = 4,
+        adjustmentType = AdjustmentServiceAdjustmentType.REMAND,
+        person = "UNUSED",
+        id = UUID.randomUUID(),
+      ),
+    )
+    val calculation: UnusedDeductionCalculationResponse = webTestClient.post()
+      .uri("/unused-deductions/UNUSED/calculation")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(adjustments))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(UnusedDeductionCalculationResponse::class.java)
+      .returnResult().responseBody!!
+
+    Assertions.assertThat(calculation.validationMessages).contains(ValidationMessage(ValidationCode.REMAND_OVERLAPS_WITH_SENTENCE, arguments = listOf("2021-02-01", "2021-04-20", adjustments[0].fromDate.toString(), adjustments[0].toDate.toString())))
+  }
+
+  @Test
   fun `Run unused deductions calculation where there is a later sentence date than the one producing the release date`() {
     val adjustments = listOf(
       AdjustmentServiceAdjustment(
