@@ -49,7 +49,7 @@ dependencies {
   implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.7.3")
 
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.2")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
@@ -57,7 +57,7 @@ dependencies {
   implementation("com.google.code.gson:gson:2.10.1")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.2")
 
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
@@ -79,7 +79,7 @@ repositories {
 
 jacoco {
   // You may modify the Jacoco version here
-  toolVersion = "0.8.11"
+  toolVersion = "0.8.12"
 }
 
 kotlin {
