@@ -45,12 +45,7 @@ abstract class AbstractSentence(
   @JsonIgnore
   override lateinit var releaseDateTypes: ReleaseDateTypes
 
-  override fun calculateErsedFromHalfway(): Boolean {
-    return identificationTrack.calculateErsedFromHalfway()
-  }
-  override fun calculateErsedFromTwoThirds(): Boolean {
-    return identificationTrack.calculateErsedFromTwoThirds()
-  }
+  override fun calulateErsed(): Boolean = identificationTrack.calculateErsed()
 
   override fun isCalculationInitialised(): Boolean {
     return this::sentenceCalculation.isInitialized
