@@ -18,7 +18,7 @@
     },
     "ERSED": {
       "rules": [
-        "ERSED_TWO_THIRDS"
+        "ERSED_MIN_EFFECTIVE_DATE"
       ],
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,

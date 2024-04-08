@@ -83,10 +83,5 @@ class SingleTermSentence(
     }
   }
 
-  override fun calculateErsedFromHalfway(): Boolean {
-    return identificationTrack.calculateErsedFromHalfway()
-  }
-  override fun calculateErsedFromTwoThirds(): Boolean {
-    return identificationTrack.calculateErsedFromTwoThirds()
-  }
+  override fun calulateErsed(): Boolean = identificationTrack.calculateErsed()
 }

@@ -41,7 +41,7 @@
     },
     "ERSED": {
       "rules": [
-        "ERSED_HALFWAY"
+        "ERSED_MIN_EFFECTIVE_DATE"
       ],
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
