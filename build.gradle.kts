@@ -45,7 +45,7 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
-  implementation("io.arrow-kt:arrow-core:1.2.3")
+  implementation("io.arrow-kt:arrow-core:1.2.4")
   implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.7.3")
 
   // OpenAPI
@@ -64,7 +64,7 @@ dependencies {
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.7")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.21")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.22")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
   testImplementation("com.h2database:h2")
