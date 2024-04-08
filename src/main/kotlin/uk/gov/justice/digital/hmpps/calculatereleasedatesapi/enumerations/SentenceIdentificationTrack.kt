@@ -17,11 +17,7 @@ enum class SentenceIdentificationTrack {
   BOTUS,
   ;
 
-  fun calculateErsedFromHalfway(): Boolean {
-    return listOf(SDS_AFTER_CJA_LASPO, SDS_AFTER_CJA_LASPO, SOPC_PED_AT_HALFWAY).contains(this)
-  }
-
-  fun calculateErsedFromTwoThirds(): Boolean {
-    return listOf(SDS_TWO_THIRDS_RELEASE, EDS_AUTOMATIC_RELEASE, EDS_DISCRETIONARY_RELEASE, SOPC_PED_AT_TWO_THIRDS).contains(this)
+  fun calculateErsed(): Boolean {
+    return listOf(SDS_AFTER_CJA_LASPO, SDS_AFTER_CJA_LASPO, SOPC_PED_AT_HALFWAY, SDS_TWO_THIRDS_RELEASE, EDS_AUTOMATIC_RELEASE, EDS_DISCRETIONARY_RELEASE, SOPC_PED_AT_TWO_THIRDS).contains(this)
   }
 }

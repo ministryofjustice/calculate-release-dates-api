@@ -170,17 +170,8 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
       .getLengthInDays(startDate)
   }
 
-  override fun calculateErsedFromHalfway(): Boolean {
-    return orderedSentences.all { it.identificationTrack.calculateErsedFromHalfway() }
-  }
-
-  override fun calculateErsedFromTwoThirds(): Boolean {
-    return orderedSentences.all { it.identificationTrack.calculateErsedFromTwoThirds() }
-  }
-
-  override fun calulateErsedMixed(): Boolean {
-    return orderedSentences.any { it.identificationTrack.calculateErsedFromHalfway() } &&
-      orderedSentences.any { it.identificationTrack.calculateErsedFromTwoThirds() }
+  override fun calulateErsed(): Boolean {
+    return orderedSentences.any { it.identificationTrack.calculateErsed() }
   }
 
   fun isMadeUpOfOnlyDtos(): Boolean {
