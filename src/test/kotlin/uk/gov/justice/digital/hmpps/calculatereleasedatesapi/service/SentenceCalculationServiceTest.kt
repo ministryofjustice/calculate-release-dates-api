@@ -7,32 +7,30 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 @ExtendWith(MockitoExtension::class)
 class SentenceCalculationServiceTest {
 
-  private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 720, ChronoUnit.DAYS, 179)
+  private val hdcedConfiguration = hdcedConfigurationForTests()
   private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
   private val bankHolidayService = mock<BankHolidayService>()
   private val workingDayService = WorkingDayService(bankHolidayService)
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val hdced4configuration = Hdced4Calculator.Hdced4Configuration(12, ChronoUnit.WEEKS, 14, 720, ChronoUnit.DAYS, 179)
-  private val hdced4Calculator = Hdced4Calculator(hdced4configuration)
-  private val ersedConfiguration = ErsedCalculator.ErsedConfiguration(544)
-  private val ersedCalculator = ErsedCalculator(ersedConfiguration)
+  private val hdced4Calculator = Hdced4Calculator(hdcedConfiguration)
+  private val ersedCalculator = ErsedCalculator(ersedConfigurationForTests())
+  private val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultiplierConfigurationForTests())
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
-  private val sentenceCalculationService: SentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
+  private val sentenceCalculationService: SentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup)
   private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
@@ -120,20 +118,5 @@ class SentenceCalculationServiceTest {
   @BeforeEach
   fun beforeAll() {
     Mockito.`when`(bankHolidayService.getBankHolidays()).thenReturn(CalculationTransactionalServiceTest.cachedBankHolidays)
-  }
-
-  companion object {
-    val cachedBankHolidays =
-      BankHolidays(
-        RegionBankHolidays(
-          "England and Wales",
-          listOf(
-            BankHoliday("Christmas Day Bank Holiday", LocalDate.of(2021, 12, 27)),
-            BankHoliday("Boxing Day Bank Holiday", LocalDate.of(2021, 12, 28)),
-          ),
-        ),
-        RegionBankHolidays("Scotland", emptyList()),
-        RegionBankHolidays("Northern Ireland", emptyList()),
-      )
   }
 }

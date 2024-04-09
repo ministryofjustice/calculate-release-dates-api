@@ -71,25 +71,3 @@ domain-events-sns:
 
 feature-toggles:
   botus: true
-
-hdced:
-  envelope:
-    minimum:
-      value: 12
-      unit: WEEKS
-    maximum:
-      value: 4
-      unit: YEARS
-    midPoint:
-      value: 720
-      unit: DAYS
-  custodialDays:
-    minimum: 14
-  deduction:
-    days: 179
-
-ersed:
-  envelope:
-    release:
-      max-period:
-        days: 544
