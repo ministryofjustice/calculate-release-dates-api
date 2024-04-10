@@ -40,9 +40,3 @@ system:
   client:
     id: calculate-release-dates-admin
     secret: client_secret
-
-ersed:
-  envelope:
-    release:
-      max-period:
-        days: 544

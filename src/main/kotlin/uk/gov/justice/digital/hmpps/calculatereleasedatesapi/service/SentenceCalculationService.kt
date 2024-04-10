@@ -17,7 +17,10 @@ import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 
 @Service
-class SentenceCalculationService(private val sentenceAdjustedCalculationService: SentenceAdjustedCalculationService) {
+class SentenceCalculationService(
+  private val sentenceAdjustedCalculationService: SentenceAdjustedCalculationService,
+  private val releasePointMultiplierLookup: ReleasePointMultiplierLookup,
+) {
 
   fun calculate(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
     // create association between the sentence and it's calculation
@@ -59,7 +62,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
         if (it == sentencesWithPed && !sentence.isRecall()) {
           numberOfDaysToParoleEligibilityDate = calculateConsecutivePed(it, daysToRelease, releaseStartDate)
         }
-        val multiplier = determineReleaseDateMultiplier(it[0].identificationTrack)
+        val multiplier = releasePointMultiplierLookup.multiplierFor(it[0].identificationTrack)
         val daysToReleaseInThisGroup = ceil(daysInThisCustodialDuration.toDouble().times(multiplier)).toLong()
         notionalCrd = releaseStartDate
           .plusDays(daysToReleaseInThisGroup)
@@ -164,7 +167,7 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
     sentence: CalculableSentence,
   ): ReleaseDateCalculation {
     var numberOfDaysToParoleEligibilityDate: Long? = null
-    val releaseDateMultiplier = determineReleaseDateMultiplier(sentence.identificationTrack)
+    val releaseDateMultiplier = releasePointMultiplierLookup.multiplierFor(sentence.identificationTrack)
     val custodialDuration = sentence.custodialDuration()
     val numberOfDaysToReleaseDateDouble =
       custodialDuration.getLengthInDays(sentence.sentencedAt).times(releaseDateMultiplier)
@@ -189,19 +192,6 @@ class SentenceCalculationService(private val sentenceAdjustedCalculationService:
       .minusDays(1)
   }
 
-  private fun determineReleaseDateMultiplier(identification: SentenceIdentificationTrack): Double {
-    return when (identification) {
-      SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE -> 2 / 3.toDouble()
-      SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE,
-      SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS,
-      SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY,
-      -> 1.toDouble()
-      SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE -> 2 / 3.toDouble()
-      SentenceIdentificationTrack.AFINE_ARD_AT_FULL_TERM -> 1.toDouble()
-      SentenceIdentificationTrack.BOTUS -> 1.toDouble()
-      else -> 1 / 2.toDouble()
-    }
-  }
   private fun determinePedMultiplier(identification: SentenceIdentificationTrack): Double {
     return when (identification) {
       SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS,

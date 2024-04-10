@@ -2,9 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErsedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
@@ -16,10 +15,6 @@ import kotlin.math.ceil
 
 @Service
 class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
-  @Configuration
-  data class ErsedConfiguration(
-    @Value("\${ersed.envelope.release.max-period.days}") val maxErsedPeriodDays: Int,
-  )
 
   fun generateEarlyReleaseSchemeEligibilityDateBreakdown(
     sentence: CalculableSentence,
@@ -57,7 +52,7 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
   ): ReleaseDateCalculationBreakdown {
     val effectiveRelease =
       sentenceCalculation.extendedDeterminateParoleEligibilityDate ?: sentenceCalculation.adjustedDeterminateReleaseDate
-    val maxEffectiveErsed = effectiveRelease.minusDays(ersedConfiguration.maxErsedPeriodDays.toLong())
+    val maxEffectiveErsed = effectiveRelease.minusDays(ersedConfiguration.maxPeriodDays.toLong())
     val maxEffectiveErsedReleaseCalcBreakdown = ReleaseDateCalculationBreakdown(
       rules = setOf(CalculationRule.ERSED_MAX_PERIOD),
       releaseDate = maxEffectiveErsed,
@@ -68,7 +63,7 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
         sentenceCalculation.adjustedDeterminateReleaseDate,
       ).toInt(),
       rulesWithExtraAdjustments = mapOf(
-        CalculationRule.ERSED_MAX_PERIOD to AdjustmentDuration(-ersedConfiguration.maxErsedPeriodDays, ChronoUnit.DAYS),
+        CalculationRule.ERSED_MAX_PERIOD to AdjustmentDuration(-ersedConfiguration.maxPeriodDays, ChronoUnit.DAYS),
       ),
     )
     val release = sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate

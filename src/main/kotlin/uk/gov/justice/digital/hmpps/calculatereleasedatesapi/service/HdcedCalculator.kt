@@ -1,8 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
@@ -11,27 +10,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
-import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 import kotlin.math.max
 
 @Service
 class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
-  @Configuration
-  data class HdcedConfiguration(
-    @Value("\${hdced.envelope.minimum.value}") val envelopeMinimum: Long,
-    @Value("\${hdced.envelope.minimum.unit}")val envelopeMinimumUnit: ChronoUnit,
-    @Value("\${hdced.envelope.maximum.value}")val envelopeMaximum: Long,
-    @Value("\${hdced.envelope.maximum.unit}")val envelopeMaximumUnit: ChronoUnit,
-    @Value("\${hdced.custodialDays.minimum}")val minimumCustodialPeriodDays: Long,
-    @Value("\${hdced.envelope.midPoint.value}")val envelopeMidPoint: Long,
-    @Value("\${hdced.envelope.midPoint.unit}")val envelopeMidPointUnit: ChronoUnit,
-    @Value("\${hdced.deduction.days}")val deductionDays: Long,
-  )
 
   fun doesHdcedDateApply(sentence: CalculableSentence, offender: Offender, isMadeUpOfOnlyDtos: Boolean): Boolean {
-    return sentence.durationIsGreaterThanOrEqualTo(hdcedConfiguration.envelopeMinimum, hdcedConfiguration.envelopeMinimumUnit) &&
-      sentence.durationIsLessThan(hdcedConfiguration.envelopeMaximum, hdcedConfiguration.envelopeMaximumUnit) && !offender.isActiveSexOffender && !isMadeUpOfOnlyDtos
+    return sentence.durationIsGreaterThanOrEqualTo(hdcedConfiguration.envelopeMinimum.value, hdcedConfiguration.envelopeMinimum.unit) &&
+      sentence.durationIsLessThan(hdcedConfiguration.envelopeMaximum.value, hdcedConfiguration.envelopeMaximum.unit) && !offender.isActiveSexOffender && !isMadeUpOfOnlyDtos
   }
 
   fun calculateHdced(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
@@ -48,7 +35,7 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
       .minus(sentenceCalculation.calculatedUnusedReleaseAda)
 
     // Any sentences < 12W or >= 4Y have been excluded already in the identification service (no HDCED)
-    if (sentence.durationIsLessThan(hdcedConfiguration.envelopeMidPoint, hdcedConfiguration.envelopeMidPointUnit)) {
+    if (sentence.durationIsLessThan(hdcedConfiguration.envelopeMidPoint.value, hdcedConfiguration.envelopeMidPoint.unit)) {
       calculateHdcedUnderMidpoint(sentenceCalculation, sentence, adjustedDays)
     } else {
       calculateHdcedOverMidpoint(sentence, adjustedDays, sentenceCalculation)

@@ -2,9 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
@@ -14,24 +13,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
-import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 import kotlin.math.max
 
 @Service
-class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
-  @Configuration
-  data class Hdced4Configuration(
-    @Value("\${hdced.envelope.minimum.value}") val envelopeMinimum: Long,
-    @Value("\${hdced.envelope.minimum.unit}") val envelopeMinimumUnit: ChronoUnit,
-    @Value("\${hdced.custodialDays.minimum}") val minimumCustodialPeriodDays: Long,
-    @Value("\${hdced.envelope.midPoint.value}") val envelopeMidPoint: Long,
-    @Value("\${hdced.envelope.midPoint.unit}") val envelopeMidPointUnit: ChronoUnit,
-    @Value("\${hdced.deduction.days}") val deductionDays: Long,
-  )
+class Hdced4Calculator(val hdcedConfiguration: HdcedConfiguration) {
 
   fun doesHdced4DateApply(sentence: CalculableSentence, offender: Offender): Boolean {
-    return sentence.durationIsGreaterThanOrEqualTo(hdcedConfiguration.envelopeMinimum, hdcedConfiguration.envelopeMinimumUnit) &&
+    return sentence.durationIsGreaterThanOrEqualTo(hdcedConfiguration.envelopeMinimum.value, hdcedConfiguration.envelopeMinimum.unit) &&
       !offender.isActiveSexOffender && !sentence.isDto() && !sentence.isSdsPlus()
   }
 
@@ -64,7 +53,7 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
 
         val sdsNotionalSled = sdsPlusNotionalCrd.plusDays(lengthInDaysOfNonSdsPlusSentences)
         log.info("Sds notional sled: {}", sdsNotionalSled)
-        if (nonSdsPlusSentenceLengthInDays < hdcedConfiguration.envelopeMidPoint) {
+        if (nonSdsPlusSentenceLengthInDays < hdcedConfiguration.envelopeMidPoint.value) {
           val hdcedDurationDays = max(TWENTY_EIGHT, ceil(lengthInDaysOfNonSdsPlusSentences.toDouble().div(FOUR)).toLong())
           log.info("HDCED Duration days: {}", hdcedDurationDays)
           sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sdsPlusNotionalCrd.plusDays(1).plusDays(hdcedDurationDays).minusDays(sentence.sentenceCalculation.calculatedTotalDeductedDays.toLong()).plusDays(sentence.sentenceCalculation.calculatedTotalAddedDays.toLong())
@@ -75,7 +64,7 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
         val nonSdsPluSentences = sentence.orderedSentences.filter { !it.isSdsPlus() }
         val nonSdsPlusSentenceLengthInDays = nonSdsPluSentences.sumOf { it.getLengthInDays() }.toLong()
 
-        if (nonSdsPlusSentenceLengthInDays < hdcedConfiguration.envelopeMidPoint) {
+        if (nonSdsPlusSentenceLengthInDays < hdcedConfiguration.envelopeMidPoint.value) {
           calculateHdcedUnderMidpoint(sentenceCalculation, sentence, adjustedDays)
         } else {
           calculateHdcedOverMidpoint(sentence, adjustedDays, sentenceCalculation)
@@ -91,7 +80,7 @@ class Hdced4Calculator(val hdcedConfiguration: Hdced4Configuration) {
           unadjustedDate = sentence.sentencedAt,
         )
     } else {
-      if (sentence.durationIsLessThan(hdcedConfiguration.envelopeMidPoint, hdcedConfiguration.envelopeMidPointUnit)) {
+      if (sentence.durationIsLessThan(hdcedConfiguration.envelopeMidPoint.value, hdcedConfiguration.envelopeMidPoint.unit)) {
         calculateHdcedUnderMidpoint(sentenceCalculation, sentence, adjustedDays)
       } else {
         calculateHdcedOverMidpoint(sentence, adjustedDays, sentenceCalculation)
