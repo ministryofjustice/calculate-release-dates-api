@@ -5,17 +5,16 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
-import java.time.temporal.ChronoUnit
 
 @ExtendWith(MockitoExtension::class)
 class SentenceIdentificationServiceTest {
-  private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, ChronoUnit.WEEKS, 4, ChronoUnit.YEARS, 14, 720, ChronoUnit.DAYS, 179)
+  private val hdcedConfiguration = hdcedConfigurationForTests()
   private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
   private val workingDayService = mock<WorkingDayService>()
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val hdced4configuration = Hdced4Calculator.Hdced4Configuration(12, ChronoUnit.WEEKS, 14, 720, ChronoUnit.DAYS, 179)
-  private val hdced4Calculator = Hdced4Calculator(hdced4configuration)
+  private val hdced4Calculator = Hdced4Calculator(hdcedConfiguration)
   private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")

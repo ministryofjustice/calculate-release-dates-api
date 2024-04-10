@@ -28,6 +28,9 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.security.oauth2.jwt.Jwt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -88,17 +91,16 @@ import java.util.*
 @ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceTest {
   private val jsonTransformation = JsonTransformation()
-  private val hdcedConfiguration = HdcedCalculator.HdcedConfiguration(12, WEEKS, 4, YEARS, 14, 720, DAYS, 179)
+  private val hdcedConfiguration = hdcedConfigurationForTests()
   private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
   private val bankHolidayService = mock<BankHolidayService>()
   private val workingDayService = WorkingDayService(bankHolidayService)
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val hdced4configuration = Hdced4Calculator.Hdced4Configuration(12, WEEKS, 14, 720, DAYS, 179)
-  private val hdced4Calculator = Hdced4Calculator(hdced4configuration)
-  private val ersedConfiguration = ErsedCalculator.ErsedConfiguration(544)
-  private val ersedCalculator = ErsedCalculator(ersedConfiguration)
+  private val hdced4Calculator = Hdced4Calculator(hdcedConfiguration)
+  private val ersedCalculator = ErsedCalculator(ersedConfigurationForTests())
+  private val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultiplierConfigurationForTests())
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
-  private val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService)
+  private val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup)
   private val sentencesExtractionService = SentencesExtractionService()
   private val sentenceIdentificationService =
     SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
@@ -131,7 +133,6 @@ class CalculationTransactionalServiceTest {
   private val serviceUserService = mock<ServiceUserService>()
   private val approvedDatesSubmissionRepository = mock<ApprovedDatesSubmissionRepository>()
   private val nomisCommentService = mock<NomisCommentService>()
-  private val calculationResultEnrichmentService = mock<CalculationResultEnrichmentService>()
 
   private val calculationTransactionalService =
     CalculationTransactionalService(

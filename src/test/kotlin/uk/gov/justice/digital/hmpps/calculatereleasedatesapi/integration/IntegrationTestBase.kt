@@ -45,7 +45,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalcula
 )
 @ExtendWith(OAuthExtension::class, PrisonApiExtension::class, BankHolidayApiExtension::class, ManageOffensesApiExtension::class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-@Import(IntegrationTestConfiguration::class)
+@Import(TestBuildPropertiesConfiguration::class)
 @ActiveProfiles("test")
 open class IntegrationTestBase internal constructor() {
 
