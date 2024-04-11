@@ -59,6 +59,7 @@ class CalculationResultEnrichmentServiceTest {
     val date = LocalDate.of(2021, 2, 3)
     whenever(nonFridayReleaseService.getDate(ReleaseDate(date, type))).thenReturn(NonFridayReleaseDay(date, false))
     whenever(workingDayService.previousWorkingDay(date)).thenReturn(WorkingDay(date, adjustedForWeekend = false, adjustedForBankHoliday = false))
+    whenever(workingDayService.nextWorkingDay(date)).thenReturn(WorkingDay(date, adjustedForWeekend = false, adjustedForBankHoliday = false))
     val releaseDate = ReleaseDate(date, type)
     val releaseDates = listOf(releaseDate)
     val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, CalculationBreakdown(emptyList(), null))
@@ -93,16 +94,15 @@ class CalculationResultEnrichmentServiceTest {
     "CRD,true",
     "ARD,true",
     "PRRD,true",
-    "HDCED,true",
     "PED,true",
     "ETD,true",
     "MTD,true",
     "LTD,true",
     "LED,false",
   )
-  fun `should calculate weekend adjustments for relevant dates`(type: ReleaseDateType, expected: Boolean) {
-    val originalDate = LocalDate.of(2021, 2, 3)
-    val adjustedDate = LocalDate.of(2021, 2, 1)
+  fun `should calculate weekend adjustments with previous working day for relevant dates`(type: ReleaseDateType, expected: Boolean) {
+    val originalDate = LocalDate.of(2021, 2, 6)
+    val adjustedDate = LocalDate.of(2021, 2, 5)
 
     whenever(nonFridayReleaseService.getDate(ReleaseDate(originalDate, type))).thenReturn(NonFridayReleaseDay(originalDate, false))
     whenever(workingDayService.previousWorkingDay(originalDate)).thenReturn(WorkingDay(adjustedDate, adjustedForWeekend = false, adjustedForBankHoliday = false))
@@ -112,10 +112,26 @@ class CalculationResultEnrichmentServiceTest {
     val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, CalculationBreakdown(emptyList(), null))
     assertThat(results[type]?.hints).isEqualTo(
       if (expected) {
-        listOf(ReleaseDateHint("Monday, 01 February 2021 when adjusted to a working day"))
+        listOf(ReleaseDateHint("Friday, 05 February 2021 when adjusted to a working day"))
       } else {
         emptyList()
       },
+    )
+  }
+
+  @Test
+  fun `should calculate weekend adjustments as next working day for HDCED`() {
+    val originalDate = LocalDate.of(2021, 2, 6)
+    val adjustedDate = LocalDate.of(2021, 2, 8)
+    val type = ReleaseDateType.HDCED
+    whenever(nonFridayReleaseService.getDate(ReleaseDate(originalDate, type))).thenReturn(NonFridayReleaseDay(originalDate, false))
+    whenever(workingDayService.nextWorkingDay(originalDate)).thenReturn(WorkingDay(adjustedDate, adjustedForWeekend = false, adjustedForBankHoliday = false))
+
+    val releaseDate = ReleaseDate(originalDate, type)
+    val releaseDates = listOf(releaseDate)
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, CalculationBreakdown(emptyList(), null))
+    assertThat(results[type]?.hints).isEqualTo(
+      listOf(ReleaseDateHint("Monday, 08 February 2021 when adjusted to a working day")),
     )
   }
 
@@ -771,6 +787,7 @@ class CalculationResultEnrichmentServiceTest {
   private fun getReleaseDateAndStubAdjustments(type: ReleaseDateType, date: LocalDate): ReleaseDate {
     whenever(nonFridayReleaseService.getDate(ReleaseDate(date, type))).thenReturn(NonFridayReleaseDay(date, false))
     whenever(workingDayService.previousWorkingDay(date)).thenReturn(WorkingDay(date, adjustedForWeekend = false, adjustedForBankHoliday = false))
+    whenever(workingDayService.nextWorkingDay(date)).thenReturn(WorkingDay(date, adjustedForWeekend = false, adjustedForBankHoliday = false))
     return ReleaseDate(date, type)
   }
 
