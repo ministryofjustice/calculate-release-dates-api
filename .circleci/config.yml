@@ -127,7 +127,7 @@ workflows:
             - deploy_dev
       - hmpps/deploy_env:
           name: deploy_alt_dev
-          env: "dev"
+          env: "alt-dev"
           jira_update: true
           pipeline_id: <<pipeline.id>>
           pipeline_number: <<pipeline.number>>
