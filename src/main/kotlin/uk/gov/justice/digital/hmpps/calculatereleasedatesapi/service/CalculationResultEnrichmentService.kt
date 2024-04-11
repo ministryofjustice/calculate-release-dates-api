@@ -80,9 +80,12 @@ class CalculationResultEnrichmentService(
     if (type !in typesAllowedWeekendAdjustment || date.isBefore(LocalDate.now(clock))) {
       return null
     }
-    val previousWorkingDay = workingDayService.previousWorkingDay(date)
-    return if (previousWorkingDay.date != date) {
-      ReleaseDateHint("${previousWorkingDay.date.format(longFormat)} when adjusted to a working day")
+    val adjustedToWorkingDay = when (type) {
+      ReleaseDateType.HDCED -> workingDayService.nextWorkingDay(date)
+      else -> workingDayService.previousWorkingDay(date)
+    }
+    return if (adjustedToWorkingDay.date != date) {
+      ReleaseDateHint("${adjustedToWorkingDay.date.format(longFormat)} when adjusted to a working day")
     } else {
       null
     }
