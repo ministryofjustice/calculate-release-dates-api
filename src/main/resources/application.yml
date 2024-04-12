@@ -14,7 +14,9 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
 
   profiles:
-    include: stdout
+    include:
+     - stdout
+     - calculation-params
 
   security:
     oauth2:
@@ -128,29 +130,3 @@ domain-events-sns:
 
 feature-toggles:
   botus: ${BOTUS_FEATURE_TOGGLE:false}
-
-hdced:
-  envelope:
-    minimum:
-      value: 12
-      unit: WEEKS
-    maximum:
-      value: 4
-      unit: YEARS
-    midPoint:
-      value: 720
-      unit: DAYS
-  custodialDays:
-    minimum: 14
-  deduction:
-    days: 179
-ersed:
-  envelope:
-    release:
-      halfway:
-        days: 2180
-      two-thirds:
-        days: 1635
-      max-period:
-        days: 544
-      

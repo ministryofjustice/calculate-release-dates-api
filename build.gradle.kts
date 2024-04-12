@@ -26,7 +26,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-actuator")
 
   // GOVUK Notify:
-  implementation("uk.gov.service.notify:notifications-java-client:5.0.0-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:5.0.1-RELEASE")
 
   // Enable kotlin reflect
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.23")
@@ -45,11 +45,11 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
-  implementation("io.arrow-kt:arrow-core:1.2.3")
+  implementation("io.arrow-kt:arrow-core:1.2.4")
   implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.7.3")
 
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.2")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
@@ -57,14 +57,14 @@ dependencies {
   implementation("com.google.code.gson:gson:2.10.1")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.2")
 
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.7")
-  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.21")
+  testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.22")
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
   testImplementation("com.h2database:h2")
@@ -79,7 +79,7 @@ repositories {
 
 jacoco {
   // You may modify the Jacoco version here
-  toolVersion = "0.8.11"
+  toolVersion = "0.8.12"
 }
 
 kotlin {

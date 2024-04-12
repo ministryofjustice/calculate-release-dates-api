@@ -40,13 +40,3 @@ system:
   client:
     id: calculate-release-dates-admin
     secret: client_secret
-
-ersed:
-  envelope:
-    release:
-      halfway:
-        days: 2180
-      two-thirds:
-        days: 1635
-      max-period:
-        days: 544
