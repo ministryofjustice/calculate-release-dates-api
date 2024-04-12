@@ -1,4 +1,4 @@
-{{- if .Values.data-analytics-extractor.create -}}
+{{ if .Values.data-analytics-extractor.create }}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
