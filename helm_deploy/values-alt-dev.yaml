@@ -31,5 +31,5 @@ generic-prometheus-alerts:
   businessHoursOnly: true
   alertSeverity: legacy-replacement-alerts-non-prod
 
-data-analytics-extractor:
+dataAnalyticsExtractor:
   create: false

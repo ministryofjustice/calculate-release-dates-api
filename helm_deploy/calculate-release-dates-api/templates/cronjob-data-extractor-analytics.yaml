@@ -1,4 +1,4 @@
-{{ if .Values.data-analytics-extractor.create }}
+{{- if .Values.dataAnalyticsExtractor.create -}}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -55,4 +55,4 @@ spec:
                   value: eu-west-2
                 - name: SAVE_EVENTS_LOG
                   value: "true"
-{{- end }}
+{{- end -}}

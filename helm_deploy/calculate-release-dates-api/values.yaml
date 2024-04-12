@@ -48,5 +48,5 @@ generic-service:
 generic-prometheus-alerts:
   targetApplication: calculate-release-dates-api
 
-data-analytics-extractor:
+dataAnalyticsExtractor:
   create: true
