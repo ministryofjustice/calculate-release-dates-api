@@ -10,7 +10,7 @@ spec:
         spec:
           restartPolicy: "Never"
           containers:
-            - name: data-extractor-analytics
+            - name: data-extractor-analytics-{{- randAlphaNum 4 | nospace -}}
               image: ministryofjustice/data-engineering-data-extractor:v1
               imagePullPolicy: Always
               args: ["extract_psql_all_tables_to_csv.sh && transfer_local_to_s3.sh"]
