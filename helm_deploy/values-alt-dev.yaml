@@ -31,3 +31,6 @@ generic-prometheus-alerts:
   targetApplication: calculate-release-dates-api-alt-dev
   businessHoursOnly: true
   alertSeverity: legacy-replacement-alerts-non-prod
+
+dataAnalyticsExtractor:
+  create: false
