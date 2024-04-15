@@ -71,6 +71,7 @@ class HistoricCalculationsControllerTest {
       "Ranby (HMP)",
       48,
       "Adding more sentences or terms",
+      -1
     )
 
     whenever(historicCalculationsService.getHistoricCalculationsForPrisoner(anyString())).thenReturn(listOf(historicCalculation))
