@@ -1,0 +1,42 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1994-11-24",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 2911105,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "isPcscSds": false,
+        "committedAt": "2023-07-01",
+        "offenceCode": "RT88026",
+        "isPcscSec250": false,
+        "isPcscSdsPlus": false,
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 10
+        }
+      },
+      "identifier": "24ae48ce-2f00-31a0-baf9-40b571408a12",
+      "recallType": null,
+      "section250": false,
+      "sentencedAt": "2024-03-08",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": "DEF321",
+      "consecutiveSentenceUUIDs": []
+    }
+  ],
+  "adjustments": {},
+  "calculateErsed": true,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}
