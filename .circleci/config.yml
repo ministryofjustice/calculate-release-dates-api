@@ -154,7 +154,7 @@ workflows:
           requires:
             - request-preprod-approval
       - hmpps/deploy_env:
-          name: deploy_preprod
+          name: deploy_alt_preprod
           env: "alt-preprod"
           release_name: PROJECT_NAME_ENV_NAME
           jira_update: true
