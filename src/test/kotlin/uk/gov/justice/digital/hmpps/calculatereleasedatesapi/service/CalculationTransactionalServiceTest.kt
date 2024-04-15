@@ -91,65 +91,17 @@ import java.util.*
 @ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceTest {
   private val jsonTransformation = JsonTransformation()
-  private val hdcedConfiguration = hdcedConfigurationForTests()
-  private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
-  private val bankHolidayService = mock<BankHolidayService>()
-  private val workingDayService = WorkingDayService(bankHolidayService)
-  private val tusedCalculator = TusedCalculator(workingDayService)
-  private val hdced4Calculator = Hdced4Calculator(hdcedConfiguration)
-  private val ersedCalculator = ErsedCalculator(ersedConfigurationForTests())
-  private val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultiplierConfigurationForTests())
-  private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
-  private val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup)
-  private val sentencesExtractionService = SentencesExtractionService()
-  private val sentenceIdentificationService =
-    SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
-  private val bookingCalculationService = BookingCalculationService(
-    sentenceCalculationService,
-    sentenceIdentificationService,
-  )
-  private val bookingExtractionService = BookingExtractionService(
-    sentencesExtractionService,
-  )
-  private val bookingTimelineService = BookingTimelineService(
-    sentenceAdjustedCalculationService,
-    sentencesExtractionService,
-    workingDayService,
-  )
-  private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
-
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
   private val prisonService = mock<PrisonService>()
   private val eventService = mock<EventService>()
-  private val calculationService = CalculationService(
-    bookingCalculationService,
-    bookingExtractionService,
-    bookingTimelineService,
-  )
   private val bookingService = mock<BookingService>()
   private val validationService = mock<ValidationService>()
   private val serviceUserService = mock<ServiceUserService>()
   private val approvedDatesSubmissionRepository = mock<ApprovedDatesSubmissionRepository>()
   private val nomisCommentService = mock<NomisCommentService>()
-
-  private val calculationTransactionalService =
-    CalculationTransactionalService(
-      calculationRequestRepository,
-      calculationOutcomeRepository,
-      calculationReasonRepository,
-      TestUtil.objectMapper(),
-      prisonService,
-      prisonApiDataMapper,
-      calculationService,
-      bookingService,
-      validationService,
-      eventService,
-      serviceUserService,
-      approvedDatesSubmissionRepository,
-      nomisCommentService,
-    )
+  private val bankHolidayService = mock<BankHolidayService>()
 
   private val fakeSourceData = PrisonApiSourceData(
     emptyList(),
@@ -170,7 +122,7 @@ class CalculationTransactionalServiceTest {
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
-  fun `Test Example`(exampleType: String, exampleNumber: String, error: String?) {
+  fun `Test Example`(exampleType: String, exampleNumber: String, error: String?, params: String) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
@@ -179,8 +131,8 @@ class CalculationTransactionalServiceTest {
     val calculatedReleaseDates: CalculatedReleaseDates
 
     try {
-      calculatedReleaseDates =
-        calculationTransactionalService.calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, null)
+      calculatedReleaseDates = calculationTransactionalService(params)
+        .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, null)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -210,7 +162,7 @@ class CalculationTransactionalServiceTest {
 
     val calculationBreakdown: CalculationBreakdown?
     try {
-      calculationBreakdown = calculationTransactionalService.calculateWithBreakdown(
+      calculationBreakdown = calculationTransactionalService().calculateWithBreakdown(
         booking,
         CalculatedReleaseDates(
           calculation.dates,
@@ -250,7 +202,7 @@ class CalculationTransactionalServiceTest {
       ),
     )
 
-    val bookingCalculation = calculationTransactionalService.findCalculationResults(CALCULATION_REQUEST_ID)
+    val bookingCalculation = calculationTransactionalService().findCalculationResults(CALCULATION_REQUEST_ID)
 
     assertEquals(
       bookingCalculation,
@@ -276,7 +228,7 @@ class CalculationTransactionalServiceTest {
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
 
     val exception = assertThrows<PreconditionFailedException> {
-      calculationTransactionalService.validateAndConfirmCalculation(
+      calculationTransactionalService().validateAndConfirmCalculation(
         CALCULATION_REQUEST_ID,
         SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null),
       )
@@ -300,7 +252,7 @@ class CalculationTransactionalServiceTest {
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
 
     val exception = assertThrows<EntityNotFoundException> {
-      calculationTransactionalService.validateAndConfirmCalculation(
+      calculationTransactionalService().validateAndConfirmCalculation(
         CALCULATION_REQUEST_ID,
         SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null),
       )
@@ -327,7 +279,7 @@ class CalculationTransactionalServiceTest {
     )
 
     assertDoesNotThrow {
-      calculationTransactionalService.validateAndConfirmCalculation(
+      calculationTransactionalService().validateAndConfirmCalculation(
         CALCULATION_REQUEST_ID,
         SubmitCalculationRequest(calculationFragments = CalculationFragments(""), approvedDates = null),
       )
@@ -348,7 +300,7 @@ class CalculationTransactionalServiceTest {
     )
     whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
-    calculationTransactionalService.writeToNomisAndPublishEvent(
+    calculationTransactionalService().writeToNomisAndPublishEvent(
       PRISONER_ID,
       BOOKING.copy(sentences = listOf(StandardSENTENCE.copy(duration = ZERO_DURATION))),
       BOOKING_CALCULATION.copy(
@@ -398,7 +350,7 @@ class CalculationTransactionalServiceTest {
     ).thenThrow(EntityNotFoundException("test ex"))
 
     val exception = assertThrows<EntityNotFoundException> {
-      calculationTransactionalService.writeToNomisAndPublishEvent(
+      calculationTransactionalService().writeToNomisAndPublishEvent(
         PRISONER_ID,
         BOOKING,
         BOOKING_CALCULATION,
@@ -431,7 +383,7 @@ class CalculationTransactionalServiceTest {
     ).thenThrow(EntityNotFoundException("test ex"))
 
     try {
-      calculationTransactionalService.writeToNomisAndPublishEvent(
+      calculationTransactionalService().writeToNomisAndPublishEvent(
         PRISONER_ID,
         BOOKING,
         BOOKING_CALCULATION,
@@ -465,7 +417,7 @@ class CalculationTransactionalServiceTest {
       submittedByUsername = USERNAME,
     )
     whenever(approvedDatesSubmissionRepository.save(any())).thenReturn(submission)
-    calculationTransactionalService.validateAndConfirmCalculation(
+    calculationTransactionalService().validateAndConfirmCalculation(
       CALCULATION_REQUEST_ID,
       SubmitCalculationRequest(
         calculationFragments = CalculationFragments(""),
@@ -498,7 +450,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA),
       ),
     )
-    calculationTransactionalService.writeToNomisAndPublishEvent(
+    calculationTransactionalService().writeToNomisAndPublishEvent(
       PRISONER_ID,
       BOOKING.copy(sentences = listOf(StandardSENTENCE.copy(duration = ZERO_DURATION))),
       BOOKING_CALCULATION.copy(
@@ -541,7 +493,7 @@ class CalculationTransactionalServiceTest {
     )
     whenever(nomisCommentService.getNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
-    calculationTransactionalService.writeToNomisAndPublishEvent(
+    calculationTransactionalService().writeToNomisAndPublishEvent(
       PRISONER_ID,
       BOOKING.copy(sentences = listOf(StandardSENTENCE.copy(duration = ZERO_DURATION))),
       BOOKING_CALCULATION.copy(
@@ -583,7 +535,7 @@ class CalculationTransactionalServiceTest {
     )
     whenever(prisonService.getPrisonApiSourceData(anyString(), eq(true))).thenReturn(SOURCE_DATA)
     assertThrows<CalculationDataHasChangedError> {
-      calculationTransactionalService.findCalculationResultsByCalculationReference(
+      calculationTransactionalService().findCalculationResultsByCalculationReference(
         UUID.randomUUID().toString(),
         true,
       )
@@ -595,6 +547,59 @@ class CalculationTransactionalServiceTest {
   @BeforeEach
   fun beforeAll() {
     Mockito.`when`(bankHolidayService.getBankHolidays()).thenReturn(cachedBankHolidays)
+  }
+
+  private fun calculationTransactionalService(params: String = "calculation-params"): CalculationTransactionalService {
+    val hdcedConfiguration = hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
+    val ersedConfiguration = ersedConfigurationForTests()
+    val releasePointMultipliersConfiguration = releasePointMultiplierConfigurationForTests(params)
+
+    val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
+    val workingDayService = WorkingDayService(bankHolidayService)
+    val tusedCalculator = TusedCalculator(workingDayService)
+    val hdced4Calculator = Hdced4Calculator(hdcedConfiguration)
+    val ersedCalculator = ErsedCalculator(ersedConfiguration)
+    val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultipliersConfiguration)
+    val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
+    val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup)
+    val sentencesExtractionService = SentencesExtractionService()
+    val sentenceIdentificationService =
+      SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
+    val bookingCalculationService = BookingCalculationService(
+      sentenceCalculationService,
+      sentenceIdentificationService,
+    )
+    val bookingExtractionService = BookingExtractionService(
+      sentencesExtractionService,
+    )
+    val bookingTimelineService = BookingTimelineService(
+      sentenceAdjustedCalculationService,
+      sentencesExtractionService,
+      workingDayService,
+    )
+    val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
+
+    val calculationService = CalculationService(
+      bookingCalculationService,
+      bookingExtractionService,
+      bookingTimelineService,
+    )
+
+    return CalculationTransactionalService(
+      calculationRequestRepository,
+      calculationOutcomeRepository,
+      calculationReasonRepository,
+      TestUtil.objectMapper(),
+      prisonService,
+      prisonApiDataMapper,
+      calculationService,
+      bookingService,
+      validationService,
+      eventService,
+      serviceUserService,
+      approvedDatesSubmissionRepository,
+      nomisCommentService,
+    )
   }
 
   companion object {

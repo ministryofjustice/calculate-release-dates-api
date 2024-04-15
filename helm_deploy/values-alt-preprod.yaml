@@ -1,0 +1,40 @@
+---
+# Per environment values which override defaults in calculate-release-dates-api/values.yaml
+
+generic-service:
+
+  ingress:
+    host: calculate-release-dates-api-alt-preprod.hmpps.service.justice.gov.uk
+    modsecurity_enabled: true
+    modsecurity_snippet: |
+      SecRuleEngine DetectionOnly
+      SecRuleUpdateActionById 949110 "t:none,deny,status:406,logdata:%{SERVER_NAME}"
+      SecRuleUpdateActionById 959100 "t:none,deny,status:406,logdata:%{SERVER_NAME}"
+      SecAction "id:900000,phase:1,nolog,pass,t:none,setvar:tx.paranoia_level=2"
+
+  env:
+    SPRING_PROFILES_ACTIVE: "logstash,alt-calculation-params"
+    APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
+    HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
+    PRISON_API_URL: https://prison-api-preprod.prison.service.justice.gov.uk
+    ADJUSTMENTS_API_URL: https://adjustments-api-preprod.hmpps.service.justice.gov.uk
+    MANAGE-OFFENCES_API_URL: https://manage-offences-api-preprod.hmpps.service.justice.gov.uk
+    BOTUS_FEATURE_TOGGLE: "false"
+
+  serviceAccountName: calculate-release-dates-api-preprod
+
+  resources:
+    requests:
+      memory: 2G
+    limits:
+      memory: 4G
+
+# CloudPlatform AlertManager receiver to route prometheus alerts to slack
+# See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
+generic-prometheus-alerts:
+  targetApplication: calculate-release-dates-api-alt-preprod
+  businessHoursOnly: true
+  alertSeverity: legacy-replacement-alerts-non-prod
+
+dataAnalyticsExtractor:
+  create: false

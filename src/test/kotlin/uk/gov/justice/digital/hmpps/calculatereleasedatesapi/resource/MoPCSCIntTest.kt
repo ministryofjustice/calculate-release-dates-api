@@ -2,8 +2,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotGetMoOffenceInformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
@@ -48,6 +50,41 @@ class MoPCSCIntTest : IntegrationTestBase() {
     UserContext.setAuthToken("123456")
     offenceSdsPlusLookupService.populateSdsPlusMarkerForOffences(inputOffenceList)
     assertTrue(inputOffenceList[0].offences[0].isPcscSdsPlus)
+  }
+
+  @Test
+  fun `Test exception is thrown on 500 MO response`() {
+    assertTrue(
+      assertThrows<Exception> {
+        val inputOffenceList = listOf(
+          SentenceAndOffences(
+            1,
+            1,
+            1,
+            1,
+            null,
+            "TEST",
+            "TEST",
+            SentenceCalculationType.SEC250.toString(),
+            "TEST",
+            LocalDate.of(2022, 8, 29),
+            listOf(SentenceTerms(8, 4, 1, 1)),
+            listOf(
+              OffenderOffence(
+                1,
+                LocalDate.of(2022, 1, 1),
+                null,
+                "500Response",
+                "TEST OFFENSE",
+              ),
+            ),
+          ),
+        )
+
+        UserContext.setAuthToken("123456")
+        offenceSdsPlusLookupService.populateSdsPlusMarkerForOffences(inputOffenceList)
+      }.cause is CouldNotGetMoOffenceInformation,
+    )
   }
 
   @Test

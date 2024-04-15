@@ -58,7 +58,14 @@ class OffenceSdsPlusLookupService(
                 val sentenceCalculationType = SentenceCalculationType.from(sentenceAndOffence.sentenceCalculationType)
                 val sevenYearsOrMore = sevenYearsOrMore(sentenceAndOffence)
 
-                return@filter isOffenceSdsPlus(sentenceCalculationType, sentenceAndOffence, sevenYearsOrMore, moResponseForOffence, sentenceIsAfterPcsc)
+                checkIsSDSPlusAndSetOffenceIndicators(
+                  sentenceCalculationType,
+                  sentenceAndOffence,
+                  sevenYearsOrMore,
+                  moResponseForOffence,
+                  sentenceIsAfterPcsc,
+                  offenderOffence,
+                )
               }
               .forEach { offence ->
                 offence.indicators = offence.indicators.plus(listOf(OffenderOffence.PCSC_SDS_PLUS))
@@ -75,20 +82,24 @@ class OffenceSdsPlusLookupService(
     return bookingToSentenceOffenceMap
   }
 
-  private fun isOffenceSdsPlus(sentenceCalculationType: SentenceCalculationType, sentenceAndOffence: SentenceAndOffences, sevenYearsOrMore: Boolean, moResponseForOffence: OffencePcscMarkers?, sentenceIsAfterPcsc: Boolean): Boolean {
+  private fun checkIsSDSPlusAndSetOffenceIndicators(sentenceCalculationType: SentenceCalculationType, sentenceAndOffence: SentenceAndOffences, sevenYearsOrMore: Boolean, moResponseForOffence: OffencePcscMarkers?, sentenceIsAfterPcsc: Boolean, offence: OffenderOffence): Boolean {
     var sdsPlusIdentified = false
     if (postPcscCalcTypes["SDS"]!!.contains(sentenceCalculationType) ||
       postPcscCalcTypes["DYOI"]!!.contains(sentenceCalculationType)
     ) {
       if (sentencedWithinOriginalSdsPlusWindow(sentenceAndOffence) && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListA == true) {
+        offence.indicators = offence.indicators.plus(listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR))
         sdsPlusIdentified = true
       } else if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListD == true) {
+        offence.indicators = offence.indicators.plus(listOf(OffenderOffence.PCSC_SDS))
         sdsPlusIdentified = true
       } else if (sentenceIsAfterPcsc && fourToUnderSeven(sentenceAndOffence) && moResponseForOffence?.pcscMarkers?.inListB == true) {
+        offence.indicators = offence.indicators.plus(listOf(OffenderOffence.PCSC_SDS_PLUS))
         sdsPlusIdentified = true
       }
     } else if (postPcscCalcTypes["S250"]!!.contains(sentenceCalculationType)) {
       if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListC == true) {
+        offence.indicators = offence.indicators.plus(listOf(OffenderOffence.PCSC_SEC250))
         sdsPlusIdentified = true
       }
     }

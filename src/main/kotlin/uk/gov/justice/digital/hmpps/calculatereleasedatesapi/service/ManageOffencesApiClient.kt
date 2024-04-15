@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotGetMoOffenceInformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
 
 @Service
@@ -20,6 +21,12 @@ class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private v
       .uri("/schedule/pcsc-indicators?offenceCodes=$offencesList")
       .retrieve()
       .bodyToMono(typeReference<List<OffencePcscMarkers>>())
+      .onErrorMap {
+        CouldNotGetMoOffenceInformation(
+          "Offence Lookup failed for $offencesList," +
+            " can not proceed to perform a sentence calculation",
+        )
+      }
       .block()!!
   }
 }

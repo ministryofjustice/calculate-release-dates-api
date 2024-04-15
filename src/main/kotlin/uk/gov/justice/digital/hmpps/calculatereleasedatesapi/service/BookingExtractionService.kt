@@ -313,7 +313,7 @@ class BookingExtractionService(
         mostRecentSentenceByAdjustedDeterminateReleaseDate.sentenceCalculation.extendedDeterminateParoleEligibilityDate
       if (mostRecentReleaseSentenceHasParoleDate != null) {
         val latestNonPedReleaseSentence = extractionService.mostRecentSentenceOrNull(
-          sentences.filter { !it.isRecall() && it.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null && !it.isDto() },
+          sentences.filter { !it.isRecall() && it.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null && !it.isDto() && !it.sentenceCalculation.isImmediateRelease() },
           SentenceCalculation::releaseDate,
         )
         val latestNonPedRelease = latestNonPedReleaseSentence?.sentenceCalculation?.releaseDate
@@ -348,7 +348,7 @@ class BookingExtractionService(
     }
 
     val latestEarlyReleaseSchemeEligibilitySentence =
-      extractionService.mostRecentSentenceOrNull(sentences, SentenceCalculation::earlyReleaseSchemeEligibilityDate)
+      extractionService.mostRecentSentenceOrNull(sentences, SentenceCalculation::earlyReleaseSchemeEligibilityDate) { !it.sentenceCalculation.isImmediateRelease() }
     val latestAFineRelease =
       extractionService.mostRecentOrNull(sentences.filterIsInstance<AFineSentence>(), SentenceCalculation::releaseDate)
     val afineIsRelease = latestAFineRelease == latestReleaseDate
