@@ -58,7 +58,7 @@ class OffenceSdsPlusLookupService(
                 val sentenceCalculationType = SentenceCalculationType.from(sentenceAndOffence.sentenceCalculationType)
                 val sevenYearsOrMore = sevenYearsOrMore(sentenceAndOffence)
 
-                return@filter isOffenceSdsPlus(
+                checkIsSDSPlusAndSetOffenceIndicators(
                   sentenceCalculationType,
                   sentenceAndOffence,
                   sevenYearsOrMore,
@@ -82,7 +82,7 @@ class OffenceSdsPlusLookupService(
     return bookingToSentenceOffenceMap
   }
 
-  private fun isOffenceSdsPlus(sentenceCalculationType: SentenceCalculationType, sentenceAndOffence: SentenceAndOffences, sevenYearsOrMore: Boolean, moResponseForOffence: OffencePcscMarkers?, sentenceIsAfterPcsc: Boolean, offence: OffenderOffence): Boolean {
+  private fun checkIsSDSPlusAndSetOffenceIndicators(sentenceCalculationType: SentenceCalculationType, sentenceAndOffence: SentenceAndOffences, sevenYearsOrMore: Boolean, moResponseForOffence: OffencePcscMarkers?, sentenceIsAfterPcsc: Boolean, offence: OffenderOffence): Boolean {
     var sdsPlusIdentified = false
     if (postPcscCalcTypes["SDS"]!!.contains(sentenceCalculationType) ||
       postPcscCalcTypes["DYOI"]!!.contains(sentenceCalculationType)

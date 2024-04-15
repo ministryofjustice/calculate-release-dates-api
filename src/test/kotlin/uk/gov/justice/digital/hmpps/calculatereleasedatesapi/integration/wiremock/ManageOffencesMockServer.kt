@@ -31,6 +31,7 @@ class ManageOffencesApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEa
     manageOffencesApi.stubMOResponse()
     manageOffencesApi.stubMOMultipleResults()
     manageOffencesApi.stubSX03014MOResponse()
+    manageOffencesApi.stub500Response()
     manageOffencesApi.stubBaseResponse()
   }
 
@@ -171,6 +172,15 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
           .withHeader("Content-Type", "application/json")
           .withBody(json)
           .withStatus(200),
+      ),
+  )
+
+  fun stub500Response(): StubMapping = stubFor(
+    get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=500Response"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withStatus(500),
       ),
   )
 }
