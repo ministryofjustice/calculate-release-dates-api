@@ -1,0 +1,15 @@
+
+release-point-multipliers:
+  multipliers:
+    - tracks:
+        - EDS_AUTOMATIC_RELEASE
+        - SDS_TWO_THIRDS_RELEASE
+      multiplier: 0.66666
+    - tracks:
+        - EDS_DISCRETIONARY_RELEASE,
+        - SOPC_PED_AT_TWO_THIRDS,
+        - SOPC_PED_AT_HALFWAY,
+        - AFINE_ARD_AT_FULL_TERM,
+        - BOTUS
+      multiplier: 1.0
+  default: 0.45
