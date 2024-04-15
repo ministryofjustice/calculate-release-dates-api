@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
@@ -44,6 +45,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalcula
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
@@ -52,7 +55,7 @@ import java.time.Duration
 import java.time.LocalDate
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-class CalculationIntTest : IntegrationTestBase() {
+class CalculationIntTest(private val mockManageOffencesClient: MockManageOffencesClient) : IntegrationTestBase() {
   @Autowired
   lateinit var calculationRequestRepository: CalculationRequestRepository
 
@@ -245,7 +248,10 @@ class CalculationIntTest : IntegrationTestBase() {
   @Test
   fun `Confirm a calculation with approved dates`() {
     val resultCalculation = createPreliminaryCalculation(PRISONER_ID)
-    val calc = createConfirmCalculationForPrisoner(resultCalculation.calculationRequestId, listOf(ManualEntrySelectedDate(APD, "APD", SubmittedDate(3, 3, 2023))))
+    val calc = createConfirmCalculationForPrisoner(
+      resultCalculation.calculationRequestId,
+      listOf(ManualEntrySelectedDate(APD, "APD", SubmittedDate(3, 3, 2023))),
+    )
     assertThat(calc).isNotNull
     val result = webTestClient.get()
       .uri("/calculation/results/$PRISONER_ID/$BOOKING_ID")
@@ -288,7 +294,9 @@ class CalculationIntTest : IntegrationTestBase() {
     assertThat(result.dates[CRD]).isEqualTo(LocalDate.of(2016, 1, 6))
     assertThat(result.dates[TUSED]).isEqualTo(LocalDate.of(2017, 1, 6))
     assertThat(result.dates[ESED]).isEqualTo(LocalDate.of(2016, 11, 16))
-    assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(PRISONER_ID_ON_SEX_OFFENDER_REGISTER)
+    assertThat(calculationRequest.inputData["offender"]["reference"].asText()).isEqualTo(
+      PRISONER_ID_ON_SEX_OFFENDER_REGISTER,
+    )
     assertThat(calculationRequest.inputData["sentences"][0]["offence"]["committedAt"].asText())
       .isEqualTo("2015-03-17")
     assert(!result.dates.containsKey(HDCED))
@@ -511,6 +519,19 @@ class CalculationIntTest : IntegrationTestBase() {
     val userInput = CalculationUserInputs(
       useOffenceIndicators = true,
     )
+
+    mockManageOffencesClient.withMOResponse(
+      OffencePcscMarkers(
+        offenceCode = "TR68132",
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
+      ),
+      OffencePcscMarkers(
+        offenceCode = "SX03001",
+        pcscMarkers = PcscMarkers(inListA = true, inListB = false, inListC = false, inListD = false),
+      ),
+      offences = "SX03001,TR68132",
+    )
+
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-872")
       .accept(MediaType.APPLICATION_JSON)
@@ -745,7 +766,14 @@ class CalculationIntTest : IntegrationTestBase() {
       .accept(MediaType.APPLICATION_JSON)
       .contentType(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .bodyValue(objectMapper.writeValueAsString(SubmitCalculationRequest(CalculationFragments("<p>BREAKDOWN</p>"), emptyList())))
+      .bodyValue(
+        objectMapper.writeValueAsString(
+          SubmitCalculationRequest(
+            CalculationFragments("<p>BREAKDOWN</p>"),
+            emptyList(),
+          ),
+        ),
+      )
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)

@@ -28,6 +28,7 @@ class OffenceSdsPlusLookupServiceTest {
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(sentencedAfterSDSPlusBeforePCSCLongerThan7Years)
     assertTrue(returnedResult.size == 1)
     assertTrue(sentencedAfterSDSPlusBeforePCSCLongerThan7Years[0].offences[0].isPcscSdsPlus)
+    assertTrue(sentencedAfterSDSPlusBeforePCSCLongerThan7Years[0].offences[0].isScheduleFifteenMaximumLife)
   }
 
   @Test
@@ -35,6 +36,7 @@ class OffenceSdsPlusLookupServiceTest {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListDMarkers))
     underTest.populateSdsPlusMarkerForOffences(sentencedADIMPAfterPCSCLongerThan7Years)
     assertTrue(sentencedADIMPAfterPCSCLongerThan7Years[0].offences[0].isPcscSdsPlus)
+    assertTrue(sentencedADIMPAfterPCSCLongerThan7Years[0].offences[0].isPcscSds)
   }
 
   @Test
@@ -49,6 +51,7 @@ class OffenceSdsPlusLookupServiceTest {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListCMarkers))
     underTest.populateSdsPlusMarkerForOffences(section250Over7YearsPostPCSCSentence)
     assertTrue(section250Over7YearsPostPCSCSentence[0].offences[0].isPcscSdsPlus)
+    assertTrue(section250Over7YearsPostPCSCSentence[0].offences[0].isPcscSec250)
   }
 
   @Test
@@ -59,6 +62,7 @@ class OffenceSdsPlusLookupServiceTest {
     verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
     underTest.populateSdsPlusMarkerForOffences(section250Over7YearsPrePCSCSentence)
     assertFalse(section250Over7YearsPrePCSCSentence[0].offences[0].isPcscSdsPlus)
+    assertFalse(section250Over7YearsPrePCSCSentence[0].offences[0].isPcscSec250)
   }
 
   @Test
@@ -67,6 +71,7 @@ class OffenceSdsPlusLookupServiceTest {
     // no call to MO should take place as offences don't match filter.
     verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
     assertFalse(sentenceMatchesNoMatchingOffencesDueToSentenceDate[0].offences[0].isPcscSdsPlus)
+    assertFalse(sentenceMatchesNoMatchingOffencesDueToSentenceDate[0].offences[0].isPcscSec250)
   }
 
   companion object {

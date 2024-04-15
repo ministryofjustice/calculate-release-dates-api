@@ -6,12 +6,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 
 @Service
-class BookingService(private val offenceSdsPlusLookupService: OffenceSdsPlusLookupService) {
+class BookingService() {
 
   fun getBooking(prisonApiSourceData: PrisonApiSourceData, calculationUserInputs: CalculationUserInputs): Booking {
     val prisonerDetails = prisonApiSourceData.prisonerDetails
     val sentenceAndOffences = prisonApiSourceData.sentenceAndOffences
     val bookingAndSentenceAdjustments = prisonApiSourceData.bookingAndSentenceAdjustments
+
     val offender = transform(prisonerDetails)
     val adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences)
     val sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) }.flatten()
