@@ -16,9 +16,9 @@ import kotlin.math.max
 @Service
 class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
 
-  fun doesHdcedDateApply(sentence: CalculableSentence, offender: Offender, isMadeUpOfOnlyDtos: Boolean): Boolean {
+  fun doesHdcedDateApply(sentence: CalculableSentence, offender: Offender): Boolean {
     return sentence.durationIsGreaterThanOrEqualTo(hdcedConfiguration.envelopeMinimum.value, hdcedConfiguration.envelopeMinimum.unit) &&
-      sentence.durationIsLessThan(hdcedConfiguration.envelopeMaximum.value, hdcedConfiguration.envelopeMaximum.unit) && !offender.isActiveSexOffender && !isMadeUpOfOnlyDtos
+      sentence.durationIsLessThan(hdcedConfiguration.envelopeMaximum.value, hdcedConfiguration.envelopeMaximum.unit) && !offender.isActiveSexOffender
   }
 
   fun calculateHdced(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {

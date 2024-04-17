@@ -32,20 +32,7 @@ class HdcedCalculatorTest {
     val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
     val sentenceCalculation = sentenceCalculation(sentence, 150, 75, Adjustments())
 
-    calc(sentenceCalculation, sentence, isActiveSexOffender = true, isMadeUpOfOnlyDtos = false)
-
-    assertHasNoHDCED(sentenceCalculation)
-  }
-
-  @Test
-  fun `shouldn't calculate a date if the sentence is made up of all DTOs`() {
-    val sentencedAt = LocalDate.of(2020, 1, 1)
-    val duration = Duration(mapOf(ChronoUnit.DAYS to 150L))
-    val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
-    val sentenceCalculation = sentenceCalculation(sentence, 150, 75, Adjustments())
-
-    calc(sentenceCalculation, sentence, isActiveSexOffender = false, isMadeUpOfOnlyDtos = true)
+    calc(sentenceCalculation, sentence, isActiveSexOffender = true)
 
     assertHasNoHDCED(sentenceCalculation)
   }
@@ -249,10 +236,9 @@ class HdcedCalculatorTest {
     sentenceCalculation: SentenceCalculation,
     sentence: StandardDeterminateSentence,
     isActiveSexOffender: Boolean = false,
-    isMadeUpOfOnlyDtos: Boolean = false,
   ) {
     val offender = Offender("ABC123", LocalDate.of(1980, 1, 1), isActiveSexOffender = isActiveSexOffender)
-    if (calculator.doesHdcedDateApply(sentence, offender, isMadeUpOfOnlyDtos)) {
+    if (calculator.doesHdcedDateApply(sentence, offender)) {
       calculator.calculateHdced(sentence, sentenceCalculation)
     }
   }

@@ -234,7 +234,7 @@ class SentenceIdentificationService(
         releaseDateTypes += TUSED
       }
 
-      if (hdcedCalculator.doesHdcedDateApply(sentence, offender, sentence.isMadeUpOfOnlyDtos())) {
+      if (!sentence.isMadeUpOfOnlyDtos() && hdcedCalculator.doesHdcedDateApply(sentence, offender)) {
         releaseDateTypes += HDCED
       }
       if (hdced4Calculator.doesHdced4DateApply(sentence, offender)) {
@@ -319,7 +319,7 @@ class SentenceIdentificationService(
       releaseDateTypes += TUSED
     }
 
-    if (hdcedCalculator.doesHdcedDateApply(sentence, offender, false)) {
+    if (hdcedCalculator.doesHdcedDateApply(sentence, offender)) {
       releaseDateTypes += HDCED
     }
     if (hdced4Calculator.doesHdced4DateApply(sentence, offender)) {
