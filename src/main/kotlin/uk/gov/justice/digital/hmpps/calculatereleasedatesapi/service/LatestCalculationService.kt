@@ -100,6 +100,20 @@ class LatestCalculationService(
     sentenceAndOffences: List<SentenceAndOffences>?,
     breakdown: CalculationBreakdown?,
   ): LatestCalculation {
+    val dates = releaseDates(prisonerCalculation)
+    return LatestCalculation(
+      prisonerId,
+      bookingId,
+      prisonerCalculation.calculatedAt,
+      calculationReference,
+      location,
+      reason,
+      calculationSource,
+      calculationResultEnrichmentService.addDetailToCalculationDates(dates, sentenceAndOffences, breakdown).values.toList(),
+    )
+  }
+
+  fun releaseDates(prisonerCalculation: OffenderKeyDates): List<ReleaseDate> {
     val sled = createASLEDIfWeCan(prisonerCalculation)
     val dates = listOfNotNull(
       sled,
@@ -123,16 +137,7 @@ class LatestCalculationService(
       prisonerCalculation.tariffDate?.let { ReleaseDate(it, ReleaseDateType.Tariff) },
       prisonerCalculation.tariffExpiredRemovalSchemeEligibilityDate?.let { ReleaseDate(it, ReleaseDateType.TERSED) },
     )
-    return LatestCalculation(
-      prisonerId,
-      bookingId,
-      prisonerCalculation.calculatedAt,
-      calculationReference,
-      location,
-      reason,
-      calculationSource,
-      calculationResultEnrichmentService.addDetailToCalculationDates(dates, sentenceAndOffences, breakdown).values.toList(),
-    )
+    return dates
   }
 
   private fun createASLEDIfWeCan(prisonerCalculation: OffenderKeyDates): ReleaseDate? {

@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserQuestions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
@@ -37,10 +38,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationResultEnrichmentService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 
 @RestController
@@ -53,6 +56,8 @@ class CalculationController(
   private val detailedCalculationResultsService: DetailedCalculationResultsService,
   private val latestCalculationService: LatestCalculationService,
   private val calculationBreakdownService: CalculationBreakdownService,
+  private val prisonService: PrisonService,
+  private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
 ) {
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -447,6 +452,35 @@ class CalculationController(
     log.info("Request received return latest calculation for prisoner {}", prisonerId)
     val result = latestCalculationService.latestCalculationForPrisoner(prisonerId)
     return result.getOrElse { problemMessage -> throw CrdWebException(problemMessage, HttpStatus.NOT_FOUND) }
+  }
+
+  @GetMapping(value = ["/nomis-calculation-summary/{offenderSentCalculationId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Get Nomis calculation summary with release dates for a offenderSentCalculationId",
+    description = "This endpoint will return the nomis calculation summary with release dates based on a offenderSentCalculationId",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns Nomis calculation summary with release dates based on a offenderSentCalculationId"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No nomis calculation summary - release dates exists for this offenderSentCalculationId"),
+    ],
+  )
+  fun getNomisCalculationSummary(
+    @Parameter(required = true, example = "123456", description = "The offenderSentCalculationId of the offender booking or a calculation")
+    @PathVariable("offenderSentCalculationId")
+    offenderSentCalculationId: Long,
+  ): NomisCalculationSummary {
+    log.info("Request received to get offender key dates for $offenderSentCalculationId")
+    val nomisOffenderKeyDates = prisonService.getNOMISOffenderKeyDates(offenderSentCalculationId)
+      .getOrElse { problemMessage -> throw CrdWebException(problemMessage, HttpStatus.NOT_FOUND) }
+    val releaseDatesForSentCalculationId = latestCalculationService.releaseDates(nomisOffenderKeyDates)
+    val detailsReleaseDates = calculationResultEnrichmentService.addDetailToCalculationDates(releaseDatesForSentCalculationId, null, null).values.toList()
+    val nomisReason = prisonService.getNOMISCalcReasons().find { it.code == nomisOffenderKeyDates.reasonCode }?.description ?: nomisOffenderKeyDates.reasonCode
+    return NomisCalculationSummary(nomisReason, nomisOffenderKeyDates.calculatedAt, nomisOffenderKeyDates.comment, detailsReleaseDates)
   }
 
   companion object {

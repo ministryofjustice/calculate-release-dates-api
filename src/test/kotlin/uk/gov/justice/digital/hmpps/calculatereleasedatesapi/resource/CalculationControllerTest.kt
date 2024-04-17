@@ -7,7 +7,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito.anyList
 import org.mockito.Mockito.reset
+import org.mockito.kotlin.any
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -46,12 +49,18 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationResultEnrichmentService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -82,6 +91,12 @@ class CalculationControllerTest {
   @MockBean
   private lateinit var calculationBreakdownService: CalculationBreakdownService
 
+  @MockBean
+  private lateinit var prisonService: PrisonService
+
+  @MockBean
+  private lateinit var calculationResultEnrichmentService: CalculationResultEnrichmentService
+
   @Autowired
   private lateinit var mvc: MockMvc
 
@@ -106,6 +121,8 @@ class CalculationControllerTest {
           detailedCalculationResultsService,
           latestCalculationService,
           calculationBreakdownService,
+          prisonService,
+          calculationResultEnrichmentService,
         ),
       )
       .setControllerAdvice(ControllerAdvice())
@@ -404,6 +421,71 @@ class CalculationControllerTest {
           errorMessage,
         ),
       )
+  }
+
+  @Test
+  fun `Test GET of offender Key Dates when there is a problem getting the dates from Prison Service NOMIS`() {
+    val offenderSentCalcId = 5636121L
+    val errorMessage = "There isn't one"
+
+    whenever(prisonService.getNOMISOffenderKeyDates(any())).thenReturn(errorMessage.left())
+
+    val result = mvc.perform(get("/calculation/nomis-calculation-summary/$offenderSentCalcId").accept(APPLICATION_JSON))
+      .andExpect(status().isNotFound)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(mapper.readValue(result.response.contentAsString, ErrorResponse::class.java))
+      .isEqualTo(
+        ErrorResponse(
+          HttpStatus.NOT_FOUND,
+          null,
+          errorMessage,
+          errorMessage,
+        ),
+      )
+  }
+
+  @Test
+  fun `Test GET of offender key dates for offenderSentCalcId successfully`() {
+    val offenderSentCalcId = 5636121L
+    var offenderKeyDates = OffenderKeyDates(
+      reasonCode = "FS",
+      calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
+      comment = null,
+      homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
+    )
+    val expected = NomisCalculationSummary(
+      "Further Sentence",
+      LocalDateTime.of(2024, 2, 29, 10, 30),
+      null,
+      listOf(
+        DetailedDate(
+          ReleaseDateType.HDCED,
+          ReleaseDateType.HDCED.description,
+          LocalDate.of(2024, 1, 1),
+          emptyList(),
+        ),
+      ),
+    )
+
+    val detailedDates = mapOf(ReleaseDateType.HDCED to DetailedDate(ReleaseDateType.HDCED, ReleaseDateType.HDCED.description, LocalDate.of(2024, 1, 1), emptyList()))
+
+    whenever(prisonService.getNOMISOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
+    whenever(latestCalculationService.releaseDates(any())).thenReturn(
+      listOf(ReleaseDate(LocalDate.of(2024, 1, 1), ReleaseDateType.HDCED)),
+      emptyList(),
+    )
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(anyList(), isNull(), isNull())).thenReturn(detailedDates)
+    whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason(code = "FS", description = "Further Sentence")))
+
+    val result = mvc.perform(get("/calculation/nomis-calculation-summary/$offenderSentCalcId").accept(APPLICATION_JSON))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(mapper.readValue(result.response.contentAsString, NomisCalculationSummary::class.java))
+      .isEqualTo(expected)
   }
 
   private val calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null)

@@ -64,6 +64,15 @@ class PrisonServiceTest {
     assertThat(keyDates).isEqualTo(expected.right())
   }
 
+  @Test
+  fun `should get offender key dates by using offender sent calc id`() {
+    val offenderSentCalcId = 123456L
+    val expected = OffenderKeyDates(reasonCode = "NEW", calculatedAt = LocalDateTime.now())
+    whenever(prisonApiClient.getNOMISOffenderKeyDates(offenderSentCalcId)).thenReturn(expected.right())
+    val keyDates = prisonService.getNOMISOffenderKeyDates(offenderSentCalcId)
+    assertThat(keyDates).isEqualTo(expected.right())
+  }
+
   companion object {
     private val mapper = ObjectMapper()
 
