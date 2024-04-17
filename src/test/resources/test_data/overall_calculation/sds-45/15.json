@@ -1,0 +1,86 @@
+{
+  "offender": {
+    "reference": "A1234BC",
+    "dateOfBirth": "1987-08-11",
+    "isActiveSexOffender": false
+  },
+  "sentences": [
+    {
+      "type": "ExtendedDeterminateSentence",
+      "offence": {
+        "isPcscSds": false,
+        "committedAt": "2019-06-01",
+        "offenceCode": "COML022",
+        "isPcscSec250": false,
+        "isPcscSdsPlus": false,
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "identifier": "5540326e-587f-360c-a7ec-639d6c876a49",
+      "recallType": null,
+      "sentencedAt": "2019-09-13",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": "B1234567",
+      "automaticRelease": false,
+      "custodialDuration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 6,
+          "MONTHS": 0
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 4,
+          "MONTHS": 0
+        }
+      },
+      "consecutiveSentenceUUIDs": []
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "isPcscSds": false,
+        "committedAt": "2020-10-27",
+        "offenceCode": "A1234567",
+        "isPcscSec250": false,
+        "isPcscSdsPlus": false,
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 8,
+          "MONTHS": 0
+        }
+      },
+      "identifier": "ea533269-f6bb-399d-8a57-ffec4716c7b1",
+      "recallType": null,
+      "section250": false,
+      "sentencedAt": "2021-08-02",
+      "caseSequence": 3,
+      "lineSequence": 17,
+      "caseReference": "T20217096",
+      "consecutiveSentenceUUIDs": []
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "toDate": "2019-09-12",
+        "fromDate": "2019-06-04",
+        "numberOfDays": 101,
+        "appliesToSentencesFrom": "2019-09-13"
+      }
+    ]
+  },
+  "calculateErsed": true,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}
