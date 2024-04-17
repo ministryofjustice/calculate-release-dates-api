@@ -36,16 +36,16 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
 
     // Any sentences < 12W or >= 4Y have been excluded already in the identification service (no HDCED)
     if (sentence.durationIsLessThan(hdcedConfiguration.envelopeMidPoint.value, hdcedConfiguration.envelopeMidPoint.unit)) {
-      calculateHdcedUnderMidpoint(sentenceCalculation, sentence, adjustedDays)
+      calculateHdcedUnderMidpoint(sentence, adjustedDays, sentenceCalculation)
     } else {
       calculateHdcedOverMidpoint(sentence, adjustedDays, sentenceCalculation)
     }
   }
 
   private fun calculateHdcedUnderMidpoint(
-    sentenceCalculation: SentenceCalculation,
     sentence: CalculableSentence,
     adjustedDays: Int,
+    sentenceCalculation: SentenceCalculation,
   ) {
     val twentyEightOrMore =
       max(TWENTY_EIGHT, ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().div(FOUR)).toLong())
