@@ -30,7 +30,7 @@
       "sentencedAt": "2024-03-04",
       "caseSequence": 1,
       "lineSequence": 1,
-      "caseReference": "23N51253023",
+      "caseReference": "A1234567",
       "consecutiveSentenceUUIDs": []
     },
     {
@@ -58,7 +58,7 @@
       "sentencedAt": "2024-03-04",
       "caseSequence": 1,
       "lineSequence": 2,
-      "caseReference": "23N51253023",
+      "caseReference": "B1234567",
       "consecutiveSentenceUUIDs": []
     },
     {
@@ -86,7 +86,7 @@
       "sentencedAt": "2024-03-04",
       "caseSequence": 1,
       "lineSequence": 3,
-      "caseReference": "23N51253023",
+      "caseReference": "C1234567",
       "consecutiveSentenceUUIDs": []
     },
     {
@@ -114,7 +114,7 @@
       "sentencedAt": "2024-03-04",
       "caseSequence": 1,
       "lineSequence": 4,
-      "caseReference": "23N51253023",
+      "caseReference": "D1234567",
       "consecutiveSentenceUUIDs": []
     }
   ],

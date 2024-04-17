@@ -1,6 +1,6 @@
 {
   "offender": {
-    "reference": "A2927EZ",
+    "reference": "A1234CD",
     "dateOfBirth": "1987-08-05",
     "isActiveSexOffender": false
   },
@@ -30,7 +30,7 @@
       "sentencedAt": "2024-02-21",
       "caseSequence": 2,
       "lineSequence": 1,
-      "caseReference": "S20240025",
+      "caseReference": "A1234567",
       "consecutiveSentenceUUIDs": []
     },
     {
@@ -58,7 +58,7 @@
       "sentencedAt": "2024-02-21",
       "caseSequence": 2,
       "lineSequence": 1,
-      "caseReference": "S20240025",
+      "caseReference": "B1234567",
       "consecutiveSentenceUUIDs": []
     },
     {
@@ -86,7 +86,7 @@
       "sentencedAt": "2024-02-21",
       "caseSequence": 2,
       "lineSequence": 1,
-      "caseReference": "S20240025",
+      "caseReference": "C1234567",
       "consecutiveSentenceUUIDs": []
     },
     {
@@ -114,7 +114,7 @@
       "sentencedAt": "2024-02-21",
       "caseSequence": 2,
       "lineSequence": 2,
-      "caseReference": "S20240025",
+      "caseReference": "D1234567",
       "consecutiveSentenceUUIDs": []
     },
     {
@@ -142,7 +142,7 @@
       "sentencedAt": "2024-02-21",
       "caseSequence": 2,
       "lineSequence": 2,
-      "caseReference": "S20240025",
+      "caseReference": "E1234567",
       "consecutiveSentenceUUIDs": []
     },
     {
@@ -170,7 +170,7 @@
       "sentencedAt": "2024-02-21",
       "caseSequence": 2,
       "lineSequence": 2,
-      "caseReference": "S20240025",
+      "caseReference": "F1234567",
       "consecutiveSentenceUUIDs": []
     },
     {
@@ -198,7 +198,7 @@
       "sentencedAt": "2024-03-21",
       "caseSequence": 1,
       "lineSequence": 3,
-      "caseReference": "23N51382423",
+      "caseReference": "G1234567",
       "consecutiveSentenceUUIDs": [
         "b5a4ffee-ca4b-37ac-99b0-55bf08e15a60"
       ]
@@ -228,7 +228,7 @@
       "sentencedAt": "2024-03-21",
       "caseSequence": 1,
       "lineSequence": 4,
-      "caseReference": "23N51382423",
+      "caseReference": "H1234567",
       "consecutiveSentenceUUIDs": []
     },
     {
@@ -255,7 +255,7 @@
       "sentencedAt": "2024-03-21",
       "caseSequence": 1,
       "lineSequence": 4,
-      "caseReference": "23N51382423",
+      "caseReference": "I1234567",
       "consecutiveSentenceUUIDs": []
     }
   ],
