@@ -1,0 +1,253 @@
+{
+  "offender": {
+    "reference": "A1234BC",
+    "dateOfBirth": "1941-01-22",
+    "isActiveSexOffender": true
+  },
+  "sentences": [
+    {
+      "type": "SopcSentence",
+      "offence": {
+        "isPcscSds": false,
+        "committedAt": "2012-08-22",
+        "offenceCode": "SX03015",
+        "isPcscSec250": false,
+        "isPcscSdsPlus": false,
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "sdopcu18": false,
+      "identifier": "64e2877b-b4a7-35fa-8f3f-da630ec53e8c",
+      "recallType": null,
+      "sentencedAt": "2020-11-13",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": "A1234567",
+      "custodialDuration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 6,
+          "MONTHS": 0
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 1,
+          "MONTHS": 0
+        }
+      },
+      "consecutiveSentenceUUIDs": []
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "isPcscSds": false,
+        "committedAt": "2012-08-22",
+        "offenceCode": "SX03017",
+        "isPcscSec250": false,
+        "isPcscSdsPlus": false,
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 2,
+          "MONTHS": 0
+        }
+      },
+      "identifier": "237f9da0-84c2-3db3-8ad9-39c73813c0d6",
+      "recallType": null,
+      "section250": false,
+      "sentencedAt": "2020-11-13",
+      "caseSequence": 1,
+      "lineSequence": 2,
+      "caseReference": "B1234567",
+      "consecutiveSentenceUUIDs": []
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "isPcscSds": false,
+        "committedAt": "2012-08-22",
+        "offenceCode": "SX03019",
+        "isPcscSec250": false,
+        "isPcscSdsPlus": false,
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 3,
+          "MONTHS": 0
+        }
+      },
+      "identifier": "6e8a3b0b-d300-3247-a1e8-a681ae394793",
+      "recallType": null,
+      "section250": false,
+      "sentencedAt": "2020-11-13",
+      "caseSequence": 1,
+      "lineSequence": 3,
+      "caseReference": "C1234567",
+      "consecutiveSentenceUUIDs": []
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "isPcscSds": false,
+        "committedAt": "1993-07-30",
+        "offenceCode": "SX56087-088N",
+        "isPcscSec250": false,
+        "isPcscSdsPlus": false,
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 18
+        }
+      },
+      "identifier": "9f99e197-25e6-3e93-8693-23e7be34593e",
+      "recallType": null,
+      "section250": false,
+      "sentencedAt": "2024-03-22",
+      "caseSequence": 2,
+      "lineSequence": 4,
+      "caseReference": "D1234567",
+      "consecutiveSentenceUUIDs": []
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "isPcscSds": false,
+        "committedAt": "1993-07-30",
+        "offenceCode": "SX56025-029N",
+        "isPcscSec250": false,
+        "isPcscSdsPlus": false,
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 42
+        }
+      },
+      "identifier": "b159ec36-568c-36c7-aa86-bd651e56dc17",
+      "recallType": null,
+      "section250": false,
+      "sentencedAt": "2024-03-22",
+      "caseSequence": 2,
+      "lineSequence": 5,
+      "caseReference": "E1234567",
+      "consecutiveSentenceUUIDs": []
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "isPcscSds": false,
+        "committedAt": "1993-07-30",
+        "offenceCode": "SX56025-029N",
+        "isPcscSec250": false,
+        "isPcscSdsPlus": false,
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 42
+        }
+      },
+      "identifier": "b159ec36-568c-36c7-aa86-bd651e56dc17",
+      "recallType": null,
+      "section250": false,
+      "sentencedAt": "2024-03-22",
+      "caseSequence": 2,
+      "lineSequence": 5,
+      "caseReference": "F1234567",
+      "consecutiveSentenceUUIDs": []
+    },
+    {
+      "type": "ExtendedDeterminateSentence",
+      "offence": {
+        "isPcscSds": false,
+        "committedAt": "1990-12-31",
+        "offenceCode": "SX56013-122N",
+        "isPcscSec250": false,
+        "isPcscSdsPlus": false,
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "identifier": "241be04a-1ad1-3753-bc70-23dad8c01f36",
+      "recallType": null,
+      "sentencedAt": "2024-03-22",
+      "caseSequence": 2,
+      "lineSequence": 6,
+      "caseReference": "G1234567",
+      "automaticRelease": false,
+      "custodialDuration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 14,
+          "MONTHS": 0
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 1,
+          "MONTHS": 0
+        }
+      },
+      "consecutiveSentenceUUIDs": []
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "isPcscSds": false,
+        "committedAt": "1990-12-31",
+        "offenceCode": "SX56013-122N",
+        "isPcscSec250": false,
+        "isPcscSdsPlus": false,
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 13,
+          "MONTHS": 0
+        }
+      },
+      "identifier": "bb9b9a7a-3900-3237-a14a-89fdc18723b9",
+      "recallType": null,
+      "section250": false,
+      "sentencedAt": "2024-03-22",
+      "caseSequence": 2,
+      "lineSequence": 7,
+      "caseReference": "H1234567",
+      "consecutiveSentenceUUIDs": []
+    }
+  ],
+  "adjustments": {},
+  "calculateErsed": true,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}
