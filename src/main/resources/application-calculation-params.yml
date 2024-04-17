@@ -11,6 +11,16 @@ hdced:
     unit: DAYS
   minimum-custodial-period-days: 14
   deduction-days: 179
+hdced4:
+  envelope-minimum:
+    value: 12
+    unit: WEEKS
+  envelope-mid-point:
+    value: 720
+    unit: DAYS
+  minimum-custodial-period-days: 14
+  deduction-days: 179
+
 ersed:
   max-period-days: 544
 release-point-multipliers:
