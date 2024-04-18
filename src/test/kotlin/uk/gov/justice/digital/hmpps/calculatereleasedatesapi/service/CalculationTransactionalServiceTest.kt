@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.security.oauth2.jwt.Jwt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdced4ConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
@@ -551,13 +552,14 @@ class CalculationTransactionalServiceTest {
 
   private fun calculationTransactionalService(params: String = "calculation-params"): CalculationTransactionalService {
     val hdcedConfiguration = hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
+    val hdced4Configuration = hdced4ConfigurationForTests()
     val ersedConfiguration = ersedConfigurationForTests()
     val releasePointMultipliersConfiguration = releasePointMultiplierConfigurationForTests(params)
 
     val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
     val workingDayService = WorkingDayService(bankHolidayService)
     val tusedCalculator = TusedCalculator(workingDayService)
-    val hdced4Calculator = Hdced4Calculator(hdcedConfiguration)
+    val hdced4Calculator = Hdced4Calculator(hdced4Configuration)
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultipliersConfiguration)
     val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
@@ -571,6 +573,7 @@ class CalculationTransactionalServiceTest {
     )
     val bookingExtractionService = BookingExtractionService(
       sentencesExtractionService,
+      hdcedConfiguration,
     )
     val bookingTimelineService = BookingTimelineService(
       sentenceAdjustedCalculationService,

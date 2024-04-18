@@ -84,7 +84,7 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
     }
 
     if (sentence.releaseDateTypes.contains(HDCED)) {
-      hdcedCalculator.calculateHdced(sentence, sentenceCalculation)
+      hdcedCalculator.calculateHdced(sentence, sentenceCalculation, booking.offender)
     }
     if (sentence.releaseDateTypes.contains(HDCED4PLUS)) {
       hdced4Calculator.calculateHdced4(sentence, sentenceCalculation)

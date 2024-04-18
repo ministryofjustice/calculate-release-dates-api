@@ -1,16 +1,22 @@
 
 hdced:
+  maximum-sentence-length-years: 4
+  minimum-custodial-period-days: 42
+  custodial-period-mid-point-days: 360
+  custodial-period-below-midpoint-minimum-deduction-days: 28
+  custodial-period-above-midpoint-deduction-days: 179
+  minimum-days-on-hdc: 14
+
+hdced4:
   envelope-minimum:
     value: 12
     unit: WEEKS
-  envelope-maximum:
-    value: 4
-    unit: YEARS
   envelope-mid-point:
     value: 720
     unit: DAYS
   minimum-custodial-period-days: 14
   deduction-days: 179
+
 ersed:
   max-period-days: 544
 release-point-multipliers:
