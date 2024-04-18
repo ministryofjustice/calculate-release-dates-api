@@ -317,7 +317,7 @@ class BookingExtractionService(
       mostRecentSentenceByAdjustedDeterminateReleaseDate,
       sentences,
       dates,
-      breakdownByReleaseDateType
+      breakdownByReleaseDateType,
     )
 
     /** --- ERSED --- **/
@@ -377,13 +377,15 @@ class BookingExtractionService(
           }
         }
       }
-      }
+    }
   }
 
-  private fun extractErsedForBooking(sentences: List<CalculableSentence>,
-                                     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
-                                     dates: MutableMap<ReleaseDateType, LocalDate>,
-                                     latestReleaseDate: LocalDate) {
+  private fun extractErsedForBooking(
+    sentences: List<CalculableSentence>,
+    breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+    dates: MutableMap<ReleaseDateType, LocalDate>,
+    latestReleaseDate: LocalDate,
+  ) {
     val latestEarlyReleaseSchemeEligibilitySentence =
       extractionService.mostRecentSentenceOrNull(sentences, SentenceCalculation::earlyReleaseSchemeEligibilityDate) { !it.sentenceCalculation.isImmediateRelease() }
     val latestAFineRelease =
