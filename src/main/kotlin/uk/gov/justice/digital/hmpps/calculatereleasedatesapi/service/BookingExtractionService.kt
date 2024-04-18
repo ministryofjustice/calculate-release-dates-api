@@ -124,6 +124,9 @@ class BookingExtractionService(
     )
   }
 
+  /**
+   *  Method applies business logic for when there are multiple sentences in a booking and the impact each may have on one another
+   */
   private fun extractMultiple(booking: Booking): CalculationResult {
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val otherDates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
@@ -308,6 +311,35 @@ class BookingExtractionService(
       dates[NCRD] = latestNotionalConditionalReleaseDate
     }
 
+    /** --- PED --- **/
+    extractPedForBooking(
+      latestExtendedDeterminateParoleEligibilityDate,
+      mostRecentSentenceByAdjustedDeterminateReleaseDate,
+      sentences,
+      dates,
+      breakdownByReleaseDateType
+    )
+
+    /** --- ERSED --- **/
+    extractErsedForBooking(sentences, breakdownByReleaseDateType, dates, latestReleaseDate)
+
+    /** --- ESED --- **/
+    dates[ESED] = latestUnadjustedExpiryDate
+    return CalculationResult(
+      dates.toMap(),
+      breakdownByReleaseDateType.toMap(),
+      otherDates.toMap(),
+      effectiveSentenceLength,
+    )
+  }
+
+  private fun extractPedForBooking(
+    latestExtendedDeterminateParoleEligibilityDate: LocalDate?,
+    mostRecentSentenceByAdjustedDeterminateReleaseDate: CalculableSentence,
+    sentences: List<CalculableSentence>,
+    dates: MutableMap<ReleaseDateType, LocalDate>,
+    breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+  ) {
     if (latestExtendedDeterminateParoleEligibilityDate != null) {
       val mostRecentReleaseSentenceHasParoleDate =
         mostRecentSentenceByAdjustedDeterminateReleaseDate.sentenceCalculation.extendedDeterminateParoleEligibilityDate
@@ -345,24 +377,29 @@ class BookingExtractionService(
           }
         }
       }
-    }
+      }
+  }
 
+  private fun extractErsedForBooking(sentences: List<CalculableSentence>,
+                                     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+                                     dates: MutableMap<ReleaseDateType, LocalDate>,
+                                     latestReleaseDate: LocalDate) {
     val latestEarlyReleaseSchemeEligibilitySentence =
       extractionService.mostRecentSentenceOrNull(sentences, SentenceCalculation::earlyReleaseSchemeEligibilityDate) { !it.sentenceCalculation.isImmediateRelease() }
     val latestAFineRelease =
-      extractionService.mostRecentOrNull(sentences.filterIsInstance<AFineSentence>(), SentenceCalculation::releaseDate)
-    val afineIsRelease = latestAFineRelease == latestReleaseDate
+      extractionService.mostRecentSentenceOrNull(sentences.filterIsInstance<AFineSentence>(), SentenceCalculation::releaseDate)
+    val afineIsRelease = latestAFineRelease?.sentenceCalculation?.releaseDate == latestReleaseDate
     if (latestEarlyReleaseSchemeEligibilitySentence != null && !afineIsRelease) {
       if (latestAFineRelease != null && latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!.isBefore(
-          latestAFineRelease,
-        )
+          latestAFineRelease.sentenceCalculation.releaseDate,
+        ) && !latestAFineRelease.sentenceCalculation.isImmediateRelease()
       ) {
         breakdownByReleaseDateType[ERSED] = ReleaseDateCalculationBreakdown(
           rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM),
-          releaseDate = latestAFineRelease,
+          releaseDate = latestAFineRelease.sentenceCalculation.releaseDate,
           unadjustedDate = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!,
         )
-        dates[ERSED] = latestAFineRelease
+        dates[ERSED] = latestAFineRelease.sentenceCalculation.releaseDate
       } else {
         if (sentences.any { it.isDto() }) {
           calculateErsedWhereDtoIsPresent(
@@ -378,14 +415,6 @@ class BookingExtractionService(
         }
       }
     }
-
-    dates[ESED] = latestUnadjustedExpiryDate
-    return CalculationResult(
-      dates.toMap(),
-      breakdownByReleaseDateType.toMap(),
-      otherDates.toMap(),
-      effectiveSentenceLength,
-    )
   }
 
   private fun isTusedableDtos(booking: Booking, effectiveSentenceLength: Period): Boolean {
