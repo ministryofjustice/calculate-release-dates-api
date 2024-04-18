@@ -208,7 +208,7 @@ class HdcedCalculatorTest {
     calc(sentenceCalculation, sentence)
 
     assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isEqualTo(LocalDate.of(2020, 1, 15))
-    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(10L) /* 35 minus 25 for remand */
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(14L) /* 35 minus 25 for remand */
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isEqualTo(
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT),
@@ -249,6 +249,22 @@ class HdcedCalculatorTest {
   }
 
   @Test
+  fun `exact midpoint should use above midpoint calculation method`() {
+    val sentencedAt = LocalDate.of(2020, 1, 1)
+    val duration = Duration(mapOf(ChronoUnit.DAYS to 1000L))
+    val offence = Offence(LocalDate.of(2020, 1, 1))
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+
+    val sentenceCalculation = sentenceCalculation(sentence, 1000, config.custodialPeriodMidPointDays.toInt(), Adjustments())
+
+    calc(sentenceCalculation, sentence)
+
+    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isEqualTo(LocalDate.of(2020, 6, 29))
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(180L)
+    assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]?.rules?.first()).isEqualTo(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD)
+  }
+
+  @Test
   fun `should calculate a date with minimum custodial period if the sentence length is greater than the midpoint and less than maximum`() {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.DAYS to 722L))
@@ -261,7 +277,7 @@ class HdcedCalculatorTest {
     calc(sentenceCalculation, sentence)
 
     assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isEqualTo(LocalDate.of(2020, 1, 15))
-    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(1L)
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(14L)
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isEqualTo(
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD),
