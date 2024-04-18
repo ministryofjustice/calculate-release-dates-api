@@ -573,6 +573,7 @@ class CalculationTransactionalServiceTest {
     )
     val bookingExtractionService = BookingExtractionService(
       sentencesExtractionService,
+      hdcedConfiguration,
     )
     val bookingTimelineService = BookingTimelineService(
       sentenceAdjustedCalculationService,
