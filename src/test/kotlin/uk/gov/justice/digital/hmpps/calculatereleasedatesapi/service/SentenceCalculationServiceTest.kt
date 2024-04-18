@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -114,7 +115,9 @@ class SentenceCalculationServiceTest {
     val calculation = sentenceCalculationService.calculate(sentence, booking)
     assertEquals(LocalDate.of(2022, 2, 22), calculation.expiryDate)
     assertEquals(LocalDate.of(2019, 8, 24), calculation.releaseDate)
-    assertEquals("[SLED, CRD, HDCED4PLUS]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[SLED, CRD, HDCED, HDCED4PLUS]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertThat(calculation.homeDetentionCurfewEligibilityDate).isNull()
+    assertThat(calculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isZero()
   }
 
   @BeforeEach

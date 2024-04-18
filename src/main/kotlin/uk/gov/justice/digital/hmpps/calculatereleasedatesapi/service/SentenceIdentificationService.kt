@@ -234,7 +234,7 @@ class SentenceIdentificationService(
         releaseDateTypes += TUSED
       }
 
-      if (!sentence.isMadeUpOfOnlyDtos() && hdcedCalculator.doesHdcedDateApply(sentence, offender)) {
+      if (!sentence.isMadeUpOfOnlyDtos()) {
         releaseDateTypes += HDCED
       }
       if (hdced4Calculator.doesHdced4DateApply(sentence, offender)) {
@@ -318,10 +318,8 @@ class SentenceIdentificationService(
     if (tusedCalculator.doesTopUpSentenceExpiryDateApply(sentence, offender)) {
       releaseDateTypes += TUSED
     }
-
-    if (hdcedCalculator.doesHdcedDateApply(sentence, offender)) {
-      releaseDateTypes += HDCED
-    }
+    // Always request HDCED although restrictions apply at calculation time
+    releaseDateTypes += HDCED
     if (hdced4Calculator.doesHdced4DateApply(sentence, offender)) {
       releaseDateTypes += HDCED4PLUS
     }

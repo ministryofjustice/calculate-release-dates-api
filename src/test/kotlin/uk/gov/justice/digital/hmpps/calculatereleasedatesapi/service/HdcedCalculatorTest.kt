@@ -38,7 +38,7 @@ class HdcedCalculatorTest {
   }
 
   @Test
-  fun `shouldn't calculate a date when the sentence length is less than the minimum`() {
+  fun `shouldn't calculate a date when the custodial period is less than the minimum`() {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.WEEKS to 11L))
     val offence = Offence(LocalDate.of(2020, 1, 1))
@@ -107,11 +107,11 @@ class HdcedCalculatorTest {
   @Test
   fun `should calculate a date with 28 days rules if the sentence length is greater than the minimum and less than midpoint and quarter is less than 28`() {
     val sentencedAt = LocalDate.of(2020, 1, 1)
-    val duration = Duration(mapOf(ChronoUnit.WEEKS to 16L))
+    val duration = Duration(mapOf(ChronoUnit.DAYS to 106L))
     val offence = Offence(LocalDate.of(2020, 1, 1))
     val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
 
-    val sentenceCalculation = sentenceCalculation(sentence, 112, 56, Adjustments())
+    val sentenceCalculation = sentenceCalculation(sentence, 106, 53, Adjustments())
 
     calc(sentenceCalculation, sentence)
 
@@ -238,8 +238,6 @@ class HdcedCalculatorTest {
     isActiveSexOffender: Boolean = false,
   ) {
     val offender = Offender("ABC123", LocalDate.of(1980, 1, 1), isActiveSexOffender = isActiveSexOffender)
-    if (calculator.doesHdcedDateApply(sentence, offender)) {
-      calculator.calculateHdced(sentence, sentenceCalculation)
-    }
+    calculator.calculateHdced(sentence, sentenceCalculation, offender)
   }
 }
