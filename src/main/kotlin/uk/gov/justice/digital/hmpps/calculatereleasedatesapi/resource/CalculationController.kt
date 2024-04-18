@@ -38,12 +38,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationResultEnrichmentService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenderKeyDatesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 
 @RestController
@@ -56,8 +55,7 @@ class CalculationController(
   private val detailedCalculationResultsService: DetailedCalculationResultsService,
   private val latestCalculationService: LatestCalculationService,
   private val calculationBreakdownService: CalculationBreakdownService,
-  private val prisonService: PrisonService,
-  private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
+  private val offenderKeyDatesService: OffenderKeyDatesService,
 ) {
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -475,12 +473,7 @@ class CalculationController(
     offenderSentCalculationId: Long,
   ): NomisCalculationSummary {
     log.info("Request received to get offender key dates for $offenderSentCalculationId")
-    val nomisOffenderKeyDates = prisonService.getNOMISOffenderKeyDates(offenderSentCalculationId)
-      .getOrElse { problemMessage -> throw CrdWebException(problemMessage, HttpStatus.NOT_FOUND) }
-    val releaseDatesForSentCalculationId = latestCalculationService.releaseDates(nomisOffenderKeyDates)
-    val detailsReleaseDates = calculationResultEnrichmentService.addDetailToCalculationDates(releaseDatesForSentCalculationId, null, null).values.toList()
-    val nomisReason = prisonService.getNOMISCalcReasons().find { it.code == nomisOffenderKeyDates.reasonCode }?.description ?: nomisOffenderKeyDates.reasonCode
-    return NomisCalculationSummary(nomisReason, nomisOffenderKeyDates.calculatedAt, nomisOffenderKeyDates.comment, detailsReleaseDates)
+    return offenderKeyDatesService.getNomisCalculationSummary(offenderSentCalculationId)
   }
 
   companion object {

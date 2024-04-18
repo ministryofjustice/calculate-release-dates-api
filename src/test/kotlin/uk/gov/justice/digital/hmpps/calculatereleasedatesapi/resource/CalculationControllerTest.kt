@@ -7,10 +7,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mockito.anyList
 import org.mockito.Mockito.reset
 import org.mockito.kotlin.any
-import org.mockito.kotlin.isNull
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -37,6 +35,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -49,22 +48,18 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationResultEnrichmentService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenderKeyDatesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
@@ -92,10 +87,7 @@ class CalculationControllerTest {
   private lateinit var calculationBreakdownService: CalculationBreakdownService
 
   @MockBean
-  private lateinit var prisonService: PrisonService
-
-  @MockBean
-  private lateinit var calculationResultEnrichmentService: CalculationResultEnrichmentService
+  private lateinit var offenderKeyDatesService: OffenderKeyDatesService
 
   @Autowired
   private lateinit var mvc: MockMvc
@@ -121,8 +113,7 @@ class CalculationControllerTest {
           detailedCalculationResultsService,
           latestCalculationService,
           calculationBreakdownService,
-          prisonService,
-          calculationResultEnrichmentService,
+          offenderKeyDatesService,
         ),
       )
       .setControllerAdvice(ControllerAdvice())
@@ -424,11 +415,15 @@ class CalculationControllerTest {
   }
 
   @Test
-  fun `Test GET of offender Key Dates when there is a problem getting the dates from Prison Service NOMIS`() {
+  fun `Test GET of offender Key Dates when there is a problem getting the dates from Prison Service - NOMIS`() {
     val offenderSentCalcId = 5636121L
     val errorMessage = "There isn't one"
 
-    whenever(prisonService.getNOMISOffenderKeyDates(any())).thenReturn(errorMessage.left())
+    whenever(
+      offenderKeyDatesService.getNomisCalculationSummary(any()),
+    ).then {
+      throw CrdWebException(errorMessage, HttpStatus.NOT_FOUND)
+    }
 
     val result = mvc.perform(get("/calculation/nomis-calculation-summary/$offenderSentCalcId").accept(APPLICATION_JSON))
       .andExpect(status().isNotFound)
@@ -449,12 +444,6 @@ class CalculationControllerTest {
   @Test
   fun `Test GET of offender key dates for offenderSentCalcId successfully`() {
     val offenderSentCalcId = 5636121L
-    var offenderKeyDates = OffenderKeyDates(
-      reasonCode = "FS",
-      calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
-      comment = null,
-      homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
-    )
     val expected = NomisCalculationSummary(
       "Further Sentence",
       LocalDateTime.of(2024, 2, 29, 10, 30),
@@ -469,15 +458,7 @@ class CalculationControllerTest {
       ),
     )
 
-    val detailedDates = mapOf(ReleaseDateType.HDCED to DetailedDate(ReleaseDateType.HDCED, ReleaseDateType.HDCED.description, LocalDate.of(2024, 1, 1), emptyList()))
-
-    whenever(prisonService.getNOMISOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
-    whenever(latestCalculationService.releaseDates(any())).thenReturn(
-      listOf(ReleaseDate(LocalDate.of(2024, 1, 1), ReleaseDateType.HDCED)),
-      emptyList(),
-    )
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(anyList(), isNull(), isNull())).thenReturn(detailedDates)
-    whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason(code = "FS", description = "Further Sentence")))
+    whenever(offenderKeyDatesService.getNomisCalculationSummary(any())).thenReturn(expected)
 
     val result = mvc.perform(get("/calculation/nomis-calculation-summary/$offenderSentCalcId").accept(APPLICATION_JSON))
       .andExpect(status().isOk)

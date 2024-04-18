@@ -41,7 +41,8 @@ class LatestCalculationServiceTest {
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService = mock()
   private val calculationBreakdownService: CalculationBreakdownService = mock()
   private val prisonApiDataMapper: PrisonApiDataMapper = mock()
-  private val service = LatestCalculationService(prisonService, calculationRequestRepository, calculationResultEnrichmentService, calculationBreakdownService, prisonApiDataMapper)
+  private val offenderKeyDatesService: OffenderKeyDatesService = OffenderKeyDatesService(prisonService, calculationResultEnrichmentService)
+  private val service = LatestCalculationService(prisonService, offenderKeyDatesService, calculationRequestRepository, calculationResultEnrichmentService, calculationBreakdownService, prisonApiDataMapper)
   private val objectMapper = TestUtil.objectMapper()
   private val prisonerId = "ABC123"
   private val bookingId = 123456L

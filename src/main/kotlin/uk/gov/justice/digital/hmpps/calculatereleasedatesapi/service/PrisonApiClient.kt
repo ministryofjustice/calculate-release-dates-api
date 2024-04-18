@@ -193,9 +193,9 @@ class PrisonApiClient(
       .exchangeToMono { response ->
         when (response.statusCode()) {
           HttpStatus.OK -> response.bodyToMono(typeReference<OffenderKeyDates>()).map { it.right() }
-          HttpStatus.NOT_FOUND -> Mono.just("Offender Key Dates  ($offenderSentCalcId) not found or has no calculations".left())
-          HttpStatus.FORBIDDEN -> Mono.just("User is not allowed to view the Offender Key Dates ($offenderSentCalcId)".left())
-          else -> Mono.just("Offender Key Dates ($offenderSentCalcId) could not be loaded for an unknown reason. Status ${response.statusCode().value()}".left())
+          HttpStatus.NOT_FOUND -> Mono.just("Offender Key Dates for offenderSentCalcId ($offenderSentCalcId) not found or has no calculations".left())
+          HttpStatus.FORBIDDEN -> Mono.just("User is not allowed to view the Offender Key Dates for offenderSentCalcId ($offenderSentCalcId)".left())
+          else -> Mono.just("Offender Key Dates for offenderSentCalcId ($offenderSentCalcId) could not be loaded for an unknown reason. Status ${response.statusCode().value()}".left())
         }
       }
       .block()!!

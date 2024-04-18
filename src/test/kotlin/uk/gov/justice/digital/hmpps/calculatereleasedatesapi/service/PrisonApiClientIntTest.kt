@@ -91,7 +91,7 @@ class PrisonApiClientIntTest(private val mockPrisonService: MockPrisonService) :
   }
 
   @Test
-  fun `can get offender release dates by offenderSentCalcId`() {
+  fun `can get offender release dates by offenderSentCalcId from NOMIS`() {
     mockPrisonService.withStub(
       get("/api/offender-dates/sentence-calculation/-1")
         .willReturn(
@@ -125,5 +125,25 @@ class PrisonApiClientIntTest(private val mockPrisonService: MockPrisonService) :
     assertThat(offenderKeyDates.sentenceExpiryDate).isEqualTo(LocalDate.of(2020, 3, 24))
     assertThat(offenderKeyDates.conditionalReleaseDate).isEqualTo(LocalDate.of(2019, 5, 24))
     assertThat(offenderKeyDates.dtoPostRecallReleaseDate).isEqualTo(LocalDate.of(2020, 3, 22))
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    "404,Offender Key Dates for offenderSentCalcId (123456) not found or has no calculations",
+    "403,User is not allowed to view the Offender Key Dates for offenderSentCalcId (123456)",
+    "400,Offender Key Dates for offenderSentCalcId (123456) could not be loaded for an unknown reason. Status 400",
+    "500,Offender Key Dates for offenderSentCalcId (123456) could not be loaded for an unknown reason. Status 500",
+  )
+  fun `get offender release dates by offenderSentCalcId from NOMIS should throw error`(status: Int, expectedError: String) {
+    val offenderSentCalcId = 123456L
+    mockPrisonService.withStub(
+      get("/api/offender-dates/sentence-calculation/$offenderSentCalcId")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(status),
+        ),
+    )
+    assertThat(prisonApiClient.getNOMISOffenderKeyDates(offenderSentCalcId)).isEqualTo(expectedError.left())
   }
 }
