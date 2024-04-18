@@ -20,17 +20,11 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
 
   fun calculateHdced(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation, offender: Offender) {
     val custodialPeriod = sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble
-    if (
-      offender.isActiveSexOffender ||
-      !isSentenceLengthBelowMaximum(sentence) ||
-      isAdjustedReleasePointLessThanMinimumElibilePeriod(sentenceCalculation, sentence) ||
-      isUnadjustedReleasePointLessThanMinimumCustodialPeriod(custodialPeriod)
-    ) {
+    if (isNotEligibleForHDC(offender, sentence, sentenceCalculation, custodialPeriod)) {
       sentenceCalculation.homeDetentionCurfewEligibilityDate = null
       sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = 0
       return
     }
-
     val adjustedDays = sentenceCalculation.calculatedTotalAddedDays
       .plus(sentenceCalculation.calculatedTotalAwardedDays)
       .minus(sentenceCalculation.calculatedTotalDeductedDays)
@@ -43,11 +37,17 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
     }
   }
 
-  private fun isSentenceLengthBelowMaximum(sentence: CalculableSentence) = sentence.durationIsLessThan(hdcedConfiguration.maximumSentenceLengthYears, ChronoUnit.YEARS)
+  private fun isNotEligibleForHDC(offender: Offender, sentence: CalculableSentence, sentenceCalculation: SentenceCalculation, custodialPeriod: Double) =
+    offender.isActiveSexOffender ||
+      sentenceLengthIsAboveOrEqualToMaximum(sentence) ||
+      adjustedReleasePointIsLessThanMinimumEligibilePeriod(sentenceCalculation, sentence) ||
+      unadjustedReleasePointIsLessThanMinimumCustodialPeriod(custodialPeriod)
 
-  private fun isUnadjustedReleasePointLessThanMinimumCustodialPeriod(custodialPeriod: Double) = custodialPeriod < hdcedConfiguration.minimumCustodialPeriodDays
+  private fun sentenceLengthIsAboveOrEqualToMaximum(sentence: CalculableSentence) = sentence.durationIsGreaterThanOrEqualTo(hdcedConfiguration.maximumSentenceLengthYears, ChronoUnit.YEARS)
 
-  private fun isAdjustedReleasePointLessThanMinimumElibilePeriod(sentenceCalculation: SentenceCalculation, sentence: CalculableSentence) =
+  private fun unadjustedReleasePointIsLessThanMinimumCustodialPeriod(custodialPeriod: Double) = custodialPeriod < hdcedConfiguration.minimumCustodialPeriodDays
+
+  private fun adjustedReleasePointIsLessThanMinimumEligibilePeriod(sentenceCalculation: SentenceCalculation, sentence: CalculableSentence) =
     sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc))
 
   private fun calculateHdcedUnderMidpoint(

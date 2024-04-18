@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
@@ -18,6 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import kotlin.math.ceil
 
 class HdcedCalculatorTest {
 
@@ -48,6 +51,45 @@ class HdcedCalculatorTest {
     calc(sentenceCalculation, sentence)
 
     assertHasNoHDCED(sentenceCalculation)
+  }
+
+  @Test
+  fun `minimum custodial period is inclusive`() {
+    val sentencedAt = LocalDate.of(2020, 1, 1)
+    val duration = Duration(mapOf(ChronoUnit.DAYS to config.minimumCustodialPeriodDays * 2))
+    val offence = Offence(LocalDate.of(2020, 1, 1))
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentenceCalculation = sentenceCalculation(sentence, config.minimumCustodialPeriodDays.toInt() * 2, config.minimumCustodialPeriodDays.toInt(), Adjustments())
+
+    calc(sentenceCalculation, sentence)
+
+    assertHasHDCED(sentenceCalculation)
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    "210,0.2,true",
+    "205,0.2,false",
+    "84,0.5,true",
+    "82,0.5,false",
+    "94,0.45,true",
+    "91,0.45,false",
+  )
+  fun `minimum custodial period handles different release points`(sentenceLength: Int, releasePointMultiplier: Double, hasHDCED: Boolean) {
+    val numberOfDaysToDeterminateRelease = ceil(sentenceLength.toDouble() * releasePointMultiplier).toInt()
+    val sentencedAt = LocalDate.of(2020, 1, 1)
+    val duration = Duration(mapOf(ChronoUnit.DAYS to sentenceLength.toLong()))
+    val offence = Offence(LocalDate.of(2020, 1, 1))
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentenceCalculation = sentenceCalculation(sentence, sentenceLength, numberOfDaysToDeterminateRelease, Adjustments())
+
+    calc(sentenceCalculation, sentence)
+
+    if (hasHDCED) {
+      assertHasHDCED(sentenceCalculation)
+    } else {
+      assertHasNoHDCED(sentenceCalculation)
+    }
   }
 
   @Test
@@ -102,6 +144,29 @@ class HdcedCalculatorTest {
         unadjustedDate = LocalDate.of(2020, 1, 1),
       ),
     ) /* Shows hint as Sentence date plus HDCED adjustment (35) plus/minus regular adjustment (0) */
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    "140,0.5,2020-02-05,35",
+    "300,0.2,2020-01-31,30",
+    "84,0.5,2020-01-29,28",
+    "200,0.45,2020-02-15,45",
+  )
+  fun `below midpoint calculation should handle different release points`(sentenceLength: Int, releasePointMultiplier: Double, expectedHDCED: LocalDate, expectedNumberOfDaysToHDCED: Long) {
+    val numberOfDaysToDeterminateRelease = ceil(sentenceLength.toDouble() * releasePointMultiplier).toInt()
+    val sentencedAt = LocalDate.of(2020, 1, 1)
+    val duration = Duration(mapOf(ChronoUnit.DAYS to sentenceLength.toLong()))
+    val offence = Offence(LocalDate.of(2020, 1, 1))
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+
+    val sentenceCalculation = sentenceCalculation(sentence, sentenceLength, numberOfDaysToDeterminateRelease, Adjustments())
+
+    calc(sentenceCalculation, sentence)
+
+    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isEqualTo(expectedHDCED)
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(expectedNumberOfDaysToHDCED)
+    assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]?.rules?.first()).isEqualTo(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT)
   }
 
   @Test
@@ -212,8 +277,14 @@ class HdcedCalculatorTest {
 
   private fun assertHasNoHDCED(sentenceCalculation: SentenceCalculation) {
     assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isNull()
-    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(0)
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isZero()
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isNull()
+  }
+
+  private fun assertHasHDCED(sentenceCalculation: SentenceCalculation) {
+    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isNotNull()
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isPositive()
+    assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isNotNull
   }
 
   private fun sentenceCalculation(sentence: StandardDeterminateSentence, numberOfDaysToSED: Int, numberOfDaysToDeterminateReleaseDate: Int, adjustments: Adjustments) =
