@@ -143,7 +143,7 @@ class HdcedCalculatorTest {
         releaseDate = LocalDate.of(2020, 2, 5),
         unadjustedDate = LocalDate.of(2020, 1, 1),
       ),
-    ) /* Shows hint as Sentence date plus HDCED adjustment (35) plus/minus regular adjustment (0) */
+    ) // Shows hint as Sentence date plus HDCED adjustment (35) plus/minus regular adjustment (0)
   }
 
   @ParameterizedTest
@@ -192,7 +192,7 @@ class HdcedCalculatorTest {
         releaseDate = LocalDate.of(2020, 1, 29),
         unadjustedDate = LocalDate.of(2020, 1, 1),
       ),
-    ) /* Shows hint as Sentence date plus HDCED adjustment (35) plus/minus regular adjustment (0) */
+    ) // Shows hint as Sentence date plus HDCED adjustment (35) plus/minus regular adjustment (0)
   }
 
   @Test
@@ -208,7 +208,7 @@ class HdcedCalculatorTest {
     calc(sentenceCalculation, sentence)
 
     assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isEqualTo(LocalDate.of(2020, 1, 15))
-    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(14L) /* 35 minus 25 for remand */
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(14L)
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isEqualTo(
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT),
@@ -245,7 +245,7 @@ class HdcedCalculatorTest {
         releaseDate = LocalDate.of(2020, 6, 30),
         unadjustedDate = LocalDate.of(2020, 12, 26),
       ),
-    ) /* Hint shown as adjusted CRD minus 179 days */
+    ) // Hint shown as adjusted CRD minus 179 days
   }
 
   @Test
