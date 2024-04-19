@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -33,6 +34,7 @@ class ManualCalculationService(
   private val eventService: EventService,
   private val serviceUserService: ServiceUserService,
   private val nomisCommentService: NomisCommentService,
+  private val buildProperties: BuildProperties,
 ) {
 
   fun hasIndeterminateSentences(bookingId: Long): Boolean {
@@ -61,6 +63,7 @@ class ManualCalculationService(
       reasonForCalculation,
       objectMapper,
       manualEntryRequest.otherReasonDescription,
+      version = buildProperties.version,
     ).withType(type)
 
     return try {
@@ -88,6 +91,7 @@ class ManualCalculationService(
           reasonForCalculation,
           objectMapper,
           manualEntryRequest.otherReasonDescription,
+          version = buildProperties.version,
         ),
       )
       ManualCalculationResponse(emptyMap(), calculationRequest.id)

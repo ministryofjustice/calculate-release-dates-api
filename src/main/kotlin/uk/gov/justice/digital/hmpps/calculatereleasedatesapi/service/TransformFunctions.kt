@@ -380,6 +380,7 @@ fun transform(
   calculationUserInputs: CalculationUserInputs? = null,
   calculationFragments: CalculationFragments? = null,
   calculationType: CalculationType = CalculationType.CALCULATED,
+  version: String,
 ): CalculationRequest {
   return CalculationRequest(
     prisonerId = booking.offender.reference,
@@ -398,6 +399,7 @@ fun transform(
     calculationType = calculationType,
     reasonForCalculation = reasonForCalculation,
     otherReasonForCalculation = otherReasonDescription,
+    version = version,
   )
 }
 

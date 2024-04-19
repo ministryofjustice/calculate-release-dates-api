@@ -1,0 +1,1 @@
+ALTER TABLE calculation_request ADD COLUMN version varchar(64) NOT NULL DEFAULT '1';

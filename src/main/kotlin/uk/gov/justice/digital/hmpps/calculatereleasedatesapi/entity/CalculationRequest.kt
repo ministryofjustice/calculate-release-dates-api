@@ -109,6 +109,8 @@ data class CalculationRequest(
   val reasonForCalculation: CalculationReason? = null,
 
   val otherReasonForCalculation: String? = null,
+
+  val version: String = "1",
 ) {
 
   init {
