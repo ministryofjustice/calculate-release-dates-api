@@ -397,7 +397,9 @@ custom-examples,crs-1835-botus-ac1,,calculation-params
 custom-examples,crs-1835-botus-ac2,,calculation-params
 custom-examples,crs-1835-botus-ac4,,calculation-params
 custom-examples,crs-1881-immediate-release-sds,,calculation-params
+alternative-release-point,1,,alt-calculation-params
 alternative-release-point,2,,alt-calculation-params
+alternative-release-point,3,,alt-calculation-params
 alternative-release-point,4,,alt-calculation-params
 alternative-release-point,5,,alt-calculation-params
 alternative-release-point,6,,alt-calculation-params
@@ -409,3 +411,6 @@ alternative-release-point,16,,alt-calculation-params
 alternative-release-point,17,,alt-calculation-params
 alternative-release-point,19,,alt-calculation-params
 alternative-release-point,20,,alt-calculation-params
+alternative-release-point,8-alt-2,,alt-2-calculation-params
+alternative-release-point,13-alt-2,,alt-2-calculation-params
+

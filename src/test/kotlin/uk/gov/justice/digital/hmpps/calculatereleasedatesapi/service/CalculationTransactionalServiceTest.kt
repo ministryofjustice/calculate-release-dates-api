@@ -26,12 +26,11 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.security.oauth2.jwt.Jwt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdced4ConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -47,6 +46,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationDataHasChangedError
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
@@ -116,9 +116,6 @@ class CalculationTransactionalServiceTest {
 
   @Captor
   lateinit var updatedOffenderDatesArgumentCaptor: ArgumentCaptor<UpdateOffenderDates>
-
-  @Captor
-  lateinit var approvedDatesArgumentCaptor: ArgumentCaptor<List<ApprovedDates>>
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
@@ -551,13 +548,14 @@ class CalculationTransactionalServiceTest {
 
   private fun calculationTransactionalService(params: String = "calculation-params"): CalculationTransactionalService {
     val hdcedConfiguration = hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
+    val hdced4Configuration = hdced4ConfigurationForTests()
     val ersedConfiguration = ersedConfigurationForTests()
     val releasePointMultipliersConfiguration = releasePointMultiplierConfigurationForTests(params)
 
     val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
     val workingDayService = WorkingDayService(bankHolidayService)
     val tusedCalculator = TusedCalculator(workingDayService)
-    val hdced4Calculator = Hdced4Calculator(hdcedConfiguration)
+    val hdced4Calculator = Hdced4Calculator(hdced4Configuration)
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultipliersConfiguration)
     val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
@@ -571,6 +569,7 @@ class CalculationTransactionalServiceTest {
     )
     val bookingExtractionService = BookingExtractionService(
       sentencesExtractionService,
+      hdcedConfiguration,
     )
     val bookingTimelineService = BookingTimelineService(
       sentenceAdjustedCalculationService,
@@ -599,6 +598,7 @@ class CalculationTransactionalServiceTest {
       serviceUserService,
       approvedDatesSubmissionRepository,
       nomisCommentService,
+      TEST_BUILD_PROPERTIES,
     )
   }
 
@@ -660,11 +660,6 @@ class CalculationTransactionalServiceTest {
     private val ZERO_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 0L))
     private val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
     val ESED_DATE: LocalDate = LocalDate.of(2021, 5, 5)
-    val FAKE_TOKEN: Jwt = Jwt
-      .withTokenValue("123")
-      .header("header1", "value1")
-      .claim("claim1", "value1")
-      .build()
     private val CALCULATION_REFERENCE: UUID = UUID.fromString("219db65e-d7b7-4c70-9239-98babff7bcd5")
     private val THIRD_FEB_2021 = LocalDate.of(2021, 2, 3)
     private val FIFTH_APRIL_2021 = LocalDate.of(2021, 4, 5)

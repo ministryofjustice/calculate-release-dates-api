@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.ERSED_ADJUSTED_TO_MTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -43,6 +44,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 @Service
 class BookingExtractionService(
   val extractionService: SentencesExtractionService,
+  val hdcedConfiguration: HdcedConfiguration,
 ) {
 
   fun extract(
@@ -520,13 +522,10 @@ class BookingExtractionService(
             sentenceGroup.filter { !it.isRecall() },
             SentenceCalculation::unadjustedExpiryDate,
           )
-        val effectiveSentenceLength = getEffectiveSentenceLength(
-          earliestSentenceDate,
-          latestUnadjustedExpiryDate,
-        )
-        if (effectiveSentenceLength.years < 4) {
+
+        if (latestUnadjustedExpiryDate.isBefore(earliestSentenceDate.plus(hdcedConfiguration.maximumSentenceLengthYears, ChronoUnit.YEARS))) {
           val hdcedSentence = extractionService.mostRecentSentenceOrNull(
-            sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
+            sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc)) },
             SentenceCalculation::homeDetentionCurfewEligibilityDate,
           )
           val latestConflictingNonHdcCrd = getLatestConflictingNonHdcOrHdc4Sentence(

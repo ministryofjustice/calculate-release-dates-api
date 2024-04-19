@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -8,6 +9,7 @@ import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdced4ConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
@@ -26,7 +28,8 @@ class SentenceCalculationServiceTest {
   private val bankHolidayService = mock<BankHolidayService>()
   private val workingDayService = WorkingDayService(bankHolidayService)
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val hdced4Calculator = Hdced4Calculator(hdcedConfiguration)
+  private val hdced4Configuration = hdced4ConfigurationForTests()
+  private val hdced4Calculator = Hdced4Calculator(hdced4Configuration)
   private val ersedCalculator = ErsedCalculator(ersedConfigurationForTests())
   private val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultiplierConfigurationForTests())
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
@@ -112,7 +115,9 @@ class SentenceCalculationServiceTest {
     val calculation = sentenceCalculationService.calculate(sentence, booking)
     assertEquals(LocalDate.of(2022, 2, 22), calculation.expiryDate)
     assertEquals(LocalDate.of(2019, 8, 24), calculation.releaseDate)
-    assertEquals("[SLED, CRD, HDCED4PLUS]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[SLED, CRD, HDCED, HDCED4PLUS]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertThat(calculation.homeDetentionCurfewEligibilityDate).isNull()
+    assertThat(calculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isZero()
   }
 
   @BeforeEach
