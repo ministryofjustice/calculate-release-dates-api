@@ -1,0 +1,77 @@
+{
+  "offender": {
+    "reference": "A1234BC",
+    "dateOfBirth": "1981-08-23",
+    "isActiveSexOffender": false
+  },
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "isPcscSds": false,
+        "committedAt": "2023-08-18",
+        "offenceCode": "COML002",
+        "isPcscSec250": false,
+        "isPcscSdsPlus": false,
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 2,
+          "MONTHS": 0
+        }
+      },
+      "recallType": null,
+      "section250": false,
+      "sentencedAt": "2024-02-01",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": "A1234567",
+      "consecutiveSentenceUUIDs": []
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "isPcscSds": false,
+        "committedAt": "2023-08-19",
+        "offenceCode": "PH97004",
+        "isPcscSec250": false,
+        "isPcscSdsPlus": false,
+        "isScheduleFifteen": false,
+        "isScheduleFifteenMaximumLife": false
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 8,
+          "YEARS": 0,
+          "MONTHS": 0
+        }
+      },
+      "identifier": "dfa11d46-bda8-34ef-943c-5f30a961e9bf",
+      "recallType": null,
+      "section250": false,
+      "sentencedAt": "2024-03-05",
+      "caseSequence": 2,
+      "lineSequence": 2,
+      "caseReference": "B1234567",
+      "consecutiveSentenceUUIDs": []
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "toDate": "2024-01-31",
+        "fromDate": "2023-08-19",
+        "numberOfDays": 166,
+        "appliesToSentencesFrom": "2024-02-01"
+      }
+    ]
+  },
+  "calculateErsed": true,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}
