@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.5"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.6"
   id("org.springdoc.openapi-gradle-plugin") version "1.8.0"
   kotlin("plugin.spring") version "1.9.23"
   kotlin("plugin.jpa") version "1.9.23"
@@ -32,7 +32,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.23")
 
   // Three Ten Date Calculations
-  implementation("org.threeten:threeten-extra:1.7.2")
+  implementation("org.threeten:threeten-extra:1.8.0")
 
   compileOnly("javax.servlet:javax.servlet-api:4.0.1")
 
@@ -46,14 +46,14 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
   implementation("io.arrow-kt:arrow-core:1.2.4")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.7.3")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.7.4")
 
   // OpenAPI
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.2")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
-  implementation("org.springframework:spring-jms:6.1.5")
+  implementation("org.springframework:spring-jms:6.1.6")
   implementation("com.google.code.gson:gson:2.10.1")
 
   // SQS
