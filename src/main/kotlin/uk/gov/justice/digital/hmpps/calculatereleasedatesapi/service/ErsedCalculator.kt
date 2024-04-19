@@ -70,6 +70,7 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
       ?: sentenceCalculation.unadjustedDeterminateReleaseDate
 
     val daysUntilRelease = ChronoUnit.DAYS.between(sentence.sentencedAt, release).plus(1).toInt()
+    // ERS requires that half of custodial period be served before a prisoner is eligible
     val unadjustedErsed =
       sentence.sentencedAt
         .plusDays(ceil(daysUntilRelease.toDouble() / 2).toLong())
