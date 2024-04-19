@@ -321,7 +321,7 @@ class BookingExtractionService(
     )
 
     /** --- ERSED --- **/
-    extractErsedForBooking(sentences, breakdownByReleaseDateType, dates, latestReleaseDate)
+    extractErsedForBooking(sentences, breakdownByReleaseDateType, dates, latestReleaseDate, booking.sentenceGroups)
 
     /** --- ESED --- **/
     dates[ESED] = latestUnadjustedExpiryDate
@@ -385,17 +385,24 @@ class BookingExtractionService(
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
     dates: MutableMap<ReleaseDateType, LocalDate>,
     latestReleaseDate: LocalDate,
+    sentenceGroups: List<List<CalculableSentence>>,
   ) {
     val latestEarlyReleaseSchemeEligibilitySentence =
       extractionService.mostRecentSentenceOrNull(sentences, SentenceCalculation::earlyReleaseSchemeEligibilityDate) { !it.sentenceCalculation.isImmediateRelease() }
-    val latestAFineRelease =
-      extractionService.mostRecentSentenceOrNull(sentences.filterIsInstance<AFineSentence>(), SentenceCalculation::releaseDate)
-    val afineIsRelease = latestAFineRelease?.sentenceCalculation?.releaseDate == latestReleaseDate
-    if (latestEarlyReleaseSchemeEligibilitySentence != null && !afineIsRelease) {
-      if (latestAFineRelease != null && latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!.isBefore(
-          latestAFineRelease.sentenceCalculation.releaseDate,
-        ) && !latestAFineRelease.sentenceCalculation.isImmediateRelease()
-      ) {
+
+    if (latestEarlyReleaseSchemeEligibilitySentence != null) {
+      val sentenceGroup = sentenceGroups.find { it.contains(latestEarlyReleaseSchemeEligibilitySentence) }!!
+      val latestAFineRelease =
+        extractionService.mostRecentSentenceOrNull(
+          sentenceGroup.filter {
+            it is AFineSentence &&
+              !it.sentenceCalculation.isImmediateRelease() &&
+              it.sentenceCalculation.releaseDate.isAfter(latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate)
+          },
+          SentenceCalculation::releaseDate,
+        )
+
+      if (latestAFineRelease != null) {
         breakdownByReleaseDateType[ERSED] = ReleaseDateCalculationBreakdown(
           rules = setOf(CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM),
           releaseDate = latestAFineRelease.sentenceCalculation.releaseDate,
