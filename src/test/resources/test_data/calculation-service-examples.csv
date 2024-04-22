@@ -410,9 +410,9 @@ alternative-release-point,14,,alt-calculation-params
 alternative-release-point,16,,alt-calculation-params
 alternative-release-point,17,,alt-calculation-params
 alternative-release-point,19,,alt-calculation-params
+alternative-release-point,20,,alt-calculation-params
 alternative-release-point,8-alt-2,,alt-2-calculation-params
 alternative-release-point,13-alt-2,,alt-2-calculation-params
 
-
-alternative-release-point,12,,alt-calculation-params
-alternative-release-point,12-alt-2,,alt-2-calculation-params
+alternative-release-point,11,,alt-calculation-params
+alternative-release-point,15,,alt-calculation-params

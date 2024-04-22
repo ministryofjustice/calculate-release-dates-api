@@ -367,6 +367,12 @@ data class SentenceCalculation(
       "PED"
     }
 
+    val paroleEligibilityDescription = if (releaseDateTypes.contains(ReleaseDateType.PED)) {
+      "Number Of Days To ParoleEligibilityDate (PED) \t:\t$numberOfDaysToParoleEligibilityDate.minus(oneday) = ($extendedDeterminateParoleEligibilityDate)\n"
+    } else {
+      ""
+    }
+
     return "Sentence type: ${sentence.javaClass.name}\n" +
       "Date of $expiryDateType\t:\t${unadjustedExpiryDate.format(formatter)}\n" +
       "Number of days to $releaseDateType\t:\t${numberOfDaysToDeterminateReleaseDate}\n" +
@@ -378,6 +384,7 @@ data class SentenceCalculation(
 
       "Total number of days to Licence Expiry Date (LED)\t:\t${numberOfDaysToLicenceExpiryDate}\n" +
       "LED\t:\t${licenceExpiryDate?.format(formatter)}\n" +
+      paroleEligibilityDescription +
 
       "Number of days to Non Parole Date (NPD)\t:\t${numberOfDaysToNonParoleDate}\n" +
       "Non Parole Date (NPD)\t:\t${nonParoleDate?.format(formatter)}\n" +

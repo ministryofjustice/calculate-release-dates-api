@@ -50,6 +50,7 @@ class BookingCalculationService(
       }
       sentenceIdentificationService.identify(booking.singleTermSentence!!, booking.offender)
       sentenceCalculationService.calculate(booking.singleTermSentence!!, booking)
+      log.info("building using createSingleTermSentences")
       log.info(booking.singleTermSentence!!.buildString())
     }
     return booking
@@ -76,7 +77,7 @@ class BookingCalculationService(
     booking.consecutiveSentences.forEach {
       sentenceIdentificationService.identify(it, booking.offender)
       sentenceCalculationService.calculate(it, booking)
-      log.info("building consecutive sentence")
+      log.info("building using consecutive sentence")
       log.info(it.buildString())
     }
     return booking

@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
@@ -84,6 +86,7 @@ class SentenceCalculationService(
   }
 
   private fun calculateConsecutivePed(calculableSentences: List<CalculableSentence>, daysToRelease: Int, releaseStartDate: LocalDate): Long {
+    log.info("Calculating consecutive PED")
     val firstSentence = calculableSentences[0]
     val firstSentenceMultiplier = determinePedMultiplier(firstSentence.identificationTrack)
     val sentencesOfFirstType = calculableSentences.filter { determinePedMultiplier(it.identificationTrack) == firstSentenceMultiplier }
@@ -208,4 +211,8 @@ class SentenceCalculationService(
     val numberOfDaysToDeterminateReleaseDate: Int,
     val numberOfDaysToParoleEligibilityDate: Long?,
   )
+
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
+  }
 }
