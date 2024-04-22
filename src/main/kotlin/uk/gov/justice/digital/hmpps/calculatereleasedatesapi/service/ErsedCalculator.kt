@@ -50,8 +50,15 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation,
   ): ReleaseDateCalculationBreakdown {
+    log.info("sentence: $sentence")
+    log.info("sentenceCalculation: $sentenceCalculation")
+
     val effectiveRelease =
       sentenceCalculation.extendedDeterminateParoleEligibilityDate ?: sentenceCalculation.adjustedDeterminateReleaseDate
+
+    log.info("effectiveRelease: $effectiveRelease")
+    log.info("maxPeriod: $ersedConfiguration.maxPeriodDays")
+
     val maxEffectiveErsed = effectiveRelease.minusDays(ersedConfiguration.maxPeriodDays.toLong())
     val maxEffectiveErsedReleaseCalcBreakdown = ReleaseDateCalculationBreakdown(
       rules = setOf(CalculationRule.ERSED_MAX_PERIOD),
@@ -66,17 +73,30 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
         CalculationRule.ERSED_MAX_PERIOD to AdjustmentDuration(-ersedConfiguration.maxPeriodDays, ChronoUnit.DAYS),
       ),
     )
+    log.info("maxEffectiveErsedReleaseCalcBreakdown: $maxEffectiveErsedReleaseCalcBreakdown")
+
     val release = sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate
       ?: sentenceCalculation.unadjustedDeterminateReleaseDate
 
     val daysUntilRelease = ChronoUnit.DAYS.between(sentence.sentencedAt, release).plus(1).toInt()
+    val daysToRelease = ceil(daysUntilRelease.toDouble() / 2).toLong()
     val unadjustedErsed =
       sentence.sentencedAt
-        .plusDays(ceil(daysUntilRelease.toDouble() / 2).toLong())
+        .plusDays(daysToRelease)
+
+    log.info("days between: ${sentence.sentencedAt} -> $release = (daysUntilRelease): $daysUntilRelease")
+    log.info("unadjustedErsed (divide by two): $unadjustedErsed ($daysToRelease)")
+    log.info("Apply the following add:(added days) subtract(deducted days) add(awarded days): (${sentenceCalculation.calculatedTotalAddedDays.toLong()}) (${sentenceCalculation.calculatedTotalDeductedDays.toLong()}) (${sentenceCalculation.calculatedTotalAwardedDays.toLong()}) ")
+
+    log.info("Explain the adjustments (deductions): ${sentenceCalculation.calculatedTotalDeductedDays}")
+
     val minimumEffectiveErsed = unadjustedErsed
       .plusDays(sentenceCalculation.calculatedTotalAddedDays.toLong())
       .minusDays(sentenceCalculation.calculatedTotalDeductedDays.toLong())
       .plusDays(sentenceCalculation.calculatedTotalAwardedDays.toLong())
+
+    log.info("adjustedErsed (adjustments applied): $minimumEffectiveErsed")
+
     val minimumEffectiveErsedReleaseCalcBreakdown = ReleaseDateCalculationBreakdown(
       rules = setOf(CalculationRule.ERSED_MIN_EFFECTIVE_DATE),
       releaseDate = minimumEffectiveErsed,
@@ -87,8 +107,10 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
     log.info("Minimum effective ERSED: $minimumEffectiveErsed, Maximum effective ERSED $maxEffectiveErsed")
 
     return if (minimumEffectiveErsed.isAfter(maxEffectiveErsed)) {
+      log.info("using min: $minimumEffectiveErsedReleaseCalcBreakdown")
       minimumEffectiveErsedReleaseCalcBreakdown
     } else {
+      log.info("using max: $maxEffectiveErsedReleaseCalcBreakdown")
       maxEffectiveErsedReleaseCalcBreakdown
     }
   }
