@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
@@ -30,7 +31,7 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
       }
     }
 
-    val lapsoCondition = when (sentence) {
+    val laspoCondition = when (sentence) {
       is StandardDeterminateSentence -> {
         sentence.identificationTrack == SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
       }
@@ -43,8 +44,15 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
         false
       }
     }
+    log.info("sentence: $sentence")
+    log.info(
+      "doesTopUpSentenceExpiryDateApply: ${oraCondition && laspoCondition &&
+        sentence.durationIsLessThanEqualTo(TWO, ChronoUnit.YEARS) &&
+        sentence.getLengthInDays() > INT_ONE &&
+        offender.getAgeOnDate(sentence.getHalfSentenceDate()) > INT_EIGHTEEN})",
+    )
 
-    return oraCondition && lapsoCondition &&
+    return oraCondition && laspoCondition &&
       sentence.durationIsLessThanEqualTo(TWO, ChronoUnit.YEARS) &&
       sentence.getLengthInDays() > INT_ONE &&
       offender.getAgeOnDate(sentence.getHalfSentenceDate()) > INT_EIGHTEEN
@@ -91,5 +99,6 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
     private const val INT_ONE = 1
     private const val TWO = 2L
     private const val TWELVE = 12L
+    private val log = LoggerFactory.getLogger(this::class.java)
   }
 }

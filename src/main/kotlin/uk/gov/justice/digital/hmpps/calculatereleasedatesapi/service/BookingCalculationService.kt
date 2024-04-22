@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DtoSingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
-import java.util.UUID
+import java.util.*
 
 @Service
 class BookingCalculationService(
@@ -76,6 +76,7 @@ class BookingCalculationService(
     booking.consecutiveSentences.forEach {
       sentenceIdentificationService.identify(it, booking.offender)
       sentenceCalculationService.calculate(it, booking)
+      log.info("building consecutive sentence")
       log.info(it.buildString())
     }
     return booking

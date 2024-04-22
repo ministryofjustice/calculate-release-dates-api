@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
@@ -241,6 +242,7 @@ class SentenceIdentificationService(
         releaseDateTypes += HDCED4PLUS
       }
     }
+    log.info("using release date types: $releaseDateTypes")
     return releaseDateTypes
   }
 
@@ -323,6 +325,8 @@ class SentenceIdentificationService(
     if (hdced4Calculator.doesHdced4DateApply(sentence, offender)) {
       releaseDateTypes += HDCED4PLUS
     }
+
+    log.info("using release date types: $releaseDateTypes")
     return releaseDateTypes
   }
 
@@ -424,5 +428,6 @@ class SentenceIdentificationService(
     private const val SEVEN = 7L
     private const val TWELVE = 12L
     private val TEN_MILLION = BigDecimal("10000000")
+    private val log = LoggerFactory.getLogger(this::class.java)
   }
 }
