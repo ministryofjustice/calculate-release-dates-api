@@ -32,7 +32,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 class LatestCalculationServiceTest {
 
@@ -41,7 +42,8 @@ class LatestCalculationServiceTest {
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService = mock()
   private val calculationBreakdownService: CalculationBreakdownService = mock()
   private val prisonApiDataMapper: PrisonApiDataMapper = mock()
-  private val service = LatestCalculationService(prisonService, calculationRequestRepository, calculationResultEnrichmentService, calculationBreakdownService, prisonApiDataMapper)
+  private val offenderKeyDatesService: OffenderKeyDatesService = mock()
+  private val service = LatestCalculationService(prisonService, offenderKeyDatesService, calculationRequestRepository, calculationResultEnrichmentService, calculationBreakdownService, prisonApiDataMapper)
   private val objectMapper = TestUtil.objectMapper()
   private val prisonerId = "ABC123"
   private val bookingId = 123456L
@@ -173,133 +175,21 @@ class LatestCalculationServiceTest {
   }
 
   @Test
-  fun `Should map all possible NOMIS dates`() {
-    whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
-    whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason("NEW", "New Sentence")))
-    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
-      OffenderKeyDates(
-        sentenceExpiryDate = LocalDate.of(2025, 1, 1),
-        licenceExpiryDate = LocalDate.of(2025, 1, 2),
-        paroleEligibilityDate = LocalDate.of(2025, 1, 3),
-        homeDetentionCurfewEligibilityDate = LocalDate.of(2025, 1, 4),
-        homeDetentionCurfewApprovedDate = LocalDate.of(2025, 1, 5),
-        automaticReleaseDate = LocalDate.of(2025, 1, 6),
-        conditionalReleaseDate = LocalDate.of(2025, 1, 7),
-        nonParoleDate = LocalDate.of(2025, 1, 8),
-        postRecallReleaseDate = LocalDate.of(2025, 1, 9),
-        approvedParoleDate = LocalDate.of(2025, 1, 10),
-        topupSupervisionExpiryDate = LocalDate.of(2025, 1, 11),
-        earlyTermDate = LocalDate.of(2025, 1, 12),
-        midTermDate = LocalDate.of(2025, 1, 13),
-        lateTermDate = LocalDate.of(2025, 1, 14),
-        tariffDate = LocalDate.of(2025, 1, 15),
-        releaseOnTemporaryLicenceDate = LocalDate.of(2025, 1, 16),
-        earlyRemovalSchemeEligibilityDate = LocalDate.of(2025, 1, 17),
-        tariffExpiredRemovalSchemeEligibilityDate = LocalDate.of(2025, 1, 18),
-        dtoPostRecallReleaseDate = LocalDate.of(2025, 1, 19),
-        reasonCode = "NEW",
-        calculatedAt = now,
-      ).right(),
-    )
-    whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.empty())
-
-    val dates = listOf(
-      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
-      ReleaseDate(LocalDate.of(2025, 1, 2), ReleaseDateType.LED),
-      ReleaseDate(LocalDate.of(2025, 1, 7), ReleaseDateType.CRD),
-      ReleaseDate(LocalDate.of(2025, 1, 6), ReleaseDateType.ARD),
-      ReleaseDate(LocalDate.of(2025, 1, 4), ReleaseDateType.HDCED),
-      ReleaseDate(LocalDate.of(2025, 1, 11), ReleaseDateType.TUSED),
-      ReleaseDate(LocalDate.of(2025, 1, 9), ReleaseDateType.PRRD),
-      ReleaseDate(LocalDate.of(2025, 1, 3), ReleaseDateType.PED),
-      ReleaseDate(LocalDate.of(2025, 1, 16), ReleaseDateType.ROTL),
-      ReleaseDate(LocalDate.of(2025, 1, 17), ReleaseDateType.ERSED),
-      ReleaseDate(LocalDate.of(2025, 1, 5), ReleaseDateType.HDCAD),
-      ReleaseDate(LocalDate.of(2025, 1, 13), ReleaseDateType.MTD),
-      ReleaseDate(LocalDate.of(2025, 1, 12), ReleaseDateType.ETD),
-      ReleaseDate(LocalDate.of(2025, 1, 14), ReleaseDateType.LTD),
-      ReleaseDate(LocalDate.of(2025, 1, 10), ReleaseDateType.APD),
-      ReleaseDate(LocalDate.of(2025, 1, 8), ReleaseDateType.NPD),
-      ReleaseDate(LocalDate.of(2025, 1, 19), ReleaseDateType.DPRRD),
-      ReleaseDate(LocalDate.of(2025, 1, 15), ReleaseDateType.Tariff),
-      ReleaseDate(LocalDate.of(2025, 1, 18), ReleaseDateType.TERSED),
-    )
-    val detailedDates = toDetailedDates(dates)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates.associateBy { it.type })
-
-    assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
-      LatestCalculation(
-        prisonerId,
-        bookingId,
-        now,
-        null,
-        null,
-        "New Sentence",
-        CalculationSource.NOMIS,
-        detailedDates,
-      ).right(),
-    )
-  }
-
-  @Test
-  fun `Should replace SED and LED with SLED for NOMIS if SED and LED are the same`() {
-    whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
-    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
-      OffenderKeyDates(
-        sentenceExpiryDate = LocalDate.of(2025, 1, 1),
-        licenceExpiryDate = LocalDate.of(2025, 1, 1),
-        reasonCode = "NEW",
-        calculatedAt = now,
-      ).right(),
-    )
-    whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.empty())
-
-    val dates = listOf(
-      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SLED),
-    )
-    val detailedDates = toDetailedDates(dates)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates.associateBy { it.type })
-    val generatedDates = service.latestCalculationForPrisoner(prisonerId).map { it.dates }.getOrNull()
-    assertThat(generatedDates).anyMatch { it.type == ReleaseDateType.SLED && it.date == LocalDate.of(2025, 1, 1) }
-    assertThat(generatedDates).noneMatch { it.type == ReleaseDateType.SED || it.type == ReleaseDateType.LED }
-  }
-
-  @Test
-  fun `Should not create SLED for NOMIS if SED and LED are both absent`() {
-    whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
-    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
-      OffenderKeyDates(
-        reasonCode = "NEW",
-        calculatedAt = now,
-      ).right(),
-    )
-    whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.empty())
-
-    val dates = listOf(
-      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SLED),
-    )
-    val detailedDates = toDetailedDates(dates)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates.associateBy { it.type })
-
-    assertThat(service.latestCalculationForPrisoner(prisonerId).map { it.dates }.getOrNull()).noneMatch { it.type == ReleaseDateType.SLED }
-  }
-
-  @Test
   fun `Should map CRDS additional fields into the results if the CRDS calc ref appears in the commend`() {
     val calculationReference = UUID.randomUUID()
     val calculatedAt = LocalDateTime.now()
+    val offenderKeyDates = OffenderKeyDates(
+      sentenceExpiryDate = LocalDate.of(2025, 1, 1),
+      licenceExpiryDate = LocalDate.of(2025, 1, 2),
+      conditionalReleaseDate = LocalDate.of(2025, 1, 7),
+      reasonCode = "NEW",
+      calculatedAt = calculatedAt,
+      comment = "Some stuff and then the ref: $calculationReference",
+    )
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
-    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
-      OffenderKeyDates(
-        sentenceExpiryDate = LocalDate.of(2025, 1, 1),
-        licenceExpiryDate = LocalDate.of(2025, 1, 2),
-        conditionalReleaseDate = LocalDate.of(2025, 1, 7),
-        reasonCode = "NEW",
-        calculatedAt = calculatedAt,
-        comment = "Some stuff and then the ref: $calculationReference",
-      ).right(),
-    )
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
+
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
       Optional.of(
         CalculationRequest(
@@ -316,6 +206,7 @@ class LatestCalculationServiceTest {
       ReleaseDate(LocalDate.of(2025, 1, 2), ReleaseDateType.LED),
       ReleaseDate(LocalDate.of(2025, 1, 7), ReleaseDateType.CRD),
     )
+    whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
     val detailedDates = toDetailedDates(dates)
     whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates.associateBy { it.type })
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
@@ -368,92 +259,20 @@ class LatestCalculationServiceTest {
   }
 
   @Test
-  fun `Should create SLED for CRDS if LED and SED are the same`() {
-    val calculationReference = UUID.randomUUID()
-    val calculatedAt = LocalDateTime.now()
-
-    whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
-    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
-      OffenderKeyDates(
-        sentenceExpiryDate = LocalDate.of(2025, 1, 1),
-        licenceExpiryDate = LocalDate.of(2025, 1, 1),
-        reasonCode = "NEW",
-        calculatedAt = calculatedAt,
-        comment = "Some stuff and then the ref: $calculationReference",
-      ).right(),
-    )
-    whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
-      Optional.of(
-        CalculationRequest(
-          id = 654321,
-          calculationReference = calculationReference,
-          calculatedAt = calculatedAt,
-          reasonForCalculation = CalculationReason(0, false, false, "Some reason", false, null, null, null),
-        ),
-      ),
-    )
-
-    val dates = listOf(
-      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SLED),
-    )
-    val detailedDates = toDetailedDates(dates)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates.associateBy { it.type })
-    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
-
-    val generatedDates = service.latestCalculationForPrisoner(prisonerId).map { it.dates }.getOrNull()
-    assertThat(generatedDates).anyMatch { it.type == ReleaseDateType.SLED && it.date == LocalDate.of(2025, 1, 1) }
-    assertThat(generatedDates).noneMatch { it.type == ReleaseDateType.SED || it.type == ReleaseDateType.LED }
-  }
-
-  @Test
-  fun `Should not create SLED for CRDS if SED and LED are both absent`() {
-    val calculationReference = UUID.randomUUID()
-    val calculatedAt = LocalDateTime.now()
-    whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
-    whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
-    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
-      OffenderKeyDates(
-        reasonCode = "NEW",
-        calculatedAt = calculatedAt,
-        comment = "Some stuff and then the ref: $calculationReference",
-      ).right(),
-    )
-    whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
-      Optional.of(
-        CalculationRequest(
-          id = 654321,
-          calculationReference = calculationReference,
-          calculatedAt = calculatedAt,
-          reasonForCalculation = CalculationReason(0, false, false, "Some reason", false, null, null, null),
-        ),
-      ),
-    )
-    whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
-
-    val dates = listOf(
-      ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SLED),
-    )
-    val detailedDates = toDetailedDates(dates)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates.associateBy { it.type })
-
-    assertThat(service.latestCalculationForPrisoner(prisonerId).map { it.dates }.getOrNull()).noneMatch { it.type == ReleaseDateType.SLED }
-  }
-
-  @Test
   fun `Should lookup the location if there is one set on CRDS`() {
     val calculationReference = UUID.randomUUID()
     val calculatedAt = LocalDateTime.now()
+    val offenderKeyDates = OffenderKeyDates(
+      reasonCode = "NEW",
+      calculatedAt = calculatedAt,
+      comment = "Some stuff and then the ref: $calculationReference",
+      sentenceExpiryDate = LocalDate.of(2025, 1, 1),
+    )
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
-    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
-      OffenderKeyDates(
-        reasonCode = "NEW",
-        calculatedAt = calculatedAt,
-        comment = "Some stuff and then the ref: $calculationReference",
-        sentenceExpiryDate = LocalDate.of(2025, 1, 1),
-      ).right(),
-    )
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
+
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
       Optional.of(CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC")),
     )
@@ -461,6 +280,7 @@ class LatestCalculationServiceTest {
     val dates = listOf(
       ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
     )
+    whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
     val detailedDates = toDetailedDates(dates)
     whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates.associateBy { it.type })
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
@@ -482,17 +302,17 @@ class LatestCalculationServiceTest {
   fun `Should default to location code if it's not in agency lookup`() {
     val calculationReference = UUID.randomUUID()
     val calculatedAt = LocalDateTime.now()
+    val offenderKeyDates = OffenderKeyDates(
+      reasonCode = "NEW",
+      calculatedAt = calculatedAt,
+      comment = "Some stuff and then the ref: $calculationReference",
+      sentenceExpiryDate = LocalDate.of(2025, 1, 1),
+    )
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
-    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
-      OffenderKeyDates(
-        reasonCode = "NEW",
-        calculatedAt = calculatedAt,
-        comment = "Some stuff and then the ref: $calculationReference",
-        sentenceExpiryDate = LocalDate.of(2025, 1, 1),
-      ).right(),
-    )
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
+
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(
       Optional.of(CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "XYZ")),
     )
@@ -501,6 +321,7 @@ class LatestCalculationServiceTest {
       ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED),
     )
     val detailedDates = toDetailedDates(dates)
+    whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
     whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, null)).thenReturn(detailedDates.associateBy { it.type })
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
@@ -521,17 +342,17 @@ class LatestCalculationServiceTest {
   fun `Should pass breakdown and sentences and offences for CRDS`() {
     val calculationReference = UUID.randomUUID()
     val calculatedAt = LocalDateTime.now()
+    val offenderKeyDates = OffenderKeyDates(
+      reasonCode = "NEW",
+      calculatedAt = calculatedAt,
+      comment = "Some stuff and then the ref: $calculationReference",
+      sentenceExpiryDate = LocalDate.of(2025, 1, 1),
+    )
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
-    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
-      OffenderKeyDates(
-        reasonCode = "NEW",
-        calculatedAt = calculatedAt,
-        comment = "Some stuff and then the ref: $calculationReference",
-        sentenceExpiryDate = LocalDate.of(2025, 1, 1),
-      ).right(),
-    )
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
+
     val calculationRequest = CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", sentenceAndOffences = objectToJson(listOf(someSentence), objectMapper))
     val expectedBreakdown = CalculationBreakdown(emptyList(), null)
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.of(calculationRequest))
@@ -539,6 +360,7 @@ class LatestCalculationServiceTest {
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(someSentence))
 
     val dates = listOf(ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED))
+    whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
     val detailedDates = toDetailedDates(dates)
     whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, listOf(someSentence), expectedBreakdown)).thenReturn(detailedDates.associateBy { it.type })
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
@@ -559,23 +381,24 @@ class LatestCalculationServiceTest {
   fun `Should not blow up if breakdown can't be generated for CRDS`() {
     val calculationReference = UUID.randomUUID()
     val calculatedAt = LocalDateTime.now()
+    val offenderKeyDates = OffenderKeyDates(
+      reasonCode = "NEW",
+      calculatedAt = calculatedAt,
+      comment = "Some stuff and then the ref: $calculationReference",
+      sentenceExpiryDate = LocalDate.of(2025, 1, 1),
+    )
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
-    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
-      OffenderKeyDates(
-        reasonCode = "NEW",
-        calculatedAt = calculatedAt,
-        comment = "Some stuff and then the ref: $calculationReference",
-        sentenceExpiryDate = LocalDate.of(2025, 1, 1),
-      ).right(),
-    )
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
+
     val calculationRequest = CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", sentenceAndOffences = objectToJson(listOf(someSentence), objectMapper))
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.of(calculationRequest))
     whenever(calculationBreakdownService.getBreakdownSafely(calculationRequest)).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(someSentence))
 
     val dates = listOf(ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED))
+    whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
     val detailedDates = toDetailedDates(dates)
     whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, listOf(someSentence), null)).thenReturn(detailedDates.associateBy { it.type })
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
@@ -596,23 +419,24 @@ class LatestCalculationServiceTest {
   fun `Should not blow up if sentences and offences are missing for CRDS`() {
     val calculationReference = UUID.randomUUID()
     val calculatedAt = LocalDateTime.now()
+    val offenderKeyDates = OffenderKeyDates(
+      reasonCode = "NEW",
+      calculatedAt = calculatedAt,
+      comment = "Some stuff and then the ref: $calculationReference",
+      sentenceExpiryDate = LocalDate.of(2025, 1, 1),
+    )
 
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
-    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(
-      OffenderKeyDates(
-        reasonCode = "NEW",
-        calculatedAt = calculatedAt,
-        comment = "Some stuff and then the ref: $calculationReference",
-        sentenceExpiryDate = LocalDate.of(2025, 1, 1),
-      ).right(),
-    )
+    whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
+
     val calculationRequest = CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", sentenceAndOffences = null)
     val expectedBreakdown = CalculationBreakdown(emptyList(), null)
     whenever(calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)).thenReturn(Optional.of(calculationRequest))
     whenever(calculationBreakdownService.getBreakdownSafely(calculationRequest)).thenReturn(expectedBreakdown.right())
 
     val dates = listOf(ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED))
+    whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
     val detailedDates = toDetailedDates(dates)
     whenever(calculationResultEnrichmentService.addDetailToCalculationDates(dates, null, expectedBreakdown)).thenReturn(detailedDates.associateBy { it.type })
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
