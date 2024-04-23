@@ -19,4 +19,5 @@ data class SentenceAndOffences(
   val caseReference: String? = null,
   val courtDescription: String? = null,
   val fineAmount: BigDecimal? = null,
+  var isSdsPlus: Boolean? = null,
 )
