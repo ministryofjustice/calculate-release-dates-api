@@ -22,7 +22,7 @@ class PrisonApiDataVersions {
       val days: Int = 0,
       val offences: List<OffenderOffence> = emptyList(),
     ) {
-      fun toLatest() = uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences(
+      fun toLatest() = SentenceAndOffences(
         bookingId,
         sentenceSequence,
         lineSequence,
