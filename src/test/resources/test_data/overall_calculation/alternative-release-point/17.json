@@ -8,35 +8,23 @@
     {
       "type": "SopcSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "1999-09-13",
-        "offenceCode": "SX56028",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "SX56028"
       },
       "sdopcu18": false,
       "identifier": "b1e1bd31-7c4f-3c96-beb3-7cc1486fd783",
-      "recallType": null,
       "sentencedAt": "2018-09-26",
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "A1234567",
       "custodialDuration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 6,
-          "MONTHS": 0
+          "YEARS": 6
         }
       },
       "extensionDuration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 1,
-          "MONTHS": 0
+          "YEARS": 1
         }
       },
       "consecutiveSentenceUUIDs": []
@@ -44,25 +32,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2002-09-13",
-        "offenceCode": "SX56029",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "SX56029"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 6,
-          "MONTHS": 0
+          "YEARS": 6
         }
       },
       "identifier": "0c465aef-48ec-33df-b89a-65904e75bc84",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2018-09-26",
       "caseSequence": 1,
       "lineSequence": 2,
@@ -72,25 +50,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "1999-09-13",
-        "offenceCode": "IC60007",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "IC60007"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 6,
-          "MONTHS": 0
+          "YEARS": 6
         }
       },
       "identifier": "0c465aef-48ec-33df-b89a-65904e75bc84",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2018-09-26",
       "caseSequence": 1,
       "lineSequence": 2,
@@ -100,25 +68,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2001-09-13",
-        "offenceCode": "IC60003",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "IC60003"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 6,
-          "MONTHS": 0
+          "YEARS": 6
         }
       },
       "identifier": "0c465aef-48ec-33df-b89a-65904e75bc84",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2018-09-26",
       "caseSequence": 1,
       "lineSequence": 2,
@@ -128,25 +86,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2002-09-13",
-        "offenceCode": "SX56014",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "SX56014"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 14,
-          "MONTHS": 0
+          "YEARS": 14
         }
       },
       "identifier": "1b0acb4b-7f05-3728-9367-42ef9c18ad19",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2018-09-26",
       "caseSequence": 1,
       "lineSequence": 3,
@@ -155,7 +103,5 @@
     }
   ],
   "adjustments": {},
-  "calculateErsed": true,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  "calculateErsed": true
 }

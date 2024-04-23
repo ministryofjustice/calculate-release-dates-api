@@ -8,25 +8,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2024-02-20",
-        "offenceCode": "MD71531",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "MD71531"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 20
         }
       },
       "identifier": "1b16aac6-1c04-3124-9082-b96ebbb45c78",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2024-04-04",
       "caseSequence": 1,
       "lineSequence": 1,
@@ -44,7 +34,5 @@
       }
     ]
   },
-  "calculateErsed": true,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  "calculateErsed": true
 }

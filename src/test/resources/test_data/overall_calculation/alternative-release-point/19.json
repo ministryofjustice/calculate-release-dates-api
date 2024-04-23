@@ -8,25 +8,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2019-12-31",
-        "offenceCode": "SX03025",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "SX03025"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 66
         }
       },
       "identifier": "ca1bb9d1-88ce-3a64-bd32-26839082c2c5",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2020-12-01",
       "caseSequence": 1,
       "lineSequence": 1,
@@ -36,25 +26,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2019-12-31",
-        "offenceCode": "SX03025",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "SX03025"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 66
         }
       },
       "identifier": "ca1bb9d1-88ce-3a64-bd32-26839082c2c5",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2020-12-01",
       "caseSequence": 1,
       "lineSequence": 1,
@@ -64,16 +44,10 @@
     {
       "type": "ExtendedDeterminateSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2020-01-24",
-        "offenceCode": "SX03013A",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "SX03013A"
       },
       "identifier": "6ec33472-e7c2-3978-9992-32b979c7a0a4",
-      "recallType": null,
       "sentencedAt": "2020-12-01",
       "caseSequence": 1,
       "lineSequence": 2,
@@ -81,17 +55,11 @@
       "automaticRelease": false,
       "custodialDuration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 21
         }
       },
       "extensionDuration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 33
         }
       },
@@ -102,16 +70,10 @@
     {
       "type": "ExtendedDeterminateSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2020-01-24",
-        "offenceCode": "SX03013A",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "SX03013A"
       },
       "identifier": "6ec33472-e7c2-3978-9992-32b979c7a0a4",
-      "recallType": null,
       "sentencedAt": "2020-12-01",
       "caseSequence": 1,
       "lineSequence": 2,
@@ -119,17 +81,11 @@
       "automaticRelease": false,
       "custodialDuration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 21
         }
       },
       "extensionDuration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 33
         }
       },
@@ -148,7 +104,5 @@
       }
     ]
   },
-  "calculateErsed": true,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  "calculateErsed": true
 }

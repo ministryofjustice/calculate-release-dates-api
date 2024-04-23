@@ -11,8 +11,6 @@
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
           "YEARS": 12,
           "MONTHS": 6
         }
@@ -30,10 +28,7 @@
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 6,
-          "YEARS": 0,
-          "MONTHS": 0
+          "WEEKS": 6
         }
       },
       "identifier": "1fd488ce-d054-36d7-bc0b-814997622b44",

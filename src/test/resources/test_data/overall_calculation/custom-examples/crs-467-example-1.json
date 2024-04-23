@@ -10,9 +10,7 @@
       },
       "duration": {
         "durationElements": {
-          "MONTHS": 56,
-          "WEEKS": 0,
-          "DAYS": 0
+          "MONTHS": 56
         }
       },
       "sentencedAt": "2017-02-17"
