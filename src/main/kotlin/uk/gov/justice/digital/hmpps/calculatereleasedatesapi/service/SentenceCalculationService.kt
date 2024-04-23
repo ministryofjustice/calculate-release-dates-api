@@ -177,6 +177,7 @@ class SentenceCalculationService(
     val numberOfDaysToReleaseDate: Int = ceil(numberOfDaysToReleaseDateDouble).toInt()
     if (sentence.releaseDateTypes.getReleaseDateTypes().contains(PED) && (sentence is ExtendedDeterminateSentence || sentence is SopcSentence)) {
       val pedMultiplier = determinePedMultiplier(sentence.identificationTrack)
+      log.info("Apply Ped Multiplier: $pedMultiplier\n")
       numberOfDaysToParoleEligibilityDate =
         ceil(numberOfDaysToReleaseDate.toDouble().times(pedMultiplier)).toLong()
     }

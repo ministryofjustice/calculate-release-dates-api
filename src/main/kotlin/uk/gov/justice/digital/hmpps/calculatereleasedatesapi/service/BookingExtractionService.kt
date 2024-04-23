@@ -175,7 +175,7 @@ class BookingExtractionService(
       extractManyHomeDetentionCurfew4PlusEligibilityDate(sentences, mostRecentSentencesByReleaseDate)
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
-      extractManyTopUpSuperVisionDate(sentences, latestLicenseExpiryDate)
+      extractManyTopUpSupervisionDate(sentences, latestLicenseExpiryDate)
     } else if (isTusedableDtos(booking, effectiveSentenceLength)) {
       val latestTUSEDSentence = sentences
         .filter { it.sentenceCalculation.topUpSupervisionDate != null }
@@ -659,7 +659,7 @@ class BookingExtractionService(
     }
   }
 
-  private fun extractManyTopUpSuperVisionDate(
+  private fun extractManyTopUpSupervisionDate(
     sentences: List<CalculableSentence>,
     latestLicenseExpiryDate: LocalDate,
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {

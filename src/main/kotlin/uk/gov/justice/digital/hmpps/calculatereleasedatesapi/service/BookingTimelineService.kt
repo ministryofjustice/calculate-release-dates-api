@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
-import java.util.Collections
+import java.util.*
 import kotlin.math.min
 
 @Service
@@ -161,6 +161,7 @@ class BookingTimelineService(
 
   private fun readjustDates(it: CalculableSentence, booking: Booking) {
     sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, booking)
+    log.info("Calculate Dates From Adjustments - readjustDates")
     log.info(it.buildString())
   }
 
