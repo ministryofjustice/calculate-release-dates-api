@@ -36,7 +36,7 @@ class HistoricCalculationsService(
           calculationReason = calculation.reasonForCalculation?.displayName
         }
       }
-      HistoricCalculation(prisonerId, nomisCalculation.calculationDate, source, calculationViewData, nomisCalculation.commentText, calculationType, establishment, calculationRequestId, calculationReason)
+      HistoricCalculation(prisonerId, nomisCalculation.calculationDate, source, calculationViewData, nomisCalculation.commentText, calculationType, establishment, calculationRequestId, calculationReason, nomisCalculation.offenderSentCalculationId)
     }
     return historicCalculations
   }

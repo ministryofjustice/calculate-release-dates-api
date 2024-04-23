@@ -183,4 +183,21 @@ class PrisonApiClient(
       .bodyToMono(typeReference<List<NomisCalculationReason>>())
       .block()!!
   }
+
+  fun getNOMISOffenderKeyDates(offenderSentCalcId: Long): Either<String, OffenderKeyDates> {
+    return webClient.get()
+      .uri { uriBuilder ->
+        uriBuilder.path("/api/offender-dates/sentence-calculation/$offenderSentCalcId")
+          .build()
+      }
+      .exchangeToMono { response ->
+        when (response.statusCode()) {
+          HttpStatus.OK -> response.bodyToMono(typeReference<OffenderKeyDates>()).map { it.right() }
+          HttpStatus.NOT_FOUND -> Mono.just("Offender Key Dates for offenderSentCalcId ($offenderSentCalcId) not found or has no calculations".left())
+          HttpStatus.FORBIDDEN -> Mono.just("User is not allowed to view the Offender Key Dates for offenderSentCalcId ($offenderSentCalcId)".left())
+          else -> Mono.just("Offender Key Dates for offenderSentCalcId ($offenderSentCalcId) could not be loaded for an unknown reason. Status ${response.statusCode().value()}".left())
+        }
+      }
+      .block()!!
+  }
 }

@@ -33,7 +33,11 @@ class CalculationResultEnrichmentService(
     private val dtoSentenceTypes = listOf(SentenceCalculationType.DTO_ORA.name, SentenceCalculationType.DTO.name)
   }
 
-  fun addDetailToCalculationDates(releaseDates: List<ReleaseDate>, sentenceAndOffences: List<SentenceAndOffences>?, calculationBreakdown: CalculationBreakdown?): Map<ReleaseDateType, DetailedDate> {
+  fun addDetailToCalculationDates(
+    releaseDates: List<ReleaseDate>,
+    sentenceAndOffences: List<SentenceAndOffences>?,
+    calculationBreakdown: CalculationBreakdown?,
+  ): Map<ReleaseDateType, DetailedDate> {
     val releaseDatesMap = releaseDates.associateBy { it.type }
     return releaseDatesMap.mapValues { (_, releaseDate) ->
       DetailedDate(

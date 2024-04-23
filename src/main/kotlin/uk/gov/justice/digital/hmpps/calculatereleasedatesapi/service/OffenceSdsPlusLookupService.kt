@@ -44,6 +44,7 @@ class OffenceSdsPlusLookupService(
     val offencesToCheck = getOffenceCodesToCheckWithMO(bookingIdToSentences)
     val bookingToSentenceOffenceMap = mutableMapOf<Long, List<SentenceAndOffences>>()
 
+    sentencesAndOffences.forEach { it.isSdsPlus = false }
     if (offencesToCheck.isNotEmpty()) {
       val moCheckResponses = manageOffencesService.getPcscMarkersForOffenceCodes(*offencesToCheck.toTypedArray()).associateBy { it.offenceCode }
 
@@ -69,6 +70,7 @@ class OffenceSdsPlusLookupService(
               }
               .forEach { offence ->
                 offence.indicators = offence.indicators.plus(listOf(OffenderOffence.PCSC_SDS_PLUS))
+                sentenceAndOffence.isSdsPlus = true
 
                 if (bookingToSentenceOffenceMap.contains(sentenceAndOffence.bookingId)) {
                   bookingToSentenceOffenceMap[sentenceAndOffence.bookingId]?.plus(sentenceAndOffence)

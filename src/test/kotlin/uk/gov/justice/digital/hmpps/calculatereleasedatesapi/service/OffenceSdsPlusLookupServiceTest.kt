@@ -29,6 +29,7 @@ class OffenceSdsPlusLookupServiceTest {
     assertTrue(returnedResult.size == 1)
     assertTrue(sentencedAfterSDSPlusBeforePCSCLongerThan7Years[0].offences[0].isPcscSdsPlus)
     assertTrue(sentencedAfterSDSPlusBeforePCSCLongerThan7Years[0].offences[0].isScheduleFifteenMaximumLife)
+    assertTrue(sentencedAfterSDSPlusBeforePCSCLongerThan7Years[0].isSdsPlus!!)
   }
 
   @Test
@@ -37,6 +38,7 @@ class OffenceSdsPlusLookupServiceTest {
     underTest.populateSdsPlusMarkerForOffences(sentencedADIMPAfterPCSCLongerThan7Years)
     assertTrue(sentencedADIMPAfterPCSCLongerThan7Years[0].offences[0].isPcscSdsPlus)
     assertTrue(sentencedADIMPAfterPCSCLongerThan7Years[0].offences[0].isPcscSds)
+    assertTrue(sentencedADIMPAfterPCSCLongerThan7Years[0].isSdsPlus!!)
   }
 
   @Test
@@ -44,6 +46,7 @@ class OffenceSdsPlusLookupServiceTest {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListBMarkers))
     underTest.populateSdsPlusMarkerForOffences(sentencedYOIORAAfterPCSCLonger4To7Years)
     assertTrue(sentencedYOIORAAfterPCSCLonger4To7Years[0].offences[0].isPcscSdsPlus)
+    assertTrue(sentencedYOIORAAfterPCSCLonger4To7Years[0].isSdsPlus!!)
   }
 
   @Test
@@ -52,6 +55,7 @@ class OffenceSdsPlusLookupServiceTest {
     underTest.populateSdsPlusMarkerForOffences(section250Over7YearsPostPCSCSentence)
     assertTrue(section250Over7YearsPostPCSCSentence[0].offences[0].isPcscSdsPlus)
     assertTrue(section250Over7YearsPostPCSCSentence[0].offences[0].isPcscSec250)
+    assertTrue(section250Over7YearsPostPCSCSentence[0].isSdsPlus!!)
   }
 
   @Test
@@ -63,6 +67,7 @@ class OffenceSdsPlusLookupServiceTest {
     underTest.populateSdsPlusMarkerForOffences(section250Over7YearsPrePCSCSentence)
     assertFalse(section250Over7YearsPrePCSCSentence[0].offences[0].isPcscSdsPlus)
     assertFalse(section250Over7YearsPrePCSCSentence[0].offences[0].isPcscSec250)
+    assertFalse(section250Over7YearsPrePCSCSentence[0].isSdsPlus!!)
   }
 
   @Test
@@ -72,6 +77,7 @@ class OffenceSdsPlusLookupServiceTest {
     verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
     assertFalse(sentenceMatchesNoMatchingOffencesDueToSentenceDate[0].offences[0].isPcscSdsPlus)
     assertFalse(sentenceMatchesNoMatchingOffencesDueToSentenceDate[0].offences[0].isPcscSec250)
+    assertFalse(sentenceMatchesNoMatchingOffencesDueToSentenceDate[0].isSdsPlus!!)
   }
 
   companion object {

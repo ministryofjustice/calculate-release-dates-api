@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito.reset
+import org.mockito.kotlin.any
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -34,6 +35,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -46,16 +48,18 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationUserQuestionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenderKeyDatesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
@@ -82,6 +86,9 @@ class CalculationControllerTest {
   @MockBean
   private lateinit var calculationBreakdownService: CalculationBreakdownService
 
+  @MockBean
+  private lateinit var offenderKeyDatesService: OffenderKeyDatesService
+
   @Autowired
   private lateinit var mvc: MockMvc
 
@@ -105,6 +112,7 @@ class CalculationControllerTest {
           detailedCalculationResultsService,
           latestCalculationService,
           calculationBreakdownService,
+          offenderKeyDatesService,
         ),
       )
       .setControllerAdvice(ControllerAdvice())
@@ -403,6 +411,61 @@ class CalculationControllerTest {
           errorMessage,
         ),
       )
+  }
+
+  @Test
+  fun `Test GET of offender Key Dates when there is a problem getting the dates from Prison Service - NOMIS`() {
+    val offenderSentCalcId = 5636121L
+    val errorMessage = "There isn't one"
+
+    whenever(
+      offenderKeyDatesService.getNomisCalculationSummary(any()),
+    ).then {
+      throw CrdWebException(errorMessage, HttpStatus.NOT_FOUND)
+    }
+
+    val result = mvc.perform(get("/calculation/nomis-calculation-summary/$offenderSentCalcId").accept(APPLICATION_JSON))
+      .andExpect(status().isNotFound)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(mapper.readValue(result.response.contentAsString, ErrorResponse::class.java))
+      .isEqualTo(
+        ErrorResponse(
+          HttpStatus.NOT_FOUND,
+          null,
+          errorMessage,
+          errorMessage,
+        ),
+      )
+  }
+
+  @Test
+  fun `Test GET of offender key dates for offenderSentCalcId successfully`() {
+    val offenderSentCalcId = 5636121L
+    val expected = NomisCalculationSummary(
+      "Further Sentence",
+      LocalDateTime.of(2024, 2, 29, 10, 30),
+      null,
+      listOf(
+        DetailedDate(
+          ReleaseDateType.HDCED,
+          ReleaseDateType.HDCED.description,
+          LocalDate.of(2024, 1, 1),
+          emptyList(),
+        ),
+      ),
+    )
+
+    whenever(offenderKeyDatesService.getNomisCalculationSummary(any())).thenReturn(expected)
+
+    val result = mvc.perform(get("/calculation/nomis-calculation-summary/$offenderSentCalcId").accept(APPLICATION_JSON))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(mapper.readValue(result.response.contentAsString, NomisCalculationSummary::class.java))
+      .isEqualTo(expected)
   }
 
   private val calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null)
