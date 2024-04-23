@@ -8,25 +8,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2023-08-06",
-        "offenceCode": "MD71174",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "MD71174"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 34
         }
       },
       "identifier": "416905d6-3188-3fcf-9c77-179db9e496cc",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2024-03-27",
       "caseSequence": 1,
       "lineSequence": 1,
@@ -36,25 +26,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2023-08-06",
-        "offenceCode": "MD71171",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "MD71171"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 34
         }
       },
       "identifier": "416905d6-3188-3fcf-9c77-179db9e496cc",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2024-03-27",
       "caseSequence": 1,
       "lineSequence": 1,
@@ -72,7 +52,5 @@
       }
     ]
   },
-  "calculateErsed": true,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  "calculateErsed": true
 }

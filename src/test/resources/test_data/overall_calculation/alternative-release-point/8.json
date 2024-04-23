@@ -8,24 +8,14 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2023-08-18",
-        "offenceCode": "COML002",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "COML002"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 2,
-          "MONTHS": 0
+          "YEARS": 2
         }
       },
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2024-02-01",
       "caseSequence": 1,
       "lineSequence": 1,
@@ -35,25 +25,16 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2023-08-19",
-        "offenceCode": "PH97004",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "PH97004"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
           "WEEKS": 8,
-          "YEARS": 0,
           "MONTHS": 0
         }
       },
       "identifier": "dfa11d46-bda8-34ef-943c-5f30a961e9bf",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2024-03-05",
       "caseSequence": 2,
       "lineSequence": 2,
@@ -71,7 +52,5 @@
       }
     ]
   },
-  "calculateErsed": true,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  "calculateErsed": true
 }

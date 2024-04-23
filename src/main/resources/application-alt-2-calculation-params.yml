@@ -1,4 +1,3 @@
-
 release-point-multipliers:
   multipliers:
     - tracks:
@@ -12,4 +11,7 @@ release-point-multipliers:
         - AFINE_ARD_AT_FULL_TERM,
         - BOTUS
       multiplier: 1.0
+    - tracks:
+        - AFINE_ARD_AT_HALFWAY
+      multiplier: 0.5
   default: 0.43

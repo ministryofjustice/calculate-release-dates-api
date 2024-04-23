@@ -8,25 +8,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2023-12-17",
-        "offenceCode": "TH68023",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "TH68023"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 27
         }
       },
       "identifier": "efdc418d-4383-30e8-86d3-970827698aa1",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2024-03-12",
       "caseSequence": 1,
       "lineSequence": 1,
@@ -44,7 +34,5 @@
       }
     ]
   },
-  "calculateErsed": true,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  "calculateErsed": true
 }

@@ -8,25 +8,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2020-12-18",
-        "offenceCode": "MD71531",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "MD71531"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 10,
-          "MONTHS": 0
+          "YEARS": 10
         }
       },
       "identifier": "15917e6d-e0ef-3d0c-9c36-f0bce996d0b5",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2022-11-16",
       "caseSequence": 1,
       "lineSequence": 1,
@@ -36,25 +26,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2020-12-18",
-        "offenceCode": "MD71230",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "MD71230"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 7,
-          "MONTHS": 0
+          "YEARS": 7
         }
       },
       "identifier": "8c08cd1c-8581-3446-8bac-76319ee9c490",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2022-11-16",
       "caseSequence": 1,
       "lineSequence": 2,
@@ -64,25 +44,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2020-12-18",
-        "offenceCode": "MD71533",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "MD71533"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 5,
-          "MONTHS": 0
+          "YEARS": 5
         }
       },
       "identifier": "1f2a4313-0140-39cc-9e34-ca3d477619c7",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2022-11-16",
       "caseSequence": 1,
       "lineSequence": 3,
@@ -100,7 +70,5 @@
       }
     ]
   },
-  "calculateErsed": true,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  "calculateErsed": true
 }
