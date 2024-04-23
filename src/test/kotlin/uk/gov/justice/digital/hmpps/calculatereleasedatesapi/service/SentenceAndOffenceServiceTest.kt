@@ -51,6 +51,16 @@ class SentenceAndOffenceServiceTest {
   }
 
   @Test
+  fun `If old version did not have SDS plus flag ignore the difference`() {
+    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(listOf(sentenceAndOffences.copy(isSdsPlus = true)))
+    val calcRequestWithMissingSDSPlusFlag = CalculationRequest(sentenceAndOffences = objectToJson(listOf(sentenceAndOffences.copy(isSdsPlus = null)), jacksonObjectMapper().findAndRegisterModules()))
+    whenever(calculationRequestRepository.findLatestCalculation(anyLong())).thenReturn(Optional.of(calcRequestWithMissingSDSPlusFlag))
+    val response = underTest.getSentencesAndOffences(123)
+    assertThat(response).hasSize(1)
+    assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
+  }
+
+  @Test
   fun `If offence change since previous calculation return sentenceAndOffences with CHANGE annotation`() {
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(listOf(sentenceAndOffences))
     whenever(calculationRequestRepository.findLatestCalculation(anyLong())).thenReturn(Optional.of(changedCalculationRequest))
@@ -71,9 +81,7 @@ class SentenceAndOffenceServiceTest {
   companion object {
     private val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     private val SECOND_JAN_2015: LocalDate = LocalDate.of(2015, 1, 2)
-    private val DOB: LocalDate = LocalDate.of(1955, 11, 5)
     private val bookingId = 1110022L
-    private val sequence = 153
     private val lineSequence = 154
     private val caseSequence = 155
     val offences = listOf(
@@ -143,6 +151,7 @@ class SentenceAndOffenceServiceTest {
       offences = offences,
       lineSequence = lineSequence,
       caseSequence = caseSequence,
+      isSdsPlus = false,
     )
     val changedSentenceAndOffences = SentenceAndOffences(
       bookingId = 1,
@@ -163,6 +172,7 @@ class SentenceAndOffenceServiceTest {
       offences = changedOffences,
       lineSequence = lineSequence,
       caseSequence = caseSequence,
+      isSdsPlus = true,
     )
     val newSentenceAndOffences = SentenceAndOffences(
       bookingId = 1,
@@ -183,9 +193,9 @@ class SentenceAndOffenceServiceTest {
       offences = newOffences,
       lineSequence = lineSequence,
       caseSequence = caseSequence,
+      isSdsPlus = true,
     )
     val calculationRequest = CalculationRequest(sentenceAndOffences = objectToJson(listOf(sentenceAndOffences), jacksonObjectMapper().findAndRegisterModules()))
     val changedCalculationRequest = CalculationRequest(sentenceAndOffences = objectToJson(listOf(changedSentenceAndOffences), jacksonObjectMapper().findAndRegisterModules()))
-    val newCalculationRequest = CalculationRequest(sentenceAndOffences = objectToJson(listOf(sentenceAndOffences), jacksonObjectMapper().findAndRegisterModules()))
   }
 }
