@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.IMMEDIATE_RELEASE
@@ -89,7 +91,8 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
     if (sentence.releaseDateTypes.contains(HDCED4PLUS)) {
       hdced4Calculator.calculateHdced4(sentence, sentenceCalculation)
     }
-    BookingCalculationService.log.info(sentence.buildString())
+    log.info("Calculate Dates from Adjustments")
+    log.info(sentence.buildString())
     return sentenceCalculation
   }
 
@@ -276,5 +279,7 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
     private const val TWENTY_EIGHT = 28L
     private const val YEAR_IN_DAYS = 365
     private const val ONE_HUNDRED_AND_THIRTY_FIVE = 135
+
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }
