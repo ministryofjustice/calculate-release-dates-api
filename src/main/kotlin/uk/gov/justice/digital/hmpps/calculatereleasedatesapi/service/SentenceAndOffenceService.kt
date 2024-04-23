@@ -25,11 +25,11 @@ class SentenceAndOffenceService(
       }
       val lastSentenceAndOffences: List<SentenceAndOffences> = objectMapper.readValue(it.sentenceAndOffences.toString())
       if (sentencesAndOffences == lastSentenceAndOffences) {
-        return@map transform(SentenceAndOffenceAnalysis.SAME, sentencesAndOffences)
+        transform(SentenceAndOffenceAnalysis.SAME, sentencesAndOffences)
       } else {
         val sentencesAndOffencesBySequence = sentencesAndOffences.associateBy { sentenceAndOffences -> "${sentenceAndOffences.caseSequence}-${sentenceAndOffences.sentenceSequence}" }
         val lastSentencesAndOffencesBySequence = lastSentenceAndOffences.associateBy { sentenceAndOffences -> "${sentenceAndOffences.caseSequence}-${sentenceAndOffences.sentenceSequence}" }
-        return@map sentencesAndOffencesBySequence.map { (key: String, value: SentenceAndOffences) ->
+        sentencesAndOffencesBySequence.map { (key: String, value: SentenceAndOffences) ->
           if (lastSentencesAndOffencesBySequence.containsKey(key)) {
             if (value.offences == lastSentencesAndOffencesBySequence[key]!!.offences) {
               transform(SentenceAndOffenceAnalysis.SAME, value)

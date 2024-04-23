@@ -22,4 +22,5 @@ data class AnalyzedSentenceAndOffences(
   val courtDescription: String? = null,
   val fineAmount: BigDecimal? = null,
   val sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis = SentenceAndOffenceAnalysis.SAME,
+  val isSDSPlus: Boolean,
 )

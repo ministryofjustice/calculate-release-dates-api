@@ -15,4 +15,5 @@ data class HistoricCalculation(
   val establishment: String?,
   val calculationRequestId: Long?,
   val calculationReason: String?,
+  val offenderSentCalculationId: Long?,
 )
