@@ -40,7 +40,7 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
     setCrdOrArdDetails(sentence, sentenceCalculation)
     setSedOrSledDetails(sentence, sentenceCalculation)
 
-    if (sentenceCalculation.calculateErsed && sentenceCalculation.earlyReleaseSchemeEligibilityDate == null) {
+    if (sentenceCalculation.calculateErsed) {
       ersedCalculator.generateEarlyReleaseSchemeEligibilityDateBreakdown(sentence, sentenceCalculation)
     }
 
