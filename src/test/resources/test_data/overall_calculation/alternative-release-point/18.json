@@ -8,25 +8,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2024-01-25",
-        "offenceCode": "SX03244",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "SX03244"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 16
         }
       },
       "identifier": "54a56297-f7a0-3087-8786-8244e48ede8e",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2024-03-08",
       "caseSequence": 1,
       "lineSequence": 1,
@@ -36,16 +26,10 @@
     {
       "type": "ExtendedDeterminateSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2024-01-25",
-        "offenceCode": "PK78008",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "PK78008"
       },
       "identifier": "1515ab24-c165-36d4-9870-59326b733764",
-      "recallType": null,
       "sentencedAt": "2024-03-08",
       "caseSequence": 1,
       "lineSequence": 2,
@@ -53,17 +37,11 @@
       "automaticRelease": false,
       "custodialDuration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 22
         }
       },
       "extensionDuration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 48
         }
       },
@@ -82,7 +60,5 @@
       }
     ]
   },
-  "calculateErsed": true,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  "calculateErsed": true
 }

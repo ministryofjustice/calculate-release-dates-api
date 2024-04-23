@@ -8,25 +8,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2023-08-24",
-        "offenceCode": "CY33054",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "CY33054"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 28
         }
       },
       "identifier": "09701261-f282-3ea8-8ec7-21ffae5beebd",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2024-03-04",
       "caseSequence": 1,
       "lineSequence": 1,
@@ -36,25 +26,15 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2023-08-24",
-        "offenceCode": "RT88026",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "RT88026"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 14
         }
       },
       "identifier": "01bf2f14-9418-3ec1-91e9-552e7101ac73",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2024-03-04",
       "caseSequence": 1,
       "lineSequence": 2,
@@ -64,25 +44,16 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2023-08-24",
-        "offenceCode": "RT88333",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "RT88333"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
           "WEEKS": 10,
-          "YEARS": 0,
           "MONTHS": 0
         }
       },
       "identifier": "fb66c63b-6f1a-3ea9-a2c5-aa334166d14c",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2024-03-04",
       "caseSequence": 1,
       "lineSequence": 3,
@@ -92,25 +63,16 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "isPcscSds": false,
         "committedAt": "2023-08-24",
-        "offenceCode": "RT88010",
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false,
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "offenceCode": "RT88010"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
           "WEEKS": 10,
-          "YEARS": 0,
           "MONTHS": 0
         }
       },
       "identifier": "f2303b43-2669-302a-832e-96dda25f61f9",
-      "recallType": null,
-      "section250": false,
       "sentencedAt": "2024-03-04",
       "caseSequence": 1,
       "lineSequence": 4,
@@ -128,7 +90,5 @@
       }
     ]
   },
-  "calculateErsed": true,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  "calculateErsed": true
 }
