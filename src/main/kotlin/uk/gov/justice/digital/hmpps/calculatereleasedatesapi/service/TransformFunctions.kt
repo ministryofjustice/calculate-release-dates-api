@@ -863,6 +863,6 @@ fun transform(
     sentenceAndOffences.courtDescription,
     sentenceAndOffences.fineAmount,
     sentenceAndOffenceAnalysis,
-    sentenceAndOffences.isSdsPlus,
+    sentenceAndOffences.isSDSPlus,
   )
 }

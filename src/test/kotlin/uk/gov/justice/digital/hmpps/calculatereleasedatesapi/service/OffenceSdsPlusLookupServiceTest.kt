@@ -26,10 +26,10 @@ class OffenceSdsPlusLookupServiceTest {
   fun `SDS+ Marker set when sentenced after SDS and before PCSC and sentence longer than 7 Years with singular offence - List A`() {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListAMarkers))
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(sentencedAfterSDSPlusBeforePCSCLongerThan7Years)
-    assertTrue(returnedResult.filter { it.isSdsPlus }.size == 1)
+    assertTrue(returnedResult.filter { it.isSDSPlus }.size == 1)
     assertTrue(returnedResult[0].offences[0].isPcscSdsPlus)
     assertTrue(returnedResult[0].offences[0].isScheduleFifteenMaximumLife)
-    assertTrue(returnedResult[0].isSdsPlus)
+    assertTrue(returnedResult[0].isSDSPlus)
   }
 
   @Test
@@ -38,7 +38,7 @@ class OffenceSdsPlusLookupServiceTest {
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(sentencedADIMPAfterPCSCLongerThan7Years)
     assertTrue(returnedResult[0].offences[0].isPcscSdsPlus)
     assertTrue(returnedResult[0].offences[0].isPcscSds)
-    assertTrue(returnedResult[0].isSdsPlus)
+    assertTrue(returnedResult[0].isSDSPlus)
   }
 
   @Test
@@ -46,7 +46,7 @@ class OffenceSdsPlusLookupServiceTest {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListBMarkers))
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(sentencedYOIORAAfterPCSCLonger4To7Years)
     assertTrue(returnedResult[0].offences[0].isPcscSdsPlus)
-    assertTrue(returnedResult[0].isSdsPlus)
+    assertTrue(returnedResult[0].isSDSPlus)
   }
 
   @Test
@@ -55,7 +55,7 @@ class OffenceSdsPlusLookupServiceTest {
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(section250Over7YearsPostPCSCSentence)
     assertTrue(returnedResult[0].offences[0].isPcscSdsPlus)
     assertTrue(returnedResult[0].offences[0].isPcscSec250)
-    assertTrue(returnedResult[0].isSdsPlus)
+    assertTrue(returnedResult[0].isSDSPlus)
   }
 
   @Test
@@ -67,7 +67,7 @@ class OffenceSdsPlusLookupServiceTest {
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(section250Over7YearsPrePCSCSentence)
     assertFalse(returnedResult[0].offences[0].isPcscSdsPlus)
     assertFalse(returnedResult[0].offences[0].isPcscSec250)
-    assertFalse(returnedResult[0].isSdsPlus)
+    assertFalse(returnedResult[0].isSDSPlus)
   }
 
   @Test
@@ -77,7 +77,7 @@ class OffenceSdsPlusLookupServiceTest {
     verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
     assertFalse(returnedResult[0].offences[0].isPcscSdsPlus)
     assertFalse(returnedResult[0].offences[0].isPcscSec250)
-    assertFalse(returnedResult[0].isSdsPlus)
+    assertFalse(returnedResult[0].isSDSPlus)
   }
 
   companion object {

@@ -57,8 +57,8 @@ class SentenceAndOffenceServiceTest {
 
   @Test
   fun `If old version did not have SDS plus flag (defaults to false) ignore the difference`() {
-    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(listOf(sentenceAndOffences.copy(isSdsPlus = true)))
-    val defaultedSentencesAndOffences = sentenceAndOffences.copy(isSdsPlus = false)
+    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(listOf(sentenceAndOffences.copy(isSDSPlus = true)))
+    val defaultedSentencesAndOffences = sentenceAndOffences.copy(isSDSPlus = false)
     val calcRequestWithMissingSDSPlusFlag = CalculationRequest(sentenceAndOffences = objectToJson(listOf(defaultedSentencesAndOffences), jacksonObjectMapper().findAndRegisterModules()))
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(defaultedSentencesAndOffences))
     whenever(calculationRequestRepository.findLatestCalculation(anyLong())).thenReturn(Optional.of(calcRequestWithMissingSDSPlusFlag))

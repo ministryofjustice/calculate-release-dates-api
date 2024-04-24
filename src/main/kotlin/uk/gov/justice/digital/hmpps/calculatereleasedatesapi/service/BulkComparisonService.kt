@@ -146,7 +146,7 @@ class BulkComparisonService(
       )
     calculableSentenceEnvelopes.forEach { calculableSentenceEnvelope ->
       val sentenceAndOffencesWithReleaseArrangementsForBooking = sentenceAndOffencesWithReleaseArrangementsForAllBookings.filter { it.bookingId == calculableSentenceEnvelope.bookingId }
-      val sdsPlusSentenceAndOffences = sentenceAndOffencesWithReleaseArrangementsForBooking.filter { it.isSdsPlus }
+      val sdsPlusSentenceAndOffences = sentenceAndOffencesWithReleaseArrangementsForBooking.filter { it.isSDSPlus }
       val mismatch = buildMismatch(calculableSentenceEnvelope, sdsPlusSentenceAndOffences, sentenceAndOffencesWithReleaseArrangementsForBooking)
       val hdced4PlusDate = getHdced4PlusDate(mismatch)
 

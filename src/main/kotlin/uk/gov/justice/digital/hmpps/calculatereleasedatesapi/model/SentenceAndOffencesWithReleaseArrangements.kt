@@ -22,7 +22,7 @@ data class SentenceAndOffencesWithReleaseArrangements(
   override val caseReference: String?,
   override val courtDescription: String?,
   override val fineAmount: BigDecimal?,
-  val isSdsPlus: Boolean,
+  val isSDSPlus: Boolean,
 ) : SentenceAndOffences {
   constructor(source: SentenceAndOffences, isSdsPlus: Boolean) : this(
     source.bookingId,

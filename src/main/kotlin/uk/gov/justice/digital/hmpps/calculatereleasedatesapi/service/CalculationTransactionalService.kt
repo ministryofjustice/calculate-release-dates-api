@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
@@ -322,7 +323,7 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun findSentenceAndOffencesFromCalculation(calculationRequestId: Long): List<SentenceAndOffences> {
+  fun findSentenceAndOffencesFromCalculation(calculationRequestId: Long): List<SentenceAndOffencesWithReleaseArrangements> {
     val calculationRequest = getCalculationRequest(calculationRequestId)
     if (calculationRequest.sentenceAndOffences == null) {
       throw PrisonApiDataNotFoundException("Sentences and offence data not found for calculation $calculationRequestId")
