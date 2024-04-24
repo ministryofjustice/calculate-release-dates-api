@@ -466,11 +466,8 @@ class CalculationTransactionalService(
         objectMapper.treeToValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
       val originalPrisonerDetails =
         objectMapper.treeToValue(calculationRequest.prisonerDetails, PrisonerDetails::class.java)
-      val originalSentenceAndOffences = calculationRequest.sentenceAndOffences?.map { element ->
-        objectMapper.treeToValue(
-          element,
-          SentenceAndOffences::class.java,
-        )
+      val originalSentenceAndOffences = calculationRequest.sentenceAndOffences?.let {
+        prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
       }
       val originalReturnToCustodyDate =
         objectMapper.treeToValue(calculationRequest.returnToCustodyDate, ReturnToCustodyDate::class.java)

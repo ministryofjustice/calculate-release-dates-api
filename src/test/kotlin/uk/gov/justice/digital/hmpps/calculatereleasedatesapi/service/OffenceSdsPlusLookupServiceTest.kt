@@ -11,7 +11,7 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PcscMarkers
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.time.LocalDate
@@ -26,36 +26,36 @@ class OffenceSdsPlusLookupServiceTest {
   fun `SDS+ Marker set when sentenced after SDS and before PCSC and sentence longer than 7 Years with singular offence - List A`() {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListAMarkers))
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(sentencedAfterSDSPlusBeforePCSCLongerThan7Years)
-    assertTrue(returnedResult.size == 1)
-    assertTrue(sentencedAfterSDSPlusBeforePCSCLongerThan7Years[0].offences[0].isPcscSdsPlus)
-    assertTrue(sentencedAfterSDSPlusBeforePCSCLongerThan7Years[0].offences[0].isScheduleFifteenMaximumLife)
-    assertTrue(sentencedAfterSDSPlusBeforePCSCLongerThan7Years[0].isSdsPlus!!)
+    assertTrue(returnedResult.filter { it.isSdsPlus }.size == 1)
+    assertTrue(returnedResult[0].offences[0].isPcscSdsPlus)
+    assertTrue(returnedResult[0].offences[0].isScheduleFifteenMaximumLife)
+    assertTrue(returnedResult[0].isSdsPlus)
   }
 
   @Test
   fun `SDS+ Marker set for ADIMP Over 7 Years after PCSC and List D marker returned`() {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListDMarkers))
-    underTest.populateSdsPlusMarkerForOffences(sentencedADIMPAfterPCSCLongerThan7Years)
-    assertTrue(sentencedADIMPAfterPCSCLongerThan7Years[0].offences[0].isPcscSdsPlus)
-    assertTrue(sentencedADIMPAfterPCSCLongerThan7Years[0].offences[0].isPcscSds)
-    assertTrue(sentencedADIMPAfterPCSCLongerThan7Years[0].isSdsPlus!!)
+    val returnedResult = underTest.populateSdsPlusMarkerForOffences(sentencedADIMPAfterPCSCLongerThan7Years)
+    assertTrue(returnedResult[0].offences[0].isPcscSdsPlus)
+    assertTrue(returnedResult[0].offences[0].isPcscSds)
+    assertTrue(returnedResult[0].isSdsPlus)
   }
 
   @Test
   fun `SDS+ Marker set for YOI_ORA 4 to 7 years after PCSC and List B Marker returned`() {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListBMarkers))
-    underTest.populateSdsPlusMarkerForOffences(sentencedYOIORAAfterPCSCLonger4To7Years)
-    assertTrue(sentencedYOIORAAfterPCSCLonger4To7Years[0].offences[0].isPcscSdsPlus)
-    assertTrue(sentencedYOIORAAfterPCSCLonger4To7Years[0].isSdsPlus!!)
+    val returnedResult = underTest.populateSdsPlusMarkerForOffences(sentencedYOIORAAfterPCSCLonger4To7Years)
+    assertTrue(returnedResult[0].offences[0].isPcscSdsPlus)
+    assertTrue(returnedResult[0].isSdsPlus)
   }
 
   @Test
   fun `SDS+ Marker set for SEC_250 Over 7 Years After PCSC and List C marker returned`() {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListCMarkers))
-    underTest.populateSdsPlusMarkerForOffences(section250Over7YearsPostPCSCSentence)
-    assertTrue(section250Over7YearsPostPCSCSentence[0].offences[0].isPcscSdsPlus)
-    assertTrue(section250Over7YearsPostPCSCSentence[0].offences[0].isPcscSec250)
-    assertTrue(section250Over7YearsPostPCSCSentence[0].isSdsPlus!!)
+    val returnedResult = underTest.populateSdsPlusMarkerForOffences(section250Over7YearsPostPCSCSentence)
+    assertTrue(returnedResult[0].offences[0].isPcscSdsPlus)
+    assertTrue(returnedResult[0].offences[0].isPcscSec250)
+    assertTrue(returnedResult[0].isSdsPlus)
   }
 
   @Test
@@ -64,25 +64,25 @@ class OffenceSdsPlusLookupServiceTest {
 
     // no call to MO should take place as offences don't match filter.
     verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
-    underTest.populateSdsPlusMarkerForOffences(section250Over7YearsPrePCSCSentence)
-    assertFalse(section250Over7YearsPrePCSCSentence[0].offences[0].isPcscSdsPlus)
-    assertFalse(section250Over7YearsPrePCSCSentence[0].offences[0].isPcscSec250)
-    assertFalse(section250Over7YearsPrePCSCSentence[0].isSdsPlus!!)
+    val returnedResult = underTest.populateSdsPlusMarkerForOffences(section250Over7YearsPrePCSCSentence)
+    assertFalse(returnedResult[0].offences[0].isPcscSdsPlus)
+    assertFalse(returnedResult[0].offences[0].isPcscSec250)
+    assertFalse(returnedResult[0].isSdsPlus)
   }
 
   @Test
   fun `SDS+ is NOT set for ADIMP as sentenced before SDS and not over 7 years in duration`() {
-    underTest.populateSdsPlusMarkerForOffences(sentenceMatchesNoMatchingOffencesDueToSentenceDate)
+    val returnedResult = underTest.populateSdsPlusMarkerForOffences(sentenceMatchesNoMatchingOffencesDueToSentenceDate)
     // no call to MO should take place as offences don't match filter.
     verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
-    assertFalse(sentenceMatchesNoMatchingOffencesDueToSentenceDate[0].offences[0].isPcscSdsPlus)
-    assertFalse(sentenceMatchesNoMatchingOffencesDueToSentenceDate[0].offences[0].isPcscSec250)
-    assertFalse(sentenceMatchesNoMatchingOffencesDueToSentenceDate[0].isSdsPlus!!)
+    assertFalse(returnedResult[0].offences[0].isPcscSdsPlus)
+    assertFalse(returnedResult[0].offences[0].isPcscSec250)
+    assertFalse(returnedResult[0].isSdsPlus)
   }
 
   companion object {
     private val sentenceMatchesNoMatchingOffencesDueToSentenceDate = listOf(
-      SentenceAndOffences(
+      PrisonApiSentenceAndOffences(
         1,
         1,
         1,
@@ -107,7 +107,7 @@ class OffenceSdsPlusLookupServiceTest {
     )
 
     private val sentencedAfterSDSPlusBeforePCSCLongerThan7Years = listOf(
-      SentenceAndOffences(
+      PrisonApiSentenceAndOffences(
         1,
         1,
         1,
@@ -132,7 +132,7 @@ class OffenceSdsPlusLookupServiceTest {
     )
 
     private val sentencedADIMPAfterPCSCLongerThan7Years = listOf(
-      SentenceAndOffences(
+      PrisonApiSentenceAndOffences(
         1,
         1,
         1,
@@ -157,7 +157,7 @@ class OffenceSdsPlusLookupServiceTest {
     )
 
     private val sentencedYOIORAAfterPCSCLonger4To7Years = listOf(
-      SentenceAndOffences(
+      PrisonApiSentenceAndOffences(
         1,
         1,
         1,
@@ -182,7 +182,7 @@ class OffenceSdsPlusLookupServiceTest {
     )
 
     private val section250Over7YearsPostPCSCSentence = listOf(
-      SentenceAndOffences(
+      PrisonApiSentenceAndOffences(
         1,
         1,
         1,
@@ -207,7 +207,7 @@ class OffenceSdsPlusLookupServiceTest {
     )
 
     private val section250Over7YearsPrePCSCSentence = listOf(
-      SentenceAndOffences(
+      PrisonApiSentenceAndOffences(
         1,
         1,
         1,
@@ -232,7 +232,7 @@ class OffenceSdsPlusLookupServiceTest {
     )
 
     private val sentenceMatchesSDSCriteriaTwoOffences = listOf(
-      SentenceAndOffences(
+      PrisonApiSentenceAndOffences(
         1,
         1,
         1,
@@ -264,7 +264,7 @@ class OffenceSdsPlusLookupServiceTest {
     )
 
     private val multipleSentencesMatchesSDSCriteriaMultipleOffences = listOf(
-      SentenceAndOffences(
+      PrisonApiSentenceAndOffences(
         1,
         1,
         1,
@@ -293,7 +293,7 @@ class OffenceSdsPlusLookupServiceTest {
           ),
         ),
       ),
-      SentenceAndOffences(
+      PrisonApiSentenceAndOffences(
         1,
         1,
         1,
@@ -325,7 +325,7 @@ class OffenceSdsPlusLookupServiceTest {
     )
 
     private val oneSentencesMatchesSDSCriteriaOneDoesNotMatchOnDateMultipleOffences = listOf(
-      SentenceAndOffences(
+      PrisonApiSentenceAndOffences(
         1,
         1,
         1,
@@ -354,7 +354,7 @@ class OffenceSdsPlusLookupServiceTest {
           ),
         ),
       ),
-      SentenceAndOffences(
+      PrisonApiSentenceAndOffences(
         1,
         1,
         1,
