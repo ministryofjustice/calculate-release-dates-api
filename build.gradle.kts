@@ -51,7 +51,7 @@ dependencies {
   // OpenAPI
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
-  implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.2")
+  implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.3")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
   implementation("org.springframework:spring-jms:6.1.6")
   implementation("com.google.code.gson:gson:2.10.1")
