@@ -45,7 +45,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_PLUS_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.math.BigDecimal
 import java.time.temporal.ChronoUnit
@@ -223,7 +222,7 @@ class SentenceIdentificationService(
             )
           }
         } else {
-          afterCJAAndLASPOorSDSPlus(sentence, offender, releaseDateTypes)
+          afterCJAAndLASPOorSDSPlus(sentence, releaseDateTypes)
         }
       } else if (sentence.isMadeUpOfOnlyBeforeCjaLaspoSentences()) {
         beforeCJAAndLASPO(sentence, releaseDateTypes)
@@ -311,7 +310,7 @@ class SentenceIdentificationService(
     ) {
       beforeCJAAndLASPO(sentence, releaseDateTypes)
     } else {
-      afterCJAAndLASPOorSDSPlus(sentence, offender, releaseDateTypes)
+      afterCJAAndLASPOorSDSPlus(sentence, releaseDateTypes)
     }
 
     if (tusedCalculator.doesTopUpSentenceExpiryDateApply(sentence, offender)) {
@@ -327,7 +326,6 @@ class SentenceIdentificationService(
 
   private fun afterCJAAndLASPOorSDSPlus(
     sentence: CalculableSentence,
-    offender: Offender,
     releaseDateTypes: MutableList<ReleaseDateType>,
   ) {
     sentence.identificationTrack = SDS_AFTER_CJA_LASPO
@@ -342,29 +340,8 @@ class SentenceIdentificationService(
         ),
       )
     } else {
-      val durationGreaterThanSevenYears = sentence.durationIsGreaterThanOrEqualTo(SEVEN, ChronoUnit.YEARS)
-      val durationGreaterThanFourLessThanSevenYears = sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS) &&
-        sentence.durationIsLessThan(SEVEN, ChronoUnit.YEARS)
-      val overEighteen = offender.getAgeOnDate(sentence.sentencedAt) > INT_EIGHTEEN
-
-      if (sentence is StandardDeterminateSentence && sentence.sentencedAt.isAfterOrEqualTo(SDS_PLUS_COMMENCEMENT_DATE)) {
-        if (sentence.sentencedAt.isAfterOrEqualTo(PCSC_COMMENCEMENT_DATE)) {
-          if (sentence.section250) {
-            if (durationGreaterThanSevenYears && sentence.offence.isPcscSec250) {
-              sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
-            }
-          } else if (overEighteen) {
-            if (durationGreaterThanFourLessThanSevenYears && sentence.offence.isPcscSds) {
-              sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
-            } else if (durationGreaterThanSevenYears && (sentence.offence.isPcscSdsPlus || sentence.offence.isScheduleFifteenMaximumLife)) {
-              sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
-            }
-          }
-        } else {
-          if (overEighteen && durationGreaterThanSevenYears && sentence.offence.isScheduleFifteenMaximumLife) {
-            sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
-          }
-        }
+      if (sentence is StandardDeterminateSentence && sentence.isSDSPlus) {
+        sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
       }
 
       releaseDateTypes.addAll(
@@ -416,9 +393,7 @@ class SentenceIdentificationService(
   }
 
   companion object {
-    private const val INT_EIGHTEEN = 18
     private const val FOUR = 4L
-    private const val SEVEN = 7L
     private const val TWELVE = 12L
     private val TEN_MILLION = BigDecimal("10000000")
   }

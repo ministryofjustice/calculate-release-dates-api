@@ -59,7 +59,8 @@
       "identifier": "18f096c7-7e61-484b-a4df-d9846dd88609",
       "consecutiveSentenceUUIDs": [
         "0194ce7a-288b-447f-a6ad-191226a769eb"
-      ]
+      ],
+      "isSDSPlus": true
     },
     {
       "offence": {
