@@ -311,7 +311,7 @@ class ValidationService(
     sourceData.sentenceAndOffences.forEach {
       val isDto = SentenceCalculationType.from(it.sentenceCalculationType).sentenceClazz == DetentionAndTrainingOrderSentence::class.java
       if (isDto) {
-        if (it.consecutiveToSequence != null && sequenceNotDto(it.consecutiveToSequence, sourceData)) {
+        if (it.consecutiveToSequence != null && sequenceNotDto(it.consecutiveToSequence!!, sourceData)) {
           validationMessages.add(ValidationMessage(code = DTO_CONSECUTIVE_TO_SENTENCE))
         }
         if (sourceData.sentenceAndOffences.any { sent -> (sent.consecutiveToSequence == it.sentenceSequence && SentenceCalculationType.from(sent.sentenceCalculationType).sentenceClazz != DetentionAndTrainingOrderSentence::class.java) }) {
