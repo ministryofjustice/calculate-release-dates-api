@@ -688,7 +688,7 @@ class CalculationTransactionalServiceTest {
           "\"isPcscSdsPlus\":false,\"offenceCode\":null},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}}," +
           "\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\"," +
           "\"consecutiveSentenceUUIDs\":[],\"caseSequence\":1,\"lineSequence\":2,\"caseReference\":null," +
-          "\"recallType\":null,\"section250\":false}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
+          "\"recallType\":null,\"section250\":false,\"isSDSPlus\":false}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
           "\"bookingId\":12345}",
       )
 
@@ -744,6 +744,7 @@ class CalculationTransactionalServiceTest {
       identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa"),
       caseSequence = 1,
       lineSequence = 2,
+      isSDSPlus = false,
     )
 
     val BOOKING = Booking(OFFENDER, listOf(StandardSENTENCE), Adjustments(), null, null, BOOKING_ID)

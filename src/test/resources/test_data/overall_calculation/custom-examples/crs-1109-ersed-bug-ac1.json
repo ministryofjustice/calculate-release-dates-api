@@ -15,7 +15,8 @@
           "YEARS": 12
         }
       },
-      "sentencedAt": "2020-12-15"
+      "sentencedAt": "2020-12-15",
+      "isSDSPlus": true
     }
   ],
   "adjustments": {

@@ -1794,10 +1794,11 @@ class ValidationServiceTest {
       lineSequence = LINE_SEQUENCE,
       caseSequence = CASE_SEQUENCE,
       recallType = FIXED_TERM_RECALL_28,
+      isSDSPlus = true,
     )
     val ONE_DAY_DURATION = Duration(mapOf(DAYS to 1L))
     val OFFENCE = Offence(LocalDate.of(2020, 1, 1))
-    val STANDARD_SENTENCE = StandardDeterminateSentence(OFFENCE, ONE_DAY_DURATION, LocalDate.of(2020, 1, 1))
+    val STANDARD_SENTENCE = StandardDeterminateSentence(OFFENCE, ONE_DAY_DURATION, LocalDate.of(2020, 1, 1), isSDSPlus = false)
     val SENTENCE_CALCULATION = SentenceCalculation(
       STANDARD_SENTENCE,
       3,

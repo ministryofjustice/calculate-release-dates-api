@@ -9,12 +9,14 @@ class SingleTermSentence(
   override val sentencedAt: LocalDate,
   override val offence: Offence,
   override val standardSentences: List<AbstractSentence>,
+  override val isSDSPlus: Boolean,
 ) : SingleTermed {
   constructor(standardSentences: List<AbstractSentence>) :
     this(
       standardSentences.minOf(AbstractSentence::sentencedAt),
       standardSentences.map(AbstractSentence::offence).minByOrNull(Offence::committedAt)!!,
       standardSentences,
+      standardSentences.minBy(AbstractSentence::sentencedAt).isSDSPlus,
     )
 
   override val recallType: RecallType?

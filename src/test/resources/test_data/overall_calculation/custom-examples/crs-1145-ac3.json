@@ -30,7 +30,8 @@
       },
       "sentencedAt": "2021-10-14",
       "isDto": false,
-      "sentenceType": "YOI"
+      "sentenceType": "YOI",
+      "isSDSPlus": true
     }
   ],
   "adjustments": {

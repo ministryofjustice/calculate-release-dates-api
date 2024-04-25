@@ -149,6 +149,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
+            isSDSPlus = false,
           ),
         ),
         adjustments = Adjustments(
@@ -204,6 +205,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
+            isSDSPlus = false,
           ),
         ),
         adjustments = Adjustments(
@@ -261,6 +263,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
+            isSDSPlus = false,
           ),
         ),
         adjustments = Adjustments(
@@ -316,6 +319,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
+            isSDSPlus = false,
           ),
         ),
         adjustments = Adjustments(
@@ -371,6 +375,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
+            isSDSPlus = false,
           ),
         ),
         adjustments = Adjustments(

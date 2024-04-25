@@ -17,7 +17,8 @@
         }
       },
       "sentencedAt": "2022-05-10",
-      "sentenceType": "ADIMP"
+      "sentenceType": "ADIMP",
+      "isSDSPlus": true
     }
   ],
   "adjustments": {

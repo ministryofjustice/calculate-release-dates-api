@@ -264,6 +264,7 @@ class ManualCalculationServiceTest {
       identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa"),
       caseSequence = 1,
       lineSequence = 2,
+      isSDSPlus = false,
     )
     private val BOOKING = Booking(OFFENDER, listOf(StandardSENTENCE), Adjustments(), null, null, BOOKING_ID)
 

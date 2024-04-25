@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Alert
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
@@ -79,25 +80,28 @@ class TransformFunctionsTest {
         indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
       ),
     )
-    val request = PrisonApiSentenceAndOffences(
-      bookingId = bookingId,
-      sentenceSequence = sequence,
-      sentenceDate = FIRST_JAN_2015,
-      terms = listOf(
-        SentenceTerms(
-          years = 5,
-          months = 4,
-          weeks = 3,
-          days = 2,
+    val request = SentenceAndOffencesWithReleaseArrangements(
+      PrisonApiSentenceAndOffences(
+        bookingId = bookingId,
+        sentenceSequence = sequence,
+        sentenceDate = FIRST_JAN_2015,
+        terms = listOf(
+          SentenceTerms(
+            years = 5,
+            months = 4,
+            weeks = 3,
+            days = 2,
+          ),
         ),
+        sentenceStatus = "IMP",
+        sentenceCategory = "CAT",
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+        sentenceTypeDescription = "Standard Determinate",
+        offences = offences,
+        lineSequence = lineSequence,
+        caseSequence = caseSequence,
       ),
-      sentenceStatus = "IMP",
-      sentenceCategory = "CAT",
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-      sentenceTypeDescription = "Standard Determinate",
-      offences = offences,
-      lineSequence = lineSequence,
-      caseSequence = caseSequence,
+      isSdsPlus = false,
     )
 
     assertThat(transform(request, CalculationUserInputs(useOffenceIndicators = true))).isEqualTo(
@@ -110,7 +114,7 @@ class TransformFunctionsTest {
           consecutiveSentenceUUIDs = mutableListOf(),
           lineSequence = lineSequence,
           caseSequence = caseSequence,
-
+          isSDSPlus = false,
         ),
         StandardDeterminateSentence(
           sentencedAt = FIRST_JAN_2015,
@@ -120,6 +124,7 @@ class TransformFunctionsTest {
           consecutiveSentenceUUIDs = mutableListOf(),
           lineSequence = lineSequence,
           caseSequence = caseSequence,
+          isSDSPlus = false,
         ),
       ),
     )
@@ -142,23 +147,26 @@ class TransformFunctionsTest {
         indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
       ),
     )
-    val request = PrisonApiSentenceAndOffences(
-      bookingId = bookingId,
-      sentenceSequence = sequence,
-      consecutiveToSequence = consecutiveTo,
-      sentenceDate = FIRST_JAN_2015,
-      terms = listOf(
-        SentenceTerms(
-          years = 5,
+    val request = SentenceAndOffencesWithReleaseArrangements(
+      PrisonApiSentenceAndOffences(
+        bookingId = bookingId,
+        sentenceSequence = sequence,
+        consecutiveToSequence = consecutiveTo,
+        sentenceDate = FIRST_JAN_2015,
+        terms = listOf(
+          SentenceTerms(
+            years = 5,
+          ),
         ),
+        sentenceStatus = "IMP",
+        sentenceCategory = "CAT",
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+        sentenceTypeDescription = "Standard Determinate",
+        offences = offences,
+        lineSequence = lineSequence,
+        caseSequence = caseSequence,
       ),
-      sentenceStatus = "IMP",
-      sentenceCategory = "CAT",
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-      sentenceTypeDescription = "Standard Determinate",
-      offences = offences,
-      lineSequence = lineSequence,
-      caseSequence = caseSequence,
+      isSdsPlus = true,
     )
 
     assertThat(transform(request, null)).isEqualTo(
@@ -171,6 +179,7 @@ class TransformFunctionsTest {
           consecutiveSentenceUUIDs = mutableListOf(UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())),
           lineSequence = lineSequence,
           caseSequence = caseSequence,
+          isSDSPlus = true,
         ),
       ),
     )

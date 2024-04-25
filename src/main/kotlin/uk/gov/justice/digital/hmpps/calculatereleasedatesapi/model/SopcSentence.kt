@@ -20,7 +20,7 @@ data class SopcSentence(
   override val caseReference: String?,
   override val recallType: RecallType? = null,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType) {
-
+  override val isSDSPlus = false
   override fun buildString(): String {
     return "SopcSentence\t:\t\n" +
       "Identification Track\t:\t${identificationTrack}\n" +

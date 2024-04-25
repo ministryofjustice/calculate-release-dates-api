@@ -119,7 +119,7 @@ import java.util.UUID
 */
 
 fun transform(
-  sentence: SentenceAndOffences,
+  sentence: SentenceAndOffencesWithReleaseArrangements,
   calculationUserInputs: CalculationUserInputs?,
 ): MutableList<out AbstractSentence> {
   // There shouldn't be multiple offences associated to a single sentence; however there are at the moment (NOMIS doesnt
@@ -170,6 +170,7 @@ fun transform(
         caseReference = sentence.caseReference,
         recallType = sentenceCalculationType.recallType,
         section250 = sentenceCalculationType == SentenceCalculationType.SEC250 || sentenceCalculationType == SentenceCalculationType.SEC250_ORA,
+        isSDSPlus = sentence.isSDSPlus,
       )
     } else if (sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
       AFineSentence(
