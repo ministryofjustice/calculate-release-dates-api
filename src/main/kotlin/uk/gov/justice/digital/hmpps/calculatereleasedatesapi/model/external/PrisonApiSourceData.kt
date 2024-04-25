@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
+
 data class PrisonApiSourceData(
-  val sentenceAndOffences: List<SentenceAndOffences>,
+  val sentenceAndOffences: List<SentenceAndOffencesWithReleaseArrangements>,
   val prisonerDetails: PrisonerDetails,
   val bookingAndSentenceAdjustments: BookingAndSentenceAdjustments,
   val offenderFinePayments: List<OffenderFinePayment> = listOf(),

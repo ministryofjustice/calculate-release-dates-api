@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
@@ -12,10 +10,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 class SentenceAndOffenceService(
   private val prisonService: PrisonService,
   private val calculationRequestRepository: CalculationRequestRepository,
+  private val prisonApiDataMapper: PrisonApiDataMapper,
 ) {
 
   fun getSentencesAndOffences(bookingId: Long): List<AnalyzedSentenceAndOffences> {
-    val objectMapper = jacksonObjectMapper().findAndRegisterModules()
     val sentencesAndOffences = prisonService.getSentencesAndOffences(bookingId)
     val lastCalculation = calculationRequestRepository.findLatestCalculation(bookingId)
 
@@ -23,7 +21,7 @@ class SentenceAndOffenceService(
       if (it.sentenceAndOffences == null) {
         return@map transform(SentenceAndOffenceAnalysis.NEW, sentencesAndOffences)
       }
-      val lastSentenceAndOffences: List<SentenceAndOffences> = objectMapper.readValue(it.sentenceAndOffences.toString())
+      val lastSentenceAndOffences: List<SentenceAndOffences> = prisonApiDataMapper.mapSentencesAndOffences(it)
       if (sentencesAndOffences == lastSentenceAndOffences) {
         transform(SentenceAndOffenceAnalysis.SAME, sentencesAndOffences)
       } else {

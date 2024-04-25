@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
@@ -23,12 +24,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.math.BigDecimal
@@ -61,21 +62,24 @@ class BookingServiceTest {
       indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
     ),
   )
-  private val sentenceAndOffences = SentenceAndOffences(
-    bookingId = bookingId,
-    sentenceSequence = sequence,
-    lineSequence = lineSequence,
-    caseSequence = caseSequence,
-    consecutiveToSequence = consecutiveTo,
-    sentenceDate = FIRST_JAN_2015,
-    terms = listOf(
-      SentenceTerms(years = 5),
+  private val sentenceAndOffences = SentenceAndOffencesWithReleaseArrangements(
+    PrisonApiSentenceAndOffences(
+      bookingId = bookingId,
+      sentenceSequence = sequence,
+      lineSequence = lineSequence,
+      caseSequence = caseSequence,
+      consecutiveToSequence = consecutiveTo,
+      sentenceDate = FIRST_JAN_2015,
+      terms = listOf(
+        SentenceTerms(years = 5),
+      ),
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.FTRSCH18.name,
+      sentenceTypeDescription = "28 day fixed term recall",
+      offences = offences,
     ),
-    sentenceStatus = "IMP",
-    sentenceCategory = "CAT",
-    sentenceCalculationType = SentenceCalculationType.FTRSCH18.name,
-    sentenceTypeDescription = "28 day fixed term recall",
-    offences = offences,
+    false,
   )
   private val bookingAndSentenceAdjustment = BookingAndSentenceAdjustments(
     bookingAdjustments = listOf(

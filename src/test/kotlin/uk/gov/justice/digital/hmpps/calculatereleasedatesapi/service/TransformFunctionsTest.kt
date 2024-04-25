@@ -36,10 +36,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
@@ -79,7 +79,7 @@ class TransformFunctionsTest {
         indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
       ),
     )
-    val request = SentenceAndOffences(
+    val request = PrisonApiSentenceAndOffences(
       bookingId = bookingId,
       sentenceSequence = sequence,
       sentenceDate = FIRST_JAN_2015,
@@ -142,7 +142,7 @@ class TransformFunctionsTest {
         indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
       ),
     )
-    val request = SentenceAndOffences(
+    val request = PrisonApiSentenceAndOffences(
       bookingId = bookingId,
       sentenceSequence = sequence,
       consecutiveToSequence = consecutiveTo,
@@ -303,7 +303,7 @@ class TransformFunctionsTest {
   fun `Transform adjustments`() {
     val fromDate = LocalDate.of(2022, 3, 1)
     val toDate = LocalDate.of(2022, 3, 10)
-    val recallSentence = SentenceAndOffences(
+    val recallSentence = PrisonApiSentenceAndOffences(
       bookingId = 1L,
       sentenceSequence = 1,
       sentenceDate = FIRST_JAN_2015,
@@ -315,7 +315,7 @@ class TransformFunctionsTest {
       caseSequence = 1,
     )
 
-    val standardSentence = SentenceAndOffences(
+    val standardSentence = PrisonApiSentenceAndOffences(
       bookingId = 1L,
       sentenceSequence = 2,
       sentenceDate = SECOND_JAN_2015,

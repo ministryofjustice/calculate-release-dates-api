@@ -57,6 +57,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
@@ -65,12 +66,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Bank
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
@@ -603,7 +604,7 @@ class CalculationTransactionalServiceTest {
   }
 
   companion object {
-    private val originalSentence = SentenceAndOffences(
+    private val originalSentence = PrisonApiSentenceAndOffences(
       bookingId = 1L,
       sentenceSequence = 3,
       lineSequence = 2,
@@ -639,7 +640,7 @@ class CalculationTransactionalServiceTest {
       ),
     )
     val SOURCE_DATA =
-      PrisonApiSourceData(listOf(originalSentence), prisonerDetails, adjustments, emptyList(), null, null)
+      PrisonApiSourceData(listOf(SentenceAndOffencesWithReleaseArrangements(originalSentence, false)), prisonerDetails, adjustments, emptyList(), null, null)
     val cachedBankHolidays =
       BankHolidays(
         RegionBankHolidays(

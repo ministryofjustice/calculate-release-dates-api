@@ -60,7 +60,7 @@ data class CalculationRequest(
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val sentenceAndOffences: JsonNode? = null,
-  val sentenceAndOffencesVersion: Int? = 1,
+  val sentenceAndOffencesVersion: Int? = 2,
 
   @NotNull
   @Type(value = JsonType::class)
@@ -135,22 +135,6 @@ data class CalculationRequest(
   }
 
   fun withType(calculationType: CalculationType): CalculationRequest {
-    return copy(
-      id = this.id,
-      calculationReference = this.calculationReference,
-      prisonerId = this.prisonerId,
-      bookingId = this.bookingId,
-      calculationStatus = this.calculationStatus,
-      calculatedAt = this.calculatedAt,
-      calculatedByUsername = this.calculatedByUsername,
-      inputData = this.inputData,
-      sentenceAndOffences = this.sentenceAndOffences,
-      sentenceAndOffencesVersion = this.sentenceAndOffencesVersion,
-      prisonerDetails = this.prisonerDetails,
-      calculationType = calculationType,
-      prisonerLocation = this.prisonerLocation,
-      reasonForCalculation = this.reasonForCalculation,
-      otherReasonForCalculation = this.otherReasonForCalculation,
-    )
+    return copy(calculationType = calculationType)
   }
 }

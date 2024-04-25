@@ -27,13 +27,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
@@ -74,8 +75,8 @@ class ManualCalculationServiceTest {
     fun `Check the presence of indeterminate sentences returns true`() {
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name),
-          BASE_DETERMINATE_SENTENCE,
+          SentenceAndOffencesWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name), false),
+          SentenceAndOffencesWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false),
         ),
       )
 
@@ -88,8 +89,8 @@ class ManualCalculationServiceTest {
     fun `Check the absence of indeterminate sentences returns false`() {
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR.name),
-          BASE_DETERMINATE_SENTENCE,
+          SentenceAndOffencesWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR.name), false),
+          SentenceAndOffencesWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false),
         ),
       )
 
@@ -177,7 +178,11 @@ class ManualCalculationServiceTest {
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
-    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(listOf(SentenceAndOffences(1, 1, 1, 1, null, "A", "A", "LIFE", "", LocalDate.now())))
+    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(
+      listOf(
+        SentenceAndOffencesWithReleaseArrangements(PrisonApiSentenceAndOffences(1, 1, 1, 1, null, "A", "A", "LIFE", "", LocalDate.now()), false),
+      ),
+    )
 
     val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
@@ -194,7 +199,7 @@ class ManualCalculationServiceTest {
     private val FIVE_YEAR_DURATION = Duration(mutableMapOf(ChronoUnit.DAYS to 0L, ChronoUnit.WEEKS to 0L, ChronoUnit.MONTHS to 0L, ChronoUnit.YEARS to 5L))
     private const val PRISONER_ID = "A1234AJ"
 
-    private val BASE_DETERMINATE_SENTENCE = SentenceAndOffences(
+    private val BASE_DETERMINATE_SENTENCE = PrisonApiSentenceAndOffences(
       bookingId = BOOKING_ID,
       sentenceSequence = 1,
       lineSequence = 1,
