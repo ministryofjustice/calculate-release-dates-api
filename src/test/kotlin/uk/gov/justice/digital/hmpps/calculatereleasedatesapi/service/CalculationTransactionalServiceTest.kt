@@ -563,7 +563,7 @@ class CalculationTransactionalServiceTest {
     val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup)
     val sentencesExtractionService = SentencesExtractionService()
     val sentenceIdentificationService =
-      SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
+      SentenceIdentificationService(tusedCalculator, hdced4Calculator)
     val bookingCalculationService = BookingCalculationService(
       sentenceCalculationService,
       sentenceIdentificationService,

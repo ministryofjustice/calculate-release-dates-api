@@ -52,7 +52,6 @@ import java.time.temporal.ChronoUnit
 
 @Service
 class SentenceIdentificationService(
-  val hdcedCalculator: HdcedCalculator,
   val tusedCalculator: TusedCalculator,
   val hdced4Calculator: Hdced4Calculator,
 ) {
@@ -418,8 +417,6 @@ class SentenceIdentificationService(
 
   companion object {
     private const val INT_EIGHTEEN = 18
-    private const val INT_ONE = 1
-    private const val TWO = 2L
     private const val FOUR = 4L
     private const val SEVEN = 7L
     private const val TWELVE = 12L
