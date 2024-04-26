@@ -93,10 +93,10 @@ class OffenceSdsPlusLookupService(
         offence.indicators = offence.indicators.plus(listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR))
         sdsPlusIdentified = true
       } else if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListD == true) {
-        offence.indicators = offence.indicators.plus(listOf(OffenderOffence.PCSC_SDS))
+        offence.indicators = offence.indicators.plus(listOf(OffenderOffence.PCSC_SDS_PLUS))
         sdsPlusIdentified = true
       } else if (sentenceIsAfterPcsc && fourToUnderSeven(sentenceAndOffence) && moResponseForOffence?.pcscMarkers?.inListB == true) {
-        offence.indicators = offence.indicators.plus(listOf(OffenderOffence.PCSC_SDS_PLUS))
+        offence.indicators = offence.indicators.plus(listOf(OffenderOffence.PCSC_SDS))
         sdsPlusIdentified = true
       }
     } else if (postPcscCalcTypes["S250"]!!.contains(sentenceCalculationType)) {

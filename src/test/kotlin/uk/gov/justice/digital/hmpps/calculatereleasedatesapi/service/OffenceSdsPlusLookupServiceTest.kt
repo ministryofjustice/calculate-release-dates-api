@@ -3,17 +3,21 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import java.time.LocalDate
 
 class OffenceSdsPlusLookupServiceTest {
@@ -37,7 +41,6 @@ class OffenceSdsPlusLookupServiceTest {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListDMarkers))
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(sentencedADIMPAfterPCSCLongerThan7Years)
     assertTrue(returnedResult[0].offences[0].isPcscSdsPlus)
-    assertTrue(returnedResult[0].offences[0].isPcscSds)
     assertTrue(returnedResult[0].isSDSPlus)
   }
 
@@ -46,6 +49,7 @@ class OffenceSdsPlusLookupServiceTest {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListBMarkers))
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(sentencedYOIORAAfterPCSCLonger4To7Years)
     assertTrue(returnedResult[0].offences[0].isPcscSdsPlus)
+    assertTrue(returnedResult[0].offences[0].isPcscSds)
     assertTrue(returnedResult[0].isSDSPlus)
   }
 
@@ -426,5 +430,144 @@ class OffenceSdsPlusLookupServiceTest {
         inListD = false,
       ),
     )
+  }
+
+  private val things = listOf(
+      "custom-examples/crs-1059-single-ersed-ac8" ,
+      "custom-examples/crs-1081-ersed-consec-ac4" ,
+      "custom-examples/crs-1081-ersed-consec-ac6" ,
+      "custom-examples/crs-1109-ersed-bug-ac1" ,
+      "custom-examples/crs-1145-ac3" ,
+      "custom-examples/crs-1175-ac2" ,
+      "custom-examples/crs-1317-bug" ,
+      "custom-examples/crs-1736-ersed24-ac6" ,
+      "custom-examples/crs-1740-ac2" ,
+      "custom-examples/crs-1740-ac3" ,
+      "custom-examples/crs-1740-ac4" ,
+      "custom-examples/crs-1740-ac5-1" ,
+      "custom-examples/crs-1740-ac5" ,
+      "custom-examples/crs-1740-ac6" ,
+      "custom-examples/crs-1766-ersed24-ac4-2" ,
+      "custom-examples/crs-377-sds-plus-example-1" ,
+      "custom-examples/crs-377-sds-plus-row-15" ,
+      "custom-examples/crs-377-sds-plus-row-47" ,
+      "custom-examples/crs-658-sds-plus-consecutive-to-sds-plus" ,
+      "custom-examples/crs-658-sds-plus-consecutive-to-sds" ,
+      "custom-examples/crs-680-pre-prod-1" ,
+      "custom-examples/crs-685-tagged-bail-release-in-between-sentences" ,
+      "custom-examples/crs-878-sds-sdsplus-consec-ac1" ,
+      "custom-examples/crs-878-sds-sdsplus-consec-ac2" ,
+      "custom-examples/crs-898-crd-mismatches" ,
+      "custom-examples/crs-907-eds-sds-plus-ac1" ,
+      "custom-examples/crs-907-eds-sds-plus-ac2" ,
+      "custom-examples/crs-921-pcsc-four-to-under-seven-ac1" ,
+      "custom-examples/crs-921-pcsc-sec250-ac1" ,
+      "custom-examples/crs-921-pcsc-updated-ac1" ,
+      "custom-examples/crs-925-pcsc-tests-ac1" ,
+      "custom-examples/crs-925-pcsc-tests-ac2" ,
+      "custom-examples/crs-925-pcsc-tests-ac3" ,
+      "custom-examples/crs-950-pre-pcsc-sopc-ac5" ,
+      "framework-examples/2" ,
+      "framework-examples/33",
+    "alternative-release-point/21" ,
+    "alternative-release-point/22" ,
+  )
+  private val jsonTransformation = JsonTransformation()
+//  "custom-examples/crs-947-bug-with-markers" ,
+  private data class Foo(
+    val sentenceDate: LocalDate,
+    val sentenceLengthDays: Int,
+    val type: SentenceCalculationType,
+    val inListA: Boolean,
+    val inListB : Boolean,
+    val inListC : Boolean,
+    val inListD : Boolean,
+    val name: String,
+  )
+
+  @ParameterizedTest
+  @CsvSource(
+    "custom-examples/crs-1059-single-ersed-ac8,YOI_ORA,2021-02-25,3287,true,false,false,false",
+    "custom-examples/crs-1081-ersed-consec-ac4,YOI_ORA,2022-05-06,2557,true,false,false,false",
+    "custom-examples/crs-1081-ersed-consec-ac6,YOI_ORA,2021-11-03,3287,true,false,false,false",
+    "custom-examples/crs-1109-ersed-bug-ac1,YOI_ORA,2020-12-15,4383,true,false,false,false",
+    "custom-examples/crs-1145-ac3,YOI_ORA,2021-10-14,2739,true,false,false,false",
+    "custom-examples/crs-1175-ac2,YOI_ORA,2021-10-14,2739,true,false,false,false",
+    "custom-examples/crs-1317-bug,YOI_ORA,2021-10-14,2739,true,false,false,false",
+    "custom-examples/crs-1736-ersed24-ac6,YOI_ORA,2023-01-13,1461,true,true,false,true",
+    "custom-examples/crs-1740-ac2,YOI_ORA,2022-05-10,3776,true,false,false,true",
+    "custom-examples/crs-1740-ac3,YOI_ORA,2023-01-25,3042,false,false,false,true",
+    "custom-examples/crs-1740-ac4,YOI_ORA,2020-07-15,2556,true,false,false,true",
+    "custom-examples/crs-1740-ac5-1,YOI_ORA,2023-07-16,1827,false,true,false,false",
+    "custom-examples/crs-1740-ac5-1,YOI_ORA,2023-07-16,1461,false,true,false,false",
+    "custom-examples/crs-1740-ac5,YOI_ORA,2023-01-25,3042,true,false,false,true",
+    "custom-examples/crs-1740-ac6,YOI_ORA,2023-01-25,3042,true,false,false,true",
+    "custom-examples/crs-1766-ersed24-ac4-2,YOI_ORA,2023-03-10,2192,false,true,false,false",
+    "custom-examples/crs-1766-ersed24-ac4-2,YOI_ORA,2023-03-10,2557,false,false,false,true",
+    "custom-examples/crs-377-sds-plus-example-1,YOI_ORA,2020-04-01,2556,true,false,false,false",
+    "custom-examples/crs-377-sds-plus-row-15,YOI_ORA,2020-04-22,3835,true,false,false,false",
+    "custom-examples/crs-377-sds-plus-row-47,YOI_ORA,2020-06-12,2556,true,false,false,false",
+    "custom-examples/crs-658-sds-plus-consecutive-to-sds-plus,YOI_ORA,2020-04-01,2556,true,false,false,false",
+    "custom-examples/crs-658-sds-plus-consecutive-to-sds-plus,YOI_ORA,2020-04-01,2556,true,false,false,false",
+    "custom-examples/crs-658-sds-plus-consecutive-to-sds,YOI_ORA,2020-04-01,2922,true,false,false,false",
+    "custom-examples/crs-680-pre-prod-1,YOI_ORA,2021-05-24,2557,true,false,false,false",
+    "custom-examples/crs-685-tagged-bail-release-in-between-sentences,YOI_ORA,2022-09-09,3287,true,false,false,true",
+    "custom-examples/crs-878-sds-sdsplus-consec-ac1,YOI_ORA,2022-05-05,2741,true,false,false,false",
+    "custom-examples/crs-878-sds-sdsplus-consec-ac1,YOI_ORA,2022-05-05,3287,true,false,false,false",
+    "custom-examples/crs-878-sds-sdsplus-consec-ac2,YOI_ORA,2022-05-05,2741,true,false,false,false",
+    "custom-examples/crs-878-sds-sdsplus-consec-ac2,YOI_ORA,2022-05-05,3287,true,false,false,false",
+    "custom-examples/crs-898-crd-mismatches,YOI_ORA,2020-12-11,2922,true,false,false,false",
+    "custom-examples/crs-898-crd-mismatches,YOI_ORA,2020-12-11,3287,true,false,false,false",
+    "custom-examples/crs-907-eds-sds-plus-ac1,YOI_ORA,2020-04-06,2556,true,false,false,false",
+    "custom-examples/crs-907-eds-sds-plus-ac2,YOI_ORA,2020-09-16,2922,true,false,false,false",
+    "custom-examples/crs-921-pcsc-four-to-under-seven-ac1,YOI_ORA,2022-06-28,1461,false,true,false,false",
+    "custom-examples/crs-921-pcsc-sec250-ac1,SEC250_ORA,2022-06-28,4383,false,false,true,false",
+    "custom-examples/crs-921-pcsc-updated-ac1,YOI_ORA,2022-06-28,4383,false,false,false,true",
+    "custom-examples/crs-925-pcsc-tests-ac1,YOI_ORA,2022-06-28,1461,false,true,false,false",
+    "custom-examples/crs-925-pcsc-tests-ac2,SEC250_ORA,2022-06-28,2557,false,false,true,false",
+    "custom-examples/crs-925-pcsc-tests-ac3,YOI_ORA,2022-06-27,2557,true,false,false,false",
+    "custom-examples/crs-925-pcsc-tests-ac3,YOI_ORA,2022-06-28,2557,false,false,false,true",
+    "custom-examples/crs-950-pre-pcsc-sopc-ac5,YOI_ORA,2021-11-03,3287,true,false,false,false",
+    "framework-examples/2,YOI_ORA,2024-05-10,3775,false,false,false,true",
+    "framework-examples/33,YOI_ORA,2023-01-25,3042,false,false,false,true",
+    "alternative-release-point/21,YOI_ORA,2022-08-26,1461,true,true,true,true",
+    "alternative-release-point/22,YOI_ORA,2023-07-28,1461,true,true,true,true",
+  )
+  fun `should produce same result as old tests`(name: String, sentenceCalculationType: SentenceCalculationType, sentenceDate: LocalDate, sentenceLengthDays: Int, inListA: Boolean, inListB: Boolean, inListC: Boolean, inListD: Boolean) {
+    val markers = OffencePcscMarkers(
+      offenceCode = OFFENCE_CODE_SOME_PCSC_MARKERS,
+      pcscMarkers = PcscMarkers(
+        inListA = inListA,
+        inListB = inListB,
+        inListC = inListC,
+        inListD = inListD,
+      ),
+    )
+    val sentence = PrisonApiSentenceAndOffences(
+      1,
+      1,
+      1,
+      1,
+      null,
+      "TEST",
+      "TEST",
+      sentenceCalculationType.toString(),
+      "TEST",
+      sentenceDate,
+      listOf(SentenceTerms(0, 0, 0, sentenceLengthDays)),
+      listOf(
+        OffenderOffence(
+          1,
+          LocalDate.of(2020, 4, 1),
+          null,
+          OFFENCE_CODE_SOME_PCSC_MARKERS,
+          "TEST OFFENCE 2",
+        ),
+      ),
+    )
+    whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(markers))
+    val returnedResult = underTest.populateSdsPlusMarkerForOffences(listOf(sentence))
+    assertTrue(returnedResult.filter { it.isSDSPlus }.size == 1, "Failed for $name")
+    assertTrue(returnedResult[0].isSDSPlus, "Failed for $name")
   }
 }
