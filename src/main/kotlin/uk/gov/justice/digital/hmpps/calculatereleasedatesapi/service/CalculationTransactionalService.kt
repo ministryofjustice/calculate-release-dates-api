@@ -28,12 +28,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
@@ -322,7 +322,7 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun findSentenceAndOffencesFromCalculation(calculationRequestId: Long): List<SentenceAndOffences> {
+  fun findSentenceAndOffencesFromCalculation(calculationRequestId: Long): List<SentenceAndOffencesWithReleaseArrangements> {
     val calculationRequest = getCalculationRequest(calculationRequestId)
     if (calculationRequest.sentenceAndOffences == null) {
       throw PrisonApiDataNotFoundException("Sentences and offence data not found for calculation $calculationRequestId")
@@ -466,11 +466,8 @@ class CalculationTransactionalService(
         objectMapper.treeToValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
       val originalPrisonerDetails =
         objectMapper.treeToValue(calculationRequest.prisonerDetails, PrisonerDetails::class.java)
-      val originalSentenceAndOffences = calculationRequest.sentenceAndOffences?.map { element ->
-        objectMapper.treeToValue(
-          element,
-          SentenceAndOffences::class.java,
-        )
+      val originalSentenceAndOffences = calculationRequest.sentenceAndOffences?.let {
+        prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
       }
       val originalReturnToCustodyDate =
         objectMapper.treeToValue(calculationRequest.returnToCustodyDate, ReturnToCustodyDate::class.java)

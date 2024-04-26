@@ -47,9 +47,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.Duration
 import java.time.LocalDate
@@ -376,7 +376,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       .exchange()
       .expectStatus().isOk
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(object : ParameterizedTypeReference<List<SentenceAndOffences>>() {})
+      .expectBody(object : ParameterizedTypeReference<List<PrisonApiSentenceAndOffences>>() {})
       .returnResult().responseBody!!
 
     assertThat(sentenceAndOffences).isNotNull

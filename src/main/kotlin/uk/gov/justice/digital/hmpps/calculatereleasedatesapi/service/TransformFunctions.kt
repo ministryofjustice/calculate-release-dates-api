@@ -86,6 +86,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
@@ -150,7 +151,7 @@ fun transform(
 
     val consecutiveSentenceUUIDs = if (sentence.consecutiveToSequence != null) {
       listOf(
-        generateUUIDForSentence(sentence.bookingId, sentence.consecutiveToSequence),
+        generateUUIDForSentence(sentence.bookingId, sentence.consecutiveToSequence!!),
       )
     } else {
       listOf()
@@ -834,7 +835,7 @@ fun transform(discrepancyCauses: List<ComparisonPersonDiscrepancyCause>): List<D
 
 fun transform(
   sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
-  sentencesAndOffences: List<SentenceAndOffences>,
+  sentencesAndOffences: List<SentenceAndOffencesWithReleaseArrangements>,
 ): List<AnalyzedSentenceAndOffences> {
   return sentencesAndOffences.map {
     transform(sentenceAndOffences = it, sentenceAndOffenceAnalysis = sentenceAndOffenceAnalysis)
@@ -843,7 +844,7 @@ fun transform(
 
 fun transform(
   sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
-  sentenceAndOffences: SentenceAndOffences,
+  sentenceAndOffences: SentenceAndOffencesWithReleaseArrangements,
 ): AnalyzedSentenceAndOffences {
   return AnalyzedSentenceAndOffences(
     sentenceAndOffences.bookingId,
@@ -862,6 +863,6 @@ fun transform(
     sentenceAndOffences.courtDescription,
     sentenceAndOffences.fineAmount,
     sentenceAndOffenceAnalysis,
-    sentenceAndOffences.isSdsPlus!!,
+    sentenceAndOffences.isSDSPlus,
   )
 }

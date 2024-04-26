@@ -31,11 +31,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalcula
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
@@ -273,7 +273,7 @@ class CalculationController(
     @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
     @PathVariable("calculationRequestId")
     calculationRequestId: Long,
-  ): List<SentenceAndOffences> {
+  ): List<SentenceAndOffencesWithReleaseArrangements> {
     log.info("Request received to get sentences and offences from $calculationRequestId calculation")
     return calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)
   }

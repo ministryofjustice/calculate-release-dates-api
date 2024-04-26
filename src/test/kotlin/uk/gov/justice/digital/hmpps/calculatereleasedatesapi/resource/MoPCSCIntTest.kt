@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotGetMoOffenceInformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenceSdsPlusLookupService
@@ -23,7 +23,7 @@ class MoPCSCIntTest : IntegrationTestBase() {
   fun `Test Call to MO Service Matching SEC_250 Offence marked as SDS+`() {
     // S250 over 7 years and sentenced after PCSC date
     val inputOffenceList = listOf(
-      SentenceAndOffences(
+      PrisonApiSentenceAndOffences(
         1,
         1,
         1,
@@ -57,7 +57,7 @@ class MoPCSCIntTest : IntegrationTestBase() {
     assertTrue(
       assertThrows<Exception> {
         val inputOffenceList = listOf(
-          SentenceAndOffences(
+          PrisonApiSentenceAndOffences(
             1,
             1,
             1,
@@ -91,7 +91,7 @@ class MoPCSCIntTest : IntegrationTestBase() {
   fun `Test Call to MO Service Matching SEC_250 multiple offences marked as SDS+ `() {
     // S250 over 7 years and sentenced after PCSC date
     val inputOffenceList = listOf(
-      SentenceAndOffences(
+      PrisonApiSentenceAndOffences(
         1,
         1,
         1,
