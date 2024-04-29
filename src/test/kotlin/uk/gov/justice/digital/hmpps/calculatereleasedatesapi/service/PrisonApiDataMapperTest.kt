@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiDataVersions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
@@ -34,6 +34,15 @@ class PrisonApiDataMapperTest {
       weeks = 2,
       months = 3,
       years = 4,
+      offences = listOf(
+        OffenderOffence(
+          offenderChargeId = 1L,
+          offenceStartDate = null,
+          offenceEndDate = null,
+          offenceCode = "Dummy Offence",
+          offenceDescription = "A Dummy description",
+        ),
+      ),
     )
 
     val calculationRequest = CalculationRequest(
@@ -75,12 +84,12 @@ class PrisonApiDataMapperTest {
     )
 
     val sentencesAndOffences = prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
-    assertThat(sentencesAndOffences).isEqualTo(listOf(SentenceAndOffencesWithReleaseArrangements(version1, false)))
+    assertThat(sentencesAndOffences).isEqualTo(listOf(SentenceAndOffenceWithReleaseArrangements(version1, version1.offences[0], false)))
   }
 
   @Test
   fun `Map version 2 of sentences and offences`() {
-    val version2 = SentenceAndOffencesWithReleaseArrangements(
+    val version2 = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1L,
       sentenceSequence = 3,
       consecutiveToSequence = null,
@@ -94,7 +103,7 @@ class PrisonApiDataMapperTest {
       sentenceCategory = "CAT",
       sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       sentenceTypeDescription = "ADMIP",
-      offences = listOf(OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A"))),
+      offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A")),
       caseReference = null,
       courtDescription = null,
       fineAmount = null,

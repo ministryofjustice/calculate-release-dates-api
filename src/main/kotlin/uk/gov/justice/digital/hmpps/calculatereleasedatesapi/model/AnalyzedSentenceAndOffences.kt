@@ -17,7 +17,7 @@ data class AnalyzedSentenceAndOffences(
   val sentenceTypeDescription: String,
   val sentenceDate: LocalDate,
   val terms: List<SentenceTerms> = emptyList(),
-  val offences: List<OffenderOffence> = emptyList(),
+  val offence: OffenderOffence,
   val caseReference: String? = null,
   val courtDescription: String? = null,
   val fineAmount: BigDecimal? = null,

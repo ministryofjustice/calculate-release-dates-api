@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import java.time.LocalDate
 
 class PrisonApiDataVersions {
@@ -23,8 +23,8 @@ class PrisonApiDataVersions {
       val days: Int = 0,
       val offences: List<OffenderOffence> = emptyList(),
     ) {
-      fun toLatest() = SentenceAndOffencesWithReleaseArrangements(
-        PrisonApiSentenceAndOffences(
+      fun toLatest() = offences.map { offence ->
+        SentenceAndOffenceWithReleaseArrangements(
           bookingId,
           sentenceSequence,
           lineSequence,
@@ -36,13 +36,13 @@ class PrisonApiDataVersions {
           sentenceTypeDescription,
           sentenceDate,
           listOf(SentenceTerms(years, months, weeks, days)),
-          offences,
+          offence,
           null,
           null,
           0.toBigDecimal(),
-        ),
-        false,
-      )
+          false,
+        )
+      }
     }
   }
 }

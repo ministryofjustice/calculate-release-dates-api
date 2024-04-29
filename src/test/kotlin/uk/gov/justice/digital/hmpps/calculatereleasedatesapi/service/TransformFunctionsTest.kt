@@ -23,13 +23,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Alert
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
@@ -59,95 +59,21 @@ class TransformFunctionsTest {
   private val objectMapper: ObjectMapper = TestUtil.objectMapper()
 
   @Test
-  fun `Transform an offenders Sentence and offences into a Sentence correctly where there are multiple offences`() {
-    val bookingId = 1110022L
-    val sequence = 153
-    val lineSequence = 154
-    val caseSequence = 155
-    val offences = listOf(
-      OffenderOffence(
-        offenderChargeId = 1L,
-        offenceStartDate = FIRST_JAN_2015,
-        offenceCode = "RR1",
-        offenceDescription = "Littering",
-        indicators = listOf("An indicator"),
-      ),
-      OffenderOffence(
-        offenderChargeId = 2L,
-        offenceStartDate = SECOND_JAN_2015,
-        offenceCode = "RR2",
-        offenceDescription = "Jaywalking",
-        indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
-      ),
-    )
-    val request = SentenceAndOffencesWithReleaseArrangements(
-      PrisonApiSentenceAndOffences(
-        bookingId = bookingId,
-        sentenceSequence = sequence,
-        sentenceDate = FIRST_JAN_2015,
-        terms = listOf(
-          SentenceTerms(
-            years = 5,
-            months = 4,
-            weeks = 3,
-            days = 2,
-          ),
-        ),
-        sentenceStatus = "IMP",
-        sentenceCategory = "CAT",
-        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-        sentenceTypeDescription = "Standard Determinate",
-        offences = offences,
-        lineSequence = lineSequence,
-        caseSequence = caseSequence,
-      ),
-      isSdsPlus = false,
-    )
-
-    assertThat(transform(request, CalculationUserInputs(useOffenceIndicators = true))).isEqualTo(
-      listOf(
-        StandardDeterminateSentence(
-          sentencedAt = FIRST_JAN_2015,
-          duration = FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION,
-          offence = Offence(committedAt = FIRST_JAN_2015, isScheduleFifteenMaximumLife = false, offenceCode = "RR1"),
-          identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
-          consecutiveSentenceUUIDs = mutableListOf(),
-          lineSequence = lineSequence,
-          caseSequence = caseSequence,
-          isSDSPlus = false,
-        ),
-        StandardDeterminateSentence(
-          sentencedAt = FIRST_JAN_2015,
-          duration = FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION,
-          offence = Offence(committedAt = SECOND_JAN_2015, isScheduleFifteenMaximumLife = true, offenceCode = "RR2"),
-          identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
-          consecutiveSentenceUUIDs = mutableListOf(),
-          lineSequence = lineSequence,
-          caseSequence = caseSequence,
-          isSDSPlus = false,
-        ),
-      ),
-    )
-  }
-
-  @Test
   fun `Transform an offenders Sentence and offences into a Sentence correctly where there are consecutive sentences`() {
     val bookingId = 1110022L
     val sequence = 153
     val lineSequence = 154
     val caseSequence = 155
     val consecutiveTo = 99
-    val offences = listOf(
-      OffenderOffence(
-        offenderChargeId = 1L,
-        offenceStartDate = FIRST_JAN_2015,
-        offenceEndDate = SECOND_JAN_2015,
-        offenceCode = "RR1",
-        offenceDescription = "Littering",
-        indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
-      ),
+    val offence = OffenderOffence(
+      offenderChargeId = 1L,
+      offenceStartDate = FIRST_JAN_2015,
+      offenceEndDate = SECOND_JAN_2015,
+      offenceCode = "RR1",
+      offenceDescription = "Littering",
+      indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
     )
-    val request = SentenceAndOffencesWithReleaseArrangements(
+    val request = SentenceAndOffenceWithReleaseArrangements(
       PrisonApiSentenceAndOffences(
         bookingId = bookingId,
         sentenceSequence = sequence,
@@ -162,25 +88,24 @@ class TransformFunctionsTest {
         sentenceCategory = "CAT",
         sentenceCalculationType = SentenceCalculationType.ADIMP.name,
         sentenceTypeDescription = "Standard Determinate",
-        offences = offences,
+        offences = listOf(offence),
         lineSequence = lineSequence,
         caseSequence = caseSequence,
       ),
+      offence,
       isSdsPlus = true,
     )
 
     assertThat(transform(request, null)).isEqualTo(
-      listOf(
-        StandardDeterminateSentence(
-          sentencedAt = FIRST_JAN_2015,
-          duration = FIVE_YEAR_DURATION,
-          offence = Offence(committedAt = SECOND_JAN_2015, offenceCode = "RR1"),
-          identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
-          consecutiveSentenceUUIDs = mutableListOf(UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())),
-          lineSequence = lineSequence,
-          caseSequence = caseSequence,
-          isSDSPlus = true,
-        ),
+      StandardDeterminateSentence(
+        sentencedAt = FIRST_JAN_2015,
+        duration = FIVE_YEAR_DURATION,
+        offence = Offence(committedAt = SECOND_JAN_2015, offenceCode = "RR1"),
+        identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
+        consecutiveSentenceUUIDs = mutableListOf(UUID.nameUUIDFromBytes(("$bookingId-$consecutiveTo").toByteArray())),
+        lineSequence = lineSequence,
+        caseSequence = caseSequence,
+        isSDSPlus = true,
       ),
     )
   }
@@ -312,7 +237,7 @@ class TransformFunctionsTest {
   fun `Transform adjustments`() {
     val fromDate = LocalDate.of(2022, 3, 1)
     val toDate = LocalDate.of(2022, 3, 10)
-    val recallSentence = PrisonApiSentenceAndOffences(
+    val recallSentence = NormalisedSentenceAndOffence(
       bookingId = 1L,
       sentenceSequence = 1,
       sentenceDate = FIRST_JAN_2015,
@@ -322,9 +247,15 @@ class TransformFunctionsTest {
       sentenceTypeDescription = "Recall",
       lineSequence = 1,
       caseSequence = 1,
+      offence = OffenderOffence(1, LocalDate.of(2020, 4, 1), null, "A123456", "TEST OFFENCE 2"),
+      terms = emptyList(),
+      caseReference = null,
+      fineAmount = null,
+      courtDescription = null,
+      consecutiveToSequence = null,
     )
 
-    val standardSentence = PrisonApiSentenceAndOffences(
+    val standardSentence = NormalisedSentenceAndOffence(
       bookingId = 1L,
       sentenceSequence = 2,
       sentenceDate = SECOND_JAN_2015,
@@ -334,6 +265,12 @@ class TransformFunctionsTest {
       sentenceTypeDescription = "Recall",
       lineSequence = 1,
       caseSequence = 2,
+      offence = OffenderOffence(1, LocalDate.of(2020, 4, 1), null, "A123456", "TEST OFFENCE 2"),
+      terms = emptyList(),
+      caseReference = null,
+      fineAmount = null,
+      courtDescription = null,
+      consecutiveToSequence = null,
     )
 
     val bookingAndSentenceAdjustment = BookingAndSentenceAdjustments(

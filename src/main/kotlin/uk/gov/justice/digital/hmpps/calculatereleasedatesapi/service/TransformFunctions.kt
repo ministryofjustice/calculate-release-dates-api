@@ -86,7 +86,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
@@ -101,7 +101,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
@@ -119,13 +119,11 @@ import java.util.UUID
 */
 
 fun transform(
-  sentence: SentenceAndOffencesWithReleaseArrangements,
+  sentence: SentenceAndOffenceWithReleaseArrangements,
   calculationUserInputs: CalculationUserInputs?,
-): MutableList<out AbstractSentence> {
-  // There shouldn't be multiple offences associated to a single sentence; however there are at the moment (NOMIS doesnt
-  // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
-  // treated as a separate sentence
-  return sentence.offences.map { offendersOffence ->
+): AbstractSentence {
+  return sentence.let {
+    val offendersOffence = sentence.offence
     val offence = if (calculationUserInputs?.useOffenceIndicators == true) {
       Offence(
         committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
@@ -151,7 +149,7 @@ fun transform(
 
     val consecutiveSentenceUUIDs = if (sentence.consecutiveToSequence != null) {
       listOf(
-        generateUUIDForSentence(sentence.bookingId, sentence.consecutiveToSequence!!),
+        generateUUIDForSentence(sentence.bookingId, sentence.consecutiveToSequence),
       )
     } else {
       listOf()
@@ -245,7 +243,7 @@ fun transform(
         }
       }
     }
-  }.toMutableList()
+  }
 }
 
 private fun transform(term: SentenceTerms): Duration {
@@ -278,7 +276,7 @@ fun transform(prisonerDetails: PrisonerDetails): Offender {
 
 fun transform(
   bookingAndSentenceAdjustments: BookingAndSentenceAdjustments,
-  sentencesAndOffences: List<SentenceAndOffences>,
+  sentencesAndOffences: List<SentenceAndOffence>,
 ): Adjustments {
   val adjustments = Adjustments()
   bookingAndSentenceAdjustments.bookingAdjustments.forEach {
@@ -298,7 +296,7 @@ fun transform(
   bookingAndSentenceAdjustments.sentenceAdjustments.forEach {
     val adjustmentType = transform(it.type)
     if (adjustmentType != null) {
-      val sentence: SentenceAndOffences? = findSentenceForAdjustment(it, sentencesAndOffences)
+      val sentence: SentenceAndOffence? = findSentenceForAdjustment(it, sentencesAndOffences)
       // If sentence is not present it could be that the adjustment is linked to an inactive sentence, which needs filtering out.
       if (sentence != null) {
         adjustments.addAdjustment(
@@ -318,8 +316,8 @@ fun transform(
 
 private fun findSentenceForAdjustment(
   adjustment: SentenceAdjustment,
-  sentencesAndOffences: List<SentenceAndOffences>,
-): SentenceAndOffences? {
+  sentencesAndOffences: List<SentenceAndOffence>,
+): SentenceAndOffence? {
   val sentence = sentencesAndOffences.find { adjustment.sentenceSequence == it.sentenceSequence }
   if (sentence == null) {
     return null
@@ -422,7 +420,7 @@ fun transform(
         type = it.userInputType,
         userChoice = it.userChoice,
         nomisMatches = sourceData.sentenceAndOffences.any { sentence ->
-          sentence.sentenceSequence == it.sentenceSequence && sentence.offences.any { offence ->
+          sentence.sentenceSequence == it.sentenceSequence && sentence.offence.let { offence ->
             offence.offenceCode == it.offenceCode && offenceMatchesChoice(
               offence,
               it.userInputType,
@@ -796,7 +794,7 @@ fun transform(
   calculatedReleaseDates: CalculatedReleaseDates?,
   overrideDates: Map<ReleaseDateType, LocalDate?>,
   breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
-  sdsSentencesIdentified: List<SentenceAndOffences>,
+  sdsSentencesIdentified: List<SentenceAndOffence>,
   hasDiscrepancyRecorded: Boolean,
   objectMapper: ObjectMapper,
 ): ComparisonPersonOverview = ComparisonPersonOverview(
@@ -836,7 +834,7 @@ fun transform(discrepancyCauses: List<ComparisonPersonDiscrepancyCause>): List<D
 
 fun transform(
   sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
-  sentencesAndOffences: List<SentenceAndOffencesWithReleaseArrangements>,
+  sentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
 ): List<AnalyzedSentenceAndOffences> {
   return sentencesAndOffences.map {
     transform(sentenceAndOffences = it, sentenceAndOffenceAnalysis = sentenceAndOffenceAnalysis)
@@ -845,7 +843,7 @@ fun transform(
 
 fun transform(
   sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
-  sentenceAndOffences: SentenceAndOffencesWithReleaseArrangements,
+  sentenceAndOffences: SentenceAndOffenceWithReleaseArrangements,
 ): AnalyzedSentenceAndOffences {
   return AnalyzedSentenceAndOffences(
     sentenceAndOffences.bookingId,
@@ -859,7 +857,7 @@ fun transform(
     sentenceAndOffences.sentenceTypeDescription,
     sentenceAndOffences.sentenceDate,
     sentenceAndOffences.terms,
-    sentenceAndOffences.offences,
+    sentenceAndOffences.offence,
     sentenceAndOffences.caseReference,
     sentenceAndOffences.courtDescription,
     sentenceAndOffences.fineAmount,

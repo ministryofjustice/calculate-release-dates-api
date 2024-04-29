@@ -57,7 +57,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
@@ -640,7 +640,7 @@ class CalculationTransactionalServiceTest {
       ),
     )
     val SOURCE_DATA =
-      PrisonApiSourceData(listOf(SentenceAndOffencesWithReleaseArrangements(originalSentence, false)), prisonerDetails, adjustments, emptyList(), null, null)
+      PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(originalSentence, originalSentence.offences[0], false)), prisonerDetails, adjustments, emptyList(), null, null)
     val cachedBankHolidays =
       BankHolidays(
         RegionBankHolidays(
