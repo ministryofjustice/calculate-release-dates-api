@@ -15,7 +15,7 @@ class SingleTermSentence(
     this(
       standardSentences.minOf(AbstractSentence::sentencedAt),
       standardSentences.map(AbstractSentence::offence).minByOrNull(Offence::committedAt)!!,
-      standardSentences
+      standardSentences,
     )
 
   override val recallType: RecallType?

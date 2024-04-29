@@ -328,7 +328,10 @@ class SentenceIdentificationService(
     sentence: CalculableSentence,
     releaseDateTypes: MutableList<ReleaseDateType>,
   ) {
-    sentence.identificationTrack = SDS_AFTER_CJA_LASPO
+    sentence.identificationTrack = when {
+      sentence is StandardDeterminateSentence && sentence.isSDSPlus -> SDS_TWO_THIRDS_RELEASE
+      else -> SDS_AFTER_CJA_LASPO
+    }
 
     if (sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) &&
       sentence.offence.committedAt.isBefore(ImportantDates.ORA_DATE)
@@ -340,10 +343,6 @@ class SentenceIdentificationService(
         ),
       )
     } else {
-      if (sentence is StandardDeterminateSentence && sentence.isSDSPlus) {
-        sentence.identificationTrack = SDS_TWO_THIRDS_RELEASE
-      }
-
       releaseDateTypes.addAll(
         listOf(
           SLED,
