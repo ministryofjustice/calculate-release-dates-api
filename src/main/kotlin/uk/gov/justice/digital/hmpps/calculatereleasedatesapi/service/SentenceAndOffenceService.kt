@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedSentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
@@ -13,7 +13,7 @@ class SentenceAndOffenceService(
   private val prisonApiDataMapper: PrisonApiDataMapper,
 ) {
 
-  fun getSentencesAndOffences(bookingId: Long): List<AnalyzedSentenceAndOffences> {
+  fun getSentencesAndOffences(bookingId: Long): List<AnalyzedSentenceAndOffence> {
     val sentencesAndOffences = prisonService.getSentencesAndOffences(bookingId)
     val lastCalculation = calculationRequestRepository.findLatestCalculation(bookingId)
 

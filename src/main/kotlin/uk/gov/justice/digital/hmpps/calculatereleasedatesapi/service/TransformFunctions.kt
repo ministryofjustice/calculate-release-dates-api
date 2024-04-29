@@ -57,7 +57,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedSentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
@@ -835,7 +835,7 @@ fun transform(discrepancyCauses: List<ComparisonPersonDiscrepancyCause>): List<D
 fun transform(
   sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
   sentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
-): List<AnalyzedSentenceAndOffences> {
+): List<AnalyzedSentenceAndOffence> {
   return sentencesAndOffences.map {
     transform(sentenceAndOffences = it, sentenceAndOffenceAnalysis = sentenceAndOffenceAnalysis)
   }
@@ -844,8 +844,8 @@ fun transform(
 fun transform(
   sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis,
   sentenceAndOffences: SentenceAndOffenceWithReleaseArrangements,
-): AnalyzedSentenceAndOffences {
-  return AnalyzedSentenceAndOffences(
+): AnalyzedSentenceAndOffence {
+  return AnalyzedSentenceAndOffence(
     sentenceAndOffences.bookingId,
     sentenceAndOffences.sentenceSequence,
     sentenceAndOffences.lineSequence,
