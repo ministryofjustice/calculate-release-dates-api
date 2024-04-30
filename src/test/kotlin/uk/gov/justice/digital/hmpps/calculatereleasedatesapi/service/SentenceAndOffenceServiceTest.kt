@@ -12,14 +12,13 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
-import java.util.Optional
+import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class SentenceAndOffenceServiceTest {
@@ -38,29 +37,31 @@ class SentenceAndOffenceServiceTest {
 
   @Test
   fun `If no previous calculation return sentenceAndOffences`() {
-    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(listOf(sentenceAndOffences))
+    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences)
     whenever(calculationRequestRepository.findLatestCalculation(anyLong())).thenReturn(Optional.empty())
     val response = underTest.getSentencesAndOffences(123)
-    assertThat(response).hasSize(1)
+    assertThat(response).hasSize(2)
     assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.NEW)
+    assertThat(response.get(1).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.NEW)
   }
 
   @Test
   fun `If no change since previous calculation return sentenceAndOffences with SAME annotation`() {
-    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(listOf(sentenceAndOffences))
+    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences)
     whenever(calculationRequestRepository.findLatestCalculation(anyLong())).thenReturn(Optional.of(calculationRequest))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(sentenceAndOffences))
+    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(sentenceAndOffences)
     val response = underTest.getSentencesAndOffences(123)
-    assertThat(response).hasSize(1)
+    assertThat(response).hasSize(2)
     assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
+    assertThat(response.get(1).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
   }
 
   @Test
   fun `If old version did not have SDS plus flag (defaults to false) ignore the difference`() {
-    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(listOf(sentenceAndOffences.copy(isSDSPlus = true)))
-    val defaultedSentencesAndOffences = sentenceAndOffences.copy(isSDSPlus = false)
-    val calcRequestWithMissingSDSPlusFlag = CalculationRequest(sentenceAndOffences = objectToJson(listOf(defaultedSentencesAndOffences), jacksonObjectMapper().findAndRegisterModules()))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(defaultedSentencesAndOffences))
+    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences.map { it.copy(isSDSPlus = true) })
+    val defaultedSentencesAndOffences = sentenceAndOffences.map { it.copy(isSDSPlus = false) }
+    val calcRequestWithMissingSDSPlusFlag = CalculationRequest(sentenceAndOffences = objectToJson(defaultedSentencesAndOffences, jacksonObjectMapper().findAndRegisterModules()))
+    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(defaultedSentencesAndOffences)
     whenever(calculationRequestRepository.findLatestCalculation(anyLong())).thenReturn(Optional.of(calcRequestWithMissingSDSPlusFlag))
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(1)
@@ -69,9 +70,9 @@ class SentenceAndOffenceServiceTest {
 
   @Test
   fun `If offence change since previous calculation return sentenceAndOffences with CHANGE annotation`() {
-    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(listOf(sentenceAndOffences))
+    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences)
     whenever(calculationRequestRepository.findLatestCalculation(anyLong())).thenReturn(Optional.of(changedCalculationRequest))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(changedCalculationRequest)).thenReturn(listOf(changedSentenceAndOffences))
+    whenever(prisonApiDataMapper.mapSentencesAndOffences(changedCalculationRequest)).thenReturn(changedSentenceAndOffences)
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(1)
     assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.UPDATED)
@@ -79,14 +80,15 @@ class SentenceAndOffenceServiceTest {
 
   @Test
   fun `If a new sentence appears since previous calculation return sentenceAndOffences with SAME and NEW annotation`() {
-    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(listOf(sentenceAndOffences, newSentenceAndOffences))
+    whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences + newSentenceAndOffences)
     whenever(calculationRequestRepository.findLatestCalculation(anyLong())).thenReturn(Optional.of(calculationRequest))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(sentenceAndOffences))
+    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(sentenceAndOffences)
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(2)
     assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
     assertThat(response.get(1).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.NEW)
   }
+
   companion object {
     private val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     private val SECOND_JAN_2015: LocalDate = LocalDate.of(2015, 1, 2)
@@ -141,8 +143,8 @@ class SentenceAndOffenceServiceTest {
         indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
       ),
     )
-    val sentenceAndOffences = SentenceAndOffencesWithReleaseArrangements(
-      PrisonApiSentenceAndOffences(
+    val sentenceAndOffences = offences.map {
+      SentenceAndOffenceWithReleaseArrangements(
         bookingId = 1,
         sentenceSequence = 1,
         sentenceDate = FIRST_JAN_2015,
@@ -158,14 +160,18 @@ class SentenceAndOffenceServiceTest {
         sentenceCategory = "CAT",
         sentenceCalculationType = SentenceCalculationType.ADIMP.name,
         sentenceTypeDescription = "Standard Determinate",
-        offences = offences,
+        offence = it,
         lineSequence = lineSequence,
         caseSequence = caseSequence,
-      ),
-      isSdsPlus = false,
-    )
-    val changedSentenceAndOffences = SentenceAndOffencesWithReleaseArrangements(
-      PrisonApiSentenceAndOffences(
+        caseReference = null,
+        fineAmount = null,
+        courtDescription = null,
+        consecutiveToSequence = null,
+        isSDSPlus = false,
+      )
+    }
+    val changedSentenceAndOffences = changedOffences.map {
+      SentenceAndOffenceWithReleaseArrangements(
         bookingId = 1,
         sentenceSequence = 1,
         sentenceDate = FIRST_JAN_2015,
@@ -181,36 +187,45 @@ class SentenceAndOffenceServiceTest {
         sentenceCategory = "CAT",
         sentenceCalculationType = SentenceCalculationType.ADIMP.name,
         sentenceTypeDescription = "Standard Determinate",
-        offences = changedOffences,
+        offence = it,
         lineSequence = lineSequence,
         caseSequence = caseSequence,
-      ),
-      isSdsPlus = true,
-    )
-    val newSentenceAndOffences = SentenceAndOffencesWithReleaseArrangements(
-      PrisonApiSentenceAndOffences(
-        bookingId = 1,
-        sentenceSequence = 2,
-        sentenceDate = FIRST_JAN_2015,
-        terms = listOf(
-          SentenceTerms(
-            years = 5,
-            months = 4,
-            weeks = 3,
-            days = 2,
-          ),
-        ),
-        sentenceStatus = "IMP",
-        sentenceCategory = "CAT",
-        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-        sentenceTypeDescription = "Standard Determinate",
-        offences = newOffences,
-        lineSequence = lineSequence,
-        caseSequence = caseSequence,
-      ),
-      isSdsPlus = true,
-    )
-    val calculationRequest = CalculationRequest(sentenceAndOffences = objectToJson(listOf(sentenceAndOffences), jacksonObjectMapper().findAndRegisterModules()))
-    val changedCalculationRequest = CalculationRequest(sentenceAndOffences = objectToJson(listOf(changedSentenceAndOffences), jacksonObjectMapper().findAndRegisterModules()))
+        caseReference = null,
+        fineAmount = null,
+        courtDescription = null,
+        consecutiveToSequence = null,
+        isSDSPlus = true,
+      )
+    }
   }
+
+  val newSentenceAndOffences = newOffences.map {
+    SentenceAndOffenceWithReleaseArrangements(
+      bookingId = 1,
+      sentenceSequence = 2,
+      sentenceDate = FIRST_JAN_2015,
+      terms = listOf(
+        SentenceTerms(
+          years = 5,
+          months = 4,
+          weeks = 3,
+          days = 2,
+        ),
+      ),
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceTypeDescription = "Standard Determinate",
+      offence = it,
+      lineSequence = lineSequence,
+      caseSequence = caseSequence,
+      caseReference = null,
+      fineAmount = null,
+      courtDescription = null,
+      consecutiveToSequence = null,
+      isSDSPlus = true,
+    )
+  }
+  val calculationRequest = CalculationRequest(sentenceAndOffences = objectToJson(listOf(sentenceAndOffences), jacksonObjectMapper().findAndRegisterModules()))
+  val changedCalculationRequest = CalculationRequest(sentenceAndOffences = objectToJson(listOf(changedSentenceAndOffences), jacksonObjectMapper().findAndRegisterModules()))
 }

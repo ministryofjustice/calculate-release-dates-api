@@ -5,6 +5,7 @@
   },
   "sentences": [
     {
+      "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-03-28",
         "isScheduleFifteenMaximumLife": true
@@ -14,7 +15,8 @@
           "YEARS": 7
         }
       },
-      "sentencedAt": "2020-04-01"
+      "sentencedAt": "2020-04-01",
+      "isSDSPlus": true
     }
   ],
   "adjustments": {}

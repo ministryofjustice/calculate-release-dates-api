@@ -35,7 +35,8 @@
       "sentencedAt":"2021-11-03",
       "consecutiveSentenceUUIDs":[
         "bf99f1c1-341e-33cb-84bb-7d67dfd03680"
-      ]
+      ],
+      "isSDSPlus": true
     }
   ]
 }

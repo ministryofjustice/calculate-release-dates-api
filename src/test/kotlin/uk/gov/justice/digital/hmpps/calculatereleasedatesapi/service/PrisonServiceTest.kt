@@ -9,10 +9,15 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RestResponsePage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class PrisonServiceTest {
@@ -72,6 +77,146 @@ class PrisonServiceTest {
     whenever(prisonApiClient.getNOMISOffenderKeyDates(offenderSentCalcId)).thenReturn(expected.right())
     val keyDates = prisonService.getNOMISOffenderKeyDates(offenderSentCalcId)
     assertThat(keyDates).isEqualTo(expected.right())
+  }
+
+  @Test
+  fun `should normalise sentence and offences`() {
+    val offence1 = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP", "description", listOf("A"))
+    val offence2 = OffenderOffence(2L, LocalDate.of(2015, 2, 2), null, "ADIMP", "description", listOf("A"))
+    val prisonApiSentencesAndOffences = listOf(
+      PrisonApiSentenceAndOffences(
+        1,
+        1,
+        1,
+        1,
+        null,
+        "A",
+        "A",
+        "LIFE",
+        "",
+        LocalDate.now(),
+        offences = listOf(offence1, offence2),
+      ),
+    )
+    val normalisedOffences = listOf(
+      NormalisedSentenceAndOffence(
+        1,
+        1,
+        1,
+        1,
+        null,
+        "A",
+        "A",
+        "LIFE",
+        "",
+        LocalDate.now(),
+        offence = offence1,
+        caseReference = null,
+        courtDescription = null,
+        fineAmount = null,
+        terms = emptyList(),
+      ),
+      NormalisedSentenceAndOffence(
+        1,
+        1,
+        1,
+        1,
+        null,
+        "A",
+        "A",
+        "LIFE",
+        "",
+        LocalDate.now(),
+        offence = offence2,
+        caseReference = null,
+        courtDescription = null,
+        fineAmount = null,
+        terms = emptyList(),
+      ),
+
+    )
+
+    val withReleaseArrangements = normalisedOffences.map { SentenceAndOffenceWithReleaseArrangements(it, false) }
+    whenever(prisonApiClient.getSentencesAndOffences(1)).thenReturn(prisonApiSentencesAndOffences)
+    whenever(offenceSdsPlusLookupService.populateSdsPlusMarkerForOffences(normalisedOffences)).thenReturn(withReleaseArrangements)
+    assertThat(prisonService.getSentencesAndOffences(1, true)).isEqualTo(withReleaseArrangements)
+  }
+
+  @Test
+  fun `should include only active sentences if requested`() {
+    val offence1 = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP", "description", listOf("A"))
+    val offence2 = OffenderOffence(2L, LocalDate.of(2015, 2, 2), null, "ADIMP", "description", listOf("NOTA"))
+    val prisonApiSentenceAndOffences1 = PrisonApiSentenceAndOffences(
+      1,
+      1,
+      1,
+      1,
+      null,
+      "A",
+      "A",
+      "LIFE",
+      "",
+      LocalDate.now(),
+      offences = listOf(offence1),
+    )
+    val prisonApiSentenceAndOffences2 = PrisonApiSentenceAndOffences(
+      1,
+      1,
+      1,
+      1,
+      null,
+      "NOTA",
+      "A",
+      "LIFE",
+      "",
+      LocalDate.now(),
+      offences = listOf(offence2),
+    )
+
+    val activeOffence = NormalisedSentenceAndOffence(prisonApiSentenceAndOffences1, offence1)
+
+    whenever(prisonApiClient.getSentencesAndOffences(1)).thenReturn(listOf(prisonApiSentenceAndOffences1, prisonApiSentenceAndOffences2))
+    whenever(offenceSdsPlusLookupService.populateSdsPlusMarkerForOffences(listOf(activeOffence))).thenReturn(listOf(SentenceAndOffenceWithReleaseArrangements(activeOffence, false)))
+    assertThat(prisonService.getSentencesAndOffences(1, true)).isEqualTo(listOf(SentenceAndOffenceWithReleaseArrangements(activeOffence, false)))
+  }
+
+  @Test
+  fun `should not filter inactive sentences if requested`() {
+    val offence1 = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP", "description", listOf("A"))
+    val offence2 = OffenderOffence(2L, LocalDate.of(2015, 2, 2), null, "ADIMP", "description", listOf("NOTA"))
+    val prisonApiSentenceAndOffences1 = PrisonApiSentenceAndOffences(
+      1,
+      1,
+      1,
+      1,
+      null,
+      "A",
+      "A",
+      "LIFE",
+      "",
+      LocalDate.now(),
+      offences = listOf(offence1),
+    )
+    val prisonApiSentenceAndOffences2 = PrisonApiSentenceAndOffences(
+      1,
+      1,
+      1,
+      1,
+      null,
+      "NOTA",
+      "A",
+      "LIFE",
+      "",
+      LocalDate.now(),
+      offences = listOf(offence2),
+    )
+
+    val activeOffence = NormalisedSentenceAndOffence(prisonApiSentenceAndOffences1, offence1)
+    val inactiveOffence = NormalisedSentenceAndOffence(prisonApiSentenceAndOffences2, offence2)
+
+    whenever(prisonApiClient.getSentencesAndOffences(1)).thenReturn(listOf(prisonApiSentenceAndOffences1, prisonApiSentenceAndOffences2))
+    whenever(offenceSdsPlusLookupService.populateSdsPlusMarkerForOffences(listOf(activeOffence, inactiveOffence))).thenReturn(listOf(SentenceAndOffenceWithReleaseArrangements(activeOffence, false), SentenceAndOffenceWithReleaseArrangements(inactiveOffence, false)))
+    assertThat(prisonService.getSentencesAndOffences(1, false)).isEqualTo(listOf(SentenceAndOffenceWithReleaseArrangements(activeOffence, false), SentenceAndOffenceWithReleaseArrangements(inactiveOffence, false)))
   }
 
   companion object {

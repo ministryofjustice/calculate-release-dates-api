@@ -5,6 +5,7 @@
   },
   "sentences": [
     {
+      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-01-01"
       },
@@ -14,9 +15,11 @@
         }
       },
       "sentencedAt": "2020-11-20",
-      "identifier": "6eb5959e-e130-4b37-b18c-c5040dadecf8"
+      "identifier": "6eb5959e-e130-4b37-b18c-c5040dadecf8",
+      "isSDSPlus": false
     },
     {
+      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-01-01"
       },
@@ -29,9 +32,11 @@
       "identifier": "d64d8f8c-5d18-40ec-b34e-ed4a409983c1",
       "consecutiveSentenceUUIDs": [
         "6eb5959e-e130-4b37-b18c-c5040dadecf8"
-      ]
+      ],
+      "isSDSPlus": false
     },
     {
+      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-01-01"
       },
@@ -43,9 +48,11 @@
       "sentencedAt": "2020-11-20",
       "consecutiveSentenceUUIDs": [
         "d64d8f8c-5d18-40ec-b34e-ed4a409983c1"
-      ]
+      ],
+      "isSDSPlus": false
     },
     {
+      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-01-01",
         "isScheduleFifteenMaximumLife": true
@@ -55,9 +62,11 @@
           "YEARS": 7
         }
       },
-      "sentencedAt": "2021-05-24"
+      "sentencedAt": "2021-05-24",
+      "isSDSPlus": true
     },
     {
+      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-01-01"
       },
@@ -66,9 +75,11 @@
           "YEARS": 3
         }
       },
-      "sentencedAt": "2021-05-24"
+      "sentencedAt": "2021-05-24",
+      "isSDSPlus": false
     },
     {
+      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-01-01"
       },
@@ -77,7 +88,8 @@
           "MONTHS": 3
         }
       },
-      "sentencedAt": "2021-05-24"
+      "sentencedAt": "2021-05-24",
+      "isSDSPlus": false
     }
   ],
   "adjustments": {

@@ -22,10 +22,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.Unsuppor
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BreakdownMissingReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
@@ -161,23 +160,25 @@ class CalculationBreakdownServiceTest {
     private const val CALCULATION_REQUEST_ID = 123456L
   }
 
-  private val originalSentence = SentenceAndOffencesWithReleaseArrangements(
-    PrisonApiSentenceAndOffences(
-      bookingId = 1L,
-      sentenceSequence = 3,
-      lineSequence = 2,
-      caseSequence = 1,
-      sentenceDate = ImportantDates.PCSC_COMMENCEMENT_DATE.minusDays(1),
-      terms = listOf(
-        SentenceTerms(years = 8),
-      ),
-      sentenceStatus = "IMP",
-      sentenceCategory = "CAT",
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-      sentenceTypeDescription = "ADMIP",
-      offences = listOf(OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A"))),
+  private val originalSentence = SentenceAndOffenceWithReleaseArrangements(
+    bookingId = 1L,
+    sentenceSequence = 3,
+    lineSequence = 2,
+    caseSequence = 1,
+    sentenceDate = ImportantDates.PCSC_COMMENCEMENT_DATE.minusDays(1),
+    terms = listOf(
+      SentenceTerms(years = 8),
     ),
-    isSdsPlus = false,
+    sentenceStatus = "IMP",
+    sentenceCategory = "CAT",
+    sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+    sentenceTypeDescription = "ADMIP",
+    offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A")),
+    caseReference = null,
+    fineAmount = null,
+    courtDescription = null,
+    consecutiveToSequence = null,
+    isSDSPlus = false,
   )
 
   private val prisonerDetails = PrisonerDetails(

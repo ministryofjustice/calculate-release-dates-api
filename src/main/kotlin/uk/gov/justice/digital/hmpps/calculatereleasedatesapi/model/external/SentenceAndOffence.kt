@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 import java.math.BigDecimal
 import java.time.LocalDate
 
-interface SentenceAndOffences {
+interface SentenceAndOffence {
   val bookingId: Long
   val sentenceSequence: Int
   val lineSequence: Int
@@ -15,7 +15,7 @@ interface SentenceAndOffences {
   val sentenceTypeDescription: String
   val sentenceDate: LocalDate
   val terms: List<SentenceTerms>
-  val offences: List<OffenderOffence>
+  val offence: OffenderOffence
   val caseReference: String?
   val courtDescription: String?
   val fineAmount: BigDecimal?

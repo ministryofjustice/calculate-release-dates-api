@@ -18,6 +18,7 @@ data class StandardDeterminateSentence(
   override val caseReference: String? = null,
   override val recallType: RecallType? = null,
   val section250: Boolean = false,
+  override val isSDSPlus: Boolean,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType) {
 
   override fun buildString(): String {

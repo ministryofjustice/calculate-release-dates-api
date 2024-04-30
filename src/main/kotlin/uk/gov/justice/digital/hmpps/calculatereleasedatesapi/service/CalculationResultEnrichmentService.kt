@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import java.time.Clock
 import java.time.LocalDate
@@ -35,7 +35,7 @@ class CalculationResultEnrichmentService(
 
   fun addDetailToCalculationDates(
     releaseDates: List<ReleaseDate>,
-    sentenceAndOffences: List<SentenceAndOffences>?,
+    sentenceAndOffences: List<SentenceAndOffence>?,
     calculationBreakdown: CalculationBreakdown?,
   ): Map<ReleaseDateType, DetailedDate> {
     val releaseDatesMap = releaseDates.associateBy { it.type }
@@ -54,7 +54,7 @@ class CalculationResultEnrichmentService(
     date: LocalDate,
     calculationBreakdown: CalculationBreakdown?,
     releaseDates: Map<ReleaseDateType, ReleaseDate>,
-    sentenceAndOffences: List<SentenceAndOffences>?,
+    sentenceAndOffences: List<SentenceAndOffence>?,
   ): List<ReleaseDateHint> {
     val hints = mutableListOf<ReleaseDateHint?>()
     hints += nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type, date)
@@ -95,7 +95,7 @@ class CalculationResultEnrichmentService(
     }
   }
 
-  private fun ardHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
+  private fun ardHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
     return if (type == ReleaseDateType.ARD && displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
       ReleaseDateHint("The Detention and training order (DTO) release date is later than the Automatic Release Date (ARD)")
     } else {
@@ -103,7 +103,7 @@ class CalculationResultEnrichmentService(
     }
   }
 
-  private fun crdHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
+  private fun crdHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
     return if (type == ReleaseDateType.CRD && displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
       ReleaseDateHint("The Detention and training order (DTO) release date is later than the Conditional Release Date (CRD)")
     } else {
@@ -111,7 +111,7 @@ class CalculationResultEnrichmentService(
     }
   }
 
-  private fun pedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> {
+  private fun pedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> {
     return if (type == ReleaseDateType.PED) {
       val hints = mutableListOf<ReleaseDateHint>()
       if (calculationBreakdown?.breakdownByReleaseDateType?.containsKey(ReleaseDateType.PED) == true) {
@@ -133,7 +133,7 @@ class CalculationResultEnrichmentService(
     }
   }
 
-  private fun hdcedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> {
+  private fun hdcedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> {
     return if (type == ReleaseDateType.HDCED) {
       val hints = mutableListOf<ReleaseDateHint>()
       if (calculationBreakdown?.breakdownByReleaseDateType?.containsKey(ReleaseDateType.HDCED) == true) {
@@ -155,7 +155,7 @@ class CalculationResultEnrichmentService(
     }
   }
 
-  private fun mtdHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
+  private fun mtdHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
     if (type == ReleaseDateType.MTD && hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences)) {
       val hdcedBeforeMtd = dateBeforeAnother(releaseDates[ReleaseDateType.HDCED]?.date, releaseDates[ReleaseDateType.MTD]?.date)
       val pedBeforeMtd = dateBeforeAnother(releaseDates[ReleaseDateType.PED]?.date, releaseDates[ReleaseDateType.MTD]?.date)
@@ -199,7 +199,7 @@ class CalculationResultEnrichmentService(
     }
   }
 
-  private fun displayDateBeforeMtd(date: LocalDate, sentencesAndOffences: List<SentenceAndOffences>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): Boolean {
+  private fun displayDateBeforeMtd(date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): Boolean {
     return hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences) &&
       releaseDates.containsKey(ReleaseDateType.MTD) &&
       date < releaseDates[ReleaseDateType.MTD]!!.date
@@ -212,7 +212,7 @@ class CalculationResultEnrichmentService(
     return dateA < dateB
   }
 
-  private fun hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences: List<SentenceAndOffences>?): Boolean {
+  private fun hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences: List<SentenceAndOffence>?): Boolean {
     return sentencesAndOffences != null &&
       sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType in dtoSentenceTypes } &&
       sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType !in dtoSentenceTypes }

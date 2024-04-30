@@ -12,7 +12,7 @@ data class BotusSentence(
   override val caseSequence: Int? = null,
   override val lineSequence: Int? = null,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence) {
-
+  override val isSDSPlus = false
   override fun buildString(): String {
     return "Sentence\t:\t\n" +
       "Identification Track\t:\t${identificationTrack}\n" +

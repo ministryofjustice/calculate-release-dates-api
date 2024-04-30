@@ -1,22 +1,25 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import java.math.BigDecimal
 import java.time.LocalDate
 
 data class PrisonApiSentenceAndOffences(
-  override val bookingId: Long,
-  override val sentenceSequence: Int,
-  override val lineSequence: Int,
-  override val caseSequence: Int,
-  override val consecutiveToSequence: Int? = null,
-  override val sentenceStatus: String,
-  override val sentenceCategory: String,
-  override val sentenceCalculationType: String,
-  override val sentenceTypeDescription: String,
-  override val sentenceDate: LocalDate,
-  override val terms: List<SentenceTerms> = emptyList(),
-  override val offences: List<OffenderOffence> = emptyList(),
-  override val caseReference: String? = null,
-  override val courtDescription: String? = null,
-  override val fineAmount: BigDecimal? = null,
-) : SentenceAndOffences
+  val bookingId: Long,
+  val sentenceSequence: Int,
+  val lineSequence: Int,
+  val caseSequence: Int,
+  val consecutiveToSequence: Int? = null,
+  val sentenceStatus: String,
+  val sentenceCategory: String,
+  val sentenceCalculationType: String,
+  val sentenceTypeDescription: String,
+  val sentenceDate: LocalDate,
+  val terms: List<SentenceTerms> = emptyList(),
+  val offences: List<OffenderOffence> = emptyList(),
+  val caseReference: String? = null,
+  val courtDescription: String? = null,
+  val fineAmount: BigDecimal? = null,
+) {
+  fun toLatest(): List<SentenceAndOffenceWithReleaseArrangements> = offences.map { offence -> SentenceAndOffenceWithReleaseArrangements(this, offence, false) }
+}

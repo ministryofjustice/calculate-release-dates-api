@@ -24,9 +24,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalcula
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -455,23 +454,25 @@ class LatestCalculationServiceTest {
     verify(prisonApiDataMapper, never()).mapSentencesAndOffences(calculationRequest)
   }
 
-  private val someSentence = SentenceAndOffencesWithReleaseArrangements(
-    PrisonApiSentenceAndOffences(
-      bookingId = 1L,
-      sentenceSequence = 3,
-      lineSequence = 2,
-      caseSequence = 1,
-      sentenceDate = ImportantDates.PCSC_COMMENCEMENT_DATE.minusDays(1),
-      terms = listOf(
-        SentenceTerms(years = 8),
-      ),
-      sentenceStatus = "IMP",
-      sentenceCategory = "CAT",
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-      sentenceTypeDescription = "ADMIP",
-      offences = listOf(OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A"))),
+  private val someSentence = SentenceAndOffenceWithReleaseArrangements(
+    bookingId = 1L,
+    sentenceSequence = 3,
+    lineSequence = 2,
+    caseSequence = 1,
+    sentenceDate = ImportantDates.PCSC_COMMENCEMENT_DATE.minusDays(1),
+    terms = listOf(
+      SentenceTerms(years = 8),
     ),
-    isSdsPlus = false,
+    sentenceStatus = "IMP",
+    sentenceCategory = "CAT",
+    sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+    sentenceTypeDescription = "ADMIP",
+    offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A")),
+    caseReference = null,
+    fineAmount = null,
+    courtDescription = null,
+    consecutiveToSequence = null,
+    isSDSPlus = false,
   )
 
   private fun toDetailedDates(dates: List<ReleaseDate>): List<DetailedDate> = dates.map { DetailedDate(it.type, it.type.description, it.date, emptyList()) }

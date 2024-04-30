@@ -18,7 +18,8 @@
       },
       "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7",
       "sentencedAt": "2023-01-25",
-      "sentenceType": "ADIMP"
+      "sentenceType": "ADIMP",
+      "isSDSPlus": true
     },
     {
       "offence": {

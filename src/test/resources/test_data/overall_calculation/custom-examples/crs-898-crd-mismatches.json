@@ -18,7 +18,8 @@
       "identifier":"a026b4b9-773d-362e-9e03-8fa6a8d9f5a7",
       "consecutiveSentenceUUIDs":[
 
-      ]
+      ],
+      "isSDSPlus": true
     },
     {
       "offence":{
@@ -34,7 +35,8 @@
       "identifier":"8b3c6741-3a23-3d79-b5f9-564a5f7a723c",
       "consecutiveSentenceUUIDs":[
         "a026b4b9-773d-362e-9e03-8fa6a8d9f5a7"
-      ]
+      ],
+      "isSDSPlus": true
     },
     {
       "offence":{
@@ -49,7 +51,8 @@
       "identifier":"a993e659-3276-35bc-a77b-5587259182e8",
       "consecutiveSentenceUUIDs":[
         "8b3c6741-3a23-3d79-b5f9-564a5f7a723c"
-      ]
+      ],
+      "isSDSPlus": false
     },
     {
       "offence":{
@@ -64,7 +67,8 @@
       "identifier":"40f3ba9d-b2b4-395a-b335-52244de62bbc",
       "consecutiveSentenceUUIDs":[
         "a993e659-3276-35bc-a77b-5587259182e8"
-      ]
+      ],
+      "isSDSPlus": false
     },
     {
       "offence":{
@@ -79,7 +83,8 @@
       "identifier":"47d2ad67-7676-378e-ac2c-92eadc6bf4d1",
       "consecutiveSentenceUUIDs":[
         "40f3ba9d-b2b4-395a-b335-52244de62bbc"
-      ]
+      ],
+      "isSDSPlus": false
     },
     {
       "offence":{
@@ -94,7 +99,8 @@
       "identifier":"33607a88-0c7f-3dbf-be11-341066cc8894",
       "consecutiveSentenceUUIDs":[
         "47d2ad67-7676-378e-ac2c-92eadc6bf4d1"
-      ]
+      ],
+      "isSDSPlus": false
     }
   ]
 }

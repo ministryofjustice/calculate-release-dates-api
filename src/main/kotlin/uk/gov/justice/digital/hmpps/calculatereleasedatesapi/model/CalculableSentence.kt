@@ -24,6 +24,7 @@ interface CalculableSentence {
   val sentencedAt: LocalDate
   val offence: Offence
   var identificationTrack: SentenceIdentificationTrack
+  val isSDSPlus: Boolean
 
   @JsonIgnore
   fun getRangeOfSentenceBeforeAwardedDays(): LocalDateRange {
@@ -212,10 +213,5 @@ interface CalculableSentence {
     return this is DetentionAndTrainingOrderSentence ||
       (this is ConsecutiveSentence && this.orderedSentences.all { it is DetentionAndTrainingOrderSentence }) ||
       this is DtoSingleTermSentence
-  }
-
-  @JsonIgnore
-  fun isSdsPlus(): Boolean {
-    return this.identificationTrack == SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE
   }
 }

@@ -30,7 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.BOTUS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
@@ -277,7 +277,7 @@ class ValidationService(
 
   private fun getFtrValidationDetails(
     ftrDetails: FixedTermRecallDetails,
-    sentencesAndOffences: List<SentenceAndOffences>,
+    sentencesAndOffences: List<SentenceAndOffence>,
   ): Triple<Int, Boolean, Boolean> {
     val recallLength = ftrDetails.recallLength
     val bookingsSentenceTypes = sentencesAndOffences.map { from(it.sentenceCalculationType) }
@@ -311,7 +311,7 @@ class ValidationService(
     sourceData.sentenceAndOffences.forEach {
       val isDto = SentenceCalculationType.from(it.sentenceCalculationType).sentenceClazz == DetentionAndTrainingOrderSentence::class.java
       if (isDto) {
-        if (it.consecutiveToSequence != null && sequenceNotDto(it.consecutiveToSequence!!, sourceData)) {
+        if (it.consecutiveToSequence != null && sequenceNotDto(it.consecutiveToSequence, sourceData)) {
           validationMessages.add(ValidationMessage(code = DTO_CONSECUTIVE_TO_SENTENCE))
         }
         if (sourceData.sentenceAndOffences.any { sent -> (sent.consecutiveToSequence == it.sentenceSequence && SentenceCalculationType.from(sent.sentenceCalculationType).sentenceClazz != DetentionAndTrainingOrderSentence::class.java) }) {
@@ -328,18 +328,20 @@ class ValidationService(
     return consecutiveTo != null && SentenceCalculationType.from(consecutiveTo.sentenceCalculationType).sentenceClazz != DetentionAndTrainingOrderSentence::class.java
   }
 
-  private fun validateSentences(sentences: List<SentenceAndOffences>): MutableList<ValidationMessage> {
+  private fun validateSentences(sentences: List<SentenceAndOffence>): MutableList<ValidationMessage> {
     val validationMessages = sentences.map { validateSentence(it) }.flatten().toMutableList()
     validationMessages += validateConsecutiveSentenceUnique(sentences)
     return validationMessages
   }
 
-  fun validateSentenceForManualEntry(sentences: List<SentenceAndOffences>): MutableList<ValidationMessage> {
+  fun validateSentenceForManualEntry(sentences: List<SentenceAndOffence>): MutableList<ValidationMessage> {
     return sentences.map { validateSentenceForManualEntry(it) }.flatten().toMutableList()
   }
 
-  private fun validateConsecutiveSentenceUnique(sentences: List<SentenceAndOffences>): List<ValidationMessage> {
-    val consecutiveSentences = sentences.filter { it.consecutiveToSequence != null }
+  private data class ValidateConsecutiveSentenceUniqueRecord(val consecutiveToSequence: Int, val lineSequence: Int, val caseSequence: Int)
+
+  private fun validateConsecutiveSentenceUnique(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
+    val consecutiveSentences = sentences.filter { it.consecutiveToSequence != null }.map { ValidateConsecutiveSentenceUniqueRecord(it.consecutiveToSequence!!, it.lineSequence, it.caseSequence) }.distinct()
     val sentencesGroupedByConsecutiveTo = consecutiveSentences.groupBy { it.consecutiveToSequence }
     return sentencesGroupedByConsecutiveTo.entries.filter { it.value.size > 1 }.map { entry ->
       val consecutiveToSentence = sentences.first { it.sentenceSequence == entry.key }
@@ -407,7 +409,7 @@ class ValidationService(
     return null
   }
 
-  private fun validateSentence(it: SentenceAndOffences): List<ValidationMessage> {
+  private fun validateSentence(it: SentenceAndOffence): List<ValidationMessage> {
     return listOfNotNull(
       validateWithoutOffenceDate(it),
       validateOffenceDateAfterSentenceDate(it),
@@ -420,13 +422,13 @@ class ValidationService(
     )
   }
 
-  private fun validateSentenceForManualEntry(it: SentenceAndOffences): List<ValidationMessage> {
+  private fun validateSentenceForManualEntry(it: SentenceAndOffence): List<ValidationMessage> {
     return listOfNotNull(
       validateWithoutOffenceDate(it),
     )
   }
 
-  private fun validateFineAmount(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
+  private fun validateFineAmount(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
     if (sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
       if (sentencesAndOffence.fineAmount == null) {
@@ -436,7 +438,7 @@ class ValidationService(
     return null
   }
 
-  private fun validateThatSec91SentenceTypeCorrectlyApplied(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
+  private fun validateThatSec91SentenceTypeCorrectlyApplied(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
 
     if (sentenceCalculationType == SentenceCalculationType.SEC91_03 || sentenceCalculationType == SentenceCalculationType.SEC91_03_ORA) {
@@ -447,7 +449,7 @@ class ValidationService(
     return null
   }
 
-  private fun validateEdsSentenceTypesCorrectlyApplied(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
+  private fun validateEdsSentenceTypesCorrectlyApplied(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
 
     if (listOf(
@@ -472,7 +474,7 @@ class ValidationService(
     return null
   }
 
-  private fun validateSopcSentenceTypesCorrectlyApplied(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
+  private fun validateSopcSentenceTypesCorrectlyApplied(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
 
     if (listOf(SentenceCalculationType.SOPC18, SentenceCalculationType.SOPC21).contains(sentenceCalculationType)) {
@@ -490,7 +492,7 @@ class ValidationService(
     return null
   }
 
-  private fun validateDuration(sentencesAndOffence: SentenceAndOffences): List<ValidationMessage> {
+  private fun validateDuration(sentencesAndOffence: SentenceAndOffence): List<ValidationMessage> {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
     return if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java ||
       sentenceCalculationType.sentenceClazz == AFineSentence::class.java ||
@@ -503,7 +505,7 @@ class ValidationService(
     }
   }
 
-  private fun validateSingleTermDuration(sentencesAndOffence: SentenceAndOffences): List<ValidationMessage> {
+  private fun validateSingleTermDuration(sentencesAndOffence: SentenceAndOffence): List<ValidationMessage> {
     val validationMessages = mutableListOf<ValidationMessage>()
     val hasMultipleTerms = sentencesAndOffence.terms.size > 1
     if (hasMultipleTerms) {
@@ -529,7 +531,7 @@ class ValidationService(
     return validationMessages
   }
 
-  private fun validateImprisonmentAndLicenceTermDuration(sentencesAndOffence: SentenceAndOffences): List<ValidationMessage> {
+  private fun validateImprisonmentAndLicenceTermDuration(sentencesAndOffence: SentenceAndOffence): List<ValidationMessage> {
     val validationMessages = mutableListOf<ValidationMessage>()
 
     val imprisonmentTerms = sentencesAndOffence.terms.filter { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
@@ -626,26 +628,26 @@ class ValidationService(
     return validationMessages
   }
 
-  private fun validateOffenceRangeDateAfterSentenceDate(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
-    val invalid =
-      sentencesAndOffence.offences.any { it.offenceEndDate != null && it.offenceEndDate > sentencesAndOffence.sentenceDate }
+  private fun validateOffenceRangeDateAfterSentenceDate(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
+    val offence = sentencesAndOffence.offence
+    val invalid = offence.offenceEndDate != null && offence.offenceEndDate > sentencesAndOffence.sentenceDate
     if (invalid) {
       return ValidationMessage(OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE, getCaseSeqAndLineSeq(sentencesAndOffence))
     }
     return null
   }
 
-  private fun validateWithoutOffenceDate(sentencesAndOffence: SentenceAndOffences): ValidationMessage? {
+  private fun validateWithoutOffenceDate(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
     // It's valid to not have an end date for many offence types, but the start date must always be present in
     // either case. If an end date is null it will be set to the start date in the transformation.
-    val invalid = sentencesAndOffence.offences.any { it.offenceStartDate == null }
+    val invalid = sentencesAndOffence.offence.offenceStartDate == null
     if (invalid) {
       return ValidationMessage(OFFENCE_MISSING_DATE, getCaseSeqAndLineSeq(sentencesAndOffence))
     }
     return null
   }
 
-  private fun sortByCaseNumberAndLineSequence(a: SentenceAndOffences, b: SentenceAndOffences): Int {
+  private fun sortByCaseNumberAndLineSequence(a: SentenceAndOffence, b: SentenceAndOffence): Int {
     if (a.caseSequence > b.caseSequence) return 1
     if (a.caseSequence < b.caseSequence) return -1
     return a.lineSequence - b.lineSequence
@@ -662,7 +664,7 @@ class ValidationService(
     return emptyList()
   }
 
-  private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffences>): List<ValidationMessage> {
+  private fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffence>): List<ValidationMessage> {
     val supportedCategories = listOf("2003", "2020")
     val validationMessages = sentencesAndOffences.filter {
       if (SentenceCalculationType.isSupported(it.sentenceCalculationType) && supportedCategories.contains(it.sentenceCategory)) {
@@ -731,11 +733,10 @@ class ValidationService(
   }
 
   private fun validateOffenceDateAfterSentenceDate(
-    sentencesAndOffence: SentenceAndOffences,
+    sentencesAndOffence: SentenceAndOffence,
   ): ValidationMessage? {
-    val invalid =
-      sentencesAndOffence.offences.any { it.offenceStartDate != null && it.offenceStartDate > sentencesAndOffence.sentenceDate }
-    if (invalid) {
+    val offence = sentencesAndOffence.offence
+    if (offence.offenceStartDate != null && offence.offenceStartDate > sentencesAndOffence.sentenceDate) {
       return ValidationMessage(OFFENCE_DATE_AFTER_SENTENCE_START_DATE, getCaseSeqAndLineSeq(sentencesAndOffence))
     }
     return null
@@ -831,7 +832,7 @@ class ValidationService(
     return messages
   }
 
-  private fun getCaseSeqAndLineSeq(sentencesAndOffence: SentenceAndOffences) =
+  private fun getCaseSeqAndLineSeq(sentencesAndOffence: SentenceAndOffence) =
     listOf(sentencesAndOffence.caseSequence.toString(), sentencesAndOffence.lineSequence.toString())
 
   companion object {

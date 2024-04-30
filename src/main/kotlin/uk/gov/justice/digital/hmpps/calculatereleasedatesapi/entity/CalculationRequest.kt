@@ -60,7 +60,7 @@ data class CalculationRequest(
   @Type(value = JsonType::class)
   @Column(columnDefinition = "jsonb")
   val sentenceAndOffences: JsonNode? = null,
-  val sentenceAndOffencesVersion: Int? = 2,
+  val sentenceAndOffencesVersion: Int? = 3,
 
   @NotNull
   @Type(value = JsonType::class)

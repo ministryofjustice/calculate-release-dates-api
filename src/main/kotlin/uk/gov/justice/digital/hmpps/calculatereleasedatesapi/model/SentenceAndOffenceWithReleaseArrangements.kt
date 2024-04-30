@@ -1,12 +1,13 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class SentenceAndOffencesWithReleaseArrangements(
+data class SentenceAndOffenceWithReleaseArrangements(
   override val bookingId: Long,
   override val sentenceSequence: Int,
   override val lineSequence: Int,
@@ -18,13 +19,13 @@ data class SentenceAndOffencesWithReleaseArrangements(
   override val sentenceTypeDescription: String,
   override val sentenceDate: LocalDate,
   override val terms: List<SentenceTerms>,
-  override val offences: List<OffenderOffence>,
+  override val offence: OffenderOffence,
   override val caseReference: String?,
   override val courtDescription: String?,
   override val fineAmount: BigDecimal?,
   val isSDSPlus: Boolean,
-) : SentenceAndOffences {
-  constructor(source: SentenceAndOffences, isSdsPlus: Boolean) : this(
+) : SentenceAndOffence {
+  constructor(source: SentenceAndOffence, isSdsPlus: Boolean) : this(
     source.bookingId,
     source.sentenceSequence,
     source.lineSequence,
@@ -36,7 +37,25 @@ data class SentenceAndOffencesWithReleaseArrangements(
     source.sentenceTypeDescription,
     source.sentenceDate,
     source.terms,
-    source.offences,
+    source.offence,
+    source.caseReference,
+    source.courtDescription,
+    source.fineAmount,
+    isSdsPlus,
+  )
+  constructor(source: PrisonApiSentenceAndOffences, offence: OffenderOffence, isSdsPlus: Boolean) : this(
+    source.bookingId,
+    source.sentenceSequence,
+    source.lineSequence,
+    source.caseSequence,
+    source.consecutiveToSequence,
+    source.sentenceStatus,
+    source.sentenceCategory,
+    source.sentenceCalculationType,
+    source.sentenceTypeDescription,
+    source.sentenceDate,
+    source.terms,
+    offence,
     source.caseReference,
     source.courtDescription,
     source.fineAmount,

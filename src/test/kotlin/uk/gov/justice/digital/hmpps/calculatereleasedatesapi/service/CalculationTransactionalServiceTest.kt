@@ -57,7 +57,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
@@ -563,7 +563,7 @@ class CalculationTransactionalServiceTest {
     val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup)
     val sentencesExtractionService = SentencesExtractionService()
     val sentenceIdentificationService =
-      SentenceIdentificationService(hdcedCalculator, tusedCalculator, hdced4Calculator)
+      SentenceIdentificationService(tusedCalculator, hdced4Calculator)
     val bookingCalculationService = BookingCalculationService(
       sentenceCalculationService,
       sentenceIdentificationService,
@@ -640,7 +640,7 @@ class CalculationTransactionalServiceTest {
       ),
     )
     val SOURCE_DATA =
-      PrisonApiSourceData(listOf(SentenceAndOffencesWithReleaseArrangements(originalSentence, false)), prisonerDetails, adjustments, emptyList(), null, null)
+      PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(originalSentence, originalSentence.offences[0], false)), prisonerDetails, adjustments, emptyList(), null, null)
     val cachedBankHolidays =
       BankHolidays(
         RegionBankHolidays(
@@ -688,7 +688,7 @@ class CalculationTransactionalServiceTest {
           "\"isPcscSdsPlus\":false,\"offenceCode\":null},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}}," +
           "\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\"," +
           "\"consecutiveSentenceUUIDs\":[],\"caseSequence\":1,\"lineSequence\":2,\"caseReference\":null," +
-          "\"recallType\":null,\"section250\":false}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
+          "\"recallType\":null,\"section250\":false,\"isSDSPlus\":false}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
           "\"bookingId\":12345}",
       )
 
@@ -744,6 +744,7 @@ class CalculationTransactionalServiceTest {
       identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa"),
       caseSequence = 1,
       lineSequence = 2,
+      isSDSPlus = false,
     )
 
     val BOOKING = Booking(OFFENDER, listOf(StandardSENTENCE), Adjustments(), null, null, BOOKING_ID)

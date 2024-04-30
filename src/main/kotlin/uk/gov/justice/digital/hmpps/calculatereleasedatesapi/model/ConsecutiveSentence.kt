@@ -8,6 +8,7 @@ import java.time.temporal.ChronoUnit
 class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : CalculableSentence {
   override val sentencedAt: LocalDate = orderedSentences.minOf(CalculableSentence::sentencedAt)
   override val offence: Offence = orderedSentences.map(CalculableSentence::offence).minByOrNull(Offence::committedAt)!!
+  override val isSDSPlus: Boolean = orderedSentences.all { it.isSDSPlus }
 
   override val recallType: RecallType?
     get() {
@@ -183,12 +184,9 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
   }
 
   fun isMadeUpOfSdsAndSdsPlusSentences(): Boolean {
-    return orderedSentences.any { it.isSdsPlus() } && orderedSentences.any { !it.isSdsPlus() }
+    return orderedSentences.any { it.isSDSPlus } && orderedSentences.any { !it.isSDSPlus }
   }
 
-  override fun isSdsPlus(): Boolean {
-    return orderedSentences.all { it.isSdsPlus() }
-  }
   override fun isBotus(): Boolean {
     return orderedSentences.all { it.isBotus() }
   }

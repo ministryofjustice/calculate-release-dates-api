@@ -30,7 +30,7 @@ open class CalculationBreakdownService(
     return if (sentenceAndOffences != null && prisonerDetails != null && bookingAndSentenceAdjustments != null) {
       val booking = Booking(
         offender = transform(prisonerDetails),
-        sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) }.flatten(),
+        sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) },
         adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
         bookingId = prisonerDetails.bookingId,
         returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,
@@ -59,7 +59,7 @@ open class CalculationBreakdownService(
     val calculation = calculationTransactionalService.findCalculationResults(calculationRequestId)
     val booking = Booking(
       offender = transform(prisonerDetails),
-      sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) }.flatten(),
+      sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) },
       adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
       bookingId = prisonerDetails.bookingId,
       returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,

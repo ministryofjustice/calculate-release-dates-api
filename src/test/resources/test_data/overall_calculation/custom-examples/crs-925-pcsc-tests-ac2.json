@@ -15,7 +15,8 @@
         }
       },
       "section250": true,
-      "sentencedAt": "2022-06-28"
+      "sentencedAt": "2022-06-28",
+      "isSDSPlus": true
     },
     {
       "offence": {
@@ -26,7 +27,8 @@
           "MONTHS": 6
         }
       },
-      "sentencedAt": "2022-06-28"
+      "sentencedAt": "2022-06-28",
+      "isSDSPlus": false
     }
   ],
   "adjustments": {
