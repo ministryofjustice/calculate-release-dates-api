@@ -7,8 +7,7 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "committedAt": "2020-01-28",
-        "isScheduleFifteenMaximumLife": true
+        "committedAt": "2020-01-28"
       },
       "duration": {
         "durationElements": {
@@ -21,8 +20,7 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "committedAt": "2020-01-28",
-        "isScheduleFifteenMaximumLife": true
+        "committedAt": "2020-01-28"
       },
       "duration": {
         "durationElements": {

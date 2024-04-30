@@ -7,10 +7,6 @@ data class Offence(
   val committedAt: LocalDate,
   val offenceCode: String? = null,
   val isScheduleFifteen: Boolean = false,
-  val isScheduleFifteenMaximumLife: Boolean = false,
-  val isPcscSds: Boolean = false,
-  val isPcscSec250: Boolean = false,
-  val isPcscSdsPlus: Boolean = false,
 ) {
   @JsonIgnore
   fun isCivilOffence(): Boolean {

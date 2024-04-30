@@ -45,8 +45,7 @@
     },
     {
       "offence": {
-        "committedAt": "2021-01-29",
-        "isScheduleFifteenMaximumLife": true
+        "committedAt": "2021-01-29"
       },
       "duration": {
         "durationElements": {

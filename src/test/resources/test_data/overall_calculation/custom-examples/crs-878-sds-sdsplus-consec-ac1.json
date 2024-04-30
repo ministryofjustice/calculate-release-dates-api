@@ -19,8 +19,7 @@
     },
     {
       "offence": {
-        "committedAt": "2022-05-04",
-        "isScheduleFifteenMaximumLife": true
+        "committedAt": "2022-05-04"
       },
       "duration": {
         "durationElements": {
@@ -53,8 +52,7 @@
     },
     {
       "offence": {
-        "committedAt": "2022-05-04",
-        "isScheduleFifteenMaximumLife": true
+        "committedAt": "2022-05-04"
       },
       "duration": {
         "durationElements": {

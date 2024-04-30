@@ -89,13 +89,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -111,7 +109,7 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.UUID
+import java.util.*
 
 /*
 ** Functions which transform entities objects into their model equivalents.
@@ -128,22 +126,11 @@ fun transform(
       Offence(
         committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
         offenceCode = offendersOffence.offenceCode,
-        isScheduleFifteenMaximumLife = offendersOffence.isScheduleFifteenMaximumLife,
-        isPcscSds = offendersOffence.isPcscSds,
-        isPcscSec250 = offendersOffence.isPcscSec250,
-        isPcscSdsPlus = offendersOffence.isPcscSdsPlus,
       )
     } else {
-      val matchingSentenceInput = calculationUserInputs?.sentenceCalculationUserInputs?.find {
-        it.sentenceSequence == sentence.sentenceSequence && it.offenceCode == offendersOffence.offenceCode
-      }
       Offence(
         committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
         offenceCode = offendersOffence.offenceCode,
-        isScheduleFifteenMaximumLife = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.ORIGINAL,
-        isPcscSds = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.FOUR_TO_UNDER_SEVEN,
-        isPcscSec250 = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.SECTION_250,
-        isPcscSdsPlus = matchingSentenceInput?.userChoice == true && matchingSentenceInput.userInputType == UserInputType.UPDATED,
       )
     }
 
@@ -167,7 +154,6 @@ fun transform(
         lineSequence = sentence.lineSequence,
         caseReference = sentence.caseReference,
         recallType = sentenceCalculationType.recallType,
-        section250 = sentenceCalculationType == SentenceCalculationType.SEC250 || sentenceCalculationType == SentenceCalculationType.SEC250_ORA,
         isSDSPlus = sentence.isSDSPlus,
       )
     } else if (sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
@@ -394,7 +380,7 @@ fun transform(
     adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments, objectMapper),
     offenderFinePayments = objectToJson(sourceData.offenderFinePayments, objectMapper),
     returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
-    calculationRequestUserInput = transform(calculationUserInputs, sourceData),
+    calculationRequestUserInput = transform(calculationUserInputs),
     breakdownHtml = calculationFragments?.breakdownHtml,
     calculationType = calculationType,
     reasonForCalculation = reasonForCalculation,
@@ -405,7 +391,6 @@ fun transform(
 
 fun transform(
   calculationUserInputs: CalculationUserInputs?,
-  sourceData: PrisonApiSourceData,
 ): CalculationRequestUserInput? {
   if (calculationUserInputs == null) {
     return null
@@ -419,27 +404,11 @@ fun transform(
         offenceCode = it.offenceCode,
         type = it.userInputType,
         userChoice = it.userChoice,
-        nomisMatches = sourceData.sentenceAndOffences.any { sentence ->
-          sentence.sentenceSequence == it.sentenceSequence && sentence.offence.let { offence ->
-            offence.offenceCode == it.offenceCode && offenceMatchesChoice(
-              offence,
-              it.userInputType,
-              it.userChoice,
-            )
-          }
-        },
+        // no longer required as users no longer select SDS+ but kept to retain old data
+        nomisMatches = true,
       )
     },
   )
-}
-
-fun offenceMatchesChoice(offence: OffenderOffence, userInputType: UserInputType, userChoice: Boolean): Boolean {
-  return when (userInputType) {
-    UserInputType.ORIGINAL -> offence.isScheduleFifteenMaximumLife == userChoice
-    UserInputType.FOUR_TO_UNDER_SEVEN -> offence.isPcscSds == userChoice
-    UserInputType.SECTION_250 -> offence.isPcscSec250 == userChoice
-    UserInputType.UPDATED -> offence.isPcscSdsPlus == userChoice
-  }
 }
 
 fun transform(calculationRequestUserInput: CalculationRequestUserInput?): CalculationUserInputs {

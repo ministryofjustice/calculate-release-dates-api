@@ -47,8 +47,7 @@
     },
     {
       "offence": {
-        "committedAt": "2014-04-18",
-        "isScheduleFifteenMaximumLife": true
+        "committedAt": "2014-04-18"
       },
       "duration": {
         "durationElements": {

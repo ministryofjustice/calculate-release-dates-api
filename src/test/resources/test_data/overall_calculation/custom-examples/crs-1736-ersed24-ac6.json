@@ -7,10 +7,7 @@
   "sentences": [
     {
       "offence": {
-        "committedAt": "2023-01-01",
-        "isPcscSdsPlus" : true,
-        "isPcscSds" : true,
-        "isScheduleFifteenMaximumLife": true
+        "committedAt": "2023-01-01"
       },
       "duration": {
         "durationElements": {

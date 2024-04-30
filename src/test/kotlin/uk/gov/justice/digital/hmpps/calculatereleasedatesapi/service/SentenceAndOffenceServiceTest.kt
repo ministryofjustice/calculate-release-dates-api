@@ -101,14 +101,12 @@ class SentenceAndOffenceServiceTest {
         offenceStartDate = FIRST_JAN_2015,
         offenceCode = "RR1",
         offenceDescription = "Littering",
-        indicators = listOf("An indicator"),
       ),
       OffenderOffence(
         offenderChargeId = 2L,
         offenceStartDate = SECOND_JAN_2015,
         offenceCode = "RR2",
         offenceDescription = "Jaywalking",
-        indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
       ),
     )
     val changedOffences = listOf(
@@ -117,14 +115,12 @@ class SentenceAndOffenceServiceTest {
         offenceStartDate = FIRST_JAN_2015,
         offenceCode = "RR1",
         offenceDescription = "Littering",
-        indicators = listOf("An indicator"),
       ),
       OffenderOffence(
         offenderChargeId = 2L,
         offenceStartDate = SECOND_JAN_2015,
         offenceCode = "RR3",
         offenceDescription = "Jaywalking",
-        indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
       ),
     )
     val newOffences = listOf(
@@ -133,14 +129,12 @@ class SentenceAndOffenceServiceTest {
         offenceStartDate = FIRST_JAN_2015,
         offenceCode = "RR4",
         offenceDescription = "Littering",
-        indicators = listOf("An indicator"),
       ),
       OffenderOffence(
         offenderChargeId = 2L,
         offenceStartDate = SECOND_JAN_2015,
         offenceCode = "RR5",
         offenceDescription = "Jaywalking",
-        indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
       ),
     )
     val sentenceAndOffences = offences.map {
