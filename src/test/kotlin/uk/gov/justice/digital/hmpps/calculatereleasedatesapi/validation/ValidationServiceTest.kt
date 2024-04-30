@@ -1679,6 +1679,178 @@ class ValidationServiceTest {
     assertThat(result).containsExactly(ValidationMessage(ValidationCode.OFFENCE_MISSING_DATE, listOf("1", "2")))
   }
 
+  @Test
+  fun `If a sentence has been normalised then it doesn't trigger consecutive sentence warning`() {
+    val sentence1 = SentenceAndOffenceWithReleaseArrangements(
+      bookingId = 1L,
+      sentenceSequence = 1,
+      lineSequence = 1,
+      caseSequence = 1,
+      sentenceDate = FIRST_MAY_2018,
+      terms = listOf(
+        SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+      ),
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceCategory = "2003",
+      sentenceStatus = "a",
+      sentenceTypeDescription = "This is a sentence type",
+      offence = OffenderOffence(
+        offenderChargeId = 1L,
+        offenceStartDate = LocalDate.of(2015, 1, 1),
+        offenceCode = "Dummy Offence",
+        offenceDescription = "A Dummy description",
+      ),
+      caseReference = null,
+      fineAmount = null,
+      courtDescription = null,
+      consecutiveToSequence = 3,
+      isSDSPlus = false,
+    )
+    val sentence2 = sentence1.copy(
+      offence = OffenderOffence(
+        offenderChargeId = 2L,
+        offenceStartDate = LocalDate.of(2015, 1, 1),
+        offenceCode = "Another Dummy Offence",
+        offenceDescription = "A Dummy description",
+      ),
+    )
+    val sentence3 = SentenceAndOffenceWithReleaseArrangements(
+      bookingId = 1L,
+      sentenceSequence = 3,
+      lineSequence = 1,
+      caseSequence = 2,
+      sentenceDate = FIRST_MAY_2018,
+      terms = listOf(
+        SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+      ),
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceCategory = "2003",
+      sentenceStatus = "a",
+      sentenceTypeDescription = "This is a sentence type",
+      offence = OffenderOffence(
+        offenderChargeId = 3L,
+        offenceStartDate = LocalDate.of(2015, 1, 1),
+        offenceCode = "And Another Dummy Offence",
+        offenceDescription = "A Dummy description",
+      ),
+      caseReference = null,
+      fineAmount = null,
+      courtDescription = null,
+      consecutiveToSequence = 1,
+      isSDSPlus = false,
+    )
+
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(
+        listOf(sentence1, sentence2, sentence3),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+    )
+    assertThat(result).isEmpty()
+  }
+
+  @Test
+  fun `If a sentence has not been normalised then it can trigger consecutive sentence warning`() {
+    val sentence1 = SentenceAndOffenceWithReleaseArrangements(
+      bookingId = 1L,
+      sentenceSequence = 1,
+      lineSequence = 1,
+      caseSequence = 1,
+      sentenceDate = FIRST_MAY_2018,
+      terms = listOf(
+        SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+      ),
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceCategory = "2003",
+      sentenceStatus = "a",
+      sentenceTypeDescription = "This is a sentence type",
+      offence = OffenderOffence(
+        offenderChargeId = 1L,
+        offenceStartDate = LocalDate.of(2015, 1, 1),
+        offenceCode = "Dummy Offence",
+        offenceDescription = "A Dummy description",
+      ),
+      caseReference = null,
+      fineAmount = null,
+      courtDescription = null,
+      consecutiveToSequence = 3,
+      isSDSPlus = false,
+    )
+    val sentence2 = SentenceAndOffenceWithReleaseArrangements(
+      bookingId = 1L,
+      sentenceSequence = 2,
+      lineSequence = 2,
+      caseSequence = 1,
+      sentenceDate = FIRST_MAY_2018,
+      terms = listOf(
+        SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+      ),
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceCategory = "2003",
+      sentenceStatus = "a",
+      sentenceTypeDescription = "This is a sentence type",
+      offence = OffenderOffence(
+        offenderChargeId = 1L,
+        offenceStartDate = LocalDate.of(2015, 1, 1),
+        offenceCode = "Another Dummy Offence",
+        offenceDescription = "A Dummy description",
+      ),
+      caseReference = null,
+      fineAmount = null,
+      courtDescription = null,
+      consecutiveToSequence = 3,
+      isSDSPlus = false,
+    )
+    val sentence3 = SentenceAndOffenceWithReleaseArrangements(
+      bookingId = 1L,
+      sentenceSequence = 3,
+      lineSequence = 1,
+      caseSequence = 2,
+      sentenceDate = FIRST_MAY_2018,
+      terms = listOf(
+        SentenceTerms(5, 0, 0, 0, SentenceTerms.IMPRISONMENT_TERM_CODE),
+      ),
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceCategory = "2003",
+      sentenceStatus = "a",
+      sentenceTypeDescription = "This is a sentence type",
+      offence = OffenderOffence(
+        offenderChargeId = 3L,
+        offenceStartDate = LocalDate.of(2015, 1, 1),
+        offenceCode = "And Another Dummy Offence",
+        offenceDescription = "A Dummy description",
+      ),
+      caseReference = null,
+      fineAmount = null,
+      courtDescription = null,
+      consecutiveToSequence = 1,
+      isSDSPlus = false,
+    )
+
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(
+        listOf(sentence1, sentence2, sentence3),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+    )
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(
+          ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO,
+          listOf("2", "1"),
+        ),
+      ),
+    )
+  }
+
   fun createConsecutiveSentences(booking: Booking): Booking {
     val (baseSentences, consecutiveSentences) = booking.sentences.partition { it.consecutiveSentenceUUIDs.isEmpty() }
     val sentencesByPrevious = consecutiveSentences.groupBy {

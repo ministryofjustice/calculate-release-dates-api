@@ -311,7 +311,7 @@ class ValidationService(
     sourceData.sentenceAndOffences.forEach {
       val isDto = SentenceCalculationType.from(it.sentenceCalculationType).sentenceClazz == DetentionAndTrainingOrderSentence::class.java
       if (isDto) {
-        if (it.consecutiveToSequence != null && sequenceNotDto(it.consecutiveToSequence!!, sourceData)) {
+        if (it.consecutiveToSequence != null && sequenceNotDto(it.consecutiveToSequence, sourceData)) {
           validationMessages.add(ValidationMessage(code = DTO_CONSECUTIVE_TO_SENTENCE))
         }
         if (sourceData.sentenceAndOffences.any { sent -> (sent.consecutiveToSequence == it.sentenceSequence && SentenceCalculationType.from(sent.sentenceCalculationType).sentenceClazz != DetentionAndTrainingOrderSentence::class.java) }) {
@@ -338,8 +338,10 @@ class ValidationService(
     return sentences.map { validateSentenceForManualEntry(it) }.flatten().toMutableList()
   }
 
+  private data class ValidateConsecutiveSentenceUniqueRecord(val consecutiveToSequence: Int, val lineSequence: Int, val caseSequence: Int)
+
   private fun validateConsecutiveSentenceUnique(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
-    val consecutiveSentences = sentences.filter { it.consecutiveToSequence != null }
+    val consecutiveSentences = sentences.filter { it.consecutiveToSequence != null }.map { ValidateConsecutiveSentenceUniqueRecord(it.consecutiveToSequence!!, it.lineSequence, it.caseSequence) }.distinct()
     val sentencesGroupedByConsecutiveTo = consecutiveSentences.groupBy { it.consecutiveToSequence }
     return sentencesGroupedByConsecutiveTo.entries.filter { it.value.size > 1 }.map { entry ->
       val consecutiveToSentence = sentences.first { it.sentenceSequence == entry.key }
