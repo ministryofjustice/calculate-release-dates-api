@@ -24,7 +24,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
 
   @Test
   @Transactional(readOnly = true)
-  fun `Use a user input that differs from NOMIS and check its persisted through prelim, confirmed and view`() {
+  fun `User input is kept for view journey even though calculation questions have been deprecated`() {
     val userInput = CalculationUserInputs(
       calculateErsed = true,
       useOffenceIndicators = false,
@@ -50,8 +50,8 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
-    // Release at halfway (different to how it would be calculated with NOMIS inputs.)
-    assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2028, 1, 10))
+    // Release at 2/3 which is the same as NOMIS as user specified sentences are no longer applicable
+    assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2030, 1, 9))
 
     val confirmResponse = webTestClient.post()
       .uri("/calculation/confirm/${prelimResponse.calculationRequestId}")
@@ -65,7 +65,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
 
-    assertThat(confirmResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2028, 1, 10))
+    assertThat(prelimResponse.dates[ReleaseDateType.CRD]).isEqualTo(LocalDate.of(2030, 1, 9))
 
     val userInputResponse = webTestClient.get()
       .uri("/calculation/calculation-user-input/${confirmResponse.calculationRequestId}")

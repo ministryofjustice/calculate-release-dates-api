@@ -11,7 +11,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.springframework.security.oauth2.jwt.Jwt
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -25,13 +24,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -42,8 +43,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.Optional
-import java.util.UUID
+import java.util.*
 
 class ManualCalculationServiceTest {
   private val prisonService = mock<PrisonService>()
@@ -75,8 +75,8 @@ class ManualCalculationServiceTest {
     fun `Check the presence of indeterminate sentences returns true`() {
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          SentenceAndOffencesWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name), false),
-          SentenceAndOffencesWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false),
+          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name), false),
+          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false),
         ),
       )
 
@@ -89,8 +89,8 @@ class ManualCalculationServiceTest {
     fun `Check the absence of indeterminate sentences returns false`() {
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          SentenceAndOffencesWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR.name), false),
-          SentenceAndOffencesWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false),
+          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR.name), false),
+          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false),
         ),
       )
 
@@ -171,6 +171,7 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check type is set to manual indeterminate when indeterminate sentences are present`() {
+    val offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP", "description", listOf("A"))
     whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
@@ -180,7 +181,23 @@ class ManualCalculationServiceTest {
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(
       listOf(
-        SentenceAndOffencesWithReleaseArrangements(PrisonApiSentenceAndOffences(1, 1, 1, 1, null, "A", "A", "LIFE", "", LocalDate.now()), false),
+        SentenceAndOffenceWithReleaseArrangements(
+          PrisonApiSentenceAndOffences(
+            1,
+            1,
+            1,
+            1,
+            null,
+            "A",
+            "A",
+            "LIFE",
+            "",
+            LocalDate.now(),
+            offences = listOf(offence),
+          ),
+          offence,
+          false,
+        ),
       ),
     )
 
@@ -199,7 +216,7 @@ class ManualCalculationServiceTest {
     private val FIVE_YEAR_DURATION = Duration(mutableMapOf(ChronoUnit.DAYS to 0L, ChronoUnit.WEEKS to 0L, ChronoUnit.MONTHS to 0L, ChronoUnit.YEARS to 5L))
     private const val PRISONER_ID = "A1234AJ"
 
-    private val BASE_DETERMINATE_SENTENCE = PrisonApiSentenceAndOffences(
+    private val BASE_DETERMINATE_SENTENCE = NormalisedSentenceAndOffence(
       bookingId = BOOKING_ID,
       sentenceSequence = 1,
       lineSequence = 1,
@@ -209,12 +226,13 @@ class ManualCalculationServiceTest {
       sentenceCategory = "CAT",
       sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       sentenceTypeDescription = "ADMIP",
+      terms = emptyList(),
+      offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A")),
+      caseReference = null,
+      fineAmount = null,
+      courtDescription = null,
+      consecutiveToSequence = null,
     )
-    private val FAKE_TOKEN: Jwt = Jwt
-      .withTokenValue("123")
-      .header("header1", "value1")
-      .claim("claim1", "value1")
-      .build()
     private val FAKE_SOURCE_DATA = PrisonApiSourceData(
       emptyList(),
       PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
@@ -264,6 +282,7 @@ class ManualCalculationServiceTest {
       identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa"),
       caseSequence = 1,
       lineSequence = 2,
+      isSDSPlus = false,
     )
     private val BOOKING = Booking(OFFENDER, listOf(StandardSENTENCE), Adjustments(), null, null, BOOKING_ID)
 

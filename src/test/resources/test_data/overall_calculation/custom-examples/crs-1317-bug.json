@@ -27,7 +27,8 @@
         }
       },
       "sentencedAt": "2021-10-14",
-      "sentenceType": "YOI"
+      "sentenceType": "YOI",
+      "isSDSPlus": false
     },
     {
       "offence": {
@@ -39,7 +40,8 @@
         }
       },
       "sentencedAt": "2021-10-14",
-      "sentenceType": "YOI"
+      "sentenceType": "YOI",
+      "isSDSPlus": false
     },
     {
       "offence": {
@@ -52,7 +54,8 @@
         }
       },
       "sentencedAt": "2021-10-14",
-      "sentenceType": "YOI"
+      "sentenceType": "YOI",
+      "isSDSPlus": true
     },
     {
       "offence": {
@@ -64,7 +67,8 @@
         }
       },
       "sentencedAt": "2021-10-14",
-      "sentenceType": "YOI"
+      "sentenceType": "YOI",
+      "isSDSPlus": false
     },
     {
       "offence": {

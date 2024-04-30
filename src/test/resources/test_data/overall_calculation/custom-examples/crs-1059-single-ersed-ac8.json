@@ -15,7 +15,8 @@
           "YEARS": 9
         }
       },
-      "sentencedAt":"2021-02-25"
+      "sentencedAt":"2021-02-25",
+      "isSDSPlus": true
     }
   ],
   "adjustments": {

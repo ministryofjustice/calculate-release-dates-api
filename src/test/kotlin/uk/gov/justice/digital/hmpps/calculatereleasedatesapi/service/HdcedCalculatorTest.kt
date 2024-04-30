@@ -32,7 +32,7 @@ class HdcedCalculatorTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.DAYS to 150L))
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = false)
     val sentenceCalculation = sentenceCalculation(sentence, 150, 75, Adjustments())
 
     calc(sentenceCalculation, sentence, isActiveSexOffender = true)
@@ -45,7 +45,7 @@ class HdcedCalculatorTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.WEEKS to 11L))
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = false)
     val sentenceCalculation = sentenceCalculation(sentence, 77, 39, Adjustments())
 
     calc(sentenceCalculation, sentence)
@@ -58,7 +58,7 @@ class HdcedCalculatorTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.DAYS to config.minimumCustodialPeriodDays * 2))
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = false)
     val sentenceCalculation = sentenceCalculation(sentence, config.minimumCustodialPeriodDays.toInt() * 2, config.minimumCustodialPeriodDays.toInt(), Adjustments())
 
     calc(sentenceCalculation, sentence)
@@ -80,7 +80,7 @@ class HdcedCalculatorTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.DAYS to sentenceLength.toLong()))
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = false)
     val sentenceCalculation = sentenceCalculation(sentence, sentenceLength, numberOfDaysToDeterminateRelease, Adjustments())
 
     calc(sentenceCalculation, sentence)
@@ -97,7 +97,7 @@ class HdcedCalculatorTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.YEARS to 5L))
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = false)
     val sentenceCalculation = sentenceCalculation(sentence, 1825, 913, Adjustments())
 
     calc(sentenceCalculation, sentence)
@@ -110,7 +110,7 @@ class HdcedCalculatorTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.WEEKS to 20L))
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = false)
 
     val withLargeRemand = Adjustments(mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(sentencedAt, 65))))
     val sentenceCalculation = sentenceCalculation(sentence, 140, 70, withLargeRemand)
@@ -125,7 +125,7 @@ class HdcedCalculatorTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.WEEKS to 20L))
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = false)
 
     val sentenceCalculation = sentenceCalculation(sentence, 140, 70, Adjustments())
 
@@ -158,7 +158,7 @@ class HdcedCalculatorTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.DAYS to sentenceLength.toLong()))
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = false)
 
     val sentenceCalculation = sentenceCalculation(sentence, sentenceLength, numberOfDaysToDeterminateRelease, Adjustments())
 
@@ -174,7 +174,7 @@ class HdcedCalculatorTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.DAYS to 106L))
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = false)
 
     val sentenceCalculation = sentenceCalculation(sentence, 106, 53, Adjustments())
 
@@ -200,7 +200,7 @@ class HdcedCalculatorTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.WEEKS to 20L))
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = false)
 
     val minus25DayAdjustments = Adjustments(mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(sentencedAt, 25))))
     val sentenceCalculation = sentenceCalculation(sentence, 140, 70, minus25DayAdjustments)
@@ -227,7 +227,7 @@ class HdcedCalculatorTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.DAYS to 722L))
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = false)
 
     val sentenceCalculation = sentenceCalculation(sentence, 722, 361, Adjustments())
 
@@ -253,7 +253,7 @@ class HdcedCalculatorTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.DAYS to 1000L))
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = false)
 
     val sentenceCalculation = sentenceCalculation(sentence, 1000, config.custodialPeriodMidPointDays.toInt(), Adjustments())
 
@@ -269,7 +269,7 @@ class HdcedCalculatorTest {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.DAYS to 722L))
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt)
+    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = false)
 
     val adjustedLessThanMinCustodialPeriod = Adjustments(mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(sentencedAt, 180))))
     val sentenceCalculation = sentenceCalculation(sentence, 722, 361, adjustedLessThanMinCustodialPeriod)

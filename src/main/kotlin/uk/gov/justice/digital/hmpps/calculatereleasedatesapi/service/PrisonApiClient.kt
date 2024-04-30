@@ -9,7 +9,6 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClientRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
@@ -23,7 +22,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Fixe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import java.time.Duration
@@ -54,7 +52,7 @@ class PrisonApiClient(
       .block()!!
   }
 
-  fun getSentencesAndOffences(bookingId: Long): List<SentenceAndOffences> {
+  fun getSentencesAndOffences(bookingId: Long): List<PrisonApiSentenceAndOffences> {
     log.info("Requesting sentence terms for bookingId $bookingId")
     return webClient.get()
       .uri("/api/offender-sentences/booking/$bookingId/sentences-and-offences")

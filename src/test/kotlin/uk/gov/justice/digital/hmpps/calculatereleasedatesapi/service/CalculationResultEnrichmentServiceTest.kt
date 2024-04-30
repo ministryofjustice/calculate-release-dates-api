@@ -15,12 +15,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NonFridayReleaseDay
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.WorkingDay
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.time.Clock
 import java.time.LocalDate
@@ -791,7 +791,7 @@ class CalculationResultEnrichmentServiceTest {
     return ReleaseDate(date, type)
   }
 
-  private fun sentenceAndOffence(sentenceCalculationType: String, sentenceDate: LocalDate = LocalDate.of(2020, 1, 2), bookingId: Long = 0, sentenceSequence: Int = 0, lineSequence: Int = 0, sentenceTerm: Int = 5) = PrisonApiSentenceAndOffences(
+  private fun sentenceAndOffence(sentenceCalculationType: String, sentenceDate: LocalDate = LocalDate.of(2020, 1, 2), bookingId: Long = 0, sentenceSequence: Int = 0, lineSequence: Int = 0, sentenceTerm: Int = 5) = NormalisedSentenceAndOffence(
     bookingId = bookingId,
     sentenceSequence = sentenceSequence,
     lineSequence = lineSequence,
@@ -804,7 +804,11 @@ class CalculationResultEnrichmentServiceTest {
     sentenceCategory = "SEN",
     sentenceCalculationType = sentenceCalculationType,
     sentenceTypeDescription = "DESC",
-    offences = listOf(offenderOffence),
+    offence = offenderOffence,
+    caseReference = null,
+    fineAmount = null,
+    courtDescription = null,
+    consecutiveToSequence = null,
   )
 
   private val offenderOffence = OffenderOffence(

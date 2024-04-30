@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
@@ -62,7 +62,7 @@ class BookingServiceTest {
       indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
     ),
   )
-  private val sentenceAndOffences = SentenceAndOffencesWithReleaseArrangements(
+  private val sentenceAndOffences = SentenceAndOffenceWithReleaseArrangements(
     PrisonApiSentenceAndOffences(
       bookingId = bookingId,
       sentenceSequence = sequence,
@@ -79,6 +79,7 @@ class BookingServiceTest {
       sentenceTypeDescription = "28 day fixed term recall",
       offences = offences,
     ),
+    offences[0],
     false,
   )
   private val bookingAndSentenceAdjustment = BookingAndSentenceAdjustments(
@@ -149,6 +150,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
+            isSDSPlus = false,
           ),
         ),
         adjustments = Adjustments(
@@ -204,6 +206,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
+            isSDSPlus = false,
           ),
         ),
         adjustments = Adjustments(
@@ -261,6 +264,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
+            isSDSPlus = false,
           ),
         ),
         adjustments = Adjustments(
@@ -316,6 +320,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
+            isSDSPlus = false,
           ),
         ),
         adjustments = Adjustments(
@@ -371,6 +376,7 @@ class BookingServiceTest {
             lineSequence = lineSequence,
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
+            isSDSPlus = false,
           ),
         ),
         adjustments = Adjustments(
