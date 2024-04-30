@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithSDSPlus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiDataVersions
@@ -20,13 +21,17 @@ class PrisonApiDataMapper(private val objectMapper: ObjectMapper) {
       0 -> {
         val reader = objectMapper.readerFor(object : TypeReference<List<PrisonApiDataVersions.Version0.SentenceAndOffences>>() {})
         val sentencesAndOffences: List<PrisonApiDataVersions.Version0.SentenceAndOffences> = reader.readValue(calculationRequest.sentenceAndOffences)
-        sentencesAndOffences.flatMap { it.toLatest() }
+        sentencesAndOffences.flatMap(PrisonApiDataVersions.Version0.SentenceAndOffences::toLatest)
       }
       1 -> {
         val reader = objectMapper.readerFor(object : TypeReference<List<PrisonApiSentenceAndOffences>>() {})
-        reader.readValue<List<PrisonApiSentenceAndOffences>>(calculationRequest.sentenceAndOffences).flatMap { prisonApiSentenceAndOffences ->
-          prisonApiSentenceAndOffences.offences.map { offence -> SentenceAndOffenceWithReleaseArrangements(prisonApiSentenceAndOffences, offence, false) }
-        }
+        reader.readValue<List<PrisonApiSentenceAndOffences>>(calculationRequest.sentenceAndOffences)
+          .flatMap(PrisonApiSentenceAndOffences::toLatest)
+      }
+      2 -> {
+        val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffencesWithSDSPlus>>() {})
+        reader.readValue<List<SentenceAndOffencesWithSDSPlus>>(calculationRequest.sentenceAndOffences)
+          .flatMap(SentenceAndOffencesWithSDSPlus::toLatest)
       }
       else -> {
         val reader = objectMapper.readerFor(object : TypeReference<List<SentenceAndOffenceWithReleaseArrangements>>() {})

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithSDSPlus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiDataVersions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
@@ -42,6 +43,13 @@ class PrisonApiDataMapperTest {
           offenceCode = "Dummy Offence",
           offenceDescription = "A Dummy description",
         ),
+        OffenderOffence(
+          offenderChargeId = 2L,
+          offenceStartDate = null,
+          offenceEndDate = null,
+          offenceCode = "Another Dummy Offence",
+          offenceDescription = "Another Dummy description",
+        ),
       ),
     )
 
@@ -53,12 +61,15 @@ class PrisonApiDataMapperTest {
     val sentencesAndOffences = prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
 
     assertThat(sentencesAndOffences).isNotNull
+    assertThat(sentencesAndOffences).hasSize(2)
     assertThat(sentencesAndOffences[0].terms).isNotEmpty
     assertThat(sentencesAndOffences[0].terms.size).isEqualTo(1)
     assertThat(sentencesAndOffences[0].terms[0].days).isEqualTo(1)
     assertThat(sentencesAndOffences[0].terms[0].weeks).isEqualTo(2)
     assertThat(sentencesAndOffences[0].terms[0].months).isEqualTo(3)
     assertThat(sentencesAndOffences[0].terms[0].years).isEqualTo(4)
+    assertThat(sentencesAndOffences[0].offence.offenceCode).isEqualTo("Dummy Offence")
+    assertThat(sentencesAndOffences[1].offence.offenceCode).isEqualTo("Another Dummy Offence")
   }
 
   @Test
@@ -76,7 +87,10 @@ class PrisonApiDataMapperTest {
       sentenceCategory = "CAT",
       sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       sentenceTypeDescription = "ADMIP",
-      offences = listOf(OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A"))),
+      offences = listOf(
+        OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "Dummy Offence", "description", listOf("A")),
+        OffenderOffence(2L, LocalDate.of(2015, 1, 1), null, "Another Dummy Offence", "description", listOf("A")),
+      ),
     )
     val calculationRequest = CalculationRequest(
       sentenceAndOffences = objectMapper.valueToTree(listOf(version1)),
@@ -84,12 +98,73 @@ class PrisonApiDataMapperTest {
     )
 
     val sentencesAndOffences = prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
-    assertThat(sentencesAndOffences).isEqualTo(listOf(SentenceAndOffenceWithReleaseArrangements(version1, version1.offences[0], false)))
+    assertThat(sentencesAndOffences).isEqualTo(
+      listOf(
+        SentenceAndOffenceWithReleaseArrangements(version1, version1.offences[0], false),
+        SentenceAndOffenceWithReleaseArrangements(version1, version1.offences[1], false),
+      ),
+    )
   }
 
   @Test
   fun `Map version 2 of sentences and offences`() {
-    val version2 = SentenceAndOffenceWithReleaseArrangements(
+    val version2 = SentenceAndOffencesWithSDSPlus(
+      bookingId = 1L,
+      sentenceSequence = 3,
+      consecutiveToSequence = null,
+      lineSequence = 2,
+      caseSequence = 1,
+      sentenceDate = ImportantDates.PCSC_COMMENCEMENT_DATE.minusDays(1),
+      terms = listOf(
+        SentenceTerms(years = 8),
+      ),
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceTypeDescription = "ADMIP",
+      offences = listOf(
+        OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "Dummy Offence", "description", listOf("A")),
+        OffenderOffence(2L, LocalDate.of(2015, 1, 1), null, "Another Dummy Offence", "description", listOf("A")),
+      ),
+      caseReference = null,
+      courtDescription = null,
+      fineAmount = null,
+      isSDSPlus = true,
+    )
+    val calculationRequest = CalculationRequest(
+      sentenceAndOffences = objectMapper.valueToTree(listOf(version2)),
+      sentenceAndOffencesVersion = 2,
+    )
+
+    val aNewSentenceAndOffence = SentenceAndOffenceWithReleaseArrangements(
+      bookingId = 1L,
+      sentenceSequence = 3,
+      consecutiveToSequence = null,
+      lineSequence = 2,
+      caseSequence = 1,
+      sentenceDate = ImportantDates.PCSC_COMMENCEMENT_DATE.minusDays(1),
+      terms = listOf(
+        SentenceTerms(years = 8),
+      ),
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceTypeDescription = "ADMIP",
+      offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "Dummy Offence", "description", listOf("A")),
+      caseReference = null,
+      courtDescription = null,
+      fineAmount = null,
+      isSDSPlus = true,
+    )
+    val theOtherSentenceAndOffence = aNewSentenceAndOffence.copy(offence = OffenderOffence(2L, LocalDate.of(2015, 1, 1), null, "Another Dummy Offence", "description", listOf("A")))
+
+    val sentencesAndOffences = prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
+    assertThat(sentencesAndOffences).isEqualTo(listOf(aNewSentenceAndOffence, theOtherSentenceAndOffence))
+  }
+
+  @Test
+  fun `Map version 3 of sentences and offences`() {
+    val version3 = SentenceAndOffenceWithReleaseArrangements(
       bookingId = 1L,
       sentenceSequence = 3,
       consecutiveToSequence = null,
@@ -110,11 +185,11 @@ class PrisonApiDataMapperTest {
       isSDSPlus = true,
     )
     val calculationRequest = CalculationRequest(
-      sentenceAndOffences = objectMapper.valueToTree(listOf(version2)),
-      sentenceAndOffencesVersion = 2,
+      sentenceAndOffences = objectMapper.valueToTree(listOf(version3)),
+      sentenceAndOffencesVersion = 3,
     )
 
     val sentencesAndOffences = prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
-    assertThat(sentencesAndOffences).isEqualTo(listOf(version2))
+    assertThat(sentencesAndOffences).isEqualTo(listOf(version3))
   }
 }

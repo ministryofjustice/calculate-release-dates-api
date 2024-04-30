@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -19,4 +20,6 @@ data class PrisonApiSentenceAndOffences(
   val caseReference: String? = null,
   val courtDescription: String? = null,
   val fineAmount: BigDecimal? = null,
-)
+) {
+  fun toLatest(): List<SentenceAndOffenceWithReleaseArrangements> = offences.map { offence -> SentenceAndOffenceWithReleaseArrangements(this, offence, false) }
+}
