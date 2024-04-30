@@ -59,7 +59,6 @@ class BookingServiceTest {
       offenceStartDate = FIRST_JAN_2015,
       offenceCode = offenceCode,
       offenceDescription = "Littering",
-      indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
     ),
   )
   private val sentenceAndOffences = SentenceAndOffenceWithReleaseArrangements(
@@ -140,7 +139,6 @@ class BookingServiceTest {
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,
-              isScheduleFifteenMaximumLife = true,
               offenceCode = offenceCode,
             ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
@@ -196,7 +194,6 @@ class BookingServiceTest {
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,
-              isScheduleFifteenMaximumLife = true,
               offenceCode = offenceCode,
             ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
@@ -254,7 +251,6 @@ class BookingServiceTest {
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,
-              isPcscSdsPlus = true,
               offenceCode = offenceCode,
             ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
@@ -310,7 +306,6 @@ class BookingServiceTest {
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,
-              isPcscSec250 = true,
               offenceCode = offenceCode,
             ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),
@@ -366,7 +361,6 @@ class BookingServiceTest {
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,
-              isPcscSds = true,
               offenceCode = offenceCode,
             ),
             identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),

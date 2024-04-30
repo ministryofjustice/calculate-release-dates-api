@@ -54,8 +54,7 @@
     {
       "type": "StandardSentence",
       "offence": {
-        "committedAt": "2019-01-01",
-        "isScheduleFifteenMaximumLife": true
+        "committedAt": "2019-01-01"
       },
       "duration": {
         "durationElements": {

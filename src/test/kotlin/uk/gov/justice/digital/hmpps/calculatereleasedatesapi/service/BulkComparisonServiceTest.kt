@@ -571,21 +571,22 @@ class BulkComparisonServiceTest {
     )
     whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
 
-    val sdsPlusOffence = offenderOffence.copy(indicators = listOf(OffenderOffence.PCSC_SDS_PLUS))
     val sdsPlusSentence = sentenceAndOffence.copy(
       sentenceCalculationType = SentenceCalculationType.SEC91_03.name,
-      offences = listOf(sdsPlusOffence),
+      offences = listOf(offenderOffence),
     )
 
+    val nonSdsPlusSentence = sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.CIVIL.name)
     val unsupportedSdsPlusSentenceEnvelope = calculableSentenceEnvelope.copy(
       sentenceAndOffences = listOf(
-        sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.CIVIL.name),
+        nonSdsPlusSentence,
         sdsPlusSentence,
       ),
     )
-    val sentenceAndOffenceWithReleaseArrangements = unsupportedSdsPlusSentenceEnvelope.sentenceAndOffences
-      .flatMap { so -> so.offences.map { NormalisedSentenceAndOffence(so, it) } }
-      .map { SentenceAndOffenceWithReleaseArrangements(it, it.offence.isPcscSdsPlus) }
+    val sentenceAndOffenceWithReleaseArrangements = listOf(
+      SentenceAndOffenceWithReleaseArrangements(nonSdsPlusSentence, nonSdsPlusSentence.offences[0], false),
+      SentenceAndOffenceWithReleaseArrangements(sdsPlusSentence, sdsPlusSentence.offences[0], true),
+    )
 
     val mismatch = bulkComparisonService.buildMismatch(unsupportedSdsPlusSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements)
 

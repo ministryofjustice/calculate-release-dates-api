@@ -7,8 +7,7 @@
     {
       "type":"SopcSentence",
       "offence":{
-        "committedAt":"1981-04-01",
-        "isScheduleFifteenMaximumLife":true
+        "committedAt":"1981-04-01"
       },
       "custodialDuration":{
         "durationElements":{
@@ -45,10 +44,7 @@
     {
       "type":"StandardSentence",
       "offence":{
-        "committedAt":"1982-11-16",
-        "isScheduleFifteenMaximumLife":true,
-        "isPcscSds":true,
-        "isPcscSec250":true
+        "committedAt":"1982-11-16"
       },
       "duration":{
         "durationElements":{

@@ -20,8 +20,7 @@
     },
     {
       "offence": {
-        "committedAt": "2021-12-07",
-        "isPcscSdsPlus": true
+        "committedAt": "2021-12-07"
       },
       "duration": {
         "durationElements": {

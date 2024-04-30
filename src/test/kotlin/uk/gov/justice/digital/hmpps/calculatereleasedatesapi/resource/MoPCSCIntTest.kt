@@ -49,8 +49,8 @@ class MoPCSCIntTest : IntegrationTestBase() {
     )
 
     UserContext.setAuthToken("123456")
-    offenceSdsPlusLookupService.populateSdsPlusMarkerForOffences(inputOffenceList)
-    assertTrue(inputOffenceList[0].offence.isPcscSdsPlus)
+    val markedUp = offenceSdsPlusLookupService.populateSdsPlusMarkerForOffences(inputOffenceList)
+    assertTrue(markedUp[0].isSDSPlus)
   }
 
   @Test
@@ -142,8 +142,7 @@ class MoPCSCIntTest : IntegrationTestBase() {
     )
 
     UserContext.setAuthToken("123456")
-    offenceSdsPlusLookupService.populateSdsPlusMarkerForOffences(inputOffenceList)
-    assertTrue(inputOffenceList[0].offence.isPcscSdsPlus)
-    assertTrue(inputOffenceList[0].offence.isPcscSdsPlus)
+    val markedUp = offenceSdsPlusLookupService.populateSdsPlusMarkerForOffences(inputOffenceList)
+    assertTrue(markedUp[0].isSDSPlus)
   }
 }

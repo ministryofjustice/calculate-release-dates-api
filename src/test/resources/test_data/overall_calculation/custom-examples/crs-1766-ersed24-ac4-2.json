@@ -7,8 +7,7 @@
   "sentences": [
     {
       "offence": {
-        "committedAt": "2023-01-03",
-        "isPcscSds": true
+        "committedAt": "2023-01-03"
       },
       "duration": {
         "durationElements": {
@@ -22,8 +21,7 @@
     },
     {
       "offence": {
-        "committedAt": "2023-01-03",
-        "isPcscSdsPlus": true
+        "committedAt": "2023-01-03"
       },
       "duration": {
         "durationElements": {

@@ -9,10 +9,7 @@
       "offence": {
         "committedAt": "2020-07-18",
         "offenceCode": "OF61014",
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false,
-        "isPcscSec250": false,
-        "isPcscSdsPlus": false
+        "isScheduleFifteen": false
       },
       "duration": {
         "durationElements": {

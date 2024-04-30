@@ -84,7 +84,7 @@ class CalculationUserInputIntTest : IntegrationTestBase() {
     assertThat(dbRequest.calculationRequestUserInput!!.calculateErsed).isTrue
     assertThat(dbRequest.calculationRequestUserInput!!.useOffenceIndicators).isFalse
     assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs).isNotEmpty
-    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].nomisMatches).isFalse
+    assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].nomisMatches).isTrue
     assertThat(dbRequest.calculationRequestUserInput!!.calculationRequestSentenceUserInputs[0].userChoice).isFalse
   }
 

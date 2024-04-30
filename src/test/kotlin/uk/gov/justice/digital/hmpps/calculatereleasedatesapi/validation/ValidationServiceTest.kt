@@ -1988,7 +1988,6 @@ class ValidationServiceTest {
       duration = FIVE_YEAR_DURATION,
       offence = Offence(
         committedAt = FIRST_JAN_2015,
-        isScheduleFifteenMaximumLife = true,
         offenceCode = OFFENCE_CODE,
       ),
       identifier = UUID.nameUUIDFromBytes(("$COMPANION_BOOKING_ID-$SEQUENCE").toByteArray()),

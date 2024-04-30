@@ -29,11 +29,7 @@
       "offence": {
         "committedAt": "2020-09-21",
         "offenceCode": "OF61016",
-        "isScheduleFifteen": true,
-        "isScheduleFifteenMaximumLife": true,
-        "isPcscSds": true,
-        "isPcscSec250": true,
-        "isPcscSdsPlus": true
+        "isScheduleFifteen": true
       },
       "duration": {
         "durationElements": {
@@ -74,11 +70,7 @@
       "offence": {
         "committedAt": "2020-10-20",
         "offenceCode": "OF61102",
-        "isScheduleFifteen": true,
-        "isScheduleFifteenMaximumLife": true,
-        "isPcscSds": true,
-        "isPcscSec250": true,
-        "isPcscSdsPlus": true
+        "isScheduleFifteen": true
       },
       "duration": {
         "durationElements": {

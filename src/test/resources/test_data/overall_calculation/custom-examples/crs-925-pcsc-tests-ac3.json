@@ -6,8 +6,7 @@
   "sentences": [
     {
       "offence": {
-        "committedAt": "2020-03-28",
-        "isScheduleFifteenMaximumLife": true
+        "committedAt": "2020-03-28"
       },
       "duration": {
         "durationElements": {
@@ -20,8 +19,7 @@
     },
     {
       "offence": {
-        "committedAt": "2020-03-28",
-        "isPcscSdsPlus": true
+        "committedAt": "2020-03-28"
       },
       "duration": {
         "durationElements": {
