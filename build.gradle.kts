@@ -46,7 +46,7 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
   implementation("io.arrow-kt:arrow-core:1.2.4")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.7.4")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.7.5")
 
   // OpenAPI
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
