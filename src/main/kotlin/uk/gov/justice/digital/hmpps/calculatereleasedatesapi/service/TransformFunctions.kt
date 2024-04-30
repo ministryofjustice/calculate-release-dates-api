@@ -111,7 +111,7 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.UUID
+import java.util.*
 
 /*
 ** Functions which transform entities objects into their model equivalents.
@@ -167,7 +167,6 @@ fun transform(
         lineSequence = sentence.lineSequence,
         caseReference = sentence.caseReference,
         recallType = sentenceCalculationType.recallType,
-        section250 = sentenceCalculationType == SentenceCalculationType.SEC250 || sentenceCalculationType == SentenceCalculationType.SEC250_ORA,
         isSDSPlus = sentence.isSDSPlus,
       )
     } else if (sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
