@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PcscMarkers
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.time.LocalDate
@@ -30,8 +29,6 @@ class OffenceSdsPlusLookupServiceTest {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListAMarkers))
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(sentencedAfterSDSPlusBeforePCSCLongerThan7Years)
     assertTrue(returnedResult.filter { it.isSDSPlus }.size == 1)
-    assertTrue(returnedResult[0].offence.isPcscSdsPlus)
-    assertTrue(returnedResult[0].offence.isScheduleFifteenMaximumLife)
     assertTrue(returnedResult[0].isSDSPlus)
   }
 
@@ -39,7 +36,6 @@ class OffenceSdsPlusLookupServiceTest {
   fun `SDS+ Marker set for ADIMP Over 7 Years after PCSC and List D marker returned`() {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListDMarkers))
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(sentencedADIMPAfterPCSCLongerThan7Years)
-    assertTrue(returnedResult[0].offence.isPcscSdsPlus)
     assertTrue(returnedResult[0].isSDSPlus)
   }
 
@@ -47,8 +43,6 @@ class OffenceSdsPlusLookupServiceTest {
   fun `SDS+ Marker set for YOI_ORA 4 to 7 years after PCSC and List B Marker returned`() {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListBMarkers))
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(sentencedYOIORAAfterPCSCLonger4To7Years)
-    assertTrue(returnedResult[0].offence.isPcscSdsPlus)
-    assertTrue(returnedResult[0].offence.isPcscSds)
     assertTrue(returnedResult[0].isSDSPlus)
   }
 
@@ -56,8 +50,6 @@ class OffenceSdsPlusLookupServiceTest {
   fun `SDS+ Marker set for SEC_250 Over 7 Years After PCSC and List C marker returned`() {
     whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListCMarkers))
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(section250Over7YearsPostPCSCSentence)
-    assertTrue(returnedResult[0].offence.isPcscSdsPlus)
-    assertTrue(returnedResult[0].offence.isPcscSec250)
     assertTrue(returnedResult[0].isSDSPlus)
   }
 
@@ -68,8 +60,6 @@ class OffenceSdsPlusLookupServiceTest {
     // no call to MO should take place as offences don't match filter.
     verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(section250Over7YearsPrePCSCSentence)
-    assertFalse(returnedResult[0].offence.isPcscSdsPlus)
-    assertFalse(returnedResult[0].offence.isPcscSec250)
     assertFalse(returnedResult[0].isSDSPlus)
   }
 
@@ -78,8 +68,6 @@ class OffenceSdsPlusLookupServiceTest {
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(sentenceMatchesNoMatchingOffencesDueToSentenceDate)
     // no call to MO should take place as offences don't match filter.
     verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
-    assertFalse(returnedResult[0].offence.isPcscSdsPlus)
-    assertFalse(returnedResult[0].offence.isPcscSec250)
     assertFalse(returnedResult[0].isSDSPlus)
   }
 
@@ -324,160 +312,6 @@ class OffenceSdsPlusLookupServiceTest {
         null,
         null,
         null,
-      ),
-    )
-
-    private val sentenceMatchesSDSCriteriaTwoOffences = listOf(
-      PrisonApiSentenceAndOffences(
-        1,
-        1,
-        1,
-        1,
-        null,
-        "TEST",
-        "TEST",
-        SentenceCalculationType.ADIMP.toString(),
-        "TEST",
-        LocalDate.of(2020, 4, 2),
-        listOf(SentenceTerms(4, 1, 1, 1)),
-        listOf(
-          OffenderOffence(
-            1,
-            LocalDate.of(2020, 4, 1),
-            null,
-            "A123456",
-            "TEST OFFENCE 1",
-          ),
-          OffenderOffence(
-            1,
-            LocalDate.of(2020, 4, 1),
-            null,
-            "A000000",
-            "TEST OFFENCE 2",
-          ),
-        ),
-      ),
-    )
-
-    private val multipleSentencesMatchesSDSCriteriaMultipleOffences = listOf(
-      PrisonApiSentenceAndOffences(
-        1,
-        1,
-        1,
-        1,
-        null,
-        "TEST",
-        "TEST",
-        SentenceCalculationType.ADIMP.toString(),
-        "TEST",
-        LocalDate.of(2020, 4, 2),
-        listOf(SentenceTerms(4, 1, 1, 1)),
-        listOf(
-          OffenderOffence(
-            1,
-            LocalDate.of(2020, 4, 1),
-            null,
-            "A123456",
-            "TEST OFFENCE 1",
-          ),
-          OffenderOffence(
-            1,
-            LocalDate.of(2020, 4, 1),
-            null,
-            "A000000",
-            "TEST OFFENCE 2",
-          ),
-        ),
-      ),
-      PrisonApiSentenceAndOffences(
-        1,
-        1,
-        1,
-        1,
-        null,
-        "TEST",
-        "TEST",
-        SentenceCalculationType.SEC250.toString(),
-        "TEST",
-        LocalDate.of(2020, 4, 2),
-        listOf(SentenceTerms(4, 1, 1, 1)),
-        listOf(
-          OffenderOffence(
-            1,
-            LocalDate.of(2020, 4, 1),
-            null,
-            "A111111",
-            "TEST OFFENCE 1",
-          ),
-          OffenderOffence(
-            1,
-            LocalDate.of(2020, 4, 1),
-            null,
-            "A22222",
-            "TEST OFFENCE 2",
-          ),
-        ),
-      ),
-    )
-
-    private val oneSentencesMatchesSDSCriteriaOneDoesNotMatchOnDateMultipleOffences = listOf(
-      PrisonApiSentenceAndOffences(
-        1,
-        1,
-        1,
-        1,
-        null,
-        "TEST",
-        "TEST",
-        SentenceCalculationType.YOI_ORA.toString(),
-        "TEST",
-        LocalDate.of(2020, 3, 31),
-        listOf(SentenceTerms(4, 1, 1, 1)),
-        listOf(
-          OffenderOffence(
-            1,
-            LocalDate.of(2020, 4, 1),
-            null,
-            "A123456",
-            "TEST OFFENCE 1",
-          ),
-          OffenderOffence(
-            1,
-            LocalDate.of(2020, 4, 1),
-            null,
-            "A000000",
-            "TEST OFFENCE 2",
-          ),
-        ),
-      ),
-      PrisonApiSentenceAndOffences(
-        1,
-        1,
-        1,
-        1,
-        null,
-        "TEST",
-        "TEST",
-        SentenceCalculationType.ADIMP.toString(),
-        "TEST",
-        LocalDate.of(2020, 4, 2),
-        listOf(SentenceTerms(12, 1, 1, 1)),
-        listOf(
-          OffenderOffence(
-            1,
-            LocalDate.of(2020, 4, 1),
-            null,
-            "A111111",
-            "TEST OFFENCE 1",
-          ),
-          OffenderOffence(
-            1,
-            LocalDate.of(2020, 4, 1),
-            null,
-            "A22222",
-            "TEST OFFENCE 2",
-          ),
-        ),
       ),
     )
 

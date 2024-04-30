@@ -71,7 +71,6 @@ class TransformFunctionsTest {
       offenceEndDate = SECOND_JAN_2015,
       offenceCode = "RR1",
       offenceDescription = "Littering",
-      indicators = listOf(OffenderOffence.SCHEDULE_15_LIFE_INDICATOR),
     )
     val request = SentenceAndOffenceWithReleaseArrangements(
       PrisonApiSentenceAndOffences(
