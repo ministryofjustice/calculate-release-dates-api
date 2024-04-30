@@ -6,8 +6,7 @@
   "sentences":[
     {
       "offence":{
-        "committedAt":"1960-09-15",
-        "isScheduleFifteenMaximumLife":true
+        "committedAt":"1960-09-15"
       },
       "duration":{
         "durationElements":{
@@ -23,8 +22,7 @@
     },
     {
       "offence":{
-        "committedAt":"1969-09-15",
-        "isScheduleFifteenMaximumLife":true
+        "committedAt":"1969-09-15"
       },
       "duration":{
         "durationElements":{

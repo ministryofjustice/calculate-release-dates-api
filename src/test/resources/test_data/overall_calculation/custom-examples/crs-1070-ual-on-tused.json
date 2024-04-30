@@ -9,13 +9,9 @@
     {
       "type":"StandardSentence",
       "offence":{
-        "isPcscSds":false,
         "committedAt":"2021-05-31",
         "offenceCode":"COML002",
-        "isPcscSec250":false,
-        "isPcscSdsPlus":false,
-        "isScheduleFifteen":false,
-        "isScheduleFifteenMaximumLife":false
+        "isScheduleFifteen":false
       },
       "duration":{
         "durationElements":{
@@ -27,7 +23,6 @@
       },
       "identifier":"f36bc182-5c02-3cc3-a4bf-df55a1a41fb4",
       "recallType":"STANDARD_RECALL",
-      "section250":false,
       "sentencedAt":"2022-02-24",
       "caseSequence":1,
       "lineSequence":1,
@@ -38,13 +33,9 @@
     {
       "type":"StandardSentence",
       "offence":{
-        "isPcscSds":false,
         "committedAt":"2021-05-31",
         "offenceCode":"PC53001",
-        "isPcscSec250":false,
-        "isPcscSdsPlus":false,
-        "isScheduleFifteen":false,
-        "isScheduleFifteenMaximumLife":false
+        "isScheduleFifteen":false
       },
       "duration":{
         "durationElements":{
@@ -56,7 +47,6 @@
       },
       "identifier":"75833df9-a090-3648-b54f-9ab3b6133f95",
       "recallType":"STANDARD_RECALL",
-      "section250":false,
       "sentencedAt":"2022-02-24",
       "caseSequence":1,
       "lineSequence":2,
@@ -68,13 +58,9 @@
     {
       "type":"AFineSentence",
       "offence":{
-        "isPcscSds":false,
         "committedAt":"2022-04-25",
         "offenceCode":"TH68010",
-        "isPcscSec250":false,
-        "isPcscSdsPlus":false,
-        "isScheduleFifteen":false,
-        "isScheduleFifteenMaximumLife":false
+        "isScheduleFifteen":false
       },
       "duration":{
         "durationElements":{
@@ -97,13 +83,9 @@
     {
       "type":"AFineSentence",
       "offence":{
-        "isPcscSds":false,
         "committedAt":"2022-04-25",
         "offenceCode":"TH68010A",
-        "isPcscSec250":false,
-        "isPcscSdsPlus":false,
-        "isScheduleFifteen":false,
-        "isScheduleFifteenMaximumLife":false
+        "isScheduleFifteen":false
       },
       "duration":{
         "durationElements":{
@@ -126,13 +108,9 @@
     {
       "type":"AFineSentence",
       "offence":{
-        "isPcscSds":false,
         "committedAt":"2022-04-25",
         "offenceCode":"TH68026",
-        "isPcscSec250":false,
-        "isPcscSdsPlus":false,
-        "isScheduleFifteen":false,
-        "isScheduleFifteenMaximumLife":false
+        "isScheduleFifteen":false
       },
       "duration":{
         "durationElements":{
@@ -155,13 +133,9 @@
     {
       "type":"AFineSentence",
       "offence":{
-        "isPcscSds":false,
         "committedAt":"2022-04-25",
         "offenceCode":"TH68010",
-        "isPcscSec250":false,
-        "isPcscSdsPlus":false,
-        "isScheduleFifteen":false,
-        "isScheduleFifteenMaximumLife":false
+        "isScheduleFifteen":false
       },
       "duration":{
         "durationElements":{
@@ -184,13 +158,9 @@
     {
       "type":"AFineSentence",
       "offence":{
-        "isPcscSds":false,
         "committedAt":"2022-04-25",
         "offenceCode":"MD71211",
-        "isPcscSec250":false,
-        "isPcscSdsPlus":false,
-        "isScheduleFifteen":false,
-        "isScheduleFifteenMaximumLife":false
+        "isScheduleFifteen":false
       },
       "duration":{
         "durationElements":{
@@ -213,13 +183,9 @@
     {
       "type":"AFineSentence",
       "offence":{
-        "isPcscSds":false,
         "committedAt":"2022-04-25",
         "offenceCode":"PU86004",
-        "isPcscSec250":false,
-        "isPcscSdsPlus":false,
-        "isScheduleFifteen":false,
-        "isScheduleFifteenMaximumLife":false
+        "isScheduleFifteen":false
       },
       "duration":{
         "durationElements":{
@@ -242,13 +208,9 @@
     {
       "type":"AFineSentence",
       "offence":{
-        "isPcscSds":false,
         "committedAt":"2022-04-25",
         "offenceCode":"CJ88116",
-        "isPcscSec250":false,
-        "isPcscSdsPlus":false,
-        "isScheduleFifteen":false,
-        "isScheduleFifteenMaximumLife":false
+        "isScheduleFifteen":false
       },
       "duration":{
         "durationElements":{
@@ -271,13 +233,9 @@
     {
       "type":"AFineSentence",
       "offence":{
-        "isPcscSds":false,
         "committedAt":"2022-04-25",
         "offenceCode":"CD71040",
-        "isPcscSec250":false,
-        "isPcscSdsPlus":false,
-        "isScheduleFifteen":false,
-        "isScheduleFifteenMaximumLife":false
+        "isScheduleFifteen":false
       },
       "duration":{
         "durationElements":{
@@ -300,13 +258,9 @@
     {
       "type":"AFineSentence",
       "offence":{
-        "isPcscSds":false,
         "committedAt":"2022-04-25",
         "offenceCode":"CA81001",
-        "isPcscSec250":false,
-        "isPcscSdsPlus":false,
-        "isScheduleFifteen":false,
-        "isScheduleFifteenMaximumLife":false
+        "isScheduleFifteen":false
       },
       "duration":{
         "durationElements":{

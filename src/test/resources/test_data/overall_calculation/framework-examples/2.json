@@ -6,8 +6,7 @@
   "sentences": [
     {
       "offence": {
-        "committedAt": "2024-05-09",
-        "isPcscSdsPlus": true
+        "committedAt": "2024-05-09"
       },
       "duration": {
         "durationElements": {

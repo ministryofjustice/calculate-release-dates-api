@@ -9,8 +9,7 @@
     {
       "offence": {
         "committedAt": "2022-01-26",
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "isScheduleFifteen": false
       },
       "duration": {
         "durationElements": {
@@ -29,8 +28,7 @@
     {
       "offence": {
         "committedAt": "2021-09-14",
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "isScheduleFifteen": false
       },
       "duration": {
         "durationElements": {
@@ -47,8 +45,7 @@
     {
       "offence": {
         "committedAt": "2021-09-17",
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "isScheduleFifteen": false
       },
       "duration": {
         "durationElements": {
@@ -67,8 +64,7 @@
     {
       "offence": {
         "committedAt": "2021-09-23",
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "isScheduleFifteen": false
       },
       "duration": {
         "durationElements": {
@@ -87,8 +83,7 @@
     {
       "offence": {
         "committedAt": "2021-09-25",
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "isScheduleFifteen": false
       },
       "duration": {
         "durationElements": {
@@ -107,8 +102,7 @@
     {
       "offence": {
         "committedAt": "2021-10-01",
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "isScheduleFifteen": false
       },
       "duration": {
         "durationElements": {
@@ -127,8 +121,7 @@
     {
       "offence": {
         "committedAt": "2021-10-03",
-        "isScheduleFifteen": false,
-        "isScheduleFifteenMaximumLife": false
+        "isScheduleFifteen": false
       },
       "duration": {
         "durationElements": {

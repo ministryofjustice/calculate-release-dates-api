@@ -7,8 +7,7 @@
   "sentences":[
     {
       "offence":{
-        "committedAt":"2021-02-10",
-        "isScheduleFifteenMaximumLife": true
+        "committedAt":"2021-02-10"
       },
       "duration":{
         "durationElements":{

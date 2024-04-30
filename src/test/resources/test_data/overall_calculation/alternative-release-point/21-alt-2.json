@@ -10,11 +10,7 @@
       "offence": {
         "committedAt": "2022-03-13",
         "offenceCode": "OF61102",
-        "isScheduleFifteen": true,
-        "isScheduleFifteenMaximumLife": true,
-        "isPcscSds": true,
-        "isPcscSec250": true,
-        "isPcscSdsPlus": true
+        "isScheduleFifteen": true
       },
       "duration": {
         "durationElements": {
@@ -34,11 +30,7 @@
       "offence": {
         "committedAt": "2021-06-24",
         "offenceCode": "OF61102",
-        "isScheduleFifteen": true,
-        "isScheduleFifteenMaximumLife": true,
-        "isPcscSds": true,
-        "isPcscSec250": true,
-        "isPcscSdsPlus": true
+        "isScheduleFifteen": true
       },
       "duration": {
         "durationElements": {
@@ -58,11 +50,7 @@
       "offence": {
         "committedAt": "2022-04-02",
         "offenceCode": "OF61016",
-        "isScheduleFifteen": true,
-        "isScheduleFifteenMaximumLife": true,
-        "isPcscSds": true,
-        "isPcscSec250": true,
-        "isPcscSdsPlus": true
+        "isScheduleFifteen": true
       },
       "duration": {
         "durationElements": {
