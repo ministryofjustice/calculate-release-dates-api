@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
@@ -20,59 +19,34 @@ class OffenceSdsPlusLookupService(
 
   /**
    * Queries MO against Sentences of type and duration that could fit the SDS+ criteria.
-   * Sets the [OffenderOffence.PCSC_SDS_PLUS] indicators if it falls under SDS+.
+   * Sets the [SentenceAndOffenceWithReleaseArrangements.isSDSPlus] indicator if it falls under SDS+.
    *
    * @param sentencesAndOffences - A list of [SentenceAndOffence] to process for SDS+
    * @return matchingSentenceMap - A list of [SentenceAndOffenceWithReleaseArrangements] with SDS+ markers set
    */
   fun populateSdsPlusMarkerForOffences(sentencesAndOffences: List<SentenceAndOffence>): List<SentenceAndOffenceWithReleaseArrangements> {
     log.info("Checking ${sentencesAndOffences.size} sentences for SDS+")
-    val bookingIdToSentences = getMatchingSentencesToBookingId(sentencesAndOffences)
-    val offencesToCheck = getOffenceCodesToCheckWithMO(bookingIdToSentences)
-    val bookingToSentenceOffenceMap = mutableMapOf<Long, List<SentenceAndOffence>>()
-
-    if (offencesToCheck.isNotEmpty()) {
-      val moCheckResponses = manageOffencesService.getPcscMarkersForOffenceCodes(*offencesToCheck.toTypedArray()).associateBy { it.offenceCode }
-
-      bookingIdToSentences.forEach {
-        it.value
-          .filter { sentenceAndOffence -> sentenceAndOffence.offence.offenceCode in offencesToCheck }
-          .filter { sentenceAndOffence ->
-            val offenderOffence = sentenceAndOffence.offence
-            val moResponseForOffence = moCheckResponses[offenderOffence.offenceCode]
-            val sentenceIsAfterPcsc = sentencedAfterPcsc(sentenceAndOffence)
-            val sentenceCalculationType = SentenceCalculationType.from(sentenceAndOffence.sentenceCalculationType)
-            val sevenYearsOrMore = sevenYearsOrMore(sentenceAndOffence)
-            checkIsSDSPlus(
-              sentenceCalculationType,
-              sentenceAndOffence,
-              sevenYearsOrMore,
-              moResponseForOffence,
-              sentenceIsAfterPcsc,
-            )
-          }
-          .forEach { sentenceAndOffence ->
-            if (bookingToSentenceOffenceMap.contains(sentenceAndOffence.bookingId)) {
-              bookingToSentenceOffenceMap[sentenceAndOffence.bookingId]?.plus(sentenceAndOffence)
-            } else {
-              bookingToSentenceOffenceMap[sentenceAndOffence.bookingId] = listOf(sentenceAndOffence)
-            }
-          }
+    val offencesToCheck = getMatchingSentenceOffenceCodes(sentencesAndOffences)
+    val moCheckResponses = if (offencesToCheck.isNotEmpty()) manageOffencesService.getPcscMarkersForOffenceCodes(*offencesToCheck.toTypedArray()).associateBy { it.offenceCode } else emptyMap()
+    return sentencesAndOffences.map { sentencesAndOffence ->
+      if (sentencesAndOffence.offence.offenceCode in offencesToCheck && checkIsSDSPlus(sentencesAndOffence, moCheckResponses)) {
+        SentenceAndOffenceWithReleaseArrangements(sentencesAndOffence, true)
+      } else {
+        SentenceAndOffenceWithReleaseArrangements(sentencesAndOffence, false)
       }
     }
-    val sentencesWithSDSPlus = bookingToSentenceOffenceMap.map { it.value }.flatten()
-    return sentencesAndOffences.map { SentenceAndOffenceWithReleaseArrangements(it, it in sentencesWithSDSPlus) }
   }
 
   private fun checkIsSDSPlus(
-    sentenceCalculationType: SentenceCalculationType,
     sentenceAndOffence: SentenceAndOffence,
-    sevenYearsOrMore: Boolean,
-    moResponseForOffence: OffencePcscMarkers?,
-    sentenceIsAfterPcsc: Boolean,
+    moCheckResponses: Map<String, OffencePcscMarkers>,
   ): Boolean {
+    val moResponseForOffence = moCheckResponses[sentenceAndOffence.offence.offenceCode]
+    val sentenceIsAfterPcsc = sentencedAfterPcsc(sentenceAndOffence)
+    val sentenceCalculationType = SentenceCalculationType.from(sentenceAndOffence.sentenceCalculationType)
+    val sevenYearsOrMore = sevenYearsOrMore(sentenceAndOffence)
     var sdsPlusIdentified = false
-    if (sentenceCalculationType in SDS_AND_DYOI_POST_PCSC_CALC_TYPES    ) {
+    if (sentenceCalculationType in SDS_AND_DYOI_POST_PCSC_CALC_TYPES) {
       if (sentencedWithinOriginalSdsPlusWindow(sentenceAndOffence) && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListA == true) {
         sdsPlusIdentified = true
       } else if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListD == true) {
@@ -88,15 +62,8 @@ class OffenceSdsPlusLookupService(
     return sdsPlusIdentified
   }
 
-  fun getOffenceCodesToCheckWithMO(bookingIdToSentences: Map<Long, List<SentenceAndOffence>>): List<String> {
-    val offencesToCheck = bookingIdToSentences.map { (_, sentenceAndOffences) ->
-      sentenceAndOffences.map { it.offence.offenceCode }
-    }.flatten().distinct()
-    return offencesToCheck
-  }
-
-  fun getMatchingSentencesToBookingId(sentencesAndOffences: List<SentenceAndOffence>): Map<Long, List<SentenceAndOffence>> {
-    val bookingIdToSentences = sentencesAndOffences
+  private fun getMatchingSentenceOffenceCodes(sentencesAndOffences: List<SentenceAndOffence>): List<String> {
+    return sentencesAndOffences
       .filter { SentenceCalculationType.isSupported(it.sentenceCalculationType) }
       .filter { sentenceAndOffences ->
         val sentenceCalculationType = SentenceCalculationType.from(sentenceAndOffences.sentenceCalculationType)
@@ -115,11 +82,8 @@ class OffenceSdsPlusLookupService(
         } else if (sentenceCalculationType in S250_POST_PCSC_CALC_TYPES && sentenceIsAfterPcsc && sevenYearsOrMore) {
           matchFilter = true
         }
-
         matchFilter
-      }
-      .groupBy { it.bookingId }
-    return bookingIdToSentences
+      }.map { it.offence.offenceCode }
   }
 
   private fun sentencedAfterPcsc(sentence: SentenceAndOffence): Boolean {

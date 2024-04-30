@@ -10,13 +10,5 @@ data class OffenderOffence(
   val offenceEndDate: LocalDate? = null,
   val offenceCode: String,
   val offenceDescription: String,
-  var indicators: List<String> = listOf(),
-) {
-
-  companion object {
-    const val SCHEDULE_15_LIFE_INDICATOR = "SCH15/CJIB/L"
-    const val PCSC_SDS = "PCSC/SDS"
-    const val PCSC_SEC250 = "PCSC/SEC250"
-    const val PCSC_SDS_PLUS = "PCSC/SDS+"
-  }
-}
+  val indicators: List<String> = emptyList(),
+)
