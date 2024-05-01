@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import jakarta.persistence.EntityNotFoundException
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -29,14 +30,18 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Discre
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancySubCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
@@ -47,7 +52,8 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
-class ComparisonServiceTest : IntegrationTestBase() {
+class ComparisonServiceTest {
+  private val objectMapper = TestUtil.objectMapper()
   private val prisonService = mock<PrisonService>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val comparisonRepository = mock<ComparisonRepository>()
@@ -66,7 +72,7 @@ class ComparisonServiceTest : IntegrationTestBase() {
     comparisonPersonDiscrepancyRepository,
     bulkComparisonService,
     calculationTransactionalService,
-    TestUtil.objectMapper(),
+    objectMapper,
   )
 
   @BeforeEach
@@ -655,6 +661,79 @@ class ComparisonServiceTest : IntegrationTestBase() {
 
     verify(bulkComparisonService).createDiscrepancy(any(), any(), any())
     assertEquals(discrepancySummary, returnedSummary)
+  }
+
+  @Test
+  fun `get a comparison person with SDS+ sentences`() {
+    val emptyObjectNode = objectMapper.createObjectNode()
+    val sdsPlusSentence = SentenceAndOffenceWithReleaseArrangements(
+      bookingId = 1L,
+      sentenceSequence = 3,
+      consecutiveToSequence = null,
+      lineSequence = 2,
+      caseSequence = 1,
+      sentenceDate = ImportantDates.PCSC_COMMENCEMENT_DATE.minusDays(1),
+      terms = listOf(
+        SentenceTerms(years = 8),
+      ),
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceTypeDescription = "ADMIP",
+      offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP_ORA", "description", listOf("A")),
+      caseReference = null,
+      courtDescription = null,
+      fineAmount = null,
+      isSDSPlus = true,
+    )
+    val person = ComparisonPerson(
+      1,
+      1,
+      person = "foo",
+      lastName = "Smith",
+      latestBookingId = 25,
+      isMatch = false,
+      isValid = true,
+      mismatchType = MismatchType.RELEASE_DATES_MISMATCH,
+      validationMessages = objectMapper.valueToTree(emptyList<ValidationMessage>()),
+      calculatedByUsername = BulkComparisonServiceTest.USERNAME,
+      nomisDates = emptyObjectNode,
+      overrideDates = emptyObjectNode,
+      breakdownByReleaseDateType = emptyObjectNode,
+      sdsPlusSentencesIdentified = objectMapper.valueToTree(listOf(sdsPlusSentence)),
+      establishment = "BMI",
+    )
+    val comparison = Comparison(
+      calculatedByUsername = ManualComparisonServiceTest.USERNAME,
+      comparisonStatus = ComparisonStatus(ComparisonStatusValue.COMPLETED),
+      comparisonType = ComparisonType.ESTABLISHMENT_FULL,
+      criteria = emptyObjectNode,
+      prison = "all",
+    )
+    whenever(comparisonRepository.findByComparisonShortReference(any())).thenReturn(comparison)
+    whenever(comparisonPersonRepository.findByComparisonIdAndShortReference(any(), any())).thenReturn(person)
+    whenever(comparisonPersonDiscrepancyRepository.existsByComparisonPerson(any())).thenReturn(false)
+    val result = comparisonService.getComparisonPersonByShortReference("ABCD1234", "FOO")
+    assertThat(result).isEqualTo(
+      ComparisonPersonOverview(
+        personId = "foo",
+        lastName = "Smith",
+        isValid = true,
+        isMatch = false,
+        hasDiscrepancyRecord = false,
+        mismatchType = MismatchType.RELEASE_DATES_MISMATCH,
+        isActiveSexOffender = null,
+        validationMessages = emptyList(),
+        shortReference = person.shortReference,
+        bookingId = 25,
+        calculatedAt = person.calculatedAt,
+        crdsDates = emptyMap(),
+        nomisDates = emptyMap(),
+        overrideDates = emptyMap(),
+        breakdownByReleaseDateType = emptyMap(),
+        sdsSentencesIdentified = listOf(sdsPlusSentence),
+      ),
+    )
   }
 
   private fun aComparison() = Comparison(
