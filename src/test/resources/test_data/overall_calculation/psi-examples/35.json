@@ -6,8 +6,7 @@
   "sentences": [
     {
       "offence": {
-        "committedAt": "2005-01-01",
-        "isScheduleFifteen": true
+        "committedAt": "2005-01-01"
       },
       "duration": {
         "durationElements": {
