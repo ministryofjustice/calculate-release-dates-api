@@ -41,6 +41,7 @@ data class SentenceAndOffencesWithSDSPlus(
       this.courtDescription,
       this.fineAmount,
       this.isSDSPlus,
+      SDSEarlyReleaseExclusionType.NO,
     )
   }
 }

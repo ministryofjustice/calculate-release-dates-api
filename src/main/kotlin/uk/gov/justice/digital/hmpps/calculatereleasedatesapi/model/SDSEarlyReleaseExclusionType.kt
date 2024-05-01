@@ -1,0 +1,23 @@
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
+
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+
+@JsonDeserialize(using = SDSEarlyReleaseExclusionTypeDeserializer::class)
+enum class SDSEarlyReleaseExclusionType {
+  SEXUAL,
+  VIOLENT,
+  NO,
+}
+
+class SDSEarlyReleaseExclusionTypeDeserializer : StdDeserializer<SDSEarlyReleaseExclusionType>(SDSEarlyReleaseExclusionType::class.java) {
+  override fun deserialize(jsonParser: JsonParser, ctxt: DeserializationContext): SDSEarlyReleaseExclusionType {
+    return SDSEarlyReleaseExclusionType.valueOf(jsonParser.valueAsString)
+  }
+
+  override fun getNullValue(ctxt: DeserializationContext): SDSEarlyReleaseExclusionType {
+    return SDSEarlyReleaseExclusionType.NO
+  }
+}
