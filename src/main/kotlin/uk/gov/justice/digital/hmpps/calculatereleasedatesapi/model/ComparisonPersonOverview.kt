@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -22,5 +21,5 @@ data class ComparisonPersonOverview(
   val nomisDates: Map<ReleaseDateType, LocalDate?>,
   val overrideDates: Map<ReleaseDateType, LocalDate?>,
   val breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
-  val sdsSentencesIdentified: List<SentenceAndOffence>,
+  val sdsSentencesIdentified: List<SentenceAndOffenceWithReleaseArrangements>,
 )

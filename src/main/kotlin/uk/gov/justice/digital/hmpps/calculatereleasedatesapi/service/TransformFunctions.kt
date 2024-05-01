@@ -763,7 +763,7 @@ fun transform(
   calculatedReleaseDates: CalculatedReleaseDates?,
   overrideDates: Map<ReleaseDateType, LocalDate?>,
   breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
-  sdsSentencesIdentified: List<SentenceAndOffence>,
+  sdsSentencesIdentified: List<SentenceAndOffenceWithReleaseArrangements>,
   hasDiscrepancyRecorded: Boolean,
   objectMapper: ObjectMapper,
 ): ComparisonPersonOverview = ComparisonPersonOverview(
