@@ -31,11 +31,20 @@ class OffenceSdsPlusLookupService(
     return sentencesAndOffences.map { sentencesAndOffence ->
       if (sentencesAndOffence.offence.offenceCode in offencesToCheck && checkIsSDSPlus(sentencesAndOffence, moCheckResponses)) {
         SentenceAndOffenceWithReleaseArrangements(sentencesAndOffence, true)
+      } else if (isForOffenceThatIsNowOnListDButUsedOldOffenceCode(sentencesAndOffence)) {
+        SentenceAndOffenceWithReleaseArrangements(sentencesAndOffence, true)
       } else {
         SentenceAndOffenceWithReleaseArrangements(sentencesAndOffence, false)
       }
     }
   }
+
+  private fun isForOffenceThatIsNowOnListDButUsedOldOffenceCode(sentenceAndOffence: SentenceAndOffence): Boolean =
+    SentenceCalculationType.isSupported(sentenceAndOffence.sentenceCalculationType) &&
+      SentenceCalculationType.from(sentenceAndOffence.sentenceCalculationType) in SDS_AND_DYOI_POST_PCSC_CALC_TYPES &&
+      sentenceAndOffence.offence.offenceCode in LEGACY_OFFENCE_CODES_FOR_OFFENCES_ON_LIST_D &&
+      sevenYearsOrMore(sentenceAndOffence) &&
+      sentencedAfterPcsc(sentenceAndOffence)
 
   private fun checkIsSDSPlus(
     sentenceAndOffence: SentenceAndOffence,
@@ -133,5 +142,30 @@ class OffenceSdsPlusLookupService(
       SentenceCalculationType.SEC250,
       SentenceCalculationType.SEC250_ORA,
     )
+
+    private val LEGACY_OFFENCE_CODES_FOR_OFFENCES_ON_LIST_D = listOf(
+      "DV04001",
+      "RT88001",
+      "RT88500",
+      "RT88527",
+      "RT88338",
+      "RT88583",
+      "RA88043",
+      "RT88337",
+      "RT88554",
+      "RT88029",
+      "RT88502",
+      "RT88028",
+      "RT88027",
+      "RT88579",
+    ).flatMap { offenceCodeWithoutSuffix ->
+      listOf(
+        offenceCodeWithoutSuffix,
+        "${offenceCodeWithoutSuffix}A",
+        "${offenceCodeWithoutSuffix}B",
+        "${offenceCodeWithoutSuffix}C",
+        "${offenceCodeWithoutSuffix}I",
+      )
+    }
   }
 }
