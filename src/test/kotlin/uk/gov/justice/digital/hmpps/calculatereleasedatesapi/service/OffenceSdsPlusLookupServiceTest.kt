@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -156,6 +157,141 @@ class OffenceSdsPlusLookupServiceTest {
     val returnedResult = underTest.populateSdsPlusMarkerForOffences(listOf(sentence))
     assertTrue(returnedResult.filter { it.isSDSPlus }.size == 1, "Failed for $name")
     assertTrue(returnedResult[0].isSDSPlus, "Failed for $name")
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    // sentence date
+    "DV04001,ADIMP,2022-06-28,7,true",
+    "DV04001,ADIMP,2022-06-29,7,true",
+    "DV04001,ADIMP,2022-06-27,7,false",
+    // sentence length
+    "DV04001,ADIMP,2022-06-28,8,true",
+    "DV04001,ADIMP,2022-06-28,6,false",
+    // sentence length and date mismatch
+    "DV04001,ADIMP,2022-06-27,6,false",
+    // code in list
+    "DV04001,ADIMP,2022-06-28,8,true",
+    "RT88001,ADIMP,2022-06-28,8,true",
+    "RT88500,ADIMP,2022-06-28,8,true",
+    "RT88527,ADIMP,2022-06-28,8,true",
+    "RT88338,ADIMP,2022-06-28,8,true",
+    "RT88583,ADIMP,2022-06-28,8,true",
+    "RA88043,ADIMP,2022-06-28,8,true",
+    "RT88337,ADIMP,2022-06-28,8,true",
+    "RT88554,ADIMP,2022-06-28,8,true",
+    "RT88029,ADIMP,2022-06-28,8,true",
+    "RT88502,ADIMP,2022-06-28,8,true",
+    "RT88028,ADIMP,2022-06-28,8,true",
+    "RT88027,ADIMP,2022-06-28,8,true",
+    "RT88579,ADIMP,2022-06-28,8,true",
+    "NOTSPECIAL,ADIMP,2022-06-28,8,false",
+    // sentence type
+    "DV04001,ADIMP,2022-06-29,7,true",
+    "DV04001,ADIMP_ORA,2022-06-29,7,true",
+    "DV04001,YOI,2022-06-29,7,true",
+    "DV04001,YOI_ORA,2022-06-29,7,true",
+    "DV04001,SEC250,2022-06-29,7,false",
+    "DV04001,SEC250_ORA,2022-06-29,7,false",
+    "DV04001,EDS21,2022-06-29,7,false",
+    // sentence type unsupported
+    "DV04001,A_FINE,2022-06-29,7,false",
+  )
+  fun `should mark old offence codes as SDS+ if the sentence is more than 7 years after PCSC date`(offenceCode: String, sentenceCalculationType: SentenceCalculationType, sentenceDate: LocalDate, sentenceLengthYears: Int, isSDSPlus: Boolean) {
+    val markers = OffencePcscMarkers(
+      offenceCode = offenceCode,
+      pcscMarkers = PcscMarkers(
+        inListA = false,
+        inListB = false,
+        inListC = false,
+        inListD = false,
+      ),
+    )
+    val sentence = NormalisedSentenceAndOffence(
+      1,
+      1,
+      1,
+      1,
+      null,
+      "TEST",
+      "TEST",
+      sentenceCalculationType.toString(),
+      "TEST",
+      sentenceDate,
+      listOf(SentenceTerms(sentenceLengthYears, 0, 0, 0)),
+      OffenderOffence(
+        1,
+        LocalDate.of(2020, 4, 1),
+        null,
+        offenceCode,
+        "TEST OFFENCE 2",
+      ),
+      null,
+      null,
+      null,
+    )
+    whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(markers))
+    val returnedResult = underTest.populateSdsPlusMarkerForOffences(listOf(sentence))
+    assertThat(returnedResult[0].isSDSPlus).describedAs("Expected isSDSPlus to be $isSDSPlus").isEqualTo(isSDSPlus)
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    "DV04001,true",
+    "RT88001,true",
+    "RT88500,true",
+    "RT88527,true",
+    "RT88338,true",
+    "RT88583,true",
+    "RA88043,true",
+    "RT88337,true",
+    "RT88554,true",
+    "RT88029,true",
+    "RT88502,true",
+    "RT88028,true",
+    "RT88027,true",
+    "RT88579,true",
+    "FOOOOOO,false",
+  )
+  fun `old offence codes also consider suffix variants A, B, C or I`(offenceCodeWithoutSuffix: String, isSDSPlus: Boolean) {
+    val offenceCodeWithSuffixes = listOf(offenceCodeWithoutSuffix, "${offenceCodeWithoutSuffix}A", "${offenceCodeWithoutSuffix}B", "${offenceCodeWithoutSuffix}C", "${offenceCodeWithoutSuffix}I")
+    offenceCodeWithSuffixes.forEach { offenceCode ->
+      val markers = OffencePcscMarkers(
+        offenceCode = offenceCode,
+        pcscMarkers = PcscMarkers(
+          inListA = false,
+          inListB = false,
+          inListC = false,
+          inListD = false,
+        ),
+      )
+      val sentence = NormalisedSentenceAndOffence(
+        1,
+        1,
+        1,
+        1,
+        null,
+        "TEST",
+        "TEST",
+        "ADIMP",
+        "TEST",
+        LocalDate.of(3033, 6, 28),
+        listOf(SentenceTerms(7, 0, 0, 0)),
+        OffenderOffence(
+          1,
+          LocalDate.of(2020, 4, 1),
+          null,
+          offenceCode,
+          "TEST OFFENCE 2",
+        ),
+        null,
+        null,
+        null,
+      )
+      whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(markers))
+      val returnedResult = underTest.populateSdsPlusMarkerForOffences(listOf(sentence))
+      assertThat(returnedResult[0].isSDSPlus).describedAs("Expected isSDSPlus to be $isSDSPlus for code $offenceCode").isEqualTo(isSDSPlus)
+    }
   }
 
   companion object {
