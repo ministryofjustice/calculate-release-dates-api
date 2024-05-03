@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import java.time.LocalDate
 
@@ -41,6 +42,7 @@ class PrisonApiDataVersions {
           null,
           0.toBigDecimal(),
           false,
+          SDSEarlyReleaseExclusionType.NO,
         )
       }
     }

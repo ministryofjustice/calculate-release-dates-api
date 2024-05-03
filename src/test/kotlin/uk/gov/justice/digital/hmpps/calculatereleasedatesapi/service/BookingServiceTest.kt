@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
@@ -80,6 +81,7 @@ class BookingServiceTest {
     ),
     offences[0],
     false,
+    SDSEarlyReleaseExclusionType.NO,
   )
   private val bookingAndSentenceAdjustment = BookingAndSentenceAdjustments(
     bookingAdjustments = listOf(

@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 @Service
 class PrisonService(
   private val prisonApiClient: PrisonApiClient,
-  private val offenceSdsPlusLookupService: OffenceSdsPlusLookupService,
+  private val offenceSDSReleaseArrangementLookupService: OffenceSDSReleaseArrangementLookupService,
 ) {
   //  The activeDataOnly flag is only used by a test endpoint (1000 calcs test, which is used to test historic data)
   fun getPrisonApiSourceData(prisonerId: String, activeDataOnly: Boolean = true): PrisonApiSourceData {
@@ -75,7 +75,7 @@ class PrisonService(
     val sentencesAndOffences = prisonApiClient.getSentencesAndOffences(bookingId)
       .flatMap { sentenceAndOffences -> sentenceAndOffences.offences.map { offence -> NormalisedSentenceAndOffence(sentenceAndOffences, offence) } }
       .filter { !filterActive || it.sentenceStatus == "A" }
-    return offenceSdsPlusLookupService.populateSdsPlusMarkerForOffences(sentencesAndOffences)
+    return offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(sentencesAndOffences)
   }
 
   fun postReleaseDates(bookingId: Long, updateOffenderDates: UpdateOffenderDates) {

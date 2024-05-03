@@ -520,7 +520,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       useOffenceIndicators = true,
     )
 
-    mockManageOffencesClient.withMOResponse(
+    mockManageOffencesClient.withPCSCMarkersResponse(
       OffencePcscMarkers(
         offenceCode = "TR68132",
         pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),

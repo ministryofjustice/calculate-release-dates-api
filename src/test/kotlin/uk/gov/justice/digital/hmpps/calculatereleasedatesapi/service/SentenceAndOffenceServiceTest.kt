@@ -11,6 +11,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
@@ -162,6 +163,7 @@ class SentenceAndOffenceServiceTest {
         courtDescription = null,
         consecutiveToSequence = null,
         isSDSPlus = false,
+        hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       )
     }
     val changedSentenceAndOffences = changedOffences.map {
@@ -189,6 +191,7 @@ class SentenceAndOffenceServiceTest {
         courtDescription = null,
         consecutiveToSequence = null,
         isSDSPlus = true,
+        hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       )
     }
   }
@@ -218,6 +221,7 @@ class SentenceAndOffenceServiceTest {
       courtDescription = null,
       consecutiveToSequence = null,
       isSDSPlus = true,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
   }
   val calculationRequest = CalculationRequest(sentenceAndOffences = objectToJson(listOf(sentenceAndOffences), jacksonObjectMapper().findAndRegisterModules()))

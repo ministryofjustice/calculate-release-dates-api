@@ -8,6 +8,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SDSEarlyReleaseExclusionForOffenceCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SDSEarlyReleaseExclusionSchedulePart
 
 class ManageOffencesServiceTest {
 
@@ -22,9 +24,21 @@ class ManageOffencesServiceTest {
     assertThat(listOf(dummyOffencePcscSomeMarkers)).isEqualTo(testResult)
   }
 
+  @Test
+  fun getSexualOrViolentForOffenceCodes() {
+    val moResult = listOf(
+      SDSEarlyReleaseExclusionForOffenceCode("SX01", SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
+      SDSEarlyReleaseExclusionForOffenceCode("V01", SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+      SDSEarlyReleaseExclusionForOffenceCode("N01", SDSEarlyReleaseExclusionSchedulePart.NO),
+    )
+    whenever(mockManageOffencesApiClient.getSexualOrViolentForOffenceCodes(listOf("SX01", "V01", "N01"))).thenReturn(moResult)
+    val testResult = underTest.getSexualOrViolentForOffenceCodes(listOf("SX01", "V01", "N01"))
+    verify(mockManageOffencesApiClient, times(1)).getSexualOrViolentForOffenceCodes(listOf("SX01", "V01", "N01"))
+    assertThat(testResult).isEqualTo(moResult)
+  }
+
   companion object {
     private const val OFFENCE_CODE_SOME_PCSC_MARKERS = "AV82002"
-    private const val OFFENCE_CODE_NO_PCSC_MARKERS = ""
     private val dummyOffencePcscSomeMarkers = OffencePcscMarkers(
       offenceCode = OFFENCE_CODE_SOME_PCSC_MARKERS,
       pcscMarkers = PcscMarkers(
@@ -32,15 +46,6 @@ class ManageOffencesServiceTest {
         inListB = false,
         inListC = false,
         inListD = true,
-      ),
-    )
-    private val dummyOffencePcscNoMarkers = OffencePcscMarkers(
-      offenceCode = OFFENCE_CODE_SOME_PCSC_MARKERS,
-      pcscMarkers = PcscMarkers(
-        inListA = false,
-        inListB = false,
-        inListC = false,
-        inListD = false,
       ),
     )
   }

@@ -11,13 +11,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenceSdsPlusLookupService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenceSDSReleaseArrangementLookupService
 import java.time.LocalDate
 
-class MoPCSCIntTest : IntegrationTestBase() {
+class OffenceSDSReleaseArrangementLookupServiceIntTest : IntegrationTestBase() {
 
   @Autowired
-  lateinit var offenceSdsPlusLookupService: OffenceSdsPlusLookupService
+  lateinit var offenceSDSReleaseArrangementLookupService: OffenceSDSReleaseArrangementLookupService
 
   @Test
   fun `Test Call to MO Service Matching SEC_250 Offence marked as SDS+`() {
@@ -49,7 +49,7 @@ class MoPCSCIntTest : IntegrationTestBase() {
     )
 
     UserContext.setAuthToken("123456")
-    val markedUp = offenceSdsPlusLookupService.populateSdsPlusMarkerForOffences(inputOffenceList)
+    val markedUp = offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(inputOffenceList)
     assertTrue(markedUp[0].isSDSPlus)
   }
 
@@ -84,7 +84,7 @@ class MoPCSCIntTest : IntegrationTestBase() {
         )
 
         UserContext.setAuthToken("123456")
-        offenceSdsPlusLookupService.populateSdsPlusMarkerForOffences(inputOffenceList)
+        offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(inputOffenceList)
       }.cause is CouldNotGetMoOffenceInformation,
     )
   }
@@ -142,7 +142,7 @@ class MoPCSCIntTest : IntegrationTestBase() {
     )
 
     UserContext.setAuthToken("123456")
-    val markedUp = offenceSdsPlusLookupService.populateSdsPlusMarkerForOffences(inputOffenceList)
+    val markedUp = offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(inputOffenceList)
     assertTrue(markedUp[0].isSDSPlus)
   }
 }
