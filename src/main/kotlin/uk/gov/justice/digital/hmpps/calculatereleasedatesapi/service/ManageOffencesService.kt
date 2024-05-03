@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SDSEarlyReleaseExclusionForOffenceCode
 
 @Service
 class ManageOffencesService(
@@ -9,5 +10,9 @@ class ManageOffencesService(
 ) {
   fun getPcscMarkersForOffenceCodes(vararg offenceCodes: String): List<OffencePcscMarkers> {
     return manageOffencesApiClient.getPCSCMarkersForOffences(offenceCodes.toList())
+  }
+
+  fun getSexualOrViolentForOffenceCodes(offenceCodes: List<String>): List<SDSEarlyReleaseExclusionForOffenceCode> {
+    return manageOffencesApiClient.getSexualOrViolentForOffenceCodes(offenceCodes)
   }
 }

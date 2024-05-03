@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
@@ -75,8 +76,8 @@ class ManualCalculationServiceTest {
     fun `Check the presence of indeterminate sentences returns true`() {
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name), false),
-          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false),
+          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name), false, SDSEarlyReleaseExclusionType.NO),
+          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false, SDSEarlyReleaseExclusionType.NO),
         ),
       )
 
@@ -89,8 +90,8 @@ class ManualCalculationServiceTest {
     fun `Check the absence of indeterminate sentences returns false`() {
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR.name), false),
-          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false),
+          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR.name), false, SDSEarlyReleaseExclusionType.NO),
+          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false, SDSEarlyReleaseExclusionType.NO),
         ),
       )
 
@@ -197,6 +198,7 @@ class ManualCalculationServiceTest {
           ),
           offence,
           false,
+          SDSEarlyReleaseExclusionType.NO,
         ),
       ),
     )

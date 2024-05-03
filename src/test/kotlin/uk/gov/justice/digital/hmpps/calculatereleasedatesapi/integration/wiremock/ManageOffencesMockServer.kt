@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremo
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.urlMatching
@@ -33,6 +34,7 @@ class ManageOffencesApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEa
     manageOffencesApi.stubSX03014MOResponse()
     manageOffencesApi.stub500Response()
     manageOffencesApi.stubBaseResponse()
+    manageOffencesApi.stubSexualOrViolentDefaultToNo()
   }
 
   override fun afterAll(context: ExtensionContext?) {
@@ -183,6 +185,28 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
           .withStatus(500),
       ),
   )
+
+  fun stubSexualOrViolentDefaultToNo(): StubMapping = stubFor(
+    get(urlMatching("/schedule/sexual-or-violent\\?offenceCodes=([A-Za-z0-9,]+)"))
+      .atPriority(Int.MAX_VALUE)
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            """[
+                {{#each request.query.offenceCodes as |offenceCode|}}
+                {
+                    "offenceCode": "{{{offenceCode}}}",
+                    "schedulePart": "NO"
+                }{{#if @last}}{{else}},{{/if}}
+                {{/each}}
+            ]
+            """.trimIndent(),
+          )
+          .withStatus(200)
+          .withTransformers("response-template"),
+      ),
+  )
 }
 
 class MockManageOffencesClient(
@@ -190,8 +214,11 @@ class MockManageOffencesClient(
   private val objectMapper: ObjectMapper,
 ) {
 
-  fun withMOResponse(vararg moResponseToMock: OffencePcscMarkers, offences: String): MockManageOffencesClient {
+  fun withPCSCMarkersResponse(vararg moResponseToMock: OffencePcscMarkers, offences: String): MockManageOffencesClient {
     manageOffencesApi.stubSpecificResponse(offences, objectMapper.writeValueAsString(moResponseToMock.toList()))
     return this
+  }
+  fun withStub(mappingBuilder: MappingBuilder): StubMapping {
+    return manageOffencesApi.stubFor(mappingBuilder)
   }
 }

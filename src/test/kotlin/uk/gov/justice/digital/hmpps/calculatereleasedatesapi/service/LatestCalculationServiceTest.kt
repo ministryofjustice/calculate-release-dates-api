@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalcula
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -473,6 +474,7 @@ class LatestCalculationServiceTest {
     courtDescription = null,
     consecutiveToSequence = null,
     isSDSPlus = false,
+    hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
   )
 
   private fun toDetailedDates(dates: List<ReleaseDate>): List<DetailedDate> = dates.map { DetailedDate(it.type, it.type.description, it.date, emptyList()) }
