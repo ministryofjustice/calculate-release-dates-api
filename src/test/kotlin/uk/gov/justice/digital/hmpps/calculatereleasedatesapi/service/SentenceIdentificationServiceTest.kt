@@ -57,18 +57,6 @@ class SentenceIdentificationServiceTest {
   // sentenced before: 03/12/2012
   //   offence before: 04/04/2005
   //  sentence length: > 4 years
-  //  schedule 15 offence: true
-
-  @Test
-  fun `Identify before 2005 48M- Section 15`() {
-    val sentence = jsonTransformation.loadSentence("five_years_2003_mar_section15")
-    sentenceIdentificationService.identify(sentence, offender)
-    assertEquals("[PED, NPD, LED, SED, HDCED, HDCED4PLUS]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
-  }
-
-  // sentenced before: 03/12/2012
-  //   offence before: 04/04/2005
-  //  sentence length: > 4 years
   //  schedule 15 offence: false
 
   @Test

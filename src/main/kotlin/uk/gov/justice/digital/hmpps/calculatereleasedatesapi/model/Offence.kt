@@ -6,7 +6,6 @@ import java.time.LocalDate
 data class Offence(
   val committedAt: LocalDate,
   val offenceCode: String? = null,
-  val isScheduleFifteen: Boolean = false,
 ) {
   @JsonIgnore
   fun isCivilOffence(): Boolean {

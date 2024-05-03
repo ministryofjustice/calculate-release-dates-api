@@ -10,8 +10,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.MTD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NCRD
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.NPD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PRRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
@@ -181,26 +179,12 @@ class SentenceIdentificationService(
         )
       } else if (sentence.isMadeUpOfBeforeAndAfterCjaLaspoSentences()) {
         // This consecutive sentence is made up of pre and post laspo date sentences. (Old and new style)
-        val hasScheduleFifteen = sentence.orderedSentences.any { it.offence.isScheduleFifteen }
-        if (hasScheduleFifteen) {
-          // PSI example 40
-          releaseDateTypes.addAll(
-            listOf(
-              NCRD,
-              PED,
-              NPD,
-              SLED,
-            ),
-          )
-        } else {
-          // PSI example 39
-          releaseDateTypes.addAll(
-            listOf(
-              SLED,
-              CRD,
-            ),
-          )
-        }
+        releaseDateTypes.addAll(
+          listOf(
+            SLED,
+            CRD,
+          ),
+        )
       } else if (sentence.isMadeUpOfOnlyAfterCjaLaspoSentences()) {
         if (sentence.hasOraSentences() && sentence.hasNonOraSentences()) {
           // PSI example 25
@@ -356,23 +340,12 @@ class SentenceIdentificationService(
     sentence.identificationTrack = SDS_BEFORE_CJA_LASPO
 
     if (sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
-      if (sentence.offence.isScheduleFifteen) {
-        releaseDateTypes.addAll(
-          listOf(
-            PED,
-            NPD,
-            LED,
-            SED,
-          ),
-        )
-      } else {
-        releaseDateTypes.addAll(
-          listOf(
-            CRD,
-            SLED,
-          ),
-        )
-      }
+      releaseDateTypes.addAll(
+        listOf(
+          CRD,
+          SLED,
+        ),
+      )
     } else if (sentence.durationIsGreaterThanOrEqualTo(TWELVE, ChronoUnit.MONTHS)) {
       releaseDateTypes.addAll(
         listOf(
