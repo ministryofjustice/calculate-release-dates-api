@@ -8,8 +8,7 @@
     {
       "offence": {
         "committedAt": "2020-07-18",
-        "offenceCode": "OF61014",
-        "isScheduleFifteen": false
+        "offenceCode": "OF61014"
       },
       "duration": {
         "durationElements": {

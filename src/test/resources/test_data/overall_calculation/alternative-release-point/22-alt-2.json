@@ -28,8 +28,7 @@
       "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-09-21",
-        "offenceCode": "OF61016",
-        "isScheduleFifteen": true
+        "offenceCode": "OF61016"
       },
       "duration": {
         "durationElements": {
@@ -69,8 +68,7 @@
       "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-10-20",
-        "offenceCode": "OF61102",
-        "isScheduleFifteen": true
+        "offenceCode": "OF61102"
       },
       "duration": {
         "durationElements": {

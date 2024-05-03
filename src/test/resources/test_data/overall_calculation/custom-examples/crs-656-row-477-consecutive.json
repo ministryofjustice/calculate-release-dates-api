@@ -6,8 +6,7 @@
   "sentences": [
     {
       "offence": {
-        "committedAt": "2018-10-01",
-        "isScheduleFifteen": false
+        "committedAt": "2018-10-01"
       },
       "duration": {
         "durationElements": {
@@ -22,8 +21,7 @@
     },
     {
       "offence": {
-        "committedAt": "2018-10-01",
-        "isScheduleFifteen": false
+        "committedAt": "2018-10-01"
       },
       "duration": {
         "durationElements": {

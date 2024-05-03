@@ -10,8 +10,7 @@
       "type":"StandardSentence",
       "offence":{
         "committedAt":"2021-05-31",
-        "offenceCode":"COML002",
-        "isScheduleFifteen":false
+        "offenceCode":"COML002"
       },
       "duration":{
         "durationElements":{
@@ -34,8 +33,7 @@
       "type":"StandardSentence",
       "offence":{
         "committedAt":"2021-05-31",
-        "offenceCode":"PC53001",
-        "isScheduleFifteen":false
+        "offenceCode":"PC53001"
       },
       "duration":{
         "durationElements":{
@@ -59,8 +57,7 @@
       "type":"AFineSentence",
       "offence":{
         "committedAt":"2022-04-25",
-        "offenceCode":"TH68010",
-        "isScheduleFifteen":false
+        "offenceCode":"TH68010"
       },
       "duration":{
         "durationElements":{
@@ -84,8 +81,7 @@
       "type":"AFineSentence",
       "offence":{
         "committedAt":"2022-04-25",
-        "offenceCode":"TH68010A",
-        "isScheduleFifteen":false
+        "offenceCode":"TH68010A"
       },
       "duration":{
         "durationElements":{
@@ -109,8 +105,7 @@
       "type":"AFineSentence",
       "offence":{
         "committedAt":"2022-04-25",
-        "offenceCode":"TH68026",
-        "isScheduleFifteen":false
+        "offenceCode":"TH68026"
       },
       "duration":{
         "durationElements":{
@@ -134,8 +129,7 @@
       "type":"AFineSentence",
       "offence":{
         "committedAt":"2022-04-25",
-        "offenceCode":"TH68010",
-        "isScheduleFifteen":false
+        "offenceCode":"TH68010"
       },
       "duration":{
         "durationElements":{
@@ -159,8 +153,7 @@
       "type":"AFineSentence",
       "offence":{
         "committedAt":"2022-04-25",
-        "offenceCode":"MD71211",
-        "isScheduleFifteen":false
+        "offenceCode":"MD71211"
       },
       "duration":{
         "durationElements":{
@@ -184,8 +177,7 @@
       "type":"AFineSentence",
       "offence":{
         "committedAt":"2022-04-25",
-        "offenceCode":"PU86004",
-        "isScheduleFifteen":false
+        "offenceCode":"PU86004"
       },
       "duration":{
         "durationElements":{
@@ -209,8 +201,7 @@
       "type":"AFineSentence",
       "offence":{
         "committedAt":"2022-04-25",
-        "offenceCode":"CJ88116",
-        "isScheduleFifteen":false
+        "offenceCode":"CJ88116"
       },
       "duration":{
         "durationElements":{
@@ -234,8 +225,7 @@
       "type":"AFineSentence",
       "offence":{
         "committedAt":"2022-04-25",
-        "offenceCode":"CD71040",
-        "isScheduleFifteen":false
+        "offenceCode":"CD71040"
       },
       "duration":{
         "durationElements":{
@@ -259,8 +249,7 @@
       "type":"AFineSentence",
       "offence":{
         "committedAt":"2022-04-25",
-        "offenceCode":"CA81001",
-        "isScheduleFifteen":false
+        "offenceCode":"CA81001"
       },
       "duration":{
         "durationElements":{
