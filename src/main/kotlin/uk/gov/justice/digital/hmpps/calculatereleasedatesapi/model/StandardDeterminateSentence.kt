@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
@@ -44,11 +43,6 @@ data class StandardDeterminateSentence(
   @JsonIgnore
   fun isOraSentence(): Boolean {
     return offence.committedAt.isAfterOrEqualTo(ImportantDates.ORA_DATE)
-  }
-
-  @JsonIgnore
-  fun isTwoThirdsReleaseSentence(): Boolean {
-    return identificationTrack == SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE
   }
 
   @JsonIgnore

@@ -155,7 +155,7 @@ class SentenceIdentificationService(
         )
       }
     } else {
-      if (sentence.isMadeUpOfOnlySdsTwoThirdsReleaseSentences()) {
+      if (sentence.isMadeUpOfOnlySdsPlusSentences()) {
         releaseDateTypes.addAll(
           listOf(
             SLED,

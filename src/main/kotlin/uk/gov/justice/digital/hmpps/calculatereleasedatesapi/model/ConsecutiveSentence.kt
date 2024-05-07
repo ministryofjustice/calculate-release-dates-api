@@ -87,10 +87,6 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
     return orderedSentences.all { it is StandardDeterminateSentence }
   }
 
-  fun allSentencesAreExtendedSentences(): Boolean {
-    return orderedSentences.all { it is ExtendedDeterminateSentence }
-  }
-
   fun hasExtendedSentence(): Boolean {
     return orderedSentences.any { it is ExtendedDeterminateSentence }
   }
@@ -127,48 +123,12 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
     return hasAfterCjaLaspo() && !hasBeforeCjaLaspo()
   }
 
-  private fun hasSdsTwoThirdsReleaseSentence(): Boolean {
-    return orderedSentences.any { it is StandardDeterminateSentence && it.isTwoThirdsReleaseSentence() }
-  }
-
-  private fun hasSdsHalfwayReleaseSentence(): Boolean {
-    return orderedSentences.any { it is StandardDeterminateSentence && !it.isTwoThirdsReleaseSentence() }
-  }
-
-  fun isMadeUpOfSdsHalfwayReleaseAndTwoThirdsReleaseSentence(): Boolean {
-    return hasSdsHalfwayReleaseSentence() && hasSdsTwoThirdsReleaseSentence()
-  }
-
-  fun isMadeUpOfOnlySdsTwoThirdsReleaseSentences(): Boolean {
-    return !hasSdsHalfwayReleaseSentence() && hasSdsTwoThirdsReleaseSentence()
-  }
-
-  fun hasAutomaticRelease(): Boolean {
-    return orderedSentences.any { it is ExtendedDeterminateSentence && it.automaticRelease }
+  fun isMadeUpOfOnlySdsPlusSentences(): Boolean {
+    return orderedSentences.all { it is StandardDeterminateSentence && it.isSDSPlus }
   }
 
   fun hasDiscretionaryRelease(): Boolean {
     return orderedSentences.any { it is ExtendedDeterminateSentence && !it.automaticRelease }
-  }
-
-  fun hasAutomaticAndDiscretionaryRelease(): Boolean {
-    return hasAutomaticRelease() && hasDiscretionaryRelease()
-  }
-
-  fun getAutomaticReleaseCustodialLengthInDays(): Int {
-    return orderedSentences
-      .filter { it is ExtendedDeterminateSentence && it.automaticRelease }
-      .map { (it as ExtendedDeterminateSentence).custodialDuration }
-      .reduce { acc, it -> acc.appendAll(it.durationElements) }
-      .getLengthInDays(sentencedAt)
-  }
-
-  fun getDiscretionaryReleaseCustodialLengthInDays(startDate: LocalDate): Int {
-    return orderedSentences
-      .filter { it is ExtendedDeterminateSentence && !it.automaticRelease }
-      .map { (it as ExtendedDeterminateSentence).custodialDuration }
-      .reduce { acc, it -> acc.appendAll(it.durationElements) }
-      .getLengthInDays(startDate)
   }
 
   override fun calulateErsed(): Boolean {
@@ -181,10 +141,6 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
 
   override fun isIdentificationTrackInitialized(): Boolean {
     return this::identificationTrack.isInitialized
-  }
-
-  fun isMadeUpOfSdsAndSdsPlusSentences(): Boolean {
-    return orderedSentences.any { it.isSDSPlus } && orderedSentences.any { !it.isSDSPlus }
   }
 
   override fun isBotus(): Boolean {
