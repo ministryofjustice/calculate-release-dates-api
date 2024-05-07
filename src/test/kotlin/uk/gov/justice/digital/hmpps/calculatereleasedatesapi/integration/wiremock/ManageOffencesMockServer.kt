@@ -197,7 +197,7 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
                 {{#each request.query.offenceCodes as |offenceCode|}}
                 {
                     "offenceCode": "{{{offenceCode}}}",
-                    "schedulePart": "NO"
+                    "schedulePart": "NONE"
                 }{{#if @last}}{{else}},{{/if}}
                 {{/each}}
             ]

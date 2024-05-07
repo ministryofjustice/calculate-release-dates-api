@@ -37,7 +37,7 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
               """[
                 {
                     "offenceCode": "N01",
-                    "schedulePart": "NO"
+                    "schedulePart": "NONE"
                 },
                 {
                     "offenceCode": "S01",
@@ -57,7 +57,7 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
     assertThat(manageOffencesApiClient.getSexualOrViolentForOffenceCodes(listOf("S01", "V01", "N01")))
       .isEqualTo(
         listOf(
-          SDSEarlyReleaseExclusionForOffenceCode("N01", SDSEarlyReleaseExclusionSchedulePart.NO),
+          SDSEarlyReleaseExclusionForOffenceCode("N01", SDSEarlyReleaseExclusionSchedulePart.NONE),
           SDSEarlyReleaseExclusionForOffenceCode("S01", SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
           SDSEarlyReleaseExclusionForOffenceCode("V01", SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
         ),
