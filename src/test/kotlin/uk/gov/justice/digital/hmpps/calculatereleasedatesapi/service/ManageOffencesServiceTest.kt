@@ -29,7 +29,7 @@ class ManageOffencesServiceTest {
     val moResult = listOf(
       SDSEarlyReleaseExclusionForOffenceCode("SX01", SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
       SDSEarlyReleaseExclusionForOffenceCode("V01", SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
-      SDSEarlyReleaseExclusionForOffenceCode("N01", SDSEarlyReleaseExclusionSchedulePart.NO),
+      SDSEarlyReleaseExclusionForOffenceCode("N01", SDSEarlyReleaseExclusionSchedulePart.NONE),
     )
     whenever(mockManageOffencesApiClient.getSexualOrViolentForOffenceCodes(listOf("SX01", "V01", "N01"))).thenReturn(moResult)
     val testResult = underTest.getSexualOrViolentForOffenceCodes(listOf("SX01", "V01", "N01"))

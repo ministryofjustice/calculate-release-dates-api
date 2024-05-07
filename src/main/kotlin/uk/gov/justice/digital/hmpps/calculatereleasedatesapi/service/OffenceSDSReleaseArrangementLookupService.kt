@@ -161,7 +161,7 @@ class OffenceSDSReleaseArrangementLookupService(
     return when (exclusionsForOffences[sentenceAndOffence.offence.offenceCode]!!.schedulePart) {
       SDSEarlyReleaseExclusionSchedulePart.SEXUAL -> SDSEarlyReleaseExclusionType.SEXUAL
       SDSEarlyReleaseExclusionSchedulePart.VIOLENT -> if (fourYearsOrMore(sentenceAndOffence)) SDSEarlyReleaseExclusionType.VIOLENT else SDSEarlyReleaseExclusionType.NO
-      SDSEarlyReleaseExclusionSchedulePart.NO -> SDSEarlyReleaseExclusionType.NO
+      SDSEarlyReleaseExclusionSchedulePart.NONE -> SDSEarlyReleaseExclusionType.NO
     }
   }
 
