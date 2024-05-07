@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import com.fasterxml.jackson.annotation.JsonIgnore
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.util.UUID
@@ -47,5 +49,15 @@ data class StandardDeterminateSentence(
   @JsonIgnore
   fun isTwoThirdsReleaseSentence(): Boolean {
     return identificationTrack == SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE
+  }
+
+  @JsonIgnore
+  fun isBeforeCJAAndLASPO(): Boolean {
+    return sentencedAt.isBefore(LASPO_DATE) && offence.committedAt.isBefore(CJA_DATE)
+  }
+
+  @JsonIgnore
+  fun isAfterCJAAndLASPO(): Boolean {
+    return !isBeforeCJAAndLASPO()
   }
 }

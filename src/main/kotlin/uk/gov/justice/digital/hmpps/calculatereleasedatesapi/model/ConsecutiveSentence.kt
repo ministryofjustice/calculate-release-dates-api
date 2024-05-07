@@ -100,11 +100,11 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
   }
 
   private fun hasAfterCjaLaspo(): Boolean {
-    return orderedSentences.any { it.identificationTrack === SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
+    return orderedSentences.any { it is StandardDeterminateSentence && it.isAfterCJAAndLASPO() }
   }
 
   private fun hasBeforeCjaLaspo(): Boolean {
-    return orderedSentences.any { it.identificationTrack === SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO }
+    return orderedSentences.any { it is StandardDeterminateSentence && it.isBeforeCJAAndLASPO() }
   }
 
   fun hasOraSentences(): Boolean {
