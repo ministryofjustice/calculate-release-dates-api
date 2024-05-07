@@ -166,7 +166,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
   fun `should not set an SDS exclusion if offence is neither sexual or violent`() {
     whenever(mockManageOffencesService.getSexualOrViolentForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
-        SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.NO),
+        SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.NONE),
       ),
     )
     val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(nonSDSPlusSentenceAndOffenceFourYears))
