@@ -151,6 +151,7 @@ class BookingServiceTest {
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
             isSDSPlus = false,
+            hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
         adjustments = Adjustments(
@@ -206,6 +207,7 @@ class BookingServiceTest {
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
             isSDSPlus = false,
+            hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
         adjustments = Adjustments(
@@ -263,6 +265,7 @@ class BookingServiceTest {
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
             isSDSPlus = false,
+            hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
         adjustments = Adjustments(
@@ -318,6 +321,7 @@ class BookingServiceTest {
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
             isSDSPlus = false,
+            hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
         adjustments = Adjustments(
@@ -373,6 +377,7 @@ class BookingServiceTest {
             caseSequence = caseSequence,
             recallType = RecallType.FIXED_TERM_RECALL_28,
             isSDSPlus = false,
+            hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
         adjustments = Adjustments(

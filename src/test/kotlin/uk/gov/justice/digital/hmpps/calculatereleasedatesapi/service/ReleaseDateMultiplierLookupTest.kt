@@ -16,17 +16,17 @@ class ReleaseDateMultiplierLookupTest {
   @Test
   fun `should use the multiplier for a track if present`() {
     val config = ReleasePointMultipliersConfiguration(
-      listOf(ReleaseDateMultiplier(listOf(SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO), 0.9)),
+      listOf(ReleaseDateMultiplier(listOf(SentenceIdentificationTrack.SDS_STANDARD_RELEASE), 0.9)),
       0.45,
     )
     val releasePointMultiplierLookup = ReleasePointMultiplierLookup(config)
-    assertThat(releasePointMultiplierLookup.multiplierFor(SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO)).isEqualTo(0.9)
+    assertThat(releasePointMultiplierLookup.multiplierFor(SentenceIdentificationTrack.SDS_STANDARD_RELEASE)).isEqualTo(0.9)
   }
 
   @Test
   fun `should use the default for a track that is not present`() {
     val config = ReleasePointMultipliersConfiguration(
-      listOf(ReleaseDateMultiplier(listOf(SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO), 0.9)),
+      listOf(ReleaseDateMultiplier(listOf(SentenceIdentificationTrack.SDS_STANDARD_RELEASE), 0.9)),
       0.45,
     )
     val releasePointMultiplierLookup = ReleasePointMultiplierLookup(config)
