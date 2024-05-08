@@ -13,15 +13,22 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 open class OffenderKeyDatesServiceTest {
@@ -32,10 +39,14 @@ open class OffenderKeyDatesServiceTest {
   @Mock
   lateinit var prisonService: PrisonService
 
+  @Mock
+  lateinit var calculationRequestRepository: CalculationRequestRepository
+
   @InjectMocks
   lateinit var underTest: OffenderKeyDatesService
 
   private val now = LocalDateTime.now()
+  val reference: UUID = UUID.randomUUID()
 
   @Test
   fun `Test getting NomisCalculationSummary for offenderSentCalcId successfully`() {
@@ -72,6 +83,74 @@ open class OffenderKeyDatesServiceTest {
     Assertions.assertThat(result.calculatedAt).isEqualTo(expected.calculatedAt)
     Assertions.assertThat(result.comment).isEqualTo(expected.comment)
     Assertions.assertThat(result.releaseDates).isEqualTo(expected.releaseDates)
+  }
+
+  @Test
+  fun `Test getting Release Dates for calc request id successfully`() {
+    val bookingId = 5636121L
+    val calcRequestId = 1L
+    val offenderKeyDates = OffenderKeyDates(
+      reasonCode = "FS",
+      calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
+      comment = null,
+      homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
+    )
+    val expected = OffenderReleaseDates(
+      bookingId,
+      calcRequestId,
+      LocalDateTime.of(2024, 2, 29, 10, 30),
+      "14 day check",
+      CalculationSource.CRDS,
+      listOf(
+        DetailedDate(
+          ReleaseDateType.HDCED,
+          ReleaseDateType.HDCED.description,
+          LocalDate.of(2024, 1, 1),
+          emptyList(),
+        ),
+      ),
+    )
+
+    val detailedDates = mapOf(ReleaseDateType.HDCED to DetailedDate(ReleaseDateType.HDCED, ReleaseDateType.HDCED.description, LocalDate.of(2024, 1, 1), emptyList()))
+    val calcRequest = CalculationRequest(
+      1,
+      reference,
+      "123",
+      bookingId,
+      CalculationStatus.CONFIRMED.name,
+      calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
+      reasonForCalculation = CalculationReason(
+        1,
+        true,
+        false,
+        "14 day check",
+        false,
+        null,
+        null,
+        1,
+      ),
+      otherReasonForCalculation = null,
+    )
+
+    whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
+    whenever(calculationRequestRepository.findById(calcRequestId)).thenReturn(Optional.of(calcRequest))
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(Mockito.anyList(), isNull(), isNull())).thenReturn(detailedDates)
+
+    val result = underTest.getKeyDatesByCalcId(calcRequestId)
+
+    Assertions.assertThat(result).isEqualTo(expected)
+  }
+
+  @Test
+  fun `Test getting Release Dates for calc request id for exception scenario`() {
+    val calcRequestId = 5636121L
+    val errorMessage = "Unable to retrieve offender key dates"
+
+    val exception = assertThrows<CrdWebException> {
+      underTest.getKeyDatesByCalcId(calcRequestId)
+    }
+
+    Assertions.assertThat(exception.message).isEqualTo(errorMessage)
   }
 
   @Test

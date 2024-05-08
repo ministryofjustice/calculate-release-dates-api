@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -447,6 +448,30 @@ class CalculationController(
   ): NomisCalculationSummary {
     log.info("Request received to get offender key dates for $offenderSentCalculationId")
     return offenderKeyDatesService.getNomisCalculationSummary(offenderSentCalculationId)
+  }
+
+  @GetMapping(value = ["/release-dates/{calculationRequestId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Get release dates summary for a calculation request id",
+    description = "This endpoint will return the list of release dates based on a calculation request id",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns list of release dates based on a calculation request id"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No release dates exists for this calculation request id"),
+    ],
+  )
+  fun getKeyDatesForABooking(
+    @Parameter(required = true, example = "123456", description = "The calculation request id of the offender")
+    @PathVariable("calculationRequestId")
+    calculationRequestId: Long,
+  ): OffenderReleaseDates {
+    log.info("Request received to get offender key dates for calc Id - $calculationRequestId")
+    return offenderKeyDatesService.getKeyDatesByCalcId(calculationRequestId)
   }
 
   companion object {

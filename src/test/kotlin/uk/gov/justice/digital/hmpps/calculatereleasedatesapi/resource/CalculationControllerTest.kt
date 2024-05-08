@@ -49,6 +49,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
@@ -462,6 +463,64 @@ class CalculationControllerTest {
 
     assertThat(mapper.readValue(result.response.contentAsString, NomisCalculationSummary::class.java))
       .isEqualTo(expected)
+  }
+
+  @Test
+  fun `Test GET of offender key dates for a booking id successfully`() {
+    val calcRequestId = 5636121L
+    val bookingId = 123456L
+    val expected = OffenderReleaseDates(
+      bookingId,
+      calcRequestId,
+      LocalDateTime.of(2024, 2, 29, 10, 30),
+      "14 day check",
+      CalculationSource.CRDS,
+      listOf(
+        DetailedDate(
+          ReleaseDateType.HDCED,
+          ReleaseDateType.HDCED.description,
+          LocalDate.of(2024, 1, 1),
+          emptyList(),
+        ),
+      ),
+    )
+
+    whenever(offenderKeyDatesService.getKeyDatesByCalcId(any())).thenReturn(expected)
+
+    val result = mvc.perform(get("/calculation/release-dates/$calcRequestId").accept(APPLICATION_JSON))
+      .andExpect(status().isOk)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(mapper.readValue(result.response.contentAsString, OffenderReleaseDates::class.java))
+      .isEqualTo(expected)
+  }
+
+  @Test
+  fun `Test GET of release Dates when there is a problem getting the release dates using CalcReleaseId`() {
+    val calcRequestId = 5636121L
+    val errorMessage = "There isn't one"
+
+    whenever(
+      offenderKeyDatesService.getKeyDatesByCalcId(any()),
+    ).then {
+      throw CrdWebException(errorMessage, HttpStatus.NOT_FOUND)
+    }
+
+    val result = mvc.perform(get("/calculation/release-dates/$calcRequestId").accept(APPLICATION_JSON))
+      .andExpect(status().isNotFound)
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn()
+
+    assertThat(mapper.readValue(result.response.contentAsString, ErrorResponse::class.java))
+      .isEqualTo(
+        ErrorResponse(
+          HttpStatus.NOT_FOUND,
+          null,
+          errorMessage,
+          errorMessage,
+        ),
+      )
   }
 
   private val calculationReason = CalculationReason(-1, false, false, "Reason", false, null, null, null)
