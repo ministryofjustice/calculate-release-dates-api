@@ -22,9 +22,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.DTO_BEFORE_PCSC
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_PLUS_RELEASE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_STANDARD_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
@@ -155,7 +154,7 @@ class SentenceIdentificationService(
         )
       }
     } else {
-      if (sentence.isMadeUpOfOnlySdsTwoThirdsReleaseSentences()) {
+      if (sentence.isMadeUpOfOnlySdsPlusSentences()) {
         releaseDateTypes.addAll(
           listOf(
             SLED,
@@ -313,8 +312,8 @@ class SentenceIdentificationService(
     releaseDateTypes: MutableList<ReleaseDateType>,
   ) {
     sentence.identificationTrack = when {
-      sentence is StandardDeterminateSentence && sentence.isSDSPlus -> SDS_TWO_THIRDS_RELEASE
-      else -> SDS_AFTER_CJA_LASPO
+      sentence is StandardDeterminateSentence && sentence.isSDSPlus -> SDS_PLUS_RELEASE
+      else -> SDS_STANDARD_RELEASE
     }
 
     if (sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) &&
@@ -337,7 +336,7 @@ class SentenceIdentificationService(
   }
 
   private fun beforeCJAAndLASPO(sentence: CalculableSentence, releaseDateTypes: MutableList<ReleaseDateType>) {
-    sentence.identificationTrack = SDS_BEFORE_CJA_LASPO
+    sentence.identificationTrack = SDS_STANDARD_RELEASE
 
     if (sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
       releaseDateTypes.addAll(

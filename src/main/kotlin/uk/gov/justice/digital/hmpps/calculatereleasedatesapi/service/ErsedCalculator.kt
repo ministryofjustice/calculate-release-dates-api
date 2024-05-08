@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDur
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 
@@ -40,10 +41,14 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation,
   ): ReleaseDateCalculationBreakdown? {
-    if (!sentence.isRecall() && sentence.calulateErsed()) {
+    if (!sentence.isRecall() && sentence.calulateErsed() && isNotBeforeCJAAndLASPOIfSDS(sentence)) {
       return calculateErsedMinOrMax(sentence, sentenceCalculation)
     }
     return null
+  }
+
+  private fun isNotBeforeCJAAndLASPOIfSDS(sentence: CalculableSentence): Boolean {
+    return !(sentence is StandardDeterminateSentence && sentence.isBeforeCJAAndLASPO())
   }
 
   private fun calculateErsedMinOrMax(

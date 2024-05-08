@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
@@ -32,7 +31,7 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
 
     val lapsoCondition = when (sentence) {
       is StandardDeterminateSentence -> {
-        sentence.identificationTrack == SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO
+        sentence.isAfterCJAAndLASPO()
       }
 
       is ConsecutiveSentence -> {

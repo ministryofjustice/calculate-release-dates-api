@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
@@ -229,13 +228,13 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
       sentence.allSentencesAreStandardSentences()
     ) {
       val daysOfNewStyleSentences = sentence.orderedSentences
-        .filter { it is StandardDeterminateSentence && it.identificationTrack == SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO }
+        .filter { it is StandardDeterminateSentence && it.isAfterCJAAndLASPO() }
         .map { (it as StandardDeterminateSentence).duration }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         .getLengthInDays(sentence.sentencedAt)
 
       val daysOfOldStyleSentences = sentence.orderedSentences
-        .filter { it is StandardDeterminateSentence && it.identificationTrack == SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO }
+        .filter { it is StandardDeterminateSentence && it.isBeforeCJAAndLASPO() }
         .map { (it as StandardDeterminateSentence).duration }
         .reduce { acc, duration -> acc.appendAll(duration.durationElements) }
         .getLengthInDays(sentence.sentencedAt)
