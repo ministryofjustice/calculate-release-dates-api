@@ -33,7 +33,7 @@ class SentenceCalculationService(
     val sentencesWithPed =
       sentence.orderedSentences.filter { (it is ExtendedDeterminateSentence && !it.automaticRelease) || it is SopcSentence }
     val sentencesTwoThirdsWithoutPed =
-      sentence.orderedSentences.filter { !sentencesWithPed.contains(it) && ((it is StandardDeterminateSentence && it.isTwoThirdsReleaseSentence()) || (it is ExtendedDeterminateSentence && it.automaticRelease)) }
+      sentence.orderedSentences.filter { !sentencesWithPed.contains(it) && ((it is StandardDeterminateSentence && it.isSDSPlus) || (it is ExtendedDeterminateSentence && it.automaticRelease)) }
     val sentencesHalfwayWithoutPed = sentence.orderedSentences.filter {
       !sentencesWithPed.contains(it) && !sentencesTwoThirdsWithoutPed.contains(it)
     }

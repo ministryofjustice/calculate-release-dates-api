@@ -49,7 +49,10 @@ class ReleaseDateMultiplierLookupTest {
         when (it) {
           SentenceIdentificationTrack.SDS_BEFORE_CJA_LASPO -> 0.5
           SentenceIdentificationTrack.SDS_AFTER_CJA_LASPO -> 0.5
+          SentenceIdentificationTrack.SDS_STANDARD_RELEASE -> 0.5
+          SentenceIdentificationTrack.SDS_EARLY_RELEASE -> 0.5
           SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE -> 0.66666
+          SentenceIdentificationTrack.SDS_PLUS_RELEASE -> 0.66666
           SentenceIdentificationTrack.RECALL -> 0.5
           SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE -> 0.66666
           SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE -> 1.00
