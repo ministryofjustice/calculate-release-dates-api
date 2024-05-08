@@ -1,10 +1,13 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations
 
 enum class SentenceIdentificationTrack {
-
+  // SDS_BEFORE_CJA_LASPO, SDS_AFTER_CJA_LASPO & SDS_TWO_THIRDS_RELEASE deprecated for SDS_STANDARD_RELEASE, SDS_EARLY_RELEASE & SDS_PLUS_RELEASE
   SDS_BEFORE_CJA_LASPO,
   SDS_AFTER_CJA_LASPO,
   SDS_TWO_THIRDS_RELEASE,
+  SDS_STANDARD_RELEASE,
+  SDS_EARLY_RELEASE,
+  SDS_PLUS_RELEASE,
   RECALL,
   EDS_AUTOMATIC_RELEASE,
   EDS_DISCRETIONARY_RELEASE,
@@ -18,6 +21,16 @@ enum class SentenceIdentificationTrack {
   ;
 
   fun calculateErsed(): Boolean {
-    return listOf(SDS_AFTER_CJA_LASPO, SOPC_PED_AT_HALFWAY, SDS_TWO_THIRDS_RELEASE, EDS_AUTOMATIC_RELEASE, EDS_DISCRETIONARY_RELEASE, SOPC_PED_AT_TWO_THIRDS).contains(this)
+    return listOf(
+      SDS_AFTER_CJA_LASPO,
+      SOPC_PED_AT_HALFWAY,
+      SDS_TWO_THIRDS_RELEASE,
+      EDS_AUTOMATIC_RELEASE,
+      EDS_DISCRETIONARY_RELEASE,
+      SOPC_PED_AT_TWO_THIRDS,
+      SDS_STANDARD_RELEASE,
+      SDS_EARLY_RELEASE,
+      SDS_PLUS_RELEASE,
+    ).contains(this)
   }
 }
