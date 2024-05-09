@@ -1,12 +1,26 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdced4ConfigurationForTests
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit.DAYS
+import java.time.temporal.ChronoUnit.MONTHS
+import java.time.temporal.ChronoUnit.WEEKS
+import java.time.temporal.ChronoUnit.YEARS
 
 @ExtendWith(MockitoExtension::class)
 class SentenceIdentificationServiceTest {
@@ -14,7 +28,8 @@ class SentenceIdentificationServiceTest {
   private val tusedCalculator = TusedCalculator(workingDayService)
   private val hdced4Configuration = hdced4ConfigurationForTests()
   private val hdced4Calculator = Hdced4Calculator(hdced4Configuration)
-  private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdced4Calculator)
+  private val featureToggles = FeatureToggles()
+  private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdced4Calculator, featureToggles)
   private val jsonTransformation = JsonTransformation()
   private val offender = jsonTransformation.loadOffender("john_doe")
   private val offenderU18 = jsonTransformation.loadOffender("john_doe_under18")
@@ -153,5 +168,51 @@ class SentenceIdentificationServiceTest {
     val sentence = jsonTransformation.loadSentence("five_years_2018_mar")
     sentenceIdentificationService.identify(sentence, offender)
     assertEquals("[SLED, CRD, HDCED, HDCED4PLUS]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+  }
+
+  // sentenced after: 03/12/2012
+  // offence after: 01/02/2015
+  // sentence length: 5 years
+
+  @ParameterizedTest
+  @CsvSource(
+    "false,true,false,NO,SDS_STANDARD_RELEASE",
+    "false,false,false,NO,SDS_STANDARD_RELEASE",
+    "false,true,false,SEXUAL,SDS_STANDARD_RELEASE",
+    "false,false,false,SEXUAL,SDS_STANDARD_RELEASE",
+    "false,true,false,VIOLENT,SDS_STANDARD_RELEASE",
+    "false,false,false,VIOLENT,SDS_STANDARD_RELEASE",
+    "true,true,false,NO,SDS_EARLY_RELEASE",
+    "true,false,false,NO,SDS_EARLY_RELEASE",
+    "true,true,false,SEXUAL,SDS_STANDARD_RELEASE",
+    "true,false,false,SEXUAL,SDS_STANDARD_RELEASE",
+    "true,true,false,VIOLENT,SDS_STANDARD_RELEASE",
+    "true,false,false,VIOLENT,SDS_STANDARD_RELEASE",
+    "true,false,true,NO,SDS_PLUS_RELEASE",
+    "true,false,true,SEXUAL,SDS_PLUS_RELEASE",
+    "true,false,true,VIOLENT,SDS_PLUS_RELEASE",
+  )
+  fun `Identify SDS early release correctly`(
+    featureToggle: Boolean,
+    beforeCjaLaspo: Boolean,
+    sdsPlus: Boolean,
+    exclusion: SDSEarlyReleaseExclusionType,
+    expected: SentenceIdentificationTrack,
+  ) {
+    featureToggles.sdsEarlyRelease = featureToggle
+    val (offenceDate, sentenceDate) = if (beforeCjaLaspo) {
+      LocalDate.of(2005, 1, 1) to LocalDate.of(2005, 1, 1)
+    } else {
+      LocalDate.of(2016, 1, 1) to LocalDate.of(2016, 1, 1)
+    }
+    val sentence = StandardDeterminateSentence(
+      Offence(offenceDate),
+      Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L)),
+      sentenceDate,
+      isSDSPlus = sdsPlus,
+      hasAnSDSEarlyReleaseExclusion = exclusion,
+    )
+    sentenceIdentificationService.identify(sentence, offender)
+    assertThat(sentence.identificationTrack).isEqualTo(expected)
   }
 }

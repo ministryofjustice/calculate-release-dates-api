@@ -5,4 +5,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties(prefix = "feature-toggles")
 data class FeatureToggles(
   var botus: Boolean = false,
+  var sdsEarlyRelease: Boolean = false,
 )

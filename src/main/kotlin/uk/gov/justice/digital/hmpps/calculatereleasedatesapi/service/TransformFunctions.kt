@@ -155,6 +155,7 @@ fun transform(
         caseReference = sentence.caseReference,
         recallType = sentenceCalculationType.recallType,
         isSDSPlus = sentence.isSDSPlus,
+        hasAnSDSEarlyReleaseExclusion = sentence.hasAnSDSEarlyReleaseExclusion,
       )
     } else if (sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
       AFineSentence(

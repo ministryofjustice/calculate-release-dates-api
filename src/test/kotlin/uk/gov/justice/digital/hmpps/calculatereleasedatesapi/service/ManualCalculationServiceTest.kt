@@ -285,6 +285,7 @@ class ManualCalculationServiceTest {
       caseSequence = 1,
       lineSequence = 2,
       isSDSPlus = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     private val BOOKING = Booking(OFFENDER, listOf(StandardSENTENCE), Adjustments(), null, null, BOOKING_ID)
 

@@ -1,0 +1,39 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1994-11-24",
+    "isActiveSexOffender": false
+  },
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-03-22"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "sentencedAt": "2024-03-22",
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-03-22"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "sentencedAt": "2024-03-22",
+      "hasAnSDSEarlyReleaseExclusion": "VIOLENT",
+      "consecutiveSentenceUUIDs": ["a31d5d02-611f-43b0-8b1a-4b1edc955e7e"]
+    }
+  ],
+  "adjustments": {},
+  "calculateErsed": false
+}

@@ -11,7 +11,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
@@ -28,41 +27,31 @@ class SentenceCalculationService(
     return sentenceAdjustedCalculationService.calculateDatesFromAdjustments(sentence, booking)
   }
 
+  private data class IndexedSentenceWithReleasePointMultiplier(val index: Int, val sentence: CalculableSentence, val multiplier: Double)
+
   private fun getConsecutiveRelease(sentence: ConsecutiveSentence): ReleaseDateCalculation {
     val daysToExpiry = getDaysInGroup(sentence.orderedSentences, sentence.sentencedAt) { it.totalDuration() }
-    val sentencesWithPed =
-      sentence.orderedSentences.filter { (it is ExtendedDeterminateSentence && !it.automaticRelease) || it is SopcSentence }
-    val sentencesTwoThirdsWithoutPed =
-      sentence.orderedSentences.filter { !sentencesWithPed.contains(it) && ((it is StandardDeterminateSentence && it.isSDSPlus) || (it is ExtendedDeterminateSentence && it.automaticRelease)) }
-    val sentencesHalfwayWithoutPed = sentence.orderedSentences.filter {
-      !sentencesWithPed.contains(it) && !sentencesTwoThirdsWithoutPed.contains(it)
-    }
+    val (sentencesWithPed, sentencesWithoutPed) = sentence.orderedSentences
+      .map { IndexedSentenceWithReleasePointMultiplier(sentence.orderedSentences.indexOf(it), it, releasePointMultiplierLookup.multiplierFor(it.identificationTrack)) }
+      .partition { (it.sentence is ExtendedDeterminateSentence && !it.sentence.automaticRelease) || it.sentence is SopcSentence }
+    val sentencesWithoutPedGroupedByMultiplierAndGroupsSortedByFirstAppearance = sentencesWithoutPed
+      .groupBy { it.multiplier }.entries
+      .sortedBy { (_, sentences) -> sentences.minOf { it.index } }
+      .map { it.value }
 
-    val firstIndexOfNonPedTwoThirds =
-      sentencesTwoThirdsWithoutPed.minOfOrNull { sentence.orderedSentences.indexOf(it) }
-    val firstIndexOfNonPedHalfway = sentencesHalfwayWithoutPed.minOfOrNull { sentence.orderedSentences.indexOf(it) }
-    val sentencesInCalculationOrder =
-      if (firstIndexOfNonPedTwoThirds != null && firstIndexOfNonPedHalfway != null && firstIndexOfNonPedTwoThirds < firstIndexOfNonPedHalfway) {
-        listOf(
-          sentencesTwoThirdsWithoutPed,
-          sentencesHalfwayWithoutPed,
-          sentencesWithPed,
-        )
-      } else {
-        listOf(sentencesHalfwayWithoutPed, sentencesTwoThirdsWithoutPed, sentencesWithPed)
-      }
+    val sentencesInCalculationOrder = sentencesWithoutPedGroupedByMultiplierAndGroupsSortedByFirstAppearance + listOf(sentencesWithPed)
 
     var notionalCrd: LocalDate? = null
     var daysToRelease = 0
     var numberOfDaysToParoleEligibilityDate: Long? = null
-    sentencesInCalculationOrder.forEach {
-      if (it.isNotEmpty()) {
+    sentencesInCalculationOrder.forEach { sentencesWithMultipliers ->
+      if (sentencesWithMultipliers.isNotEmpty()) {
         val releaseStartDate = if (notionalCrd != null) notionalCrd!!.plusDays(1) else sentence.sentencedAt
-        val daysInThisCustodialDuration = getDaysInGroup(it, releaseStartDate) { it.custodialDuration() }
-        if (it == sentencesWithPed && !sentence.isRecall()) {
-          numberOfDaysToParoleEligibilityDate = calculateConsecutivePed(it, daysToRelease, releaseStartDate)
+        val daysInThisCustodialDuration = getDaysInGroup(sentencesWithMultipliers.map { it.sentence }, releaseStartDate) { it.custodialDuration() }
+        if (sentencesWithMultipliers == sentencesWithPed && !sentence.isRecall()) {
+          numberOfDaysToParoleEligibilityDate = calculateConsecutivePed(sentencesWithMultipliers.map { it.sentence }, daysToRelease, releaseStartDate)
         }
-        val multiplier = releasePointMultiplierLookup.multiplierFor(it[0].identificationTrack)
+        val multiplier = sentencesWithMultipliers[0].multiplier
         val daysToReleaseInThisGroup = ceil(daysInThisCustodialDuration.toDouble().times(multiplier)).toLong()
         notionalCrd = releaseStartDate
           .plusDays(daysToReleaseInThisGroup)
@@ -197,6 +186,7 @@ class SentenceCalculationService(
       SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS,
       SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE,
       -> 2 / 3.toDouble()
+
       SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY -> 1 / 2.toDouble()
       else -> throw UnsupportedOperationException("Unknown identification for a PED calculation $identification")
     }

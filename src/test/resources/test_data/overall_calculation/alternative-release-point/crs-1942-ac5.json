@@ -1,0 +1,25 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1994-11-24",
+    "isActiveSexOffender": false
+  },
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-03-22"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 5
+        }
+      },
+      "sentencedAt": "2024-03-22",
+      "hasAnSDSEarlyReleaseExclusion": "VIOLENT",
+      "isSDSPlus": true
+    }
+  ],
+  "adjustments": {},
+  "calculateErsed": false
+}

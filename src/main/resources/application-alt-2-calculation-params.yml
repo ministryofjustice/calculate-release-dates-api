@@ -13,6 +13,6 @@ release-point-multipliers:
         - BOTUS
       multiplier: 1.0
     - tracks:
-        - AFINE_ARD_AT_HALFWAY
-      multiplier: 0.5
-  default: 0.43
+        - SDS_EARLY_RELEASE
+      multiplier: 0.43
+  default: 0.5
