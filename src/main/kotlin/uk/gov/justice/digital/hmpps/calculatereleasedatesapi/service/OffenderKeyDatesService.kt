@@ -3,15 +3,18 @@ import arrow.core.getOrElse
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.CalculationController
+import java.util.*
 
 @Service
 @Transactional(readOnly = true)
@@ -21,19 +24,33 @@ class OffenderKeyDatesService(
   private val calculationRequestRepository: CalculationRequestRepository,
 ) {
 
-  fun getKeyDatesByCalcId(calculationRequestId: Long): OffenderReleaseDates {
+  fun getKeyDatesByCalcId(calculationRequestId: Long): ReleaseDatesAndCalculationContext {
     try {
       val calculationRequest = calculationRequestRepository.findById(calculationRequestId).get()
       val offenderKeyDatesEither = prisonService.getOffenderKeyDates(calculationRequest.bookingId)
-      val releaseDatesForBookingId = offenderKeyDatesEither.map { releaseDates(it) }.getOrNull()
-      return OffenderReleaseDates(
-        calculationRequest.bookingId,
-        calculationRequestId,
-        calculationRequest.calculatedAt,
-        calculationRequest.reasonForCalculation?.displayName ?: "Not entered",
-        CalculationSource.CRDS,
-        calculationResultEnrichmentService.addDetailToCalculationDates(releaseDatesForBookingId!!, null, null).values.toList(),
-      )
+
+      return offenderKeyDatesEither
+        .map { releaseDates(it) }
+        .map { calculationResultEnrichmentService.addDetailToCalculationDates(it, null, null).values.toList() }
+        .fold(
+          { error -> throw NoSuchElementException("Unable to retrieve offender key dates") },
+          { enrichedDates ->
+            ReleaseDatesAndCalculationContext(
+              CalculationContext(
+                calculationRequestId,
+                calculationRequest.bookingId,
+                calculationRequest.prisonerId,
+                CalculationStatus.CONFIRMED,
+                calculationRequest.calculationReference,
+                calculationRequest.reasonForCalculation,
+                calculationRequest.otherReasonForCalculation,
+                calculationRequest.calculatedAt.toLocalDate(),
+                calculationRequest.calculationType,
+              ),
+              enrichedDates,
+            )
+          },
+        )
     } catch (e: Exception) {
       throw CrdWebException("Unable to retrieve offender key dates", HttpStatus.NOT_FOUND)
     }

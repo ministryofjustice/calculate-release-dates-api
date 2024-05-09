@@ -49,7 +49,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
@@ -469,12 +469,18 @@ class CalculationControllerTest {
   fun `Test GET of offender key dates for a booking id successfully`() {
     val calcRequestId = 5636121L
     val bookingId = 123456L
-    val expected = OffenderReleaseDates(
-      bookingId,
-      calcRequestId,
-      LocalDateTime.of(2024, 2, 29, 10, 30),
-      "14 day check",
-      CalculationSource.CRDS,
+    val expected = ReleaseDatesAndCalculationContext(
+      CalculationContext(
+        calcRequestId,
+        bookingId,
+        "A1234AB",
+        CONFIRMED,
+        UUID.randomUUID(),
+        CalculationReason(-1, isActive = false, isOther = false, displayName = "14 day check", isBulk = false, nomisReason = null, nomisComment = null, displayRank = null),
+        null,
+        LocalDate.of(2024, 1, 1),
+        CalculationType.CALCULATED,
+      ),
       listOf(
         DetailedDate(
           ReleaseDateType.HDCED,
@@ -492,7 +498,7 @@ class CalculationControllerTest {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn()
 
-    assertThat(mapper.readValue(result.response.contentAsString, OffenderReleaseDates::class.java))
+    assertThat(mapper.readValue(result.response.contentAsString, ReleaseDatesAndCalculationContext::class.java))
       .isEqualTo(expected)
   }
 

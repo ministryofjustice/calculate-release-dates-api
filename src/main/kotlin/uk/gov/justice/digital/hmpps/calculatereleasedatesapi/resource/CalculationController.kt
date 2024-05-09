@@ -29,7 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedCalculationResults
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderReleaseDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -469,7 +469,7 @@ class CalculationController(
     @Parameter(required = true, example = "123456", description = "The calculation request id of the offender")
     @PathVariable("calculationRequestId")
     calculationRequestId: Long,
-  ): OffenderReleaseDates {
+  ): ReleaseDatesAndCalculationContext {
     log.info("Request received to get offender key dates for calc Id - $calculationRequestId")
     return offenderKeyDatesService.getKeyDatesByCalcId(calculationRequestId)
   }

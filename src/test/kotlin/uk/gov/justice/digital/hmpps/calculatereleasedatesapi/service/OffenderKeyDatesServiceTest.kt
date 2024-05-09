@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import arrow.core.left
 import arrow.core.right
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -15,16 +15,17 @@ import org.mockito.kotlin.isNull
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -79,10 +80,10 @@ open class OffenderKeyDatesServiceTest {
 
     val result = underTest.getNomisCalculationSummary(offenderSentCalcId)
 
-    Assertions.assertThat(result.reason).isEqualTo(expected.reason)
-    Assertions.assertThat(result.calculatedAt).isEqualTo(expected.calculatedAt)
-    Assertions.assertThat(result.comment).isEqualTo(expected.comment)
-    Assertions.assertThat(result.releaseDates).isEqualTo(expected.releaseDates)
+    assertThat(result.reason).isEqualTo(expected.reason)
+    assertThat(result.calculatedAt).isEqualTo(expected.calculatedAt)
+    assertThat(result.comment).isEqualTo(expected.comment)
+    assertThat(result.releaseDates).isEqualTo(expected.releaseDates)
   }
 
   @Test
@@ -95,12 +96,18 @@ open class OffenderKeyDatesServiceTest {
       comment = null,
       homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
     )
-    val expected = OffenderReleaseDates(
-      bookingId,
-      calcRequestId,
-      LocalDateTime.of(2024, 2, 29, 10, 30),
-      "14 day check",
-      CalculationSource.CRDS,
+    val expected = ReleaseDatesAndCalculationContext(
+      CalculationContext(
+        calcRequestId,
+        bookingId,
+        "A1234AB",
+        CalculationStatus.CONFIRMED,
+        reference,
+        CalculationReason(-1, false, false, "14 day check", false, null, null, 1),
+        null,
+        LocalDate.of(2024, 1, 1),
+        CalculationType.CALCULATED,
+      ),
       listOf(
         DetailedDate(
           ReleaseDateType.HDCED,
@@ -115,13 +122,13 @@ open class OffenderKeyDatesServiceTest {
     val calcRequest = CalculationRequest(
       1,
       reference,
-      "123",
+      "A1234AB",
       bookingId,
       CalculationStatus.CONFIRMED.name,
-      calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
+      calculatedAt = LocalDateTime.of(2024, 1, 1, 0, 0),
       reasonForCalculation = CalculationReason(
-        1,
-        true,
+        -1,
+        false,
         false,
         "14 day check",
         false,
@@ -130,6 +137,7 @@ open class OffenderKeyDatesServiceTest {
         1,
       ),
       otherReasonForCalculation = null,
+      calculationType = CalculationType.CALCULATED,
     )
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
@@ -138,19 +146,101 @@ open class OffenderKeyDatesServiceTest {
 
     val result = underTest.getKeyDatesByCalcId(calcRequestId)
 
-    Assertions.assertThat(result).isEqualTo(expected)
+    assertThat(result).isEqualTo(expected)
   }
 
   @Test
-  fun `Test getting Release Dates for calc request id for exception scenario`() {
+  fun `Test getting Release Dates for calc request id for exception scenario calcRequest is in error`() {
     val calcRequestId = 5636121L
     val errorMessage = "Unable to retrieve offender key dates"
+
+    whenever(calculationRequestRepository.findById(calcRequestId)).thenThrow(NoSuchElementException("Database error"))
 
     val exception = assertThrows<CrdWebException> {
       underTest.getKeyDatesByCalcId(calcRequestId)
     }
 
-    Assertions.assertThat(exception.message).isEqualTo(errorMessage)
+    assertThat(exception.message).isEqualTo(errorMessage)
+  }
+
+  @Test
+  fun `Test getting Release Dates for calc request id for exception scenario getOffenderKeyDates is in error`() {
+    val calcRequestId = 5636121L
+    val bookingId = 56121L
+    val errorMessage = "Unable to retrieve offender key dates"
+    val calcRequest = CalculationRequest(
+      1,
+      reference,
+      "A1234AB",
+      bookingId,
+      CalculationStatus.CONFIRMED.name,
+      calculatedAt = LocalDateTime.of(2024, 1, 1, 0, 0),
+      reasonForCalculation = CalculationReason(
+        -1,
+        false,
+        false,
+        "14 day check",
+        false,
+        null,
+        null,
+        1,
+      ),
+      otherReasonForCalculation = null,
+      calculationType = CalculationType.CALCULATED,
+    )
+
+    whenever(prisonService.getOffenderKeyDates(any())).thenReturn(errorMessage.left())
+    whenever(calculationRequestRepository.findById(calcRequestId)).thenReturn(Optional.of(calcRequest))
+
+    val exception = assertThrows<CrdWebException> {
+      underTest.getKeyDatesByCalcId(calcRequestId)
+    }
+
+    assertThat(exception.message).isEqualTo(errorMessage)
+  }
+
+  @Test
+  fun `Test getting Release Dates for calc request id for exception scenario addDetailToCalculationDates is in error`() {
+    val calcRequestId = 5636121L
+    val bookingId = 56121L
+    val errorMessage = "Unable to retrieve offender key dates"
+    val offenderKeyDates = OffenderKeyDates(
+      reasonCode = "FS",
+      calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
+      comment = null,
+      homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 1),
+    )
+    val calcRequest = CalculationRequest(
+      1,
+      reference,
+      "A1234AB",
+      bookingId,
+      CalculationStatus.CONFIRMED.name,
+      calculatedAt = LocalDateTime.of(2024, 1, 1, 0, 0),
+      reasonForCalculation = CalculationReason(
+        -1,
+        false,
+        false,
+        "14 day check",
+        false,
+        null,
+        null,
+        1,
+      ),
+      otherReasonForCalculation = null,
+      calculationType = CalculationType.CALCULATED,
+    )
+
+    whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
+    whenever(calculationRequestRepository.findById(calcRequestId)).thenReturn(Optional.of(calcRequest))
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(Mockito.anyList(), isNull(), isNull()))
+      .thenThrow(NoSuchElementException("Error"))
+
+    val exception = assertThrows<CrdWebException> {
+      underTest.getKeyDatesByCalcId(calcRequestId)
+    }
+
+    assertThat(exception.message).isEqualTo(errorMessage)
   }
 
   @Test
@@ -166,7 +256,7 @@ open class OffenderKeyDatesServiceTest {
 
     val result = underTest.getNomisCalculationSummary(offenderSentCalcId)
 
-    Assertions.assertThat(result.reason).isEqualTo("FS")
+    assertThat(result.reason).isEqualTo("FS")
   }
 
   @Test
@@ -180,7 +270,7 @@ open class OffenderKeyDatesServiceTest {
       underTest.getNomisCalculationSummary(offenderSentCalcId)
     }
 
-    Assertions.assertThat(exception.message).isEqualTo(errorMessage)
+    assertThat(exception.message).isEqualTo(errorMessage)
   }
 
   @Test
@@ -194,8 +284,8 @@ open class OffenderKeyDatesServiceTest {
 
     val generatedDates = underTest.releaseDates(offenderKeyDates)
 
-    Assertions.assertThat(generatedDates).anyMatch { it.type == ReleaseDateType.SLED && it.date == LocalDate.of(2025, 1, 1) }
-    Assertions.assertThat(generatedDates).noneMatch { it.type == ReleaseDateType.SED || it.type == ReleaseDateType.LED }
+    assertThat(generatedDates).anyMatch { it.type == ReleaseDateType.SLED && it.date == LocalDate.of(2025, 1, 1) }
+    assertThat(generatedDates).noneMatch { it.type == ReleaseDateType.SED || it.type == ReleaseDateType.LED }
   }
 
   @Test
@@ -209,9 +299,9 @@ open class OffenderKeyDatesServiceTest {
 
     val generatedDates = underTest.releaseDates(offenderKeyDates)
 
-    Assertions.assertThat(generatedDates).noneMatch { it.type == ReleaseDateType.SLED }
-    Assertions.assertThat(generatedDates).anyMatch { it.type == ReleaseDateType.SED && it.date == LocalDate.of(2025, 1, 1) }
-    Assertions.assertThat(generatedDates).anyMatch { it.type == ReleaseDateType.LED && it.date == LocalDate.of(2026, 1, 1) }
+    assertThat(generatedDates).noneMatch { it.type == ReleaseDateType.SLED }
+    assertThat(generatedDates).anyMatch { it.type == ReleaseDateType.SED && it.date == LocalDate.of(2025, 1, 1) }
+    assertThat(generatedDates).anyMatch { it.type == ReleaseDateType.LED && it.date == LocalDate.of(2026, 1, 1) }
   }
 
   @Test
@@ -224,8 +314,8 @@ open class OffenderKeyDatesServiceTest {
 
     val generatedDates = underTest.releaseDates(offenderKeyDates)
 
-    Assertions.assertThat(generatedDates).noneMatch { it.type == ReleaseDateType.SLED }
-    Assertions.assertThat(generatedDates).noneMatch { it.type == ReleaseDateType.SED || it.type == ReleaseDateType.LED }
+    assertThat(generatedDates).noneMatch { it.type == ReleaseDateType.SLED }
+    assertThat(generatedDates).noneMatch { it.type == ReleaseDateType.SED || it.type == ReleaseDateType.LED }
   }
 
   @Test
@@ -279,6 +369,6 @@ open class OffenderKeyDatesServiceTest {
 
     val result = underTest.releaseDates(offenderKeyDates)
 
-    Assertions.assertThat(dates).isEqualTo(result)
+    assertThat(dates).isEqualTo(result)
   }
 }
