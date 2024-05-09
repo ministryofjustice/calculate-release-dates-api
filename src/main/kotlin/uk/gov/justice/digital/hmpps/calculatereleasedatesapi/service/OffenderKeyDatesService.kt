@@ -54,7 +54,7 @@ class OffenderKeyDatesService(
         )
     } catch (exception: Exception) {
       val message = "Unable to retrieve offender key dates"
-      log.error(message,exception)
+      log.error(message, exception)
       throw CrdWebException(message, HttpStatus.NOT_FOUND)
     }
   }
