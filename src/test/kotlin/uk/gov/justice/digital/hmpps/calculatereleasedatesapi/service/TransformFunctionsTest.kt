@@ -107,6 +107,7 @@ class TransformFunctionsTest {
         lineSequence = lineSequence,
         caseSequence = caseSequence,
         isSDSPlus = true,
+        hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       ),
     )
   }

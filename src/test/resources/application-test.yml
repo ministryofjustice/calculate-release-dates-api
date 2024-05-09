@@ -71,3 +71,4 @@ domain-events-sns:
 
 feature-toggles:
   botus: true
+  sds-early-release: true
