@@ -32,7 +32,7 @@ class OffenderKeyDatesService(
         .map { releaseDates(it) }
         .map { calculationResultEnrichmentService.addDetailToCalculationDates(it, null, null).values.toList() }
         .fold(
-          { error -> throw NoSuchElementException("Unable to retrieve offender key dates") },
+          { throw NoSuchElementException("Unable to retrieve offender key dates") },
           { enrichedDates ->
             ReleaseDatesAndCalculationContext(
               CalculationContext(
