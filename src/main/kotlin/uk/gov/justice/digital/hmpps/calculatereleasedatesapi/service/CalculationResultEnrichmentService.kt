@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
@@ -37,6 +38,7 @@ class CalculationResultEnrichmentService(
     releaseDates: List<ReleaseDate>,
     sentenceAndOffences: List<SentenceAndOffence>?,
     calculationBreakdown: CalculationBreakdown?,
+    historicalTusedSource: HistoricalTusedSource? = null,
   ): Map<ReleaseDateType, DetailedDate> {
     val releaseDatesMap = releaseDates.associateBy { it.type }
     return releaseDatesMap.mapValues { (_, releaseDate) ->
@@ -44,7 +46,7 @@ class CalculationResultEnrichmentService(
         releaseDate.type,
         releaseDate.type.description,
         releaseDate.date,
-        getHints(releaseDate.type, releaseDate.date, calculationBreakdown, releaseDatesMap, sentenceAndOffences),
+        getHints(releaseDate.type, releaseDate.date, calculationBreakdown, releaseDatesMap, sentenceAndOffences, historicalTusedSource),
       )
     }
   }
@@ -55,6 +57,7 @@ class CalculationResultEnrichmentService(
     calculationBreakdown: CalculationBreakdown?,
     releaseDates: Map<ReleaseDateType, ReleaseDate>,
     sentenceAndOffences: List<SentenceAndOffence>?,
+    historicalTusedSource: HistoricalTusedSource? = null,
   ): List<ReleaseDateHint> {
     val hints = mutableListOf<ReleaseDateHint?>()
     hints += nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type, date)
@@ -64,7 +67,18 @@ class CalculationResultEnrichmentService(
     hints += hdcedHints(type, date, sentenceAndOffences, releaseDates, calculationBreakdown)
     hints += mtdHints(type, date, sentenceAndOffences, releaseDates)
     hints += ersedHints(type, releaseDates, calculationBreakdown)
+    if (historicalTusedSource != null) {
+      hints += tusedHints(type)
+    }
     return hints.filterNotNull()
+  }
+
+  private fun tusedHints(type: ReleaseDateType): List<ReleaseDateHint> {
+    return if (type == ReleaseDateType.TUSED) {
+      mutableListOf(ReleaseDateHint("TUSED recorded in NOMIS at time of release"))
+    } else {
+      emptyList()
+    }
   }
 
   private fun nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type: ReleaseDateType, date: LocalDate): ReleaseDateHint? {

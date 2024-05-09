@@ -15,7 +15,7 @@ class BookingService() {
 
     val offender = transform(prisonerDetails)
     val adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences)
-    val sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) }
+    val sentences = sentenceAndOffences.map { transform(it, calculationUserInputs, prisonApiSourceData.historicalTusedData) }
 
     return Booking(
       offender = offender,
@@ -24,6 +24,7 @@ class BookingService() {
       bookingId = prisonerDetails.bookingId,
       returnToCustodyDate = prisonApiSourceData.returnToCustodyDate?.returnToCustodyDate,
       fixedTermRecallDetails = prisonApiSourceData.fixedTermRecallDetails,
+      historicalTusedData = prisonApiSourceData.historicalTusedData,
     )
   }
 }

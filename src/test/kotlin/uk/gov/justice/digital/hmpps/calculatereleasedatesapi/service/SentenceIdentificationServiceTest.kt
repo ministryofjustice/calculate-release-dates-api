@@ -26,6 +26,7 @@ import java.time.temporal.ChronoUnit.YEARS
 @ExtendWith(MockitoExtension::class)
 class SentenceIdentificationServiceTest {
   private val workingDayService = mock<WorkingDayService>()
+  private val botusTusedService = mock<BotusTusedService>()
   private val tusedCalculator = TusedCalculator(workingDayService)
   private val hdced4Calculator = Hdced4Calculator(hdcedConfigurationForTests(), SentenceAggregator(), ReleasePointMultiplierLookup(releasePointMultiplierConfigurationForTests()))
   private val sentenceIdentificationService: SentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdced4Calculator)

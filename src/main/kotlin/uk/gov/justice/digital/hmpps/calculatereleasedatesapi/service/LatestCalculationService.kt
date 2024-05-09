@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
@@ -98,6 +99,7 @@ class LatestCalculationService(
     location: String?,
     sentenceAndOffences: List<SentenceAndOffence>?,
     breakdown: CalculationBreakdown?,
+    historicalTusedSource: HistoricalTusedSource? = null,
   ): LatestCalculation {
     val dates = offenderKeyDatesService.releaseDates(prisonerCalculation)
     return LatestCalculation(
@@ -108,7 +110,7 @@ class LatestCalculationService(
       location,
       reason,
       calculationSource,
-      calculationResultEnrichmentService.addDetailToCalculationDates(dates, sentenceAndOffences, breakdown).values.toList(),
+      calculationResultEnrichmentService.addDetailToCalculationDates(dates, sentenceAndOffences, breakdown, historicalTusedSource).values.toList(),
     )
   }
 }

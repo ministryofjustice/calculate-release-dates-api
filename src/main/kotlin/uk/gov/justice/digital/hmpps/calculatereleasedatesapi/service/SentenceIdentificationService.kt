@@ -96,9 +96,14 @@ class SentenceIdentificationService(
     sentence.releaseDateTypes = ReleaseDateTypes(releaseDateTypes.toList(), sentence, offender)
   }
 
-  private fun identifyBotusSentence(sentence: CalculableSentence): List<ReleaseDateType> {
+  private fun identifyBotusSentence(sentence: BotusSentence): List<ReleaseDateType> {
     sentence.identificationTrack = BOTUS
-    return listOf(ARD, SED)
+    var releaseDateTypes: List<ReleaseDateType> = mutableListOf(ARD, SED)
+    if (sentence.latestTusedDate != null) {
+      sentence.identificationTrack = SentenceIdentificationTrack.BOTUS_WITH_HISTORIC_TUSED
+      releaseDateTypes += TUSED
+    }
+    return releaseDateTypes
   }
 
   private fun identifyDtoSentence(sentence: CalculableSentence): List<ReleaseDateType> {

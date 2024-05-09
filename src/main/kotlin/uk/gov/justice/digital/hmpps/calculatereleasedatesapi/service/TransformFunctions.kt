@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType.MANUAL
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.APD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
@@ -81,6 +82,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HdcFourPlusComparisonMismatch
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -110,7 +112,7 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.*
+import java.util.UUID
 
 /*
 ** Functions which transform entities objects into their model equivalents.
@@ -120,6 +122,7 @@ import java.util.*
 fun transform(
   sentence: SentenceAndOffenceWithReleaseArrangements,
   calculationUserInputs: CalculationUserInputs?,
+  historicalTusedData: HistoricalTusedData? = null,
 ): AbstractSentence {
   return sentence.let {
     val offendersOffence = sentence.offence
@@ -154,6 +157,7 @@ fun transform(
           hasAnSDSEarlyReleaseExclusion = sentence.hasAnSDSEarlyReleaseExclusion,
         )
       }
+
       AFineSentence::class.java -> {
         AFineSentence(
           sentencedAt = sentence.sentenceDate,
@@ -168,6 +172,7 @@ fun transform(
           fineAmount = sentence.fineAmount,
         )
       }
+
       DetentionAndTrainingOrderSentence::class.java -> {
         DetentionAndTrainingOrderSentence(
           sentencedAt = sentence.sentenceDate,
@@ -181,6 +186,7 @@ fun transform(
           recallType = sentenceCalculationType.recallType,
         )
       }
+
       BotusSentence::class.java -> {
         BotusSentence(
           sentencedAt = sentence.sentenceDate,
@@ -190,8 +196,11 @@ fun transform(
           consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
           caseSequence = sentence.caseSequence,
           lineSequence = sentence.lineSequence,
+          latestTusedDate = historicalTusedData?.tused,
+          latestTusedSource = historicalTusedData?.historicalTusedSource,
         )
       }
+
       else -> {
         val imprisonmentTerm = sentence.terms.first { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
         val licenseTerm = sentence.terms.first { it.code == SentenceTerms.LICENCE_TERM_CODE }
@@ -368,6 +377,7 @@ fun transform(
   calculationUserInputs: CalculationUserInputs? = null,
   calculationFragments: CalculationFragments? = null,
   calculationType: CalculationType = CalculationType.CALCULATED,
+  historicalTusedSource: HistoricalTusedSource? = null,
   version: String,
 ): CalculationRequest {
   return CalculationRequest(
@@ -386,6 +396,7 @@ fun transform(
     breakdownHtml = calculationFragments?.breakdownHtml,
     calculationType = calculationType,
     reasonForCalculation = reasonForCalculation,
+    historicalTusedSource = historicalTusedSource,
     otherReasonForCalculation = otherReasonDescription,
     version = version,
   )
@@ -719,7 +730,12 @@ fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
   comparison.numberOfPeopleComparisonFailedFor,
 )
 
-fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4PlusResults: List<HdcFourPlusComparisonMismatch>, objectMapper: ObjectMapper): ComparisonOverview = ComparisonOverview(
+fun transform(
+  comparison: Comparison,
+  mismatches: List<ComparisonPerson>,
+  hdc4PlusResults: List<HdcFourPlusComparisonMismatch>,
+  objectMapper: ObjectMapper,
+): ComparisonOverview = ComparisonOverview(
   comparison.comparisonShortReference,
   comparison.prison,
   comparison.comparisonType,
@@ -733,7 +749,11 @@ fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4Pl
   hdc4PlusResults,
 )
 
-fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, objectMapper: ObjectMapper): ComparisonOverview = ComparisonOverview(
+fun transform(
+  comparison: Comparison,
+  mismatches: List<ComparisonPerson>,
+  objectMapper: ObjectMapper,
+): ComparisonOverview = ComparisonOverview(
   comparison.comparisonShortReference,
   comparison.prison,
   comparison.comparisonType,
@@ -794,9 +814,13 @@ fun transform(
   comparisonPerson.fatalException,
 )
 
-fun transform(discrepancy: ComparisonPersonDiscrepancy): ComparisonDiscrepancySummary = transform(discrepancy, discrepancy.causes)
+fun transform(discrepancy: ComparisonPersonDiscrepancy): ComparisonDiscrepancySummary =
+  transform(discrepancy, discrepancy.causes)
 
-fun transform(discrepancy: ComparisonPersonDiscrepancy, discrepancyCauses: List<ComparisonPersonDiscrepancyCause>): ComparisonDiscrepancySummary = ComparisonDiscrepancySummary(
+fun transform(
+  discrepancy: ComparisonPersonDiscrepancy,
+  discrepancyCauses: List<ComparisonPersonDiscrepancyCause>,
+): ComparisonDiscrepancySummary = ComparisonDiscrepancySummary(
   impact = discrepancy.discrepancyImpact.impact,
   causes = transform(discrepancyCauses),
   detail = discrepancy.detail,

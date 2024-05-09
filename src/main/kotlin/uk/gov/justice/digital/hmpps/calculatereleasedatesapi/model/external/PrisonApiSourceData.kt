@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 
 data class PrisonApiSourceData(
@@ -10,4 +11,5 @@ data class PrisonApiSourceData(
   val returnToCustodyDate: ReturnToCustodyDate?,
   // TODO This fixedTermTermRecallDetails variable can replace returnToCustodyDate - to be done as tech debt ticket
   val fixedTermRecallDetails: FixedTermRecallDetails? = null,
+  val historicalTusedData: HistoricalTusedData? = null,
 )
