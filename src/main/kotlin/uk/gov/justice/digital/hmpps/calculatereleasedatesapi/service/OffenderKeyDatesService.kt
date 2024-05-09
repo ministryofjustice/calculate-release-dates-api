@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import arrow.core.getOrElse
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -32,7 +34,7 @@ class OffenderKeyDatesService(
         .map { releaseDates(it) }
         .map { calculationResultEnrichmentService.addDetailToCalculationDates(it, null, null).values.toList() }
         .fold(
-          { throw NoSuchElementException("Unable to retrieve offender key dates") },
+          { throw NoSuchElementException("Error in mapping/enriching release dates") },
           { enrichedDates ->
             ReleaseDatesAndCalculationContext(
               CalculationContext(
@@ -50,8 +52,10 @@ class OffenderKeyDatesService(
             )
           },
         )
-    } catch (e: Exception) {
-      throw CrdWebException("Unable to retrieve offender key dates", HttpStatus.NOT_FOUND)
+    } catch (exception: Exception) {
+      val message = "Unable to retrieve offender key dates"
+      log.error(message,exception)
+      throw CrdWebException(message, HttpStatus.NOT_FOUND)
     }
   }
 
@@ -98,5 +102,9 @@ class OffenderKeyDatesService(
       prisonerCalculation.tariffExpiredRemovalSchemeEligibilityDate?.let { ReleaseDate(it, ReleaseDateType.TERSED) },
     )
     return dates
+  }
+
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }
