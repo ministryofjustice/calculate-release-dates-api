@@ -1,21 +1,63 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import arrow.core.getOrElse
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.CalculationController
+import java.util.*
 
 @Service
 @Transactional(readOnly = true)
 class OffenderKeyDatesService(
   private val prisonService: PrisonService,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
+  private val calculationRequestRepository: CalculationRequestRepository,
 ) {
+
+  fun getKeyDatesByCalcId(calculationRequestId: Long): ReleaseDatesAndCalculationContext {
+    try {
+      val calculationRequest = calculationRequestRepository.findById(calculationRequestId).get()
+      val offenderKeyDatesEither = prisonService.getOffenderKeyDates(calculationRequest.bookingId)
+
+      return offenderKeyDatesEither
+        .map { releaseDates(it) }
+        .map { calculationResultEnrichmentService.addDetailToCalculationDates(it, null, null).values.toList() }
+        .fold(
+          { throw NoSuchElementException("Error in mapping/enriching release dates") },
+          { enrichedDates ->
+            ReleaseDatesAndCalculationContext(
+              CalculationContext(
+                calculationRequestId,
+                calculationRequest.bookingId,
+                calculationRequest.prisonerId,
+                CalculationStatus.CONFIRMED,
+                calculationRequest.calculationReference,
+                calculationRequest.reasonForCalculation,
+                calculationRequest.otherReasonForCalculation,
+                calculationRequest.calculatedAt.toLocalDate(),
+                calculationRequest.calculationType,
+              ),
+              enrichedDates,
+            )
+          },
+        )
+    } catch (exception: Exception) {
+      val message = "Unable to retrieve offender key dates"
+      log.error(message, exception)
+      throw CrdWebException(message, HttpStatus.NOT_FOUND)
+    }
+  }
 
   fun getNomisCalculationSummary(offenderSentCalculationId: Long): NomisCalculationSummary {
     CalculationController.log.info("Request received to get offender key dates for $offenderSentCalculationId")
@@ -60,5 +102,9 @@ class OffenderKeyDatesService(
       prisonerCalculation.tariffExpiredRemovalSchemeEligibilityDate?.let { ReleaseDate(it, ReleaseDateType.TERSED) },
     )
     return dates
+  }
+
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }
