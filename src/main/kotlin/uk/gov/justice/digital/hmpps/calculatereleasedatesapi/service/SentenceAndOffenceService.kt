@@ -15,27 +15,26 @@ class SentenceAndOffenceService(
 
   fun getSentencesAndOffences(bookingId: Long): List<AnalyzedSentenceAndOffence> {
     val sentencesAndOffences = prisonService.getSentencesAndOffences(bookingId)
-    val lastCalculation = calculationRequestRepository.findLatestCalculation(bookingId)
 
-    return lastCalculation.map {
-      if (it.sentenceAndOffences == null) {
+    return calculationRequestRepository.findLatestCalculation(bookingId).map { latestCalculation ->
+      if (latestCalculation.sentenceAndOffences == null) {
         return@map transform(SentenceAndOffenceAnalysis.NEW, sentencesAndOffences)
       }
-      val lastSentenceAndOffences: List<SentenceAndOffence> = prisonApiDataMapper.mapSentencesAndOffences(it)
+      val lastSentenceAndOffences: List<SentenceAndOffence> = prisonApiDataMapper.mapSentencesAndOffences(latestCalculation)
       if (sentencesAndOffences == lastSentenceAndOffences) {
         transform(SentenceAndOffenceAnalysis.SAME, sentencesAndOffences)
       } else {
-        val sentencesAndOffencesBySequence = sentencesAndOffences.associateBy { sentenceAndOffences -> "${sentenceAndOffences.caseSequence}-${sentenceAndOffences.sentenceSequence}" }
-        val lastSentencesAndOffencesBySequence = lastSentenceAndOffences.associateBy { sentenceAndOffences -> "${sentenceAndOffences.caseSequence}-${sentenceAndOffences.sentenceSequence}" }
-        sentencesAndOffencesBySequence.map { (key: String, value: SentenceAndOffence) ->
+        val sentencesAndOffencesBySequence = sentencesAndOffences.groupBy { sentenceAndOffences -> "${sentenceAndOffences.caseSequence}-${sentenceAndOffences.sentenceSequence}" }
+        val lastSentencesAndOffencesBySequence = lastSentenceAndOffences.groupBy { sentenceAndOffences -> "${sentenceAndOffences.caseSequence}-${sentenceAndOffences.sentenceSequence}" }
+        sentencesAndOffencesBySequence.flatMap { (key: String, values: List<SentenceAndOffence>) ->
           if (lastSentencesAndOffencesBySequence.containsKey(key)) {
-            if (value.offence == lastSentencesAndOffencesBySequence[key]!!.offence) {
-              transform(SentenceAndOffenceAnalysis.SAME, value)
+            if (values.map { it.offence } == lastSentencesAndOffencesBySequence[key]!!.map { it.offence }) {
+              values.map { transform(SentenceAndOffenceAnalysis.SAME, it) }
             } else {
-              transform(SentenceAndOffenceAnalysis.UPDATED, value)
+              values.map { transform(SentenceAndOffenceAnalysis.UPDATED, it) }
             }
           } else {
-            transform(SentenceAndOffenceAnalysis.NEW, value)
+            values.map { transform(SentenceAndOffenceAnalysis.NEW, it) }
           }
         }
       }
