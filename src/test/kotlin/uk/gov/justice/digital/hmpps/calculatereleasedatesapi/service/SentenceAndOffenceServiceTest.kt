@@ -65,7 +65,7 @@ class SentenceAndOffenceServiceTest {
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(defaultedSentencesAndOffences)
     whenever(calculationRequestRepository.findLatestCalculation(anyLong())).thenReturn(Optional.of(calcRequestWithMissingSDSPlusFlag))
     val response = underTest.getSentencesAndOffences(123)
-    assertThat(response).hasSize(1)
+    assertThat(response).hasSize(2)
     assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
   }
 
@@ -75,8 +75,9 @@ class SentenceAndOffenceServiceTest {
     whenever(calculationRequestRepository.findLatestCalculation(anyLong())).thenReturn(Optional.of(changedCalculationRequest))
     whenever(prisonApiDataMapper.mapSentencesAndOffences(changedCalculationRequest)).thenReturn(changedSentenceAndOffences)
     val response = underTest.getSentencesAndOffences(123)
-    assertThat(response).hasSize(1)
+    assertThat(response).hasSize(2)
     assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.UPDATED)
+    assertThat(response.get(1).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.UPDATED)
   }
 
   @Test
@@ -85,9 +86,11 @@ class SentenceAndOffenceServiceTest {
     whenever(calculationRequestRepository.findLatestCalculation(anyLong())).thenReturn(Optional.of(calculationRequest))
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(sentenceAndOffences)
     val response = underTest.getSentencesAndOffences(123)
-    assertThat(response).hasSize(2)
+    assertThat(response).hasSize(4)
     assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
-    assertThat(response.get(1).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.NEW)
+    assertThat(response.get(1).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
+    assertThat(response.get(2).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.NEW)
+    assertThat(response.get(3).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.NEW)
   }
 
   companion object {
