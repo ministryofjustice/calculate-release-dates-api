@@ -5,7 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class AnalyzedSentenceAndOffence(
+data class AnalysedSentenceAndOffence(
   val bookingId: Long,
   val sentenceSequence: Int,
   val lineSequence: Int,
@@ -23,4 +23,5 @@ data class AnalyzedSentenceAndOffence(
   val fineAmount: BigDecimal? = null,
   val sentenceAndOffenceAnalysis: SentenceAndOffenceAnalysis = SentenceAndOffenceAnalysis.SAME,
   val isSDSPlus: Boolean,
+  val hasAnSDSEarlyReleaseExclusion: SDSEarlyReleaseExclusionType,
 )

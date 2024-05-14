@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedBookingAndSentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.AdjustmentsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentenceAndOffenceService
 
@@ -37,7 +37,7 @@ class PrisonApiProxyController(
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun getSentencesAndOffences(@PathVariable bookingId: Long): List<AnalyzedSentenceAndOffence> {
+  fun getSentencesAndOffences(@PathVariable bookingId: Long): List<AnalysedSentenceAndOffence> {
     return sentenceAndOffenceService.getSentencesAndOffences(bookingId)
   }
 

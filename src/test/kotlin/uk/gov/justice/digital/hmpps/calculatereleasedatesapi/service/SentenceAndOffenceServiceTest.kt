@@ -11,6 +11,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -42,8 +43,35 @@ class SentenceAndOffenceServiceTest {
     whenever(calculationRequestRepository.findLatestCalculation(anyLong())).thenReturn(Optional.empty())
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(2)
-    assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.NEW)
-    assertThat(response.get(1).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.NEW)
+    val analysedSentenceAndOffence = AnalysedSentenceAndOffence(
+      bookingId = 1,
+      sentenceSequence = 1,
+      sentenceDate = FIRST_JAN_2015,
+      terms = listOf(
+        SentenceTerms(
+          years = 5,
+          months = 4,
+          weeks = 3,
+          days = 2,
+        ),
+      ),
+      sentenceStatus = "IMP",
+      sentenceCategory = "CAT",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+      sentenceTypeDescription = "Standard Determinate",
+      offence = offences[0],
+      lineSequence = lineSequence,
+      caseSequence = caseSequence,
+      caseReference = null,
+      fineAmount = null,
+      courtDescription = null,
+      consecutiveToSequence = null,
+      isSDSPlus = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+      sentenceAndOffenceAnalysis = SentenceAndOffenceAnalysis.NEW,
+    )
+    assertThat(response[0]).isEqualTo(analysedSentenceAndOffence)
+    assertThat(response[1]).isEqualTo(analysedSentenceAndOffence.copy(offence = offences[1]))
   }
 
   @Test
@@ -53,8 +81,8 @@ class SentenceAndOffenceServiceTest {
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(sentenceAndOffences)
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(2)
-    assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
-    assertThat(response.get(1).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
+    assertThat(response[0].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
+    assertThat(response[1].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
   }
 
   @Test
@@ -66,7 +94,8 @@ class SentenceAndOffenceServiceTest {
     whenever(calculationRequestRepository.findLatestCalculation(anyLong())).thenReturn(Optional.of(calcRequestWithMissingSDSPlusFlag))
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(2)
-    assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
+    assertThat(response[0].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
+    assertThat(response[1].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
   }
 
   @Test
@@ -76,8 +105,8 @@ class SentenceAndOffenceServiceTest {
     whenever(prisonApiDataMapper.mapSentencesAndOffences(changedCalculationRequest)).thenReturn(changedSentenceAndOffences)
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(2)
-    assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.UPDATED)
-    assertThat(response.get(1).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.UPDATED)
+    assertThat(response[0].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.UPDATED)
+    assertThat(response[1].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.UPDATED)
   }
 
   @Test
@@ -87,10 +116,10 @@ class SentenceAndOffenceServiceTest {
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(sentenceAndOffences)
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(4)
-    assertThat(response.get(0).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
-    assertThat(response.get(1).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
-    assertThat(response.get(2).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.NEW)
-    assertThat(response.get(3).sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.NEW)
+    assertThat(response[0].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
+    assertThat(response[1].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
+    assertThat(response[2].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.NEW)
+    assertThat(response[3].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.NEW)
   }
 
   companion object {
