@@ -156,23 +156,39 @@ class SentenceCalculationService(
     sentence: CalculableSentence,
   ): ReleaseDateCalculation {
     var numberOfDaysToParoleEligibilityDate: Long? = null
-    val releaseDateMultiplier = releasePointMultiplierLookup.multiplierFor(sentence.identificationTrack)
     val custodialDuration = sentence.custodialDuration()
-    val numberOfDaysToReleaseDateDouble =
-      custodialDuration.getLengthInDays(sentence.sentencedAt).times(releaseDateMultiplier)
-    val numberOfDaysToReleaseDate: Int = ceil(numberOfDaysToReleaseDateDouble).toInt()
+
+    val numberOfDaysToReleaseDate = when (sentence.identificationTrack) {
+      SentenceIdentificationTrack.SDS_EARLY_RELEASE -> fudgeItUpToCommencementDateIfThisMeansYoureAlreadyReleased(custodialDuration, sentence.sentencedAt)
+      else -> custodialDuration.getLengthInDays(sentence.sentencedAt).times(releasePointMultiplierLookup.multiplierFor(sentence.identificationTrack))
+    }
+
     if (sentence.releaseDateTypes.getReleaseDateTypes().contains(PED) && (sentence is ExtendedDeterminateSentence || sentence is SopcSentence)) {
       val pedMultiplier = determinePedMultiplier(sentence.identificationTrack)
       numberOfDaysToParoleEligibilityDate =
-        ceil(numberOfDaysToReleaseDate.toDouble().times(pedMultiplier)).toLong()
+        ceil(numberOfDaysToReleaseDate.times(pedMultiplier)).toLong()
     }
 
     return ReleaseDateCalculation(
       sentence.getLengthInDays(),
-      numberOfDaysToReleaseDateDouble,
       numberOfDaysToReleaseDate,
+      ceil(numberOfDaysToReleaseDate).toInt(),
       numberOfDaysToParoleEligibilityDate,
     )
+  }
+
+  private fun fudgeItUpToCommencementDateIfThisMeansYoureAlreadyReleased(custodialDuration: Duration, sentencedAt: LocalDate): Double {
+    val earlyReleaseDays = custodialDuration.getLengthInDays(sentencedAt).times(releasePointMultiplierLookup.multiplierFor(SentenceIdentificationTrack.SDS_EARLY_RELEASE))
+    val oldReleaseDays = custodialDuration.getLengthInDays(sentencedAt).times(releasePointMultiplierLookup.multiplierFor(SentenceIdentificationTrack.SDS_STANDARD_RELEASE))
+    val earlyReleaseDate = sentencedAt.plusDays(ceil(earlyReleaseDays).toLong() - 1)
+    val oldReleaseDate = sentencedAt.plusDays(ceil(oldReleaseDays).toLong() - 1)
+    return if (earlyReleaseDate < ImportantDates.OPERATION_EARLY_DAWN_COMMENCEMENT_DATE && oldReleaseDate >= ImportantDates.OPERATION_EARLY_DAWN_COMMENCEMENT_DATE) {
+      ChronoUnit.DAYS.between(sentencedAt, ImportantDates.OPERATION_EARLY_DAWN_COMMENCEMENT_DATE).toDouble() + 1
+    } else if (earlyReleaseDate < ImportantDates.OPERATION_EARLY_DAWN_COMMENCEMENT_DATE && oldReleaseDate < ImportantDates.OPERATION_EARLY_DAWN_COMMENCEMENT_DATE) {
+      oldReleaseDays
+    } else {
+      earlyReleaseDays
+    }
   }
 
   fun calculateFixedTermRecall(booking: Booking, days: Int): LocalDate {
