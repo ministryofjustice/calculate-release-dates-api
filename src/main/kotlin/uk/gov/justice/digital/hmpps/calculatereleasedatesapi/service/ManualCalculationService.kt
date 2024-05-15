@@ -148,17 +148,17 @@ class ManualCalculationService(
 
   fun calculateEffectiveSentenceLength(booking: Booking, manualEntryRequest: ManualEntryRequest): Period {
     if (hasIndeterminateSentences(booking.bookingId)) {
-      return Period.of(0, 0, 0)
+      return Period.ZERO
     } else {
       val identifiedBooking = bookingCalculationService.identify(booking)
       val consecutiveSentencesBooking = bookingCalculationService.createConsecutiveSentences(identifiedBooking)
       val sentences = consecutiveSentencesBooking.getAllExtractableSentences()
-      val earliestSentenceDate = sentences.minOf { it.sentencedAt }
+      val earliestSentenceDate = sentences.minOfOrNull { it.sentencedAt }
       val sed = getSED(manualEntryRequest)
-      return if (sed != null) {
+      return if (sed != null && earliestSentenceDate != null) {
         Period.between(earliestSentenceDate, sed)
       } else {
-        Period.of(0, 0, 0)
+        Period.ZERO
       }
     }
   }
