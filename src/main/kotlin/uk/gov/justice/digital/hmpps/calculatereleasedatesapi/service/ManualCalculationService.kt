@@ -154,23 +154,18 @@ class ManualCalculationService(
       val consecutiveSentencesBooking = bookingCalculationService.createConsecutiveSentences(identifiedBooking)
       val sentences = consecutiveSentencesBooking.getAllExtractableSentences()
       val earliestSentenceDate = sentences.minOf { it.sentencedAt }
-      val sedOptional = getSED(manualEntryRequest)
-      if (sedOptional.isPresent) {
-        val sed = sedOptional.get()
-        return Period.between(earliestSentenceDate, sed)
+      val sed = getSED(manualEntryRequest)
+      return if (sed != null) {
+        Period.between(earliestSentenceDate, sed)
       } else {
-        return Period.of(0, 0, 0)
+        Period.of(0, 0, 0)
       }
     }
   }
 
-  fun getSED(manualEntryRequest: ManualEntryRequest): Optional<LocalDate> {
+  fun getSED(manualEntryRequest: ManualEntryRequest): LocalDate? {
     val sed = manualEntryRequest.selectedManualEntryDates.find { it.dateType == ReleaseDateType.SED }
-    return if (sed != null) {
-      Optional.ofNullable(sed.date?.toLocalDate())
-    } else {
-      Optional.empty()
-    }
+    return sed?.date?.toLocalDate()
   }
 
   private companion object {
