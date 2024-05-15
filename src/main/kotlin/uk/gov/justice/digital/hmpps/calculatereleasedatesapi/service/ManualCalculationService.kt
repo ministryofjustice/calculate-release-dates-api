@@ -152,16 +152,12 @@ class ManualCalculationService(
     } else {
       val identifiedBooking = bookingCalculationService.identify(booking)
       val consecutiveSentencesBooking = bookingCalculationService.createConsecutiveSentences(identifiedBooking)
-      if (consecutiveSentencesBooking.consecutiveSentences.isNotEmpty()) {
-        val sentences = consecutiveSentencesBooking.getAllExtractableSentences()
-        val earliestSentenceDate = sentences.minOf { it.sentencedAt }
-        val sedOptional = getSED(manualEntryRequest)
-        if (sedOptional.isPresent) {
-          val sed = sedOptional.get()
-          return Period.between(earliestSentenceDate, sed)
-        } else {
-          return Period.of(0, 0, 0)
-        }
+      val sentences = consecutiveSentencesBooking.getAllExtractableSentences()
+      val earliestSentenceDate = sentences.minOf { it.sentencedAt }
+      val sedOptional = getSED(manualEntryRequest)
+      if (sedOptional.isPresent) {
+        val sed = sedOptional.get()
+        return Period.between(earliestSentenceDate, sed)
       } else {
         return Period.of(0, 0, 0)
       }
