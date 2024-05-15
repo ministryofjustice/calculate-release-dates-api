@@ -121,18 +121,6 @@ class ManualCalculationServiceTest {
     @Test
     fun `Check ESL is calculated correctly for indeterminate sentences`() {
       // Arrange
-      val sentenceOne = StandardSENTENCE.copy(
-        consecutiveSentenceUUIDs = emptyList(),
-        sentencedAt = LocalDate.of(2022, 1, 1),
-      )
-      var workingBooking = BOOKING.copy(
-        sentences = listOf(
-          sentenceOne,
-        ),
-      )
-      workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
-      whenever(bookingCalculationService.identify(any())).thenReturn(workingBooking)
-      whenever(bookingCalculationService.createConsecutiveSentences(any())).thenReturn(workingBooking)
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
           SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name), false, SDSEarlyReleaseExclusionType.NO),
