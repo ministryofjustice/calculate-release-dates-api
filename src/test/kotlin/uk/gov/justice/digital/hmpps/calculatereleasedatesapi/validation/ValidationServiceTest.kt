@@ -13,7 +13,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
@@ -43,6 +42,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.BookingHelperTest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL
@@ -1300,7 +1300,7 @@ class ValidationServiceTest {
             consecutiveSentenceTwo,
           ),
         )
-        workingBooking = createConsecutiveSentences(workingBooking)
+        workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
         val result = validationService.validateBookingAfterCalculation(
           workingBooking,
         )
@@ -1335,7 +1335,7 @@ class ValidationServiceTest {
             consecutiveSentenceTwo,
           ),
         )
-        workingBooking = createConsecutiveSentences(workingBooking)
+        workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
         val result = validationService.validateBookingAfterCalculation(
           workingBooking,
         )
@@ -1365,7 +1365,7 @@ class ValidationServiceTest {
             consecutiveSentenceTwo,
           ),
         )
-        workingBooking = createConsecutiveSentences(workingBooking)
+        workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
         val result = validationService.validateBookingAfterCalculation(
           workingBooking,
         )
@@ -1378,6 +1378,7 @@ class ValidationServiceTest {
         )
       }
 
+      // Copying this
       @Test
       fun `Test 14 day aggregate Type sentence and aggregate duration greater than 12 months`() {
         val consecutiveSentenceOne = FTR_SDS_SENTENCE.copy(
@@ -1400,7 +1401,7 @@ class ValidationServiceTest {
             consecutiveSentenceTwo,
           ),
         )
-        workingBooking = createConsecutiveSentences(workingBooking)
+        workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
         val result = validationService.validateBookingAfterCalculation(
           workingBooking,
         )
@@ -1855,33 +1856,6 @@ class ValidationServiceTest {
         ),
       ),
     )
-  }
-
-  fun createConsecutiveSentences(booking: Booking): Booking {
-    val (baseSentences, consecutiveSentences) = booking.sentences.partition { it.consecutiveSentenceUUIDs.isEmpty() }
-    val sentencesByPrevious = consecutiveSentences.groupBy {
-      it.consecutiveSentenceUUIDs.first()
-    }
-
-    val chains: MutableList<MutableList<AbstractSentence>> = mutableListOf(mutableListOf())
-
-    baseSentences.forEach {
-      val chain: MutableList<AbstractSentence> = mutableListOf()
-      chains.add(chain)
-      chain.add(it)
-      createSentenceChain(it, chain, sentencesByPrevious, chains)
-    }
-
-    booking.consecutiveSentences = chains.filter { it.size > 1 }
-      .map {
-        val cs = ConsecutiveSentence(it)
-        cs.sentenceCalculation = SENTENCE_CALCULATION
-        cs
-      }
-    booking.consecutiveSentences.forEach { it.sentenceCalculation }
-
-    booking.sentenceGroups = emptyList()
-    return booking
   }
 
   private fun createSentenceChain(

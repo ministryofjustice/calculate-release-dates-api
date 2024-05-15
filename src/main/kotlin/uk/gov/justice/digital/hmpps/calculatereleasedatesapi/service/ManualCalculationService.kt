@@ -22,6 +22,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
+import java.time.Period
+import java.util.*
 
 @Service
 class ManualCalculationService(
@@ -35,6 +37,7 @@ class ManualCalculationService(
   private val serviceUserService: ServiceUserService,
   private val nomisCommentService: NomisCommentService,
   private val buildProperties: BuildProperties,
+  private val bookingCalculationService: BookingCalculationService,
 ) {
 
   fun hasIndeterminateSentences(bookingId: Long): Boolean {
@@ -42,6 +45,7 @@ class ManualCalculationService(
     return sentencesAndOffences.any { SentenceCalculationType.isIndeterminate(it.sentenceCalculationType) }
   }
 
+  // Write a method to create EffectiveSentenceLength
   @Transactional
   fun storeManualCalculation(
     prisonerId: String,
@@ -49,7 +53,10 @@ class ManualCalculationService(
     isGenuineOverride: Boolean? = false,
   ): ManualCalculationResponse {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, true)
-    val booking = bookingService.getBooking(sourceData, CalculationUserInputs())
+    var booking = bookingService.getBooking(sourceData, CalculationUserInputs())
+
+    val effectiveSentenceLength = calculateEffectiveSentenceLength(booking, manualEntryRequest)
+
     val reasonForCalculation = calculationReasonRepository.findById(manualEntryRequest.reasonForCalculationId)
       .orElse(null) // TODO: This should thrown an EntityNotFoundException when the reason is mandatory.
     val type =
@@ -78,6 +85,7 @@ class ManualCalculationService(
           savedCalculationRequest.id,
           calculationOutcomes,
           isGenuineOverride,
+          effectiveSentenceLength,
         )
           ?: throw CouldNotSaveManualEntryException("There was a problem saving the dates")
       ManualCalculationResponse(enteredDates, savedCalculationRequest.id)
@@ -105,6 +113,7 @@ class ManualCalculationService(
     calculationRequestId: Long,
     calculationOutcomes: List<CalculationOutcome>,
     isGenuineOverride: Boolean,
+    effectiveSentenceLength: Period,
   ): Map<ReleaseDateType, LocalDate?>? {
     val calculationRequest = calculationRequestRepository.findById(calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists") }
@@ -112,7 +121,7 @@ class ManualCalculationService(
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = serviceUserService.getUsername(),
-      keyDates = transform(dates),
+      keyDates = transform(dates, effectiveSentenceLength),
       noDates = dates.containsKey(ReleaseDateType.None),
       reason = calculationRequest.reasonForCalculation?.nomisReason,
       comment = nomisCommentService.getManualNomisComment(calculationRequest, dates, isGenuineOverride),
@@ -135,6 +144,37 @@ class ManualCalculationService(
       )
     }
     return dates
+  }
+
+  fun calculateEffectiveSentenceLength(booking: Booking, manualEntryRequest: ManualEntryRequest): Period {
+    if (hasIndeterminateSentences(booking.bookingId)) {
+      return Period.of(0, 0, 0)
+    } else {
+      val identifiedBooking = bookingCalculationService.identify(booking)
+      val consecutiveSentencesBooking = bookingCalculationService.createConsecutiveSentences(identifiedBooking)
+      if (consecutiveSentencesBooking.consecutiveSentences.isNotEmpty()) {
+        val sentences = consecutiveSentencesBooking.getAllExtractableSentences()
+        val earliestSentenceDate = sentences.minOf { it.sentencedAt }
+        val sedOptional = getSED(manualEntryRequest)
+        if (sedOptional.isPresent) {
+          val sed = sedOptional.get()
+          return Period.between(earliestSentenceDate, sed)
+        } else {
+          return Period.of(0, 0, 0)
+        }
+      } else {
+        return Period.of(0, 0, 0)
+      }
+    }
+  }
+
+  fun getSED(manualEntryRequest: ManualEntryRequest): Optional<LocalDate> {
+    val sed = manualEntryRequest.selectedManualEntryDates.find { it.dateType == ReleaseDateType.SED }
+    return if (sed != null) {
+      Optional.ofNullable(sed.date?.toLocalDate())
+    } else {
+      Optional.empty()
+    }
   }
 
   private companion object {
