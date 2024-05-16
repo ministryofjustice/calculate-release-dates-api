@@ -434,3 +434,12 @@ alternative-release-point,crs-1944-ac3,,alt-calculation-params
 alternative-release-point,crs-1944-ac6,,alt-calculation-params
 alternative-release-point,crs-1944-ac7,,alt-calculation-params
 alternative-release-point,crs-1944-ac8,,alt-calculation-params
+
+custom-examples,crs-1943-ac1,,calculation-params
+custom-examples,crs-1943-ac2,,calculation-params
+custom-examples,crs-1943-ac3,,calculation-params
+custom-examples,crs-1943-ac4,,calculation-params
+custom-examples,crs-1943-ac5,,calculation-params
+custom-examples,crs-1943-botus-unaffected-by-remand,,calculation-params
+custom-examples,crs-1943-botus-unaffected-by-tagged-bail,,calculation-params
+
