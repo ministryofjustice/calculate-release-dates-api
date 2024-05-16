@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DtoSingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import java.util.UUID
+import java.util.*
 
 @Service
 class BookingCalculationService(
@@ -18,9 +18,9 @@ class BookingCalculationService(
   val sentenceIdentificationService: SentenceIdentificationService,
 ) {
 
-  fun identify(booking: Booking): Booking {
+  fun identify(booking: Booking, useEarlyRelease: Boolean): Booking {
     for (sentence in booking.sentences) {
-      sentenceIdentificationService.identify(sentence, booking.offender)
+      sentenceIdentificationService.identify(sentence, booking.offender, useEarlyRelease)
     }
     return booking
   }
@@ -36,7 +36,7 @@ class BookingCalculationService(
 
   private fun allDtos(booking: Booking): Boolean = booking.sentences.all { it is DetentionAndTrainingOrderSentence }
 
-  fun createSingleTermSentences(booking: Booking): Booking {
+  fun createSingleTermSentences(booking: Booking, useEarlyRelease: Boolean): Booking {
     if (booking.sentences.size > 1 &&
       (allSdsBeforeLaspo(booking) || allDtos(booking)) &&
       booking.sentences.all { it.consecutiveSentenceUUIDs.isEmpty() } &&
@@ -48,14 +48,14 @@ class BookingCalculationService(
       } else {
         booking.singleTermSentence = SingleTermSentence(booking.sentences)
       }
-      sentenceIdentificationService.identify(booking.singleTermSentence!!, booking.offender)
+      sentenceIdentificationService.identify(booking.singleTermSentence!!, booking.offender, useEarlyRelease)
       sentenceCalculationService.calculate(booking.singleTermSentence!!, booking)
       log.info(booking.singleTermSentence!!.buildString())
     }
     return booking
   }
 
-  fun createConsecutiveSentences(booking: Booking): Booking {
+  fun createConsecutiveSentences(booking: Booking, useEarlyRelease: Boolean): Booking {
     val (baseSentences, consecutiveSentences) = booking.sentences.partition { it.consecutiveSentenceUUIDs.isEmpty() }
     val sentencesByPrevious = consecutiveSentences.groupBy {
       it.consecutiveSentenceUUIDs.first()
@@ -74,7 +74,7 @@ class BookingCalculationService(
       .map { ConsecutiveSentence(it) }
 
     booking.consecutiveSentences.forEach {
-      sentenceIdentificationService.identify(it, booking.offender)
+      sentenceIdentificationService.identify(it, booking.offender, useEarlyRelease)
       sentenceCalculationService.calculate(it, booking)
       log.info(it.buildString())
     }

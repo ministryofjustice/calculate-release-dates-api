@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -60,6 +61,7 @@ class CalculationTransactionalService(
   private val approvedDatesSubmissionRepository: ApprovedDatesSubmissionRepository,
   private val nomisCommentService: NomisCommentService,
   private val buildProperties: BuildProperties,
+  private val featureToggles: FeatureToggles
 ) {
 
   /*
@@ -84,7 +86,7 @@ class CalculationTransactionalService(
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     messages = validationService.validateBeforeCalculation(booking) // Validation stage 2 of 4
     if (messages.isNotEmpty()) return messages
-    val bookingAfterCalculation = calculationService.calculate(booking) // Validation stage 3 of 4
+    val bookingAfterCalculation = calculationService.calculate(booking, featureToggles.sdsEarlyRelease) // Validation stage 3 of 4
     messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation) // Validation stage 4 of 4
     return messages
   }

@@ -566,7 +566,7 @@ class CalculationTransactionalServiceTest {
     val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
     val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup)
     val sentencesExtractionService = SentencesExtractionService()
-    val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdced4Calculator, featureToggles)
+    val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdced4Calculator)
     val bookingCalculationService = BookingCalculationService(
       sentenceCalculationService,
       sentenceIdentificationService,
@@ -586,6 +586,7 @@ class CalculationTransactionalServiceTest {
       bookingCalculationService,
       bookingExtractionService,
       bookingTimelineService,
+      featureToggles
     )
 
     return CalculationTransactionalService(
@@ -603,6 +604,7 @@ class CalculationTransactionalServiceTest {
       approvedDatesSubmissionRepository,
       nomisCommentService,
       TEST_BUILD_PROPERTIES,
+      featureToggles
     )
   }
 
