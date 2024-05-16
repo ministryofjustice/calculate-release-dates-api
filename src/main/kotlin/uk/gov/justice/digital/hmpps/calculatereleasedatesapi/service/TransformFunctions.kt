@@ -105,6 +105,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
@@ -635,7 +636,7 @@ fun transform(
   )
 }
 
-fun transform(dates: Map<ReleaseDateType, LocalDate?>?): OffenderKeyDates {
+fun transform(dates: Map<ReleaseDateType, LocalDate?>?, effectiveSentenceLength: Period): OffenderKeyDates {
   if (dates!!.containsKey(None)) {
     return OffenderKeyDates(null)
   }
@@ -657,9 +658,9 @@ fun transform(dates: Map<ReleaseDateType, LocalDate?>?): OffenderKeyDates {
     effectiveSentenceEndDate = dates[ESED],
     sentenceLength = String.format(
       "%02d/%02d/%02d",
-      0,
-      0,
-      0,
+      effectiveSentenceLength.years,
+      effectiveSentenceLength.months,
+      effectiveSentenceLength.days,
     ),
     homeDetentionCurfewApprovedDate = dates[HDCAD],
     tariffDate = dates[Tariff],
