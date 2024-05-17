@@ -109,16 +109,22 @@ interface CalculableSentence {
 
   @JsonIgnore
   fun getReleaseDateType(): ReleaseDateType {
-    return if (isRecall()) {
-      ReleaseDateType.PRRD
-    } else if (releaseDateTypes.getReleaseDateTypes().contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null) {
-      ReleaseDateType.PED
-    } else if (sentenceCalculation.isReleaseDateConditional) {
-      ReleaseDateType.CRD
-    } else if (releaseDateTypes.contains(ReleaseDateType.MTD)) {
-      ReleaseDateType.MTD
-    } else {
-      ReleaseDateType.ARD
+    return when {
+      isRecall() -> {
+        ReleaseDateType.PRRD
+      }
+      releaseDateTypes.getReleaseDateTypes().contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null -> {
+        ReleaseDateType.PED
+      }
+      sentenceCalculation.isReleaseDateConditional -> {
+        ReleaseDateType.CRD
+      }
+      releaseDateTypes.contains(ReleaseDateType.MTD) -> {
+        ReleaseDateType.MTD
+      }
+      else -> {
+        ReleaseDateType.ARD
+      }
     }
   }
 
