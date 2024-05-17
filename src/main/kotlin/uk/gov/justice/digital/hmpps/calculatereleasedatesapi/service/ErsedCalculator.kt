@@ -41,7 +41,7 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation,
   ): ReleaseDateCalculationBreakdown? {
-    if (!sentence.isRecall() && sentence.calulateErsed() && isNotBeforeCJAAndLASPOIfSDS(sentence)) {
+    if (!sentence.isRecall() && sentence.calculateErsed() && isNotBeforeCJAAndLASPOIfSDS(sentence)) {
       return calculateErsedMinOrMax(sentence, sentenceCalculation)
     }
     return null

@@ -199,7 +199,7 @@ interface CalculableSentence {
     }
   }
 
-  fun calulateErsed(): Boolean
+  fun calculateErsed(): Boolean
   fun buildString(): String
 
   @JsonIgnore

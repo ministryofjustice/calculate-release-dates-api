@@ -131,7 +131,7 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
     return orderedSentences.any { it is ExtendedDeterminateSentence && !it.automaticRelease }
   }
 
-  override fun calulateErsed(): Boolean {
+  override fun calculateErsed(): Boolean {
     return orderedSentences.any { it.identificationTrack.calculateErsed() }
   }
 
