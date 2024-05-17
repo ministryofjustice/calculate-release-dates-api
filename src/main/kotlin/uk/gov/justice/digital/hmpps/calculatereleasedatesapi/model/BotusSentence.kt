@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 data class BotusSentence(
   override val offence: Offence,
