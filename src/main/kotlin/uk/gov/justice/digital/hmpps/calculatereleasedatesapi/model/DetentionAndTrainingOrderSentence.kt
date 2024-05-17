@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 data class DetentionAndTrainingOrderSentence(
   override val offence: Offence,
@@ -31,6 +31,6 @@ data class DetentionAndTrainingOrderSentence(
       "Sentence Types\t:\t$recallType\n" +
       "Release Date Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
-      sentenceCalculation.buildString(releaseDateTypes)
+      sentenceCalculation.buildString(releaseDateTypes.initialTypes)
   }
 }

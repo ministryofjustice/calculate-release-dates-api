@@ -358,7 +358,7 @@ data class SentenceCalculation(
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
 
-  fun buildString(releaseDateTypes: ReleaseDateTypes): String {
+  fun buildString(releaseDateTypes: List<ReleaseDateType>): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val expiryDateType = if (releaseDateTypes.contains(ReleaseDateType.SLED)) "SLED" else "SED"
     val releaseDateType = if (releaseDateTypes.contains(ReleaseDateType.ARD)) {

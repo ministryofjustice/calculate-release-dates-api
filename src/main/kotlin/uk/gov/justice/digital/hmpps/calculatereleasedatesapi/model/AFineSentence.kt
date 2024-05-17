@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 data class AFineSentence(
   override val offence: Offence,
@@ -27,7 +27,7 @@ data class AFineSentence(
       "Sentence Types\t:\t$recallType\n" +
       "Release Date Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
-      sentenceCalculation.buildString(releaseDateTypes)
+      sentenceCalculation.buildString(releaseDateTypes.initialTypes)
   }
 
   override fun getLengthInDays(): Int {

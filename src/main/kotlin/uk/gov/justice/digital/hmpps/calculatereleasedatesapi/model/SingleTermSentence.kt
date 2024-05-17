@@ -37,7 +37,7 @@ class SingleTermSentence(
       "Number of sentences\t:\t${standardSentences.size}\n" +
       "Sentence Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
-      sentenceCalculation.buildString(releaseDateTypes)
+      sentenceCalculation.buildString(releaseDateTypes.initialTypes)
   }
 
   override fun isCalculationInitialised(): Boolean {
