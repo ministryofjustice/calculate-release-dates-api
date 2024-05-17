@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 /**
  * This class is used to model the SOPC Sentences
@@ -29,7 +29,7 @@ data class SopcSentence(
       "Sentence Types\t:\t$recallType\n" +
       "Release Date Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
-      sentenceCalculation.buildString(releaseDateTypes)
+      sentenceCalculation.buildString(releaseDateTypes.initialTypes)
   }
 
   @JsonIgnore

@@ -20,7 +20,7 @@ data class BotusSentence(
       "${duration.toPeriodString(sentencedAt)}\n" +
       "Release Date Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
-      sentenceCalculation.buildString(releaseDateTypes)
+      sentenceCalculation.buildString(releaseDateTypes.initialTypes)
   }
 
   override fun getLengthInDays(): Int {
