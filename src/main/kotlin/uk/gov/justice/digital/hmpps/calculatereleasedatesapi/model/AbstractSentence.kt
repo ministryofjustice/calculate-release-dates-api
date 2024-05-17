@@ -45,7 +45,7 @@ abstract class AbstractSentence(
   @JsonIgnore
   override lateinit var releaseDateTypes: ReleaseDateTypes
 
-  override fun calulateErsed(): Boolean = identificationTrack.calculateErsed()
+  override fun calculateErsed(): Boolean = identificationTrack.calculateErsed()
 
   override fun isCalculationInitialised(): Boolean {
     return this::sentenceCalculation.isInitialized

@@ -29,7 +29,7 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
       "Number of sentences\t:\t${orderedSentences.size}\n" +
       "Sentence Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
-      sentenceCalculation.buildString(releaseDateTypes)
+      sentenceCalculation.buildString(releaseDateTypes.initialTypes)
   }
 
   override fun isCalculationInitialised(): Boolean {
@@ -131,7 +131,7 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
     return orderedSentences.any { it is ExtendedDeterminateSentence && !it.automaticRelease }
   }
 
-  override fun calulateErsed(): Boolean {
+  override fun calculateErsed(): Boolean {
     return orderedSentences.any { it.identificationTrack.calculateErsed() }
   }
 

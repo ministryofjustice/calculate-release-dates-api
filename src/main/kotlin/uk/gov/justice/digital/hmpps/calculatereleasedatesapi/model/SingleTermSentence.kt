@@ -84,5 +84,5 @@ class SingleTermSentence(
     }
   }
 
-  override fun calulateErsed(): Boolean = identificationTrack.calculateErsed()
+  override fun calculateErsed(): Boolean = identificationTrack.calculateErsed()
 }
