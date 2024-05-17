@@ -42,7 +42,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Upda
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.BookingHelperTest
 import java.time.LocalDate
+import java.time.Period
 import java.time.temporal.ChronoUnit
 import java.util.*
 
@@ -56,6 +58,7 @@ class ManualCalculationServiceTest {
   private val eventService = mock<EventService>()
   private val serviceUserService = mock<ServiceUserService>()
   private val nomisCommentService = mock<NomisCommentService>()
+  private val bookingCalculationService = mock<BookingCalculationService>()
   private val manualCalculationService = ManualCalculationService(
     prisonService,
     bookingService,
@@ -67,8 +70,150 @@ class ManualCalculationServiceTest {
     serviceUserService,
     nomisCommentService,
     TEST_BUILD_PROPERTIES,
+    bookingCalculationService,
   )
   private val calculationRequestArgumentCaptor = argumentCaptor<CalculationRequest>()
+
+  @Nested
+  inner class CalculateESLTests {
+    @Test
+    fun `Check ESL is calculated correctly for determinate sentences without SED`() {
+      // Arrange
+      val sentenceOne = StandardSENTENCE.copy(
+        consecutiveSentenceUUIDs = emptyList(),
+        sentencedAt = LocalDate.of(2022, 1, 1),
+      )
+      var workingBooking = BOOKING.copy(
+        sentences = listOf(
+          sentenceOne,
+        ),
+      )
+      workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+      whenever(bookingCalculationService.identify(any())).thenReturn(workingBooking)
+      whenever(bookingCalculationService.createConsecutiveSentences(any())).thenReturn(workingBooking)
+      whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
+        listOf(
+          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.NP.name), false, SDSEarlyReleaseExclusionType.NO),
+          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false, SDSEarlyReleaseExclusionType.NO),
+        ),
+      )
+
+      // Act
+      val result = manualCalculationService.calculateEffectiveSentenceLength(
+        BOOKING,
+        ManualEntryRequest(
+          listOf(
+            ManualEntrySelectedDate(
+              ReleaseDateType.LED,
+              "None",
+              SubmittedDate(1, 1, 2026),
+            ),
+          ),
+          1L,
+          "",
+        ),
+      )
+
+      // Assert
+      assertThat(result).isEqualTo(Period.of(0, 0, 0))
+    }
+
+    @Test
+    fun `Check ESL is calculated correctly for indeterminate sentences`() {
+      // Arrange
+      whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
+        listOf(
+          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name), false, SDSEarlyReleaseExclusionType.NO),
+          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false, SDSEarlyReleaseExclusionType.NO),
+        ),
+      )
+
+      // Act
+      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
+
+      // Assert
+      assertThat(result).isEqualTo(Period.of(0, 0, 0))
+    }
+
+    @Test
+    fun `Check ESL is calculated correctly (2 concurrent) for determinate sentences`() {
+      // Arrange
+      val sentenceOne = StandardSENTENCE.copy(
+        consecutiveSentenceUUIDs = emptyList(),
+        sentencedAt = LocalDate.of(2022, 1, 1),
+      )
+      val sentenceTwo = StandardSENTENCE.copy(
+        consecutiveSentenceUUIDs = emptyList(),
+        sentencedAt = LocalDate.of(2021, 1, 1),
+      )
+      var workingBooking = BOOKING.copy(
+        sentences = listOf(
+          sentenceOne,
+          sentenceTwo,
+        ),
+      )
+      workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+      whenever(bookingCalculationService.identify(any())).thenReturn(workingBooking)
+      whenever(bookingCalculationService.createConsecutiveSentences(any())).thenReturn(workingBooking)
+
+      // Act
+      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
+
+      // Assert
+      assertThat(result).isEqualTo(Period.of(5, 0, 0))
+    }
+
+    @Test
+    fun `Check ESL is calculated correctly (single) for determinate sentences`() {
+      // Arrange
+      val sentenceOne = StandardSENTENCE.copy(
+        consecutiveSentenceUUIDs = emptyList(),
+        sentencedAt = LocalDate.of(2022, 1, 1),
+      )
+      var workingBooking = BOOKING.copy(
+        sentences = listOf(
+          sentenceOne,
+        ),
+      )
+      workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+      whenever(bookingCalculationService.identify(any())).thenReturn(workingBooking)
+      whenever(bookingCalculationService.createConsecutiveSentences(any())).thenReturn(workingBooking)
+
+      // Act
+      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
+
+      // Assert
+      assertThat(result).isEqualTo(Period.of(4, 0, 0))
+    }
+
+    @Test
+    fun `Check ESL is calculated correctly (consecutive) for determinate sentences`() {
+      // Arrange
+      val consecutiveSentenceOne = StandardSENTENCE.copy(
+        consecutiveSentenceUUIDs = emptyList(),
+      )
+      val consecutiveSentenceTwo = StandardSENTENCE.copy(
+        identifier = UUID.randomUUID(),
+        sentencedAt = LocalDate.of(2023, 1, 1),
+        consecutiveSentenceUUIDs = listOf(StandardSENTENCE.identifier),
+      )
+      var workingBooking = BOOKING.copy(
+        sentences = listOf(
+          consecutiveSentenceOne,
+          consecutiveSentenceTwo,
+        ),
+      )
+      workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+      whenever(bookingCalculationService.identify(any())).thenReturn(workingBooking)
+      whenever(bookingCalculationService.createConsecutiveSentences(any())).thenReturn(workingBooking)
+
+      // Act
+      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
+
+      // Assert
+      assertThat(result).isEqualTo(Period.of(4, 10, 29))
+    }
+  }
 
   @Nested
   inner class IndeterminateSentencesTests {
@@ -103,6 +248,18 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check noDates is set correctly when indeterminate`() {
+    val sentenceOne = StandardSENTENCE.copy(
+      consecutiveSentenceUUIDs = emptyList(),
+      sentencedAt = LocalDate.of(2022, 1, 1),
+    )
+    var booking = BOOKING.copy(
+      sentences = listOf(
+        sentenceOne,
+      ),
+    )
+    booking = BookingHelperTest().createConsecutiveSentences(booking)
+    whenever(bookingCalculationService.identify(any())).thenReturn(booking)
+    whenever(bookingCalculationService.createConsecutiveSentences(any())).thenReturn(booking)
     whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
@@ -127,6 +284,18 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check noDates is set correctly for determinate manual entry`() {
+    val sentenceOne = StandardSENTENCE.copy(
+      consecutiveSentenceUUIDs = emptyList(),
+      sentencedAt = LocalDate.of(2022, 1, 1),
+    )
+    var booking = BOOKING.copy(
+      sentences = listOf(
+        sentenceOne,
+      ),
+    )
+    booking = BookingHelperTest().createConsecutiveSentences(booking)
+    whenever(bookingCalculationService.identify(any())).thenReturn(booking)
+    whenever(bookingCalculationService.createConsecutiveSentences(any())).thenReturn(booking)
     whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
@@ -153,11 +322,23 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check type is set to Genuine Override when its a genuine override`() {
+    val sentenceOne = StandardSENTENCE.copy(
+      consecutiveSentenceUUIDs = emptyList(),
+      sentencedAt = LocalDate.of(2022, 1, 1),
+    )
+    var booking = BOOKING.copy(
+      sentences = listOf(
+        sentenceOne,
+      ),
+    )
+    booking = BookingHelperTest().createConsecutiveSentences(booking)
     whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(bookingCalculationService.identify(any())).thenReturn(booking)
+    whenever(bookingCalculationService.createConsecutiveSentences(any())).thenReturn(booking)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
@@ -288,7 +469,17 @@ class ManualCalculationServiceTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     private val BOOKING = Booking(OFFENDER, listOf(StandardSENTENCE), Adjustments(), null, null, BOOKING_ID)
-
+    private val MANUAL_ENTRY = ManualEntryRequest(
+      listOf(
+        ManualEntrySelectedDate(
+          ReleaseDateType.SED,
+          "None",
+          SubmittedDate(1, 1, 2026),
+        ),
+      ),
+      1L,
+      "",
+    )
     const val USERNAME = "user1"
   }
 }
