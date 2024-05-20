@@ -141,13 +141,13 @@ class BulkComparisonService(
     establishment: String? = "",
   ) {
     val sentenceAndOffencesWithReleaseArrangementsForAllBookings =
-      pcscLookupService.populateReleaseArrangements(
-        calculableSentenceEnvelopes.map { envelope ->
+      calculableSentenceEnvelopes.map { envelope ->
+        pcscLookupService.populateReleaseArrangements(
           envelope.sentenceAndOffences.flatMap { sentenceAndOffences ->
             sentenceAndOffences.offences.map { offence -> NormalisedSentenceAndOffence(sentenceAndOffences, offence) }
-          }
-        }.flatten(),
-      )
+          },
+        )
+      }.flatten()
     calculableSentenceEnvelopes.forEach { calculableSentenceEnvelope ->
       val sentenceAndOffencesWithReleaseArrangementsForBooking = sentenceAndOffencesWithReleaseArrangementsForAllBookings.filter { it.bookingId == calculableSentenceEnvelope.bookingId }
       val sdsPlusSentenceAndOffences = sentenceAndOffencesWithReleaseArrangementsForBooking.filter { it.isSDSPlus }
