@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
@@ -22,18 +23,40 @@ class SentenceCalculationService(
 ) {
 
   fun calculate(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
-    // create association between the sentence and it's calculation
-    sentence.sentenceCalculation = getSentenceCalculation(booking, sentence)
+    if (sentence is StandardDeterminateSentence) {
+      sentence.sentenceCalculation = processSDSWithAlternativeReleasePoints(sentence, booking)
+    } else {
+      sentence.sentenceCalculation =
+        getSentenceCalculation(booking, sentence, 0)
+    }
+
     return sentenceAdjustedCalculationService.calculateDatesFromAdjustments(sentence, booking)
   }
 
   private data class IndexedSentenceWithReleasePointMultiplier(val index: Int, val sentence: CalculableSentence, val multiplier: Double)
 
-  private fun getConsecutiveRelease(sentence: ConsecutiveSentence): ReleaseDateCalculation {
+  private fun processSDSWithAlternativeReleasePoints(sentence: StandardDeterminateSentence, booking: Booking): SentenceCalculation {
+    sentence.releaseArrangements.forEachIndexed {
+        index, track ->
+      sentence.releaseArrangementCalculations[track] = getSentenceCalculation(booking, sentence, index)
+    }
+
+    return sentence.releaseArrangementCalculations[sentence.identificationTrack]!!
+  }
+
+  private fun getConsecutiveRelease(
+    sentence: ConsecutiveSentence,
+    releaseArrangementIndex: Int,
+  ): ReleaseDateCalculation {
     val daysToExpiry = getDaysInGroup(sentence.orderedSentences, sentence.sentencedAt) { it.totalDuration() }
     val (sentencesWithPed, sentencesWithoutPed) = sentence.orderedSentences
-      .map { IndexedSentenceWithReleasePointMultiplier(sentence.orderedSentences.indexOf(it), it, releasePointMultiplierLookup.multiplierFor(it.identificationTrack)) }
-      .partition { (it.sentence is ExtendedDeterminateSentence && !it.sentence.automaticRelease) || it.sentence is SopcSentence }
+      .map {
+        IndexedSentenceWithReleasePointMultiplier(
+          sentence.orderedSentences.indexOf(it),
+          it,
+          getReleasePoint(it, releaseArrangementIndex),
+        )
+      }.partition { (it.sentence is ExtendedDeterminateSentence && !it.sentence.automaticRelease) || it.sentence is SopcSentence }
     val sentencesWithoutPedGroupedByMultiplierAndGroupsSortedByFirstAppearance = sentencesWithoutPed
       .groupBy { it.multiplier }.entries
       .sortedBy { (_, sentences) -> sentences.minOf { it.index } }
@@ -104,11 +127,15 @@ class SentenceCalculationService(
     return ConsecutiveSentenceAggregator(sentences.map(durationSupplier)).calculateDays(sentenceStartDate)
   }
 
-  private fun getSentenceCalculation(booking: Booking, sentence: CalculableSentence): SentenceCalculation {
+  private fun getSentenceCalculation(
+    booking: Booking,
+    sentence: CalculableSentence,
+    releaseArrangementIndex: Int,
+  ): SentenceCalculation {
     val release = if (sentence is ConsecutiveSentence) {
-      getConsecutiveRelease(sentence)
+      getConsecutiveRelease(sentence, releaseArrangementIndex)
     } else {
-      getSingleSentenceRelease(sentence)
+      getSingleSentenceRelease(sentence, releaseArrangementIndex)
     }
     val unadjustedExpiryDate =
       sentence.sentencedAt
@@ -154,9 +181,10 @@ class SentenceCalculationService(
 
   private fun getSingleSentenceRelease(
     sentence: CalculableSentence,
+    releaseArrangementIndex: Int,
   ): ReleaseDateCalculation {
     var numberOfDaysToParoleEligibilityDate: Long? = null
-    val releaseDateMultiplier = releasePointMultiplierLookup.multiplierFor(sentence.identificationTrack)
+    val releaseDateMultiplier = getReleasePoint(sentence, releaseArrangementIndex)
     val custodialDuration = sentence.custodialDuration()
     val numberOfDaysToReleaseDateDouble =
       custodialDuration.getLengthInDays(sentence.sentencedAt).times(releaseDateMultiplier)
@@ -173,6 +201,13 @@ class SentenceCalculationService(
       numberOfDaysToReleaseDate,
       numberOfDaysToParoleEligibilityDate,
     )
+  }
+
+  private fun getReleasePoint(sentence: CalculableSentence, releaseArrangementIndex: Int): Double {
+    if (sentence is StandardDeterminateSentence) {
+      return releasePointMultiplierLookup.multiplierFor(sentence.releaseArrangements[releaseArrangementIndex])
+    }
+    return releasePointMultiplierLookup.multiplierFor(sentence.identificationTrack)
   }
 
   fun calculateFixedTermRecall(booking: Booking, days: Int): LocalDate {
