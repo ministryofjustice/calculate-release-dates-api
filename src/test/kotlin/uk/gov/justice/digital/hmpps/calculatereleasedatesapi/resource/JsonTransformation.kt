@@ -1,11 +1,13 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -26,9 +28,11 @@ class JsonTransformation {
     return mapper.readValue(json, StandardDeterminateSentence::class.java)
   }
 
-  fun loadBooking(testData: String): Booking {
+  fun loadBooking(testData: String): Pair<Booking, CalculationUserInputs> {
     val json = getJsonTest("$testData.json", "overall_calculation")
-    return mapper.readValue(json, Booking::class.java)
+    val jsonTree = mapper.readTree(json)
+    val calculateErsed = if (jsonTree.has("calculateErsed")) jsonTree.get("calculateErsed").booleanValue() else false
+    return mapper.readValue(json, Booking::class.java) to CalculationUserInputs(calculateErsed = calculateErsed)
   }
 
   fun loadCalculationResult(testData: String): CalculationResult {

@@ -7,12 +7,14 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveManualEntryException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
@@ -23,7 +25,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 import java.time.Period
-import java.util.*
 
 @Service
 class ManualCalculationService(
@@ -38,6 +39,7 @@ class ManualCalculationService(
   private val nomisCommentService: NomisCommentService,
   private val buildProperties: BuildProperties,
   private val bookingCalculationService: BookingCalculationService,
+  private val featureToggles: FeatureToggles,
 ) {
 
   fun hasIndeterminateSentences(bookingId: Long): Boolean {
@@ -53,7 +55,8 @@ class ManualCalculationService(
     isGenuineOverride: Boolean? = false,
   ): ManualCalculationResponse {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, true)
-    var booking = bookingService.getBooking(sourceData, CalculationUserInputs())
+    val calculationUserInputs = CalculationUserInputs()
+    var booking = bookingService.getBooking(sourceData, calculationUserInputs)
 
     val effectiveSentenceLength = calculateEffectiveSentenceLength(booking, manualEntryRequest)
 
@@ -150,8 +153,9 @@ class ManualCalculationService(
     if (hasIndeterminateSentences(booking.bookingId)) {
       return Period.ZERO
     } else {
-      val identifiedBooking = bookingCalculationService.identify(booking)
-      val consecutiveSentencesBooking = bookingCalculationService.createConsecutiveSentences(identifiedBooking)
+      val options = CalculationOptions(false, featureToggles.sdsEarlyRelease)
+      val identifiedBooking = bookingCalculationService.identify(booking, options)
+      val consecutiveSentencesBooking = bookingCalculationService.createConsecutiveSentences(identifiedBooking, options)
       val sentences = consecutiveSentencesBooking.getAllExtractableSentences()
       val earliestSentenceDate = sentences.minOfOrNull { it.sentencedAt }
       val sed = getSED(manualEntryRequest)

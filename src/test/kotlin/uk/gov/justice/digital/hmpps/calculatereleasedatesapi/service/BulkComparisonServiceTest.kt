@@ -179,7 +179,7 @@ class BulkComparisonServiceTest {
     )
 
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
     whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
@@ -234,7 +234,7 @@ class BulkComparisonServiceTest {
     )
 
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
     whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
@@ -282,7 +282,7 @@ class BulkComparisonServiceTest {
     )
 
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, null, null)
     whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
@@ -317,7 +317,7 @@ class BulkComparisonServiceTest {
       ),
     )
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, null, null)
     whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
@@ -343,7 +343,7 @@ class BulkComparisonServiceTest {
   @Test
   fun `Determine if a mismatch report is valid and is a match`() {
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, calculatedReleaseDates, null)
 
     whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
@@ -363,7 +363,7 @@ class BulkComparisonServiceTest {
   @Test
   fun `Determine mismatch invalid and not potential HDC4+ due being a sex offender`() {
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(
       listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)),
       booking,
@@ -389,7 +389,7 @@ class BulkComparisonServiceTest {
   @Test
   fun `Determine mismatch invalid and not potential HDC4+ due to sentence type`() {
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(
       listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)),
       booking,
@@ -417,7 +417,7 @@ class BulkComparisonServiceTest {
   @Test
   fun `Determine mismatch invalid and not potential HDC4+ due to sentence length under 4 years`() {
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(
       listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)),
       booking,
@@ -445,7 +445,7 @@ class BulkComparisonServiceTest {
   @Test
   fun `Determine validation error mismatch not potential HDC4+ when there is a EDS sentence consecutive to an SDS sentence`() {
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(
       listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)),
       booking,
@@ -481,7 +481,7 @@ class BulkComparisonServiceTest {
   @Test
   fun `Determine validation error mismatch not potential HDC4+ when there is a SDS sentence consecutive to an SOPC sentence`() {
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(
       listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)),
       booking,
@@ -517,7 +517,7 @@ class BulkComparisonServiceTest {
   @Test
   fun `Determine potential HDC4+ mismatch`() {
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(
       listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)),
       booking,
@@ -542,7 +542,7 @@ class BulkComparisonServiceTest {
   @Test
   fun `Determine unsupported sentence type not HDC4+ because active sex offender`() {
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(
       listOf(ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)),
       booking,
@@ -568,7 +568,7 @@ class BulkComparisonServiceTest {
   @Test
   fun `Determine unsupported sentence type not HDC4+ because indeterminate sentence type`() {
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(
       listOf(
         ValidationMessage(ValidationCode.FTR_28_DAYS_SENTENCE_LT_12_MONTHS),
@@ -599,7 +599,7 @@ class BulkComparisonServiceTest {
   @Test
   fun `Determine unsupported sentence type not HDC4+ because duration less than 4 years`() {
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(
       listOf(
         ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE),
@@ -637,7 +637,7 @@ class BulkComparisonServiceTest {
   @Test
   fun `Determine unsupported sentence type not HDC4+ because of SDS+ offence`() {
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(
       listOf(
         ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE),
@@ -679,7 +679,7 @@ class BulkComparisonServiceTest {
   @Test
   fun `Determine if a mismatch report is not valid due to unsupported sentence type and potential HDC4+`() {
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(
       listOf(
         ValidationMessage(ValidationCode.FTR_28_DAYS_SENTENCE_LT_12_MONTHS),
@@ -716,7 +716,7 @@ class BulkComparisonServiceTest {
   @Test
   fun `should be unsupported sentence type for HDC4+ when unsupported sentence and consecutive SDS sentences of more than 4 years`() {
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(
       listOf(
         ValidationMessage(ValidationCode.FTR_28_DAYS_SENTENCE_LT_12_MONTHS),
@@ -804,7 +804,7 @@ class BulkComparisonServiceTest {
   @Test
   fun `Determine if a mismatch is reported as an unsupported sentence type for an unsupported calculation validation`() {
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(
       listOf(
         ValidationMessage(ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL),
@@ -850,7 +850,7 @@ class BulkComparisonServiceTest {
     )
 
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
 
     whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
@@ -897,7 +897,7 @@ class BulkComparisonServiceTest {
     )
 
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
     whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
@@ -948,7 +948,7 @@ class BulkComparisonServiceTest {
     )
 
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
     whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
@@ -997,7 +997,7 @@ class BulkComparisonServiceTest {
     )
 
     val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
     whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
       validationResult,
