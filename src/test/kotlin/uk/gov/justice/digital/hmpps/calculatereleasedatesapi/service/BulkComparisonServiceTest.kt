@@ -209,6 +209,53 @@ class BulkComparisonServiceTest {
   }
 
   @Test
+  fun `Should create a prison comparison with multiple envelopes effeciently`() {
+    val comparison = Comparison(
+      1,
+      UUID.randomUUID(),
+      "ABCD1234",
+      objectMapper.createObjectNode(),
+      "BMI",
+      ComparisonType.ESTABLISHMENT_FULL,
+      LocalDateTime.now(),
+      "SOMEONE",
+      ComparisonStatus(ComparisonStatusValue.PROCESSING),
+    )
+
+    val duplicatedReleaseDates = CalculatedReleaseDates(
+      dates = releaseDates,
+      calculationRequestId = 123,
+      bookingId = 123,
+      prisonerId = "ABC123DEF",
+      calculationStatus = CalculationStatus.CONFIRMED,
+      calculationReference = UUID.randomUUID(),
+      calculationReason = bulkCalculationReason,
+      calculationDate = LocalDate.of(2024, 1, 1),
+    )
+
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123, true)
+    val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+
+    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
+      listOf(
+        calculableSentenceEnvelope,
+        sexOffenderCalculableSentenceEnvelope,
+      ),
+    )
+
+    bulkComparisonService.processPrisonComparison(comparison, "")
+
+    val comparisonStatus = comparison.comparisonStatus
+    assertThat(comparisonStatus.name).isEqualTo(ComparisonStatusValue.COMPLETED.name)
+    assertThat(comparison.numberOfPeopleCompared).isEqualTo(2)
+    verify(pcscLookupService, times(2)).populateReleaseArrangements(any())
+  }
+
+  @Test
   fun `Should create an all prisons comparison`() {
     val comparison = Comparison(
       1,
