@@ -203,6 +203,7 @@ class OffenceSDSReleaseArrangementLookupService(
         "${offenceCodeWithoutSuffix}I",
       )
     }
-    private val SDS_EXCLUSION_CALC_TYPES = SDS_AND_DYOI_POST_PCSC_CALC_TYPES + S250_POST_PCSC_CALC_TYPES
+    private val SDS_EXCLUSION_CALC_TYPES = SDS_AND_DYOI_POST_PCSC_CALC_TYPES + S250_POST_PCSC_CALC_TYPES +
+      listOf(SentenceCalculationType.SEC91_03, SentenceCalculationType.SEC91_03_ORA)
   }
 }

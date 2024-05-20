@@ -271,6 +271,32 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     verify(mockManageOffencesService, times(0)).getSexualOrViolentForOffenceCodes(any())
   }
 
+  @ParameterizedTest
+  @CsvSource(
+    "ADIMP",
+    "ADIMP_ORA",
+    "SEC91_03",
+    "SEC91_03_ORA",
+    "SEC250",
+    "SEC250_ORA",
+    "YOI",
+    "YOI_ORA",
+  )
+  fun `should set an SDS exclusion for all supported SDS sentence types`(type: SentenceCalculationType) {
+    whenever(mockManageOffencesService.getSexualOrViolentForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
+      listOf(
+        SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+      ),
+    )
+
+    val unsupportedSentence = nonSDSPlusSentenceAndOffenceFourYears.copy(sentenceCalculationType = type.name)
+    val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(unsupportedSentence))
+    assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
+    assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.VIOLENT)
+
+    verify(mockManageOffencesService, times(1)).getSexualOrViolentForOffenceCodes(any())
+  }
+
   @Test
   fun `should match codes for sexual and violent against correct offences`() {
     whenever(mockManageOffencesService.getSexualOrViolentForOffenceCodes(listOf("SX01", "V01"))).thenReturn(
@@ -362,7 +388,13 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     // sentence type unsupported
     "DV04001,A_FINE,2022-06-29,7,false",
   )
-  fun `should mark old offence codes as SDS+ if the sentence is more than 7 years after PCSC date`(offenceCode: String, sentenceCalculationType: SentenceCalculationType, sentenceDate: LocalDate, sentenceLengthYears: Int, isSDSPlus: Boolean) {
+  fun `should mark old offence codes as SDS+ if the sentence is more than 7 years after PCSC date`(
+    offenceCode: String,
+    sentenceCalculationType: SentenceCalculationType,
+    sentenceDate: LocalDate,
+    sentenceLengthYears: Int,
+    isSDSPlus: Boolean,
+  ) {
     val markers = OffencePcscMarkers(
       offenceCode = offenceCode,
       pcscMarkers = PcscMarkers(
