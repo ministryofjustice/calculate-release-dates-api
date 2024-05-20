@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
@@ -32,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DtoSingleTermSentence
@@ -54,14 +54,13 @@ import java.time.temporal.ChronoUnit
 class SentenceIdentificationService(
   val tusedCalculator: TusedCalculator,
   val hdced4Calculator: Hdced4Calculator,
-  val featureToggles: FeatureToggles,
 ) {
 
-  fun identify(sentence: CalculableSentence, offender: Offender) {
+  fun identify(sentence: CalculableSentence, offender: Offender, options: CalculationOptions) {
     val releaseDateTypes = mutableListOf<ReleaseDateType>()
     when (sentence) {
       is ConsecutiveSentence -> {
-        releaseDateTypes.addAll(identifyConsecutiveSentence(sentence, offender))
+        releaseDateTypes.addAll(identifyConsecutiveSentence(sentence, offender, options))
       }
 
       is SopcSentence -> {
@@ -73,7 +72,7 @@ class SentenceIdentificationService(
       }
 
       is StandardDeterminateSentence, is SingleTermSentence -> {
-        releaseDateTypes.addAll(identifyStandardDeterminate(sentence, offender))
+        releaseDateTypes.addAll(identifyStandardDeterminate(sentence, offender, options))
       }
 
       is AFineSentence -> {
@@ -139,7 +138,7 @@ class SentenceIdentificationService(
     )
   }
 
-  private fun identifyConsecutiveSentence(sentence: ConsecutiveSentence, offender: Offender): List<ReleaseDateType> {
+  private fun identifyConsecutiveSentence(sentence: ConsecutiveSentence, offender: Offender, options: CalculationOptions): List<ReleaseDateType> {
     val releaseDateTypes = mutableListOf<ReleaseDateType>()
     if (sentence.hasAnyEdsOrSopcSentence()) {
       if (sentence.hasSopcSentence() || sentence.hasDiscretionaryRelease()) {
@@ -210,10 +209,10 @@ class SentenceIdentificationService(
             )
           }
         } else {
-          afterCJAAndLASPOorSDSPlus(sentence, releaseDateTypes)
+          afterCJAAndLASPOorSDSPlus(sentence, releaseDateTypes, options)
         }
       } else if (sentence.isMadeUpOfOnlyBeforeCjaLaspoSentences()) {
-        beforeCJAAndLASPO(sentence, releaseDateTypes)
+        beforeCJAAndLASPO(sentence, releaseDateTypes, options)
       }
 
       if (tusedCalculator.doesTopUpSentenceExpiryDateApply(sentence, offender)) {
@@ -289,16 +288,16 @@ class SentenceIdentificationService(
     return releaseDateTypes
   }
 
-  fun identifyStandardDeterminate(sentence: CalculableSentence, offender: Offender): List<ReleaseDateType> {
+  fun identifyStandardDeterminate(sentence: CalculableSentence, offender: Offender, options: CalculationOptions): List<ReleaseDateType> {
     val releaseDateTypes = mutableListOf<ReleaseDateType>()
 
     if (
       sentence.sentencedAt.isBefore(LASPO_DATE) &&
       sentence.offence.committedAt.isBefore(CJA_DATE)
     ) {
-      beforeCJAAndLASPO(sentence, releaseDateTypes)
+      beforeCJAAndLASPO(sentence, releaseDateTypes, options)
     } else {
-      afterCJAAndLASPOorSDSPlus(sentence, releaseDateTypes)
+      afterCJAAndLASPOorSDSPlus(sentence, releaseDateTypes, options)
     }
 
     if (tusedCalculator.doesTopUpSentenceExpiryDateApply(sentence, offender)) {
@@ -315,10 +314,11 @@ class SentenceIdentificationService(
   private fun afterCJAAndLASPOorSDSPlus(
     sentence: CalculableSentence,
     releaseDateTypes: MutableList<ReleaseDateType>,
+    options: CalculationOptions,
   ) {
     sentence.identificationTrack = when {
       sentence is StandardDeterminateSentence && sentence.isSDSPlus -> SDS_PLUS_RELEASE
-      else -> sdsStandardOrEarlyRelease(sentence)
+      else -> sdsStandardOrEarlyRelease(sentence, options)
     }
 
     if (sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) &&
@@ -340,8 +340,8 @@ class SentenceIdentificationService(
     }
   }
 
-  private fun beforeCJAAndLASPO(sentence: CalculableSentence, releaseDateTypes: MutableList<ReleaseDateType>) {
-    sentence.identificationTrack = sdsStandardOrEarlyRelease(sentence)
+  private fun beforeCJAAndLASPO(sentence: CalculableSentence, releaseDateTypes: MutableList<ReleaseDateType>, options: CalculationOptions) {
+    sentence.identificationTrack = sdsStandardOrEarlyRelease(sentence, options)
 
     if (sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
       releaseDateTypes.addAll(
@@ -368,9 +368,9 @@ class SentenceIdentificationService(
     }
   }
 
-  private fun sdsStandardOrEarlyRelease(sentence: CalculableSentence): SentenceIdentificationTrack {
+  private fun sdsStandardOrEarlyRelease(sentence: CalculableSentence, options: CalculationOptions): SentenceIdentificationTrack {
     return when {
-      !featureToggles.sdsEarlyRelease -> SDS_STANDARD_RELEASE
+      !options.allowSDSEarlyRelease -> SDS_STANDARD_RELEASE
       sentence is StandardDeterminateSentence && sentence.hasAnSDSEarlyReleaseExclusion == SDSEarlyReleaseExclusionType.NO -> SDS_EARLY_RELEASE
       else -> SDS_STANDARD_RELEASE
     }

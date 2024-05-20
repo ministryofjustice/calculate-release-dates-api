@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
@@ -21,9 +22,9 @@ class SentenceCalculationService(
   private val releasePointMultiplierLookup: ReleasePointMultiplierLookup,
 ) {
 
-  fun calculate(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
+  fun calculate(sentence: CalculableSentence, booking: Booking, options: CalculationOptions): SentenceCalculation {
     // create association between the sentence and it's calculation
-    sentence.sentenceCalculation = getSentenceCalculation(booking, sentence)
+    sentence.sentenceCalculation = getSentenceCalculation(booking, sentence, options)
     return sentenceAdjustedCalculationService.calculateDatesFromAdjustments(sentence, booking)
   }
 
@@ -104,7 +105,7 @@ class SentenceCalculationService(
     return ConsecutiveSentenceAggregator(sentences.map(durationSupplier)).calculateDays(sentenceStartDate)
   }
 
-  private fun getSentenceCalculation(booking: Booking, sentence: CalculableSentence): SentenceCalculation {
+  private fun getSentenceCalculation(booking: Booking, sentence: CalculableSentence, options: CalculationOptions): SentenceCalculation {
     val release = if (sentence is ConsecutiveSentence) {
       getConsecutiveRelease(sentence)
     } else {
@@ -145,7 +146,7 @@ class SentenceCalculationService(
       unadjustedDeterminateReleaseDate,
       numberOfDaysToPostRecallReleaseDate,
       unadjustedPostRecallReleaseDate,
-      booking.calculateErsed,
+      options.calculateErsed,
       booking.adjustments,
       returnToCustodyDate = booking.returnToCustodyDate,
       numberOfDaysToParoleEligibilityDate = release.numberOfDaysToParoleEligibilityDate,

@@ -42,7 +42,7 @@ class UnusedDeductionsCalculationService(
       return UnusedDeductionCalculationResponse(null, validationMessages)
     }
 
-    val result = calculationService.calculateReleaseDates(booking)
+    val result = calculationService.calculateReleaseDates(booking, calculationUserInputs)
     val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.MTD)
     val calculationResult = result.second
     val releaseDate = calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOfOrNull { it.value }

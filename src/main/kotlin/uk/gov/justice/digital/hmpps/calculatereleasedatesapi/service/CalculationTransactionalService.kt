@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -25,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
@@ -60,6 +62,7 @@ class CalculationTransactionalService(
   private val approvedDatesSubmissionRepository: ApprovedDatesSubmissionRepository,
   private val nomisCommentService: NomisCommentService,
   private val buildProperties: BuildProperties,
+  private val featureToggles: FeatureToggles,
 ) {
 
   /*
@@ -84,7 +87,7 @@ class CalculationTransactionalService(
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     messages = validationService.validateBeforeCalculation(booking) // Validation stage 2 of 4
     if (messages.isNotEmpty()) return messages
-    val bookingAfterCalculation = calculationService.calculate(booking) // Validation stage 3 of 4
+    val bookingAfterCalculation = calculationService.calculate(booking, CalculationOptions(calculationUserInputs.calculateErsed, featureToggles.sdsEarlyRelease)) // Validation stage 3 of 4
     messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation) // Validation stage 4 of 4
     return messages
   }
@@ -104,7 +107,7 @@ class CalculationTransactionalService(
     val booking = bookingService.getBooking(providedSourceData, calculationUserInputs)
     messages = validationService.validateBeforeCalculation(booking) // Validation stage 2 of 4
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
-    val (bookingAfterCalculation, calculationResult) = calculationService.calculateReleaseDates(booking) // Validation stage 3 of 4
+    val (bookingAfterCalculation, calculationResult) = calculationService.calculateReleaseDates(booking, calculationUserInputs) // Validation stage 3 of 4
     messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation) // Validation stage 4 of 4
     val calculatedReleaseDates = calculate(
       booking,
@@ -194,7 +197,7 @@ class CalculationTransactionalService(
     calculationFragments: CalculationFragments,
     sourceData: PrisonApiSourceData,
     booking: Booking,
-    userInput: CalculationUserInputs?,
+    userInput: CalculationUserInputs,
     approvedDates: List<ManualEntrySelectedDate>?,
     isSpecialistSupport: Boolean? = false,
     reasonForCalculation: CalculationReason?,
@@ -236,7 +239,7 @@ class CalculationTransactionalService(
     calculationStatus: CalculationStatus,
     sourceData: PrisonApiSourceData,
     reasonForCalculation: CalculationReason?,
-    calculationUserInputs: CalculationUserInputs?,
+    calculationUserInputs: CalculationUserInputs,
     otherCalculationReason: String? = null,
     calculationFragments: CalculationFragments? = null,
     calculationType: CalculationType = CalculationType.CALCULATED,
@@ -258,7 +261,7 @@ class CalculationTransactionalService(
         ),
       )
 
-    val calculationResult = calculationService.calculateReleaseDates(booking).second
+    val calculationResult = calculationService.calculateReleaseDates(booking, calculationUserInputs).second
 
     calculationResult.dates.forEach {
       calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
@@ -284,9 +287,10 @@ class CalculationTransactionalService(
   fun calculateWithBreakdown(
     booking: Booking,
     previousCalculationResults: CalculatedReleaseDates,
+    calculationUserInputs: CalculationUserInputs,
   ): CalculationBreakdown {
     if (previousCalculationResults.calculationType == CalculationType.CALCULATED) {
-      val (workingBooking, bookingCalculation) = calculationService.calculateReleaseDates(booking)
+      val (workingBooking, bookingCalculation) = calculationService.calculateReleaseDates(booking, calculationUserInputs)
       if (bookingCalculation.dates == previousCalculationResults.dates) {
         return transform(workingBooking, bookingCalculation.breakdownByReleaseDateType, bookingCalculation.otherDates)
       } else {
