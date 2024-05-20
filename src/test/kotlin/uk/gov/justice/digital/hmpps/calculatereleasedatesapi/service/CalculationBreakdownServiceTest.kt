@@ -107,7 +107,7 @@ class CalculationBreakdownServiceTest {
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
     whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
     whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
-    whenever(calculationTransactionalService.calculateWithBreakdown(any(), any())).then {
+    whenever(calculationTransactionalService.calculateWithBreakdown(any(), any(), any())).then {
       throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")
     }
 
@@ -128,7 +128,7 @@ class CalculationBreakdownServiceTest {
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
     whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
     whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
-    whenever(calculationTransactionalService.calculateWithBreakdown(any(), any())).then {
+    whenever(calculationTransactionalService.calculateWithBreakdown(any(), any(), any())).then {
       throw UnsupportedCalculationBreakdown("Bang!")
     }
 
@@ -150,7 +150,7 @@ class CalculationBreakdownServiceTest {
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
     whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
     whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
-    whenever(calculationTransactionalService.calculateWithBreakdown(any(), any())).thenReturn(expectedBreakdown)
+    whenever(calculationTransactionalService.calculateWithBreakdown(any(), any(), any())).thenReturn(expectedBreakdown)
     val results = service.getBreakdownSafely(calculationRequestWithEverythingForBreakdown)
     assertThat(results).isEqualTo(expectedBreakdown.right())
   }

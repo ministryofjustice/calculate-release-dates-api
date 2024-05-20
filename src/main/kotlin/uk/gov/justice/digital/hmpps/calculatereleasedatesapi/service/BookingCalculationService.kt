@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DtoSingleTermSentence
@@ -18,16 +19,16 @@ class BookingCalculationService(
   val sentenceIdentificationService: SentenceIdentificationService,
 ) {
 
-  fun identify(booking: Booking): Booking {
+  fun identify(booking: Booking, options: CalculationOptions): Booking {
     for (sentence in booking.sentences) {
-      sentenceIdentificationService.identify(sentence, booking.offender)
+      sentenceIdentificationService.identify(sentence, booking.offender, options)
     }
     return booking
   }
 
-  fun calculate(booking: Booking): Booking {
+  fun calculate(booking: Booking, options: CalculationOptions): Booking {
     for (sentence in booking.sentences) {
-      sentenceCalculationService.calculate(sentence, booking)
+      sentenceCalculationService.calculate(sentence, booking, options)
     }
     return booking
   }
@@ -36,7 +37,7 @@ class BookingCalculationService(
 
   private fun allDtos(booking: Booking): Boolean = booking.sentences.all { it is DetentionAndTrainingOrderSentence }
 
-  fun createSingleTermSentences(booking: Booking): Booking {
+  fun createSingleTermSentences(booking: Booking, options: CalculationOptions): Booking {
     if (booking.sentences.size > 1 &&
       (allSdsBeforeLaspo(booking) || allDtos(booking)) &&
       booking.sentences.all { it.consecutiveSentenceUUIDs.isEmpty() } &&
@@ -48,14 +49,14 @@ class BookingCalculationService(
       } else {
         booking.singleTermSentence = SingleTermSentence(booking.sentences)
       }
-      sentenceIdentificationService.identify(booking.singleTermSentence!!, booking.offender)
-      sentenceCalculationService.calculate(booking.singleTermSentence!!, booking)
+      sentenceIdentificationService.identify(booking.singleTermSentence!!, booking.offender, options)
+      sentenceCalculationService.calculate(booking.singleTermSentence!!, booking, options)
       log.info(booking.singleTermSentence!!.buildString())
     }
     return booking
   }
 
-  fun createConsecutiveSentences(booking: Booking): Booking {
+  fun createConsecutiveSentences(booking: Booking, options: CalculationOptions): Booking {
     val (baseSentences, consecutiveSentences) = booking.sentences.partition { it.consecutiveSentenceUUIDs.isEmpty() }
     val sentencesByPrevious = consecutiveSentences.groupBy {
       it.consecutiveSentenceUUIDs.first()
@@ -74,8 +75,8 @@ class BookingCalculationService(
       .map { ConsecutiveSentence(it) }
 
     booking.consecutiveSentences.forEach {
-      sentenceIdentificationService.identify(it, booking.offender)
-      sentenceCalculationService.calculate(it, booking)
+      sentenceIdentificationService.identify(it, booking.offender, options)
+      sentenceCalculationService.calculate(it, booking, options)
       log.info(it.buildString())
     }
     return booking

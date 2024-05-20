@@ -12,7 +12,6 @@ data class Booking(
   val returnToCustodyDate: LocalDate? = null,
   val fixedTermRecallDetails: FixedTermRecallDetails? = null,
   val bookingId: Long = -1L,
-  val calculateErsed: Boolean = false,
 ) {
   @JsonIgnore
   lateinit var consecutiveSentences: List<ConsecutiveSentence>

@@ -127,12 +127,11 @@ class CalculationTransactionalServiceTest {
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
 
-    val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
+    val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculatedReleaseDates: CalculatedReleaseDates
-
     try {
       calculatedReleaseDates = calculationTransactionalService(params)
-        .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, null)
+        .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -157,7 +156,7 @@ class CalculationTransactionalServiceTest {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
 
-    val booking = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
+    val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculation = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
 
     val calculationBreakdown: CalculationBreakdown?
@@ -174,6 +173,7 @@ class CalculationTransactionalServiceTest {
           calculationReason = CALCULATION_REASON,
           calculationDate = LocalDate.of(2024, 1, 1),
         ),
+        calculationUserInputs,
       )
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
@@ -566,7 +566,7 @@ class CalculationTransactionalServiceTest {
     val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
     val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup)
     val sentencesExtractionService = SentencesExtractionService()
-    val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdced4Calculator, featureToggles)
+    val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdced4Calculator)
     val bookingCalculationService = BookingCalculationService(
       sentenceCalculationService,
       sentenceIdentificationService,
@@ -586,6 +586,7 @@ class CalculationTransactionalServiceTest {
       bookingCalculationService,
       bookingExtractionService,
       bookingTimelineService,
+      featureToggles,
     )
 
     return CalculationTransactionalService(
@@ -603,6 +604,7 @@ class CalculationTransactionalServiceTest {
       approvedDatesSubmissionRepository,
       nomisCommentService,
       TEST_BUILD_PROPERTIES,
+      featureToggles,
     )
   }
 
@@ -685,7 +687,7 @@ class CalculationTransactionalServiceTest {
 
     val INPUT_DATA: JsonNode =
       JacksonUtil.toJsonNode(
-        "{\"calculateErsed\": false, \"offender\":{\"reference\":\"A1234AJ\",\"dateOfBirth\":\"1980-01-01\",\"isActiveSexOffender\":false}," +
+        "{\"offender\":{\"reference\":\"A1234AJ\",\"dateOfBirth\":\"1980-01-01\",\"isActiveSexOffender\":false}," +
           "\"sentences\":[{\"type\":\"StandardSentence\",\"offence\":{\"committedAt\":\"2021-02-03\"," +
           "\"offenceCode\":null},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}}," +
           "\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\"," +

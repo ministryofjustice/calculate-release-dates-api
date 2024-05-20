@@ -47,7 +47,7 @@ class RelevantRemandService(
       )
     }
 
-    val result = calculationService.calculateReleaseDates(booking)
+    val result = calculationService.calculateReleaseDates(booking, calculationUserInputs)
     val calculationResult = result.second
     val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.MTD)
 

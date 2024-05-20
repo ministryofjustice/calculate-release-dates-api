@@ -34,10 +34,9 @@ open class CalculationBreakdownService(
         adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
         bookingId = prisonerDetails.bookingId,
         returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,
-        calculateErsed = calculationUserInputs.calculateErsed,
       )
       try {
-        calculationTransactionalService.calculateWithBreakdown(booking, calculation).right()
+        calculationTransactionalService.calculateWithBreakdown(booking, calculation, calculationUserInputs).right()
       } catch (e: BreakdownChangedSinceLastCalculation) {
         BreakdownMissingReason.BREAKDOWN_CHANGED_SINCE_LAST_CALCULATION.left()
       } catch (e: UnsupportedCalculationBreakdown) {
@@ -63,8 +62,7 @@ open class CalculationBreakdownService(
       adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
       bookingId = prisonerDetails.bookingId,
       returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,
-      calculateErsed = calculationUserInputs.calculateErsed,
     )
-    return calculationTransactionalService.calculateWithBreakdown(booking, calculation)
+    return calculationTransactionalService.calculateWithBreakdown(booking, calculation, calculationUserInputs)
   }
 }
