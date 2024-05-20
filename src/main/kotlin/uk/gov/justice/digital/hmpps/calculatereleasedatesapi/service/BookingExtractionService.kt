@@ -63,59 +63,36 @@ class BookingExtractionService(
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val sentence = booking.getAllExtractableSentences()[0]
     val sentenceCalculation = sentence.sentenceCalculation
-
-    if (sentence.releaseDateTypes.contains(SLED)) {
-      dates[SLED] = sentenceCalculation.expiryDate
-    } else {
-      dates[SED] = sentenceCalculation.expiryDate
-    }
-
     dates[sentence.getReleaseDateType()] = sentenceCalculation.releaseDate
 
-    if (sentenceCalculation.licenceExpiryDate != null &&
-      sentence.releaseDateTypes.getReleaseDateTypes().contains(LED)
-    ) {
-      dates[LED] = sentenceCalculation.licenceExpiryDate!!
-    }
+    val expiryDateType = if (sentence.releaseDateTypes.contains(SLED)) SLED else SED
+    dates[expiryDateType] = sentenceCalculation.expiryDate
 
-    if (sentenceCalculation.nonParoleDate != null) {
-      dates[NPD] = sentenceCalculation.nonParoleDate!!
-    }
+    val dateMappings = listOf(
+      LED to sentenceCalculation.licenceExpiryDate?.takeIf {
+        sentence.releaseDateTypes.getReleaseDateTypes().contains(LED)
+      },
+      NPD to sentenceCalculation.nonParoleDate,
 
-    if (sentenceCalculation.topUpSupervisionDate != null) {
-      dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
-    }
+      TUSED to sentenceCalculation.topUpSupervisionDate,
+      HDCED to sentenceCalculation.homeDetentionCurfewEligibilityDate,
+      HDCED4PLUS to sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate?.takeIf {
+        !sentence.releaseDateTypes.contains(PED)
+      },
+      NCRD to sentenceCalculation.notionalConditionalReleaseDate,
+      PED to sentenceCalculation.extendedDeterminateParoleEligibilityDate,
+      ERSED to sentenceCalculation.earlyReleaseSchemeEligibilityDate,
+      ETD to sentenceCalculation.earlyTransferDate,
+      LTD to sentenceCalculation.latestTransferDate,
+      ESED to sentenceCalculation.unadjustedExpiryDate.takeIf {
+        !sentence.isBotus()
+      },
+    )
 
-    if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null) {
-      dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
-    }
-
-    if (sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
-      dates[HDCED4PLUS] = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!
-    }
-
-    if (sentenceCalculation.notionalConditionalReleaseDate != null) {
-      dates[NCRD] = sentenceCalculation.notionalConditionalReleaseDate!!
-    }
-
-    if (sentenceCalculation.extendedDeterminateParoleEligibilityDate != null) {
-      dates[PED] = sentenceCalculation.extendedDeterminateParoleEligibilityDate!!
-    }
-
-    if (sentenceCalculation.earlyReleaseSchemeEligibilityDate != null) {
-      dates[ERSED] = sentenceCalculation.earlyReleaseSchemeEligibilityDate!!
-    }
-
-    if (sentenceCalculation.earlyTransferDate != null) {
-      dates[ETD] = sentenceCalculation.earlyTransferDate!!
-    }
-
-    if (sentenceCalculation.latestTransferDate != null) {
-      dates[LTD] = sentenceCalculation.latestTransferDate!!
-    }
-
-    if (!sentence.isBotus()) {
-      dates[ESED] = sentenceCalculation.unadjustedExpiryDate
+    for ((key, date) in dateMappings) {
+      if (date != null) {
+        dates[key] = date
+      }
     }
 
     return CalculationResult(
@@ -125,6 +102,30 @@ class BookingExtractionService(
       getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedExpiryDate),
     )
   }
+
+  fun applyEarlyReleaseCommencement(inTrancheOne:Boolean, calculatedDate: LocalDate, dateAtEarlyRelease: LocalDate, dateAtStandardRelease: LocalDate): LocalDate {
+    val TRANCHE_ONE_COMMENCEMENT = LocalDate.of(2022,1,1)
+    val FINAL_TRANCHE_COMMENCEMENT = LocalDate.of(2022,1,1)
+
+    return when {
+        inTrancheOne && LocalDate.now().isBefore(TRANCHE_ONE_COMMENCEMENT) -> if (dateAtStandardRelease.isBefore(TRANCHE_ONE_COMMENCEMENT)) {
+          TRANCHE_ONE_COMMENCEMENT
+        } else {
+          dateAtStandardRelease
+        }
+        else -> if (LocalDate.now().isBefore(FINAL_TRANCHE_COMMENCEMENT)) {
+          if (dateAtStandardRelease.isBefore(TRANCHE_ONE_COMMENCEMENT)) {
+            FINAL_TRANCHE_COMMENCEMENT
+          } else {
+            dateAtStandardRelease
+          }
+        } else {
+          calculatedDate
+        }
+    }
+
+  }
+
 
   /**
    *  Method applies business logic for when there are multiple sentences in a booking and the impact each may have on one another

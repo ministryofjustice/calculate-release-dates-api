@@ -23,7 +23,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
 import java.time.Period
-import java.util.*
 
 @Service
 class ManualCalculationService(
@@ -121,7 +120,7 @@ class ManualCalculationService(
     val updateOffenderDates = UpdateOffenderDates(
       calculationUuid = calculationRequest.calculationReference,
       submissionUser = serviceUserService.getUsername(),
-      keyDates = transform(dates, effectiveSentenceLength),
+      keyDates = transform(dates),
       noDates = dates.containsKey(ReleaseDateType.None),
       reason = calculationRequest.reasonForCalculation?.nomisReason,
       comment = nomisCommentService.getManualNomisComment(calculationRequest, dates, isGenuineOverride),
@@ -147,19 +146,22 @@ class ManualCalculationService(
   }
 
   fun calculateEffectiveSentenceLength(booking: Booking, manualEntryRequest: ManualEntryRequest): Period {
-    if (hasIndeterminateSentences(booking.bookingId)) {
-      return Period.ZERO
-    } else {
-      val identifiedBooking = bookingCalculationService.identify(booking)
-      val consecutiveSentencesBooking = bookingCalculationService.createConsecutiveSentences(identifiedBooking)
-      val sentences = consecutiveSentencesBooking.getAllExtractableSentences()
-      val earliestSentenceDate = sentences.minOfOrNull { it.sentencedAt }
-      val sed = getSED(manualEntryRequest)
-      return if (sed != null && earliestSentenceDate != null) {
-        Period.between(earliestSentenceDate, sed)
-      } else {
-        Period.ZERO
-      }
+    when {
+        hasIndeterminateSentences(booking.bookingId) -> {
+          return Period.ZERO
+        }
+        else -> {
+          val identifiedBooking = bookingCalculationService.identify(booking)
+          val consecutiveSentencesBooking = bookingCalculationService.createConsecutiveSentences(identifiedBooking)
+          val sentences = consecutiveSentencesBooking.getAllExtractableSentences()
+          val earliestSentenceDate = sentences.minOfOrNull { it.sentencedAt }
+          val sed = getSED(manualEntryRequest)
+          return if (sed != null && earliestSentenceDate != null) {
+            Period.between(earliestSentenceDate, sed)
+          } else {
+            Period.ZERO
+          }
+        }
     }
   }
 

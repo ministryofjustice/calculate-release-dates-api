@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.CJA_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.LASPO_DATE
@@ -21,6 +22,20 @@ data class StandardDeterminateSentence(
   override val isSDSPlus: Boolean,
   val hasAnSDSEarlyReleaseExclusion: SDSEarlyReleaseExclusionType,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType) {
+
+  @JsonIgnore
+  val releaseArrangements: List<SentenceIdentificationTrack> = if (isSDSPlus) {
+    listOf(SentenceIdentificationTrack.SDS_PLUS_RELEASE)
+  } else {
+    if (hasAnSDSEarlyReleaseExclusion == SDSEarlyReleaseExclusionType.NO) {
+      listOf(SentenceIdentificationTrack.SDS_EARLY_RELEASE, SentenceIdentificationTrack.SDS_STANDARD_RELEASE)
+    } else {
+      listOf(SentenceIdentificationTrack.SDS_STANDARD_RELEASE, SentenceIdentificationTrack.SDS_EARLY_RELEASE)
+    }
+  }
+
+  @JsonIgnore
+  val releaseArrangementCalculations: MutableMap<SentenceIdentificationTrack, SentenceCalculation> = mutableMapOf()
 
   override fun buildString(): String {
     return "Sentence\t:\t\n" +

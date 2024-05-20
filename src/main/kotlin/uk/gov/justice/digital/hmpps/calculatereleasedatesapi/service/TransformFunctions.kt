@@ -105,7 +105,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
@@ -123,11 +122,10 @@ fun transform(
 ): AbstractSentence {
   return sentence.let {
     val offendersOffence = sentence.offence
-    val offence =
-      Offence(
-        committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
-        offenceCode = offendersOffence.offenceCode,
-      )
+    val offence = Offence(
+      committedAt = offendersOffence.offenceEndDate ?: offendersOffence.offenceStartDate!!,
+      offenceCode = offendersOffence.offenceCode,
+    )
 
     val consecutiveSentenceUUIDs = if (sentence.consecutiveToSequence != null) {
       listOf(
@@ -381,7 +379,14 @@ fun transform(
     prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
     adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments, objectMapper),
     offenderFinePayments = objectToJson(sourceData.offenderFinePayments, objectMapper),
-    returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
+    returnToCustodyDate = if (sourceData.returnToCustodyDate != null) {
+      objectToJson(
+        sourceData.returnToCustodyDate,
+        objectMapper,
+      )
+    } else {
+      null
+    },
     calculationRequestUserInput = transform(calculationUserInputs),
     breakdownHtml = calculationFragments?.breakdownHtml,
     calculationType = calculationType,
@@ -636,7 +641,7 @@ fun transform(
   )
 }
 
-fun transform(dates: Map<ReleaseDateType, LocalDate?>?, effectiveSentenceLength: Period): OffenderKeyDates {
+fun transform(dates: Map<ReleaseDateType, LocalDate?>?): OffenderKeyDates {
   if (dates!!.containsKey(None)) {
     return OffenderKeyDates(null)
   }
@@ -658,9 +663,9 @@ fun transform(dates: Map<ReleaseDateType, LocalDate?>?, effectiveSentenceLength:
     effectiveSentenceEndDate = dates[ESED],
     sentenceLength = String.format(
       "%02d/%02d/%02d",
-      effectiveSentenceLength.years,
-      effectiveSentenceLength.months,
-      effectiveSentenceLength.days,
+      0,
+      0,
+      0,
     ),
     homeDetentionCurfewApprovedDate = dates[HDCAD],
     tariffDate = dates[Tariff],
@@ -716,7 +721,12 @@ fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
   comparison.numberOfPeopleCompared,
 )
 
-fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4PlusResults: List<HdcFourPlusComparisonMismatch>, objectMapper: ObjectMapper): ComparisonOverview = ComparisonOverview(
+fun transform(
+  comparison: Comparison,
+  mismatches: List<ComparisonPerson>,
+  hdc4PlusResults: List<HdcFourPlusComparisonMismatch>,
+  objectMapper: ObjectMapper,
+): ComparisonOverview = ComparisonOverview(
   comparison.comparisonShortReference,
   comparison.prison,
   comparison.comparisonType,
@@ -729,7 +739,11 @@ fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4Pl
   hdc4PlusResults,
 )
 
-fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, objectMapper: ObjectMapper): ComparisonOverview = ComparisonOverview(
+fun transform(
+  comparison: Comparison,
+  mismatches: List<ComparisonPerson>,
+  objectMapper: ObjectMapper,
+): ComparisonOverview = ComparisonOverview(
   comparison.comparisonShortReference,
   comparison.prison,
   comparison.comparisonType,
@@ -742,17 +756,18 @@ fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, object
   emptyList(),
 )
 
-private fun transform(comparisonPerson: ComparisonPerson, objectMapper: ObjectMapper): ComparisonMismatchSummary = ComparisonMismatchSummary(
-  comparisonPerson.person,
-  comparisonPerson.lastName,
-  comparisonPerson.isValid,
-  comparisonPerson.isMatch,
-  transform(comparisonPerson.validationMessages, objectMapper),
-  comparisonPerson.shortReference,
-  comparisonPerson.mismatchType,
-  comparisonPerson.sdsPlusSentencesIdentified,
-  comparisonPerson.establishment,
-)
+private fun transform(comparisonPerson: ComparisonPerson, objectMapper: ObjectMapper): ComparisonMismatchSummary =
+  ComparisonMismatchSummary(
+    comparisonPerson.person,
+    comparisonPerson.lastName,
+    comparisonPerson.isValid,
+    comparisonPerson.isMatch,
+    transform(comparisonPerson.validationMessages, objectMapper),
+    comparisonPerson.shortReference,
+    comparisonPerson.mismatchType,
+    comparisonPerson.sdsPlusSentencesIdentified,
+    comparisonPerson.establishment,
+  )
 
 private fun transform(validationMessageJsonNode: JsonNode, objectMapper: ObjectMapper): List<ValidationMessage> {
   val validationMessages: List<ValidationMessage> = objectMapper.readValue(validationMessageJsonNode.toString())
@@ -787,9 +802,13 @@ fun transform(
   sdsSentencesIdentified,
 )
 
-fun transform(discrepancy: ComparisonPersonDiscrepancy): ComparisonDiscrepancySummary = transform(discrepancy, discrepancy.causes)
+fun transform(discrepancy: ComparisonPersonDiscrepancy): ComparisonDiscrepancySummary =
+  transform(discrepancy, discrepancy.causes)
 
-fun transform(discrepancy: ComparisonPersonDiscrepancy, discrepancyCauses: List<ComparisonPersonDiscrepancyCause>): ComparisonDiscrepancySummary = ComparisonDiscrepancySummary(
+fun transform(
+  discrepancy: ComparisonPersonDiscrepancy,
+  discrepancyCauses: List<ComparisonPersonDiscrepancyCause>,
+): ComparisonDiscrepancySummary = ComparisonDiscrepancySummary(
   impact = discrepancy.discrepancyImpact.impact,
   causes = transform(discrepancyCauses),
   detail = discrepancy.detail,
