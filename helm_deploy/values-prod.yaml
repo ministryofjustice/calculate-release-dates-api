@@ -9,7 +9,7 @@ generic-service:
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     HMPPS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
-    PRISON_API_URL: https://api.prison.service.justice.gov.uk
+    PRISON_API_URL: https://prison-api.prison.service.justice.gov.uk
     ADJUSTMENTS_API_URL: https://adjustments-api.hmpps.service.justice.gov.uk
     MANAGE-OFFENCES_API_URL: https://manage-offences-api.hmpps.service.justice.gov.uk
     BOTUS_FEATURE_TOGGLE: "false"
