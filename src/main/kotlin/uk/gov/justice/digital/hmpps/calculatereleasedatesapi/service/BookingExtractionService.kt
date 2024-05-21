@@ -73,7 +73,6 @@ class BookingExtractionService(
         sentence.releaseDateTypes.getReleaseDateTypes().contains(LED)
       },
       NPD to sentenceCalculation.nonParoleDate,
-
       TUSED to sentenceCalculation.topUpSupervisionDate,
       HDCED to sentenceCalculation.homeDetentionCurfewEligibilityDate,
       HDCED4PLUS to sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate?.takeIf {
@@ -91,7 +90,23 @@ class BookingExtractionService(
 
     for ((key, date) in dateMappings) {
       if (date != null) {
-        dates[key] = date
+        var thisDate = date
+
+        // Apply early release commencement logic for specific date types if sentence is a StandardDeterminateSentence
+        if (sentence is StandardDeterminateSentence &&
+          listOf(NPD, TUSED, HDCED, HDCED4PLUS, sentence.getReleaseDateType(), PED, ERSED).contains(key) &&
+          sentence.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE
+        ) {
+          val standardReleaseCalculation = sentence.releaseArrangementCalculations[SentenceIdentificationTrack.SDS_STANDARD_RELEASE]?.releaseDate
+
+          thisDate = applyEarlyReleaseCommencement(
+            booking.isTrancheOne(),
+            date,
+            standardReleaseCalculation ?: date,
+          )
+        }
+
+        dates[key] = thisDate
       }
     }
 
@@ -103,29 +118,28 @@ class BookingExtractionService(
     )
   }
 
-  fun applyEarlyReleaseCommencement(inTrancheOne:Boolean, calculatedDate: LocalDate, dateAtEarlyRelease: LocalDate, dateAtStandardRelease: LocalDate): LocalDate {
-    val TRANCHE_ONE_COMMENCEMENT = LocalDate.of(2022,1,1)
-    val FINAL_TRANCHE_COMMENCEMENT = LocalDate.of(2022,1,1)
-
+  fun applyEarlyReleaseCommencement(
+    inTrancheOne: Boolean,
+    calculatedDate: LocalDate,
+    dateAtStandardRelease: LocalDate,
+  ): LocalDate {
     return when {
-        inTrancheOne && LocalDate.now().isBefore(TRANCHE_ONE_COMMENCEMENT) -> if (dateAtStandardRelease.isBefore(TRANCHE_ONE_COMMENCEMENT)) {
-          TRANCHE_ONE_COMMENCEMENT
+      inTrancheOne && LocalDate.now().isBefore(TRANCHE_ONE_COMMENCEMENT) -> if (dateAtStandardRelease.isBefore(TRANCHE_ONE_COMMENCEMENT)) {
+        TRANCHE_ONE_COMMENCEMENT
+      } else {
+        dateAtStandardRelease
+      }
+      else -> if (LocalDate.now().isBefore(TRANCHE_TWO_COMMENCEMENT)) {
+        if (dateAtStandardRelease.isBefore(TRANCHE_ONE_COMMENCEMENT)) {
+          TRANCHE_TWO_COMMENCEMENT
         } else {
           dateAtStandardRelease
         }
-        else -> if (LocalDate.now().isBefore(FINAL_TRANCHE_COMMENCEMENT)) {
-          if (dateAtStandardRelease.isBefore(TRANCHE_ONE_COMMENCEMENT)) {
-            FINAL_TRANCHE_COMMENCEMENT
-          } else {
-            dateAtStandardRelease
-          }
-        } else {
-          calculatedDate
-        }
+      } else {
+        calculatedDate
+      }
     }
-
   }
-
 
   /**
    *  Method applies business logic for when there are multiple sentences in a booking and the impact each may have on one another
@@ -137,33 +151,41 @@ class BookingExtractionService(
     val sentences = booking.getAllExtractableSentences()
     val earliestSentenceDate = sentences.minOf { it.sentencedAt }
 
-    val mostRecentSentencesByReleaseDate =
-      extractionService.mostRecentSentences(sentences, SentenceCalculation::releaseDate)
-    val mostRecentSentenceByAdjustedDeterminateReleaseDate =
-      extractionService.mostRecentSentence(sentences, SentenceCalculation::adjustedDeterminateReleaseDate)
-    val mostRecentSentenceByExpiryDate =
-      extractionService.mostRecentSentence(sentences, SentenceCalculation::expiryDate)
+    val mostRecentSentencesByType: MutableMap<String, List<CalculableSentence>> = mutableMapOf()
+    val mostRecentSentenceByType: MutableMap<String, CalculableSentence?> = mutableMapOf()
+    val currentDate: MutableMap<String, LocalDate?> = mutableMapOf()
 
-    val latestReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
-    val latestExpiryDate = mostRecentSentenceByExpiryDate.sentenceCalculation.expiryDate
+    // aggregate the sentences in order where appropriate
 
-    val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(
-      sentences,
-      SentenceCalculation::unadjustedExpiryDate,
-    )
+    mostRecentSentencesByType["releaseDate"] = extractionService.mostRecentSentences(sentences, SentenceCalculation::releaseDate)
 
-    val effectiveSentenceLength = getEffectiveSentenceLength(
-      earliestSentenceDate,
-      latestUnadjustedExpiryDate,
-    )
+    // determine the relevant sentences and their calculations
+    mostRecentSentenceByType["releaseDate"] = mostRecentSentencesByType["releaseDate"]?.get(0)
+    mostRecentSentenceByType["adjustedDeterminateReleaseDate"] = extractionService.mostRecentSentence(sentences, SentenceCalculation::adjustedDeterminateReleaseDate)
+    mostRecentSentenceByType["expiryDate"] = extractionService.mostRecentSentence(sentences, SentenceCalculation::expiryDate)
+    mostRecentSentenceByType["unadjustedExpiryDate"] = extractionService.mostRecentSentence(sentences, SentenceCalculation::unadjustedExpiryDate)
+    mostRecentSentenceByType["licenceExpiryDate"] = extractionService.mostRecentSentenceOrNull(sentences, SentenceCalculation::licenceExpiryDate)
+    mostRecentSentenceByType["nonParoleDate"] = extractionService.mostRecentSentenceOrNull(sentences, SentenceCalculation::nonParoleDate)
+    mostRecentSentenceByType["extendedDeterminateParoleEligibilityDate"] = extractionService.mostRecentSentenceOrNull(sentences, SentenceCalculation::extendedDeterminateParoleEligibilityDate)
+    mostRecentSentenceByType["notionalConditionalReleaseDate"] = extractionService.mostRecentSentence(sentences, SentenceCalculation::notionalConditionalReleaseDate)
 
-    val latestLicenseExpirySentence: CalculableSentence? = extractionService.mostRecentSentenceOrNull(
-      sentences,
-      SentenceCalculation::licenceExpiryDate,
-    )
-    val latestLicenseExpiryDate: LocalDate? = latestLicenseExpirySentence?.sentenceCalculation?.licenceExpiryDate
+    // determine the relevant dates for those sentences from each calculation
 
-    val latestNonParoleDate: LocalDate? = extractManyNonParoleDate(sentences, latestReleaseDate)
+    currentDate["releaseDate"] = mostRecentSentenceByType["releaseDate"]?.sentenceCalculation?.releaseDate
+    currentDate["adjustedDeterminateReleaseDate"] = mostRecentSentenceByType["releaseDate"]?.sentenceCalculation?.adjustedDeterminateReleaseDate
+    currentDate["expiryDate"] = mostRecentSentenceByType["expiryDate"]?.sentenceCalculation?.expiryDate
+    currentDate["unadjustedExpiryDate"] = mostRecentSentenceByType["unadjustedExpiryDate"]?.sentenceCalculation?.unadjustedExpiryDate
+    currentDate["licenceExpiryDate"] = mostRecentSentenceByType["licenceExpiryDate"]?.sentenceCalculation?.licenceExpiryDate
+    currentDate["extendedDeterminateParoleEligibilityDate"] = mostRecentSentenceByType["extendedDeterminateParoleEligibilityDate"]?.sentenceCalculation?.extendedDeterminateParoleEligibilityDate
+    currentDate["notionalConditionalReleaseDate"] = mostRecentSentenceByType["notionalConditionalReleaseDate"]?.sentenceCalculation?.notionalConditionalReleaseDate
+    currentDate["nonParoleDate"] = if (mostRecentSentenceByType["nonParoleDate"]?.sentenceCalculation?.nonParoleDate != null && mostRecentSentenceByType["nonParoleDate"]?.sentenceCalculation?.nonParoleDate.isAfter(currentDate["releaseDate"])) {
+      currentDate["releaseDate"]
+    } else {
+      null
+    }
+
+    // need to resolve
+    // val latestNonParoleDate: LocalDate? = extractManyNonParoleDate(sentences, latestReleaseDate)
 
     val latestHDCEDAndBreakdown =
       extractManyHomeDetentionCurfewEligibilityDate(
@@ -174,6 +196,12 @@ class BookingExtractionService(
 
     val latestHDC4PLUSAndBreakdown =
       extractManyHomeDetentionCurfew4PlusEligibilityDate(sentences, mostRecentSentencesByReleaseDate)
+
+    // determine the ESL
+    val effectiveSentenceLength = getEffectiveSentenceLength(
+      earliestSentenceDate,
+      latestUnadjustedExpiryDate,
+    )
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
       extractManyTopUpSuperVisionDate(sentences, latestLicenseExpiryDate)
@@ -186,11 +214,6 @@ class BookingExtractionService(
       null
     }
 
-    val latestExtendedDeterminateParoleEligibilityDate: LocalDate? = extractionService.mostRecentOrNull(
-      sentences,
-      SentenceCalculation::extendedDeterminateParoleEligibilityDate,
-    )
-
     val concurrentOraAndNonOraDetails = extractConcurrentOraAndNonOraDetails(
       mostRecentSentenceByAdjustedDeterminateReleaseDate.releaseDateTypes.getReleaseDateTypes(),
       mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes(),
@@ -198,11 +221,6 @@ class BookingExtractionService(
       sentences,
       effectiveSentenceLength,
       booking,
-    )
-
-    val latestNotionalConditionalReleaseDate: LocalDate? = extractionService.mostRecentOrNull(
-      sentences,
-      SentenceCalculation::notionalConditionalReleaseDate,
     )
 
     if (latestExpiryDate == latestLicenseExpiryDate && mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes()
@@ -754,5 +772,8 @@ class BookingExtractionService(
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     private const val FOUR = 4L
     private const val INT_EIGHTEEN = 18
+
+    private val TRANCHE_ONE_COMMENCEMENT = LocalDate.of(2022, 1, 1)
+    private val TRANCHE_TWO_COMMENCEMENT = LocalDate.of(2022, 1, 1)
   }
 }
