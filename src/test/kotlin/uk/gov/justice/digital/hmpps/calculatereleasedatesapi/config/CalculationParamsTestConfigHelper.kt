@@ -2,8 +2,12 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config
 
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean
 import org.springframework.boot.context.properties.bind.Binder
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource
 import org.springframework.core.io.ClassPathResource
+import java.time.LocalDate
+import java.time.ZoneId
+import java.util.Date
 
 object CalculationParamsTestConfigHelper {
 
@@ -21,5 +25,12 @@ object CalculationParamsTestConfigHelper {
   fun ersedConfigurationForTests(params: String = "calculation-params"): ErsedConfiguration {
     return Binder(propertySource(params)).bind("ersed", ErsedConfiguration::class.java).get()
   }
+
+  fun sdsEarlyReleaseTrancheOneDate(): LocalDate {
+    val configurationProperty = propertySource("calculation-params").getConfigurationProperty(ConfigurationPropertyName.of("sds-early-release-tranches.tranche-one-date"))
+    val date = configurationProperty.value as Date
+    return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+  }
+
   private fun propertySource(params: String) = MapConfigurationPropertySource(YamlPropertiesFactoryBean().apply { setResources(ClassPathResource("application-$params.yml")) }.getObject())
 }
