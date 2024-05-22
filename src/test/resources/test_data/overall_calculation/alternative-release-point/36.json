@@ -1,0 +1,45 @@
+{
+  "offender": {
+    "reference": "A1234BC",
+    "dateOfBirth": "1977-05-02",
+    "isActiveSexOffender": false
+  },
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2021-01-01",
+        "offenceCode": "AB123C"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 7
+        }
+      },
+      "sentencedAt": "2021-03-02",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+      "consecutiveSentenceUUIDs": []
+    }
+  ],
+  "adjustments": {
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "toDate": "2021-10-13",
+        "fromDate": "2021-10-10",
+        "numberOfDays": 4,
+        "appliesToSentencesFrom": "2021-03-02"
+      }
+    ],
+    "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+      {
+        "numberOfDays": 2,
+        "appliesToSentencesFrom": "2021-03-02",
+        "fromDate": "2024-05-01",
+        "toDate": "2024-05-02"
+      }
+    ]
+  },
+  "calculateErsed": true
+}
