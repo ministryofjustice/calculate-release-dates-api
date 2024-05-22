@@ -564,7 +564,7 @@ class CalculationTransactionalServiceTest {
     val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultipliersConfiguration)
     val isNotDefaultParams = params != "calculation-params"
     val featureToggles = FeatureToggles(botus = false, sdsEarlyRelease = isNotDefaultParams)
-    val sdsEarlyReleaseAdjustmentService = SDSEarlyReleaseAdjustmentService(sdsEarlyReleaseTrancheOneDate())
+    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sdsEarlyReleaseTrancheOneDate())
     val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
     val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup)
     val sentencesExtractionService = SentencesExtractionService()
@@ -589,7 +589,7 @@ class CalculationTransactionalServiceTest {
       bookingExtractionService,
       bookingTimelineService,
       featureToggles,
-      sdsEarlyReleaseAdjustmentService,
+      sdsEarlyReleaseDefaultingRulesService,
     )
 
     return CalculationTransactionalService(
