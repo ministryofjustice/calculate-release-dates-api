@@ -11,4 +11,5 @@ data class CalculationBreakdown(
   @Schema(description = "Breakdown details in a map keyed by release date type")
   val breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown> = emptyMap(),
   val otherDates: Map<ReleaseDateType, LocalDate> = emptyMap(),
+  var ersedNotApplicableDueToDtoLaterThanCrd: Boolean = false
 )
