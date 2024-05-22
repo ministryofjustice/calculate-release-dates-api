@@ -332,7 +332,7 @@ class BookingExtractionService(
       breakdownByReleaseDateType.toMap(),
       otherDates.toMap(),
       effectiveSentenceLength,
-      ersedNotApplicableDueToDtoLaterThanCrd
+      ersedNotApplicableDueToDtoLaterThanCrd,
     )
   }
 
@@ -389,7 +389,7 @@ class BookingExtractionService(
     dates: MutableMap<ReleaseDateType, LocalDate>,
     latestReleaseDate: LocalDate,
     sentenceGroups: List<List<CalculableSentence>>,
-  ) : Boolean{
+  ): Boolean {
     val latestEarlyReleaseSchemeEligibilitySentence =
       extractionService.mostRecentSentenceOrNull(sentences, SentenceCalculation::earlyReleaseSchemeEligibilityDate) { !it.sentenceCalculation.isImmediateRelease() }
 
@@ -440,7 +440,7 @@ class BookingExtractionService(
     dates: MutableMap<ReleaseDateType, LocalDate>,
     latestEarlyReleaseSchemeEligibilitySentence: CalculableSentence,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
-  ) : Boolean {
+  ): Boolean {
     val releaseDate = dates[CRD] ?: dates[ARD]
     if (dates[MTD]?.isBefore(releaseDate)!!) {
       val ersed = latestEarlyReleaseSchemeEligibilitySentence.sentenceCalculation.earlyReleaseSchemeEligibilityDate!!

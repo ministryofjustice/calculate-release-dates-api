@@ -292,7 +292,7 @@ class CalculationTransactionalService(
           workingBooking,
           bookingCalculation.breakdownByReleaseDateType,
           bookingCalculation.otherDates,
-          bookingCalculation.ersedNotApplicableDueToDtoLaterThanCrd
+          bookingCalculation.ersedNotApplicableDueToDtoLaterThanCrd,
         )
       } else {
         throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")

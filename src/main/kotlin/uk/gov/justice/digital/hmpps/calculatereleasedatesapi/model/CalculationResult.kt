@@ -9,5 +9,5 @@ data class CalculationResult(
   val breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown> = mapOf(),
   val otherDates: Map<ReleaseDateType, LocalDate> = mapOf(),
   val effectiveSentenceLength: Period,
-  val ersedNotApplicableDueToDtoLaterThanCrd : Boolean = false,
+  val ersedNotApplicableDueToDtoLaterThanCrd: Boolean = false,
 )
