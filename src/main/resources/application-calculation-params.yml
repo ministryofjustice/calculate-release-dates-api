@@ -34,3 +34,6 @@ release-point-multipliers:
         - BOTUS
       multiplier: 1.0
   default: 0.5
+
+sds-early-release-tranches:
+  tranche-one-date: 2024-07-29
