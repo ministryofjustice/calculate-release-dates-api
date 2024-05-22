@@ -13,7 +13,7 @@ class CalculationService(
   private val bookingExtractionService: BookingExtractionService,
   private val bookingTimelineService: BookingTimelineService,
   private val featureToggles: FeatureToggles,
-  private val sdsEarlyReleaseAdjustmentService: SDSEarlyReleaseAdjustmentService,
+  private val sdsEarlyReleaseDefaultingRulesService: SDSEarlyReleaseDefaultingRulesService,
 ) {
 
   fun calculateReleaseDates(booking: Booking, calculationUserInputs: CalculationUserInputs): Pair<Booking, CalculationResult> {
@@ -27,9 +27,9 @@ class CalculationService(
     workingBookingForPossibleEarlyRelease: Booking,
     resultWithPossibleEarlyRelease: CalculationResult,
     options: CalculationOptions,
-  ) = if (sdsEarlyReleaseAdjustmentService.requiresRecalculation(workingBookingForPossibleEarlyRelease, resultWithPossibleEarlyRelease)) {
+  ) = if (sdsEarlyReleaseDefaultingRulesService.requiresRecalculation(workingBookingForPossibleEarlyRelease, resultWithPossibleEarlyRelease)) {
     val (_, resultWithoutEarlyRelease) = calcAndExtract(originalBooking.copy(), options.copy(allowSDSEarlyRelease = false))
-    sdsEarlyReleaseAdjustmentService.mergeResults(resultWithPossibleEarlyRelease, resultWithoutEarlyRelease)
+    sdsEarlyReleaseDefaultingRulesService.mergeResults(resultWithPossibleEarlyRelease, resultWithoutEarlyRelease)
   } else {
     resultWithPossibleEarlyRelease
   }

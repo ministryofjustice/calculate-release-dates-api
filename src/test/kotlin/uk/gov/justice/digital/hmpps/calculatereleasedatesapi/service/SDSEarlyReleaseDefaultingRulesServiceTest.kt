@@ -24,10 +24,10 @@ import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
 import java.util.*
 
-class SDSEarlyReleaseAdjustmentServiceTest {
+class SDSEarlyReleaseDefaultingRulesServiceTest {
 
   private val testCommencementDate = LocalDate.of(2024, 7, 29)
-  private val service = SDSEarlyReleaseAdjustmentService(testCommencementDate)
+  private val service = SDSEarlyReleaseDefaultingRulesService(testCommencementDate)
 
   @Test
   fun `should not require recalculation if no SDS early release`() {

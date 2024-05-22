@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCa
 import java.time.LocalDate
 
 @Service
-class SDSEarlyReleaseAdjustmentService(
+class SDSEarlyReleaseDefaultingRulesService(
   @Value("\${sds-early-release-tranches.tranche-one-date}")
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   private val trancheOneCommencementDate: LocalDate,
