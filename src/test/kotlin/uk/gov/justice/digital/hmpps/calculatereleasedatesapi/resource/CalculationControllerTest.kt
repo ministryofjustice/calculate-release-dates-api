@@ -323,7 +323,7 @@ class CalculationControllerTest {
   @Test
   fun `Test GET of calculation breakdown by calculationRequestId`() {
     val calculationRequestId = 9995L
-    val breakdown = CalculationBreakdown(listOf(), null)
+    val breakdown = CalculationBreakdown(listOf(), null, ersedNotApplicableDueToDtoLaterThanCrd = false)
     whenever(calculationBreakdownService.getBreakdownUnsafely(calculationRequestId)).thenReturn(breakdown)
 
     val result = mvc.perform(get("/calculation/breakdown/$calculationRequestId").accept(APPLICATION_JSON))
@@ -345,7 +345,7 @@ class CalculationControllerTest {
         null,
         null,
       ),
-      null,
+      CalculationBreakdown(listOf(), null, ersedNotApplicableDueToDtoLaterThanCrd = true),
     )
     whenever(detailedCalculationResultsService.findDetailedCalculationResults(calculationRequestId)).thenReturn(
       calculatedReleaseDates,
