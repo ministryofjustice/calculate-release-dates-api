@@ -13,12 +13,13 @@
       },
       "duration": {
         "durationElements": {
-          "YEARS": 3
+          "MONTHS": 18
         }
       },
-      "sentencedAt": "2021-08-02",
+      "sentencedAt": "2022-03-14",
       "caseSequence": 1,
       "lineSequence": 1,
+      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
       "consecutiveSentenceUUIDs": []
     },
     {
@@ -29,14 +30,24 @@
       },
       "duration": {
         "durationElements": {
-          "YEARS": 3
+          "MONTHS": 50
         }
       },
-      "sentencedAt": "2023-01-03",
+      "sentencedAt": "2022-11-25",
       "caseSequence": 2,
-      "lineSequence": 1
+      "lineSequence": 1,
+      "consecutiveSentenceUUIDs": ["cb304745-d781-47d3-b931-4baa31551fc5"]
     }
   ],
-  "adjustments": {},
+  "adjustments": {
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "toDate": "2022-11-22",
+        "fromDate": "2024-11-24",
+        "numberOfDays": 2,
+        "appliesToSentencesFrom": "2022-03-14"
+      }
+    ]
+  },
   "calculateErsed": true
 }
