@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationP
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdced4ConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -563,6 +564,7 @@ class CalculationTransactionalServiceTest {
     val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultipliersConfiguration)
     val isNotDefaultParams = params != "calculation-params"
     val featureToggles = FeatureToggles(botus = false, sdsEarlyRelease = isNotDefaultParams)
+    val sdsEarlyReleaseAdjustmentService = SDSEarlyReleaseAdjustmentService(sdsEarlyReleaseTrancheOneDate())
     val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
     val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup)
     val sentencesExtractionService = SentencesExtractionService()
@@ -587,6 +589,7 @@ class CalculationTransactionalServiceTest {
       bookingExtractionService,
       bookingTimelineService,
       featureToggles,
+      sdsEarlyReleaseAdjustmentService,
     )
 
     return CalculationTransactionalService(
