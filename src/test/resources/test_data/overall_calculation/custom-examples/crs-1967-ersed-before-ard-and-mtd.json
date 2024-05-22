@@ -1,0 +1,50 @@
+{
+  "calculateErsed": true,
+  "offender":{
+    "reference": "ABC123D",
+    "dateOfBirth": "2005-04-01"
+  },
+  "sentences":[
+    {
+      "type":"StandardDeterminateSentence",
+      "lineSequence": 1,
+      "caseSequence": 1,
+      "offence":{
+        "committedAt":"2022-08-25"
+      },
+      "duration":{
+        "durationElements":{
+          "MONTHS": 8
+        }
+      },
+      "sentencedAt": "2022-10-27",
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+    },
+    {
+      "type": "DetentionAndTrainingOrderSentence",
+      "lineSequence": 2,
+      "caseSequence": 1,
+      "offence":{
+        "committedAt":"2022-08-25"
+      },
+      "duration":{
+        "durationElements":{
+          "MONTHS": 12
+        }
+      },
+      "isDto": true,
+      "sentencedAt": "2022-10-27",
+      "identifier": "8995cb19-1b7f-491e-bbdd-0a9c90e18c2a"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "numberOfDays": 62,
+        "appliesToSentencesFrom": "2022-10-27",
+        "fromDate": "2022-08-26",
+        "toDate": "2022-10-26"
+      }
+    ]
+  }
+}

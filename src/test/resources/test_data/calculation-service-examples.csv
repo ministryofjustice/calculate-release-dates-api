@@ -442,5 +442,7 @@ custom-examples,crs-1943-ac4,,calculation-params
 custom-examples,crs-1943-ac5,,calculation-params
 custom-examples,crs-1943-botus-unaffected-by-remand,,calculation-params
 custom-examples,crs-1943-botus-unaffected-by-tagged-bail,,calculation-params
+
 custom-examples,crs-1967-ersed-before-crd-and-mtd,,calculation-params
+custom-examples,crs-1967-ersed-before-ard-and-mtd,,calculation-params
 
