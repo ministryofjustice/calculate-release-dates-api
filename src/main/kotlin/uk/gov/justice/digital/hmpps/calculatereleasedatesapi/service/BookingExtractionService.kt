@@ -323,7 +323,7 @@ class BookingExtractionService(
     )
 
     /** --- ERSED --- **/
-    val ersedNotApplicableDueToDtoLaterThanCrd = extractErsedForBooking(sentences, breakdownByReleaseDateType, dates, latestReleaseDate, booking.sentenceGroups)
+    val ersedNotApplicableDueToDtoLaterThanCrd = extractErsedAndNotApplicableDueToDtoLaterThanCrdFlag(sentences, breakdownByReleaseDateType, dates, latestReleaseDate, booking.sentenceGroups)
 
     /** --- ESED --- **/
     dates[ESED] = latestUnadjustedExpiryDate
@@ -383,7 +383,7 @@ class BookingExtractionService(
     }
   }
 
-  private fun extractErsedForBooking(
+  private fun extractErsedAndNotApplicableDueToDtoLaterThanCrdFlag(
     sentences: List<CalculableSentence>,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
     dates: MutableMap<ReleaseDateType, LocalDate>,
@@ -436,7 +436,7 @@ class BookingExtractionService(
     return booking.sentences.all { it.isDto() } && effectiveSentenceLength.toTotalMonths() < 24 && !booking.underEighteenAtEndOfCustodialPeriod()
   }
 
-  fun calculateErsedWhereDtoIsPresent(
+  private fun calculateErsedWhereDtoIsPresent(
     dates: MutableMap<ReleaseDateType, LocalDate>,
     latestEarlyReleaseSchemeEligibilitySentence: CalculableSentence,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
