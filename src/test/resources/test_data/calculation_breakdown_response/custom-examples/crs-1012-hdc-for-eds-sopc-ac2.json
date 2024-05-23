@@ -72,5 +72,6 @@
       "unadjustedDate": "2023-01-12"
     }
   },
-  "otherDates": {}
+  "otherDates": {},
+  "ersedNotApplicableDueToDtoLaterThanCrd": false
 }
