@@ -139,5 +139,6 @@
       "unadjustedDate": "2015-02-12"
     }
   },
-  "otherDates": {}
+  "otherDates": {},
+  "ersedNotApplicableDueToDtoLaterThanCrd": false
 }

@@ -292,7 +292,12 @@ class CalculationTransactionalService(
     if (previousCalculationResults.calculationType == CalculationType.CALCULATED) {
       val (workingBooking, bookingCalculation) = calculationService.calculateReleaseDates(booking, calculationUserInputs)
       if (bookingCalculation.dates == previousCalculationResults.dates) {
-        return transform(workingBooking, bookingCalculation.breakdownByReleaseDateType, bookingCalculation.otherDates)
+        return transform(
+          workingBooking,
+          bookingCalculation.breakdownByReleaseDateType,
+          bookingCalculation.otherDates,
+          bookingCalculation.ersedNotApplicableDueToDtoLaterThanCrd,
+        )
       } else {
         throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")
       }

@@ -73,5 +73,6 @@
       "unadjustedDate": "2020-10-19"
     }
   },
-  "otherDates": {}
+  "otherDates": {},
+  "ersedNotApplicableDueToDtoLaterThanCrd": false
 }
