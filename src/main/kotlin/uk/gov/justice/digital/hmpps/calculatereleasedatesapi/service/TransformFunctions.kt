@@ -478,6 +478,7 @@ fun transform(
   booking: Booking,
   breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   otherDates: Map<ReleaseDateType, LocalDate>,
+  ersedNotApplicableDueToDtoLaterThanCrd: Boolean,
 ): CalculationBreakdown {
   val concurrentSentences = booking.sentences.filter {
     booking.consecutiveSentences.none { consecutiveSentence ->
@@ -486,6 +487,7 @@ fun transform(
       it is StandardDeterminateSentence
   }.map { it as StandardDeterminateSentence }
   return CalculationBreakdown(
+    ersedNotApplicableDueToDtoLaterThanCrd = ersedNotApplicableDueToDtoLaterThanCrd,
     concurrentSentences = concurrentSentences.map { sentence ->
       ConcurrentSentenceBreakdown(
         sentence.sentencedAt,

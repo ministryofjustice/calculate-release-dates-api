@@ -1,0 +1,80 @@
+{
+  "concurrentSentences": [
+    {
+      "sentencedAt": "2022-10-27",
+      "sentenceLength": "8 months",
+      "sentenceLengthDays": 243,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2023-06-26",
+          "adjusted": "2023-04-25",
+          "daysFromSentenceStart": 243,
+          "adjustedByDays": 62
+        },
+        "CRD": {
+          "unadjusted": "2023-02-25",
+          "adjusted": "2022-12-25",
+          "daysFromSentenceStart": 122,
+          "adjustedByDays": 62
+        }
+      },
+      "lineSequence": 1,
+      "caseSequence": 1,
+      "caseReference": null
+    }
+  ],
+  "consecutiveSentence": null,
+  "breakdownByReleaseDateType": {
+    "SED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -62,
+      "releaseDate": "2023-08-25",
+      "unadjustedDate": "2023-10-26"
+    },
+    "TUSED": {
+      "rules": ["TUSED_LICENCE_PERIOD_LT_1Y"],
+      "rulesWithExtraAdjustments": {
+        "TUSED_LICENCE_PERIOD_LT_1Y": {
+          "adjustmentValue": 12,
+          "type": "MONTHS"
+        }
+      },
+      "adjustedDays": -62,
+      "releaseDate": "2024-02-24",
+      "unadjustedDate": "2023-04-27"
+    },
+    "HDCED": {
+      "rules": [
+          "HDCED_MINIMUM_CUSTODIAL_PERIOD",
+          "HDCED_GE_MIN_PERIOD_LT_MIDPOINT"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_MINIMUM_CUSTODIAL_PERIOD": {
+          "adjustmentValue": 14,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": 0,
+      "releaseDate": "2022-11-10",
+      "unadjustedDate": "2022-10-27"
+    },
+    "HDCED4PLUS": {
+      "rules": [
+        "HDCED_MINIMUM_CUSTODIAL_PERIOD",
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_MINIMUM_CUSTODIAL_PERIOD": {
+          "adjustmentValue": 14,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": 0,
+      "releaseDate": "2022-11-10",
+      "unadjustedDate": "2022-10-27"
+    }
+  },
+  "otherDates": {},
+  "ersedNotApplicableDueToDtoLaterThanCrd": true
+}
