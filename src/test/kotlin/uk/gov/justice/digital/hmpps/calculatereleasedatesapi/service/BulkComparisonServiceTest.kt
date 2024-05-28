@@ -13,10 +13,13 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.firstValue
+import org.mockito.kotlin.lastValue
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.retry.support.RetryTemplate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
@@ -74,6 +77,7 @@ class BulkComparisonServiceTest {
   private val comparisonPersonDiscrepancyRepository = mock<ComparisonPersonDiscrepancyRepository>()
   private val comparisonPersonDiscrepancyCategoryRepository = mock<ComparisonPersonDiscrepancyCategoryRepository>()
   private var serviceUserService = mock<ServiceUserService>()
+  private val retryTemplate = RetryTemplate.builder().maxAttempts(3).build() // No backoff to keep test fast
   private val bulkComparisonService: BulkComparisonService = BulkComparisonService(
     comparisonPersonRepository,
     prisonService,
@@ -85,6 +89,7 @@ class BulkComparisonServiceTest {
     comparisonPersonDiscrepancyRepository,
     comparisonPersonDiscrepancyCategoryRepository,
     serviceUserService,
+    retryTemplate,
   )
 
   private val releaseDates = someReleaseDates()
@@ -153,17 +158,7 @@ class BulkComparisonServiceTest {
 
   @Test
   fun `Should create a prison comparison`() {
-    val comparison = Comparison(
-      1,
-      UUID.randomUUID(),
-      "ABCD1234",
-      objectMapper.createObjectNode(),
-      "BMI",
-      ComparisonType.ESTABLISHMENT_FULL,
-      LocalDateTime.now(),
-      "SOMEONE",
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
-    )
+    val comparison = aBasicComparison()
     val duplicateReleaseDates = releaseDates.toMutableMap()
     duplicateReleaseDates[ReleaseDateType.SED] = LocalDate.of(2022, 1, 1)
 
@@ -209,36 +204,14 @@ class BulkComparisonServiceTest {
   }
 
   @Test
-  fun `Should create a prison comparison with multiple envelopes effeciently`() {
-    val comparison = Comparison(
-      1,
-      UUID.randomUUID(),
-      "ABCD1234",
-      objectMapper.createObjectNode(),
-      "BMI",
-      ComparisonType.ESTABLISHMENT_FULL,
-      LocalDateTime.now(),
-      "SOMEONE",
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
-    )
-
-    val duplicatedReleaseDates = CalculatedReleaseDates(
-      dates = releaseDates,
-      calculationRequestId = 123,
-      bookingId = 123,
-      prisonerId = "ABC123DEF",
-      calculationStatus = CalculationStatus.CONFIRMED,
-      calculationReference = UUID.randomUUID(),
-      calculationReason = bulkCalculationReason,
-      calculationDate = LocalDate.of(2024, 1, 1),
-    )
+  fun `Should create a prison comparison with multiple envelopes efficiently`() {
+    val comparison = aBasicComparison()
+    val duplicatedReleaseDates = sameReleaseDates()
 
     val booking =
       Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(validationResult)
 
     whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
       listOf(
@@ -254,6 +227,122 @@ class BulkComparisonServiceTest {
     assertThat(comparison.numberOfPeopleCompared).isEqualTo(2)
     verify(pcscLookupService, times(2)).populateReleaseArrangements(any())
   }
+
+  @Test
+  fun `Should retry failures`() {
+    val comparison = aBasicComparison()
+
+    val duplicatedReleaseDates = sameReleaseDates()
+
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
+    val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+
+    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
+      listOf(calculableSentenceEnvelope),
+    )
+
+    whenever(pcscLookupService.populateReleaseArrangements(any()))
+      .thenThrow(RuntimeException("Bang!"))
+      .thenThrow(RuntimeException("Bang!"))
+      .thenReturn(listOf())
+
+    bulkComparisonService.processPrisonComparison(comparison, "")
+
+    val comparisonStatus = comparison.comparisonStatus
+    assertThat(comparisonStatus.name).isEqualTo(ComparisonStatusValue.COMPLETED.name)
+    assertThat(comparison.numberOfPeopleCompared).isEqualTo(1)
+    verify(pcscLookupService, times(3)).populateReleaseArrangements(any())
+  }
+
+  @Test
+  fun `If a single envelope fails even after retry then continue with the rest`() {
+    val comparison = aBasicComparison()
+
+    val duplicatedReleaseDates = sameReleaseDates()
+
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
+    val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+
+    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
+      listOf(
+        calculableSentenceEnvelope,
+        sexOffenderCalculableSentenceEnvelope,
+      ),
+    )
+
+    whenever(pcscLookupService.populateReleaseArrangements(any()))
+      .thenThrow(RuntimeException("Bang!"))
+      .thenThrow(RuntimeException("Bang!"))
+      .thenThrow(RuntimeException("Bang!"))
+      // 1st envelope fails after 3 attempts and 2nd will always pass
+      .thenReturn(listOf())
+
+    bulkComparisonService.processPrisonComparison(comparison, "")
+
+    val comparisonStatus = comparison.comparisonStatus
+    assertThat(comparisonStatus.name).isEqualTo(ComparisonStatusValue.COMPLETED.name)
+    assertThat(comparison.numberOfPeopleCompared).isEqualTo(2)
+    assertThat(comparison.numberOfPeopleComparisonFailedFor).isEqualTo(1)
+    val argumentCaptor = ArgumentCaptor.forClass(ComparisonPerson::class.java)
+    verify(comparisonPersonRepository, times(2)).save(argumentCaptor.capture())
+    val failedComparisonPerson = argumentCaptor.firstValue
+    assertThat(failedComparisonPerson.mismatchType).isEqualTo(MismatchType.FATAL_EXCEPTION)
+    assertThat(failedComparisonPerson.fatalException).isEqualTo("Bang!")
+
+    val successComparisonPerson = argumentCaptor.lastValue
+    assertThat(successComparisonPerson.mismatchType).isEqualTo(MismatchType.NONE)
+    assertThat(successComparisonPerson.fatalException).isNull()
+  }
+
+  @Test
+  fun `should trim fatal exceptions to 256 chars`() {
+    val comparison = aBasicComparison()
+
+    val duplicatedReleaseDates = sameReleaseDates()
+
+    val booking =
+      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
+    val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
+
+    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(listOf(calculableSentenceEnvelope))
+
+    val aReallyLongException = List(25) { "ABCDEFGHIJKLMNOPQRSTUVWXYZ" }.joinToString()
+    assertThat(aReallyLongException).hasSizeGreaterThan(256)
+    whenever(pcscLookupService.populateReleaseArrangements(any()))
+      .thenThrow(RuntimeException(aReallyLongException))
+      .thenThrow(RuntimeException(aReallyLongException))
+      .thenThrow(RuntimeException(aReallyLongException))
+
+    bulkComparisonService.processPrisonComparison(comparison, "")
+
+    val argumentCaptor = ArgumentCaptor.forClass(ComparisonPerson::class.java)
+    verify(comparisonPersonRepository).save(argumentCaptor.capture())
+    val failedComparisonPerson = argumentCaptor.firstValue
+    assertThat(failedComparisonPerson.mismatchType).isEqualTo(MismatchType.FATAL_EXCEPTION)
+    assertThat(failedComparisonPerson.fatalException).hasSize(256)
+  }
+
+  private fun sameReleaseDates() = CalculatedReleaseDates(
+    dates = releaseDates,
+    calculationRequestId = 123,
+    bookingId = 123,
+    prisonerId = "ABC123DEF",
+    calculationStatus = CalculationStatus.CONFIRMED,
+    calculationReference = UUID.randomUUID(),
+    calculationReason = bulkCalculationReason,
+    calculationDate = LocalDate.of(2024, 1, 1),
+  )
 
   @Test
   fun `Should create an all prisons comparison`() {
@@ -871,17 +960,7 @@ class BulkComparisonServiceTest {
 
   @Test
   fun `Should set HDCED4PLUS date if not the same as HDCED`() {
-    val comparison = Comparison(
-      1,
-      UUID.randomUUID(),
-      "ABCD1234",
-      objectMapper.createObjectNode(),
-      "BMI",
-      ComparisonType.ESTABLISHMENT_FULL,
-      LocalDateTime.now(),
-      "SOMEONE",
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
-    )
+    val comparison = aBasicComparison()
     val duplicateReleaseDates = releaseDates.toMutableMap()
     duplicateReleaseDates[ReleaseDateType.HDCED4PLUS] = LocalDate.of(2022, 1, 1)
 
@@ -971,17 +1050,7 @@ class BulkComparisonServiceTest {
 
   @Test
   fun `Should set HDCED4PLUS date to null if same`() {
-    val comparison = Comparison(
-      1,
-      UUID.randomUUID(),
-      "ABCD1234",
-      objectMapper.createObjectNode(),
-      "BMI",
-      ComparisonType.ESTABLISHMENT_FULL,
-      LocalDateTime.now(),
-      "SOMEONE",
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
-    )
+    val comparison = aBasicComparison()
     val duplicateReleaseDates = releaseDates.toMutableMap()
     duplicateReleaseDates[ReleaseDateType.HDCED4PLUS] = LocalDate.of(2026, 1, 1)
 
@@ -1019,6 +1088,18 @@ class BulkComparisonServiceTest {
     val comparisonPerson = comparisonPersonCaptor.value
     assertThat(comparisonPerson.hdcedFourPlusDate).isNull()
   }
+
+  private fun aBasicComparison() = Comparison(
+    1,
+    UUID.randomUUID(),
+    "ABCD1234",
+    objectMapper.createObjectNode(),
+    "BMI",
+    ComparisonType.ESTABLISHMENT_FULL,
+    LocalDateTime.now(),
+    "SOMEONE",
+    ComparisonStatus(ComparisonStatusValue.PROCESSING),
+  )
 
   @Test
   fun `Creates a comparison person discrepancy`() {

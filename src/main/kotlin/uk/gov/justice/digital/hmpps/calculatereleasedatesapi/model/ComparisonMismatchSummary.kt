@@ -13,4 +13,5 @@ data class ComparisonMismatchSummary(
   val misMatchType: MismatchType,
   val sdsSentencesIdentified: JsonNode,
   val establishment: String?,
+  val fatalException: String?,
 )
