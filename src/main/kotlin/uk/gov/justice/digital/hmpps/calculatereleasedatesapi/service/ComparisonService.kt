@@ -216,7 +216,7 @@ class ComparisonService(
       .filter { outcome -> comparisonPerson.calculationRequestId?.let { id -> id == outcome.calculationRequestId } ?: false }
       .filter { outcome -> outcome.outcomeDate != null }.maxByOrNull { outcome -> outcome.outcomeDate!! }
       ?.let { nonNullOutcome -> ReleaseDate(nonNullOutcome.outcomeDate!!, ReleaseDateType.valueOf(nonNullOutcome.calculationDateType)) }
-    HdcFourPlusComparisonMismatch(comparisonPerson.person, comparisonPerson.lastName, comparisonPerson.mismatchType, comparisonPerson.hdcedFourPlusDate!!, comparisonPerson.establishment, releaseDate)
+    HdcFourPlusComparisonMismatch(comparisonPerson.person, comparisonPerson.lastName, comparisonPerson.mismatchType, comparisonPerson.hdcedFourPlusDate!!, comparisonPerson.establishment, releaseDate, comparisonPerson.fatalException)
   }
 
   companion object {

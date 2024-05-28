@@ -22,4 +22,5 @@ data class ComparisonPersonOverview(
   val overrideDates: Map<ReleaseDateType, LocalDate?>,
   val breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   val sdsSentencesIdentified: List<SentenceAndOffenceWithReleaseArrangements>,
+  val fatalException: String?,
 )
