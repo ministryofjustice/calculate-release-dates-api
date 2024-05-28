@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
@@ -18,6 +19,7 @@ import java.util.*
 @Service
 class OffenceSDSReleaseArrangementLookupService(
   private val manageOffencesService: ManageOffencesService,
+  private val featureToggles: FeatureToggles,
 ) {
 
   fun populateReleaseArrangements(sentencesAndOffences: List<SentenceAndOffence>): List<SentenceAndOffenceWithReleaseArrangements> {
@@ -25,7 +27,7 @@ class OffenceSDSReleaseArrangementLookupService(
     val checkedForSDSPlus = checkForSDSPlus(sentencesAndOffences)
 
     val offencesToCheckForSDSExclusions = getOffencesToCheckForSDSExclusions(checkedForSDSPlus)
-    val exclusionsForOffences = if (offencesToCheckForSDSExclusions.isNotEmpty()) manageOffencesService.getSexualOrViolentForOffenceCodes(offencesToCheckForSDSExclusions).associateBy { it.offenceCode } else emptyMap()
+    val exclusionsForOffences = if (offencesToCheckForSDSExclusions.isNotEmpty() && featureToggles.sdsEarlyRelease) manageOffencesService.getSexualOrViolentForOffenceCodes(offencesToCheckForSDSExclusions).associateBy { it.offenceCode } else emptyMap()
 
     return checkedForSDSPlus
       .map { sdsPlusCheckResult ->

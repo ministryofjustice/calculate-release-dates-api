@@ -11,6 +11,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
@@ -26,7 +27,8 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
 
   private val mockManageOffencesService = mock<ManageOffencesService>()
 
-  private val underTest = OffenceSDSReleaseArrangementLookupService(mockManageOffencesService)
+  private val featureToggles = FeatureToggles(botus = false, sdsEarlyRelease = true)
+  private val underTest = OffenceSDSReleaseArrangementLookupService(mockManageOffencesService, featureToggles)
 
   @Test
   fun `SDS+ Marker set when sentenced after SDS and before PCSC and sentence longer than 7 Years with singular offence - List A`() {
@@ -160,6 +162,27 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     val returnedResult = underTest.populateReleaseArrangements(listOf(sentence))
     assertTrue(returnedResult.filter { it.isSDSPlus }.size == 1, "Failed for $name")
     assertTrue(returnedResult[0].isSDSPlus, "Failed for $name")
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    "true,SEXUAL,1",
+    "false,NO,0",
+  )
+  fun `should only check SDS exclusion if feature toggle is on`(featureToggle: Boolean, expectedExclusion: SDSEarlyReleaseExclusionType, expectedCallCount: Int) {
+    featureToggles.sdsEarlyRelease = featureToggle
+    whenever(mockManageOffencesService.getSexualOrViolentForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
+      listOf(
+        SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
+      ),
+    )
+
+    val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(nonSDSPlusSentenceAndOffenceFourYears))
+    assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
+    assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(expectedExclusion)
+
+    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
+    verify(mockManageOffencesService, times(expectedCallCount)).getSexualOrViolentForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))
   }
 
   @Test
