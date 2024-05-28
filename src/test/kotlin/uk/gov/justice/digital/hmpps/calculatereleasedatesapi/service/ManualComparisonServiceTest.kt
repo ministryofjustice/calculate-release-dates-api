@@ -216,6 +216,7 @@ class ManualComparisonServiceTest {
         overrideDates = emptyMap(),
         breakdownByReleaseDateType = emptyMap(),
         sdsSentencesIdentified = listOf(sdsPlusSentence),
+        fatalException = person.fatalException,
       ),
     )
   }

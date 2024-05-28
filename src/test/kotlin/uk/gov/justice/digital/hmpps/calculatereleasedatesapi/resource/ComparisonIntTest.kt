@@ -135,9 +135,9 @@ class ComparisonIntTest(private val mockPrisonService: MockPrisonService) : Inte
 
     assertEquals(
       listOf(
-        HdcFourPlusComparisonMismatch("G6390GH", "Darlonne", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2020, 5, 13), "prison HDC4P", ReleaseDate(LocalDate.of(2020, 11, 8), ReleaseDateType.CRD)),
-        HdcFourPlusComparisonMismatch("G3229GA", "Britteman", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2016, 11, 4), "prison HDC4P", ReleaseDate(LocalDate.of(2017, 5, 2), ReleaseDateType.CRD)),
-        HdcFourPlusComparisonMismatch("G5243GX", "Khalifer", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2017, 8, 7), "prison HDC4P", ReleaseDate(LocalDate.of(2018, 2, 2), ReleaseDateType.CRD)),
+        HdcFourPlusComparisonMismatch("G6390GH", "Darlonne", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2020, 5, 13), "prison HDC4P", ReleaseDate(LocalDate.of(2020, 11, 8), ReleaseDateType.CRD), null),
+        HdcFourPlusComparisonMismatch("G3229GA", "Britteman", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2016, 11, 4), "prison HDC4P", ReleaseDate(LocalDate.of(2017, 5, 2), ReleaseDateType.CRD), null),
+        HdcFourPlusComparisonMismatch("G5243GX", "Khalifer", MismatchType.RELEASE_DATES_MISMATCH, LocalDate.of(2017, 8, 7), "prison HDC4P", ReleaseDate(LocalDate.of(2018, 2, 2), ReleaseDateType.CRD), null),
       ),
       result.hdc4PlusCalculated,
     )

@@ -58,6 +58,8 @@ class Comparison(
 
   var numberOfPeopleCompared: Long = 0,
 
+  var numberOfPeopleComparisonFailedFor: Long = 0,
+
   @Formula("(SELECT count(*) FROM comparison_person cp WHERE cp.comparison_id=id and cp.is_match = false)")
   val numberOfMismatches: Long = 0,
 ) {

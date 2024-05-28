@@ -5,6 +5,8 @@ import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.retry.support.RetryTemplate
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
@@ -62,6 +64,8 @@ class BulkComparisonService(
   private val comparisonPersonDiscrepancyRepository: ComparisonPersonDiscrepancyRepository,
   private val comparisonPersonDiscrepancyCategoryRepository: ComparisonPersonDiscrepancyCategoryRepository,
   private var serviceUserService: ServiceUserService,
+  @Qualifier("bulkComparisonRetryTemplate")
+  private val retryTemplate: RetryTemplate,
 ) {
   @Async
   fun processPrisonComparison(comparison: Comparison, token: String) {
@@ -140,58 +144,103 @@ class BulkComparisonService(
     comparison: Comparison,
     establishment: String? = "",
   ) {
-    val sentenceAndOffencesWithReleaseArrangementsForAllBookings =
-      calculableSentenceEnvelopes.map { envelope ->
-        pcscLookupService.populateReleaseArrangements(
-          envelope.sentenceAndOffences.flatMap { sentenceAndOffences ->
-            sentenceAndOffences.offences.map { offence -> NormalisedSentenceAndOffence(sentenceAndOffences, offence) }
-          },
-        )
-      }.flatten()
-    calculableSentenceEnvelopes.forEach { calculableSentenceEnvelope ->
-      val sentenceAndOffencesWithReleaseArrangementsForBooking = sentenceAndOffencesWithReleaseArrangementsForAllBookings.filter { it.bookingId == calculableSentenceEnvelope.bookingId }
-      val sdsPlusSentenceAndOffences = sentenceAndOffencesWithReleaseArrangementsForBooking.filter { it.isSDSPlus }
-      val mismatch = buildMismatch(calculableSentenceEnvelope, sentenceAndOffencesWithReleaseArrangementsForBooking)
-      val hdced4PlusDate = getHdced4PlusDate(mismatch)
-
-      if (comparison.shouldStoreMismatch(mismatch, hdced4PlusDate != null)) {
-        val establishmentValue = if (comparison.comparisonType != ComparisonType.MANUAL) {
-          if (establishment == null || establishment == "") {
-            comparison.prison!!
-          } else {
-            establishment
-          }
-        } else {
-          null
-        }
-        comparisonPersonRepository.save(
-          ComparisonPerson(
-            comparisonId = comparison.id,
-            person = calculableSentenceEnvelope.person.prisonerNumber,
-            lastName = calculableSentenceEnvelope.person.lastName,
-            latestBookingId = calculableSentenceEnvelope.bookingId,
-            isMatch = mismatch.isMatch,
-            isValid = mismatch.isValid,
-            mismatchType = mismatch.type,
-            validationMessages = objectMapper.valueToTree(mismatch.messages),
-            calculatedByUsername = comparison.calculatedByUsername,
-            calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
-            nomisDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) }
-              ?: objectMapper.createObjectNode(),
-            overrideDates = calculableSentenceEnvelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) }
-              ?: objectMapper.createObjectNode(),
-            breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) }
-              ?: objectMapper.createObjectNode(),
-            isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
-            sdsPlusSentencesIdentified = objectMapper.valueToTree(sdsPlusSentenceAndOffences),
-            hdcedFourPlusDate = hdced4PlusDate,
-            establishment = establishmentValue,
-          ),
-        )
-      }
+    var numberOfFailures = 0
+    calculableSentenceEnvelopes.forEach { envelope ->
+      retryTemplate.execute<Unit, RuntimeException>(
+        { processSingleEnvelope(envelope, comparison, establishment) },
+        {
+          numberOfFailures++
+          saveComparisonPersonWithFatalError(comparison, envelope, establishment, it.lastThrowable)
+        },
+      )
     }
     comparison.numberOfPeopleCompared += calculableSentenceEnvelopes.size.toLong()
+    comparison.numberOfPeopleComparisonFailedFor += numberOfFailures
     comparisonRepository.save(comparison)
+  }
+
+  private fun saveComparisonPersonWithFatalError(comparison: Comparison, envelope: CalculableSentenceEnvelope, establishment: String?, lastException: Throwable) {
+    val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
+    val trimmedException = lastException.message?.trim()?.take(256) ?: "Exception had no message"
+    log.error("Failed to create comparison for ${envelope.person.prisonerNumber} due to \"$trimmedException\"", lastException)
+    comparisonPersonRepository.save(
+      ComparisonPerson(
+        comparisonId = comparison.id,
+        person = envelope.person.prisonerNumber,
+        lastName = envelope.person.lastName,
+        latestBookingId = envelope.bookingId,
+        isMatch = false,
+        isValid = false,
+        mismatchType = MismatchType.FATAL_EXCEPTION,
+        validationMessages = objectMapper.createObjectNode(),
+        calculatedByUsername = comparison.calculatedByUsername,
+        nomisDates = envelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) }
+          ?: objectMapper.createObjectNode(),
+        overrideDates = envelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) }
+          ?: objectMapper.createObjectNode(),
+        breakdownByReleaseDateType = objectMapper.createObjectNode(),
+        isActiveSexOffender = envelope.person.isActiveSexOffender(),
+        sdsPlusSentencesIdentified = objectMapper.createObjectNode(),
+        establishment = establishmentValue,
+        fatalException = trimmedException,
+      ),
+    )
+  }
+
+  private fun processSingleEnvelope(
+    envelope: CalculableSentenceEnvelope,
+    comparison: Comparison,
+    establishment: String?,
+  ) {
+    val sentenceAndOffencesWithReleaseArrangementsForBooking = pcscLookupService.populateReleaseArrangements(normalisedSentenceAndOffences(envelope))
+    val sdsPlusSentenceAndOffences = sentenceAndOffencesWithReleaseArrangementsForBooking.filter { it.isSDSPlus }
+    val mismatch = buildMismatch(envelope, sentenceAndOffencesWithReleaseArrangementsForBooking)
+    val hdced4PlusDate = getHdced4PlusDate(mismatch)
+
+    if (comparison.shouldStoreMismatch(mismatch, hdced4PlusDate != null)) {
+      val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
+      comparisonPersonRepository.save(
+        ComparisonPerson(
+          comparisonId = comparison.id,
+          person = envelope.person.prisonerNumber,
+          lastName = envelope.person.lastName,
+          latestBookingId = envelope.bookingId,
+          isMatch = mismatch.isMatch,
+          isValid = mismatch.isValid,
+          mismatchType = mismatch.type,
+          validationMessages = objectMapper.valueToTree(mismatch.messages),
+          calculatedByUsername = comparison.calculatedByUsername,
+          calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
+          nomisDates = envelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) }
+            ?: objectMapper.createObjectNode(),
+          overrideDates = envelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) }
+            ?: objectMapper.createObjectNode(),
+          breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) }
+            ?: objectMapper.createObjectNode(),
+          isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
+          sdsPlusSentencesIdentified = objectMapper.valueToTree(sdsPlusSentenceAndOffences),
+          hdcedFourPlusDate = hdced4PlusDate,
+          establishment = establishmentValue,
+        ),
+      )
+    }
+  }
+
+  private fun getEstablishmentValueForComparisonPerson(comparison: Comparison, establishment: String?): String? {
+    val establishmentValue = if (comparison.comparisonType != ComparisonType.MANUAL) {
+      if (establishment == null || establishment == "") {
+        comparison.prison!!
+      } else {
+        establishment
+      }
+    } else {
+      null
+    }
+    return establishmentValue
+  }
+
+  private fun normalisedSentenceAndOffences(envelope: CalculableSentenceEnvelope) = envelope.sentenceAndOffences.flatMap { sentenceAndOffences ->
+    sentenceAndOffences.offences.map { offence -> NormalisedSentenceAndOffence(sentenceAndOffences, offence) }
   }
 
   private fun getHdced4PlusDate(mismatch: Mismatch): LocalDate? {

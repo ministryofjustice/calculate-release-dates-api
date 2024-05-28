@@ -83,4 +83,6 @@ class ComparisonPerson(
   var hdcedFourPlusDate: LocalDate? = null,
 
   var establishment: String?,
+
+  var fatalException: String? = null,
 )

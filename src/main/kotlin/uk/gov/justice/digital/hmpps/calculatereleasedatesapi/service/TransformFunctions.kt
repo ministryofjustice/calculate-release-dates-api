@@ -726,6 +726,7 @@ fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4Pl
   comparison.calculatedByUsername,
   comparison.numberOfMismatches,
   comparison.numberOfPeopleCompared,
+  comparison.numberOfPeopleComparisonFailedFor,
   mismatches.map { transform(it, objectMapper) },
   comparison.comparisonStatus.name,
   hdc4PlusResults,
@@ -739,6 +740,7 @@ fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, object
   comparison.calculatedByUsername,
   comparison.numberOfMismatches,
   comparison.numberOfPeopleCompared,
+  comparison.numberOfPeopleComparisonFailedFor,
   mismatches.map { transform(it, objectMapper) },
   comparison.comparisonStatus.name,
   emptyList(),
@@ -754,6 +756,7 @@ private fun transform(comparisonPerson: ComparisonPerson, objectMapper: ObjectMa
   comparisonPerson.mismatchType,
   comparisonPerson.sdsPlusSentencesIdentified,
   comparisonPerson.establishment,
+  comparisonPerson.fatalException,
 )
 
 private fun transform(validationMessageJsonNode: JsonNode, objectMapper: ObjectMapper): List<ValidationMessage> {
@@ -787,6 +790,7 @@ fun transform(
   overrideDates,
   breakdownByReleaseDateType,
   sdsSentencesIdentified,
+  comparisonPerson.fatalException,
 )
 
 fun transform(discrepancy: ComparisonPersonDiscrepancy): ComparisonDiscrepancySummary = transform(discrepancy, discrepancy.causes)
