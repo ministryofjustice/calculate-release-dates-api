@@ -52,6 +52,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import java.util.*
 
 @Service
 class BulkComparisonService(
@@ -172,6 +173,7 @@ class BulkComparisonService(
         latestBookingId = envelope.bookingId,
         isMatch = false,
         isValid = false,
+        isFatal = true,
         mismatchType = MismatchType.FATAL_EXCEPTION,
         validationMessages = objectMapper.valueToTree(emptyList<ValidationMessage>()),
         calculatedByUsername = comparison.calculatedByUsername,
@@ -208,6 +210,7 @@ class BulkComparisonService(
           latestBookingId = envelope.bookingId,
           isMatch = mismatch.isMatch,
           isValid = mismatch.isValid,
+          isFatal = false,
           mismatchType = mismatch.type,
           validationMessages = objectMapper.valueToTree(mismatch.messages),
           calculatedByUsername = comparison.calculatedByUsername,
