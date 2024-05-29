@@ -84,7 +84,7 @@ class ManualComparisonControllerTest {
 
   @Test
   fun `Test GET of preconfigured comparisons`() {
-    whenever(manualComparisonService.listManual()).thenReturn(listOf(ComparisonSummary("ABCD1234", null, ComparisonType.MANUAL, LocalDateTime.now(), "JOEL", 0, 0)))
+    whenever(manualComparisonService.listManual()).thenReturn(listOf(ComparisonSummary("ABCD1234", null, ComparisonType.MANUAL, LocalDateTime.now(), "JOEL", 0, 0, 0)))
 
     val result = mvc.perform(
       MockMvcRequestBuilders.get("/comparison/manual/")

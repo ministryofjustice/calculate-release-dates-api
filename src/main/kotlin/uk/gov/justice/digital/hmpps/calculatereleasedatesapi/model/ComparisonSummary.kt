@@ -11,4 +11,5 @@ data class ComparisonSummary(
   val calculatedByUsername: String,
   val numberOfMismatches: Long,
   val numberOfPeopleCompared: Long,
+  val numberOfPeopleComparisonFailedFor: Long,
 )
