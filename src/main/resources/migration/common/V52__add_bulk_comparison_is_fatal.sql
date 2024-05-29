@@ -1,0 +1,1 @@
+alter table comparison_person add column is_fatal bool DEFAULT false NOT NULL;

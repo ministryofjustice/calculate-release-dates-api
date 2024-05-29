@@ -179,6 +179,7 @@ class ManualComparisonServiceTest {
       latestBookingId = 25,
       isMatch = false,
       isValid = true,
+      isFatal = false,
       mismatchType = MismatchType.RELEASE_DATES_MISMATCH,
       validationMessages = objectMapper.valueToTree(emptyList<ValidationMessage>()),
       calculatedByUsername = BulkComparisonServiceTest.USERNAME,
