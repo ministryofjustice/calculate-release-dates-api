@@ -40,6 +40,8 @@ class ComparisonPerson(
 
   var isValid: Boolean,
 
+  var isFatal: Boolean,
+
   @Column
   @Enumerated(value = EnumType.STRING)
   val mismatchType: MismatchType,

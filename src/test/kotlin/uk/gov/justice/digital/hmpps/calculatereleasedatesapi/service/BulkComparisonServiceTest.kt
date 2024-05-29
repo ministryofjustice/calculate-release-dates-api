@@ -296,10 +296,12 @@ class BulkComparisonServiceTest {
     val failedComparisonPerson = argumentCaptor.firstValue
     assertThat(failedComparisonPerson.mismatchType).isEqualTo(MismatchType.FATAL_EXCEPTION)
     assertThat(failedComparisonPerson.fatalException).isEqualTo("Bang!")
+    assertThat(failedComparisonPerson.isFatal).isTrue()
 
     val successComparisonPerson = argumentCaptor.lastValue
     assertThat(successComparisonPerson.mismatchType).isEqualTo(MismatchType.NONE)
     assertThat(successComparisonPerson.fatalException).isNull()
+    assertThat(successComparisonPerson.isFatal).isFalse()
   }
 
   @Test
@@ -1282,6 +1284,7 @@ class BulkComparisonServiceTest {
       latestBookingId = 25,
       isMatch = false,
       isValid = true,
+      isFatal = false,
       mismatchType = MismatchType.RELEASE_DATES_MISMATCH,
       validationMessages = emptyObjectNode,
       calculatedByUsername = USERNAME,
