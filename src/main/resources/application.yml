@@ -24,6 +24,13 @@ spring:
         jwt:
           jwk-set-uri: ${hmpps.auth.url}/.well-known/jwks.json
       client:
+        registration:
+          manage-offences-api:
+            provider: hmpps-auth
+            client-id: ${system.client.id}
+            client-secret: ${system.client.secret}
+            authorization-grant-type: client_credentials
+            scope: read,write
         provider:
           hmpps-auth:
             token-uri: ${hmpps.auth.url}/oauth/token
