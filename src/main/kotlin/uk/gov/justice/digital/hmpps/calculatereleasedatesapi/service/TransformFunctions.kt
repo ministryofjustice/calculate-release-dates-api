@@ -716,6 +716,7 @@ fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
   comparison.calculatedByUsername,
   comparison.numberOfMismatches,
   comparison.numberOfPeopleCompared,
+  comparison.numberOfPeopleComparisonFailedFor,
 )
 
 fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, hdc4PlusResults: List<HdcFourPlusComparisonMismatch>, objectMapper: ObjectMapper): ComparisonOverview = ComparisonOverview(
