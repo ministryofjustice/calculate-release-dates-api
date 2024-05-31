@@ -17,7 +17,7 @@ class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private v
   private val log = LoggerFactory.getLogger(this::class.java)
 
   fun getPCSCMarkersForOffences(offenceCodes: List<String>): List<OffencePcscMarkers> {
-    val offencesList = if (offenceCodes.size > 1) offenceCodes.joinToString(",") else offenceCodes[0]
+    val offencesList = offenceCodes.joinToString(",")
     log.info("getPCSCMarkersForOffences : /schedule/pcsc-indicators?offenceCodes=$offencesList")
 
     return webClient.get()
@@ -26,19 +26,19 @@ class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private v
       .bodyToMono(typeReference<List<OffencePcscMarkers>>())
       .retryWhen(
         Retry.backoff(5, Duration.ofMillis(100))
-          .maxBackoff(Duration.ofSeconds(3))
+          .maxBackoff(Duration.ofSeconds(5))
           .doBeforeRetry { retrySignal ->
             log.warn("getPCSCMarkersForOffences: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
+          }
+          .onRetryExhaustedThrow { _, _ ->
+            throw MaxRetryAchievedException("getSexualOrViolentForOffenceCodes: Max retries - lookup failed for $offencesList, cannot proceed to perform a sentence calculation")
           },
       )
-      .onErrorMap { _ ->
-        CouldNotGetMoOffenceInformation("Sexual or violent schedule for offence lookup failed for ${offenceCodes.joinToString(",")}, cannot proceed to perform a sentence calculation")
-      }
-      .block()!!
+      .block() ?: throw CouldNotGetMoOffenceInformation("PCSC indicator for offence lookup, otherwise failed for $offencesList, cannot proceed to perform a sentence calculation")
   }
 
   fun getSexualOrViolentForOffenceCodes(offenceCodes: List<String>): List<SDSEarlyReleaseExclusionForOffenceCode> {
-    val offencesList = if (offenceCodes.size > 1) offenceCodes.joinToString(",") else offenceCodes[0]
+    val offencesList = offenceCodes.joinToString(",")
     log.info("getSexualOrViolentForOffenceCodes : /schedule/sexual-or-violent?offenceCodes=$offencesList")
 
     return webClient.get()
@@ -46,15 +46,18 @@ class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private v
       .retrieve()
       .bodyToMono(typeReference<List<SDSEarlyReleaseExclusionForOffenceCode>>())
       .retryWhen(
-        Retry.backoff(5, Duration.ofMillis(100))
-          .maxBackoff(Duration.ofSeconds(3))
+        Retry
+          .backoff(5, Duration.ofMillis(100))
+          .maxBackoff(Duration.ofSeconds(5))
           .doBeforeRetry { retrySignal ->
             log.warn("getSexualOrViolentForOffenceCodes: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
+          }
+          .onRetryExhaustedThrow { _, _ ->
+            throw MaxRetryAchievedException("getSexualOrViolentForOffenceCodes: Max retries - lookup failed for $offencesList, cannot proceed to perform a sentence calculation")
           },
       )
-      .onErrorMap { _ ->
-        CouldNotGetMoOffenceInformation("Sexual or violent schedule for offence lookup failed for ${offenceCodes.joinToString(",")}, cannot proceed to perform a sentence calculation")
-      }
-      .block()!!
+      .block() ?: throw CouldNotGetMoOffenceInformation("Sexual or violent schedule otherwise failed for offence lookup failed for $offencesList, cannot proceed to perform a sentence calculation")
   }
+
+  class MaxRetryAchievedException(message: String?) : RuntimeException(message)
 }

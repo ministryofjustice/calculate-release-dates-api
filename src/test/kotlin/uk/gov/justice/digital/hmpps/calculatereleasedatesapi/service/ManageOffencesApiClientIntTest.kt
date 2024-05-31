@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,22 +30,22 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
   @Test
   fun `should get sexual or violent for multiple offence codes`() {
     mockManageOffencesClient.withStub(
-      get(urlMatching("/schedule/sexual-or-violent\\?offenceCodes=([A-Za-z0-9,]+)"))
+      get(urlMatching("/schedule/sexual-or-violent\\?offenceCodes=SuccessExample1,SuccessExample2,SuccessExample3"))
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
             .withBody(
               """[
                 {
-                    "offenceCode": "N01",
+                    "offenceCode": "SuccessExample1",
                     "schedulePart": "NONE"
                 },
                 {
-                    "offenceCode": "S01",
+                    "offenceCode": "SuccessExample2",
                     "schedulePart": "SEXUAL"
                 },
                 {
-                    "offenceCode": "V01",
+                    "offenceCode": "SuccessExample3",
                     "schedulePart": "VIOLENT"
                 }
             ]
@@ -54,13 +55,93 @@ class ManageOffencesApiClientIntTest(private val mockManageOffencesClient: MockM
             .withTransformers("response-template"),
         ),
     )
-    assertThat(manageOffencesApiClient.getSexualOrViolentForOffenceCodes(listOf("S01", "V01", "N01")))
+    assertThat(manageOffencesApiClient.getSexualOrViolentForOffenceCodes(listOf("SuccessExample1", "SuccessExample2", "SuccessExample3")))
       .isEqualTo(
         listOf(
-          SDSEarlyReleaseExclusionForOffenceCode("N01", SDSEarlyReleaseExclusionSchedulePart.NONE),
-          SDSEarlyReleaseExclusionForOffenceCode("S01", SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
-          SDSEarlyReleaseExclusionForOffenceCode("V01", SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample1", SDSEarlyReleaseExclusionSchedulePart.NONE),
+          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample2", SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
+          SDSEarlyReleaseExclusionForOffenceCode("SuccessExample3", SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
         ),
       )
+  }
+
+  @Test
+  fun `should retry and eventually get sexual or violent for multiple offence codes`() {
+    mockManageOffencesClient.withStub(
+      get(urlMatching("/schedule/sexual-or-violent\\?offenceCodes=RetryExample1,RetryExample2,RetryExample3"))
+        .inScenario("Retry Scenario")
+        .whenScenarioStateIs("Started")
+        .willReturn(
+          aResponse()
+            .withStatus(500),
+        )
+        .willSetStateTo("Second Attempt"),
+    )
+
+    mockManageOffencesClient.withStub(
+      get(urlMatching("/schedule/sexual-or-violent\\?offenceCodes=RetryExample1,RetryExample2,RetryExample3"))
+        .inScenario("Retry Scenario")
+        .whenScenarioStateIs("Second Attempt")
+        .willReturn(
+          aResponse()
+            .withStatus(500),
+        )
+        .willSetStateTo("Third Attempt"),
+    )
+
+    mockManageOffencesClient.withStub(
+      get(urlMatching("/schedule/sexual-or-violent\\?offenceCodes=RetryExample1,RetryExample2,RetryExample3"))
+        .inScenario("Retry Scenario")
+        .whenScenarioStateIs("Third Attempt")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(
+              """[
+                {
+                    "offenceCode": "RetryExample1",
+                    "schedulePart": "NONE"
+                },
+                {
+                    "offenceCode": "RetryExample2",
+                    "schedulePart": "SEXUAL"
+                },
+                {
+                    "offenceCode": "RetryExample3",
+                    "schedulePart": "VIOLENT"
+                }
+              ]
+              """.trimIndent(),
+            )
+            .withStatus(200),
+        ),
+    )
+
+    val result = manageOffencesApiClient.getSexualOrViolentForOffenceCodes(listOf("RetryExample1", "RetryExample2", "RetryExample3"))
+
+    assertThat(result).isEqualTo(
+      listOf(
+        SDSEarlyReleaseExclusionForOffenceCode("RetryExample1", SDSEarlyReleaseExclusionSchedulePart.NONE),
+        SDSEarlyReleaseExclusionForOffenceCode("RetryExample2", SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
+        SDSEarlyReleaseExclusionForOffenceCode("RetryExample3", SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+      ),
+    )
+  }
+
+  @Test
+  fun `should throw exception when maximum retries are exceeded`() {
+    mockManageOffencesClient.withStub(
+      get(urlMatching("/schedule/sexual-or-violent\\?offenceCodes=ErrorExample1,ErrorExample2,ErrorExample3"))
+        .willReturn(
+          aResponse()
+            .withStatus(500),
+        ),
+    )
+
+    assertThatThrownBy {
+      manageOffencesApiClient.getSexualOrViolentForOffenceCodes(listOf("ErrorExample1", "ErrorExample2", "ErrorExample3"))
+    }
+      .isInstanceOf(ManageOffencesApiClient.MaxRetryAchievedException::class.java)
+      .hasMessageContaining("getSexualOrViolentForOffenceCodes: Max retries - lookup failed")
   }
 }
