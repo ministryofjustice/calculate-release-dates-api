@@ -30,7 +30,7 @@ class SentenceCalculationServiceTest {
   private val workingDayService = WorkingDayService(bankHolidayService)
   private val tusedCalculator = TusedCalculator(workingDayService)
   private val hdced4Configuration = hdced4ConfigurationForTests()
-  private val hdced4Calculator = Hdced4Calculator(hdced4Configuration)
+  private val hdced4Calculator = Hdced4Calculator(hdced4Configuration, hdcedConfiguration)
   private val ersedCalculator = ErsedCalculator(ersedConfigurationForTests())
   private val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultiplierConfigurationForTests())
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)

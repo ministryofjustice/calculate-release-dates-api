@@ -559,7 +559,7 @@ class CalculationTransactionalServiceTest {
     val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
     val workingDayService = WorkingDayService(bankHolidayService)
     val tusedCalculator = TusedCalculator(workingDayService)
-    val hdced4Calculator = Hdced4Calculator(hdced4Configuration)
+    val hdced4Calculator = Hdced4Calculator(hdced4Configuration, hdcedConfiguration)
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultipliersConfiguration)
     val isNotDefaultParams = params != "calculation-params"
