@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.joda.time.DateTime
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.Hdced4Configuration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.ERSED_ADJUSTED_TO_MTD
@@ -45,6 +47,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 class BookingExtractionService(
   val extractionService: SentencesExtractionService,
   val hdcedConfiguration: HdcedConfiguration,
+  val hdced4Configuration: Hdced4Configuration,
 ) {
 
   fun extract(
@@ -86,12 +89,19 @@ class BookingExtractionService(
       dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
     }
 
-    if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null) {
-      dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
-    }
+    if (DateTime.now().toDate().after(hdced4Configuration.hdc4CommencementDate)){
+      //After commencement date only produce HDCED using HDCED4 ruling.
+      if (sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
+        dates[HDCED] = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!
+      }
+    } else {
+      if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null) {
+        dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
+      }
 
-    if (sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
-      dates[HDCED4PLUS] = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!
+      if (sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
+        dates[HDCED4PLUS] = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!
+      }
     }
 
     if (sentenceCalculation.notionalConditionalReleaseDate != null) {
@@ -299,14 +309,22 @@ class BookingExtractionService(
       breakdownByReleaseDateType[TUSED] = latestTUSEDAndBreakdown.second
     }
 
-    if (latestHDCEDAndBreakdown != null) {
-      dates[HDCED] = latestHDCEDAndBreakdown.first
-      breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdown.second
-    }
+    if (DateTime.now().toDate().after(hdced4Configuration.hdc4CommencementDate)){
+      //After commencement date only produce HDCED using HDCED4 ruling.
+      if (latestHDC4PLUSAndBreakdown != null) {
+        dates[HDCED] = latestHDC4PLUSAndBreakdown.first
+        breakdownByReleaseDateType[HDCED] = latestHDC4PLUSAndBreakdown.second
+      }
+    } else {
+      if (latestHDCEDAndBreakdown != null) {
+        dates[HDCED] = latestHDCEDAndBreakdown.first
+        breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdown.second
+      }
 
-    if (latestHDC4PLUSAndBreakdown != null) {
-      dates[HDCED4PLUS] = latestHDC4PLUSAndBreakdown.first
-      breakdownByReleaseDateType[HDCED4PLUS] = latestHDC4PLUSAndBreakdown.second
+      if (latestHDC4PLUSAndBreakdown != null) {
+        dates[HDCED4PLUS] = latestHDC4PLUSAndBreakdown.first
+        breakdownByReleaseDateType[HDCED4PLUS] = latestHDC4PLUSAndBreakdown.second
+      }
     }
 
     if (latestNotionalConditionalReleaseDate != null) {
