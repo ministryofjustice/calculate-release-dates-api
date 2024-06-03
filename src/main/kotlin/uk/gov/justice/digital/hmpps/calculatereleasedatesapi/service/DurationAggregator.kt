@@ -11,7 +11,7 @@ import java.time.temporal.ChronoUnit
  * e.g. a consecutive sentence of [3months, 3weeks, 3months, 5months], should return [3months, 3weeks, 8months].
  *      a consecutive sentence of [3years, 4months, 5months], should return [3years and 9months]
  */
-data class ConsecutiveSentenceAggregator(val durations: List<Duration>) {
+data class DurationAggregator(val durations: List<Duration>) {
 
   fun aggregate(): List<Duration> {
     val aggregated = mutableListOf<Duration>()
