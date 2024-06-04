@@ -1,0 +1,57 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1994-11-24",
+    "isActiveSexOffender": false
+  },
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-02-16"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 2
+        }
+      },
+      "sentencedAt": "2024-02-16",
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
+      "isSDSPlus": false
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-02-16"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 2
+        }
+      },
+      "sentencedAt": "2024-02-16",
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "identifier": "8995cb19-1b7f-491e-bbdd-0a9c90e18c2a",
+      "consecutiveSentenceUUIDs": ["a31d5d02-611f-43b0-8b1a-4b1edc955e7e"],
+      "isSDSPlus": false
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-02-16"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 6
+        }
+      },
+      "sentencedAt": "2024-02-16",
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "consecutiveSentenceUUIDs": ["8995cb19-1b7f-491e-bbdd-0a9c90e18c2a"],
+      "isSDSPlus": true
+    }
+  ],
+  "adjustments": {},
+  "calculateErsed": false
+}

@@ -110,17 +110,17 @@
     },
     "HDCED4PLUS": {
       "rules": [
-        "CONSECUTIVE_SENTENCE_HDCED_CALCULATION"
+        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD"
       ],
       "rulesWithExtraAdjustments": {
-        "HDCED_MINIMUM_CUSTODIAL_PERIOD": {
-          "adjustmentValue": 14,
+        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD": {
+          "adjustmentValue": -179,
           "type": "DAYS"
         }
       },
-      "adjustedDays": 0,
+      "adjustedDays": -9,
       "releaseDate": "2022-07-15",
-      "unadjustedDate": "2020-03-20"
+      "unadjustedDate": "2023-01-10"
     }
   },
   "otherDates": {}

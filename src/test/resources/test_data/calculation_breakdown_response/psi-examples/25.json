@@ -93,11 +93,11 @@
     },
     "HDCED4PLUS": {
       "rules": [
-        "CONSECUTIVE_SENTENCE_HDCED_CALCULATION"
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT"
       ],
       "rulesWithExtraAdjustments": {
-        "HDCED_MINIMUM_CUSTODIAL_PERIOD": {
-          "adjustmentValue": 14,
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
+          "adjustmentValue": 76,
           "type": "DAYS"
         }
       },

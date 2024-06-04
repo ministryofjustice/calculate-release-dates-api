@@ -7,19 +7,18 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 
 @Service
 class SentenceCalculationService(
   private val sentenceAdjustedCalculationService: SentenceAdjustedCalculationService,
   private val releasePointMultiplierLookup: ReleasePointMultiplierLookup,
+  private val sentenceAggregator: SentenceAggregator,
 ) {
 
   fun calculate(sentence: CalculableSentence, booking: Booking, options: CalculationOptions): SentenceCalculation {
@@ -31,7 +30,7 @@ class SentenceCalculationService(
   private data class IndexedSentenceWithReleasePointMultiplier(val index: Int, val sentence: CalculableSentence, val multiplier: Double)
 
   private fun getConsecutiveRelease(sentence: ConsecutiveSentence): ReleaseDateCalculation {
-    val daysToExpiry = getDaysInGroup(sentence.orderedSentences, sentence.sentencedAt) { it.totalDuration() }
+    val daysToExpiry = sentenceAggregator.getDaysInGroup(sentence.sentencedAt, sentence.orderedSentences) { it.totalDuration() }
     val (sentencesWithPed, sentencesWithoutPed) = sentence.orderedSentences
       .map { IndexedSentenceWithReleasePointMultiplier(sentence.orderedSentences.indexOf(it), it, releasePointMultiplierLookup.multiplierFor(it.identificationTrack)) }
       .partition { (it.sentence is ExtendedDeterminateSentence && !it.sentence.automaticRelease) || it.sentence is SopcSentence }
@@ -48,7 +47,7 @@ class SentenceCalculationService(
     sentencesInCalculationOrder.forEach { sentencesWithMultipliers ->
       if (sentencesWithMultipliers.isNotEmpty()) {
         val releaseStartDate = if (notionalCrd != null) notionalCrd!!.plusDays(1) else sentence.sentencedAt
-        val daysInThisCustodialDuration = getDaysInGroup(sentencesWithMultipliers.map { it.sentence }, releaseStartDate) { it.custodialDuration() }
+        val daysInThisCustodialDuration = sentenceAggregator.getDaysInGroup(releaseStartDate, sentencesWithMultipliers.map { it.sentence }) { it.custodialDuration() }
         if (sentencesWithMultipliers == sentencesWithPed && !sentence.isRecall()) {
           numberOfDaysToParoleEligibilityDate = calculateConsecutivePed(sentencesWithMultipliers.map { it.sentence }, daysToRelease, releaseStartDate)
         }
@@ -79,30 +78,17 @@ class SentenceCalculationService(
     val sentencesOfFirstType = calculableSentences.filter { determinePedMultiplier(it.identificationTrack) == firstSentenceMultiplier }
     val sentencesOfOtherType = calculableSentences.filter { determinePedMultiplier(it.identificationTrack) != firstSentenceMultiplier }
 
-    val daysInFirstCustodialDuration = getDaysInGroup(sentencesOfFirstType, releaseStartDate) { it.custodialDuration() }
+    val daysInFirstCustodialDuration = sentenceAggregator.getDaysInGroup(releaseStartDate, sentencesOfFirstType) { it.custodialDuration() }
     var daysToPed = ceil(daysInFirstCustodialDuration.times(firstSentenceMultiplier)).toLong()
     val notionalPed = releaseStartDate
       .plusDays(daysToPed)
       .minusDays(1)
     if (sentencesOfOtherType.isNotEmpty()) {
       val otherSentenceMultiplier = determinePedMultiplier(sentencesOfOtherType[0].identificationTrack)
-      val daysInOtherCustodialDuration = getDaysInGroup(sentencesOfOtherType, notionalPed) { it.custodialDuration() }
+      val daysInOtherCustodialDuration = sentenceAggregator.getDaysInGroup(notionalPed, sentencesOfOtherType) { it.custodialDuration() }
       daysToPed += ceil(daysInOtherCustodialDuration.times(otherSentenceMultiplier)).toLong()
     }
     return daysToRelease + daysToPed
-  }
-
-  private fun getDaysInGroup(sentences: List<CalculableSentence>, sentenceStartDate: LocalDate, durationSupplier: (sentence: CalculableSentence) -> Duration): Int {
-    if (sentences.all { it.isDto() }) {
-      val days = ConsecutiveSentenceAggregator(sentences.map(durationSupplier)).calculateDays(sentenceStartDate)
-      val between = ChronoUnit.DAYS.between(sentenceStartDate, sentenceStartDate.plusMonths(24))
-      return if (days >= between) {
-        between.toInt()
-      } else {
-        days
-      }
-    }
-    return ConsecutiveSentenceAggregator(sentences.map(durationSupplier)).calculateDays(sentenceStartDate)
   }
 
   private fun getSentenceCalculation(booking: Booking, sentence: CalculableSentence, options: CalculationOptions): SentenceCalculation {
