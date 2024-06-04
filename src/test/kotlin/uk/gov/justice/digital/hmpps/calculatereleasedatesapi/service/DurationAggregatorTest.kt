@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import java.time.temporal.ChronoUnit
 
-class ConsecutiveSentenceAggregatorTest {
+class DurationAggregatorTest {
 
   @Test
   fun `Aggregate some durations`() {
@@ -42,7 +42,7 @@ class ConsecutiveSentenceAggregatorTest {
       ),
     )
 
-    val result = ConsecutiveSentenceAggregator(durations).aggregate()
+    val result = DurationAggregator(durations).aggregate()
 
     Assertions.assertThat(result).containsAll(
       listOf(
@@ -107,7 +107,7 @@ class ConsecutiveSentenceAggregatorTest {
       ),
     )
 
-    val result = ConsecutiveSentenceAggregator(durations).aggregate()
+    val result = DurationAggregator(durations).aggregate()
 
     Assertions.assertThat(result).containsAll(
       listOf(
@@ -180,7 +180,7 @@ class ConsecutiveSentenceAggregatorTest {
       ),
     )
 
-    val result = ConsecutiveSentenceAggregator(durations).aggregate()
+    val result = DurationAggregator(durations).aggregate()
 
     Assertions.assertThat(result).containsAll(
       listOf(
