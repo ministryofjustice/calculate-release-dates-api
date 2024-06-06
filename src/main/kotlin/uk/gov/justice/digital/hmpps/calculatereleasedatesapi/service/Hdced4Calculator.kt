@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
@@ -30,23 +28,19 @@ class Hdced4Calculator(
     return !offender.isActiveSexOffender && !sentence.isDto() && !sentence.isSDSPlus
   }
 
-  private data class Hdced4Params(val custodialPeriod: Double, val dateHdcAppliesFrom: LocalDate, val adjustedDays: Int)
+  private data class Hdced4Params(
+    val custodialPeriod: Double,
+    val dateHdcAppliesFrom: LocalDate,
+    val adjustedDays: Int,
+  )
 
   fun calculateHdced4(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
     val custodialPeriod = sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble
 
-    val adjustedDays = sentenceCalculation.calculatedTotalAddedDays
-      .plus(sentenceCalculation.calculatedTotalAwardedDays)
-      .minus(sentenceCalculation.calculatedTotalDeductedDays)
-      .minus(sentenceCalculation.calculatedUnusedReleaseAda)
-
     val params = if (sentence is ConsecutiveSentence && sentence.orderedSentences.any { it.isSDSPlus }) {
-      val (sdsPlusSentences, nonSdsPlusSentences) = sentence.orderedSentences.partition { it.isSDSPlus }
-      val sdsPlusNotionalCrd = calculateSdsPlusNotionalCRD(sentence, sdsPlusSentences)
-      val nonSdsPlusCustodialPeriod = calculateNonSdsPlusCustodialPeriod(nonSdsPlusSentences, sdsPlusNotionalCrd)
-      Hdced4Params(nonSdsPlusCustodialPeriod.toDouble(), sdsPlusNotionalCrd, adjustedDays)
+      consecChainWithSDSPlusParams(sentence, sentenceCalculation)
     } else {
-      Hdced4Params(custodialPeriod, sentence.sentencedAt, adjustedDays)
+      Hdced4Params(custodialPeriod, sentence.sentencedAt, getAllAdjustments(sentenceCalculation))
     }
 
     // If adjustments make the CRD before sentence date plus 14 days (i.e. a large REMAND days)
@@ -55,14 +49,30 @@ class Hdced4Calculator(
       sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = null
       sentenceCalculation.numberOfDaysToHomeDetentionCurfew4PlusEligibilityDate = 0
       sentenceCalculation.breakdownByReleaseDateType.remove(ReleaseDateType.HDCED4PLUS)
-      return
-    }
-
-    if (params.custodialPeriod < hdcedConfiguration.custodialPeriodMidPointDays) {
-      calculateHdcedUnderMidpoint(sentenceCalculation, sentence, params)
     } else {
-      calculateHdcedOverMidpoint(sentenceCalculation, sentence, params)
+      if (params.custodialPeriod < hdcedConfiguration.custodialPeriodMidPointDays) {
+        calculateHdcedUnderMidpoint(sentenceCalculation, sentence, params)
+      } else {
+        calculateHdcedOverMidpoint(sentenceCalculation, sentence)
+      }
     }
+  }
+
+  private fun consecChainWithSDSPlusParams(
+    sentence: ConsecutiveSentence,
+    sentenceCalculation: SentenceCalculation,
+  ): Hdced4Params {
+    // When consec with SDS+ we need to create a notional CRD using any SDS+ and apply the deductions before calculating the
+    // custodial period of the non-SDS+ sentences. This is to prevent a scenario where your HDC4+ date is before the CRD
+    // of the SDS+ in the chain.
+    val (sdsPlusSentences, nonSdsPlusSentences) = sentence.orderedSentences.partition { it.isSDSPlus }
+    val deductionDays = sentenceCalculation.calculatedTotalDeductedDays
+    val remainingAdjustments = sentenceCalculation.calculatedTotalAddedDays
+      .plus(sentenceCalculation.calculatedTotalAwardedDays)
+      .minus(sentenceCalculation.calculatedUnusedReleaseAda)
+    val sdsPlusNotionalCrd = calculateSdsPlusNotionalCRD(sentence, sdsPlusSentences, deductionDays)
+    val nonSdsPlusCustodialPeriod = calculateNonSdsPlusCustodialPeriod(nonSdsPlusSentences, sdsPlusNotionalCrd)
+    return Hdced4Params(nonSdsPlusCustodialPeriod.toDouble(), sdsPlusNotionalCrd, remainingAdjustments)
   }
 
   private fun calculateHdcedUnderMidpoint(
@@ -98,12 +108,12 @@ class Hdced4Calculator(
   private fun calculateHdcedOverMidpoint(
     sentenceCalculation: SentenceCalculation,
     sentence: CalculableSentence,
-    params: Hdced4Params,
   ) {
+    val adjustedDays = getAllAdjustments(sentenceCalculation)
     sentenceCalculation.numberOfDaysToHomeDetentionCurfew4PlusEligibilityDate =
       sentenceCalculation.numberOfDaysToDeterminateReleaseDate
         .minus(hdcedConfiguration.custodialPeriodAboveMidpointDeductionDays + 1) // Extra plus one because we use the numberOfDaysToDeterminateReleaseDate param and not the sentencedAt param
-        .plus(params.adjustedDays)
+        .plus(adjustedDays)
     sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = sentence.sentencedAt
       .plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfew4PlusEligibilityDate)
 
@@ -116,7 +126,7 @@ class Hdced4Calculator(
         ReleaseDateCalculationBreakdown(
           rules = setOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD),
           rulesWithExtraAdjustments = mapOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD to AdjustmentDuration(-hdcedConfiguration.custodialPeriodAboveMidpointDeductionDays.toInt())),
-          adjustedDays = params.adjustedDays,
+          adjustedDays = adjustedDays,
           releaseDate = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
           unadjustedDate = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!.plusDays(
             hdcedConfiguration.custodialPeriodAboveMidpointDeductionDays,
@@ -124,6 +134,11 @@ class Hdced4Calculator(
         )
     }
   }
+
+  private fun getAllAdjustments(sentenceCalculation: SentenceCalculation) = sentenceCalculation.calculatedTotalAddedDays
+    .plus(sentenceCalculation.calculatedTotalAwardedDays)
+    .minus(sentenceCalculation.calculatedTotalDeductedDays)
+    .minus(sentenceCalculation.calculatedUnusedReleaseAda)
 
   private fun calculateHdcedMinimumCustodialPeriod(
     sentence: CalculableSentence,
@@ -165,11 +180,12 @@ class Hdced4Calculator(
   private fun calculateSdsPlusNotionalCRD(
     sentence: CalculableSentence,
     sdsPlusSentences: List<CalculableSentence>,
+    deductionDays: Int,
   ): LocalDate = sentence.sentencedAt
     .plusDays(ceil(sentenceAggregator.getDaysInGroup(sentence.sentencedAt, sdsPlusSentences) { it.custodialDuration() } * releaseDateMultiplierLookup.multiplierFor(SentenceIdentificationTrack.SDS_PLUS_RELEASE)).toLong())
+    .minusDays(deductionDays.toLong())
 
   companion object {
     private const val HALF = 2L
-    private val log: Logger = LoggerFactory.getLogger(Hdced4Calculator::class.java)
   }
 }
