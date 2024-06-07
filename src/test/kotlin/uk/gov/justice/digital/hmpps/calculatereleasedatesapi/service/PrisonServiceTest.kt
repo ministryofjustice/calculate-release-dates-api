@@ -34,7 +34,7 @@ class PrisonServiceTest {
     val caseLoads = arrayListOf(
       CaseLoad("ABC", "Description 1", CaseLoadType.INST, CaseLoadFunction.GENERAL, true),
       CaseLoad("KTI", "Description 2", CaseLoadType.INST, CaseLoadFunction.GENERAL, false),
-      CaseLoad("XYZ", "Description 3", CaseLoadType.INST, CaseLoadFunction.GENERAL, true)
+      CaseLoad("XYZ", "Description 3", CaseLoadType.INST, CaseLoadFunction.GENERAL, true),
     )
 
     whenever(prisonApiClient.getCurrentUserCaseLoads()).thenReturn(caseLoads)
