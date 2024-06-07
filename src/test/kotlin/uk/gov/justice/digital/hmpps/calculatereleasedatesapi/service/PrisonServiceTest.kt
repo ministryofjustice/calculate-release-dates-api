@@ -30,7 +30,7 @@ class PrisonServiceTest {
   private val prisonService = PrisonService(prisonApiClient, offenceSDSReleaseArrangementLookupService)
 
   @Test
-  fun `getCurrentUserPrisonsList should exclude prisons where currentlyActive is false`() {
+  fun `getCurrentUserPrisonsList should exclude prisons where the establishment is KTI`() {
     val caseLoads = arrayListOf(
       CaseLoad("ABC", "Description 1", CaseLoadType.INST, CaseLoadFunction.GENERAL, true),
       CaseLoad("KTI", "Description 2", CaseLoadType.INST, CaseLoadFunction.GENERAL, false),
