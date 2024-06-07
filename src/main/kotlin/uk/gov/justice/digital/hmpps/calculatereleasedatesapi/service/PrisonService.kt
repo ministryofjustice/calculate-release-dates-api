@@ -83,7 +83,9 @@ class PrisonService(
   }
 
   fun getCurrentUserPrisonsList(): List<String> {
-    return prisonApiClient.getCurrentUserCaseLoads()?.map { caseLoad -> caseLoad.caseLoadId }
+    return prisonApiClient.getCurrentUserCaseLoads()
+      ?.filter { caseLoad -> caseLoad.currentlyActive }
+      ?.map { caseLoad -> caseLoad.caseLoadId }
       ?: emptyList()
   }
 
