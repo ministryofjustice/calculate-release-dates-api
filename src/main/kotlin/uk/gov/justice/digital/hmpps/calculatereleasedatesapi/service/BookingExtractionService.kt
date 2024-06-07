@@ -30,7 +30,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -513,10 +512,7 @@ class BookingExtractionService(
     val latestAdjustedReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
     val mostRecentReleaseIsPrrd =
       mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.getReleaseDateTypes().contains(PRRD) }
-    val mostRecentReleaseIsPed =
-      mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.getReleaseDateTypes().contains(PED) }
-    // For now we can't calculate HDCED if there is a consecutive sentence with EDS or SOPC sentences
-    if (!mostRecentReleaseIsPrrd && !mostRecentReleaseIsPed && sentences.none { it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence() }) {
+    if (!mostRecentReleaseIsPrrd) {
       val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(
         sentences.filter { !it.isRecall() && !it.isDto() },
         SentenceCalculation::releaseDate,
@@ -609,10 +605,7 @@ class BookingExtractionService(
     val latestAdjustedReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
     val mostRecentReleaseIsPrrd =
       mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.getReleaseDateTypes().contains(PRRD) }
-    // For now we can't calculate HDCED if there is a consecutive sentence with EDS or SOPC sentences
-    if (!mostRecentReleaseIsPrrd && sentences.none { (it is ConsecutiveSentence && it.hasAnyEdsOrSopcSentence()) } &&
-      sentences.none { (it is ConsecutiveSentence && it.releaseDateTypes.contains(PED)) }
-    ) {
+    if (!mostRecentReleaseIsPrrd) {
       val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(
         sentences.filter { !it.isRecall() && !it.isDto() },
         SentenceCalculation::releaseDate,
