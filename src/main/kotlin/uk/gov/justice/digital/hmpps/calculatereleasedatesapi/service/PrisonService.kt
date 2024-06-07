@@ -84,7 +84,7 @@ class PrisonService(
 
   fun getCurrentUserPrisonsList(): List<String> {
     return prisonApiClient.getCurrentUserCaseLoads()
-      ?.filter { caseLoad -> caseLoad.currentlyActive }
+      ?.filter { it.caseLoadId == "KTI" }
       ?.map { caseLoad -> caseLoad.caseLoadId }
       ?: emptyList()
   }
