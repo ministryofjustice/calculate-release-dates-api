@@ -29,7 +29,7 @@ import java.time.Duration
 @Service
 class PrisonApiClient(
   @Qualifier("prisonApiWebClient") private val webClient: WebClient,
-  @Qualifier("prisonApiAsyncWebClient") private val asyncWebClient: WebClient,
+  @Qualifier("prisonApiBulkComparisonWebClient") private val bulkComparisonWebClient: WebClient,
 ) {
   private inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T>() {}
   private val log = LoggerFactory.getLogger(this::class.java)
@@ -105,7 +105,7 @@ class PrisonApiClient(
     token: String,
   ): RestResponsePage<CalculableSentenceEnvelope> {
     log.info("Requesting personId and booking details for latest booking of all offenders at establishment $establishmentId and page $pageNumber")
-    return asyncWebClient.get()
+    return bulkComparisonWebClient.get()
       .uri("/api/prison/$establishmentId/booking/latest/paged/calculable-sentence-envelope?page=$pageNumber")
       .header("Authorization", token)
       .httpRequest { httpRequest ->
@@ -120,7 +120,7 @@ class PrisonApiClient(
   }
 
   fun getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds: List<String>, token: String): List<CalculableSentenceEnvelope> {
-    return asyncWebClient.get()
+    return bulkComparisonWebClient.get()
       .uri { uriBuilder ->
         uriBuilder.path("/api/bookings/latest/calculable-sentence-envelope")
           .queryParam("offenderNo", prisonerIds)

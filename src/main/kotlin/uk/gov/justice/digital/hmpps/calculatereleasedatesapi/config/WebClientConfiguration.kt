@@ -33,9 +33,15 @@ class WebClientConfiguration(
   }
 
   @Bean
-  fun prisonApiAsyncWebClient(webClientBuilder: WebClient.Builder): WebClient {
-    return webClientBuilder
+  fun prisonApiBulkComparisonWebClient(
+    builder: WebClient.Builder,
+    authorizedClientManager: OAuth2AuthorizedClientManager,
+  ): WebClient {
+    val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
+    oauth2Client.setDefaultClientRegistrationId("prison-api")
+    return builder
       .baseUrl(prisonApiUri)
+      .apply(oauth2Client.oauth2Configuration())
       .build()
   }
 
