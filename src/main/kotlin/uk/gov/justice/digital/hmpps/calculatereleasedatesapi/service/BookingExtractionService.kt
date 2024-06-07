@@ -320,7 +320,6 @@ class BookingExtractionService(
         dates[HDCED] = latestHDCEDAndBreakdown.first
         breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdown.second
       }
-
       if (latestHDC4PLUSAndBreakdown != null) {
         dates[HDCED4PLUS] = latestHDC4PLUSAndBreakdown.first
         breakdownByReleaseDateType[HDCED4PLUS] = latestHDC4PLUSAndBreakdown.second
