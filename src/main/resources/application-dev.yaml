@@ -11,11 +11,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: ${hmpps.auth.url}/.well-known/jwks.json
-      client:
-        provider:
-          hmpps-auth:
-            token-uri: ${hmpps.auth.url}/oauth/token
+          public-key-location: classpath:local-public-key.pub
 
   jpa:
     show-sql: true
@@ -23,12 +19,12 @@ spring:
 # Container-provider local auth server
 hmpps:
   auth:
-    url: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
+    url: http://localhost:8090/auth
 
 # Container-provider local prison-api
 prison:
   api:
-    url: https://prison-api-dev.prison.service.justice.gov.uk
+    url: http://localhost:8080
 
 #TODO: Add local docker compose support for Adjustments container
 adjustments:

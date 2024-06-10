@@ -16,3 +16,5 @@ release-point-multipliers:
         - SDS_EARLY_RELEASE
       multiplier: 0.45
   default: 0.5
+hdced4:
+  hdc4-commencement-date: 2024-06-10
