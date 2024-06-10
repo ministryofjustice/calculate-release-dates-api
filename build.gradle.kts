@@ -29,7 +29,7 @@ dependencies {
   implementation("uk.gov.service.notify:notifications-java-client:5.1.0-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.24")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.8.0")
