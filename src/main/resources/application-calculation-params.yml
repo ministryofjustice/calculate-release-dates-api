@@ -16,6 +16,7 @@ hdced4:
     unit: DAYS
   minimum-custodial-period-days: 14
   deduction-days: 179
+  hdc4-commencement-date: 2024-06-17
 
 ersed:
   max-period-days: 544

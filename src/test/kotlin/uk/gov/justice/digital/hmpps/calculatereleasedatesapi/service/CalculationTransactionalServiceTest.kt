@@ -5,6 +5,7 @@ import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
+import org.joda.time.DateTime
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -28,6 +29,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdced4ConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
@@ -131,6 +133,43 @@ class CalculationTransactionalServiceTest {
     val calculatedReleaseDates: CalculatedReleaseDates
     try {
       calculatedReleaseDates = calculationTransactionalService(params)
+        .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
+    } catch (e: Exception) {
+      if (!error.isNullOrEmpty()) {
+        assertEquals(error, e.javaClass.simpleName)
+        return
+      } else {
+        throw e
+      }
+    }
+    log.info(
+      "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
+      TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
+    )
+    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
+
+    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
+    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
+  }
+
+  @ParameterizedTest
+  @CsvFileSource(resources = ["/test_data/calculation-hdc4-commencement-examples.csv"], numLinesToSkip = 1)
+  fun `Test HDC4 move over post commencement only hdced`(exampleType: String, exampleNumber: String, error: String?, params: String) {
+    log.info("Testing example $exampleType/$exampleNumber")
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+
+    val hdc4CommencementDate =
+      if (exampleNumber.contains("pre-")) {
+        DateTime.now().plusDays(1).toDate()
+      } else {
+        DateTime.now().minusDays(1).toDate()
+      }
+
+    val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
+    val calculatedReleaseDates: CalculatedReleaseDates
+    try {
+      calculatedReleaseDates = calculationTransactionalService(params, mapOf(Pair("hdc4CommencementDate", hdc4CommencementDate)))
         .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
@@ -549,8 +588,21 @@ class CalculationTransactionalServiceTest {
     Mockito.`when`(bankHolidayService.getBankHolidays()).thenReturn(cachedBankHolidays)
   }
 
-  private fun calculationTransactionalService(params: String = "calculation-params"): CalculationTransactionalService {
+  private fun calculationTransactionalService(params: String = "calculation-params", overriddenConfigurationParams: Map<String, Any> = emptyMap()): CalculationTransactionalService {
     val hdcedConfiguration = hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
+    var hdced4Configuration = hdced4ConfigurationForTests()
+    val isNotDefaultParams = params != "calculation-params"
+    if (isNotDefaultParams) {
+      // If using alternate release config then set the HDC4 commencement date to tomorrow
+      val overwrittenHdced4Config = hdced4Configuration.copy(hdc4CommencementDate = DateTime.now().plusDays(1).toDate())
+      hdced4Configuration = overwrittenHdced4Config
+    }
+    if (overriddenConfigurationParams.containsKey("hdc4CommencementDate")) {
+      val overwrittenHdced4Config =
+        hdced4Configuration.copy(hdc4CommencementDate = overriddenConfigurationParams["hdc4CommencementDate"] as Date)
+      hdced4Configuration = overwrittenHdced4Config
+    }
+
     val ersedConfiguration = ersedConfigurationForTests()
     val releasePointMultipliersConfiguration = releasePointMultiplierConfigurationForTests(params)
 
@@ -559,9 +611,9 @@ class CalculationTransactionalServiceTest {
     val tusedCalculator = TusedCalculator(workingDayService)
     val sentenceAggregator = SentenceAggregator()
     val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultipliersConfiguration)
+
     val hdced4Calculator = Hdced4Calculator(hdcedConfiguration, sentenceAggregator, releasePointMultiplierLookup)
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
-    val isNotDefaultParams = params != "calculation-params"
     val featureToggles = FeatureToggles(botus = false, sdsEarlyRelease = isNotDefaultParams)
     val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sdsEarlyReleaseTrancheOneDate())
     val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
@@ -575,6 +627,7 @@ class CalculationTransactionalServiceTest {
     val bookingExtractionService = BookingExtractionService(
       sentencesExtractionService,
       hdcedConfiguration,
+      hdced4Configuration,
     )
     val bookingTimelineService = BookingTimelineService(
       sentenceAdjustedCalculationService,
