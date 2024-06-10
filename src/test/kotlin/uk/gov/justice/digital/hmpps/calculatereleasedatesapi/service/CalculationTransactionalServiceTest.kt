@@ -609,14 +609,15 @@ class CalculationTransactionalServiceTest {
     val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
     val workingDayService = WorkingDayService(bankHolidayService)
     val tusedCalculator = TusedCalculator(workingDayService)
-    val hdced4Calculator = Hdced4Calculator(hdced4Configuration, hdcedConfiguration)
-    val ersedCalculator = ErsedCalculator(ersedConfiguration)
+    val sentenceAggregator = SentenceAggregator()
     val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultipliersConfiguration)
 
+    val hdced4Calculator = Hdced4Calculator(hdcedConfiguration, sentenceAggregator, releasePointMultiplierLookup)
+    val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val featureToggles = FeatureToggles(botus = false, sdsEarlyRelease = isNotDefaultParams)
     val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sdsEarlyReleaseTrancheOneDate())
     val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
-    val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup)
+    val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup, sentenceAggregator)
     val sentencesExtractionService = SentencesExtractionService()
     val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdced4Calculator)
     val bookingCalculationService = BookingCalculationService(

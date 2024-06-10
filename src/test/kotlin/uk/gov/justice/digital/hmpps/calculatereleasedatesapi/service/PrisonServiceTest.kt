@@ -8,7 +8,10 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadFunction
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RestResponsePage
@@ -25,6 +28,22 @@ class PrisonServiceTest {
   private val prisonApiClient = mock<PrisonApiClient>()
   private val offenceSDSReleaseArrangementLookupService = mock<OffenceSDSReleaseArrangementLookupService>()
   private val prisonService = PrisonService(prisonApiClient, offenceSDSReleaseArrangementLookupService)
+
+  @Test
+  fun `getCurrentUserPrisonsList should exclude prisons where the establishment is KTI`() {
+    val caseLoads = arrayListOf(
+      CaseLoad("ABC", "Description 1", CaseLoadType.INST, CaseLoadFunction.GENERAL, true),
+      CaseLoad("KTI", "Description 2", CaseLoadType.INST, CaseLoadFunction.GENERAL, false),
+      CaseLoad("XYZ", "Description 3", CaseLoadType.INST, CaseLoadFunction.GENERAL, true),
+    )
+
+    whenever(prisonApiClient.getCurrentUserCaseLoads()).thenReturn(caseLoads)
+
+    val result = prisonService.getCurrentUserPrisonsList()
+
+    assertThat(result).containsExactlyInAnyOrder("ABC", "XYZ")
+    assertThat(result).doesNotContain("KTI")
+  }
 
   @Test
   fun `The request to fetch Calculable Sentences is sent once per page until the last page is retrieved`() {

@@ -5,7 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ReleasePoint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 
 @Service
-class ReleasePointMultiplierLookup(val configuration: ReleasePointMultipliersConfiguration) {
+class ReleasePointMultiplierLookup(private val configuration: ReleasePointMultipliersConfiguration) {
 
   fun multiplierFor(track: SentenceIdentificationTrack): Double {
     return configuration.multipliers.find { track in it.tracks }?.multiplier ?: configuration.default

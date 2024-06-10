@@ -1,0 +1,41 @@
+{
+  "offender":{
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences":[
+    {
+      "type":"ExtendedDeterminateSentence",
+      "offence":{
+        "committedAt":"2023-01-25"
+      },
+      "custodialDuration":{
+        "durationElements":{
+          "YEARS": 5
+        }
+      },
+      "extensionDuration":{
+        "durationElements":{
+          "YEARS": 3
+        }
+      },
+      "automaticRelease":false,
+      "sentencedAt":"2023-01-25"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2023-01-25"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 10,
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2023-01-25",
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlus": false
+    }
+  ]
+}

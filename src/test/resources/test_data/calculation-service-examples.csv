@@ -446,3 +446,14 @@ custom-examples,crs-1943-botus-unaffected-by-tagged-bail,,calculation-params
 custom-examples,crs-1967-ersed-before-crd-and-mtd,,calculation-params
 custom-examples,crs-1967-ersed-before-ard-and-mtd,,calculation-params
 
+custom-examples,crs-1994-ac3,,calculation-params
+custom-examples,crs-1994-ac7,,calculation-params
+custom-examples,crs-1981-ac1,,calculation-params
+custom-examples,crs-1981-ac2,,calculation-params
+custom-examples,crs-1981-ac3,,calculation-params
+
+custom-examples,crs-1997-ac1-hdc-eds-concurrent-sds,,calculation-params
+custom-examples,crs-1997-ac2-hdc-eds-concurrent-sds,,calculation-params
+custom-examples,crs-1997-ac3-hdc-sopc-consec-sds,,calculation-params
+custom-examples,crs-1997-ac4-hdc-eds-consec-sds,,calculation-params
+custom-examples,crs-1997-ac5-hdc-sopc-consec-sds,,calculation-params
