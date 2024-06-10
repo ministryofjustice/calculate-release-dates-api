@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestClassOrder
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
@@ -18,7 +17,6 @@ import org.junit.jupiter.params.provider.CsvFileSource
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Captor
-import org.mockito.InjectMocks
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
@@ -29,7 +27,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.boot.test.context.TestConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdced4ConfigurationForTests
@@ -37,7 +34,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationP
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.Hdced4Configuration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -98,7 +94,6 @@ import java.time.temporal.ChronoUnit.YEARS
 import java.util.*
 
 @ExtendWith(MockitoExtension::class)
-@TestConfiguration('')
 class CalculationTransactionalServiceTest {
   private val jsonTransformation = JsonTransformation()
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
@@ -158,17 +153,22 @@ class CalculationTransactionalServiceTest {
   }
 
   @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/calculation-hdc4-examples.csv"], numLinesToSkip = 1)
-  fun `Test HDC4 move over`(exampleType: String, exampleNumber: String, error: String?, params: String) {
+  @CsvFileSource(resources = ["/test_data/calculation-hdc4-commencement-examples.csv"], numLinesToSkip = 1)
+  fun `Test HDC4 move over post commencement only hdced`(exampleType: String, exampleNumber: String, error: String?, params: String) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
 
+    val hdc4CommencementDate =
+      if(exampleNumber.contains("pre-"))
+        DateTime.now().plusDays(1).toDate()
+      else
+        DateTime.now().minusDays(1).toDate()
+
     val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculatedReleaseDates: CalculatedReleaseDates
     try {
-      //Override the hdc4CommencementDate
-      calculatedReleaseDates = calculationTransactionalService(params, mapOf(Pair("hdc4CommencementDate", DateTime.now().minusDays(1).toDate())))
+      calculatedReleaseDates = calculationTransactionalService(params, mapOf(Pair("hdc4CommencementDate", hdc4CommencementDate)))
         .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
@@ -596,7 +596,7 @@ class CalculationTransactionalServiceTest {
         val overwrittenHdced4Config = hdced4Configuration.copy(hdc4CommencementDate = DateTime.now().plusDays(1).toDate())
         hdced4Configuration = overwrittenHdced4Config
     }
-    if (overriddenConfigurationParams.containsKey("hdc4C ommencementDate")) {
+    if (overriddenConfigurationParams.containsKey("hdc4CommencementDate")) {
       val overwrittenHdced4Config =
         hdced4Configuration.copy(hdc4CommencementDate = overriddenConfigurationParams["hdc4CommencementDate"] as Date)
       hdced4Configuration = overwrittenHdced4Config
