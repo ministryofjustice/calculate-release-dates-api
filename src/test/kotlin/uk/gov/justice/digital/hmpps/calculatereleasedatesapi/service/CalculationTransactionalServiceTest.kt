@@ -160,10 +160,11 @@ class CalculationTransactionalServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
 
     val hdc4CommencementDate =
-      if(exampleNumber.contains("pre-"))
+      if (exampleNumber.contains("pre-")) {
         DateTime.now().plusDays(1).toDate()
-      else
+      } else {
         DateTime.now().minusDays(1).toDate()
+      }
 
     val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculatedReleaseDates: CalculatedReleaseDates
@@ -591,10 +592,10 @@ class CalculationTransactionalServiceTest {
     val hdcedConfiguration = hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
     var hdced4Configuration = hdced4ConfigurationForTests()
     val isNotDefaultParams = params != "calculation-params"
-    if (isNotDefaultParams){
-        //If using alternate release config then set the HDC4 commencement date to tomorrow
-        val overwrittenHdced4Config = hdced4Configuration.copy(hdc4CommencementDate = DateTime.now().plusDays(1).toDate())
-        hdced4Configuration = overwrittenHdced4Config
+    if (isNotDefaultParams) {
+      // If using alternate release config then set the HDC4 commencement date to tomorrow
+      val overwrittenHdced4Config = hdced4Configuration.copy(hdc4CommencementDate = DateTime.now().plusDays(1).toDate())
+      hdced4Configuration = overwrittenHdced4Config
     }
     if (overriddenConfigurationParams.containsKey("hdc4CommencementDate")) {
       val overwrittenHdced4Config =
@@ -625,7 +626,7 @@ class CalculationTransactionalServiceTest {
     val bookingExtractionService = BookingExtractionService(
       sentencesExtractionService,
       hdcedConfiguration,
-      hdced4Configuration
+      hdced4Configuration,
     )
     val bookingTimelineService = BookingTimelineService(
       sentenceAdjustedCalculationService,

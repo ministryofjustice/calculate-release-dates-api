@@ -89,8 +89,8 @@ class BookingExtractionService(
       dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
     }
 
-    if (DateTime.now().toDate().after(hdced4Configuration.hdc4CommencementDate)){
-      //After commencement date only produce HDCED using HDCED4 ruling.
+    if (DateTime.now().toDate().after(hdced4Configuration.hdc4CommencementDate)) {
+      // After commencement date only produce HDCED using HDCED4 ruling.
       if (sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
         dates[HDCED] = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!
       }
@@ -309,8 +309,8 @@ class BookingExtractionService(
       breakdownByReleaseDateType[TUSED] = latestTUSEDAndBreakdown.second
     }
 
-    if (DateTime.now().toDate().after(hdced4Configuration.hdc4CommencementDate)){
-      //After commencement date only produce HDCED using HDCED4 ruling.
+    if (DateTime.now().toDate().after(hdced4Configuration.hdc4CommencementDate)) {
+      // After commencement date only produce HDCED using HDCED4 ruling.
       if (latestHDC4PLUSAndBreakdown != null) {
         dates[HDCED] = latestHDC4PLUSAndBreakdown.first
         breakdownByReleaseDateType[HDCED] = latestHDC4PLUSAndBreakdown.second
