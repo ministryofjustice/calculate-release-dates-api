@@ -26,7 +26,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-actuator")
 
   // GOVUK Notify:
-  implementation("uk.gov.service.notify:notifications-java-client:5.0.1-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:5.1.0-RELEASE")
 
   // Enable kotlin reflect
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.24")
@@ -46,15 +46,15 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
   implementation("io.arrow-kt:arrow-core:1.2.4")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.7.5")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.7.6")
 
   // OpenAPI
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.3")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
-  implementation("org.springframework:spring-jms:6.1.6")
-  implementation("com.google.code.gson:gson:2.10.1")
+  implementation("org.springframework:spring-jms:6.1.8")
+  implementation("com.google.code.gson:gson:2.11.0")
 
   // SQS
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.3")
