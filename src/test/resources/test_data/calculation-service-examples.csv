@@ -435,6 +435,7 @@ alternative-release-point,crs-1944-ac6,,alt-calculation-params
 alternative-release-point,crs-1944-ac7,,alt-calculation-params
 alternative-release-point,crs-1944-ac8,,alt-calculation-params
 
+custom-examples,crs-1873-ac1,,calculation-params
 custom-examples,crs-1943-ac1,,calculation-params
 custom-examples,crs-1943-ac2,,calculation-params
 custom-examples,crs-1943-ac3,,calculation-params
