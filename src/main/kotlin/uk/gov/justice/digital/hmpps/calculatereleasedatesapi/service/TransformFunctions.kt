@@ -747,7 +747,7 @@ fun transform(comparison: Comparison, mismatches: List<ComparisonPerson>, object
   emptyList(),
 )
 
-private fun transform(comparisonPerson: ComparisonPerson, objectMapper: ObjectMapper): ComparisonMismatchSummary = ComparisonMismatchSummary(
+internal fun transform(comparisonPerson: ComparisonPerson, objectMapper: ObjectMapper): ComparisonMismatchSummary = ComparisonMismatchSummary(
   comparisonPerson.person,
   comparisonPerson.lastName,
   comparisonPerson.isValid,
@@ -760,7 +760,7 @@ private fun transform(comparisonPerson: ComparisonPerson, objectMapper: ObjectMa
   comparisonPerson.fatalException,
 )
 
-private fun transform(validationMessageJsonNode: JsonNode, objectMapper: ObjectMapper): List<ValidationMessage> {
+internal fun transform(validationMessageJsonNode: JsonNode, objectMapper: ObjectMapper): List<ValidationMessage> {
   val validationMessages: List<ValidationMessage> = objectMapper.readValue(validationMessageJsonNode.toString())
   return validationMessages
 }
