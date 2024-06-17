@@ -14,6 +14,7 @@ import reactor.netty.http.client.HttpClientRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RestResponsePage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
@@ -198,5 +199,18 @@ class PrisonApiClient(
         }
       }
       .block()!!
+  }
+  fun getLatestTusedDataForBotus(nomisId: String): Either<String, NomisTusedData> {
+    return webClient.get()
+      .uri("/api/offender-dates/latest-tused/$nomisId")
+      .exchangeToMono { response ->
+        when (response.statusCode()) {
+          HttpStatus.OK -> response.bodyToMono(typeReference<NomisTusedData>()).map { it.right() }
+          HttpStatus.BAD_REQUEST -> Mono.just("Bad request".left())
+          HttpStatus.FORBIDDEN -> Mono.just("User not authorised to access Tused".left())
+          HttpStatus.NOT_FOUND -> Mono.just("No Tused could be retrieved for Nomis ID $nomisId".left())
+          else -> Mono.just("Unknown: status code was ${response.statusCode().value()}".left())
+        }
+      }.block()!!
   }
 }

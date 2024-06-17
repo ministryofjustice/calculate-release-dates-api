@@ -4,6 +4,7 @@ import arrow.core.Either
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -22,6 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 class PrisonService(
   private val prisonApiClient: PrisonApiClient,
   private val offenceSDSReleaseArrangementLookupService: OffenceSDSReleaseArrangementLookupService,
+  private val botusTusedService: BotusTusedService,
 ) {
   //  The activeDataOnly flag is only used by a test endpoint (1000 calcs test, which is used to test historic data)
   fun getPrisonApiSourceData(prisonerId: String, activeDataOnly: Boolean = true): PrisonApiSourceData {
@@ -37,6 +39,8 @@ class PrisonService(
     val (ftrDetails, returnToCustodyDate) = getFixedTermRecallDetails(prisonerDetails.bookingId, bookingHasFixedTermRecall)
     val bookingHasAFine = sentenceAndOffences.any { isSupported(it.sentenceCalculationType) && from(it.sentenceCalculationType).sentenceClazz == AFineSentence::class.java }
     val offenderFinePayments = if (bookingHasAFine) prisonApiClient.getOffenderFinePayments(prisonerDetails.bookingId) else listOf()
+    val tusedData = getLatestTusedDataForBotus(prisonerDetails.offenderNo).getOrNull()
+    val historicalTusedData = if (tusedData != null) botusTusedService.identifyTused(tusedData) else null
 
     return PrisonApiSourceData(
       sentenceAndOffences,
@@ -45,6 +49,7 @@ class PrisonService(
       offenderFinePayments,
       returnToCustodyDate,
       ftrDetails,
+      historicalTusedData,
     )
   }
 
@@ -114,4 +119,6 @@ class PrisonService(
   fun getNOMISCalcReasons(): List<NomisCalculationReason> = prisonApiClient.getNOMISCalcReasons()
 
   fun getNOMISOffenderKeyDates(offenderSentCalcId: Long): Either<String, OffenderKeyDates> = prisonApiClient.getNOMISOffenderKeyDates(offenderSentCalcId)
+
+  fun getLatestTusedDataForBotus(nomisId: String): Either<String, NomisTusedData> = prisonApiClient.getLatestTusedDataForBotus(nomisId)
 }

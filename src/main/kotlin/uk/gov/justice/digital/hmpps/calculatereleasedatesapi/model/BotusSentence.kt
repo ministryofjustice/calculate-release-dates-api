@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import java.time.LocalDate
 import java.util.*
 
@@ -11,6 +12,8 @@ data class BotusSentence(
   override val consecutiveSentenceUUIDs: List<UUID> = listOf(),
   override val caseSequence: Int? = null,
   override val lineSequence: Int? = null,
+  var latestTusedDate: LocalDate? = null,
+  var latestTusedSource: HistoricalTusedSource? = null,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence) {
   override val isSDSPlus = false
   override fun buildString(): String {

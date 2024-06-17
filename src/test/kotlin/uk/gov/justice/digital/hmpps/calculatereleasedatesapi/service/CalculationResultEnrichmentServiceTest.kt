@@ -11,6 +11,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
@@ -782,6 +783,16 @@ class CalculationResultEnrichmentServiceTest {
         ReleaseDateHint("Adjusted to Mid term date (MTD) of the Detention and training order (DTO)"),
       ),
     )
+  }
+
+  @ParameterizedTest
+  @EnumSource(HistoricalTusedSource::class)
+  fun `TUSEDs that have historical status should get the appropriate hint`(source: HistoricalTusedSource) {
+    val tusedType = getReleaseDateAndStubAdjustments(ReleaseDateType.TUSED, LocalDate.of(2020, 5, 9))
+    val releaseDates = listOf(tusedType)
+    val calculationBreakdown = CalculationBreakdown(emptyList(), null)
+    val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown, source)
+    assertThat(results[tusedType.type]?.hints).isEqualTo(listOf(ReleaseDateHint("TUSED recorded in NOMIS at time of release")))
   }
 
   private fun getReleaseDateAndStubAdjustments(type: ReleaseDateType, date: LocalDate): ReleaseDate {
