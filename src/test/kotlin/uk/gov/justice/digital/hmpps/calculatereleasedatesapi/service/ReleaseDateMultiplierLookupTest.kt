@@ -63,6 +63,7 @@ class ReleaseDateMultiplierLookupTest {
           SentenceIdentificationTrack.DTO_BEFORE_PCSC -> 0.5
           SentenceIdentificationTrack.DTO_AFTER_PCSC -> 0.5
           SentenceIdentificationTrack.BOTUS -> 1.00
+          SentenceIdentificationTrack.BOTUS_WITH_HISTORIC_TUSED -> 1.00
         }
       }.map { Arguments.of(it.key, it.value) }.stream()
     }

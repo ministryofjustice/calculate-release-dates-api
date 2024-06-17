@@ -21,6 +21,7 @@ import org.hibernate.Hibernate
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import org.hibernate.annotations.Type
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -109,6 +110,9 @@ data class CalculationRequest(
   val reasonForCalculation: CalculationReason? = null,
 
   val otherReasonForCalculation: String? = null,
+
+  @Enumerated(value = EnumType.STRING)
+  val historicalTusedSource: HistoricalTusedSource? = null,
 
   val version: String = "1",
 ) {

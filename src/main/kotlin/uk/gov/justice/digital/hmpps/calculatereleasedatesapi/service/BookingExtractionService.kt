@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.Hdced4Config
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.ERSED_ADJUSTED_TO_MTD
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
@@ -30,6 +31,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
@@ -65,6 +67,7 @@ class BookingExtractionService(
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val sentence = booking.getAllExtractableSentences()[0]
     val sentenceCalculation = sentence.sentenceCalculation
+    var historicalTusedSource: HistoricalTusedSource? = null
 
     if (sentence.releaseDateTypes.contains(SLED)) {
       dates[SLED] = sentenceCalculation.expiryDate
@@ -123,7 +126,15 @@ class BookingExtractionService(
       dates[LTD] = sentenceCalculation.latestTransferDate!!
     }
 
-    if (!sentence.isBotus()) {
+    if (sentence.isBotus()) {
+      if (sentence is BotusSentence && sentence.latestTusedDate != null && sentenceCalculation.expiryDate.isBefore(
+          sentence.latestTusedDate,
+        )
+      ) {
+        dates[TUSED] = sentence.latestTusedDate!!
+        historicalTusedSource = sentence.latestTusedSource!!
+      }
+    } else {
       dates[ESED] = sentenceCalculation.unadjustedExpiryDate
     }
 
@@ -132,6 +143,8 @@ class BookingExtractionService(
       sentenceCalculation.breakdownByReleaseDateType,
       emptyMap(),
       getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedExpiryDate),
+      false,
+      historicalTusedSource,
     )
   }
 
@@ -339,7 +352,7 @@ class BookingExtractionService(
     )
 
     /** --- ERSED --- **/
-    val ersedNotApplicableDueToDtoLaterThanCrd = extractErsedAndNotApplicableDueToDtoLaterThanCrdFlag(sentences, breakdownByReleaseDateType, dates, latestReleaseDate, booking.sentenceGroups)
+    val ersedNotApplicableDueToDtoLaterThanCrd = extractErsedAndNotApplicableDueToDtoLaterThanCrdFlag(sentences, breakdownByReleaseDateType, dates, booking.sentenceGroups)
 
     /** --- ESED --- **/
     dates[ESED] = latestUnadjustedExpiryDate
@@ -403,11 +416,13 @@ class BookingExtractionService(
     sentences: List<CalculableSentence>,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
     dates: MutableMap<ReleaseDateType, LocalDate>,
-    latestReleaseDate: LocalDate,
     sentenceGroups: List<List<CalculableSentence>>,
   ): Boolean {
     val latestEarlyReleaseSchemeEligibilitySentence =
-      extractionService.mostRecentSentenceOrNull(sentences, SentenceCalculation::earlyReleaseSchemeEligibilityDate) { !it.sentenceCalculation.isImmediateRelease() }
+      extractionService.mostRecentSentenceOrNull(
+        sentences,
+        SentenceCalculation::earlyReleaseSchemeEligibilityDate,
+      ) { !it.sentenceCalculation.isImmediateRelease() }
 
     if (latestEarlyReleaseSchemeEligibilitySentence != null) {
       val sentenceGroup = sentenceGroups.find { it.contains(latestEarlyReleaseSchemeEligibilitySentence) }!!
@@ -543,7 +558,13 @@ class BookingExtractionService(
             SentenceCalculation::unadjustedExpiryDate,
           )
 
-        if (latestUnadjustedExpiryDate.isBefore(earliestSentenceDate.plus(hdcedConfiguration.maximumSentenceLengthYears, ChronoUnit.YEARS))) {
+        if (latestUnadjustedExpiryDate.isBefore(
+            earliestSentenceDate.plus(
+              hdcedConfiguration.maximumSentenceLengthYears,
+              ChronoUnit.YEARS,
+            ),
+          )
+        ) {
           val hdcedSentence = extractionService.mostRecentSentenceOrNull(
             sentences.filter { !latestAdjustedReleaseDate.isBefore(it.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc)) },
             SentenceCalculation::homeDetentionCurfewEligibilityDate,

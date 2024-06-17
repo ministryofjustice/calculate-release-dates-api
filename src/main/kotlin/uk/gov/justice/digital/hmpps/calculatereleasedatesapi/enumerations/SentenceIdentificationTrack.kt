@@ -18,6 +18,7 @@ enum class SentenceIdentificationTrack {
   DTO_BEFORE_PCSC,
   DTO_AFTER_PCSC,
   BOTUS,
+  BOTUS_WITH_HISTORIC_TUSED,
   ;
 
   fun calculateErsed(): Boolean {

@@ -69,6 +69,26 @@ class PrisonApiClientIntTest(private val mockPrisonService: MockPrisonService) :
     assertThat(prisonApiClient.getOffenderKeyDates(bookingId)).isEqualTo(expectedError.left())
   }
 
+  @ParameterizedTest
+  @CsvSource(
+    "400,Bad request",
+    "403,User not authorised to access Tused",
+    "404,No Tused could be retrieved for Nomis ID A12345AB",
+    "500,Unknown: status code was 500",
+  )
+  fun `latest tudsed returns sensible errors`(status: Int, expectedError: String) {
+    val nomisId = "A12345AB"
+    mockPrisonService.withStub(
+      get("/api/offender-dates/latest-tused/$nomisId")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(status),
+        ),
+    )
+    assertThat(prisonApiClient.getLatestTusedDataForBotus(nomisId)).isEqualTo(expectedError.left())
+  }
+
   @Test
   fun `can get NOMIS calc reasons`() {
     mockPrisonService.withStub(

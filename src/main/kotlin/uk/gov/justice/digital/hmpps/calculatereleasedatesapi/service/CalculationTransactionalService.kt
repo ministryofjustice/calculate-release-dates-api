@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.ERROR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.BreakdownChangedSinceLastCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationDataHasChangedError
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CalculationNotFoundException
@@ -257,12 +258,11 @@ class CalculationTransactionalService(
           calculationUserInputs,
           calculationFragments,
           calculationType,
+          HistoricalTusedSource.NOMIS,
           buildProperties.version,
         ),
       )
-
     val calculationResult = calculationService.calculateReleaseDates(booking, calculationUserInputs).second
-
     calculationResult.dates.forEach {
       calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
     }
@@ -280,6 +280,7 @@ class CalculationTransactionalService(
       calculationReason = reasonForCalculation,
       otherReasonDescription = otherCalculationReason,
       calculationDate = calculationRequest.calculatedAt.toLocalDate(),
+      historicalTusedSource = calculationResult.historicalTusedSource,
     )
   }
 
