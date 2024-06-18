@@ -156,7 +156,12 @@ class CalculationTransactionalServiceTest {
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-hdc4-commencement-examples.csv"], numLinesToSkip = 1)
-  fun `Test HDC4 move over post commencement only hdced`(exampleType: String, exampleNumber: String, error: String?, params: String) {
+  fun `Test HDC4 move over post commencement only hdced`(
+    exampleType: String,
+    exampleNumber: String,
+    error: String?,
+    params: String,
+  ) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
@@ -171,8 +176,9 @@ class CalculationTransactionalServiceTest {
     val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculatedReleaseDates: CalculatedReleaseDates
     try {
-      calculatedReleaseDates = calculationTransactionalService(params, mapOf(Pair("hdc4CommencementDate", hdc4CommencementDate)))
-        .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
+      calculatedReleaseDates =
+        calculationTransactionalService(params, mapOf(Pair("hdc4CommencementDate", hdc4CommencementDate)))
+          .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -590,19 +596,23 @@ class CalculationTransactionalServiceTest {
     Mockito.`when`(bankHolidayService.getBankHolidays()).thenReturn(cachedBankHolidays)
   }
 
-  private fun calculationTransactionalService(params: String = "calculation-params", overriddenConfigurationParams: Map<String, Any> = emptyMap()): CalculationTransactionalService {
-    val hdcedConfiguration = hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
+  private fun calculationTransactionalService(
+    params: String = "calculation-params",
+    overriddenConfigurationParams: Map<String, Any> = emptyMap(),
+  ): CalculationTransactionalService {
+    val hdcedConfiguration =
+      hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
     var hdced4Configuration = hdced4ConfigurationForTests()
     val isNotDefaultParams = params != "calculation-params"
-    if (isNotDefaultParams) {
-      // If using alternate release config then set the HDC4 commencement date to tomorrow
-      val overwrittenHdced4Config = hdced4Configuration.copy(hdc4CommencementDate = DateTime.now().plusDays(1).toDate())
-      hdced4Configuration = overwrittenHdced4Config
-    }
-    if (overriddenConfigurationParams.containsKey("hdc4CommencementDate")) {
+
+    hdced4Configuration = if (overriddenConfigurationParams.containsKey("hdc4CommencementDate")) {
       val overwrittenHdced4Config =
         hdced4Configuration.copy(hdc4CommencementDate = overriddenConfigurationParams["hdc4CommencementDate"] as Date)
-      hdced4Configuration = overwrittenHdced4Config
+      overwrittenHdced4Config
+    } else {
+      // If using alternate release config then set the HDC4 commencement date to tomorrow
+      val overwrittenHdced4Config = hdced4Configuration.copy(hdc4CommencementDate = DateTime.now().plusDays(1).toDate())
+      overwrittenHdced4Config
     }
 
     val ersedConfiguration = ersedConfigurationForTests()
@@ -618,8 +628,10 @@ class CalculationTransactionalServiceTest {
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val featureToggles = FeatureToggles(botus = false, sdsEarlyRelease = isNotDefaultParams)
     val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sdsEarlyReleaseTrancheOneDate())
-    val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
-    val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup, sentenceAggregator)
+    val sentenceAdjustedCalculationService =
+      SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
+    val sentenceCalculationService =
+      SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup, sentenceAggregator)
     val sentencesExtractionService = SentencesExtractionService()
     val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdced4Calculator)
     val bookingCalculationService = BookingCalculationService(
@@ -702,7 +714,17 @@ class CalculationTransactionalServiceTest {
       ),
     )
     val SOURCE_DATA =
-      PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(originalSentence, originalSentence.offences[0], false, SDSEarlyReleaseExclusionType.NO)), prisonerDetails, adjustments, emptyList(), null, null)
+      PrisonApiSourceData(
+          listOf(
+              SentenceAndOffenceWithReleaseArrangements(
+                  originalSentence,
+                  originalSentence.offences[0],
+                  false,
+                  SDSEarlyReleaseExclusionType.NO,
+              ),
+          ),
+          prisonerDetails, adjustments, emptyList(), null, null,
+      )
     val cachedBankHolidays =
       BankHolidays(
         RegionBankHolidays(
@@ -753,7 +775,8 @@ class CalculationTransactionalServiceTest {
           "\"bookingId\":12345}",
       )
 
-    val CALCULATION_REASON = CalculationReason(-1, true, false, "Reason", false, nomisReason = "UPDATE", nomisComment = "NOMIS_COMMENT", null)
+    val CALCULATION_REASON =
+      CalculationReason(-1, true, false, "Reason", false, nomisReason = "UPDATE", nomisComment = "NOMIS_COMMENT", null)
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
       id = CALCULATION_REQUEST_ID,
