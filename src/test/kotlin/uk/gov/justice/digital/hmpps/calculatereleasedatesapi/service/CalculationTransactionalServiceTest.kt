@@ -715,15 +715,19 @@ class CalculationTransactionalServiceTest {
     )
     val SOURCE_DATA =
       PrisonApiSourceData(
-          listOf(
-              SentenceAndOffenceWithReleaseArrangements(
-                  originalSentence,
-                  originalSentence.offences[0],
-                  false,
-                  SDSEarlyReleaseExclusionType.NO,
-              ),
+        listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            originalSentence,
+            originalSentence.offences[0],
+            false,
+            SDSEarlyReleaseExclusionType.NO,
           ),
-          prisonerDetails, adjustments, emptyList(), null, null,
+        ),
+        prisonerDetails,
+        adjustments,
+        emptyList(),
+        null,
+        null,
       )
     val cachedBankHolidays =
       BankHolidays(
