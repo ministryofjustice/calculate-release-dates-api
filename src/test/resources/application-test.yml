@@ -72,3 +72,6 @@ domain-events-sns:
 feature-toggles:
   botus: true
   sds-early-release: true
+
+hdced4:
+  hdc4-commencement-date: 2025-01-01
