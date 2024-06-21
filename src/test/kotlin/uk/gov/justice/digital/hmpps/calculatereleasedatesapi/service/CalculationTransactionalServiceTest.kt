@@ -29,7 +29,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdced4ConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
@@ -91,7 +90,6 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.Date
 import java.util.Optional
 import java.util.UUID
 
@@ -602,18 +600,7 @@ class CalculationTransactionalServiceTest {
   ): CalculationTransactionalService {
     val hdcedConfiguration =
       hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
-    var hdced4Configuration = hdced4ConfigurationForTests()
     val isNotDefaultParams = params != "calculation-params"
-
-    hdced4Configuration = if (overriddenConfigurationParams.containsKey("hdc4CommencementDate")) {
-      val overwrittenHdced4Config =
-        hdced4Configuration.copy(hdc4CommencementDate = overriddenConfigurationParams["hdc4CommencementDate"] as Date)
-      overwrittenHdced4Config
-    } else {
-      // If using alternate release config then set the HDC4 commencement date to tomorrow
-      val overwrittenHdced4Config = hdced4Configuration.copy(hdc4CommencementDate = DateTime.now().plusDays(1).toDate())
-      overwrittenHdced4Config
-    }
 
     val ersedConfiguration = ersedConfigurationForTests()
     val releasePointMultipliersConfiguration = releasePointMultiplierConfigurationForTests(params)
@@ -640,8 +627,6 @@ class CalculationTransactionalServiceTest {
     )
     val bookingExtractionService = BookingExtractionService(
       sentencesExtractionService,
-      hdcedConfiguration,
-      hdced4Configuration,
     )
     val bookingTimelineService = BookingTimelineService(
       sentenceAdjustedCalculationService,
