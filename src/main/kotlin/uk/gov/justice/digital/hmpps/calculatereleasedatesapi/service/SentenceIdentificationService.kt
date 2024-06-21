@@ -6,7 +6,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ETD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED4PLUS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.MTD
@@ -90,7 +89,6 @@ class SentenceIdentificationService(
 
     if (sentence.recallType != null) {
       releaseDateTypes -= HDCED
-      releaseDateTypes -= HDCED4PLUS
       releaseDateTypes += PRRD
     }
     sentence.releaseDateTypes = ReleaseDateTypes(releaseDateTypes.toList(), sentence, offender)
@@ -224,11 +222,8 @@ class SentenceIdentificationService(
         releaseDateTypes += TUSED
       }
 
-      if (!sentence.isMadeUpOfOnlyDtos()) {
-        releaseDateTypes += HDCED
-      }
       if (hdced4Calculator.doesHdced4DateApply(sentence, offender)) {
-        releaseDateTypes += HDCED4PLUS
+        releaseDateTypes += HDCED
       }
     }
     return releaseDateTypes
@@ -308,10 +303,8 @@ class SentenceIdentificationService(
     if (tusedCalculator.doesTopUpSentenceExpiryDateApply(sentence, offender)) {
       releaseDateTypes += TUSED
     }
-    // Always request HDCED although restrictions apply at calculation time
-    releaseDateTypes += HDCED
     if (hdced4Calculator.doesHdced4DateApply(sentence, offender)) {
-      releaseDateTypes += HDCED4PLUS
+      releaseDateTypes += HDCED
     }
     return releaseDateTypes
   }
