@@ -111,7 +111,7 @@ data class SentenceCalculation(
 
   val calculatedTotalDeductedDays: Int
     get() {
-      return getAdjustmentBeforeSentence(*getAdjustmentTypes())
+      return getDeterminateAdjustmentBeforeSentence(*getAdjustmentTypes())
     }
   val calculatedDeterminateTotalAddedDays: Int
     get() {
