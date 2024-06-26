@@ -458,3 +458,7 @@ custom-examples,crs-1997-ac2-hdc-eds-concurrent-sds,,calculation-params
 custom-examples,crs-1997-ac3-hdc-sopc-consec-sds,,calculation-params
 custom-examples,crs-1997-ac4-hdc-eds-consec-sds,,calculation-params
 custom-examples,crs-1997-ac5-hdc-sopc-consec-sds,,calculation-params
+
+custom-examples,crs-1776-overlapping-recall-ac1,,calculation-params
+custom-examples,crs-1776-overlapping-recall-ac2,,calculation-params
+custom-examples,crs-1776-overlapping-recall-ac3,,calculation-params

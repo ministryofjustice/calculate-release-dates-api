@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
-import java.util.Collections
 import kotlin.math.min
 
 @Service
@@ -42,7 +41,7 @@ class BookingTimelineService(
     )
 
     sortedSentences.forEach {
-      it.sentenceCalculation.latestConcurrentRelease = Collections.max(listOf(timelineTracker.timelineRange.end, it.sentencedAt))
+      it.sentenceCalculation.latestConcurrentRelease = findLatestConcurrentRelease(timelineTracker, it)
       it.sentenceCalculation.latestConcurrentDeterminateRelease = findLatestConcurrentDeterminateRelease(timelineTracker, it)
       it.sentenceCalculation.adjustmentsAfter = timelineTracker.previousReleaseDateReached
       val itRange = it.getRangeOfSentenceBeforeAwardedDays()
@@ -143,7 +142,7 @@ class BookingTimelineService(
 
   private fun shareAdjustmentsThroughSentenceGroup(timelineTracker: TimelineTracker, booking: Booking) {
     timelineTracker.currentSentenceGroup.forEach {
-      it.sentenceCalculation.latestConcurrentRelease = timelineTracker.timelineRange.end
+      it.sentenceCalculation.latestConcurrentRelease = findLatestConcurrentRelease(timelineTracker, it)
       it.sentenceCalculation.latestConcurrentDeterminateRelease = findLatestConcurrentDeterminateRelease(timelineTracker, it)
       readjustDates(it, booking)
     }
@@ -156,6 +155,14 @@ class BookingTimelineService(
     var release =
       if (!it.isRecall()) it.sentenceCalculation.latestConcurrentRelease else if (timelineTracker.currentSentenceGroup.isEmpty()) it.sentenceCalculation.adjustedDeterminateReleaseDate else timelineTracker.currentSentenceGroup.maxOf { sentence -> sentence.sentenceCalculation.adjustedDeterminateReleaseDate }
     release = workingDayService.previousWorkingDay(release).date
+    return maxOf(release, it.sentencedAt)
+  }
+  private fun findLatestConcurrentRelease(
+    timelineTracker: TimelineTracker,
+    it: CalculableSentence,
+  ): LocalDate {
+    var release =
+      if (timelineTracker.currentSentenceGroup.isEmpty()) it.sentenceCalculation.releaseDate else timelineTracker.currentSentenceGroup.maxOf { sentence -> sentence.sentenceCalculation.releaseDate }
     return maxOf(release, it.sentencedAt)
   }
 

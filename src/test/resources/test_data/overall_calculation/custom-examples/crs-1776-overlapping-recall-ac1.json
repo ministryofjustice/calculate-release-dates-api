@@ -1,0 +1,49 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "2000-01-01"
+  },
+  "bookingId": 1,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2018-07-12",
+        "offenceCode": "TH68023"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 5
+        }
+      },
+      "identifier": "ca2cf8de-abf4-30c5-b485-bdbb3ca65a56",
+      "recallType": "STANDARD_RECALL",
+      "sentencedAt": "2019-02-06"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2022-11-11",
+        "offenceCode": "PU86003"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 12
+        }
+      },
+      "identifier": "5dc7adf5-357e-3a26-9292-2a8184253c79",
+      "recallType": "STANDARD_RECALL",
+      "sentencedAt": "2023-02-09"
+    }
+  ],
+  "adjustments": {
+    "RECALL_TAGGED_BAIL": [
+      {
+        "toDate": null,
+        "fromDate": null,
+        "numberOfDays": 39,
+        "appliesToSentencesFrom": "2023-02-09"
+      }
+    ]
+  }
+}
