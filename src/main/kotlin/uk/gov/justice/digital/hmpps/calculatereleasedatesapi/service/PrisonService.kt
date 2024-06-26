@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import arrow.core.Either
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
@@ -40,7 +41,8 @@ class PrisonService(
     val bookingHasAFine = sentenceAndOffences.any { isSupported(it.sentenceCalculationType) && from(it.sentenceCalculationType).sentenceClazz == AFineSentence::class.java }
     val offenderFinePayments = if (bookingHasAFine) prisonApiClient.getOffenderFinePayments(prisonerDetails.bookingId) else listOf()
     val tusedData = getLatestTusedDataForBotus(prisonerDetails.offenderNo).getOrNull()
-    val historicalTusedData = if (tusedData != null) botusTusedService.identifyTused(tusedData) else null
+    val bookingHasBotus = sentenceAndOffences.any { isSupported(it.sentenceCalculationType) && from(it.sentenceCalculationType).sentenceClazz == BotusSentence::class.java }
+    val historicalTusedData = if (tusedData != null && bookingHasBotus) botusTusedService.identifyTused(tusedData) else null
 
     return PrisonApiSourceData(
       sentenceAndOffences,
