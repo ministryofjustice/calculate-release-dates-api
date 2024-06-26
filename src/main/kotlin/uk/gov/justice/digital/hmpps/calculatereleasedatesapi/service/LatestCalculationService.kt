@@ -64,6 +64,7 @@ class LatestCalculationService(
             location,
             sentenceAndOffences,
             breakdown,
+            calculationRequest.historicalTusedSource,
           )
         }
       }

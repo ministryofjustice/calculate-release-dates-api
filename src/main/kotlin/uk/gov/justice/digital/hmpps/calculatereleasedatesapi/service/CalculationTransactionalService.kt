@@ -116,6 +116,7 @@ class CalculationTransactionalService(
       providedSourceData,
       calculationReason,
       calculationUserInputs,
+      historicalTusedSource = providedSourceData.historicalTusedData?.historicalTusedSource,
     )
     return ValidationResult(messages, bookingAfterCalculation, calculatedReleaseDates, calculationResult)
   }
@@ -146,6 +147,7 @@ class CalculationTransactionalService(
         reasonForCalculation,
         calculationUserInputs,
         calculationRequestModel.otherReasonDescription,
+        historicalTusedSource = sourceData.historicalTusedData?.historicalTusedSource,
       )
     } catch (error: Exception) {
       recordError(
@@ -190,6 +192,7 @@ class CalculationTransactionalService(
       submitCalculationRequest.approvedDates, submitCalculationRequest.isSpecialistSupport,
       calculationRequest.reasonForCalculation,
       calculationRequest.otherReasonForCalculation,
+      sourceData.historicalTusedData?.historicalTusedSource,
     )
   }
 
@@ -203,6 +206,7 @@ class CalculationTransactionalService(
     isSpecialistSupport: Boolean? = false,
     reasonForCalculation: CalculationReason?,
     otherReasonForCalculation: String?,
+    historicalTusedSource: HistoricalTusedSource? = null,
   ): CalculatedReleaseDates {
     try {
       val calculationType = if (approvedDates != null) {
@@ -221,6 +225,7 @@ class CalculationTransactionalService(
         otherReasonForCalculation,
         calculationFragments,
         calculationType,
+        historicalTusedSource,
       )
       if (!approvedDates.isNullOrEmpty()) {
         storeApprovedDates(calculation, approvedDates)
@@ -244,6 +249,7 @@ class CalculationTransactionalService(
     otherCalculationReason: String? = null,
     calculationFragments: CalculationFragments? = null,
     calculationType: CalculationType = CalculationType.CALCULATED,
+    historicalTusedSource: HistoricalTusedSource? = null,
   ): CalculatedReleaseDates {
     val calculationRequest =
       calculationRequestRepository.save(
@@ -258,7 +264,7 @@ class CalculationTransactionalService(
           calculationUserInputs,
           calculationFragments,
           calculationType,
-          HistoricalTusedSource.NOMIS,
+          historicalTusedSource,
           buildProperties.version,
         ),
       )
