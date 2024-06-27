@@ -63,7 +63,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
 class BulkComparisonServiceTest {
@@ -77,6 +78,7 @@ class BulkComparisonServiceTest {
   private val comparisonPersonDiscrepancyRepository = mock<ComparisonPersonDiscrepancyRepository>()
   private val comparisonPersonDiscrepancyCategoryRepository = mock<ComparisonPersonDiscrepancyCategoryRepository>()
   private var serviceUserService = mock<ServiceUserService>()
+  private val botusTusedService = mock<BotusTusedService>()
   private val retryTemplate = RetryTemplate.builder().maxAttempts(3).build() // No backoff to keep test fast
   private val bulkComparisonService: BulkComparisonService = BulkComparisonService(
     comparisonPersonRepository,
@@ -89,6 +91,7 @@ class BulkComparisonServiceTest {
     comparisonPersonDiscrepancyRepository,
     comparisonPersonDiscrepancyCategoryRepository,
     serviceUserService,
+    botusTusedService,
     retryTemplate,
   )
 
