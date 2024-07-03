@@ -400,43 +400,43 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check type dates for bookings with fines can be manually set`() {
-      val aFineSentence = AFineSentence(
-        sentencedAt = THIRD_FEB_2021,
-        duration =  Duration(mutableMapOf(ChronoUnit.DAYS to 90L, ChronoUnit.WEEKS to 0L, ChronoUnit.MONTHS to 0L, ChronoUnit.YEARS to 0L)),
-        offence = Offence(committedAt = THIRD_FEB_2021),
-        identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa"),
-        caseSequence = 1,
-        lineSequence = 2,
-        fineAmount = BigDecimal(10000000),
-        consecutiveSentenceUUIDs = emptyList(),
-        recallType = null,
-        caseReference = "A Fine Case"
-        )
-      var booking = BOOKING.copy(
-        sentences = listOf(
-          aFineSentence,
-          aFineSentence.copy(identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8efffe24f5fa"), consecutiveSentenceUUIDs = listOf( UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa")) )
-        ),
-      )
-      booking = BookingHelperTest().createConsecutiveSentences(booking)
-      whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
-      whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
-      whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
-      whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
-      whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
-      whenever(bookingCalculationService.identify(any(), any())).thenReturn(booking)
-      whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenReturn(booking)
-      whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-      whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    val aFineSentence = AFineSentence(
+      sentencedAt = THIRD_FEB_2021,
+      duration = Duration(mutableMapOf(ChronoUnit.DAYS to 90L, ChronoUnit.WEEKS to 0L, ChronoUnit.MONTHS to 0L, ChronoUnit.YEARS to 0L)),
+      offence = Offence(committedAt = THIRD_FEB_2021),
+      identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa"),
+      caseSequence = 1,
+      lineSequence = 2,
+      fineAmount = BigDecimal(10000000),
+      consecutiveSentenceUUIDs = emptyList(),
+      recallType = null,
+      caseReference = "A Fine Case",
+    )
+    var booking = BOOKING.copy(
+      sentences = listOf(
+        aFineSentence,
+        aFineSentence.copy(identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8efffe24f5fa"), consecutiveSentenceUUIDs = listOf(UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa"))),
+      ),
+    )
+    booking = BookingHelperTest().createConsecutiveSentences(booking)
+    whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+    whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
+    whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(bookingCalculationService.identify(any(), any())).thenReturn(booking)
+    whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenReturn(booking)
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
-      val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
-      val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
+    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
+    val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 
-      manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
-      verify(calculationRequestRepository).save(calculationRequestArgumentCaptor.capture())
-      val actualRequest = calculationRequestArgumentCaptor.firstValue
-      assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
-    }
+    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
+    verify(calculationRequestRepository).save(calculationRequestArgumentCaptor.capture())
+    val actualRequest = calculationRequestArgumentCaptor.firstValue
+    assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
+  }
 
   private companion object {
     private const val BOOKING_ID = 12345L
