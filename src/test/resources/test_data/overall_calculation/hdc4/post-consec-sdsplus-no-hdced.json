@@ -1,0 +1,45 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2000-07-23"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2019-12-07"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 7
+        }
+      },
+      "sentencedAt": "2023-11-13",
+      "sentenceType": "ADIMP",
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlus": true,
+      "identifier":"83fd11aa-a579-3b93-aaba-937e138aec88",
+      "lineSequence" : 1
+    },
+    {
+      "offence": {
+        "committedAt": "2019-12-07"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 7
+        }
+      },
+      "sentencedAt": "2023-11-13",
+      "sentenceType": "ADIMP",
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlus": false,
+      "consecutiveSentenceUUIDs":[
+        "83fd11aa-a579-3b93-aaba-937e138aec88"
+      ],
+      "lineSequence" : 2
+    }
+  ],
+  "adjustments": {
+  }
+}
+
