@@ -29,7 +29,7 @@ class Hdced4Calculator(
   }
 
   fun hasSdsPlus(sentence: CalculableSentence): Boolean {
-    return if (sentence is ConsecutiveSentence){
+    return if (sentence is ConsecutiveSentence) {
       sentence.orderedSentences.any { it.isSDSPlus }
     } else {
       sentence.isSDSPlus
@@ -49,8 +49,7 @@ class Hdced4Calculator(
 
     // If adjustments make the CRD before sentence date plus 14 days (i.e. a large REMAND days)
     // then we don't need a HDCED date.
-    if (adjustedReleasePointIsLessThanMinimumEligiblePeriod(sentenceCalculation, sentence) || unadjustedReleasePointIsLessThanMinimumCustodialPeriod(params.custodialPeriod)
-      || sentence is ConsecutiveSentence) {
+    if (adjustedReleasePointIsLessThanMinimumEligiblePeriod(sentenceCalculation, sentence) || unadjustedReleasePointIsLessThanMinimumCustodialPeriod(params.custodialPeriod)) {
       sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate = null
       sentenceCalculation.numberOfDaysToHomeDetentionCurfew4PlusEligibilityDate = 0
       sentenceCalculation.breakdownByReleaseDateType.remove(ReleaseDateType.HDCED4PLUS)
