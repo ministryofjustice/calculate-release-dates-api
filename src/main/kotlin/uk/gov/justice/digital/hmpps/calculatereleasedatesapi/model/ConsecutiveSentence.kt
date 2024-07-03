@@ -59,6 +59,10 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
           it.duration
         }
 
+        is AFineSentence -> {
+          it.duration
+        }
+
         else -> {
           throw UnsupportedOperationException("Unknown type of sentence in a consecutive sentence ${it.javaClass}")
         }
