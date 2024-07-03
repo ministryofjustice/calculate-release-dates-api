@@ -643,7 +643,9 @@ class BookingExtractionService(
     val latestAdjustedReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
     val mostRecentReleaseIsPrrd =
       mostRecentSentencesByReleaseDate.any { it.releaseDateTypes.getReleaseDateTypes().contains(PRRD) }
-    if (!mostRecentReleaseIsPrrd) {
+
+    // CRS-2032 - do not generate a HDCED for any booking that has an SDS+ sentence
+    if (!mostRecentReleaseIsPrrd && !sentences.any { it.isSDSPlus }) {
       val latestNonRecallRelease = extractionService.mostRecentSentenceOrNull(
         sentences.filter { !it.isRecall() && !it.isDto() },
         SentenceCalculation::releaseDate,
