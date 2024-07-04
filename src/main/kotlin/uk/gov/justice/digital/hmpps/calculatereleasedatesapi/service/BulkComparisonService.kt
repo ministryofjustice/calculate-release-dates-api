@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
@@ -33,6 +34,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
@@ -52,7 +54,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.*
 
 @Service
 class BulkComparisonService(
@@ -66,6 +67,7 @@ class BulkComparisonService(
   private val comparisonPersonDiscrepancyRepository: ComparisonPersonDiscrepancyRepository,
   private val comparisonPersonDiscrepancyCategoryRepository: ComparisonPersonDiscrepancyCategoryRepository,
   private var serviceUserService: ServiceUserService,
+  private val botusTusedService: BotusTusedService,
   @Qualifier("bulkComparisonRetryTemplate")
   private val retryTemplate: RetryTemplate,
 ) {
@@ -404,7 +406,20 @@ class BulkComparisonService(
       offenderFinePayments,
       returnToCustodyDate,
       fixedTermRecallDetails,
+      getHistoricalTusedDataForBotus(source.sentenceAndOffences, prisonerDetails.offenderNo),
     )
+  }
+
+  private fun getHistoricalTusedDataForBotus(
+    sentenceAndOffences: List<PrisonApiSentenceAndOffences>,
+    offenderNo: String,
+  ): HistoricalTusedData? {
+    return if (sentenceAndOffences.any { it.sentenceCalculationType == "BOTUS" }) {
+      val nomisTusedData = prisonService.getLatestTusedDataForBotus(offenderNo).getOrNull()
+      return if (nomisTusedData != null) botusTusedService.identifyTused(nomisTusedData) else null
+    } else {
+      null
+    }
   }
 
   private fun isPotentialHdc4Plus(calculableSentenceEnvelope: CalculableSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>): Boolean {
