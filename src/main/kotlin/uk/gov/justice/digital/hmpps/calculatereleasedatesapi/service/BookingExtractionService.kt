@@ -539,7 +539,7 @@ class BookingExtractionService(
   private fun extractManyHomeDetentionCurfewEligibilityDate(
     sentenceGroups: List<List<CalculableSentence>>,
     sentences: List<CalculableSentence>,
-    mostRecentSentencesByReleaseDate: List<CalculableSentence>
+    mostRecentSentencesByReleaseDate: List<CalculableSentence>,
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
     val latestAdjustedReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
 
