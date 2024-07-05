@@ -13,7 +13,7 @@ generic-service:
       SecAction "id:900000,phase:1,nolog,pass,t:none,setvar:tx.paranoia_level=2"
 
   env:
-    SPRING_PROFILES_ACTIVE: "logstash,alt-hdc4"
+    SPRING_PROFILES_ACTIVE: "logstash,alt-calculation-params"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
     PRISON_API_URL: https://prison-api-preprod.prison.service.justice.gov.uk
