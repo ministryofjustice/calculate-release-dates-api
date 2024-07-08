@@ -1988,6 +1988,8 @@ class ValidationServiceTest {
       3,
       4.0,
       4,
+      4,
+      FIRST_MAY_2018,
       FIRST_MAY_2018,
       FIRST_MAY_2018,
       1,

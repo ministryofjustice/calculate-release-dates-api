@@ -14,6 +14,28 @@ import java.util.stream.Stream
 class ReleaseDateMultiplierLookupTest {
 
   @Test
+  fun `historicMultiplierFor should use the historic for a track if present`() {
+    val config = ReleasePointMultipliersConfiguration(
+      listOf(ReleaseDateMultiplier(listOf(SentenceIdentificationTrack.SDS_EARLY_RELEASE), 0.45)),
+      0.5,
+      listOf(ReleaseDateMultiplier(listOf(SentenceIdentificationTrack.SDS_EARLY_RELEASE), 0.5)),
+    )
+    val releasePointMultiplierLookup = ReleasePointMultiplierLookup(config)
+    assertThat(releasePointMultiplierLookup.historicMultiplierFor(SentenceIdentificationTrack.SDS_EARLY_RELEASE)).isEqualTo(0.5)
+  }
+
+  @Test
+  fun `historicMultiplierFor should use the multiplierFor for a track if not present`() {
+    val config = ReleasePointMultipliersConfiguration(
+      listOf(ReleaseDateMultiplier(listOf(SentenceIdentificationTrack.SDS_EARLY_RELEASE), 0.45)),
+      0.5,
+      emptyList(),
+    )
+    val releasePointMultiplierLookup = ReleasePointMultiplierLookup(config)
+    assertThat(releasePointMultiplierLookup.historicMultiplierFor(SentenceIdentificationTrack.SDS_EARLY_RELEASE)).isEqualTo(0.45)
+  }
+
+  @Test
   fun `should use the multiplier for a track if present`() {
     val config = ReleasePointMultipliersConfiguration(
       listOf(ReleaseDateMultiplier(listOf(SentenceIdentificationTrack.SDS_STANDARD_RELEASE), 0.9)),

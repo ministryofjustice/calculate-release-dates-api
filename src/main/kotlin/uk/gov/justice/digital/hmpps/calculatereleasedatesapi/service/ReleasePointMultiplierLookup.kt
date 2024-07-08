@@ -10,4 +10,8 @@ class ReleasePointMultiplierLookup(private val configuration: ReleasePointMultip
   fun multiplierFor(track: SentenceIdentificationTrack): Double {
     return configuration.multipliers.find { track in it.tracks }?.multiplier ?: configuration.default
   }
+
+  fun historicMultiplierFor(track: SentenceIdentificationTrack): Double {
+    return configuration.historicMultipliers.find { track in it.tracks }?.multiplier ?: multiplierFor(track)
+  }
 }
