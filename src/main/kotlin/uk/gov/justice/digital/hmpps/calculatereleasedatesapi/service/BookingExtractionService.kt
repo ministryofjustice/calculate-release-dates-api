@@ -598,7 +598,14 @@ class BookingExtractionService(
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown> {
     val adjustedReleaseDate = latestConflictingSentence.second!!
     return adjustedReleaseDate to ReleaseDateCalculationBreakdown(
-      rules = setOf(if (latestConflictingSentence.first!!.releaseDateTypes.contains(ARD)) CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE else CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE),
+      rules = setOf(
+        if (latestConflictingSentence.first!!.releaseDateTypes.contains(ARD))
+          CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE
+        else if (latestConflictingSentence.first!!.releaseDateTypes.contains(PRRD))
+          CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_PRRD
+        else
+          CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE
+          ),
       releaseDate = adjustedReleaseDate,
       unadjustedDate = hdcedSentenceDate,
       adjustedDays = ChronoUnit.DAYS.between(adjustedReleaseDate, hdcedSentenceDate).toInt(),
