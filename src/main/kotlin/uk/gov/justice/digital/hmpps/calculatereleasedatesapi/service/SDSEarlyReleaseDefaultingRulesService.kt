@@ -72,6 +72,6 @@ class SDSEarlyReleaseDefaultingRulesService(
     }
   }
   companion object {
-    private val DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE = listOf(ReleaseDateType.CRD, ReleaseDateType.ERSED, ReleaseDateType.HDCED, ReleaseDateType.PED)
+    private val DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE = listOf(ReleaseDateType.CRD, ReleaseDateType.ERSED, ReleaseDateType.HDCED, ReleaseDateType.HDCED4PLUS, ReleaseDateType.PED)
   }
 }

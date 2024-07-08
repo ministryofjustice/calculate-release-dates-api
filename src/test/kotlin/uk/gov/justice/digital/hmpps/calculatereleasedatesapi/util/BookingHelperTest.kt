@@ -83,6 +83,8 @@ class BookingHelperTest {
       3,
       4.0,
       4,
+      4,
+      BookingHelperTest.FIRST_MAY_2018,
       BookingHelperTest.FIRST_MAY_2018,
       BookingHelperTest.FIRST_MAY_2018,
       1,

@@ -377,6 +377,8 @@ class Hdced4CalculatorTest {
       numberOfDaysToSED,
       numberOfDaysToDeterminateReleaseDate.toDouble(),
       numberOfDaysToDeterminateReleaseDate,
+      numberOfDaysToDeterminateReleaseDate,
+      sentence.sentencedAt.plusDays(numberOfDaysToDeterminateReleaseDate.toLong() - 1),
       sentence.sentencedAt.plusDays(numberOfDaysToSED.toLong() - 1),
       sentence.sentencedAt.plusDays(numberOfDaysToDeterminateReleaseDate.toLong() - 1),
       null,

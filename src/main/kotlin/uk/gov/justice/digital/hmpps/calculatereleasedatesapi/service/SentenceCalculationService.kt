@@ -29,10 +29,10 @@ class SentenceCalculationService(
 
   private data class IndexedSentenceWithReleasePointMultiplier(val index: Int, val sentence: CalculableSentence, val multiplier: Double)
 
-  private fun getConsecutiveRelease(sentence: ConsecutiveSentence): ReleaseDateCalculation {
+  private fun getConsecutiveRelease(sentence: ConsecutiveSentence, multiplerFn: (identification: SentenceIdentificationTrack) -> Double): ReleaseDateCalculation {
     val daysToExpiry = sentenceAggregator.getDaysInGroup(sentence.sentencedAt, sentence.orderedSentences) { it.totalDuration() }
     val (sentencesWithPed, sentencesWithoutPed) = sentence.orderedSentences
-      .map { IndexedSentenceWithReleasePointMultiplier(sentence.orderedSentences.indexOf(it), it, releasePointMultiplierLookup.multiplierFor(it.identificationTrack)) }
+      .map { IndexedSentenceWithReleasePointMultiplier(sentence.orderedSentences.indexOf(it), it, multiplerFn(it.identificationTrack)) }
       .partition { (it.sentence is ExtendedDeterminateSentence && !it.sentence.automaticRelease) || it.sentence is SopcSentence }
     val sentencesWithoutPedGroupedByMultiplierAndGroupsSortedByFirstAppearance = sentencesWithoutPed
       .groupBy { it.multiplier }.entries
@@ -92,11 +92,12 @@ class SentenceCalculationService(
   }
 
   private fun getSentenceCalculation(booking: Booking, sentence: CalculableSentence, options: CalculationOptions): SentenceCalculation {
-    val release = if (sentence is ConsecutiveSentence) {
-      getConsecutiveRelease(sentence)
+    val (release, historicRelease) = if (sentence is ConsecutiveSentence) {
+      getConsecutiveRelease(sentence) { releasePointMultiplierLookup.multiplierFor(it) } to getConsecutiveRelease(sentence) { releasePointMultiplierLookup.historicMultiplierFor(it) }
     } else {
-      getSingleSentenceRelease(sentence)
+      getSingleSentenceRelease(sentence) { releasePointMultiplierLookup.multiplierFor(it) } to getSingleSentenceRelease(sentence) { releasePointMultiplierLookup.historicMultiplierFor(it) }
     }
+
     val unadjustedExpiryDate =
       sentence.sentencedAt
         .plusDays(release.numberOfDaysToSentenceExpiryDate.toLong())
@@ -105,6 +106,11 @@ class SentenceCalculationService(
     val unadjustedDeterminateReleaseDate =
       sentence.sentencedAt
         .plusDays(release.numberOfDaysToDeterminateReleaseDate.toLong())
+        .minusDays(1)
+
+    val unadjustedHistoricDeterminateReleaseDate =
+      sentence.sentencedAt
+        .plusDays(historicRelease.numberOfDaysToDeterminateReleaseDate.toLong())
         .minusDays(1)
 
     var numberOfDaysToPostRecallReleaseDate: Int? = null
@@ -128,6 +134,8 @@ class SentenceCalculationService(
       release.numberOfDaysToSentenceExpiryDate,
       release.numberOfDaysToDeterminateReleaseDateDouble,
       release.numberOfDaysToDeterminateReleaseDate,
+      historicRelease.numberOfDaysToDeterminateReleaseDate,
+      unadjustedHistoricDeterminateReleaseDate,
       unadjustedExpiryDate,
       unadjustedDeterminateReleaseDate,
       numberOfDaysToPostRecallReleaseDate,
@@ -141,9 +149,10 @@ class SentenceCalculationService(
 
   private fun getSingleSentenceRelease(
     sentence: CalculableSentence,
+    multiplerFn: (identification: SentenceIdentificationTrack) -> Double,
   ): ReleaseDateCalculation {
     var numberOfDaysToParoleEligibilityDate: Long? = null
-    val releaseDateMultiplier = releasePointMultiplierLookup.multiplierFor(sentence.identificationTrack)
+    val releaseDateMultiplier = multiplerFn(sentence.identificationTrack)
     val custodialDuration = sentence.custodialDuration()
     val numberOfDaysToReleaseDateDouble =
       custodialDuration.getLengthInDays(sentence.sentencedAt).times(releaseDateMultiplier)

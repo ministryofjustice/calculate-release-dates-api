@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_SERVED
@@ -22,6 +24,9 @@ class BookingTimelineService(
   val sentenceAdjustedCalculationService: SentenceAdjustedCalculationService,
   val extractionService: SentencesExtractionService,
   val workingDayService: WorkingDayService,
+  @Value("\${sds-early-release-tranches.tranche-one-date}")
+  @DateTimeFormat(pattern = "yyyy-MM-dd")
+  private val trancheOneCommencementDate: LocalDate,
 ) {
 
   fun walkTimelineOfBooking(booking: Booking): Booking {
@@ -36,7 +41,7 @@ class BookingTimelineService(
     val sortedSentences = booking.getAllExtractableSentences().sortedBy { it.sentencedAt }
     val timelineTracker = TimelineTracker(
       firstSentence = sortedSentences[0],
-      timelineRange = sortedSentences[0].getRangeOfSentenceBeforeAwardedDays(),
+      timelineRange = sortedSentences[0].getRangeOfSentenceBeforeAwardedDays(trancheOneCommencementDate),
       previousSentence = sortedSentences[0],
     )
 
@@ -44,7 +49,7 @@ class BookingTimelineService(
       it.sentenceCalculation.latestConcurrentRelease = findLatestConcurrentRelease(timelineTracker, it)
       it.sentenceCalculation.latestConcurrentDeterminateRelease = findLatestConcurrentDeterminateRelease(timelineTracker, it)
       it.sentenceCalculation.adjustmentsAfter = timelineTracker.previousReleaseDateReached
-      val itRange = it.getRangeOfSentenceBeforeAwardedDays()
+      val itRange = it.getRangeOfSentenceBeforeAwardedDays(trancheOneCommencementDate)
       if (isThisSentenceTheFirstOfSentencesParallelToRecall(timelineTracker, it)) {
         endCurrentSentenceGroup(timelineTracker, booking)
         startNewSentenceGroup(timelineTracker, it, itRange)
