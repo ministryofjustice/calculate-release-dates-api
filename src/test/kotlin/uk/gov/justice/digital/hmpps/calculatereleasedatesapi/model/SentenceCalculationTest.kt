@@ -23,6 +23,8 @@ internal class SentenceCalculationTest {
       3,
       4.0,
       4,
+      4,
+      date,
       date,
       date,
       1,

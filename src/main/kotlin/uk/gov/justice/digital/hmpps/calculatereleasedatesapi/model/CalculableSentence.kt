@@ -27,7 +27,7 @@ interface CalculableSentence {
   val isSDSPlus: Boolean
 
   @JsonIgnore
-  fun getRangeOfSentenceBeforeAwardedDays(): LocalDateRange {
+  fun getRangeOfSentenceBeforeAwardedDays(earlyReleaseCommencementDate: LocalDate): LocalDateRange {
     /*
     When we're walking the timeline of the sentence, we want to use the NPD date rather than PED, otherwise we
     could falsely state that there is a gap in the booking timeline if the prisoner wasn't released at the PED.
@@ -35,7 +35,11 @@ interface CalculableSentence {
     val releaseDate = if (getReleaseDateType() === ReleaseDateType.PED && this is StandardDeterminateSentence) {
       sentenceCalculation.nonParoleDate!!
     } else {
-      sentenceCalculation.adjustedDeterminateReleaseDate
+      if (sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(earlyReleaseCommencementDate)) {
+        sentenceCalculation.adjustedHistoricDeterminateReleaseDate
+      } else {
+        sentenceCalculation.adjustedDeterminateReleaseDate
+      }
     }
     val releaseDateBeforeAda = releaseDate.minusDays(sentenceCalculation.calculatedTotalAwardedDays.toLong())
 

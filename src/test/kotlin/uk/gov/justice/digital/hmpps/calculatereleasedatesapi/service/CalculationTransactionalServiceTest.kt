@@ -647,6 +647,7 @@ class CalculationTransactionalServiceTest {
       sentenceAdjustedCalculationService,
       sentencesExtractionService,
       workingDayService,
+      sdsEarlyReleaseTrancheOneDate(),
     )
     val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
 
