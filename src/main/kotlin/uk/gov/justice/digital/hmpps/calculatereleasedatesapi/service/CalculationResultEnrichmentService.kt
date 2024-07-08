@@ -157,8 +157,8 @@ class CalculationResultEnrichmentService(
           hints += ReleaseDateHint("HDCED adjusted for the ARD of a concurrent sentence or default term")
         }
       }
-      if (calculationBreakdown?.otherDates?.containsKey(ReleaseDateType.PRRD) == true && calculationBreakdown.otherDates[ReleaseDateType.PRRD]!!.isAfter(date)) {
-        hints += ReleaseDateHint("Release on HDC must not take place before the PRRD ${calculationBreakdown.otherDates[ReleaseDateType.PRRD]!!.format(longFormat)}")
+      if (calculationBreakdown?.otherDates?.containsKey(ReleaseDateType.PRRD) == true && calculationBreakdown.otherDates[ReleaseDateType.PRRD] == date) {
+        hints += ReleaseDateHint("HDCED adjusted for the PRRD of a recall")
       }
       if (displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
         hints += ReleaseDateHint("The Detention and training order (DTO) release date is later than the Home detention curfew eligibility date (HDCED)")

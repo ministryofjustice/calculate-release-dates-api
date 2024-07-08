@@ -464,3 +464,6 @@ custom-examples,crs-1776-overlapping-recall-ac2,,calculation-params
 custom-examples,crs-1776-overlapping-recall-ac3,,calculation-params
 custom-examples,crs-1776-overlapping-recall-ac4,,calculation-params
 custom-examples,crs-1776-overlapping-recall-ac5,,calculation-params
+
+custom-examples,crs-2013-ac1-hdced-adjusted-to-prrd,,calculation-params
+custom-examples,crs-2013-ac2-hdced-adjusted-to-crd,,calculation-params

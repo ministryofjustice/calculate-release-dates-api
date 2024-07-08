@@ -557,8 +557,8 @@ class CalculationResultEnrichmentServiceTest {
   }
 
   @Test
-  fun `should add HDCED before PRRD hint if PRRD is present in other dates and is after HDCED`() {
-    val (hdcedDate, hdcedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 2, 1))
+  fun `should display hint if HDCED is adjusted to PRRD`() {
+    val (hdcedDate, hdcedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 2, 2))
 
     val releaseDates = listOf(ReleaseDate(hdcedDate, hdcedType))
     val calculationBreakdown = CalculationBreakdown(
@@ -568,11 +568,11 @@ class CalculationResultEnrichmentServiceTest {
       mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 2)),
     )
     val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
-    assertThat(results[hdcedType]?.hints).isEqualTo(listOf(ReleaseDateHint("Release on HDC must not take place before the PRRD Tuesday, 02 February 2021")))
+    assertThat(results[hdcedType]?.hints).isEqualTo(listOf(ReleaseDateHint("HDCED adjusted for the PRRD of a recall")))
   }
 
   @Test
-  fun `should not add HDCED before PRRD hint if PRRD is present in other dates but is before HDCED`() {
+  fun `should not add HDCED adjusted to PRRD hint if PRRD is present in other dates and is not equal to HDCED`() {
     val (hdcedDate, hdcedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.HDCED, LocalDate.of(2021, 2, 1))
 
     val releaseDates = listOf(ReleaseDate(hdcedDate, hdcedType))
@@ -580,7 +580,7 @@ class CalculationResultEnrichmentServiceTest {
       emptyList(),
       null,
       emptyMap(),
-      mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 1)),
+      mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 2)),
     )
     val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
     assertThat(results[hdcedType]?.hints).isEqualTo(emptyList<ReleaseDateHint>())
@@ -600,13 +600,13 @@ class CalculationResultEnrichmentServiceTest {
       emptyList(),
       null,
       mapOf(ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE))),
-      mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 2)),
+      mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 1)),
     )
     val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, sentencesAndOffences, calculationBreakdown)
     assertThat(results[hdcedType]?.hints).isEqualTo(
       listOf(
         ReleaseDateHint("HDCED adjusted for the CRD of a concurrent sentence or default term"),
-        ReleaseDateHint("Release on HDC must not take place before the PRRD Tuesday, 02 February 2021"),
+        ReleaseDateHint("HDCED adjusted for the PRRD of a recall"),
         ReleaseDateHint("The Detention and training order (DTO) release date is later than the Home detention curfew eligibility date (HDCED)"),
       ),
     )
