@@ -1,10 +1,10 @@
 {
   "dates": {
-    "SLED": "2026-12-06",
-    "CRD": "2025-09-06",
-    "HDCED": "2025-03-11",
+    "SLED": "2026-12-05",
+    "CRD": "2025-09-05",
+    "HDCED": "2025-03-10",
     "HDCED4PLUS": "2025-07-14",
     "ESED": "2026-12-06"
   },
-  "effectiveSentenceLength": "P1Y"
+  "effectiveSentenceLength": "P4Y10M27D"
 }
