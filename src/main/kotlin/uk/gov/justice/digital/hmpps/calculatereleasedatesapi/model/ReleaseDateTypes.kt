@@ -25,7 +25,7 @@ class ReleaseDateTypes(
     return initialTypes
   }
 
-  fun contains(releaseDateType: ReleaseDateType): Boolean {
+  operator fun contains(releaseDateType: ReleaseDateType): Boolean {
     return getReleaseDateTypes().contains(releaseDateType)
   }
 

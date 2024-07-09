@@ -564,8 +564,8 @@ class CalculationResultEnrichmentServiceTest {
     val calculationBreakdown = CalculationBreakdown(
       emptyList(),
       null,
+      mapOf(ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_PRRD))),
       emptyMap(),
-      mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 2)),
     )
     val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
     assertThat(results[hdcedType]?.hints).isEqualTo(listOf(ReleaseDateHint("HDCED adjusted for the PRRD of a recall")))
@@ -599,13 +599,12 @@ class CalculationResultEnrichmentServiceTest {
     val calculationBreakdown = CalculationBreakdown(
       emptyList(),
       null,
-      mapOf(ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE))),
-      mapOf(ReleaseDateType.PRRD to LocalDate.of(2021, 2, 1)),
+      mapOf(ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_PRRD))),
+      emptyMap(),
     )
     val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, sentencesAndOffences, calculationBreakdown)
     assertThat(results[hdcedType]?.hints).isEqualTo(
       listOf(
-        ReleaseDateHint("HDCED adjusted for the CRD of a concurrent sentence or default term"),
         ReleaseDateHint("HDCED adjusted for the PRRD of a recall"),
         ReleaseDateHint("The Detention and training order (DTO) release date is later than the Home detention curfew eligibility date (HDCED)"),
       ),
