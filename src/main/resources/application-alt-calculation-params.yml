@@ -22,3 +22,6 @@ release-point-multipliers:
   default: 0.5
 hdced4:
   hdc4-commencement-date: 2024-06-10
+sds-early-release-tranches:
+  tranche-one-date: 2024-07-29
+  tranche-two-date: 2024-10-15
