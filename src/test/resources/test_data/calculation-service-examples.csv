@@ -470,3 +470,7 @@ custom-examples,crs-1776-overlapping-recall-ac5,,calculation-params
 
 custom-examples,crs-2013-ac1-hdced-adjusted-to-prrd,,calculation-params
 custom-examples,crs-2013-ac2-hdced-adjusted-to-crd,,calculation-params
+
+custom-examples,sdsx-document-example1-tranch1,,alt-3-calculation-params
+custom-examples,sdsx-document-example2-tranch1,,alt-3-calculation-params
+custom-examples,sdsx-document-example3-tranch1,,alt-3-calculation-params
