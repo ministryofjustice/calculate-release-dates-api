@@ -151,14 +151,18 @@ class CalculationResultEnrichmentService(
     return if (type == ReleaseDateType.HDCED) {
       val hints = mutableListOf<ReleaseDateHint>()
       if (calculationBreakdown?.breakdownByReleaseDateType?.containsKey(ReleaseDateType.HDCED) == true) {
-        if (CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE in calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.HDCED]!!.rules) {
-          hints += ReleaseDateHint("HDCED adjusted for the CRD of a concurrent sentence or default term")
-        } else if (CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE in calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.HDCED]!!.rules) {
-          hints += ReleaseDateHint("HDCED adjusted for the ARD of a concurrent sentence or default term")
+        val hdcRules = calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.HDCED]!!.rules
+        when {
+          CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE in hdcRules -> {
+            hints += ReleaseDateHint("HDCED adjusted for the CRD of a concurrent sentence or default term")
+          }
+          CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE in hdcRules -> {
+            hints += ReleaseDateHint("HDCED adjusted for the ARD of a concurrent sentence or default term")
+          }
+          CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_PRRD in hdcRules -> {
+            hints += ReleaseDateHint("HDCED adjusted for the PRRD of a recall")
+          }
         }
-      }
-      if (calculationBreakdown?.otherDates?.containsKey(ReleaseDateType.PRRD) == true && calculationBreakdown.otherDates[ReleaseDateType.PRRD] == date) {
-        hints += ReleaseDateHint("HDCED adjusted for the PRRD of a recall")
       }
       if (displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
         hints += ReleaseDateHint("The Detention and training order (DTO) release date is later than the Home detention curfew eligibility date (HDCED)")

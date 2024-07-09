@@ -143,7 +143,7 @@
     },
     "HDCED4PLUS": {
       "rules": [
-        "HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE"
+        "HDCED_ADJUSTED_TO_CONCURRENT_PRRD"
       ],
       "rulesWithExtraAdjustments": {},
       "adjustedDays": -102,
