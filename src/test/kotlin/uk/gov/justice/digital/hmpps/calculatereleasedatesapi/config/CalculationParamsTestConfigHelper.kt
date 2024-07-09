@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.source.MapConfigurationProper
 import org.springframework.core.io.ClassPathResource
 import java.time.LocalDate
 import java.time.ZoneId
-import java.util.Date
+import java.util.*
 
 object CalculationParamsTestConfigHelper {
 
@@ -26,8 +26,14 @@ object CalculationParamsTestConfigHelper {
     return Binder(propertySource(params)).bind("ersed", ErsedConfiguration::class.java).get()
   }
 
-  fun sdsEarlyReleaseTrancheOneDate(): LocalDate {
-    val configurationProperty = propertySource("calculation-params").getConfigurationProperty(ConfigurationPropertyName.of("sds-early-release-tranches.tranche-one-date"))
+  fun sdsEarlyReleaseTrancheOneDate(params: String = "calculation-params"): LocalDate {
+    val configurationProperty = propertySource(params).getConfigurationProperty(ConfigurationPropertyName.of("sds-early-release-tranches.tranche-one-date"))
+    val date = configurationProperty.value as Date
+    return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+  }
+
+  fun sdsEarlyReleaseTrancheTwoDate(params: String = "calculation-params"): LocalDate {
+    val configurationProperty = propertySource(params).getConfigurationProperty(ConfigurationPropertyName.of("sds-early-release-tranches.tranche-two-date"))
     val date = configurationProperty.value as Date
     return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
   }
