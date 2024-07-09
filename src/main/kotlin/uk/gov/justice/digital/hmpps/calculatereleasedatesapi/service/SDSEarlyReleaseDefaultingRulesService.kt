@@ -16,6 +16,10 @@ class SDSEarlyReleaseDefaultingRulesService(
   @Value("\${sds-early-release-tranches.tranche-one-date}")
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   private val trancheOneCommencementDate: LocalDate,
+
+  @Value("\${sds-early-release-tranches.tranche-two-date}")
+  @DateTimeFormat(pattern = "yyyy-MM-dd")
+  private val trancheTwoCommencementDate: LocalDate,
 ) {
 
   fun requiresRecalculation(booking: Booking, result: CalculationResult): Boolean {

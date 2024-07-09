@@ -26,8 +26,9 @@ import java.util.*
 
 class SDSEarlyReleaseDefaultingRulesServiceTest {
 
-  private val testCommencementDate = LocalDate.of(2024, 7, 29)
-  private val service = SDSEarlyReleaseDefaultingRulesService(testCommencementDate)
+  private val testTrancheOneCommencementDate = LocalDate.of(2024, 7, 29)
+  private val testTrancheTwoCommencementDate = LocalDate.of(2024, 7, 29)
+  private val service = SDSEarlyReleaseDefaultingRulesService(testTrancheOneCommencementDate, testTrancheTwoCommencementDate)
 
   @Test
   fun `should not require recalculation if no SDS early release`() {
@@ -152,11 +153,11 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
 
     assertThat(service.mergeResults(early, standard)).isEqualTo(
       CalculationResult(
-        mapOf(type to testCommencementDate),
+        mapOf(type to testTrancheOneCommencementDate),
         mapOf(
           type to ReleaseDateCalculationBreakdown(
             setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_COMMENCEMENT),
-            releaseDate = testCommencementDate,
+            releaseDate = testTrancheOneCommencementDate,
             unadjustedDate = LocalDate.of(2024, 7, 25),
           ),
         ),
@@ -199,12 +200,12 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
           ReleaseDateType.CRD to LocalDate.of(2024, 8, 10),
           ReleaseDateType.PED to LocalDate.of(2024, 8, 10),
           ReleaseDateType.ERSED to LocalDate.of(2024, 7, 26),
-          ReleaseDateType.HDCED to testCommencementDate,
+          ReleaseDateType.HDCED to testTrancheOneCommencementDate,
         ),
         mapOf(
           ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(
             setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_COMMENCEMENT),
-            releaseDate = testCommencementDate,
+            releaseDate = testTrancheOneCommencementDate,
             unadjustedDate = LocalDate.of(2024, 7, 25),
           ),
         ),
