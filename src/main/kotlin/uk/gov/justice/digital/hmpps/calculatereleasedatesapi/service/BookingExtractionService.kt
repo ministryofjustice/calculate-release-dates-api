@@ -353,7 +353,12 @@ class BookingExtractionService(
 
     if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
       dates[PRRD] = latestReleaseDate
-      if (dates[CRD] == dates[PRRD]) {
+      val filteredReleaseDates = dates.filter { (key, value) -> key == CRD || key == ARD || key == NPD }
+      val latestDateEntry = filteredReleaseDates.maxByOrNull { (_, value) -> value }
+
+      if (dates[CRD] == dates[PRRD] ||
+        (dates[PRRD] != null && (latestDateEntry == null || dates[PRRD]!!.isAfter(latestDateEntry.value)))
+      ) {
         dates.remove(HDCED)
         dates.remove(HDCED4PLUS)
       }
