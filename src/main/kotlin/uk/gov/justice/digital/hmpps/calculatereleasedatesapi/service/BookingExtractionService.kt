@@ -263,9 +263,6 @@ class BookingExtractionService(
       }
     }
 
-    if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
-      dates[PRRD] = latestReleaseDate
-    }
     if (booking.sentences.any { it is DetentionAndTrainingOrderSentence }) {
       if (booking.sentences.all { it.isDto() }) {
         dates[MTD] = latestReleaseDate
@@ -353,6 +350,14 @@ class BookingExtractionService(
 
     /** --- ERSED --- **/
     val ersedNotApplicableDueToDtoLaterThanCrd = extractErsedAndNotApplicableDueToDtoLaterThanCrdFlag(sentences, breakdownByReleaseDateType, dates, booking.sentenceGroups)
+
+    if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
+      dates[PRRD] = latestReleaseDate
+      if (dates[CRD] == dates[PRRD]) {
+        dates.remove(HDCED)
+        dates.remove(HDCED4PLUS)
+      }
+    }
 
     /** --- ESED --- **/
     dates[ESED] = latestUnadjustedExpiryDate
