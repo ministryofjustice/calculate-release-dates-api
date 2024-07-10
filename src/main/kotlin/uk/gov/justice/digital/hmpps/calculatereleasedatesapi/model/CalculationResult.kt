@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranches
 import java.time.LocalDate
 import java.time.Period
 
@@ -12,4 +13,5 @@ data class CalculationResult(
   val effectiveSentenceLength: Period,
   val ersedNotApplicableDueToDtoLaterThanCrd: Boolean = false,
   val historicalTusedSource: HistoricalTusedSource? = null,
+  val sdsEarlyReleaseTranche: SDSEarlyReleaseTranches = SDSEarlyReleaseTranches.TRANCHE_0,
 )

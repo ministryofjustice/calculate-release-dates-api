@@ -627,7 +627,7 @@ class CalculationTransactionalServiceTest {
     val hdced4Calculator = Hdced4Calculator(hdcedConfiguration, sentenceAggregator, releasePointMultiplierLookup)
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val featureToggles = FeatureToggles(botus = false, sdsEarlyRelease = isNotDefaultParams)
-    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sdsEarlyReleaseTrancheOneDate())
+    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService()
     val sentenceAdjustedCalculationService =
       SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
     val sentenceCalculationService =
@@ -649,6 +649,11 @@ class CalculationTransactionalServiceTest {
       workingDayService,
       sdsEarlyReleaseTrancheOneDate(),
     )
+
+    val trancheOne = TrancheOne(sdsEarlyReleaseTrancheOneDate())
+    val trancheTwo = TrancheTwo(sdsEarlyReleaseTrancheOneDate())
+
+    val trancheAllocationService = TrancheAllocationService(TrancheOne(sdsEarlyReleaseTrancheOneDate()), TrancheTwo(sdsEarlyReleaseTrancheOneDate()))
     val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
 
     val calculationService = CalculationService(
@@ -657,6 +662,9 @@ class CalculationTransactionalServiceTest {
       bookingTimelineService,
       featureToggles,
       sdsEarlyReleaseDefaultingRulesService,
+      trancheAllocationService,
+      trancheOne,
+      trancheTwo
     )
 
     return CalculationTransactionalService(
