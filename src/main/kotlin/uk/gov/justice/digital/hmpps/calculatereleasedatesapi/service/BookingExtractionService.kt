@@ -357,8 +357,8 @@ class BookingExtractionService(
       val latestDateEntry = filteredReleaseDates.maxByOrNull { (_, value) -> value }
 
       if (dates[CRD] == dates[PRRD] ||
-        (dates[PRRD] != null && (latestDateEntry == null || dates[PRRD]!!.isAfter(latestDateEntry.value))))
-      {
+        (dates[PRRD] != null && (latestDateEntry == null || dates[PRRD]!!.isAfter(latestDateEntry.value)))
+      ) {
         dates.remove(HDCED)
         dates.remove(HDCED4PLUS)
       }
