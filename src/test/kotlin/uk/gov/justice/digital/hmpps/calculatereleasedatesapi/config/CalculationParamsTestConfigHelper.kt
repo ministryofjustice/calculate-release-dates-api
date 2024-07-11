@@ -26,8 +26,8 @@ object CalculationParamsTestConfigHelper {
     return Binder(propertySource(params)).bind("ersed", ErsedConfiguration::class.java).get()
   }
 
-  fun sdsEarlyReleaseTrancheOneDate(): LocalDate {
-    val configurationProperty = propertySource("calculation-params").getConfigurationProperty(ConfigurationPropertyName.of("sds-early-release-tranches.tranche-one-date"))
+  fun sdsEarlyReleaseTrancheOneDate(params: String = "calculation-params"): LocalDate {
+    val configurationProperty = propertySource(params).getConfigurationProperty(ConfigurationPropertyName.of("sds-early-release-tranches.tranche-one-date"))
     val date = configurationProperty.value as Date
     return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
   }

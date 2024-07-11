@@ -5,5 +5,6 @@
     "HDCED4PLUS": "2024-06-13",
     "ESED": "2027-12-09"
   },
-  "effectiveSentenceLength": "P6Y"
+  "effectiveSentenceLength": "P6Y",
+  "sdsEarlyReleaseTranche": "TRANCHE_2"
 }

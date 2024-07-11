@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationP
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -692,7 +693,7 @@ class CalculationTransactionalServiceTest {
     )
 
     val trancheOne = TrancheOne(sdsEarlyReleaseTrancheOneDate())
-    val trancheTwo = TrancheTwo(sdsEarlyReleaseTrancheOneDate())
+    val trancheTwo = TrancheTwo(sdsEarlyReleaseTrancheTwoDate())
 
     val trancheAllocationService = TrancheAllocationService(TrancheOne(sdsEarlyReleaseTrancheOneDate()), TrancheTwo(sdsEarlyReleaseTrancheOneDate()))
     val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
