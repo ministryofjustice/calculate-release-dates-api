@@ -144,3 +144,4 @@ domain-events-sns:
 feature-toggles:
   botus: ${BOTUS_FEATURE_TOGGLE:false}
   sds-early-release: ${SDS_EARLY_RELEASE_FEATURE_TOGGLE:false}
+  sds-early-release-unsupported: ${SDS_EARLY_RELEASE_UNSUPPORTED_FEATURE_TOGGLE:false}
