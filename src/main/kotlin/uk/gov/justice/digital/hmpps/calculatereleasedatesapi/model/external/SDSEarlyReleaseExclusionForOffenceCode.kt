@@ -4,5 +4,7 @@ data class SDSEarlyReleaseExclusionForOffenceCode(val offenceCode: String, val s
 enum class SDSEarlyReleaseExclusionSchedulePart {
   SEXUAL,
   VIOLENT,
+  DOMESTIC_ABUSE,
+  NATIONAL_SECURITY,
   NONE,
 }
