@@ -269,9 +269,9 @@ data class SentenceCalculation(
             calculatedTotalAddedDays.toLong(),
           )
         }
-        if (sentence.recallType!!.isFixedTermRecall) {
+        if (sentence.recallType!!.isFixedTermRecall && unadjustedPostRecallReleaseDate != null) {
           // Fixed term recalls only apply adjustments from return to custody date
-          val fixedTermRecallRelease = unadjustedPostRecallReleaseDate?.plusDays(
+          val fixedTermRecallRelease = unadjustedPostRecallReleaseDate.plusDays(
             calculatedFixedTermRecallAddedDays.toLong(),
           )
           return minOf(fixedTermRecallRelease!!, expiryDate)
@@ -375,6 +375,10 @@ data class SentenceCalculation(
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
 
+  fun isRecallWithoutCustodyDate(): Boolean {
+    return sentence.isRecall() && sentence.sentenceCalculation.unadjustedPostRecallReleaseDate == null
+  }
+
   fun buildString(releaseDateTypes: List<ReleaseDateType>): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val expiryDateType = if (releaseDateTypes.contains(ReleaseDateType.SLED)) "SLED" else "SED"
@@ -384,6 +388,12 @@ data class SentenceCalculation(
       "CRD"
     } else {
       "PED"
+    }
+
+    val releaseDateToPrint: LocalDate? = if (!isRecallWithoutCustodyDate()) {
+      releaseDate
+    } else {
+      null
     }
 
     return "Sentence type: ${sentence.javaClass.name}\n" +
@@ -410,7 +420,7 @@ data class SentenceCalculation(
       "Home Detention Curfew Eligibility Date 4+(HDCED4PLUS)\t:\t" +
       "${homeDetentionCurfew4PlusEligibilityDate?.format(formatter)}\n" +
       "Effective $expiryDateType\t:\t${expiryDate.format(formatter)}\n" +
-      "Effective $releaseDateType\t:\t${releaseDate.format(formatter)}\n" +
+      "Effective $releaseDateType\t:\t${releaseDateToPrint?.format(formatter)}\n" +
       "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +
       "${topUpSupervisionDate?.format(formatter)}\n"
   }
