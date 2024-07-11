@@ -114,9 +114,11 @@ data class CalculationRequest(
   @Enumerated(value = EnumType.STRING)
   val historicalTusedSource: HistoricalTusedSource? = null,
 
+  @OneToOne(mappedBy = "calculationRequest", cascade = [CascadeType.ALL])
+  val allocatedSDSTranche: TrancheOutcome? = null,
+
   val version: String = "1",
 ) {
-
   init {
     calculationRequestUserInput?.calculationRequest = this
   }

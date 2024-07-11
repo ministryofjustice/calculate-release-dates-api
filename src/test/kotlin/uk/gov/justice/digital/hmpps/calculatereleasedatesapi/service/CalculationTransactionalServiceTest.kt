@@ -83,6 +83,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Approved
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.LocalDate
@@ -109,6 +110,7 @@ class CalculationTransactionalServiceTest {
   private val approvedDatesSubmissionRepository = mock<ApprovedDatesSubmissionRepository>()
   private val nomisCommentService = mock<NomisCommentService>()
   private val bankHolidayService = mock<BankHolidayService>()
+  private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
 
   private val fakeSourceData = PrisonApiSourceData(
     emptyList(),
@@ -664,7 +666,7 @@ class CalculationTransactionalServiceTest {
       sdsEarlyReleaseDefaultingRulesService,
       trancheAllocationService,
       trancheOne,
-      trancheTwo
+      trancheTwo,
     )
 
     return CalculationTransactionalService(
@@ -683,6 +685,7 @@ class CalculationTransactionalServiceTest {
       nomisCommentService,
       TEST_BUILD_PROPERTIES,
       featureToggles,
+      trancheOutcomeRepository,
     )
   }
 

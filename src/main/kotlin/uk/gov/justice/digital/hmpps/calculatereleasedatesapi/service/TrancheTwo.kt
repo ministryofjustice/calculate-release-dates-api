@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import java.time.LocalDate
@@ -16,14 +15,16 @@ class TrancheTwo(
 ) : Tranche {
 
   override fun isBookingApplicableForTrancheCriteria(calculationResult: CalculationResult, booking: Booking): Boolean {
-    return (booking.consecutiveSentences.any { consecutiveSentence ->
-      consecutiveSentence.durationIsGreaterThan(
-        5,
-        ChronoUnit.YEARS,
+    return (
+      booking.consecutiveSentences.any { consecutiveSentence ->
+        consecutiveSentence.durationIsGreaterThan(
+          5,
+          ChronoUnit.YEARS,
+        )
+      } ||
+        booking.sentences.any {
+          it.durationIsGreaterThan(5, ChronoUnit.YEARS)
+        }
       )
-    }
-      || booking.sentences.any {
-      it.durationIsGreaterThan(5, ChronoUnit.YEARS)
-    })
- }
+  }
 }

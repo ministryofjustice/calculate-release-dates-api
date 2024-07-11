@@ -6,7 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranches
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -38,7 +38,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranches.TRANCHE_0
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
     )
     assertThat(service.requiresRecalculation(booking, result, testCommencementDate)).isFalse()
   }
@@ -65,7 +65,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranches.TRANCHE_0
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
     )
     assertThat(service.requiresRecalculation(booking, result, testCommencementDate)).isEqualTo(requiresRecalc)
   }
@@ -83,7 +83,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranches.TRANCHE_1
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
     )
     assertThat(service.requiresRecalculation(booking, result, testCommencementDate)).isTrue()
   }
@@ -105,7 +105,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       ),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranches.TRANCHE_0
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
     )
 
     val standard = CalculationResult(
@@ -117,10 +117,10 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       ),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranches.TRANCHE_0
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
     )
 
-    assertThat(service.mergeResults(early, standard, testCommencementDate, SDSEarlyReleaseTranches.TRANCHE_0)).isEqualTo(
+    assertThat(service.mergeResults(early, standard, testCommencementDate, SDSEarlyReleaseTranche.TRANCHE_0)).isEqualTo(
       CalculationResult(
         mapOf(type to LocalDate.of(2024, 7, 26)),
         mapOf(
@@ -130,7 +130,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         ),
         emptyMap(),
         Period.ofYears(5),
-        sdsEarlyReleaseTranche = SDSEarlyReleaseTranches.TRANCHE_0
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
       ),
     )
   }
@@ -148,7 +148,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranches.TRANCHE_0
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
     )
 
     val standard = CalculationResult(
@@ -156,10 +156,10 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranches.TRANCHE_1
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
     )
 
-    assertThat(service.mergeResults(early, standard, testCommencementDate, SDSEarlyReleaseTranches.TRANCHE_1)).isEqualTo(
+    assertThat(service.mergeResults(early, standard, testCommencementDate, SDSEarlyReleaseTranche.TRANCHE_1)).isEqualTo(
       CalculationResult(
         mapOf(type to testCommencementDate),
         mapOf(
@@ -171,7 +171,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         ),
         emptyMap(),
         Period.ofYears(5),
-        sdsEarlyReleaseTranche = SDSEarlyReleaseTranches.TRANCHE_1
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
       ),
     )
   }
@@ -189,7 +189,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranches.TRANCHE_1
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
     )
 
     val standard = CalculationResult(
@@ -202,10 +202,10 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranches.TRANCHE_1
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
     )
 
-    assertThat(service.mergeResults(early, standard, testCommencementDate, SDSEarlyReleaseTranches.TRANCHE_1)).isEqualTo(
+    assertThat(service.mergeResults(early, standard, testCommencementDate, SDSEarlyReleaseTranche.TRANCHE_1)).isEqualTo(
       CalculationResult(
         mapOf(
           ReleaseDateType.CRD to LocalDate.of(2024, 8, 10),
@@ -222,7 +222,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         ),
         emptyMap(),
         Period.ofYears(5),
-        sdsEarlyReleaseTranche = SDSEarlyReleaseTranches.TRANCHE_1
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
       ),
     )
   }

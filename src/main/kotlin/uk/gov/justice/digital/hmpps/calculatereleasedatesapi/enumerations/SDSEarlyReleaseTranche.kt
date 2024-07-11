@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations
 
-enum class SDSEarlyReleaseTranches {
+enum class SDSEarlyReleaseTranche {
 
   TRANCHE_0,
   TRANCHE_1,

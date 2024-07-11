@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranches
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -24,12 +24,12 @@ class CalculationService(
   fun calculateReleaseDates(booking: Booking, calculationUserInputs: CalculationUserInputs): Pair<Booking, CalculationResult> {
     val options = CalculationOptions(calculationUserInputs.calculateErsed, featureToggles.sdsEarlyRelease)
     val (workingBooking, result) = calcAndExtract(booking.copy(), options)
-    val tranche = trancheAllocationService.calculateTranche(result, workingBooking);
+    val tranche = trancheAllocationService.calculateTranche(result, workingBooking)
 
-    val tranchCommencentDate = when(tranche){
-      SDSEarlyReleaseTranches.TRANCHE_0 -> null
-      SDSEarlyReleaseTranches.TRANCHE_1 -> trancheOne.trancheCommencementDate
-      SDSEarlyReleaseTranches.TRANCHE_2 -> trancheTwo.trancheCommencementDate
+    val tranchCommencentDate = when (tranche) {
+      SDSEarlyReleaseTranche.TRANCHE_0 -> null
+      SDSEarlyReleaseTranche.TRANCHE_1 -> trancheOne.trancheCommencementDate
+      SDSEarlyReleaseTranche.TRANCHE_2 -> trancheTwo.trancheCommencementDate
     }
 
     return workingBooking to adjustResultsForSDSEarlyReleaseIfRequired(booking, workingBooking, result, options, tranchCommencentDate, tranche)
@@ -41,7 +41,7 @@ class CalculationService(
     resultWithPossibleEarlyRelease: CalculationResult,
     options: CalculationOptions,
     trancheCommencementDate: LocalDate?,
-    tranche: SDSEarlyReleaseTranches
+    tranche: SDSEarlyReleaseTranche,
   ) = if (sdsEarlyReleaseDefaultingRulesService.requiresRecalculation(workingBookingForPossibleEarlyRelease, resultWithPossibleEarlyRelease, trancheCommencementDate)) {
     val (_, resultWithoutEarlyRelease) = calcAndExtract(originalBooking.copy(), options.copy(allowSDSEarlyRelease = false))
     sdsEarlyReleaseDefaultingRulesService.mergeResults(resultWithPossibleEarlyRelease, resultWithoutEarlyRelease, trancheCommencementDate, tranche)

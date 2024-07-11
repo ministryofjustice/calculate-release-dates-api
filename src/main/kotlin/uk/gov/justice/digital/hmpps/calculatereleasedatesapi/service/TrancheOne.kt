@@ -3,12 +3,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-
 
 @Component
 class TrancheOne(
@@ -22,9 +20,9 @@ class TrancheOne(
         5,
         ChronoUnit.YEARS,
       )
-    }
-      && booking.sentences.none {
-      it.durationIsGreaterThan(5, ChronoUnit.YEARS)
-    }
+    } &&
+      booking.sentences.none {
+        it.durationIsGreaterThan(5, ChronoUnit.YEARS)
+      }
   }
 }

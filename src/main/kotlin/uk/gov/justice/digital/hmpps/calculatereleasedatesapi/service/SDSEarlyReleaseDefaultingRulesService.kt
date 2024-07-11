@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranches
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -17,7 +17,7 @@ class SDSEarlyReleaseDefaultingRulesService {
     return hasAnySDSEarlyRelease(booking) && hasAnyReleaseBeforeTrancheCommencement(result, trancheCommencementDate)
   }
 
-  fun mergeResults(earlyReleaseResult: CalculationResult, standardReleaseResult: CalculationResult, trancheCommencementDate: LocalDate?, allocatedTranche: SDSEarlyReleaseTranches): CalculationResult {
+  fun mergeResults(earlyReleaseResult: CalculationResult, standardReleaseResult: CalculationResult, trancheCommencementDate: LocalDate?, allocatedTranche: SDSEarlyReleaseTranche): CalculationResult {
     val dates = earlyReleaseResult.dates.toMutableMap()
     val breakdownByReleaseDateType = earlyReleaseResult.breakdownByReleaseDateType.toMutableMap()
 
