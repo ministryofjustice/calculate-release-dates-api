@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -118,6 +119,50 @@ class ManualCalculationServiceTest {
           "",
         ),
       )
+
+      // Assert
+      assertThat(result).isEqualTo(Period.of(0, 0, 0))
+    }
+
+    @Test
+    fun `Check ESL is set to zero for FTR 14 without custody date`() {
+      // Arrange
+      val sentenceOne = StandardSENTENCE.copy(
+        consecutiveSentenceUUIDs = emptyList(),
+        sentencedAt = LocalDate.of(2022, 1, 1),
+        recallType = RecallType.FIXED_TERM_RECALL_14,
+      )
+      var workingBooking = BOOKING.copy(
+        returnToCustodyDate = null,
+        sentences = listOf(
+          sentenceOne,
+        ),
+      )
+
+      // Act
+      val result = manualCalculationService.calculateEffectiveSentenceLength(workingBooking, MANUAL_ENTRY)
+
+      // Assert
+      assertThat(result).isEqualTo(Period.of(0, 0, 0))
+    }
+
+    @Test
+    fun `Check ESL is set to zero for FTR 28 without custody date`() {
+      // Arrange
+      val sentenceOne = StandardSENTENCE.copy(
+        consecutiveSentenceUUIDs = emptyList(),
+        sentencedAt = LocalDate.of(2022, 1, 1),
+        recallType = RecallType.FIXED_TERM_RECALL_28,
+      )
+      var workingBooking = BOOKING.copy(
+        returnToCustodyDate = null,
+        sentences = listOf(
+          sentenceOne,
+        ),
+      )
+
+      // Act
+      val result = manualCalculationService.calculateEffectiveSentenceLength(workingBooking, MANUAL_ENTRY)
 
       // Assert
       assertThat(result).isEqualTo(Period.of(0, 0, 0))

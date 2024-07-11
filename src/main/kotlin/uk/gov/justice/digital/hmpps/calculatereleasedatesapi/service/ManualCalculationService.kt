@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOp
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
@@ -150,7 +151,10 @@ class ManualCalculationService(
   }
 
   fun calculateEffectiveSentenceLength(booking: Booking, manualEntryRequest: ManualEntryRequest): Period {
-    if (hasIndeterminateSentences(booking.bookingId)) {
+    val hasFixedTermRecallSentences = booking.sentences.filter { it.recallType == RecallType.FIXED_TERM_RECALL_14 || it.recallType == RecallType.FIXED_TERM_RECALL_28 }
+    if (hasIndeterminateSentences(booking.bookingId) ||
+      (hasFixedTermRecallSentences.isNotEmpty() && booking.returnToCustodyDate == null)
+    ) {
       return Period.ZERO
     } else {
       val options = CalculationOptions(false, featureToggles.sdsEarlyRelease)
