@@ -99,7 +99,7 @@ class OffenceSDSReleaseArrangementLookupService(
         if (sentenceCalculationType in SDS_AND_DYOI_POST_PCSC_CALC_TYPES) {
           if (sentencedWithinOriginalSdsWindow && sevenYearsOrMore) {
             matchFilter = true
-          } else if (sentenceIsAfterPcsc && overFourYearsSentenceLength(sentenceAndOffences)) {
+          } else if (sentenceIsAfterPcsc && fourYearsOrMore(sentenceAndOffences)) {
             matchFilter = true
           }
         } else if (sentenceCalculationType in S250_POST_PCSC_CALC_TYPES && sentenceIsAfterPcsc && sevenYearsOrMore) {
@@ -117,12 +117,6 @@ class OffenceSDSReleaseArrangementLookupService(
 
   private fun sentencedWithinOriginalSdsPlusWindow(sentence: SentenceAndOffence): Boolean {
     return sentence.sentenceDate.isAfterOrEqualTo(ImportantDates.SDS_PLUS_COMMENCEMENT_DATE) && !sentencedAfterPcsc(sentence)
-  }
-
-  private fun overFourYearsSentenceLength(sentence: SentenceAndOffence): Boolean {
-    val endOfSentence = endOfSentence(sentence)
-    val endOfFourYears = sentence.sentenceDate.plusYears(4)
-    return endOfSentence.isAfterOrEqualTo(endOfFourYears)
   }
 
   private fun endOfSentence(sentence: SentenceAndOffence): LocalDate {
