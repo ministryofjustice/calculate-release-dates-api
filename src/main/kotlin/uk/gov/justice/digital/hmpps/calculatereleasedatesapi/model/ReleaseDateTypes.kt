@@ -10,7 +10,7 @@ class ReleaseDateTypes(
 ) {
 
   fun getReleaseDateTypes(): List<ReleaseDateType> {
-    if (sentence.isCalculationInitialised()) {
+    if (sentence.isCalculationInitialised() && !sentence.sentenceCalculation.isRecallWithoutCustodyDate()) {
       val underEighteenAtTimeOfRelease = offender.getAgeOnDate(sentence.sentenceCalculation.releaseDate) < INT_EIGHTEEN
       val lessThanTwelveMonths = sentence.durationIsLessThan(12, MONTHS)
       if (underEighteenAtTimeOfRelease && lessThanTwelveMonths && !sentence.isDto()) {

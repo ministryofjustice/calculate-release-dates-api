@@ -171,10 +171,8 @@ class SentenceCalculationService(
     )
   }
 
-  fun calculateFixedTermRecall(booking: Booking, days: Int): LocalDate {
-    return booking.returnToCustodyDate!!
-      .plusDays(days.toLong())
-      .minusDays(1)
+  fun calculateFixedTermRecall(booking: Booking, days: Int): LocalDate? {
+    return booking.returnToCustodyDate?.plusDays(days.toLong())?.minusDays(1)
   }
 
   private fun determinePedMultiplier(identification: SentenceIdentificationTrack): Double {

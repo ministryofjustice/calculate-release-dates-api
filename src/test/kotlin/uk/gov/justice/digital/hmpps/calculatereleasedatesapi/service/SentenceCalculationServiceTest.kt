@@ -53,6 +53,26 @@ class SentenceCalculationServiceTest {
   }
 
   @Test
+  fun `Sentence Calculation for sentences without a custody date in FTR 14`() {
+    val sentence = jsonTransformation.loadSentence("crs-2034-npe-ftr-14")
+    sentenceIdentificationService.identify(sentence, offender, CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false))
+    val offender = Offender("A1234BC", LocalDate.of(1980, 1, 1))
+    val booking = Booking(offender, mutableListOf(sentence), Adjustments())
+    val calculation = sentenceCalculationService.calculate(sentence, booking, CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false))
+    assertEquals(calculation.expiryDate, LocalDate.of(2015, 9, 20))
+  }
+
+  @Test
+  fun `Sentence Calculation for sentences without a custody date in FTR 28`() {
+    val sentence = jsonTransformation.loadSentence("crs-2034-npe-ftr-28")
+    sentenceIdentificationService.identify(sentence, offender, CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false))
+    val offender = Offender("A1234BC", LocalDate.of(1980, 1, 1))
+    val booking = Booking(offender, mutableListOf(sentence), Adjustments())
+    val calculation = sentenceCalculationService.calculate(sentence, booking, CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false))
+    assertEquals(calculation.expiryDate, LocalDate.of(2015, 9, 20))
+  }
+
+  @Test
   fun `Example 10`() {
     val sentence = jsonTransformation.loadSentence("3_year_dec_2012")
     sentenceIdentificationService.identify(sentence, offender, CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false))
