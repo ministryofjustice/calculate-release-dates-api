@@ -291,7 +291,7 @@ class CalculationTransactionalService(
       otherReasonDescription = otherCalculationReason,
       calculationDate = calculationRequest.calculatedAt.toLocalDate(),
       historicalTusedSource = calculationResult.historicalTusedSource,
-      sdsEarlyReleaseTranche = calculationResult.sdsEarlyReleaseTranche
+      sdsEarlyReleaseTranche = calculationResult.sdsEarlyReleaseTranche,
     )
   }
 

@@ -169,17 +169,17 @@ class TrancheAllocationServiceTest {
     )
 
     val booking = bookingWithSentences(
-        listOf(
-            createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_STANDARD_RELEASE, 3L),
-            createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_EARLY_RELEASE, 1L),
-        ),
+      listOf(
+        createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_STANDARD_RELEASE, 3L),
+        createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_EARLY_RELEASE, 1L),
+      ),
     )
 
     booking.consecutiveSentences = listOf(ConsecutiveSentence(booking.sentences))
 
     val result = testTrancheAllocationService.calculateTranche(
-        early,
-        booking,
+      early,
+      booking,
     )
     assertThat(result).isEqualTo(SDSEarlyReleaseTranche.TRANCHE_1)
   }
@@ -263,7 +263,7 @@ class TrancheAllocationServiceTest {
 
     val booking = bookingWithSentences(
       listOf(
-        createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_EARLY_RELEASE, durationMonths = 61L)
+        createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_EARLY_RELEASE, durationMonths = 61L),
       ),
     )
 
