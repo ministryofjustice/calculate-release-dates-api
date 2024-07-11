@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -166,29 +167,126 @@ class TrancheAllocationServiceTest {
       Period.ofYears(5),
       sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
     )
+
+    val booking = bookingWithSentences(
+        listOf(
+            createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_STANDARD_RELEASE, 3L),
+            createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_EARLY_RELEASE, 1L),
+        ),
+    )
+
+    booking.consecutiveSentences = listOf(ConsecutiveSentence(booking.sentences))
+
+    val result = testTrancheAllocationService.calculateTranche(
+        early,
+        booking,
+    )
+    assertThat(result).isEqualTo(SDSEarlyReleaseTranche.TRANCHE_1)
+  }
+
+  @Test
+  fun `Consecutive chain of 5 years gets tranche 2`() {
+    val testTranchOneCommencementDate = LocalDate.of(2024, 9, 3)
+    val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 15)
+    val trancheOne = TrancheOne(testTranchOneCommencementDate)
+    val trancheTwo = TrancheTwo(testTrancheTwoCommencementDate)
+    val testTrancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo)
+    val early = CalculationResult(
+      mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
+      emptyMap(),
+      emptyMap(),
+      Period.ofYears(5),
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
+    )
+
+    val booking = bookingWithSentences(
+      listOf(
+        createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_STANDARD_RELEASE, 3L),
+        createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_EARLY_RELEASE, 2L),
+      ),
+    )
+
+    booking.consecutiveSentences = listOf(ConsecutiveSentence(booking.sentences))
+
     val result = testTrancheAllocationService.calculateTranche(
       early,
-      bookingWithSentences(
-        listOf(
-          createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_STANDARD_RELEASE, 4L),
-          createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_EARLY_RELEASE, 6L),
-        ),
+      booking,
+    )
+    assertThat(result).isEqualTo(SDSEarlyReleaseTranche.TRANCHE_1)
+  }
+
+  @Test
+  fun `Consecutive chain of 4 years 364 days gets tranche 1`() {
+    val testTranchOneCommencementDate = LocalDate.of(2024, 9, 3)
+    val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 15)
+    val trancheOne = TrancheOne(testTranchOneCommencementDate)
+    val trancheTwo = TrancheTwo(testTrancheTwoCommencementDate)
+    val testTrancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo)
+    val early = CalculationResult(
+      mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
+      emptyMap(),
+      emptyMap(),
+      Period.ofYears(5),
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
+    )
+
+    val booking = bookingWithSentences(
+      listOf(
+        createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_STANDARD_RELEASE, 2L, durationDays = 364L),
+        createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_EARLY_RELEASE, 2L),
       ),
+    )
+
+    booking.consecutiveSentences = listOf(ConsecutiveSentence(booking.sentences))
+
+    val result = testTrancheAllocationService.calculateTranche(
+      early,
+      booking,
+    )
+    assertThat(result).isEqualTo(SDSEarlyReleaseTranche.TRANCHE_1)
+  }
+
+  @Test
+  fun `SDS with early release track with 61 months gets tranche 2`() {
+    val testTranchOneCommencementDate = LocalDate.of(2024, 9, 3)
+    val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 15)
+    val trancheOne = TrancheOne(testTranchOneCommencementDate)
+    val trancheTwo = TrancheTwo(testTrancheTwoCommencementDate)
+    val testTrancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo)
+    val early = CalculationResult(
+      mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
+      emptyMap(),
+      emptyMap(),
+      Period.ofYears(5),
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
+    )
+
+    val booking = bookingWithSentences(
+      listOf(
+        createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_EARLY_RELEASE, durationMonths = 61L)
+      ),
+    )
+
+    val result = testTrancheAllocationService.calculateTranche(
+      early,
+      booking,
     )
     assertThat(result).isEqualTo(SDSEarlyReleaseTranche.TRANCHE_2)
   }
 
   private fun createBookingOfSDSSentencesOfTypeWithDuration(
     identificationTrack: SentenceIdentificationTrack,
-    durationYears: Long,
+    durationYears: Long = 0L,
+    durationMonths: Long = 0L,
+    durationDays: Long = 0L,
   ): StandardDeterminateSentence {
     val sentence = StandardDeterminateSentence(
       sentencedAt = LocalDate.of(2020, 1, 1),
       duration = Duration(
         mutableMapOf(
-          ChronoUnit.DAYS to 0L,
+          ChronoUnit.DAYS to durationDays,
           ChronoUnit.WEEKS to 0L,
-          ChronoUnit.MONTHS to 0L,
+          ChronoUnit.MONTHS to durationMonths,
           ChronoUnit.YEARS to durationYears,
         ),
       ),
