@@ -160,10 +160,20 @@ class OffenceSDSReleaseArrangementLookupService(
       !isSDSPlus
 
   private fun exclusionForOffence(exclusionsForOffences: Map<String, SDSEarlyReleaseExclusionForOffenceCode>, sentenceAndOffence: SentenceAndOffence): SDSEarlyReleaseExclusionType {
-    return when (exclusionsForOffences[sentenceAndOffence.offence.offenceCode]!!.schedulePart) {
+    val offenceCode = sentenceAndOffence.offence.offenceCode
+    val exclusionForOffence = exclusionsForOffences[offenceCode]
+
+    return when (exclusionForOffence?.schedulePart) {
       SDSEarlyReleaseExclusionSchedulePart.SEXUAL -> SDSEarlyReleaseExclusionType.SEXUAL
-      SDSEarlyReleaseExclusionSchedulePart.VIOLENT -> if (fourYearsOrMore(sentenceAndOffence)) SDSEarlyReleaseExclusionType.VIOLENT else SDSEarlyReleaseExclusionType.NO
+      SDSEarlyReleaseExclusionSchedulePart.DOMESTIC_ABUSE -> SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE
+      SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY -> SDSEarlyReleaseExclusionType.NATIONAL_SECURITY
+      SDSEarlyReleaseExclusionSchedulePart.VIOLENT -> if (fourYearsOrMore(sentenceAndOffence)) {
+        SDSEarlyReleaseExclusionType.VIOLENT
+      } else {
+        SDSEarlyReleaseExclusionType.NO
+      }
       SDSEarlyReleaseExclusionSchedulePart.NONE -> SDSEarlyReleaseExclusionType.NO
+      null -> SDSEarlyReleaseExclusionType.NO
     }
   }
 

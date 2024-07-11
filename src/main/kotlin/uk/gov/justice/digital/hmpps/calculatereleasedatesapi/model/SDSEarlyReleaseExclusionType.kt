@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 enum class SDSEarlyReleaseExclusionType {
   SEXUAL,
   VIOLENT,
+  DOMESTIC_ABUSE,
+  NATIONAL_SECURITY,
   NO,
 }
 
