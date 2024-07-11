@@ -151,6 +151,9 @@ class ValidationService(
     if (validationMessages.isEmpty()) {
       validationMessages += validateUnsupportedCalculation(sourceData)
     }
+    if (validationMessages.isEmpty() && featureToggles.sdsEarlyReleaseUnsupported) {
+      validationMessages += validateSdsEarlyRelease(sourceData)
+    }
     return validationMessages.toList()
   }
 
