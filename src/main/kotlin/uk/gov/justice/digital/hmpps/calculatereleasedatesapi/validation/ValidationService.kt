@@ -82,6 +82,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_FROM_TO_DATES_REQUIRED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_OVERLAPS_WITH_REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_OVERLAPS_WITH_SENTENCE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SDS_EARLY_RELEASE_UNSUPPORTED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SEC236A_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SEC_91_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS
@@ -125,6 +126,13 @@ class ValidationService(
     val unsupportedCalculationMessages = validateUnsupportedCalculation(sourceData)
     if (unsupportedCalculationMessages.isNotEmpty()) {
       return unsupportedCalculationMessages
+    }
+
+    if (featureToggles.sdsEarlyReleaseUnsupported) {
+      val unsupportedEarlyReleaseCalculationMessages = validateSdsEarlyRelease(sourceData)
+      if (unsupportedEarlyReleaseCalculationMessages.isNotEmpty()) {
+        return unsupportedEarlyReleaseCalculationMessages
+      }
     }
 
     val validationMessages = validateSentences(sortedSentences)
@@ -834,6 +842,18 @@ class ValidationService(
 
   private fun getCaseSeqAndLineSeq(sentencesAndOffence: SentenceAndOffence) =
     listOf(sentencesAndOffence.caseSequence.toString(), sentencesAndOffence.lineSequence.toString())
+
+  private fun validateSdsEarlyRelease(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+    val anySdsExcludingSdsPlus = sourceData.sentenceAndOffences.any {
+      val sentenceCalculationType = SentenceCalculationType.from(it.sentenceCalculationType)
+      val isSds = sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java && sentenceCalculationType.recallType == null
+      isSds && !it.isSDSPlus
+    }
+    if (anySdsExcludingSdsPlus) {
+      return listOf(ValidationMessage(SDS_EARLY_RELEASE_UNSUPPORTED))
+    }
+    return emptyList()
+  }
 
   companion object {
     private val BOOKING_ADJUSTMENTS_TO_VALIDATE =

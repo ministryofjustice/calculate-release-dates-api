@@ -1858,6 +1858,48 @@ class ValidationServiceTest {
     )
   }
 
+  @Test
+  fun `Validate that SDS sentences are unsupported for before SDS early release is implemented`() {
+    val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyReleaseUnsupported = true))
+
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(
+        listOf(validSdsSentence).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+    )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(
+          ValidationCode.SDS_EARLY_RELEASE_UNSUPPORTED,
+        ),
+      ),
+    )
+  }
+
+  @Test
+  fun `Validate that SDS+ sentences are supported for before SDS early release is implemented`() {
+    val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyReleaseUnsupported = true))
+
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(
+        listOf(validSdsSentence).map { SentenceAndOffenceWithReleaseArrangements(it, true, SDSEarlyReleaseExclusionType.NO) },
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+    )
+
+    assertThat(result.isEmpty()).isTrue
+  }
+
   private fun createSentenceChain(
     start: AbstractSentence,
     chain: MutableList<AbstractSentence>,

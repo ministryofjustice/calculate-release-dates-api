@@ -69,4 +69,5 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   UNSUPPORTED_CALCULATION_DTO_WITH_RECALL("Unsupported calculation - DTO and recall", UNSUPPORTED_CALCULATION),
   PRE_PCSC_DTO_WITH_ADJUSTMENT("If a Detention and training order (DTO) has a sentence date before 28 June 2022, %s cannot be applied."),
   BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE("BOTUS concurrent/consecutive with other sentence type", UNSUPPORTED_CALCULATION),
+  SDS_EARLY_RELEASE_UNSUPPORTED("SDS40 Early release is not currently supported", UNSUPPORTED_CALCULATION),
 }
