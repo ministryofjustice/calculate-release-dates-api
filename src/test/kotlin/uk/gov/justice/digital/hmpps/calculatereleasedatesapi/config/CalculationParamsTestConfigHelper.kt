@@ -32,5 +32,11 @@ object CalculationParamsTestConfigHelper {
     return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
   }
 
+  fun sdsEarlyReleaseTrancheTwoDate(params: String = "calculation-params"): LocalDate {
+    val configurationProperty = propertySource(params).getConfigurationProperty(ConfigurationPropertyName.of("sds-early-release-tranches.tranche-two-date"))
+    val date = configurationProperty.value as Date
+    return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+  }
+
   private fun propertySource(params: String) = MapConfigurationPropertySource(YamlPropertiesFactoryBean().apply { setResources(ClassPathResource("application-$params.yml")) }.getObject())
 }
