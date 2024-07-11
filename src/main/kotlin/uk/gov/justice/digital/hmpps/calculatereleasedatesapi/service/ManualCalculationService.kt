@@ -153,7 +153,7 @@ class ManualCalculationService(
   fun calculateEffectiveSentenceLength(booking: Booking, manualEntryRequest: ManualEntryRequest): Period {
     val hasFixedTermRecallSentences = booking.sentences.filter { it.recallType == RecallType.FIXED_TERM_RECALL_14 || it.recallType == RecallType.FIXED_TERM_RECALL_28 }
     if (hasIndeterminateSentences(booking.bookingId) ||
-      (hasFixedTermRecallSentences.isNotEmpty() && booking.fixedTermRecallDetails?.returnToCustodyDate == null)
+      (hasFixedTermRecallSentences.isNotEmpty() && booking.returnToCustodyDate == null)
     ) {
       return Period.ZERO
     } else {
