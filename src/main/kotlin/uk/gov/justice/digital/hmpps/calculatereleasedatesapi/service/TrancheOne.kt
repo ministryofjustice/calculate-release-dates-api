@@ -15,14 +15,11 @@ class TrancheOne(
 ) : Tranche {
 
   override fun isBookingApplicableForTrancheCriteria(calculationResult: CalculationResult, booking: Booking): Boolean {
-    return booking.consecutiveSentences.none { consecutiveSentence ->
-      consecutiveSentence.durationIsGreaterThan(
+    return booking.getAllExtractableSentences().none {
+      it.durationIsGreaterThan(
         5,
         ChronoUnit.YEARS,
       )
-    } &&
-      booking.sentences.none {
-        it.durationIsGreaterThan(5, ChronoUnit.YEARS)
-      }
+    }
   }
 }
