@@ -23,11 +23,11 @@ class TrancheAllocationService(
 
     var resultTranche: SDSEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0
 
-    if (sdsEarlyReleaseSentences.isNotEmpty()) {
-      if (trancheOne.isBookingApplicableForTrancheCriteria(calculationResult, booking)) {
-        resultTranche = SDSEarlyReleaseTranche.TRANCHE_1
-      } else if (trancheTwo.isBookingApplicableForTrancheCriteria(calculationResult, booking)) {
-        resultTranche = SDSEarlyReleaseTranche.TRANCHE_2
+    sdsEarlyReleaseSentences.takeIf { it.isNotEmpty() }?.let {
+      resultTranche = when {
+        trancheOne.isBookingApplicableForTrancheCriteria(calculationResult, booking) -> SDSEarlyReleaseTranche.TRANCHE_1
+        trancheTwo.isBookingApplicableForTrancheCriteria(calculationResult, booking) -> SDSEarlyReleaseTranche.TRANCHE_2
+        else -> resultTranche
       }
     }
 
