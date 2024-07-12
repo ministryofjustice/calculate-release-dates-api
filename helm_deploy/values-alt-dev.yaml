@@ -14,14 +14,13 @@ generic-service:
       SecAction "id:900000,phase:1,nolog,pass,t:none,setvar:tx.paranoia_level=2"
 
   env:
-    SPRING_PROFILES_ACTIVE: "logstash,alt-3-calculation-params"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
     PRISON_API_URL: https://prison-api-dev.prison.service.justice.gov.uk
     ADJUSTMENTS_API_URL: https://adjustments-api-dev.hmpps.service.justice.gov.uk
     MANAGE-OFFENCES_API_URL: https://manage-offences-api-dev.hmpps.service.justice.gov.uk
     BOTUS_FEATURE_TOGGLE: "true"
-    SDS_EARLY_RELEASE_FEATURE_TOGGLE: "true"
+    SDS_EARLY_RELEASE_FEATURE_TOGGLE: "false"
     SDS_EARLY_RELEASE_UNSUPPORTED_FEATURE_TOGGLE: "true"
   # Switches off the allow list in the DEV env only.
   allowlist: null
