@@ -75,3 +75,8 @@ feature-toggles:
 
 hdced4:
   hdc4-commencement-date: 2025-01-01
+
+sds-early-release-tranches:
+  tranche-one-date: 2024-09-03
+  tranche-two-date: 2024-10-15
+

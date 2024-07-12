@@ -38,4 +38,6 @@ release-point-multipliers:
   default: 0.5
 
 sds-early-release-tranches:
-  tranche-one-date: 2024-07-29
+  tranche-one-date: 2024-09-03
+  tranche-two-date: 2024-10-15
+

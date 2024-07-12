@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.TrancheOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.CONFIRMED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.ERROR
@@ -42,6 +43,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Approved
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
@@ -64,6 +66,7 @@ class CalculationTransactionalService(
   private val nomisCommentService: NomisCommentService,
   private val buildProperties: BuildProperties,
   private val featureToggles: FeatureToggles,
+  private val trancheOutcomeRepository: TrancheOutcomeRepository,
 ) {
 
   /*
@@ -272,6 +275,7 @@ class CalculationTransactionalService(
     calculationResult.dates.forEach {
       calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
     }
+    trancheOutcomeRepository.save(TrancheOutcome(calculationRequest = calculationRequest, tranche = calculationResult.sdsEarlyReleaseTranche))
 
     return CalculatedReleaseDates(
       dates = calculationResult.dates,
@@ -287,6 +291,7 @@ class CalculationTransactionalService(
       otherReasonDescription = otherCalculationReason,
       calculationDate = calculationRequest.calculatedAt.toLocalDate(),
       historicalTusedSource = calculationResult.historicalTusedSource,
+      sdsEarlyReleaseTranche = calculationResult.sdsEarlyReleaseTranche,
     )
   }
 

@@ -1,0 +1,24 @@
+{
+  "calculateErsed": false,
+  "offender":{
+    "reference": "ABC123D",
+    "dateOfBirth": "2005-04-01"
+  },
+  "sentences":[
+    {
+      "type":"StandardDeterminateSentence",
+      "offence":{
+        "committedAt":"2024-05-10"
+      },
+      "duration":{
+        "durationElements":{
+          "WEEKS": 36
+        }
+      },
+      "sentencedAt": "2024-05-10",
+      "sentenceType": "YOI_ORA",
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+    }
+  ],
+  "adjustments": { }
+}

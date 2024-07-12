@@ -1,0 +1,8 @@
+exampleType,exampleNumber,error,params
+tranches,over_5_years_before_tranche_1,,alt-3-calculation-params
+tranches,over_5_years_after_tranche_1,,alt-3-calculation-params
+tranches,over_5_years_after_tranche_2,,alt-3-calculation-params
+tranches,under_5_years_after_tranche_1,,alt-3-calculation-params
+tranches,under_5_years_after_tranche_2,,alt-3-calculation-params
+tranches,under_5_years_before_tranche_1,,alt-3-calculation-params
+tranches,crs-2035-ac2-eds-sopc-tranche-0,,alt-3-calculation-params
