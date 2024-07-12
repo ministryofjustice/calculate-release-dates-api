@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationP
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
@@ -83,6 +84,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Approved
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.LocalDate
@@ -109,6 +111,7 @@ class CalculationTransactionalServiceTest {
   private val approvedDatesSubmissionRepository = mock<ApprovedDatesSubmissionRepository>()
   private val nomisCommentService = mock<NomisCommentService>()
   private val bankHolidayService = mock<BankHolidayService>()
+  private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
 
   private val fakeSourceData = PrisonApiSourceData(
     emptyList(),
@@ -194,6 +197,43 @@ class CalculationTransactionalServiceTest {
     val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
 
     assertEquals(bookingData.dates, calculatedReleaseDates.dates)
+    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
+  }
+
+  @ParameterizedTest
+  @CsvFileSource(resources = ["/test_data/calculation-sds-early-tranching-crs-2035.csv"], numLinesToSkip = 1)
+  fun `Test SDS Early Release Tranching`(
+    exampleType: String,
+    exampleNumber: String,
+    error: String?,
+    params: String,
+  ) {
+    log.info("Testing example $exampleType/$exampleNumber")
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+
+    val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
+    val calculatedReleaseDates: CalculatedReleaseDates
+    try {
+      calculatedReleaseDates =
+        calculationTransactionalService(params)
+          .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
+    } catch (e: Exception) {
+      if (!error.isNullOrEmpty()) {
+        assertEquals(error, e.javaClass.simpleName)
+        return
+      } else {
+        throw e
+      }
+    }
+    log.info(
+      "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
+      TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
+    )
+    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
+
+    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
+    assertEquals(bookingData.sdsEarlyReleaseTranche, calculatedReleaseDates.sdsEarlyReleaseTranche)
     assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
   }
 
@@ -627,7 +667,7 @@ class CalculationTransactionalServiceTest {
     val hdced4Calculator = Hdced4Calculator(hdcedConfiguration, sentenceAggregator, releasePointMultiplierLookup)
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val featureToggles = FeatureToggles(botus = false, sdsEarlyRelease = isNotDefaultParams)
-    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sdsEarlyReleaseTrancheOneDate())
+    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService()
     val sentenceAdjustedCalculationService =
       SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
     val sentenceCalculationService =
@@ -649,6 +689,11 @@ class CalculationTransactionalServiceTest {
       workingDayService,
       sdsEarlyReleaseTrancheOneDate(),
     )
+
+    val trancheOne = TrancheOne(sdsEarlyReleaseTrancheOneDate())
+    val trancheTwo = TrancheTwo(sdsEarlyReleaseTrancheTwoDate())
+
+    val trancheAllocationService = TrancheAllocationService(TrancheOne(sdsEarlyReleaseTrancheOneDate()), TrancheTwo(sdsEarlyReleaseTrancheOneDate()))
     val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
 
     val calculationService = CalculationService(
@@ -657,6 +702,9 @@ class CalculationTransactionalServiceTest {
       bookingTimelineService,
       featureToggles,
       sdsEarlyReleaseDefaultingRulesService,
+      trancheAllocationService,
+      trancheOne,
+      trancheTwo,
     )
 
     return CalculationTransactionalService(
@@ -675,6 +723,7 @@ class CalculationTransactionalServiceTest {
       nomisCommentService,
       TEST_BUILD_PROPERTIES,
       featureToggles,
+      trancheOutcomeRepository,
     )
   }
 
