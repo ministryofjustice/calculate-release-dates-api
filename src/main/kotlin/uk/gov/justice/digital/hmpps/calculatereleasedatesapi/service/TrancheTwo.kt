@@ -21,6 +21,7 @@ class TrancheTwo(
           5,
           ChronoUnit.YEARS,
         )
-      })
+      }
+      )
   }
 }
