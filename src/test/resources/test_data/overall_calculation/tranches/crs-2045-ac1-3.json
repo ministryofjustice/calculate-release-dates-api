@@ -1,0 +1,45 @@
+{
+  "offender": {
+    "reference": "MD71159",
+    "dateOfBirth": "1994-11-24",
+    "isActiveSexOffender": false
+  },
+  "sentences": [
+    {
+      "type": "ADIMP",
+      "offence": {
+        "committedAt": "2024-03-22",
+        "description": "Offer to supply a class A drug - other"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "sentencedAt": "2024-03-22",
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceSequence": 1,
+      "lineSequence": 1,
+      "caseSequence": 1
+    },
+    {
+      "type": "ADIMP",
+      "offence": {
+        "committedAt": "2024-03-22",
+        "description": "Intentional strangulation"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "sentencedAt": "2024-03-22",
+      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE",
+      "sentenceSequence": 2,
+      "lineSequence": 1,
+      "caseSequence": 1
+    }
+  ],
+  "adjustments": {},
+  "calculateErsed": false
+}
