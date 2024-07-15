@@ -474,3 +474,11 @@ custom-examples,crs-2013-ac2-hdced-adjusted-to-crd,,calculation-params
 custom-examples,sdsx-document-example1-tranche1,,alt-3-calculation-params
 custom-examples,sdsx-document-example2-tranche1,,alt-3-calculation-params
 custom-examples,sdsx-document-example3-tranche1,,alt-3-calculation-params
+
+tranches,crs-2045-ac1-1,,alt-3-calculation-params
+tranches,crs-2045-ac1-2,,alt-3-calculation-params
+
+tranches,crs-2045-ac2-1,,alt-3-calculation-params
+tranches,crs-2045-ac2-2,,alt-3-calculation-params
+
+tranches,crs-2045-ac2-4,,alt-3-calculation-params
