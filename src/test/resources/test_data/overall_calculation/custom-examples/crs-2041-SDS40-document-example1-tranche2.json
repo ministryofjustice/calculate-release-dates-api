@@ -1,0 +1,32 @@
+{
+  "calculateErsed": false,
+  "offender":{
+    "reference": "ABC123D",
+    "dateOfBirth": "2005-04-01"
+  },
+  "sentences":[
+    {
+      "type":"StandardDeterminateSentence",
+      "offence":{
+        "committedAt":"2019-02-02"
+      },
+      "duration":{
+        "durationElements":{
+          "YEARS": 12
+        }
+      },
+      "sentencedAt": "2019-02-02",
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "numberOfDays": 101,
+        "appliesToSentencesFrom": "2019-02-02",
+        "fromDate": "2019-02-02",
+        "toDate": "2019-05-14"
+      }
+    ]
+  }
+}
