@@ -12,7 +12,7 @@ class ManageOffencesService(
     return manageOffencesApiClient.getPCSCMarkersForOffences(offenceCodes.toList())
   }
 
-  fun getSexualOrViolentForOffenceCodes(offenceCodes: List<String>): List<SDSEarlyReleaseExclusionForOffenceCode> {
-    return manageOffencesApiClient.getSexualOrViolentForOffenceCodes(offenceCodes)
+  fun getSdsExclusionsForOffenceCodes(offenceCodes: List<String>): List<SDSEarlyReleaseExclusionForOffenceCode> {
+    return manageOffencesApiClient.getSdsExclusionsForOffenceCodes(offenceCodes)
   }
 }
