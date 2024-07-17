@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.Period
-import java.util.*
+import java.util.EnumSet
 
 @Service
 class OffenceSDSReleaseArrangementLookupService(
@@ -27,7 +27,7 @@ class OffenceSDSReleaseArrangementLookupService(
     val checkedForSDSPlus = checkForSDSPlus(sentencesAndOffences)
 
     val offencesToCheckForSDSExclusions = getOffencesToCheckForSDSExclusions(checkedForSDSPlus)
-    val exclusionsForOffences = if (offencesToCheckForSDSExclusions.isNotEmpty() && featureToggles.sdsEarlyRelease) manageOffencesService.getSexualOrViolentForOffenceCodes(offencesToCheckForSDSExclusions).associateBy { it.offenceCode } else emptyMap()
+    val exclusionsForOffences = if (offencesToCheckForSDSExclusions.isNotEmpty() && featureToggles.sdsEarlyRelease) manageOffencesService.getSdsExclusionsForOffenceCodes(offencesToCheckForSDSExclusions).associateBy { it.offenceCode } else emptyMap()
 
     return checkedForSDSPlus
       .map { sdsPlusCheckResult ->
@@ -161,6 +161,7 @@ class OffenceSDSReleaseArrangementLookupService(
       SDSEarlyReleaseExclusionSchedulePart.SEXUAL -> SDSEarlyReleaseExclusionType.SEXUAL
       SDSEarlyReleaseExclusionSchedulePart.DOMESTIC_ABUSE -> SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE
       SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY -> SDSEarlyReleaseExclusionType.NATIONAL_SECURITY
+      SDSEarlyReleaseExclusionSchedulePart.TERRORISM -> SDSEarlyReleaseExclusionType.TERRORISM
       SDSEarlyReleaseExclusionSchedulePart.VIOLENT -> if (fourYearsOrMore(sentenceAndOffence)) {
         SDSEarlyReleaseExclusionType.VIOLENT
       } else {

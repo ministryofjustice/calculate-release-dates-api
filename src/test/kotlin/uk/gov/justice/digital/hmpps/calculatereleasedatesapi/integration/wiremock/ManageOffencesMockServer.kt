@@ -34,7 +34,7 @@ class ManageOffencesApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEa
     manageOffencesApi.stubSX03014MOResponse()
     manageOffencesApi.stub500Response()
     manageOffencesApi.stubBaseResponse()
-    manageOffencesApi.stubSexualOrViolentDefaultToNo()
+    manageOffencesApi.stubSdsExclusionsDefaultToNo()
   }
 
   override fun afterAll(context: ExtensionContext?) {
@@ -186,8 +186,8 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
-  fun stubSexualOrViolentDefaultToNo(): StubMapping = stubFor(
-    get(urlMatching("/schedule/sexual-or-violent\\?offenceCodes=([A-Za-z0-9,]+)"))
+  fun stubSdsExclusionsDefaultToNo(): StubMapping = stubFor(
+    get(urlMatching("/schedule/sds-early-release-exclusions\\?offenceCodes=([A-Za-z0-9,]+)"))
       .atPriority(Int.MAX_VALUE)
       .willReturn(
         aResponse()
