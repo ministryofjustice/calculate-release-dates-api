@@ -11,6 +11,7 @@ enum class SDSEarlyReleaseExclusionType {
   VIOLENT,
   DOMESTIC_ABUSE,
   NATIONAL_SECURITY,
+  TERRORISM,
   NO,
 }
 

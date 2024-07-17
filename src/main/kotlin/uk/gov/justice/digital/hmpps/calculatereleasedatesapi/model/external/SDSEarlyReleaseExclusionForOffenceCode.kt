@@ -6,5 +6,6 @@ enum class SDSEarlyReleaseExclusionSchedulePart {
   VIOLENT,
   DOMESTIC_ABUSE,
   NATIONAL_SECURITY,
+  TERRORISM,
   NONE,
 }

@@ -31,18 +31,18 @@ class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private v
             log.warn("getPCSCMarkersForOffences: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
           }
           .onRetryExhaustedThrow { _, _ ->
-            throw MaxRetryAchievedException("getSexualOrViolentForOffenceCodes: Max retries - lookup failed for $offencesList, cannot proceed to perform a sentence calculation")
+            throw MaxRetryAchievedException("getPCSCMarkersForOffences: Max retries - lookup failed for $offencesList, cannot proceed to perform a sentence calculation")
           },
       )
       .block() ?: throw CouldNotGetMoOffenceInformation("PCSC indicator for offence lookup, otherwise failed for $offencesList, cannot proceed to perform a sentence calculation")
   }
 
-  fun getSexualOrViolentForOffenceCodes(offenceCodes: List<String>): List<SDSEarlyReleaseExclusionForOffenceCode> {
+  fun getSdsExclusionsForOffenceCodes(offenceCodes: List<String>): List<SDSEarlyReleaseExclusionForOffenceCode> {
     val offencesList = offenceCodes.joinToString(",")
-    log.info("getSexualOrViolentForOffenceCodes : /schedule/sexual-or-violent?offenceCodes=$offencesList")
+    log.info("getSdsExclusionsForOffenceCodes : /schedule/sds-early-release-exclusions?offenceCodes=$offencesList")
 
     return webClient.get()
-      .uri("/schedule/sexual-or-violent?offenceCodes=$offencesList")
+      .uri("/schedule/sds-early-release-exclusions?offenceCodes=$offencesList")
       .retrieve()
       .bodyToMono(typeReference<List<SDSEarlyReleaseExclusionForOffenceCode>>())
       .retryWhen(
@@ -50,13 +50,13 @@ class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private v
           .backoff(5, Duration.ofMillis(100))
           .maxBackoff(Duration.ofSeconds(5))
           .doBeforeRetry { retrySignal ->
-            log.warn("getSexualOrViolentForOffenceCodes: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
+            log.warn("getSdsExclusionsForOffenceCodes: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
           }
           .onRetryExhaustedThrow { _, _ ->
-            throw MaxRetryAchievedException("getSexualOrViolentForOffenceCodes: Max retries - lookup failed for $offencesList, cannot proceed to perform a sentence calculation")
+            throw MaxRetryAchievedException("getSdsExclusionsForOffenceCodes: Max retries - lookup failed for $offencesList, cannot proceed to perform a sentence calculation")
           },
       )
-      .block() ?: throw CouldNotGetMoOffenceInformation("Sexual or violent schedule otherwise failed for offence lookup failed for $offencesList, cannot proceed to perform a sentence calculation")
+      .block() ?: throw CouldNotGetMoOffenceInformation("Sds early release exclusions schedule otherwise failed for offence lookup failed for $offencesList, cannot proceed to perform a sentence calculation")
   }
 
   class MaxRetryAchievedException(message: String?) : RuntimeException(message)
