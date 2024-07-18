@@ -1,0 +1,54 @@
+{
+  "offender": {
+    "reference": "OS89095",
+    "dateOfBirth": "1994-11-24",
+    "isActiveSexOffender": false
+  },
+  "sentences": [
+    {
+      "type": "YOI",
+      "offence": {
+        "committedAt": "2024-04-17",
+        "description": "Disclose information which can be used to gain access to protected information"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "sentencedAt": "2024-04-17",
+      "hasAnSDSEarlyReleaseExclusion": "NATIONAL_SECURITY",
+      "sentenceSequence": 1,
+      "lineSequence": 1,
+      "caseSequence": 1
+    },
+    {
+      "type": "YOI",
+      "offence": {
+        "committedAt": "2024-04-17",
+        "description": "Offer to supply a class A drug - other"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "sentencedAt": "2024-04-17",
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceSequence": 2,
+      "lineSequence": 1,
+      "caseSequence": 1
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2024-04-17",
+        "numberOfDays": 660,
+        "fromDate": "2022-06-27",
+        "toDate": "2024-04-16"
+      }
+    ]
+  },
+  "calculateErsed": false
+}
