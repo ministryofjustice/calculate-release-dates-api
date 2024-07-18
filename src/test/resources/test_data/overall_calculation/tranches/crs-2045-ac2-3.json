@@ -1,0 +1,47 @@
+{
+  "offender": {
+    "reference": "MD71159",
+    "dateOfBirth": "1994-11-24",
+    "isActiveSexOffender": false
+  },
+  "sentences": [
+    {
+      "type": "SEC250",
+      "offence": {
+        "committedAt": "2024-03-22",
+        "description": "Offer to supply a class A drug - other"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "sentencedAt": "2024-03-22",
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceSequence": 1,
+      "lineSequence": 1,
+      "caseSequence": 1,
+      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+    },
+    {
+      "type": "SEC250",
+      "offence": {
+        "committedAt": "2024-03-22",
+        "description": "Commit act prejudicial to safety / interest of the State"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "sentencedAt": "2024-03-22",
+      "hasAnSDSEarlyReleaseExclusion": "NATIONAL_SECURITY",
+      "sentenceSequence": 2,
+      "lineSequence": 1,
+      "consecutiveSentenceUUIDs": ["a31d5d02-611f-43b0-8b1a-4b1edc955e7e"],
+      "caseSequence": 1
+    }
+  ],
+  "adjustments": {},
+  "calculateErsed": false
+}
