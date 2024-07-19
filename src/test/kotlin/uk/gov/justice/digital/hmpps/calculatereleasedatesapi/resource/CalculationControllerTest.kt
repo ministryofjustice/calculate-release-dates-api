@@ -348,7 +348,7 @@ class CalculationControllerTest {
       ),
       CalculationBreakdown(listOf(), null, ersedNotApplicableDueToDtoLaterThanCrd = true),
       null,
-      SDSEarlyReleaseTranche.TRANCHE_1
+      SDSEarlyReleaseTranche.TRANCHE_1,
     )
     whenever(detailedCalculationResultsService.findDetailedCalculationResults(calculationRequestId)).thenReturn(
       calculatedReleaseDates,

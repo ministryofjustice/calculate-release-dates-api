@@ -102,7 +102,7 @@ class DetailedCalculationResultsServiceTest {
           ),
         ),
       ),
-      allocatedSDSTranche = TrancheOutcome(calculationRequest = base, tranche= SDSEarlyReleaseTranche.TRANCHE_1)
+      allocatedSDSTranche = TrancheOutcome(calculationRequest = base, tranche = SDSEarlyReleaseTranche.TRANCHE_1),
     )
     val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
     val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
@@ -127,7 +127,7 @@ class DetailedCalculationResultsServiceTest {
         ),
         expectedBreakdown,
         null,
-        SDSEarlyReleaseTranche.TRANCHE_1
+        SDSEarlyReleaseTranche.TRANCHE_1,
       ),
     )
     verify(calculationResultEnrichmentService).addDetailToCalculationDates(toReleaseDates(calculationRequestWithApprovedDates), listOf(originalSentence), expectedBreakdown)
