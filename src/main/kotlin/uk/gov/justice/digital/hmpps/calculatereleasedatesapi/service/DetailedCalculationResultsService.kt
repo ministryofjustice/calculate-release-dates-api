@@ -47,6 +47,7 @@ open class DetailedCalculationResultsService(
       ),
       calculationBreakdown,
       breakdownMissingReason,
+      calculationRequest.allocatedSDSTranche?.tranche,
     )
   }
 
