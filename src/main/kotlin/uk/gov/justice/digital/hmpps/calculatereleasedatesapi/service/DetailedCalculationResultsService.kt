@@ -37,6 +37,7 @@ open class DetailedCalculationResultsService(
       .filter { it.outcomeDate != null }
       .map { ReleaseDate(it.outcomeDate!!, ReleaseDateType.valueOf(it.calculationDateType)) }
 
+
     return DetailedCalculationResults(
       calculationContext(calculationRequestId, calculationRequest),
       calculationResultEnrichmentService.addDetailToCalculationDates(releaseDates, sentenceAndOffences, calculationBreakdown, calculationRequest.historicalTusedSource),
@@ -47,6 +48,7 @@ open class DetailedCalculationResultsService(
       ),
       calculationBreakdown,
       breakdownMissingReason,
+      calculationRequest.allocatedSDSTranche?.tranche
     )
   }
 
