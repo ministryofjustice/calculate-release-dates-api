@@ -314,14 +314,13 @@ class ValidationService(
     return messages
   }
 
-  private fun findUnsupportedEncouragingOffenceCodes(sentenceAndOffences: List<SentenceAndOffence>): List<SentenceAndOffence> {
+  private fun findUnsupportedEncouragingOffenceCodes(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>): List<SentenceAndOffence> {
     val offenceCodesToFilter = (2..13).map { "SC070${"%02d".format(it)}" }
     return sentenceAndOffences.filter { it.offence.offenceCode in offenceCodesToFilter }
   }
 
   private fun validateUnsupportedOffences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
-    val messages = validateUnsupportedEncouragingOffences(sentencesAndOffence).toMutableList()
-    return messages
+    return validateUnsupportedEncouragingOffences(sentencesAndOffence).toMutableList()
   }
 
   private fun validateUnsupportedEncouragingOffences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {

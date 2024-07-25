@@ -73,7 +73,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   SDS_EARLY_RELEASE_UNSUPPORTED("SDS40 Early release is not currently supported", UNSUPPORTED_CALCULATION),
   UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING(
     "Any offences that include the inchoate ‘Encouraging/ Assisting’ should be recorded as the underlying act, ending in the letter ‘e’.\n" +
-      "For example, ‘Encouraging/Assisting a Rape SX03001 would be SX03001E.",
+      "For example, ‘Encouraging/Assisting’ a Rape SX03001 would be SX03001E.",
     UNSUPPORTED_OFFENCE,
   ),
 }
