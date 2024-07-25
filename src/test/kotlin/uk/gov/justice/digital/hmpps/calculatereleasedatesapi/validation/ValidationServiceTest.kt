@@ -221,14 +221,14 @@ class ValidationServiceTest {
   @ValueSource(strings = ["SC07001", "SC07014", "FG06019", "TH68058"])
   fun `Test Sentences with supported offenceCodes shouldn't return validation message`(offenceCode: String) {
     // Arrange
-    val invalidSentence = validSdsSentence.copy(
+    val validSentence = validSdsSentence.copy(
       offence = validSdsSentence.offence.copy(offenceCode = offenceCode),
     )
 
     // Act
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(invalidSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(validSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
         USER_INPUTS,
       )
 
