@@ -201,7 +201,7 @@ class CalculationTransactionalServiceTest {
   }
 
   @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/calculation-sds-early-tranching-crs-2035.csv"], numLinesToSkip = 1)
+  @CsvFileSource(resources = ["/test_data/calculation-sds-early-tranching.csv"], numLinesToSkip = 1)
   fun `Test SDS Early Release Tranching`(
     exampleType: String,
     exampleNumber: String,
