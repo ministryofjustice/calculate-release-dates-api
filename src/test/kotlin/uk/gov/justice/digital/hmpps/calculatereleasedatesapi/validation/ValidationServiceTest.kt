@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.context.annotation.Profile
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
@@ -194,6 +196,45 @@ class ValidationServiceTest {
     ),
     emptyList(),
   )
+
+  @ParameterizedTest
+  @ValueSource(strings = ["SC07002", "SC07003", "SC07004", "SC07005", "SC07006", "SC07007", "SC07008", "SC07009", "SC07010", "SC07011", "SC07012", "SC07013"])
+  fun `Test Sentences with unsupported offenceCodes SC07002 to SC07013 returns validation message`(offenceCode: String) {
+    // Arrange
+    val invalidSentence = validSdsSentence.copy(
+      offence = validSdsSentence.offence.copy(offenceCode = offenceCode),
+    )
+
+    // Act
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(invalidSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        USER_INPUTS,
+      )
+
+    // Assert
+    assertThat(result).isNotEmpty
+    assertThat(result[0].code).isEqualTo(ValidationCode.UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING)
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = ["SC07001", "SC07014", "FG06019", "TH68058"])
+  fun `Test Sentences with supported offenceCodes shouldn't return validation message`(offenceCode: String) {
+    // Arrange
+    val validSentence = validSdsSentence.copy(
+      offence = validSdsSentence.offence.copy(offenceCode = offenceCode),
+    )
+
+    // Act
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(validSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        USER_INPUTS,
+      )
+
+    // Assert
+    assertThat(result).isEmpty()
+  }
 
   @Test
   fun `Test EDS valid sentence should pass`() {
