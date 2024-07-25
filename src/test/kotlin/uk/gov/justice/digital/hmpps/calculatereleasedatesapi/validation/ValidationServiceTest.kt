@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.context.annotation.Profile
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
@@ -43,8 +45,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.BookingHelperTest
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL
@@ -202,7 +202,7 @@ class ValidationServiceTest {
   fun `Test Sentences with unsupported offenceCodes SC07002 to SC07013 returns validation message`(offenceCode: String) {
     // Arrange
     val invalidSentence = validSdsSentence.copy(
-      offence = validSdsSentence.offence.copy(offenceCode = offenceCode)
+      offence = validSdsSentence.offence.copy(offenceCode = offenceCode),
     )
 
     // Act
@@ -222,7 +222,7 @@ class ValidationServiceTest {
   fun `Test Sentences with supported offenceCodes shouldn't return validation message`(offenceCode: String) {
     // Arrange
     val invalidSentence = validSdsSentence.copy(
-      offence = validSdsSentence.offence.copy(offenceCode = offenceCode)
+      offence = validSdsSentence.offence.copy(offenceCode = offenceCode),
     )
 
     // Act
