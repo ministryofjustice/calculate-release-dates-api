@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -93,6 +94,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SENTENCE_TYPE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ZERO_IMPRISONMENT_TERM
 import java.time.LocalDate
@@ -126,6 +128,11 @@ class ValidationService(
     val unsupportedCalculationMessages = validateUnsupportedCalculation(sourceData)
     if (unsupportedCalculationMessages.isNotEmpty()) {
       return unsupportedCalculationMessages
+    }
+
+    val unsupportedOffenceMessages = validateUnsupportedOffences(sentencesAndOffences)
+    if (unsupportedOffenceMessages.isNotEmpty()) {
+      return unsupportedOffenceMessages
     }
 
     if (featureToggles.sdsEarlyReleaseUnsupported) {
@@ -305,6 +312,23 @@ class ValidationService(
     messages += validateDtoIsNotConsecutiveToSentence(sourceData)
     messages += validateBotusWithOtherSentence(sourceData)
     return messages
+  }
+
+  private fun findUnsupportedEncouragingOffenceCodes(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>): List<SentenceAndOffence> {
+    val offenceCodesToFilter = (2..13).map { "SC070${"%02d".format(it)}" }
+    return sentenceAndOffences.filter { it.offence.offenceCode in offenceCodesToFilter }
+  }
+
+  private fun validateUnsupportedOffences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
+    return validateUnsupportedEncouragingOffences(sentencesAndOffence).toMutableList()
+  }
+
+  private fun validateUnsupportedEncouragingOffences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
+    val unSupportedEncouragingOffenceCodes = findUnsupportedEncouragingOffenceCodes(sentencesAndOffence)
+    if (unSupportedEncouragingOffenceCodes.size > 0) {
+      return listOf(ValidationMessage(UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING))
+    }
+    return emptyList()
   }
 
   private fun validateBotusWithOtherSentence(sourceData: PrisonApiSourceData): List<ValidationMessage> {
