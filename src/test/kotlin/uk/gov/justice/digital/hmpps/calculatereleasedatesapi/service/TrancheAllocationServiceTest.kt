@@ -22,7 +22,7 @@ import java.util.*
 class TrancheAllocationServiceTest {
 
   @Test
-  fun `Single 5 year SDS eligible for SDS Early Release should be allocated to tranche 1`() {
+  fun `Single 5 year SDS eligible for SDS Early Release should be allocated to tranche 2`() {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 3)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 15)
     val trancheOne = TrancheOne(testTranchOneCommencementDate)
@@ -46,7 +46,7 @@ class TrancheAllocationServiceTest {
         ),
       ),
     )
-    assertThat(result).isEqualTo(SDSEarlyReleaseTranche.TRANCHE_1)
+    assertThat(result).isEqualTo(SDSEarlyReleaseTranche.TRANCHE_2)
   }
 
   @Test
@@ -102,7 +102,7 @@ class TrancheAllocationServiceTest {
   }
 
   @Test
-  fun `5 year SDS with early release with a 4 year SDS not identified as early release track should be allocated to tranche 1`() {
+  fun `5 year SDS with early release with a 4 year SDS not identified as early release track should be allocated to tranche 2`() {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 3)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 15)
     val trancheOne = TrancheOne(testTranchOneCommencementDate)
@@ -124,7 +124,7 @@ class TrancheAllocationServiceTest {
         ),
       ),
     )
-    assertThat(result).isEqualTo(SDSEarlyReleaseTranche.TRANCHE_1)
+    assertThat(result).isEqualTo(SDSEarlyReleaseTranche.TRANCHE_2)
   }
 
   @Test
@@ -212,7 +212,7 @@ class TrancheAllocationServiceTest {
       early,
       booking,
     )
-    assertThat(result).isEqualTo(SDSEarlyReleaseTranche.TRANCHE_1)
+    assertThat(result).isEqualTo(SDSEarlyReleaseTranche.TRANCHE_2)
   }
 
   @Test
@@ -226,7 +226,7 @@ class TrancheAllocationServiceTest {
       mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
       emptyMap(),
       emptyMap(),
-      Period.ofYears(5),
+      Period.ofYears(4).plusDays(364),
       sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
     )
 
