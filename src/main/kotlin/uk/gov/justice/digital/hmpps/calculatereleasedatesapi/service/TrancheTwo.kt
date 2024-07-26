@@ -17,7 +17,7 @@ class TrancheTwo(
   override fun isBookingApplicableForTrancheCriteria(calculationResult: CalculationResult, booking: Booking): Boolean {
     return (
       booking.getAllExtractableSentences().any {
-        it.durationIsGreaterThan(
+        it.durationIsGreaterThanOrEqualTo(
           5,
           ChronoUnit.YEARS,
         )
