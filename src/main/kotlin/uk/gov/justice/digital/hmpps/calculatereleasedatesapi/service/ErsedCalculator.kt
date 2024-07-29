@@ -24,11 +24,13 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
     val ersed = calculateErsed(sentence, sentenceCalculation)
 
     if (ersed != null) {
-      if (ersed.releaseDate.isBefore(sentence.sentencedAt)) {
+      val addedDays = sentenceCalculation.calculatedTotalAddedDays + sentenceCalculation.calculatedTotalAwardedDays
+      if (ersed.releaseDate.minusDays(addedDays.toLong()).isBefore(sentence.sentencedAt)) {
         sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] =
           ReleaseDateCalculationBreakdown(
-            releaseDate = sentence.sentencedAt,
+            releaseDate = sentence.sentencedAt.plusDays(addedDays.toLong()),
             unadjustedDate = sentence.sentencedAt,
+            adjustedDays = addedDays,
             rules = setOf(CalculationRule.ERSED_BEFORE_SENTENCE_DATE),
           )
       } else {

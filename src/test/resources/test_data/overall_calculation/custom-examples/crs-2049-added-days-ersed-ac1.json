@@ -1,0 +1,37 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1970-03-03"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2024-04-02"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 5,
+          "MONTHS":8
+        }
+      },
+      "sentencedAt": "2024-09-12"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "numberOfDays": 52,
+        "appliesToSentencesFrom": "2024-09-12",
+        "fromDate": "2024-07-19",
+        "toDate": "2024-09-11"
+      }
+    ],
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "numberOfDays": 10,
+        "appliesToSentencesFrom": "2024-09-23"
+      }
+    ]
+  },
+  "calculateErsed": true
+}
