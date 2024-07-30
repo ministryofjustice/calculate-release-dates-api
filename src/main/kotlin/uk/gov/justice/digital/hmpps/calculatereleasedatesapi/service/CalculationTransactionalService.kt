@@ -112,7 +112,8 @@ class CalculationTransactionalService(
     messages = validationService.validateBeforeCalculation(booking) // Validation stage 2 of 4
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
     val (bookingAfterCalculation, calculationResult) = calculationService.calculateReleaseDates(booking, calculationUserInputs) // Validation stage 3 of 4
-    messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation) // Validation stage 4 of 4
+    messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation, calculationResult) // Validation stage 4 of 4
+
     val calculatedReleaseDates = calculate(
       booking,
       calculationType,

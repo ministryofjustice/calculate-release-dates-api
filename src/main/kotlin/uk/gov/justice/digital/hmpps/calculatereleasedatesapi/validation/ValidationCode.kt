@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import io.swagger.v3.oas.annotations.media.Schema
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_CALCULATION
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_OFFENCE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_SDS40_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.VALIDATION
 
@@ -71,6 +72,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   PRE_PCSC_DTO_WITH_ADJUSTMENT("If a Detention and training order (DTO) has a sentence date before 28 June 2022, %s cannot be applied."),
   BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE("BOTUS concurrent/consecutive with other sentence type", UNSUPPORTED_CALCULATION),
   SDS_EARLY_RELEASE_UNSUPPORTED("SDS40 Early release is not currently supported", UNSUPPORTED_CALCULATION),
+  UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE("Unsupported recalls for SDS40", UNSUPPORTED_SDS40_SENTENCE),
   UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING(
     "Any offences that include the inchoate ‘Encouraging/ Assisting’ should be recorded as the underlying act, ending in the letter ‘e’.\n" +
       "For example, ‘Encouraging/Assisting’ a Rape SX03001 would be SX03001E.",
