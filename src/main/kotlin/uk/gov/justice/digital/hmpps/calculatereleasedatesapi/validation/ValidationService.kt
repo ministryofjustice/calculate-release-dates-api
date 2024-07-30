@@ -10,7 +10,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
@@ -196,7 +195,6 @@ class ValidationService(
    */
   fun validateBookingAfterCalculation(
     booking: Booking,
-    calculationResult: CalculationResult? = null,
   ): List<ValidationMessage> {
     log.info("Validating booking after calculation: $booking")
     val messages = mutableListOf<ValidationMessage>()
@@ -206,9 +204,7 @@ class ValidationService(
     messages += validateFixedTermRecallAfterCalc(booking)
 
     if (featureToggles.sdsEarlyRelease && !featureToggles.sdsEarlyReleaseUnsupported) {
-      if (calculationResult != null) {
-        messages += validateUnsupportedRecallTypes(booking, calculationResult)
-      }
+      messages += validateUnsupportedRecallTypes(booking)
     }
 
     return messages
@@ -216,25 +212,22 @@ class ValidationService(
 
   private fun validateUnsupportedRecallTypes(
     booking: Booking,
-    calculationResult: CalculationResult,
   ): List<ValidationMessage> {
     var result = emptyList<ValidationMessage>()
-    if (calculationResult.dates.containsKey(ReleaseDateType.TUSED)) {
-      booking.getAllExtractableSentences().any {
+    booking.getAllExtractableSentences().any {
+      it.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
         (
           it is StandardDeterminateSentence ||
             (it is ConsecutiveSentence && it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence })
           ) &&
-          it.recallType != null &&
-          it.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(sds40TrancheOne.trancheCommencementDate)
-      }
-        .takeIf { it }?.let {
-          result = listOf(
-            ValidationMessage(
-              UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE,
-            ),
-          )
-        }
+        it.recallType != null &&
+        it.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(sds40TrancheOne.trancheCommencementDate)
+    }.takeIf { it }?.let {
+      result = listOf(
+        ValidationMessage(
+          UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE,
+        ),
+      )
     }
     return result
   }
