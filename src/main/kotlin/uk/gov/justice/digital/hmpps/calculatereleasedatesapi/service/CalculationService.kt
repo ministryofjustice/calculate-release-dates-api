@@ -46,7 +46,7 @@ class CalculationService(
     val (_, resultWithoutEarlyRelease) = calcAndExtract(originalBooking.copy(), options.copy(allowSDSEarlyRelease = false))
     sdsEarlyReleaseDefaultingRulesService.mergeResults(resultWithPossibleEarlyRelease, resultWithoutEarlyRelease, trancheCommencementDate, tranche)
   } else {
-    resultWithPossibleEarlyRelease.copy(sdsEarlyReleaseTranche = tranche)
+    resultWithPossibleEarlyRelease.copy(sdsEarlyReleaseAllocatedTranche = tranche, sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0)
   }
 
   private fun calcAndExtract(

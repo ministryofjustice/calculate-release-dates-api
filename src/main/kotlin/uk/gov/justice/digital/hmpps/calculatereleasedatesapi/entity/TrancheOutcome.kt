@@ -28,6 +28,10 @@ data class TrancheOutcome(
 
   @NotNull
   @Enumerated(value = EnumType.STRING)
+  val allocatedTranche: SDSEarlyReleaseTranche,
+
+  @NotNull
+  @Enumerated(value = EnumType.STRING)
   val tranche: SDSEarlyReleaseTranche,
 
   val outcomeDate: LocalDate? = LocalDate.now(),

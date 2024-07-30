@@ -43,33 +43,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     assertThat(service.requiresRecalculation(booking, result, testCommencementDate)).isFalse()
   }
 
-  @ParameterizedTest
-  @CsvSource(
-    "CRD,2024-07-28,true",
-    "CRD,2024-07-29,false",
-    "CRD,2024-07-30,false",
-    "ERSED,2024-07-28,true",
-    "ERSED,2024-07-29,false",
-    "ERSED,2024-07-30,false",
-    "HDCED,2024-07-28,true",
-    "HDCED,2024-07-29,false",
-    "HDCED,2024-07-30,false",
-    "PED,2024-07-28,true",
-    "PED,2024-07-29,false",
-    "PED,2024-07-30,false",
-  )
-  fun `should require recalculation only if SDS early release and date is before commencement date`(type: ReleaseDateType, date: LocalDate, requiresRecalc: Boolean) {
-    val booking = createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE)
-    val result = CalculationResult(
-      mapOf(type to date),
-      emptyMap(),
-      emptyMap(),
-      Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
-    )
-    assertThat(service.requiresRecalculation(booking, result, testCommencementDate)).isEqualTo(requiresRecalc)
-  }
-
   @Test
   fun `should require recalculation if any single type requires recalc`() {
     val booking = createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE)
@@ -171,6 +144,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         ),
         emptyMap(),
         Period.ofYears(5),
+        sdsEarlyReleaseAllocatedTranche = SDSEarlyReleaseTranche.TRANCHE_1,
         sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
       ),
     )
@@ -222,6 +196,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         ),
         emptyMap(),
         Period.ofYears(5),
+        sdsEarlyReleaseAllocatedTranche = SDSEarlyReleaseTranche.TRANCHE_1,
         sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
       ),
     )

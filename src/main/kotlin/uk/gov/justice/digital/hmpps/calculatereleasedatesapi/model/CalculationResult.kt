@@ -13,5 +13,6 @@ data class CalculationResult(
   val effectiveSentenceLength: Period,
   val ersedNotApplicableDueToDtoLaterThanCrd: Boolean = false,
   val historicalTusedSource: HistoricalTusedSource? = null,
+  val sdsEarlyReleaseAllocatedTranche: SDSEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
   val sdsEarlyReleaseTranche: SDSEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
 )
