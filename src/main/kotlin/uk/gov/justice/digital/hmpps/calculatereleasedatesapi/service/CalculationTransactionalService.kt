@@ -275,7 +275,7 @@ class CalculationTransactionalService(
     calculationResult.dates.forEach {
       calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
     }
-    trancheOutcomeRepository.save(TrancheOutcome(calculationRequest = calculationRequest, tranche = calculationResult.sdsEarlyReleaseTranche))
+    trancheOutcomeRepository.save(TrancheOutcome(calculationRequest = calculationRequest, allocatedTranche = calculationResult.sdsEarlyReleaseAllocatedTranche, tranche = calculationResult.sdsEarlyReleaseTranche))
 
     return CalculatedReleaseDates(
       dates = calculationResult.dates,
@@ -291,6 +291,7 @@ class CalculationTransactionalService(
       otherReasonDescription = otherCalculationReason,
       calculationDate = calculationRequest.calculatedAt.toLocalDate(),
       historicalTusedSource = calculationResult.historicalTusedSource,
+      sdsEarlyReleaseAllocatedTranche = calculationResult.sdsEarlyReleaseAllocatedTranche,
       sdsEarlyReleaseTranche = calculationResult.sdsEarlyReleaseTranche,
     )
   }

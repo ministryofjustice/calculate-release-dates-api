@@ -28,6 +28,7 @@ data class CalculatedReleaseDates(
   val otherReasonDescription: String? = null,
   val calculationDate: LocalDate?,
   val historicalTusedSource: HistoricalTusedSource? = null,
+  val sdsEarlyReleaseAllocatedTranche: SDSEarlyReleaseTranche? = null,
   val sdsEarlyReleaseTranche: SDSEarlyReleaseTranche? = null,
 ) {
   fun toSentenceCalcDates(): SentenceCalcDates {

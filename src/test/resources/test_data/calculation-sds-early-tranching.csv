@@ -10,3 +10,7 @@ tranches,crs-2035-ac2-eds-sopc-tranche-0,,alt-3-calculation-params
 tranches,CRS-2065-Tranche-1-1,,alt-3-calculation-params
 tranches,CRS-2065-Tranche-2-1,,alt-3-calculation-params
 tranches,CRS-2065-Tranche-2-2,,alt-3-calculation-params
+
+tranches,crs-2071-tranche-label-bug-ac1,,alt-3-calculation-params
+tranches,crs-2071-tranche-label-bug-ac2,,alt-3-calculation-params
+tranches,crs-2071-tranche-label-bug-ac3,,alt-3-calculation-params

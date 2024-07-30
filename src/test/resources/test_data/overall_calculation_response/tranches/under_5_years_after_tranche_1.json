@@ -7,5 +7,6 @@
     "ESED": "2025-09-09"
   },
   "effectiveSentenceLength": "P2Y",
-  "sdsEarlyReleaseTranche": "TRANCHE_1"
+  "sdsEarlyReleaseTranche": "TRANCHE_1",
+  "sdsEarlyReleaseAllocatedTranche": "TRANCHE_1"
 }
