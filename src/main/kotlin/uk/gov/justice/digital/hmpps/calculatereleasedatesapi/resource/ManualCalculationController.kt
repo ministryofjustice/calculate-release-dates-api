@@ -49,6 +49,29 @@ class ManualCalculationController(
     return manualCalculationService.hasIndeterminateSentences(bookingId)
   }
 
+  @GetMapping(value = ["/{bookingId}/has-recall-sentences"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Determine if a booking has any recall sentences",
+    description = "This endpoint will return true if a booking has any recall sentences",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns a boolean value"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun hasRecallSentences(
+    @Parameter(required = true, example = "100001", description = "The booking ID to check against")
+    @PathVariable("bookingId")
+    bookingId: Long,
+  ): Boolean {
+    log.info("Request received to check if booking has recall sentences for bookingId: $bookingId")
+    return manualCalculationService.hasRecallSentences(bookingId)
+  }
+
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
   @ResponseBody

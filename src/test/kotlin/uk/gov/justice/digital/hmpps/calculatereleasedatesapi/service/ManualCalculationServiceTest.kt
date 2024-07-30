@@ -99,7 +99,11 @@ class ManualCalculationServiceTest {
       whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenReturn(workingBooking)
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.NP.name), false, SDSEarlyReleaseExclusionType.NO),
+          SentenceAndOffenceWithReleaseArrangements(
+            BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.NP.name),
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          ),
           SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false, SDSEarlyReleaseExclusionType.NO),
         ),
       )
@@ -173,7 +177,11 @@ class ManualCalculationServiceTest {
       // Arrange
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name), false, SDSEarlyReleaseExclusionType.NO),
+          SentenceAndOffenceWithReleaseArrangements(
+            BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name),
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          ),
           SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false, SDSEarlyReleaseExclusionType.NO),
         ),
       )
@@ -262,6 +270,45 @@ class ManualCalculationServiceTest {
 
       // Assert
       assertThat(result).isEqualTo(Period.of(4, 10, 29))
+    }
+  }
+
+  @Nested
+  inner class RecallSentencesTests {
+    @Test
+    fun `Check the presence of recall sentences returns true`() {
+      whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
+        listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.LR_ORA.name),
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          ),
+          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false, SDSEarlyReleaseExclusionType.NO),
+        ),
+      )
+
+      val hasRecallSentences = manualCalculationService.hasRecallSentences(BOOKING_ID)
+
+      assertThat(hasRecallSentences).isTrue()
+    }
+
+    @Test
+    fun `Check the absence of licenceRecall sentences returns false`() {
+      whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
+        listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name),
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          ),
+          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false, SDSEarlyReleaseExclusionType.NO),
+        ),
+      )
+
+      val hasRecallSentences = manualCalculationService.hasIndeterminateSentences(BOOKING_ID)
+
+      assertThat(hasRecallSentences).isFalse()
     }
   }
 
