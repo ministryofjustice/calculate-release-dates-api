@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
@@ -220,7 +221,11 @@ class ValidationService(
     var result = emptyList<ValidationMessage>()
     if (calculationResult.dates.containsKey(ReleaseDateType.TUSED)) {
       booking.getAllExtractableSentences().any {
-        it is StandardDeterminateSentence && it.recallType != null &&
+        (
+          it is StandardDeterminateSentence ||
+            (it is ConsecutiveSentence && it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence })
+          ) &&
+          it.recallType != null &&
           it.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(sds40TrancheOne.trancheCommencementDate)
       }
         .takeIf { it }?.let {

@@ -1982,6 +1982,52 @@ class ValidationServiceTest {
   }
 
   @Test
+  fun `Test consecutive sentence with LA_ORA with CRD after tranche commencement returns a validation error`() {
+    val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), SDS40_TRANCHE_ONE)
+
+    val testIdentifierUUID = UUID.randomUUID()
+
+    val laOraSentence = LA_ORA.copy(
+      identifier = testIdentifierUUID,
+    )
+    val standardSentence = STANDARD_SENTENCE.copy(
+      consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
+    )
+
+    laOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
+      unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
+    )
+    var workingBooking = BOOKING.copy(
+      sentences = listOf(
+        laOraSentence,
+        standardSentence,
+      ),
+      adjustments = Adjustments(),
+    )
+
+    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+    workingBooking.consecutiveSentences[0].sentenceCalculation = SENTENCE_CALCULATION.copy(
+      unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
+    )
+
+    val testCalculationResult = CalculationResult(
+      dates = mapOf(ReleaseDateType.TUSED to LocalDate.now(), ReleaseDateType.CRD to LocalDate.of(2024, 9, 11)),
+      effectiveSentenceLength = Period.of(0, 9, 0),
+    )
+
+    val result = validationService.validateBookingAfterCalculation(
+      workingBooking,
+      testCalculationResult,
+    )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE),
+      ),
+    )
+  }
+
+  @Test
   fun `Test LA_ORA with CRD before tranche commencement returns no error`() {
     val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), SDS40_TRANCHE_ONE)
     val laOraSentence = LA_ORA.copy()
