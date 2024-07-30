@@ -233,6 +233,7 @@ class CalculationTransactionalServiceTest {
     val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
 
     assertEquals(bookingData.dates, calculatedReleaseDates.dates)
+    assertEquals(bookingData.sdsEarlyReleaseAllocatedTranche, calculatedReleaseDates.sdsEarlyReleaseAllocatedTranche)
     assertEquals(bookingData.sdsEarlyReleaseTranche, calculatedReleaseDates.sdsEarlyReleaseTranche)
     assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
   }

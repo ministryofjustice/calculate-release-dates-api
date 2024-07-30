@@ -14,7 +14,7 @@ import java.time.LocalDate
 class SDSEarlyReleaseDefaultingRulesService {
 
   fun requiresRecalculation(booking: Booking, result: CalculationResult, trancheCommencementDate: LocalDate?): Boolean {
-    return hasAnySDSEarlyRelease(booking) && hasAnyReleaseBeforeTrancheCommencement(result, trancheCommencementDate)
+    return hasAnySDSEarlyRelease(booking)
   }
 
   fun mergeResults(
@@ -26,15 +26,23 @@ class SDSEarlyReleaseDefaultingRulesService {
     val dates = earlyReleaseResult.dates.toMutableMap()
     val breakdownByReleaseDateType = earlyReleaseResult.breakdownByReleaseDateType.toMutableMap()
 
-    DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.forEach { releaseDateType ->
-      mergeDate(
-        releaseDateType,
-        earlyReleaseResult,
-        standardReleaseResult,
-        trancheCommencementDate,
-        dates,
-        breakdownByReleaseDateType,
-      )
+    if (hasAnyReleaseBeforeTrancheCommencement(earlyReleaseResult, trancheCommencementDate)) {
+      DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.forEach { releaseDateType ->
+        mergeDate(
+          releaseDateType,
+          earlyReleaseResult,
+          standardReleaseResult,
+          trancheCommencementDate,
+          dates,
+          breakdownByReleaseDateType,
+        )
+      }
+    }
+
+    val calculatedTranche = if (earlyReleaseResult.dates == standardReleaseResult.dates) {
+      SDSEarlyReleaseTranche.TRANCHE_0
+    } else {
+      allocatedTranche
     }
 
     return CalculationResult(
@@ -42,7 +50,8 @@ class SDSEarlyReleaseDefaultingRulesService {
       breakdownByReleaseDateType,
       earlyReleaseResult.otherDates,
       earlyReleaseResult.effectiveSentenceLength,
-      sdsEarlyReleaseTranche = allocatedTranche,
+      sdsEarlyReleaseAllocatedTranche = allocatedTranche,
+      sdsEarlyReleaseTranche = calculatedTranche,
     )
   }
 
