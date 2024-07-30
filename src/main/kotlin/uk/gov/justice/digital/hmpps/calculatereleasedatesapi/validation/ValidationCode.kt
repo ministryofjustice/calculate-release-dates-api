@@ -3,9 +3,9 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import io.swagger.v3.oas.annotations.media.Schema
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_CALCULATION
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_OFFENCE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_SDS40_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.VALIDATION
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_SDS40_SENTENCE
 
 @Schema(description = "Validation code details")
 enum class ValidationCode(val message: String, val validationType: ValidationType = VALIDATION) {

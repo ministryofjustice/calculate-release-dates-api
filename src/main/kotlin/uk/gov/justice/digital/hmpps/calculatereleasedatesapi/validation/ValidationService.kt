@@ -44,6 +44,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheOne
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA
@@ -108,6 +109,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 class ValidationService(
   private val extractionService: SentencesExtractionService,
   private val featureToggles: FeatureToggles,
+  private val sds40TrancheOne: TrancheOne,
 ) {
   fun validateBeforeCalculation(
     sourceData: PrisonApiSourceData,
@@ -203,8 +205,9 @@ class ValidationService(
     messages += validateFixedTermRecallAfterCalc(booking)
 
     if (featureToggles.sdsEarlyRelease && !featureToggles.sdsEarlyReleaseUnsupported) {
-      if (calculationResult != null)
+      if (calculationResult != null) {
         messages += validateUnsupportedRecallTypes(booking, calculationResult)
+      }
     }
 
     return messages
@@ -217,8 +220,8 @@ class ValidationService(
     var result = emptyList<ValidationMessage>()
     if (calculationResult.dates.containsKey(ReleaseDateType.TUSED)) {
       booking.getAllExtractableSentences().any {
-        it is StandardDeterminateSentence && it.recallType != null
-          && it.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(LocalDate.of(2024, 9, 10))
+        it is StandardDeterminateSentence && it.recallType != null &&
+          it.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(sds40TrancheOne.trancheCommencementDate)
       }
         .takeIf { it }?.let {
           result = listOf(
@@ -387,10 +390,13 @@ class ValidationService(
           validationMessages.add(ValidationMessage(code = DTO_CONSECUTIVE_TO_SENTENCE))
         }
         if (sourceData.sentenceAndOffences.any { sent ->
-            (sent.consecutiveToSequence == it.sentenceSequence && SentenceCalculationType.from(
-              sent.sentenceCalculationType,
-            ).sentenceClazz != DetentionAndTrainingOrderSentence::class.java)
-          }) {
+            (
+              sent.consecutiveToSequence == it.sentenceSequence && SentenceCalculationType.from(
+                sent.sentenceCalculationType,
+              ).sentenceClazz != DetentionAndTrainingOrderSentence::class.java
+              )
+          }
+        ) {
           validationMessages.add(ValidationMessage(code = DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT))
         }
       }
@@ -952,15 +958,5 @@ class ValidationService(
     )
     private const val TWELVE = 12L
     private val log = LoggerFactory.getLogger(this::class.java)
-    private val unsupportedRecallTypesForSDS40 = listOf<SentenceCalculationType>(
-      SentenceCalculationType.LR_ORA,
-      SentenceCalculationType.LR_YOI_ORA,
-      SentenceCalculationType.LR_SEC91_ORA,
-      SentenceCalculationType.LRSEC250_ORA,
-      SentenceCalculationType.FTR_14_HDC_ORA,
-      SentenceCalculationType.FTR_ORA,
-      SentenceCalculationType.FTRSCH15_ORA,
-      SentenceCalculationType.FTRSCH18_ORA,
-    )
   }
 }
