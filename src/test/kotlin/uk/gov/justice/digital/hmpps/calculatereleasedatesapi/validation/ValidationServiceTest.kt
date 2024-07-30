@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSente
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
@@ -24,6 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.STANDARD_RECALL
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -89,7 +89,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ZERO_IMPRISONMENT_TERM
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
@@ -1948,30 +1947,25 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test LA_ORA with CRD after tranche commencement returns a validation error`() {
+  fun `Test LR_ORA with CRD after tranche commencement returns a validation error`() {
     val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), SDS40_TRANCHE_ONE)
-    val laOraSentence = LA_ORA.copy()
+    val lrOraSentence = LR_ORA.copy()
 
-    laOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
+    lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
       unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
     )
     var workingBooking = BOOKING.copy(
       sentences = listOf(
-        laOraSentence,
+        lrOraSentence,
       ),
       adjustments = Adjustments(),
     )
+    lrOraSentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
 
     workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
 
-    val testCalculationResult = CalculationResult(
-      dates = mapOf(ReleaseDateType.TUSED to LocalDate.now(), ReleaseDateType.CRD to LocalDate.of(2024, 9, 11)),
-      effectiveSentenceLength = Period.of(0, 9, 0),
-    )
-
     val result = validationService.validateBookingAfterCalculation(
       workingBooking,
-      testCalculationResult,
     )
 
     assertThat(result).isEqualTo(
@@ -1982,42 +1976,38 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test consecutive sentence with LA_ORA with CRD after tranche commencement returns a validation error`() {
+  fun `Test consecutive sentence with LR_ORA with CRD after tranche commencement returns a validation error`() {
     val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), SDS40_TRANCHE_ONE)
 
     val testIdentifierUUID = UUID.randomUUID()
 
-    val laOraSentence = LA_ORA.copy(
+    val lrOraSentence = LR_ORA.copy(
       identifier = testIdentifierUUID,
     )
     val standardSentence = STANDARD_SENTENCE.copy(
       consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
     )
 
-    laOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
+    lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
       unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
     )
     var workingBooking = BOOKING.copy(
       sentences = listOf(
-        laOraSentence,
+        lrOraSentence,
         standardSentence,
       ),
       adjustments = Adjustments(),
     )
+    lrOraSentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
 
     workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
     workingBooking.consecutiveSentences[0].sentenceCalculation = SENTENCE_CALCULATION.copy(
       unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
     )
-
-    val testCalculationResult = CalculationResult(
-      dates = mapOf(ReleaseDateType.TUSED to LocalDate.now(), ReleaseDateType.CRD to LocalDate.of(2024, 9, 11)),
-      effectiveSentenceLength = Period.of(0, 9, 0),
-    )
+    workingBooking.consecutiveSentences[0].releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
 
     val result = validationService.validateBookingAfterCalculation(
       workingBooking,
-      testCalculationResult,
     )
 
     assertThat(result).isEqualTo(
@@ -2028,60 +2018,50 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test LA_ORA with CRD before tranche commencement returns no error`() {
+  fun `Test LR_ORA with CRD before tranche commencement returns no error`() {
     val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), SDS40_TRANCHE_ONE)
-    val laOraSentence = LA_ORA.copy()
+    val lrOraSentence = LR_ORA.copy()
 
-    laOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
+    lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
       unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 9),
     )
     var workingBooking = BOOKING.copy(
       sentences = listOf(
-        laOraSentence,
+        lrOraSentence,
       ),
       adjustments = Adjustments(),
     )
+    lrOraSentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
 
     workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
 
-    val testCalculationResult = CalculationResult(
-      dates = mapOf(ReleaseDateType.TUSED to LocalDate.now(), ReleaseDateType.CRD to LocalDate.of(2024, 9, 9)),
-      effectiveSentenceLength = Period.of(0, 9, 0),
-    )
-
     val result = validationService.validateBookingAfterCalculation(
       workingBooking,
-      testCalculationResult,
     )
 
     assertThat(result).isEmpty()
   }
 
   @Test
-  fun `Test LA_ORA with no TUSED after tranche commencement returns no error`() {
+  fun `Test LR with no TUSED after tranche commencement returns no error`() {
     val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), SDS40_TRANCHE_ONE)
-    val laOraSentence = LA_ORA.copy()
+    val lrOraSentence = LR_ORA.copy()
 
-    laOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
+    lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
       unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
     )
     var workingBooking = BOOKING.copy(
       sentences = listOf(
-        laOraSentence,
+        lrOraSentence,
       ),
       adjustments = Adjustments(),
     )
+    lrOraSentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.CRD), lrOraSentence, workingBooking.offender)
 
     workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
 
-    val testCalculationResult = CalculationResult(
-      dates = mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 9, 11)),
-      effectiveSentenceLength = Period.of(0, 9, 0),
-    )
-
     val result = validationService.validateBookingAfterCalculation(
       workingBooking,
-      testCalculationResult,
     )
 
     assertThat(result).isEmpty()
@@ -2211,7 +2191,7 @@ class ValidationServiceTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
-    private val LA_ORA = StandardDeterminateSentence(
+    private val LR_ORA = StandardDeterminateSentence(
       sentencedAt = LocalDate.of(2024, 1, 10),
       duration = Duration(mapOf(MONTHS to 18L)),
       offence = Offence(
