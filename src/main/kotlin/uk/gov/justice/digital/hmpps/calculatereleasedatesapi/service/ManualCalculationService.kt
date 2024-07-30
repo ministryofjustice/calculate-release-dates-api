@@ -48,6 +48,11 @@ class ManualCalculationService(
     return sentencesAndOffences.any { SentenceCalculationType.isIndeterminate(it.sentenceCalculationType) }
   }
 
+  fun hasRecallSentences(bookingId: Long): Boolean {
+    val sentencesAndOffences = prisonService.getSentencesAndOffences(bookingId)
+    return sentencesAndOffences.any { SentenceCalculationType.from((it.sentenceCalculationType)).recallType != null }
+  }
+
   // Write a method to create EffectiveSentenceLength
   @Transactional
   fun storeManualCalculation(
