@@ -74,14 +74,17 @@ class SDSEarlyReleaseDefaultingRulesService {
           it.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
             (
               it is StandardDeterminateSentence ||
-                (it is ConsecutiveSentence
-                  && it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence })
-              )
-            && it.recallType != null
-            && it.sentenceCalculation.adjustedDeterminateReleaseDate.isBeforeOrEqualTo(
-            trancheOneCommencementDate,
-          )
-        }) {
+                (
+                  it is ConsecutiveSentence &&
+                    it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence }
+                  )
+              ) &&
+            it.recallType != null &&
+            it.sentenceCalculation.adjustedDeterminateReleaseDate.isBeforeOrEqualTo(
+              trancheOneCommencementDate,
+            )
+        }
+      ) {
         standardReleaseResult.dates[ReleaseDateType.TUSED]?.let {
           dates[ReleaseDateType.TUSED] = it
         }
@@ -89,7 +92,7 @@ class SDSEarlyReleaseDefaultingRulesService {
           breakdownByReleaseDateType[ReleaseDateType.TUSED] = it
         }
       }
-      }
+    }
   }
 
   private fun hasAnySDSEarlyRelease(anInitialCalc: Booking) =

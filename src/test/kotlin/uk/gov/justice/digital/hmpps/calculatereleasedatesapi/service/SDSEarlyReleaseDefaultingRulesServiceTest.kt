@@ -114,7 +114,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
   }
 
   @Test
-  fun `should take original TUSED and breakdown if recall CRD is before Tranche 1 Commencement`(){
+  fun `should take original TUSED and breakdown if recall CRD is before Tranche 1 Commencement`() {
     val testBreakdown = ReleaseDateCalculationBreakdown(
       setOf(CalculationRule.CONSECUTIVE_SENTENCE_HDCED_CALCULATION),
     )
@@ -122,7 +122,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     val standard = CalculationResult(
       mapOf(ReleaseDateType.TUSED to LocalDate.of(2024, 8, 1)),
       mapOf(
-        ReleaseDateType.TUSED to testBreakdown
+        ReleaseDateType.TUSED to testBreakdown,
       ),
       emptyMap(),
       Period.ofYears(5),
@@ -140,9 +140,9 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       lineSequence = 1,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-      recallType = RecallType.STANDARD_RECALL
+      recallType = RecallType.STANDARD_RECALL,
     )
-    sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED),sentence,testOffender)
+    sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
 
     val date = LocalDate.of(2024, 1, 1)
     val sentenceCalculation = SentenceCalculation(
@@ -181,14 +181,14 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
 
     val resultDates = mutableMapOf<ReleaseDateType, LocalDate>(ReleaseDateType.TUSED to LocalDate.now())
     val resultBreakdown = mutableMapOf<ReleaseDateType, ReleaseDateCalculationBreakdown>()
-    service.handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(resultDates,recallBooking,testCommencementDate,standard, resultBreakdown)
+    service.handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(resultDates, recallBooking, testCommencementDate, standard, resultBreakdown)
 
     assertThat(resultDates[ReleaseDateType.TUSED]).isEqualTo(LocalDate.of(2024, 8, 1))
     assertThat(resultBreakdown[ReleaseDateType.TUSED]).isEqualTo(testBreakdown)
   }
 
   @Test
-  fun `should retain existing TUSED and breakdown if recall CRD is after Tranche 1 Commencement`(){
+  fun `should retain existing TUSED and breakdown if recall CRD is after Tranche 1 Commencement`() {
     val testBreakdown = ReleaseDateCalculationBreakdown(
       setOf(CalculationRule.CONSECUTIVE_SENTENCE_HDCED_CALCULATION),
     )
@@ -196,7 +196,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     val standard = CalculationResult(
       mapOf(ReleaseDateType.TUSED to LocalDate.of(2024, 11, 1)),
       mapOf(
-        ReleaseDateType.TUSED to testBreakdown
+        ReleaseDateType.TUSED to testBreakdown,
       ),
       emptyMap(),
       Period.ofYears(5),
@@ -214,9 +214,9 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       lineSequence = 1,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-      recallType = RecallType.STANDARD_RECALL
+      recallType = RecallType.STANDARD_RECALL,
     )
-    sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED),sentence,testOffender)
+    sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
 
     val date = LocalDate.of(2024, 1, 1)
     val sentenceCalculation = SentenceCalculation(
@@ -255,7 +255,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
 
     val resultDates = mutableMapOf<ReleaseDateType, LocalDate>(ReleaseDateType.TUSED to date)
     val resultBreakdown = mutableMapOf<ReleaseDateType, ReleaseDateCalculationBreakdown>()
-    service.handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(resultDates,recallBooking,testCommencementDate,standard, resultBreakdown)
+    service.handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(resultDates, recallBooking, testCommencementDate, standard, resultBreakdown)
 
     assertThat(resultDates[ReleaseDateType.TUSED]).isEqualTo(date)
     assertThat(resultBreakdown).doesNotContainKeys(ReleaseDateType.TUSED)
