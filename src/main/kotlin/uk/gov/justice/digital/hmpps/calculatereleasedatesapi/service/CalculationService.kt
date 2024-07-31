@@ -32,7 +32,7 @@ class CalculationService(
       SDSEarlyReleaseTranche.TRANCHE_2 -> trancheTwo.trancheCommencementDate
     }
 
-    return workingBooking to adjustResultsForSDSEarlyReleaseIfRequired(booking, workingBooking, result, options, tranchCommencentDate, tranche)
+    return workingBooking to adjustResultsForSDSEarlyReleaseIfRequired(booking, workingBooking, result, options, tranchCommencentDate, tranche, trancheOne.trancheCommencementDate)
   }
 
   private fun adjustResultsForSDSEarlyReleaseIfRequired(
@@ -42,9 +42,10 @@ class CalculationService(
     options: CalculationOptions,
     trancheCommencementDate: LocalDate?,
     tranche: SDSEarlyReleaseTranche,
+    trancheOneCommencementDate: LocalDate,
   ) = if (sdsEarlyReleaseDefaultingRulesService.requiresRecalculation(workingBookingForPossibleEarlyRelease, resultWithPossibleEarlyRelease, trancheCommencementDate)) {
-    val (_, resultWithoutEarlyRelease) = calcAndExtract(originalBooking.copy(), options.copy(allowSDSEarlyRelease = false))
-    sdsEarlyReleaseDefaultingRulesService.mergeResults(resultWithPossibleEarlyRelease, resultWithoutEarlyRelease, trancheCommencementDate, tranche)
+    val (originalReleaseBooking, resultWithoutEarlyRelease) = calcAndExtract(originalBooking.copy(), options.copy(allowSDSEarlyRelease = false))
+    sdsEarlyReleaseDefaultingRulesService.mergeResults(resultWithPossibleEarlyRelease, resultWithoutEarlyRelease, trancheCommencementDate, tranche, originalReleaseBooking, trancheOneCommencementDate)
   } else {
     resultWithPossibleEarlyRelease.copy(sdsEarlyReleaseAllocatedTranche = tranche, sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0)
   }
