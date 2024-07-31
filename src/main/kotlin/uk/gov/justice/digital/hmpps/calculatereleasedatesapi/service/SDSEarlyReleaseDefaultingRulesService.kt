@@ -7,7 +7,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEar
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.LocalDate
 
 @Service
@@ -22,6 +25,8 @@ class SDSEarlyReleaseDefaultingRulesService {
     standardReleaseResult: CalculationResult,
     trancheCommencementDate: LocalDate?,
     allocatedTranche: SDSEarlyReleaseTranche,
+    originalBooking: Booking,
+    trancheOneCommencementDate: LocalDate,
   ): CalculationResult {
     val dates = earlyReleaseResult.dates.toMutableMap()
     val breakdownByReleaseDateType = earlyReleaseResult.breakdownByReleaseDateType.toMutableMap()
@@ -39,6 +44,8 @@ class SDSEarlyReleaseDefaultingRulesService {
       }
     }
 
+    handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(dates, originalBooking, trancheOneCommencementDate, standardReleaseResult, breakdownByReleaseDateType)
+
     val calculatedTranche = if (earlyReleaseResult.dates == standardReleaseResult.dates) {
       SDSEarlyReleaseTranche.TRANCHE_0
     } else {
@@ -53,6 +60,39 @@ class SDSEarlyReleaseDefaultingRulesService {
       sdsEarlyReleaseAllocatedTranche = allocatedTranche,
       sdsEarlyReleaseTranche = calculatedTranche,
     )
+  }
+
+  fun handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(
+    dates: MutableMap<ReleaseDateType, LocalDate>,
+    originalBooking: Booking,
+    trancheOneCommencementDate: LocalDate,
+    standardReleaseResult: CalculationResult,
+    breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+  ) {
+    if (dates.containsKey(ReleaseDateType.TUSED)) {
+      if (originalBooking.getAllExtractableSentences().any {
+          it.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
+            (
+              it is StandardDeterminateSentence ||
+                (
+                  it is ConsecutiveSentence &&
+                    it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence }
+                  )
+              ) &&
+            it.recallType != null &&
+            it.sentenceCalculation.adjustedDeterminateReleaseDate.isBeforeOrEqualTo(
+              trancheOneCommencementDate,
+            )
+        }
+      ) {
+        standardReleaseResult.dates[ReleaseDateType.TUSED]?.let {
+          dates[ReleaseDateType.TUSED] = it
+        }
+        standardReleaseResult.breakdownByReleaseDateType[ReleaseDateType.TUSED]?.let {
+          breakdownByReleaseDateType[ReleaseDateType.TUSED] = it
+        }
+      }
+    }
   }
 
   private fun hasAnySDSEarlyRelease(anInitialCalc: Booking) =

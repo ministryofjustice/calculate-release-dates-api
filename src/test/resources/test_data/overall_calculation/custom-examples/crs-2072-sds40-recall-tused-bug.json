@@ -1,0 +1,55 @@
+{
+  "offender": {
+    "reference": "A1234AA",
+    "dateOfBirth": "1989-01-01",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 1,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2023-11-20",
+        "offenceCode": "OF61017"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 18
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "549ea389-5909-3361-8077-7529e29f78f8",
+      "recallType": "STANDARD_RECALL",
+      "sentencedAt": "2024-01-29",
+      "caseSequence": 1,
+      "lineSequence": 2,
+      "caseReference": "43SW0729923",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    }
+  ],
+  "adjustments": {
+    "RECALL_REMAND": [
+      {
+        "toDate": "2024-01-28",
+        "fromDate": "2023-11-21",
+        "numberOfDays": 69,
+        "appliesToSentencesFrom": "2024-01-29"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "toDate": "2024-07-18",
+        "fromDate": "2024-06-29",
+        "numberOfDays": 20,
+        "appliesToSentencesFrom": "2024-06-29"
+      }
+    ]
+  },
+  "historicalTusedData": null,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}
