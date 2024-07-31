@@ -14,7 +14,7 @@ generic-service:
     MANAGE-OFFENCES_API_URL: https://manage-offences-api.hmpps.service.justice.gov.uk
     BOTUS_FEATURE_TOGGLE: "false"
     SDS_EARLY_RELEASE_FEATURE_TOGGLE: "false"
-    SDS_EARLY_RELEASE_UNSUPPORTED_FEATURE_TOGGLE: "false"
+    SDS_EARLY_RELEASE_UNSUPPORTED_FEATURE_TOGGLE: "true"
 
   serviceAccountName: calculate-release-dates-api-prod
 
