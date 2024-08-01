@@ -33,7 +33,7 @@ import java.util.*
 class SDSEarlyReleaseDefaultingRulesServiceTest {
 
   private val testCommencementDate = LocalDate.of(2024, 7, 29)
-  private val service = SDSEarlyReleaseDefaultingRulesService()
+  private val service = SDSEarlyReleaseDefaultingRulesService(SentencesExtractionService())
 
   @Test
   fun `should not require recalculation if no SDS early release`() {
@@ -367,7 +367,28 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     sentence.identificationTrack = identificationTrack
-    return Booking(
+    val date = LocalDate.of(2024, 1, 1)
+    val sentenceCalculation = SentenceCalculation(
+      sentence,
+      3,
+      4.0,
+      4,
+      4,
+      date,
+      date,
+      unadjustedDeterminateReleaseDate = testCommencementDate.plusDays(1),
+      1,
+      date,
+      false,
+      Adjustments(
+        mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(numberOfDays = 1, appliesToSentencesFrom = date))),
+      ),
+      date,
+      date,
+    )
+    sentence.sentenceCalculation = sentenceCalculation
+
+    val booking = Booking(
       Offender("a", LocalDate.of(1980, 1, 1), true),
       listOf(
         sentence,
@@ -377,5 +398,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       null,
       123,
     )
+    booking.consecutiveSentences = emptyList()
+    return booking
   }
 }
