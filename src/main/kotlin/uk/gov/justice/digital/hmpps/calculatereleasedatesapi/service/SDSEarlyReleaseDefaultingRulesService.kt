@@ -9,12 +9,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 
 @Service
-class SDSEarlyReleaseDefaultingRulesService {
+class SDSEarlyReleaseDefaultingRulesService(
+  val extractionService: SentencesExtractionService,
+) {
 
   fun requiresRecalculation(booking: Booking, result: CalculationResult, trancheCommencementDate: LocalDate?): Boolean {
     return hasAnySDSEarlyRelease(booking)
@@ -69,7 +72,9 @@ class SDSEarlyReleaseDefaultingRulesService {
     standardReleaseResult: CalculationResult,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   ) {
-    if (dates.containsKey(ReleaseDateType.TUSED)) {
+    val latestReleaseDate = extractionService.mostRecentSentence(originalBooking.getAllExtractableSentences(), SentenceCalculation::adjustedDeterminateReleaseDate).sentenceCalculation.adjustedDeterminateReleaseDate
+
+    if (dates.containsKey(ReleaseDateType.TUSED) && !latestReleaseDate.isAfterOrEqualTo(trancheOneCommencementDate)) {
       if (originalBooking.getAllExtractableSentences().any {
           it.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
             (
@@ -79,10 +84,7 @@ class SDSEarlyReleaseDefaultingRulesService {
                     it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence }
                   )
               ) &&
-            it.recallType != null &&
-            it.sentenceCalculation.adjustedDeterminateReleaseDate.isBeforeOrEqualTo(
-              trancheOneCommencementDate,
-            )
+            it.recallType != null
         }
       ) {
         standardReleaseResult.dates[ReleaseDateType.TUSED]?.let {
