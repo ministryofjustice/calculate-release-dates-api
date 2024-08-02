@@ -47,7 +47,13 @@ class SDSEarlyReleaseDefaultingRulesService(
       }
     }
 
-    handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(dates, originalBooking, trancheOneCommencementDate, standardReleaseResult, breakdownByReleaseDateType)
+    handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(
+      dates,
+      originalBooking,
+      trancheOneCommencementDate,
+      standardReleaseResult,
+      breakdownByReleaseDateType,
+    )
 
     val calculatedTranche = if (earlyReleaseResult.dates == standardReleaseResult.dates) {
       SDSEarlyReleaseTranche.TRANCHE_0
@@ -72,19 +78,14 @@ class SDSEarlyReleaseDefaultingRulesService(
     standardReleaseResult: CalculationResult,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   ) {
-    val latestReleaseDate = extractionService.mostRecentSentence(originalBooking.getAllExtractableSentences(), SentenceCalculation::adjustedDeterminateReleaseDate).sentenceCalculation.adjustedDeterminateReleaseDate
+    val latestReleaseDate = extractionService.mostRecentSentence(
+      originalBooking.getAllExtractableSentences(),
+      SentenceCalculation::adjustedDeterminateReleaseDate,
+    ).sentenceCalculation.adjustedDeterminateReleaseDate
 
     if (dates.containsKey(ReleaseDateType.TUSED) && !latestReleaseDate.isAfterOrEqualTo(trancheOneCommencementDate)) {
       if (originalBooking.getAllExtractableSentences().any {
-          it.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
-            (
-              it is StandardDeterminateSentence ||
-                (
-                  it is ConsecutiveSentence &&
-                    it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence }
-                  )
-              ) &&
-            it.recallType != null
+          it.releaseDateTypes.contains(ReleaseDateType.TUSED) && (it is StandardDeterminateSentence || (it is ConsecutiveSentence && it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence })) && it.recallType != null
         }
       ) {
         standardReleaseResult.dates[ReleaseDateType.TUSED]?.let {
@@ -104,8 +105,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     result: CalculationResult,
     trancheCommencementDate: LocalDate?,
   ): Boolean {
-    return DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE
-      .mapNotNull { result.dates[it] }
+    return DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.mapNotNull { result.dates[it] }
       .any { it < trancheCommencementDate }
   }
 
@@ -119,25 +119,34 @@ class SDSEarlyReleaseDefaultingRulesService(
   ) {
     val early = earlyReleaseResult.dates[dateType]
     val standard = standardReleaseResult.dates[dateType]
-    if (commencementDate != null && early != null && early < commencementDate && standard != null && standard >= commencementDate) {
-      dates[dateType] = commencementDate
-      breakdownByReleaseDateType[dateType] = ReleaseDateCalculationBreakdown(
-        setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_COMMENCEMENT),
-        releaseDate = commencementDate,
-        unadjustedDate = early,
-      )
-    } else if (standard != null && ((commencementDate != null && standard.isBefore(commencementDate)) || commencementDate == null)) {
-      dates[dateType] = standard
-      standardReleaseResult.breakdownByReleaseDateType[dateType]?.let {
-        breakdownByReleaseDateType[dateType] = it
+    val isEarlyBeforeCommencement = early != null && early < commencementDate
+    val isStandardOnOrAfterCommencement = standard != null && commencementDate != null && standard >= commencementDate
+    val isStandardBeforeCommencement = standard != null && commencementDate != null && standard < commencementDate
+
+    when {
+      // if the 40% release is before commencement, but the standard is on or after commencement
+      early != null && commencementDate != null && isEarlyBeforeCommencement && isStandardOnOrAfterCommencement -> {
+        dates[dateType] = commencementDate
+        breakdownByReleaseDateType[dateType] = ReleaseDateCalculationBreakdown(
+          setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_COMMENCEMENT),
+          releaseDate = commencementDate,
+          unadjustedDate = early,
+        )
       }
-      // Handle TUSED adjustment to standard when normal CRD is being used.
-      if (dateType == ReleaseDateType.CRD && standardReleaseResult.dates.containsKey(ReleaseDateType.TUSED)) {
-        standardReleaseResult.dates[ReleaseDateType.TUSED]?.let {
-          dates[ReleaseDateType.TUSED] = it
+      // if the 50% release is before commencement or commencement is null
+      standard != null && (isStandardBeforeCommencement || commencementDate == null) -> {
+        dates[dateType] = standard
+        standardReleaseResult.breakdownByReleaseDateType[dateType]?.let {
+          breakdownByReleaseDateType[dateType] = it
         }
-        standardReleaseResult.breakdownByReleaseDateType[ReleaseDateType.TUSED]?.let {
-          breakdownByReleaseDateType[ReleaseDateType.TUSED] = it
+        // Handle TUSED adjustment to standard when normal CRD is being used.
+        if (dateType == ReleaseDateType.CRD && standardReleaseResult.dates.containsKey(ReleaseDateType.TUSED)) {
+          standardReleaseResult.dates[ReleaseDateType.TUSED]?.let {
+            dates[ReleaseDateType.TUSED] = it
+          }
+          standardReleaseResult.breakdownByReleaseDateType[ReleaseDateType.TUSED]?.let {
+            breakdownByReleaseDateType[ReleaseDateType.TUSED] = it
+          }
         }
       }
     }
