@@ -2233,6 +2233,7 @@ class ValidationServiceTest {
       ),
       FIRST_MAY_2018,
     )
+
     private val BOOKING = Booking(
       bookingId = 123456,
       returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,

@@ -49,19 +49,13 @@ class SDSEarlyReleaseDefaultingRulesService(
 
     handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(dates, originalBooking, trancheOneCommencementDate, standardReleaseResult, breakdownByReleaseDateType)
 
-    val calculatedTranche = if (earlyReleaseResult.dates == standardReleaseResult.dates) {
-      SDSEarlyReleaseTranche.TRANCHE_0
-    } else {
-      allocatedTranche
-    }
-
     return CalculationResult(
       dates,
       breakdownByReleaseDateType,
       earlyReleaseResult.otherDates,
       earlyReleaseResult.effectiveSentenceLength,
       sdsEarlyReleaseAllocatedTranche = allocatedTranche,
-      sdsEarlyReleaseTranche = calculatedTranche,
+      sdsEarlyReleaseTranche = allocatedTranche,
     )
   }
 
@@ -100,7 +94,7 @@ class SDSEarlyReleaseDefaultingRulesService(
   private fun hasAnySDSEarlyRelease(anInitialCalc: Booking) =
     anInitialCalc.sentences.any { it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE }
 
-  private fun hasAnyReleaseBeforeTrancheCommencement(
+  fun hasAnyReleaseBeforeTrancheCommencement(
     result: CalculationResult,
     trancheCommencementDate: LocalDate?,
   ): Boolean {
