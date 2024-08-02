@@ -1,6 +1,6 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.0"
-  id("org.springdoc.openapi-gradle-plugin") version "1.8.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.2"
+  id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.0.0"
   kotlin("plugin.jpa") version "2.0.0"
   id("jacoco")
@@ -26,7 +26,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-actuator")
 
   // GOVUK Notify:
-  implementation("uk.gov.service.notify:notifications-java-client:5.1.0-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:5.2.0-RELEASE")
 
   // Enable kotlin reflect
   implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
@@ -42,32 +42,32 @@ dependencies {
   runtimeOnly("org.postgresql:postgresql:42.7.3")
 
   // JWT
-  implementation("io.jsonwebtoken:jjwt-api:0.12.5")
-  runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
-  runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
+  implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+  runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+  runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
   implementation("io.arrow-kt:arrow-core:1.2.4")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.7.6")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.8.2")
 
   // OpenAPI
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.3")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
-  implementation("org.springframework:spring-jms:6.1.9")
+  implementation("org.springframework:spring-jms:6.1.11")
   implementation("com.google.code.gson:gson:2.11.0")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.0.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.1.0")
 
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.7")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.4.1")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.22")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
   testImplementation("com.h2database:h2")
 
   if (project.hasProperty("docs")) {
