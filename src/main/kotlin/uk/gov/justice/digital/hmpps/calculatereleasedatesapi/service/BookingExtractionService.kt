@@ -288,19 +288,13 @@ class BookingExtractionService(
         }
       }
     } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
-      val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }
-      if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
-        dates[CRD] = latestReleaseDate
-        // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
-        val releaseDateType =
-          if (mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType.containsKey(CRD)) CRD else ARD
-        breakdownByReleaseDateType[CRD] =
-          mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]!!
-      } else {
-        dates[ARD] = latestReleaseDate
-        breakdownByReleaseDateType[ARD] =
-          mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
-      }
+      extractCrdOrArd(
+        mostRecentSentencesByReleaseDate,
+        concurrentOraAndNonOraDetails,
+        dates,
+        latestReleaseDate,
+        breakdownByReleaseDateType
+      )
     }
 
     val latestPostRecallReleaseDate =
@@ -373,6 +367,28 @@ class BookingExtractionService(
       effectiveSentenceLength,
       ersedNotApplicableDueToDtoLaterThanCrd,
     )
+  }
+
+  fun extractCrdOrArd(
+    mostRecentSentencesByReleaseDate: List<CalculableSentence>,
+    concurrentOraAndNonOraDetails: ConcurrentOraAndNonOraDetails,
+    dates: MutableMap<ReleaseDateType, LocalDate>,
+    latestReleaseDate: LocalDate,
+    breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+  ) {
+    val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }
+    if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
+      dates[CRD] = latestReleaseDate
+      // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
+      val releaseDateType =
+        if (mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType.containsKey(CRD)) CRD else ARD
+      breakdownByReleaseDateType[CRD] =
+        mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]!!
+    } else {
+      dates[ARD] = latestReleaseDate
+      breakdownByReleaseDateType[ARD] =
+        mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
+    }
   }
 
   private fun extractPedForBooking(
