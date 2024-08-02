@@ -202,10 +202,7 @@ class ValidationService(
     messages += validateRemandOverlappingSentences(booking)
     messages += validateAdditionAdjustmentsInsideLatestReleaseDate(booking)
     messages += validateFixedTermRecallAfterCalc(booking)
-
-    if (featureToggles.sdsEarlyRelease && !featureToggles.sdsEarlyReleaseUnsupported) {
-      messages += validateUnsupportedRecallTypes(booking)
-    }
+    messages += validateUnsupportedRecallTypes(booking)
 
     return messages
   }

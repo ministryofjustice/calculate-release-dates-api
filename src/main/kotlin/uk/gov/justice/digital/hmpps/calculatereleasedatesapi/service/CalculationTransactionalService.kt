@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -28,7 +27,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
@@ -65,7 +63,6 @@ class CalculationTransactionalService(
   private val approvedDatesSubmissionRepository: ApprovedDatesSubmissionRepository,
   private val nomisCommentService: NomisCommentService,
   private val buildProperties: BuildProperties,
-  private val featureToggles: FeatureToggles,
   private val trancheOutcomeRepository: TrancheOutcomeRepository,
 ) {
 
@@ -91,7 +88,7 @@ class CalculationTransactionalService(
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     messages = validationService.validateBeforeCalculation(booking) // Validation stage 2 of 4
     if (messages.isNotEmpty()) return messages
-    val bookingAfterCalculation = calculationService.calculate(booking, CalculationOptions(calculationUserInputs.calculateErsed, featureToggles.sdsEarlyRelease)) // Validation stage 3 of 4
+    val (bookingAfterCalculation, _) = calculationService.calculateReleaseDates(booking, calculationUserInputs) // Validation stage 3 of 4
     messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation) // Validation stage 4 of 4
     return messages
   }

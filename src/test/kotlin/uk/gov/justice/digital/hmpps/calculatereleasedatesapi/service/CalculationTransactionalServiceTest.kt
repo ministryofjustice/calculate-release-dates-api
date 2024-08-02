@@ -701,11 +701,12 @@ class CalculationTransactionalServiceTest {
       bookingCalculationService,
       bookingExtractionService,
       bookingTimelineService,
-      featureToggles,
       sdsEarlyReleaseDefaultingRulesService,
       trancheAllocationService,
       trancheOne,
       trancheTwo,
+      sentencesExtractionService,
+      TestUtil.objectMapper(),
     )
 
     return CalculationTransactionalService(
@@ -723,7 +724,6 @@ class CalculationTransactionalServiceTest {
       approvedDatesSubmissionRepository,
       nomisCommentService,
       TEST_BUILD_PROPERTIES,
-      featureToggles,
       trancheOutcomeRepository,
     )
   }
