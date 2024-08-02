@@ -158,6 +158,36 @@ class CalculationTransactionalServiceTest {
   }
 
   @ParameterizedTest
+  @CsvFileSource(resources = ["/test_data/calculation-validation-examples.csv"], numLinesToSkip = 1)
+  fun `Test calculations with validation by example`(exampleType: String, exampleNumber: String, error: String?, params: String) {
+    log.info("Testing example $exampleType/$exampleNumber")
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+
+    val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
+    val calculatedReleaseDates: CalculatedReleaseDates
+    try {
+      calculatedReleaseDates = calculationTransactionalService(params, passedInServices = listOf(ValidationService::class.java.simpleName))
+        .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
+    } catch (e: Exception) {
+      if (!error.isNullOrEmpty()) {
+        assertEquals(error, e.javaClass.simpleName)
+        return
+      } else {
+        throw e
+      }
+    }
+    log.info(
+      "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
+      TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
+    )
+    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
+
+    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
+    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
+  }
+
+  @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-hdc4-commencement-examples.csv"], numLinesToSkip = 1)
   fun `Test HDC4 move over post commencement only hdced`(
     exampleType: String,
@@ -640,6 +670,7 @@ class CalculationTransactionalServiceTest {
   private fun calculationTransactionalService(
     params: String = "calculation-params",
     overriddenConfigurationParams: Map<String, Any> = emptyMap(),
+    passedInServices: List<String> = emptyList(),
   ): CalculationTransactionalService {
     val hdcedConfiguration =
       hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
@@ -667,7 +698,6 @@ class CalculationTransactionalServiceTest {
 
     val hdced4Calculator = Hdced4Calculator(hdcedConfiguration, sentenceAggregator, releasePointMultiplierLookup)
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
-    val featureToggles = FeatureToggles(botus = false, sdsEarlyRelease = isNotDefaultParams)
     val sentenceAdjustedCalculationService =
       SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
     val sentenceCalculationService =
@@ -709,6 +739,9 @@ class CalculationTransactionalServiceTest {
       TestUtil.objectMapper(),
     )
 
+    val validationServiceToUse = if (passedInServices.contains(ValidationService::class.java.simpleName))
+          ValidationService(sentencesExtractionService, featureToggles = FeatureToggles(true, true, false), trancheOne) as ValidationService else validationService
+
     return CalculationTransactionalService(
       calculationRequestRepository,
       calculationOutcomeRepository,
@@ -718,7 +751,7 @@ class CalculationTransactionalServiceTest {
       prisonApiDataMapper,
       calculationService,
       bookingService,
-      validationService,
+      validationServiceToUse,
       eventService,
       serviceUserService,
       approvedDatesSubmissionRepository,
