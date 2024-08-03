@@ -171,8 +171,12 @@ class CalculationTransactionalServiceTest {
     try {
       calculatedReleaseDates = calculationTransactionalService(params, passedInServices = listOf(ValidationService::class.java.simpleName))
         .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
-      returnedValidationMessages = validationService.validateBookingAfterCalculation(booking)
-
+      val sentencesExtractionService = SentencesExtractionService()
+      val trancheOne = TrancheOne(sdsEarlyReleaseTrancheOneDate(params))
+      val myValidationService = getActiveValidationService(sentencesExtractionService, trancheOne)
+      returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
+        calculatedReleaseDates.calculatedBooking!!,
+      )
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -744,8 +748,11 @@ class CalculationTransactionalServiceTest {
       TestUtil.objectMapper(),
     )
 
-    val validationServiceToUse = if (passedInServices.contains(ValidationService::class.java.simpleName))
-          ValidationService(sentencesExtractionService, featureToggles = FeatureToggles(true, true, false), trancheOne) as ValidationService else validationService
+    val validationServiceToUse = if (passedInServices.contains(ValidationService::class.java.simpleName)) {
+      getActiveValidationService(sentencesExtractionService, trancheOne)
+    } else {
+      validationService
+    }
 
     return CalculationTransactionalService(
       calculationRequestRepository,
@@ -764,6 +771,10 @@ class CalculationTransactionalServiceTest {
       TEST_BUILD_PROPERTIES,
       trancheOutcomeRepository,
     )
+  }
+
+  private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheOne: TrancheOne): ValidationService {
+    return ValidationService(sentencesExtractionService, featureToggles = FeatureToggles(true, true, false), trancheOne)
   }
 
   companion object {

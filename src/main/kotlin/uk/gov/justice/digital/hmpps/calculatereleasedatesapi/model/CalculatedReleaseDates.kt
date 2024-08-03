@@ -30,6 +30,7 @@ data class CalculatedReleaseDates(
   val historicalTusedSource: HistoricalTusedSource? = null,
   val sdsEarlyReleaseAllocatedTranche: SDSEarlyReleaseTranche? = null,
   val sdsEarlyReleaseTranche: SDSEarlyReleaseTranche? = null,
+  val calculatedBooking: Booking? = null,
 ) {
   fun toSentenceCalcDates(): SentenceCalcDates {
     return SentenceCalcDates(
