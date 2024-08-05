@@ -1,0 +1,1 @@
+CREATE INDEX comparison_person_comparison_id_is_match_is_fatal_idx ON comparison_person(comparison_id, is_match, is_fatal);
