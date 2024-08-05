@@ -195,12 +195,13 @@ class ValidationService(
    */
   fun validateBookingAfterCalculation(
     booking: Booking,
+    standardSDSBooking: Booking? = null,
   ): List<ValidationMessage> {
     log.info("Validating booking after calculation: $booking")
     val messages = mutableListOf<ValidationMessage>()
     booking.sentenceGroups.forEach { messages += validateSentenceHasNotBeenExtinguished(it) }
     messages += validateRemandOverlappingSentences(booking)
-    messages += validateAdditionAdjustmentsInsideLatestReleaseDate(booking)
+    messages += validateAdditionAdjustmentsInsideLatestReleaseDate(standardSDSBooking ?: booking, booking)
     messages += validateFixedTermRecallAfterCalc(booking)
     messages += validateUnsupportedRecallTypes(booking)
 
@@ -826,10 +827,28 @@ class ValidationService(
     return null
   }
 
-  private fun validateAdditionAdjustmentsInsideLatestReleaseDate(booking: Booking): List<ValidationMessage> {
+  private fun validateAdditionAdjustmentsInsideLatestReleaseDate(longestBooking: Booking, booking: Booking): List<ValidationMessage> {
     val sentences = booking.getAllExtractableSentences()
+    val longestSentences = longestBooking.getAllExtractableSentences()
+
+    // Ensure both lists have the same size before proceeding
+    if (sentences.size != longestSentences.size) {
+      throw IllegalArgumentException("The number of sentences in longestBooking and booking must be the same.")
+    }
+
+    // Create a new list of calculable sentences
+    val longestRelevantSentences = sentences.zip(longestSentences).map { (sentence, longestSentence) ->
+      if (sentence.sentencedAt.isBefore(sds40TrancheOne.trancheCommencementDate)) {
+        // Use the corresponding sentence from longestBooking
+        longestSentence
+      } else {
+        // Otherwise use the standard sentence from booking
+        sentence
+      }
+    }
+
     val latestReleaseDatePreAddedDays =
-      sentences.filter { it !is Term }.maxOfOrNull { it.sentenceCalculation.releaseDateWithoutAdditions }
+      longestRelevantSentences.filter { it !is Term }.maxOfOrNull { it.sentenceCalculation.releaseDateWithoutAdditions }
         ?: return emptyList()
 
     val adas = booking.adjustments.getOrEmptyList(AdjustmentType.ADDITIONAL_DAYS_AWARDED).toSet()
