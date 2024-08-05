@@ -27,7 +27,7 @@ class CalculationService(
     val json = objectToJson(sourceBooking, objectMapper)
     return objectMapper.readValue(json.toString(), Booking::class.java)
   }
-  fun calculateReleaseDates(booking: Booking, calculationUserInputs: CalculationUserInputs): Pair<Booking, CalculationResult> {
+  fun calculateReleaseDates(booking: Booking, calculationUserInputs: CalculationUserInputs, returnLongestPossibleSentences: Boolean = false): Pair<Booking, CalculationResult> {
     val sds40Options = CalculationOptions(calculationUserInputs.calculateErsed, allowSDSEarlyRelease = true)
     val (sds40WorkingBooking, sds40Result) = calcAndExtract(deepCopy(booking), sds40Options)
     val (standardWorkingBooking, standardResult) =
@@ -36,7 +36,7 @@ class CalculationService(
     val latestReleaseDateFromStandardBooking = extractionService.mostRecentSentence(standardWorkingBooking.getAllExtractableSentences(), SentenceCalculation::adjustedDeterminateReleaseDate).sentenceCalculation.adjustedDeterminateReleaseDate
 
     val tranche =
-      if (sds40Result.dates == standardResult.dates || latestReleaseDateFromStandardBooking.isBefore(trancheOne.trancheCommencementDate)) {
+      if (returnLongestPossibleSentences || sds40Result.dates == standardResult.dates || latestReleaseDateFromStandardBooking.isBefore(trancheOne.trancheCommencementDate)) {
         SDSEarlyReleaseTranche.TRANCHE_0
         return standardWorkingBooking to bookingExtractionService.extract(standardWorkingBooking)
       } else {

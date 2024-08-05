@@ -89,7 +89,8 @@ class CalculationTransactionalService(
     messages = validationService.validateBeforeCalculation(booking) // Validation stage 2 of 4
     if (messages.isNotEmpty()) return messages
     val (bookingAfterCalculation, _) = calculationService.calculateReleaseDates(booking, calculationUserInputs) // Validation stage 3 of 4
-    messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation) // Validation stage 4 of 4
+    val (longestPossibleSdsBookingAfterCalculation, _) = calculationService.calculateReleaseDates(booking, calculationUserInputs, true) // Validation stage 3 of 4
+    messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation, longestPossibleSdsBookingAfterCalculation) // Validation stage 4 of 4
     return messages
   }
 
@@ -269,7 +270,7 @@ class CalculationTransactionalService(
           buildProperties.version,
         ),
       )
-    val calculationResult = calculationService.calculateReleaseDates(booking, calculationUserInputs).second
+    val (calculatedBooking, calculationResult) = calculationService.calculateReleaseDates(booking, calculationUserInputs)
     calculationResult.dates.forEach {
       calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
     }
@@ -291,6 +292,7 @@ class CalculationTransactionalService(
       historicalTusedSource = calculationResult.historicalTusedSource,
       sdsEarlyReleaseAllocatedTranche = calculationResult.sdsEarlyReleaseAllocatedTranche,
       sdsEarlyReleaseTranche = calculationResult.sdsEarlyReleaseTranche,
+      calculatedBooking = calculatedBooking,
     )
   }
 
