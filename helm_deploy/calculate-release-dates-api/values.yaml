@@ -55,4 +55,4 @@ generic-data-analytics-extractor:
   databaseSecretName: rds-instance-output
   destinationS3SecretName: analytical-platform-reporting-s3-bucket
   serviceAccountName: calculate-release-dates-to-ap-s3
-  args: "extract_psql_all_tables_to_csv.sh && transfer_local_to_s3.sh"
+  args: "extract_table_names.py && extract_psql_all_tables_to_csv.sh && transfer_local_to_s3.sh"
