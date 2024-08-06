@@ -40,3 +40,4 @@ generic-prometheus-alerts:
 
 generic-data-analytics-extractor:
   enabled: false
+  cronjob-name: calculate-release-dates-alt-data-analytics-extractor
