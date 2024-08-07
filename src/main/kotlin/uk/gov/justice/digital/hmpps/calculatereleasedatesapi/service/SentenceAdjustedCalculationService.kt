@@ -82,11 +82,14 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
       calculateLED(sentence, sentenceCalculation)
     }
 
+    val extraDaysForSdsConsecToBotusDays =
+      if (sentence.isSdsConsecToBotus()) booking.sentences[0].sentenceCalculation.numberOfDaysToDeterminateReleaseDate.div(2) else 0
+
     if (sentence.releaseDateTypes.contains(HDCED)) {
-      hdcedCalculator.calculateHdced(sentence, sentenceCalculation, booking.offender)
+      hdcedCalculator.calculateHdced(sentence, sentenceCalculation, booking.offender, extraDaysForSdsConsecToBotusDays)
     }
     if (sentence.releaseDateTypes.contains(HDCED4PLUS)) {
-      hdced4Calculator.calculateHdced4(sentence, sentenceCalculation)
+      hdced4Calculator.calculateHdced4(sentence, sentenceCalculation, extraDaysForSdsConsecToBotusDays)
     }
     BookingCalculationService.log.info(sentence.buildString())
     return sentenceCalculation

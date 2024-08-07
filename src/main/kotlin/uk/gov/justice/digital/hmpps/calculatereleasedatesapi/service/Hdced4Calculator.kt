@@ -42,10 +42,10 @@ class Hdced4Calculator(
     val adjustedDays: Int = addedDays.minus(deductedDays),
   )
 
-  fun calculateHdced4(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
+  fun calculateHdced4(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation, extraDaysForSdsConsecToBotusDays: Int = 0) {
     val custodialPeriod = sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble
 
-    val params = Hdced4Params(custodialPeriod, sentence.sentencedAt, getDeductedDays(sentenceCalculation), getAddedDays(sentenceCalculation))
+    val params = Hdced4Params(custodialPeriod, sentence.sentencedAt, getDeductedDays(sentenceCalculation), getAddedDays(sentenceCalculation, extraDaysForSdsConsecToBotusDays))
 
     // If adjustments make the CRD before sentence date plus 14 days (i.e. a large REMAND days)
     // then we don't need a HDCED date.
@@ -118,8 +118,9 @@ class Hdced4Calculator(
     }
   }
 
-  private fun getAddedDays(sentenceCalculation: SentenceCalculation) = sentenceCalculation.calculatedTotalAddedDays
+  private fun getAddedDays(sentenceCalculation: SentenceCalculation, extraDaysForSdsConsecToBotusDays: Int) = sentenceCalculation.calculatedTotalAddedDays
     .plus(sentenceCalculation.calculatedTotalAwardedDays)
+    .plus(extraDaysForSdsConsecToBotusDays)
     .minus(sentenceCalculation.calculatedUnusedReleaseAda)
 
   private fun getDeductedDays(sentenceCalculation: SentenceCalculation) = sentenceCalculation.calculatedTotalDeductedDays
