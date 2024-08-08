@@ -100,6 +100,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SENTENCE_TYPE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SUSPENDED_OFFENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ZERO_IMPRISONMENT_TERM
 import java.time.LocalDate
 import java.time.Period
@@ -354,13 +355,28 @@ class ValidationService(
     return sentenceAndOffences.filter { it.offence.offenceCode in offenceCodesToFilter }
   }
 
+  private fun findUnsupportedSuspendedOffenceCodes(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>): List<SentenceAndOffence> {
+    val offenceCodesToFilter = listOf("SE20512", "CJ03523")
+    return sentenceAndOffences.filter { it.offence.offenceCode in offenceCodesToFilter }
+  }
+
   private fun validateUnsupportedOffences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
-    return validateUnsupportedEncouragingOffences(sentencesAndOffence).toMutableList()
+    val messages = validateUnsupportedEncouragingOffences(sentencesAndOffence).toMutableList()
+    messages += validateUnsupportedSuspendedOffences(sentencesAndOffence)
+    return messages
+  }
+
+  private fun validateUnsupportedSuspendedOffences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
+    val unSupportedEncouragingOffenceCodes = findUnsupportedSuspendedOffenceCodes(sentencesAndOffence)
+    if (unSupportedEncouragingOffenceCodes.isNotEmpty()) {
+      return listOf(ValidationMessage(UNSUPPORTED_SUSPENDED_OFFENCE))
+    }
+    return emptyList()
   }
 
   private fun validateUnsupportedEncouragingOffences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
     val unSupportedEncouragingOffenceCodes = findUnsupportedEncouragingOffenceCodes(sentencesAndOffence)
-    if (unSupportedEncouragingOffenceCodes.size > 0) {
+    if (unSupportedEncouragingOffenceCodes.isNotEmpty()) {
       return listOf(ValidationMessage(UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING))
     }
     return emptyList()
