@@ -243,7 +243,7 @@ class ValidationServiceTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = ["KS97002","SC07001", "SC07014", "FG06019", "TH68058"])
+  @ValueSource(strings = ["KS97002", "SC07001", "SC07014", "FG06019", "TH68058"])
   fun `Test Sentences with supported offenceCodes shouldn't return validation message`(offenceCode: String) {
     // Arrange
     val validSentence = validSdsSentence.copy(
