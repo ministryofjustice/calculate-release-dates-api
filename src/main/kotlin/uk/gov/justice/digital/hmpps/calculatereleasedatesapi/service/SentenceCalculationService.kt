@@ -98,10 +98,13 @@ class SentenceCalculationService(
       getSingleSentenceRelease(sentence) { releasePointMultiplierLookup.multiplierFor(it) } to getSingleSentenceRelease(sentence) { releasePointMultiplierLookup.historicMultiplierFor(it) }
     }
 
-    val unadjustedExpiryDate =
-      sentence.sentencedAt
-        .plusDays(release.numberOfDaysToSentenceExpiryDate.toLong())
-        .minusDays(1)
+    val expiryDateDaysToAdd = if (sentence.isBotusConsecToSds()) {
+      booking.sentences[0].sentenceCalculation.numberOfDaysToSentenceExpiryDate.toLong()
+    } else {
+      release.numberOfDaysToSentenceExpiryDate.toLong()
+    }
+
+    val unadjustedExpiryDate = sentence.sentencedAt.plusDays(expiryDateDaysToAdd).minusDays(1)
 
     val unadjustedDeterminateReleaseDate =
       sentence.sentencedAt

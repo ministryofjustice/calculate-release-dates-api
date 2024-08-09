@@ -82,14 +82,41 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
       calculateLED(sentence, sentenceCalculation)
     }
 
+    val extraDaysForSdsConsecutiveToBotus = getExtraDaysForSdsConsecutiveToBotus(sentence, booking)
+
     if (sentence.releaseDateTypes.contains(HDCED)) {
-      hdcedCalculator.calculateHdced(sentence, sentenceCalculation, booking.offender)
+      hdcedCalculator.calculateHdced(sentence, sentenceCalculation, booking.offender, extraDaysForSdsConsecutiveToBotus)
     }
     if (sentence.releaseDateTypes.contains(HDCED4PLUS)) {
-      hdced4Calculator.calculateHdced4(sentence, sentenceCalculation)
+      hdced4Calculator.calculateHdced4(sentence, sentenceCalculation, extraDaysForSdsConsecutiveToBotus)
+    }
+
+    if (sentence.isBotusConsecToSds()) {
+      resetHdcedAndTusedDatesIfBotusConsecutiveToSdsSentence(sentence, sentenceCalculation, booking)
     }
     BookingCalculationService.log.info(sentence.buildString())
     return sentenceCalculation
+  }
+
+  private fun getExtraDaysForSdsConsecutiveToBotus(
+    sentence: CalculableSentence,
+    booking: Booking,
+  ) = if (sentence.isSdsConsecToBotus()) booking.sentences[0].getLengthInDays().div(2) else 0
+
+  private fun resetHdcedAndTusedDatesIfBotusConsecutiveToSdsSentence(
+    sentence: CalculableSentence,
+    sentenceCalculation: SentenceCalculation,
+    booking: Booking,
+  ) {
+    val sdsSentenceCalculation = booking.sentences[0].sentenceCalculation
+    sentenceCalculation.homeDetentionCurfewEligibilityDate = sdsSentenceCalculation.homeDetentionCurfewEligibilityDate
+    sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate =
+      sdsSentenceCalculation.homeDetentionCurfew4PlusEligibilityDate
+
+    if (sentence.releaseDateTypes.contains(TUSED)) {
+      sentenceCalculation.topUpSupervisionDate =
+        sentenceCalculation.topUpSupervisionDate?.minusDays(booking.sentences[1].getLengthInDays().toLong())
+    }
   }
 
   private fun setSedOrSledDetails(

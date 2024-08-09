@@ -174,6 +174,28 @@ class Hdced4CalculatorTest {
   }
 
   @Test
+  fun `extra days for SDS consecutive to BOTUS are added correctly`() {
+    val sentence = StandardDeterminateSentence(
+      Offence(LocalDate.of(2020, 1, 1)),
+      Duration(mapOf(ChronoUnit.DAYS to 140.toLong())),
+      LocalDate.of(2020, 1, 1),
+      isSDSPlus = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+
+    val sentenceCalculation =
+      sentenceCalculation(sentence, numberOfDaysToSED = 140, numberOfDaysToDeterminateReleaseDate = 70, Adjustments())
+
+    calc(sentenceCalculation, sentence)
+
+    assertThat(sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate).isEqualTo(LocalDate.of(2020, 2, 5))
+
+    calc(sentenceCalculation, sentence, extraDaysForSdsConsecToBotus = 14)
+
+    assertThat(sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate).isEqualTo(LocalDate.of(2020, 2, 19))
+  }
+
+  @Test
   fun `should calculate a date with 28 days rules if the sentence length is greater than the minimum and less than midpoint and quarter is less than 28`() {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.DAYS to 106L))
@@ -393,10 +415,11 @@ class Hdced4CalculatorTest {
     sentenceCalculation: SentenceCalculation,
     sentence: CalculableSentence,
     isActiveSexOffender: Boolean = false,
+    extraDaysForSdsConsecToBotus: Int = 0,
   ) {
     val offender = Offender("ABC123", LocalDate.of(1980, 1, 1), isActiveSexOffender = isActiveSexOffender)
     if (calculator.doesHdced4DateApply(sentence, offender)) {
-      calculator.calculateHdced4(sentence, sentenceCalculation)
+      calculator.calculateHdced4(sentence, sentenceCalculation, extraDaysForSdsConsecToBotus)
     }
   }
 }
