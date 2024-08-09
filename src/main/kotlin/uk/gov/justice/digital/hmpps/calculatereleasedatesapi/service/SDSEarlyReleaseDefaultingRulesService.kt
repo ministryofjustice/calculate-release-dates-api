@@ -33,6 +33,7 @@ class SDSEarlyReleaseDefaultingRulesService(
   ): CalculationResult {
     val dates = earlyReleaseResult.dates.toMutableMap()
     val breakdownByReleaseDateType = earlyReleaseResult.breakdownByReleaseDateType.toMutableMap()
+    var overriddenTranche = allocatedTranche
 
     if (hasAnyReleaseBeforeTrancheCommencement(earlyReleaseResult, trancheCommencementDate)) {
       DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.forEach { releaseDateType ->
@@ -47,6 +48,12 @@ class SDSEarlyReleaseDefaultingRulesService(
       }
     }
 
+    if (standardReleaseResult.dates[ReleaseDateType.CRD]?.isBefore(trancheCommencementDate) == true) {
+      overriddenTranche = SDSEarlyReleaseTranche.TRANCHE_0
+    } else if (earlyReleaseResult.dates[ReleaseDateType.CRD]?.isAfter(trancheCommencementDate) == true) {
+      overriddenTranche = SDSEarlyReleaseTranche.TRANCHE_0
+    }
+
     handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(dates, originalBooking, trancheOneCommencementDate, standardReleaseResult, breakdownByReleaseDateType)
 
     return CalculationResult(
@@ -54,8 +61,8 @@ class SDSEarlyReleaseDefaultingRulesService(
       breakdownByReleaseDateType,
       earlyReleaseResult.otherDates,
       earlyReleaseResult.effectiveSentenceLength,
-      sdsEarlyReleaseAllocatedTranche = allocatedTranche,
-      sdsEarlyReleaseTranche = allocatedTranche,
+      sdsEarlyReleaseAllocatedTranche = overriddenTranche,
+      sdsEarlyReleaseTranche = overriddenTranche,
     )
   }
 
