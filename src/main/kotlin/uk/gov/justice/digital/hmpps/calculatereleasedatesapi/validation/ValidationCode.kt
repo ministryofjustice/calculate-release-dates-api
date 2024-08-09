@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import io.swagger.v3.oas.annotations.media.Schema
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.SUSPENDED_OFFENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_CALCULATION
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_OFFENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_SDS40_SENTENCE
@@ -78,4 +79,5 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
       "For example, ‘Encouraging/Assisting’ a Rape SX03001 would be SX03001E.",
     UNSUPPORTED_OFFENCE,
   ),
+  UNSUPPORTED_SUSPENDED_OFFENCE("Replace this offence in NOMIS with the original offence they were sentenced for, then reload this page.", SUSPENDED_OFFENCE),
 }
