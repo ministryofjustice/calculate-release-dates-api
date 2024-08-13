@@ -151,6 +151,29 @@ class ManualCalculationServiceTest {
     }
 
     @Test
+    fun `Check if ESL is set to zero for when calculated ESL is negative`() {
+      // Arrange
+      val sentenceOne = StandardSENTENCE.copy(
+        consecutiveSentenceUUIDs = emptyList(),
+        sentencedAt = LocalDate.of(2035, 1, 1),
+      )
+      var workingBooking = BOOKING.copy(
+        sentences = listOf(
+          sentenceOne,
+        ),
+      )
+      workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+      whenever(bookingCalculationService.identify(any(), any())).thenReturn(workingBooking)
+      whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenReturn(workingBooking)
+
+      // Act
+      val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
+
+      // Assert
+      assertThat(result).isEqualTo(Period.of(0, 0, 0))
+    }
+
+    @Test
     fun `Check ESL is set to zero for FTR 28 without custody date`() {
       // Arrange
       val sentenceOne = StandardSENTENCE.copy(
