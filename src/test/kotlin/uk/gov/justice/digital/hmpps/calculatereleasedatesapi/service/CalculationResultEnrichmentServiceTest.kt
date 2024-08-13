@@ -92,12 +92,18 @@ class CalculationResultEnrichmentServiceTest {
     verify(workingDayService, never()).previousWorkingDay(any())
   }
 
-  @Test
-  fun `should display hint - default tranche 1 commencement`() {
+  @ParameterizedTest
+  @CsvSource(
+    "CRD",
+    "ARD",
+    "HDCED",
+    "ERSED",
+    "PED",
+  )
+  fun `should display hints in order - default tranche 1 commencement, Friday Desc`(type: ReleaseDateType) {
     val originalDate = LocalDate.of(2024, 9, 10)
     val adjustedDate = LocalDate.of(2024, 9, 10)
-    val type = ReleaseDateType.HDCED
-    whenever(nonFridayReleaseService.getDate(ReleaseDate(originalDate, type))).thenReturn(NonFridayReleaseDay(originalDate, false))
+    whenever(nonFridayReleaseService.getDate(ReleaseDate(originalDate, type))).thenReturn(NonFridayReleaseDay(originalDate, true))
     whenever(workingDayService.nextWorkingDay(originalDate)).thenReturn(WorkingDay(adjustedDate, adjustedForWeekend = false, adjustedForBankHoliday = false))
 
     val releaseDate = ReleaseDate(originalDate, type)
@@ -112,6 +118,42 @@ class CalculationResultEnrichmentServiceTest {
     assertThat(results[type]?.hints).isEqualTo(
       listOf(
         ReleaseDateHint(text = "Defaulted to tranche 1 commencement", link = null),
+        ReleaseDateHint(
+          text = "The Discretionary Friday/Pre-Bank Holiday Release Scheme Policy applies to this release date.",
+          link = "https://www.gov.uk/government/publications/discretionary-fridaypre-bank-holiday-release-scheme-policy-framework",
+        ),
+      ),
+    )
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    "HDCED",
+    "ERSED",
+    "PED",
+  )
+  fun `should display hint in order - 50 percent date has been applied, Friday Desc`(type: ReleaseDateType) {
+    val originalDate = LocalDate.of(2024, 4, 10)
+    val adjustedDate = LocalDate.of(2024, 4, 10)
+    whenever(nonFridayReleaseService.getDate(ReleaseDate(originalDate, type))).thenReturn(NonFridayReleaseDay(originalDate, true))
+    whenever(workingDayService.nextWorkingDay(originalDate)).thenReturn(WorkingDay(adjustedDate, adjustedForWeekend = false, adjustedForBankHoliday = false))
+
+    val releaseDate = ReleaseDate(originalDate, type)
+    val releaseDates = listOf(releaseDate)
+    val results = calculationResultEnrichmentServiceSDS40().addDetailToCalculationDates(
+      releaseDates,
+      null,
+      CalculationBreakdown(emptyList(), null),
+      historicalTusedSource = null,
+      SDSEarlyReleaseTranche.TRANCHE_1,
+    )
+    assertThat(results[type]?.hints).isEqualTo(
+      listOf(
+        ReleaseDateHint(text = "50% date has been applied", link = null),
+        ReleaseDateHint(
+          text = "The Discretionary Friday/Pre-Bank Holiday Release Scheme Policy applies to this release date.",
+          link = "https://www.gov.uk/government/publications/discretionary-fridaypre-bank-holiday-release-scheme-policy-framework",
+        ),
       ),
     )
   }

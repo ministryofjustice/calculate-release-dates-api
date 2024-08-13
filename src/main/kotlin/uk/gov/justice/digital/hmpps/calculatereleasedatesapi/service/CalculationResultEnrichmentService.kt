@@ -77,7 +77,7 @@ class CalculationResultEnrichmentService(
   private fun defaultedToTrancheCommencementDate(
     releaseDatesMap: Map<ReleaseDateType, ReleaseDate>,
     sdsTrancheOutcome: SDSEarlyReleaseTranche?,
-    sds40Hints: MutableMap<ReleaseDateType, DetailedDate> = mutableMapOf(),
+    regularAndSDS40Hints: MutableMap<ReleaseDateType, DetailedDate> = mutableMapOf(),
   ) {
     val releaseDateTypes = listOf(
       ReleaseDateType.CRD,
@@ -97,7 +97,7 @@ class CalculationResultEnrichmentService(
       }
 
       if (hint != null) {
-        val detailedDate = sds40Hints.getOrPut(key) { DetailedDate(key, key.description, releaseDate.date, mutableListOf()) }
+        val detailedDate = regularAndSDS40Hints.getOrPut(key) { DetailedDate(key, key.description, releaseDate.date, mutableListOf()) }
         detailedDate.hints += ReleaseDateHint(hint)
       }
     }
@@ -106,7 +106,7 @@ class CalculationResultEnrichmentService(
   private fun fiftyPercentDatesBeforeTranche(
     releaseDatesMap: Map<ReleaseDateType, ReleaseDate>,
     sdsTrancheOutcome: SDSEarlyReleaseTranche?,
-    sds40Hints: MutableMap<ReleaseDateType, DetailedDate> = mutableMapOf(),
+    regularAndSDS40Hints: MutableMap<ReleaseDateType, DetailedDate> = mutableMapOf(),
   ) {
     val releaseDateTypes = listOf(
       ReleaseDateType.HDCED,
@@ -124,7 +124,7 @@ class CalculationResultEnrichmentService(
       }
 
       if (trancheCommencementDate != null && releaseDate.date.isBefore(trancheCommencementDate)) {
-        val detailedDate = sds40Hints.getOrPut(key) { DetailedDate(key, key.description, releaseDate.date, mutableListOf()) }
+        val detailedDate = regularAndSDS40Hints.getOrPut(key) { DetailedDate(key, key.description, releaseDate.date, mutableListOf()) }
         detailedDate.hints += ReleaseDateHint("50% date has been applied")
       }
     }
