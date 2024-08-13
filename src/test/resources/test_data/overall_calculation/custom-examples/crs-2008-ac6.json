@@ -1,0 +1,40 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "1986-01-08"
+  },
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2022-03-16"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 1
+        }
+      },
+      "identifier": "ee91a161-dde2-3a7b-8611-624d24566ac7",
+      "sentencedAt": "2022-08-31",
+      "caseSequence": 1,
+      "lineSequence": 1
+    },
+    {
+      "type": "BotusSentence",
+      "offence": {
+        "committedAt": "2022-03-16"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 14
+        }
+      },
+      "sentencedAt": "2022-08-31",
+      "caseSequence": 1,
+      "lineSequence": 2,
+      "consecutiveSentenceUUIDs": [
+        "ee91a161-dde2-3a7b-8611-624d24566ac7"
+      ]
+    }
+  ]
+}
