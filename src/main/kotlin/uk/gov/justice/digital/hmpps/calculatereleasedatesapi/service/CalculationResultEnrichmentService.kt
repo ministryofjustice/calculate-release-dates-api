@@ -130,27 +130,6 @@ class CalculationResultEnrichmentService(
     }
   }
 
-  private fun getSDS40Hints(
-    type: ReleaseDateType,
-    date: LocalDate,
-    calculationBreakdown: CalculationBreakdown?,
-    releaseDates: Map<ReleaseDateType, ReleaseDate>,
-    sentenceAndOffences: List<SentenceAndOffence>?,
-    historicalTusedSource: HistoricalTusedSource? = null,
-  ): List<ReleaseDateHint> {
-    val hints = mutableListOf<ReleaseDateHint?>()
-    hints += ardHints(type, date, sentenceAndOffences, releaseDates)
-    hints += crdHints(type, date, sentenceAndOffences, releaseDates)
-    hints += pedHints(type, date, sentenceAndOffences, releaseDates, calculationBreakdown)
-    hints += hdcedHints(type, date, sentenceAndOffences, releaseDates, calculationBreakdown)
-    hints += mtdHints(type, date, sentenceAndOffences, releaseDates)
-    hints += ersedHints(type, releaseDates, calculationBreakdown)
-    if (historicalTusedSource != null) {
-      hints += tusedHints(type)
-    }
-    return hints.filterNotNull()
-  }
-
   private fun getHints(
     type: ReleaseDateType,
     date: LocalDate,
