@@ -169,7 +169,8 @@ class ManualCalculationService(
       val earliestSentenceDate = sentences.minOfOrNull { it.sentencedAt }
       val sed = getSED(manualEntryRequest)
       return if (sed != null && earliestSentenceDate != null) {
-        Period.between(earliestSentenceDate, sed)
+        val period = Period.between(earliestSentenceDate, sed)
+        if (!period.isNegative) period else Period.ZERO
       } else {
         Period.ZERO
       }
