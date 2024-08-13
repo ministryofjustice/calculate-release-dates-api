@@ -468,6 +468,13 @@ custom-examples,crs-1776-overlapping-recall-ac3,,calculation-params
 custom-examples,crs-1776-overlapping-recall-ac4,,calculation-params
 custom-examples,crs-1776-overlapping-recall-ac5,,calculation-params
 
+custom-examples,crs-2008-ac1,,calculation-params
+custom-examples,crs-2008-ac2,,calculation-params
+custom-examples,crs-2008-ac3,,calculation-params
+custom-examples,crs-2008-ac4,,calculation-params
+custom-examples,crs-2008-ac5,,calculation-params
+custom-examples,crs-2008-ac6,,calculation-params
+
 custom-examples,crs-2013-ac1-hdced-adjusted-to-prrd,,calculation-params
 custom-examples,crs-2013-ac2-hdced-adjusted-to-crd,,calculation-params
 custom-examples,crs-2041-SDS40-document-example1-tranche1,,alt-3-calculation-params
