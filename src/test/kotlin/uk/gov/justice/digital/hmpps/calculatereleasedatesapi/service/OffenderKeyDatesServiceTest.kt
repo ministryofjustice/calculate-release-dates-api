@@ -76,7 +76,7 @@ open class OffenderKeyDatesServiceTest {
     val detailedDates = mapOf(ReleaseDateType.HDCED to DetailedDate(ReleaseDateType.HDCED, ReleaseDateType.HDCED.description, LocalDate.of(2024, 1, 1), emptyList()))
 
     whenever(prisonService.getNOMISOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(Mockito.anyList(), isNull(), isNull(), isNull())).thenReturn(detailedDates)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(Mockito.anyList(), isNull(), isNull(), isNull(), isNull())).thenReturn(detailedDates)
     whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason(code = "FS", description = "Further Sentence")))
 
     val result = underTest.getNomisCalculationSummary(offenderSentCalcId)
@@ -143,7 +143,7 @@ open class OffenderKeyDatesServiceTest {
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
     whenever(calculationRequestRepository.findById(calcRequestId)).thenReturn(Optional.of(calcRequest))
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(Mockito.anyList(), isNull(), isNull(), isNull())).thenReturn(detailedDates)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(Mockito.anyList(), isNull(), isNull(), isNull(), isNull())).thenReturn(detailedDates)
 
     val result = underTest.getKeyDatesByCalcId(calcRequestId)
 
@@ -234,7 +234,7 @@ open class OffenderKeyDatesServiceTest {
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
     whenever(calculationRequestRepository.findById(calcRequestId)).thenReturn(Optional.of(calcRequest))
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(Mockito.anyList(), isNull(), isNull(), isNull()))
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(Mockito.anyList(), isNull(), isNull(), isNull(), isNull()))
       .thenThrow(NoSuchElementException("Error"))
 
     val exception = assertThrows<CrdWebException> {
