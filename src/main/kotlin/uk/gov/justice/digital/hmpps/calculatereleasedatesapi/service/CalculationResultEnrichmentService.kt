@@ -56,6 +56,7 @@ class CalculationResultEnrichmentService(
 
     if (featureToggles.sds40Hints && sdsTrancheOutcome !== null && sdsTrancheOutcome in listOf(SDSEarlyReleaseTranche.TRANCHE_1, SDSEarlyReleaseTranche.TRANCHE_2)) {
       defaultedToTrancheCommencementDate(releaseDatesMap, sdsTrancheOutcome, regularAndSDS40Hints)
+      fiftyPercentDatesBeforeTranche(releaseDatesMap, sdsTrancheOutcome, regularAndSDS40Hints)
     }
 
     releaseDatesMap.forEach { (key, releaseDate) ->
@@ -98,6 +99,33 @@ class CalculationResultEnrichmentService(
       if (hint != null) {
         val detailedDate = sds40Hints.getOrPut(key) { DetailedDate(key, key.description, releaseDate.date, mutableListOf()) }
         detailedDate.hints += ReleaseDateHint(hint)
+      }
+    }
+  }
+
+  private fun fiftyPercentDatesBeforeTranche(
+    releaseDatesMap: Map<ReleaseDateType, ReleaseDate>,
+    sdsTrancheOutcome: SDSEarlyReleaseTranche?,
+    sds40Hints: MutableMap<ReleaseDateType, DetailedDate> = mutableMapOf(),
+  ) {
+    val releaseDateTypes = listOf(
+      ReleaseDateType.HDCED,
+      ReleaseDateType.ERSED,
+      ReleaseDateType.PED,
+    )
+
+    releaseDatesMap.filterKeys { it in releaseDateTypes }.forEach { (key, releaseDate) ->
+      val trancheCommencementDate = when {
+        sdsTrancheOutcome == SDSEarlyReleaseTranche.TRANCHE_1 ->
+          trancheOneCommencementDate
+        sdsTrancheOutcome == SDSEarlyReleaseTranche.TRANCHE_2 ->
+          trancheTwoCommencementDate
+        else -> null
+      }
+
+      if (trancheCommencementDate != null  && releaseDate.date.isBefore(trancheCommencementDate)) {
+        val detailedDate = sds40Hints.getOrPut(key) { DetailedDate(key, key.description, releaseDate.date, mutableListOf()) }
+        detailedDate.hints += ReleaseDateHint("50% date has been applied")
       }
     }
   }
