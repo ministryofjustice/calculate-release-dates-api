@@ -1,8 +1,8 @@
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.2"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
-  kotlin("plugin.spring") version "2.0.0"
-  kotlin("plugin.jpa") version "2.0.0"
+  kotlin("plugin.spring") version "2.0.10"
+  kotlin("plugin.jpa") version "2.0.10"
   id("jacoco")
 }
 
@@ -29,7 +29,7 @@ dependencies {
   implementation("uk.gov.service.notify:notifications-java-client:5.2.0-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.10")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.8.0")
@@ -58,12 +58,12 @@ dependencies {
   implementation("com.google.code.gson:gson:2.11.0")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.1.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.2.0")
 
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
+  testImplementation("org.awaitility:awaitility-kotlin:4.2.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.4.1")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.22")
   testImplementation("org.mockito:mockito-inline:5.2.0")
