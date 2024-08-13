@@ -110,7 +110,7 @@ class DetailedCalculationResultsServiceTest {
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithApprovedDates)).thenReturn(listOf(originalSentence))
     whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithApprovedDates)).thenReturn(prisonerDetails)
     whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithApprovedDates)).thenReturn(adjustments)
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(toReleaseDates(calculationRequestWithApprovedDates), listOf(originalSentence), expectedBreakdown)).thenReturn(enrichedReleaseDates)
+    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(toReleaseDates(calculationRequestWithApprovedDates), listOf(originalSentence), expectedBreakdown, null, SDSEarlyReleaseTranche.TRANCHE_1)).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
     val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
     assertThat(results).isEqualTo(
@@ -130,7 +130,13 @@ class DetailedCalculationResultsServiceTest {
         SDSEarlyReleaseTranche.TRANCHE_1,
       ),
     )
-    verify(calculationResultEnrichmentService).addDetailToCalculationDates(toReleaseDates(calculationRequestWithApprovedDates), listOf(originalSentence), expectedBreakdown)
+    verify(calculationResultEnrichmentService).addDetailToCalculationDates(
+      toReleaseDates(calculationRequestWithApprovedDates),
+      listOf(originalSentence),
+      expectedBreakdown,
+      null,
+      SDSEarlyReleaseTranche.TRANCHE_1,
+    )
   }
 
   @Test
