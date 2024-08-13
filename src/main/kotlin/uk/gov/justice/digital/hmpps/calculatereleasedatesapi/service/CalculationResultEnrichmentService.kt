@@ -123,7 +123,7 @@ class CalculationResultEnrichmentService(
         else -> null
       }
 
-      if (trancheCommencementDate != null  && releaseDate.date.isBefore(trancheCommencementDate)) {
+      if (trancheCommencementDate != null && releaseDate.date.isBefore(trancheCommencementDate)) {
         val detailedDate = sds40Hints.getOrPut(key) { DetailedDate(key, key.description, releaseDate.date, mutableListOf()) }
         detailedDate.hints += ReleaseDateHint("50% date has been applied")
       }
