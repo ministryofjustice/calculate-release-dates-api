@@ -7,5 +7,5 @@ data class DetailedDate(
   val type: ReleaseDateType,
   val description: String,
   val date: LocalDate,
-  val hints: List<ReleaseDateHint>,
+  var hints: List<ReleaseDateHint>,
 )
