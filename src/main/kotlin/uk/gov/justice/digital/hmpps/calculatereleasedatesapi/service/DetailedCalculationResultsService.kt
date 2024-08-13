@@ -39,7 +39,13 @@ open class DetailedCalculationResultsService(
 
     return DetailedCalculationResults(
       calculationContext(calculationRequestId, calculationRequest),
-      calculationResultEnrichmentService.addDetailToCalculationDates(releaseDates, sentenceAndOffences, calculationBreakdown, calculationRequest.historicalTusedSource),
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        releaseDates,
+        sentenceAndOffences,
+        calculationBreakdown,
+        calculationRequest.historicalTusedSource,
+        calculationRequest.allocatedSDSTranche?.tranche,
+      ),
       approvedDates(calculationRequest.approvedDatesSubmissions.firstOrNull()),
       CalculationOriginalData(
         prisonerDetails,
