@@ -22,7 +22,7 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation,
     offender: Offender,
-    extraDaysForSdsConsecToBotus: Int = 0,
+    extraDaysForSdsConsecutiveToBotus: Int = 0,
   ) {
     val custodialPeriod = sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble
     if (isNotEligibleForHDC(offender, sentence, sentenceCalculation, custodialPeriod)) {
@@ -33,7 +33,7 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
     val deductedDays = sentenceCalculation.calculatedTotalDeductedDays
     val addedDays = sentenceCalculation.calculatedTotalAddedDays
       .plus(sentenceCalculation.calculatedTotalAwardedDays)
-      .plus(extraDaysForSdsConsecToBotus)
+      .plus(extraDaysForSdsConsecutiveToBotus)
       .minus(sentenceCalculation.calculatedUnusedReleaseAda)
 
     if (custodialPeriod < hdcedConfiguration.custodialPeriodMidPointDays) {

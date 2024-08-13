@@ -109,12 +109,12 @@ interface CalculableSentence {
   }
 
   @JsonIgnore
-  fun isBotusConsecToSds(): Boolean {
+  fun isBotusConsecutiveToSDS(): Boolean {
     return false
   }
 
   @JsonIgnore
-  fun isSdsConsecToBotus(): Boolean {
+  fun isSdsConsecutiveToBotus(): Boolean {
     return false
   }
 

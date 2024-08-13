@@ -91,7 +91,7 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
       hdced4Calculator.calculateHdced4(sentence, sentenceCalculation, extraDaysForSdsConsecutiveToBotus)
     }
 
-    if (sentence.isBotusConsecToSds()) {
+    if (sentence.isBotusConsecutiveToSDS()) {
       resetHdcedAndTusedDatesIfBotusConsecutiveToSdsSentence(sentence, sentenceCalculation, booking)
     }
     BookingCalculationService.log.info(sentence.buildString())
@@ -101,7 +101,7 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
   private fun getExtraDaysForSdsConsecutiveToBotus(
     sentence: CalculableSentence,
     booking: Booking,
-  ) = if (sentence.isSdsConsecToBotus()) booking.sentences[0].getLengthInDays().div(2) else 0
+  ) = if (sentence.isSdsConsecutiveToBotus()) booking.sentences[0].getLengthInDays().div(2) else 0
 
   private fun resetHdcedAndTusedDatesIfBotusConsecutiveToSdsSentence(
     sentence: CalculableSentence,

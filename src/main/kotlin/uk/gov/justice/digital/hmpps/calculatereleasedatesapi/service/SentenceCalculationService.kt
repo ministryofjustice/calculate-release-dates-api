@@ -98,7 +98,7 @@ class SentenceCalculationService(
       getSingleSentenceRelease(sentence) { releasePointMultiplierLookup.multiplierFor(it) } to getSingleSentenceRelease(sentence) { releasePointMultiplierLookup.historicMultiplierFor(it) }
     }
 
-    val expiryDateDaysToAdd = if (sentence.isBotusConsecToSds()) {
+    val expiryDateDaysToAdd = if (sentence.isBotusConsecutiveToSDS()) {
       booking.sentences[0].sentenceCalculation.numberOfDaysToSentenceExpiryDate.toLong()
     } else {
       release.numberOfDaysToSentenceExpiryDate.toLong()

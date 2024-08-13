@@ -190,7 +190,7 @@ class Hdced4CalculatorTest {
 
     assertThat(sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate).isEqualTo(LocalDate.of(2020, 2, 5))
 
-    calc(sentenceCalculation, sentence, extraDaysForSdsConsecToBotus = 14)
+    calc(sentenceCalculation, sentence, extraDaysForSdsConsecutiveToBotus = 14)
 
     assertThat(sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate).isEqualTo(LocalDate.of(2020, 2, 19))
   }
@@ -415,11 +415,11 @@ class Hdced4CalculatorTest {
     sentenceCalculation: SentenceCalculation,
     sentence: CalculableSentence,
     isActiveSexOffender: Boolean = false,
-    extraDaysForSdsConsecToBotus: Int = 0,
+    extraDaysForSdsConsecutiveToBotus: Int = 0,
   ) {
     val offender = Offender("ABC123", LocalDate.of(1980, 1, 1), isActiveSexOffender = isActiveSexOffender)
     if (calculator.doesHdced4DateApply(sentence, offender)) {
-      calculator.calculateHdced4(sentence, sentenceCalculation, extraDaysForSdsConsecToBotus)
+      calculator.calculateHdced4(sentence, sentenceCalculation, extraDaysForSdsConsecutiveToBotus)
     }
   }
 }

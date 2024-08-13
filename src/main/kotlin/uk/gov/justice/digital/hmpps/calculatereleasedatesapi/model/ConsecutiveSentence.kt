@@ -151,13 +151,13 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
     return orderedSentences.all { it.isBotus() }
   }
 
-  override fun isBotusConsecToSds(): Boolean {
+  override fun isBotusConsecutiveToSDS(): Boolean {
     return orderedSentences.size == 2 &&
       orderedSentences[0] is StandardDeterminateSentence &&
       orderedSentences[1] is BotusSentence
   }
 
-  override fun isSdsConsecToBotus(): Boolean {
+  override fun isSdsConsecutiveToBotus(): Boolean {
     return orderedSentences.size == 2 &&
       orderedSentences[0] is BotusSentence &&
       orderedSentences[1] is StandardDeterminateSentence
