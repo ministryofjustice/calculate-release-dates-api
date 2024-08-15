@@ -838,7 +838,7 @@ class ValidationService(
 
     // Create a new list of calculable sentences
     val longestRelevantSentences = sentences.zip(longestSentences).map { (sentence, longestSentence) ->
-      if (sentence.sentencedAt.isBefore(sds40TrancheOne.trancheCommencementDate)) {
+      if (sentence.sentencedAt.isBefore(sds40TrancheOne.trancheTwoCommencementDate)) {
         // Use the corresponding sentence from longestBooking
         longestSentence
       } else {

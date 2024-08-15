@@ -11,11 +11,13 @@ import java.time.LocalDate
 class TrancheOne(
   @Value("\${sds-early-release-tranches.tranche-one-date}")
   @DateTimeFormat(pattern = "yyyy-MM-dd") val trancheCommencementDate: LocalDate,
+  @Value("\${sds-early-release-tranches.tranche-two-date}")
+  @DateTimeFormat(pattern = "yyyy-MM-dd") val trancheTwoCommencementDate: LocalDate,
 ) : Tranche {
 
   override fun isBookingApplicableForTrancheCriteria(calculationResult: CalculationResult, booking: Booking): Boolean {
     return booking.getAllExtractableSentences()
-      .map { filterAndMapSentencesForNotIncludedTypesByDuration(it, trancheCommencementDate) }
+      .map { filterAndMapSentencesForNotIncludedTypesByDuration(it, trancheCommencementDate, trancheTwoCommencementDate) }
       .none {
         it >= 5
       }
