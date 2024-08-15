@@ -6,20 +6,20 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 @Component
 class TrancheOne(
   @Value("\${sds-early-release-tranches.tranche-one-date}")
   @DateTimeFormat(pattern = "yyyy-MM-dd") val trancheCommencementDate: LocalDate,
+  @Value("\${sds-early-release-tranches.tranche-two-date}")
+  @DateTimeFormat(pattern = "yyyy-MM-dd") val trancheTwoCommencementDate: LocalDate,
 ) : Tranche {
 
   override fun isBookingApplicableForTrancheCriteria(calculationResult: CalculationResult, booking: Booking): Boolean {
-    return booking.getAllExtractableSentences().none {
-      it.durationIsGreaterThanOrEqualTo(
-        5,
-        ChronoUnit.YEARS,
-      )
-    }
+    return booking.getAllExtractableSentences()
+      .map { filterAndMapSentencesForNotIncludedTypesByDuration(it, trancheCommencementDate, trancheTwoCommencementDate) }
+      .none {
+        it >= 5
+      }
   }
 }
