@@ -349,8 +349,8 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         ),
         emptyMap(),
         Period.ofYears(5),
-        sdsEarlyReleaseAllocatedTranche = SDSEarlyReleaseTranche.TRANCHE_1,
-        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
+        sdsEarlyReleaseAllocatedTranche = SDSEarlyReleaseTranche.TRANCHE_0,
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
       ),
     )
   }

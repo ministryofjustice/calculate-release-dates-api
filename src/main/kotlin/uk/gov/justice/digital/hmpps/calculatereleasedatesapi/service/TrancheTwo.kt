@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 @Component
 class TrancheTwo(
@@ -16,12 +15,11 @@ class TrancheTwo(
 
   override fun isBookingApplicableForTrancheCriteria(calculationResult: CalculationResult, booking: Booking): Boolean {
     return (
-      booking.getAllExtractableSentences().any {
-        it.durationIsGreaterThanOrEqualTo(
-          5,
-          ChronoUnit.YEARS,
-        )
-      }
+      booking.getAllExtractableSentences()
+        .map { filterAndMapSentencesForNotIncludedTypesByDuration(it, trancheCommencementDate, trancheCommencementDate) }
+        .any {
+          it >= 5
+        }
       )
   }
 }

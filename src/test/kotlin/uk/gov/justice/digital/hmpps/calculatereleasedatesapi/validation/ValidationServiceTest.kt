@@ -2119,7 +2119,7 @@ class ValidationServiceTest {
     val NINE_MONTH_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 9L, YEARS to 0L))
     val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     val DOB: LocalDate = LocalDate.of(1980, 1, 1)
-    val SDS40_TRANCHE_ONE = TrancheOne(LocalDate.of(2024, 9, 10))
+    val SDS40_TRANCHE_ONE = TrancheOne(LocalDate.of(2024, 9, 10), LocalDate.of(2024, 10, 22))
 
     const val PRISONER_ID = "A123456A"
     const val SEQUENCE = 153

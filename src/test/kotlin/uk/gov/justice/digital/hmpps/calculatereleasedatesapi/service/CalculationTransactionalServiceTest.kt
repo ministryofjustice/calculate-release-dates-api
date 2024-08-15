@@ -172,7 +172,7 @@ class CalculationTransactionalServiceTest {
       calculatedReleaseDates = calculationTransactionalService(params, passedInServices = listOf(ValidationService::class.java.simpleName))
         .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
       val sentencesExtractionService = SentencesExtractionService()
-      val trancheOne = TrancheOne(sdsEarlyReleaseTrancheOneDate(params))
+      val trancheOne = TrancheOne(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
       val myValidationService = getActiveValidationService(sentencesExtractionService, trancheOne)
       returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
         calculatedReleaseDates.calculatedBooking!!,
@@ -730,10 +730,10 @@ class CalculationTransactionalServiceTest {
       sdsEarlyReleaseTrancheOneDate(),
     )
 
-    val trancheOne = TrancheOne(sdsEarlyReleaseTrancheOneDate(params))
+    val trancheOne = TrancheOne(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
     val trancheTwo = TrancheTwo(sdsEarlyReleaseTrancheTwoDate(params))
 
-    val trancheAllocationService = TrancheAllocationService(TrancheOne(sdsEarlyReleaseTrancheOneDate()), TrancheTwo(sdsEarlyReleaseTrancheOneDate()))
+    val trancheAllocationService = TrancheAllocationService(TrancheOne(sdsEarlyReleaseTrancheOneDate(), sdsEarlyReleaseTrancheTwoDate()), TrancheTwo(sdsEarlyReleaseTrancheOneDate()))
     val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
 
     val calculationService = CalculationService(

@@ -11,7 +11,11 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          public-key-location: classpath:local-public-key.pub
+          jwk-set-uri: ${hmpps.auth.url}/.well-known/jwks.json
+      client:
+        provider:
+          hmpps-auth:
+            token-uri: ${hmpps.auth.url}/oauth/token
 
   jpa:
     show-sql: true
