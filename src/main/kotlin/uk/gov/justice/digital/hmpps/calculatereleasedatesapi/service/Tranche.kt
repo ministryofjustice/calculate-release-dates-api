@@ -37,12 +37,17 @@ interface Tranche {
     return if (sentenceToFilter is ConsecutiveSentence) {
       val filteredSentences = sentenceToFilter.orderedSentences
         .filter { filterOnType(it, trancheCommencementDate, trancheTwoCommencementDate) }
-      val earliestSentencedAt = filteredSentences.minBy { it.sentencedAt }
-      filteredSentences.sumOf { it.getLengthInDays() }.let {
-        ChronoUnit.YEARS.between(
-          earliestSentencedAt.sentencedAt,
-          earliestSentencedAt.sentencedAt.plus(it.toLong(), ChronoUnit.DAYS),
-        )
+
+      if (filteredSentences.any()) {
+        val earliestSentencedAt = filteredSentences.minBy { it.sentencedAt }
+        filteredSentences.sumOf { it.getLengthInDays() }.let {
+          ChronoUnit.YEARS.between(
+            earliestSentencedAt.sentencedAt,
+            earliestSentencedAt.sentencedAt.plus(it.toLong(), ChronoUnit.DAYS),
+          )
+        }
+      } else {
+        0
       }
     } else {
       if (filterOnType(sentenceToFilter, trancheCommencementDate, trancheTwoCommencementDate)) {

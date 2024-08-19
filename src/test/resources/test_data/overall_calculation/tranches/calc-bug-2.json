@@ -1,0 +1,161 @@
+{
+  "offender": {
+    "reference": "A123456",
+    "dateOfBirth": "2001-06-26",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 2499879,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2019-01-22",
+        "offenceCode": "COML017"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 4,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "d7449876-d80b-3769-916e-4a165431c6c3",
+      "recallType": "STANDARD_RECALL",
+      "sentencedAt": "2019-04-16",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": "A12345678",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2019-01-22",
+        "offenceCode": "MD71231"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 12
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "9c60dacd-31e2-3341-b429-27332751adfe",
+      "recallType": "STANDARD_RECALL",
+      "sentencedAt": "2019-04-16",
+      "caseSequence": 2,
+      "lineSequence": 2,
+      "caseReference": "162/S20190176",
+      "consecutiveSentenceUUIDs": [
+        "d7449876-d80b-3769-916e-4a165431c6c3"
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2022-09-01",
+        "offenceCode": "CJ88144"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 8
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "cb785d76-8fe0-383e-8e1e-1b9a89ec8c55",
+      "recallType": null,
+      "sentencedAt": "2023-04-27",
+      "caseSequence": 3,
+      "lineSequence": 3,
+      "caseReference": "05C10084722",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2022-09-01",
+        "offenceCode": "MD71234"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 3,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "1f1879ae-943d-30ff-a630-9d5e2a045567",
+      "recallType": null,
+      "sentencedAt": "2023-04-27",
+      "caseSequence": 3,
+      "lineSequence": 4,
+      "caseReference": "05C10084722",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2022-09-01",
+        "offenceCode": "MD71231"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 3,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "1f1879ae-943d-30ff-a630-9d5e2a045567",
+      "recallType": null,
+      "sentencedAt": "2023-04-27",
+      "caseSequence": 3,
+      "lineSequence": 4,
+      "caseReference": "05C10084722",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    }
+  ],
+  "adjustments": {
+    "RECALL_REMAND": [
+      {
+        "toDate": null,
+        "fromDate": null,
+        "numberOfDays": 64,
+        "appliesToSentencesFrom": "2019-04-16"
+      }
+    ],
+    "RECALL_TAGGED_BAIL": [
+      {
+        "toDate": null,
+        "fromDate": null,
+        "numberOfDays": 110,
+        "appliesToSentencesFrom": "2019-04-16"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "toDate": "2022-08-31",
+        "fromDate": "2022-08-26",
+        "numberOfDays": 6,
+        "appliesToSentencesFrom": "2022-08-26"
+      }
+    ]
+  },
+  "historicalTusedData": null,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}

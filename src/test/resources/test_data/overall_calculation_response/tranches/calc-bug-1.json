@@ -1,0 +1,11 @@
+{
+  "dates": {
+    "SLED": "2027-03-11",
+    "CRD": "2024-09-10",
+    "HDCED4PLUS": "2024-06-29",
+    "ESED": "2027-03-11"
+  },
+  "effectiveSentenceLength": "P9Y4M13D",
+  "sdsEarlyReleaseTranche": "TRANCHE_1",
+  "sdsEarlyReleaseAllocatedTranche": "TRANCHE_1"
+}
