@@ -53,6 +53,7 @@ class CalculationTransactionalServiceValidationTest {
   private val nomisCommentService = mock<NomisCommentService>()
   private val bankHolidayService = mock<BankHolidayService>()
   private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
+  private val objectMapper = TestUtil.objectMapper()
 
   @BeforeEach
   fun beforeAll() {
@@ -90,16 +91,19 @@ class CalculationTransactionalServiceValidationTest {
     // Get the captured log messages
     val logMessages = logCaptor.infoLogs
 
+    val sourceDataJson = objectMapper.writeValueAsString(fakeSourceData)
+    val bookingJson = objectMapper.writeValueAsString(BOOKING)
+
     // Verify the expected log messages
     assertEquals(
       listOf(
         "Full Validation for $prisonerId",
         "Gathering source data from PrisonAPI",
-        "Source data: $fakeSourceData",
+        "Source data:\n$sourceDataJson",
         "Stage 1: Running initial calculation validations",
         "Initial validation passed",
         "Retrieving booking information",
-        "Booking information: $BOOKING",
+        "Booking information:\n$bookingJson",
         "Stage 2: Running booking-related calculation validations",
         "Booking validation passed",
         "Stage 3: Calculating release dates",
