@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.2"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
@@ -61,7 +63,7 @@ dependencies {
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.2.0")
 
   // Test dependencies
-  testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
+  testImplementation("org.wiremock:wiremock-standalone:3.9.1")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.4.1")
@@ -69,6 +71,8 @@ dependencies {
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
   testImplementation("com.h2database:h2")
+  testImplementation("io.github.hakky54:logcaptor:2.9.3")
+
 
   if (project.hasProperty("docs")) {
     implementation("com.h2database:h2")
@@ -87,11 +91,9 @@ kotlin {
   jvmToolchain(21)
 }
 
-tasks {
-  withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-      compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
-    }
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+  compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_21)
   }
 }
 
