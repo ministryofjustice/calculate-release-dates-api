@@ -64,17 +64,25 @@ class CalculationTransactionalServiceValidationTest {
     val logCaptor = LogCaptor.forClass(CalculationTransactionalService::class.java)
 
     val prisonerId = "A1234BC"
-    val calculationUserInputs = CalculationUserInputs(/* initialize as needed */)
-    val fakeMessages = listOf<ValidationMessage>() // Mock or create as needed
+    val calculationUserInputs = CalculationUserInputs()
+    val fakeMessages = listOf<ValidationMessage>()
 
     // Mocking the behaviour of services
     whenever(prisonService.getPrisonApiSourceData(prisonerId, true)).thenReturn(fakeSourceData)
     whenever(validationService.validateBeforeCalculation(any(), eq(calculationUserInputs))).thenReturn(fakeMessages)
     whenever(bookingService.getBooking(any(), eq(calculationUserInputs))).thenReturn(BOOKING)
-    whenever(calculationService.calculateReleaseDates(any(), eq(calculationUserInputs), eq(true))).thenReturn(Pair(
-      BOOKING, mock<CalculationResult>()))
-    whenever(calculationService.calculateReleaseDates(any(), eq(calculationUserInputs), eq(false))).thenReturn(Pair(
-      BOOKING, mock<CalculationResult>()))
+    whenever(calculationService.calculateReleaseDates(any(), eq(calculationUserInputs), eq(true))).thenReturn(
+      Pair(
+        BOOKING,
+        mock<CalculationResult>(),
+      ),
+    )
+    whenever(calculationService.calculateReleaseDates(any(), eq(calculationUserInputs), eq(false))).thenReturn(
+      Pair(
+        BOOKING,
+        mock<CalculationResult>(),
+      ),
+    )
     whenever(validationService.validateBookingAfterCalculation(any(), any())).thenReturn(fakeMessages)
 
     // Call the method under test
@@ -99,9 +107,9 @@ class CalculationTransactionalServiceValidationTest {
         "Calculating release dates for longest possible sentences",
         "Longest possible release dates calculated",
         "Stage 4: Running final booking validation after calculation",
-        fakeMessages.joinToString("\n")
+        fakeMessages.joinToString("\n"),
       ),
-      logMessages
+      logMessages,
     )
   }
 
@@ -197,7 +205,7 @@ class CalculationTransactionalServiceValidationTest {
       approvedDatesSubmissionRepository,
       nomisCommentService,
       TEST_BUILD_PROPERTIES,
-      trancheOutcomeRepository
+      trancheOutcomeRepository,
     )
   }
 
@@ -215,5 +223,4 @@ class CalculationTransactionalServiceValidationTest {
   private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheOne: TrancheOne): ValidationService {
     return ValidationService(sentencesExtractionService, featureToggles = FeatureToggles(true, true, false), trancheOne)
   }
-
 }
