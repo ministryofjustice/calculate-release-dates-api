@@ -83,7 +83,8 @@ class CalculationTransactionalService(
     log.info("Full Validation for $prisonerId")
     log.info("Gathering source data from PrisonAPI")
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
-    log.info("Source data: $sourceData")
+    val sourceDataJson = objectMapper.writeValueAsString(sourceData)
+    log.info("Source data:\n$sourceDataJson")
 
     log.info("Stage 1: Running initial calculation validations")
     val initialValidationMessages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs)
@@ -97,7 +98,8 @@ class CalculationTransactionalService(
 
     log.info("Retrieving booking information")
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
-    log.info("Booking information: $booking")
+    val bookingJson = objectMapper.writeValueAsString(booking)
+    log.info("Booking information:\n$bookingJson")
 
     log.info("Stage 2: Running booking-related calculation validations")
     val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
