@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.3"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
@@ -90,9 +88,11 @@ kotlin {
   jvmToolchain(21)
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-  compilerOptions {
-    jvmTarget.set(JvmTarget.JVM_21)
+tasks {
+  withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+      compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+    }
   }
 }
 
