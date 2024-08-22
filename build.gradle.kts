@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.3"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.0.10"
   kotlin("plugin.jpa") version "2.0.10"
@@ -29,7 +29,7 @@ dependencies {
   implementation("uk.gov.service.notify:notifications-java-client:5.2.0-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.10")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.20")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.8.0")
@@ -54,11 +54,11 @@ dependencies {
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.3")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
-  implementation("org.springframework:spring-jms:6.1.11")
+  implementation("org.springframework:spring-jms:6.1.12")
   implementation("com.google.code.gson:gson:2.11.0")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.2.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.3.1")
 
   // Test dependencies
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
@@ -67,7 +67,7 @@ dependencies {
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.4.1")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.22")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
   testImplementation("com.h2database:h2")
 
   if (project.hasProperty("docs")) {
