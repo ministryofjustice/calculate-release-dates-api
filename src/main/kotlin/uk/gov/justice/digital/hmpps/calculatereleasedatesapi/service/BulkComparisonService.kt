@@ -71,10 +71,10 @@ class BulkComparisonService(
   @Qualifier("bulkComparisonRetryTemplate")
   private val retryTemplate: RetryTemplate,
 ) {
+
   @Async
   fun processPrisonComparison(comparison: Comparison, token: String) {
-    UserContext.setAuthToken(token)
-    log.info("Using token: {}", UserContext.getAuthToken())
+    setAuthTokenAndLog(token)
     val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison!!, token)
     processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison)
     completeComparison(comparison)
@@ -82,6 +82,7 @@ class BulkComparisonService(
 
   @Async
   fun processFullCaseLoadComparison(comparison: Comparison, token: String) {
+    setAuthTokenAndLog(token)
     val currentUserPrisonsList = prisonService.getCurrentUserPrisonsList()
     log.info("Running case load comparison with prisons: {}", currentUserPrisonsList)
     for (prison in currentUserPrisonsList) {
@@ -93,8 +94,7 @@ class BulkComparisonService(
 
   @Async
   fun processManualComparison(comparison: Comparison, prisonerIds: List<String>, token: String) {
-    UserContext.setAuthToken(token)
-    log.info("Using token: {}", UserContext.getAuthToken())
+    setAuthTokenAndLog(token)
     val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIds(prisonerIds, token)
     processCalculableSentenceEnvelopes(activeBookingsForPrisoners, comparison)
     completeComparison(comparison)
@@ -658,6 +658,11 @@ class BulkComparisonService(
       SentenceCalculationType.SEC236A,
     )
     private val log: Logger = LoggerFactory.getLogger(BulkComparisonService::class.java)
+  }
+
+  private fun setAuthTokenAndLog(token: String) {
+    UserContext.setAuthToken(token)
+    log.info("Using token: {}", UserContext.getAuthToken())
   }
 
   private fun Comparison.shouldStoreMismatch(mismatch: Mismatch, hasHdced: Boolean): Boolean {
