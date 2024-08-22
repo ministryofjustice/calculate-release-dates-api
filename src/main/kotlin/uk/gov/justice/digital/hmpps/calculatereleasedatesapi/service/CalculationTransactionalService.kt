@@ -67,7 +67,7 @@ class CalculationTransactionalService(
 ) {
 
   /*
-   * There are 3 stages of full validation:
+   * There are 4 stages of full validation:
    * 1. validate user input data, the raw sentence and offence data from NOMIS
    * 2. validate the raw Booking (NOMIS offence data transformed into a Booking object)
    * 3. Run the calculation and catch any errors thrown by the calculation algorithm
@@ -80,18 +80,54 @@ class CalculationTransactionalService(
     calculationUserInputs: CalculationUserInputs,
     activeDataOnly: Boolean = true,
   ): List<ValidationMessage> {
+    log.info("Full Validation for $prisonerId")
+    log.info("Gathering source data from PrisonAPI")
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
-    var messages =
-      validationService.validateBeforeCalculation(sourceData, calculationUserInputs) // Validation stage 1 of 3
-    if (messages.isNotEmpty()) return messages
-    // getBooking relies on the previous validation stage to have succeeded
+    val sourceDataJson = objectMapper.writeValueAsString(sourceData)
+    log.info("Source data:\n$sourceDataJson")
+
+    log.info("Stage 1: Running initial calculation validations")
+    val initialValidationMessages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs)
+
+    if (initialValidationMessages.isNotEmpty()) {
+      log.warn("Initial validation returned messages")
+      log.info(initialValidationMessages.joinToString("\n"))
+      return initialValidationMessages
+    }
+    log.info("Initial validation passed")
+
+    log.info("Retrieving booking information")
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
-    messages = validationService.validateBeforeCalculation(booking) // Validation stage 2 of 4
-    if (messages.isNotEmpty()) return messages
-    val (bookingAfterCalculation, _) = calculationService.calculateReleaseDates(booking, calculationUserInputs) // Validation stage 3 of 4
-    val (longestPossibleSdsBookingAfterCalculation, _) = calculationService.calculateReleaseDates(booking, calculationUserInputs, true) // Validation stage 3 of 4
-    messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation, longestPossibleSdsBookingAfterCalculation) // Validation stage 4 of 4
-    return messages
+    val bookingJson = objectMapper.writeValueAsString(booking)
+    log.info("Booking information:\n$bookingJson")
+
+    log.info("Stage 2: Running booking-related calculation validations")
+    val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
+
+    if (bookingValidationMessages.isNotEmpty()) {
+      log.warn("Booking validation returned messages")
+      log.info(bookingValidationMessages.joinToString("\n"))
+      return bookingValidationMessages
+    }
+    log.info("Booking validation passed")
+
+    log.info("Stage 3: Calculating release dates")
+    val (bookingAfterCalculation, _) = calculationService.calculateReleaseDates(booking, calculationUserInputs, false)
+    log.info("Release dates calculated")
+
+    log.info("Calculating release dates for longest possible sentences")
+    val (longestPossibleSdsBookingAfterCalculation, _) = calculationService.calculateReleaseDates(booking, calculationUserInputs, true)
+    log.info("Longest possible release dates calculated")
+
+    log.info("Stage 4: Running final booking validation after calculation")
+    val finalValidationMessages = validationService.validateBookingAfterCalculation(bookingAfterCalculation, longestPossibleSdsBookingAfterCalculation)
+
+    if (finalValidationMessages.isNotEmpty()) {
+      log.warn("Final validation returned messages")
+    }
+    log.info(finalValidationMessages.joinToString("\n"))
+
+    return finalValidationMessages
   }
 
   fun validateAndCalculate(
