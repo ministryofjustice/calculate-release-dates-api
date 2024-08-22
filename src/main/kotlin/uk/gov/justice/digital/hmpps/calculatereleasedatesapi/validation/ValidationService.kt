@@ -116,7 +116,7 @@ class ValidationService(
     sourceData: PrisonApiSourceData,
     calculationUserInputs: CalculationUserInputs,
   ): List<ValidationMessage> {
-    log.info("Pre-calculation validation of source data: $sourceData")
+    log.info("Pre-calculation validation of source data")
     val sentencesAndOffences = sourceData.sentenceAndOffences
     val adjustments = sourceData.bookingAndSentenceAdjustments
     val sortedSentences = sentencesAndOffences.sortedWith(this::sortByCaseNumberAndLineSequence)
@@ -198,7 +198,7 @@ class ValidationService(
     booking: Booking,
     standardSDSBooking: Booking? = null,
   ): List<ValidationMessage> {
-    log.info("Validating booking after calculation: $booking")
+    log.info("Validating booking after calculation")
     val messages = mutableListOf<ValidationMessage>()
     booking.sentenceGroups.forEach { messages += validateSentenceHasNotBeenExtinguished(it) }
     messages += validateRemandOverlappingSentences(booking)
@@ -336,8 +336,7 @@ class ValidationService(
     val recallLength = ftrDetails.recallLength
     val bookingsSentenceTypes = sentencesAndOffences.map { from(it.sentenceCalculationType) }
     val has14DayFTRSentence = bookingsSentenceTypes.any { it == FTR_14_ORA }
-    val has28DayFTRSentence = SentenceCalculationType.values()
-      .any { it.isFixedTermRecall && it != FTR_14_ORA && bookingsSentenceTypes.contains(it) }
+    val has28DayFTRSentence = SentenceCalculationType.entries.any { it.isFixedTermRecall && it != FTR_14_ORA && bookingsSentenceTypes.contains(it) }
     return Triple(recallLength, has14DayFTRSentence, has28DayFTRSentence)
   }
 
