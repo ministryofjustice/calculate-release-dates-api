@@ -1,8 +1,8 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.4"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
-  kotlin("plugin.spring") version "2.0.10"
-  kotlin("plugin.jpa") version "2.0.10"
+  kotlin("plugin.spring") version "2.0.20"
+  kotlin("plugin.jpa") version "2.0.20"
   id("jacoco")
 }
 
@@ -29,7 +29,7 @@ dependencies {
   implementation("uk.gov.service.notify:notifications-java-client:5.2.0-RELEASE")
 
   // Enable kotlin reflect
-  implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.10")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.20")
 
   // Three Ten Date Calculations
   implementation("org.threeten:threeten-extra:1.8.0")
@@ -39,7 +39,7 @@ dependencies {
   // Database dependencies
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  runtimeOnly("org.postgresql:postgresql:42.7.3")
+  runtimeOnly("org.postgresql:postgresql:42.7.4")
 
   // JWT
   implementation("io.jsonwebtoken:jjwt-api:0.12.6")
@@ -54,21 +54,22 @@ dependencies {
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.3")
   implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE")
-  implementation("org.springframework:spring-jms:6.1.11")
+  implementation("org.springframework:spring-jms:6.1.12")
   implementation("com.google.code.gson:gson:2.11.0")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.2.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.3.1")
 
   // Test dependencies
-  testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1")
+  testImplementation("org.wiremock:wiremock-standalone:3.9.1")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.2")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.4.1")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.22")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
   testImplementation("com.h2database:h2")
+  testImplementation("io.github.hakky54:logcaptor:2.9.3")
 
   if (project.hasProperty("docs")) {
     implementation("com.h2database:h2")
@@ -89,9 +90,7 @@ kotlin {
 
 tasks {
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-      compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
-    }
+    compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
   }
 }
 
