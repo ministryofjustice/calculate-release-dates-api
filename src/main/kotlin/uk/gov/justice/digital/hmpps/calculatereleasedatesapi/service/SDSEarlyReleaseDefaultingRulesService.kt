@@ -50,6 +50,12 @@ class SDSEarlyReleaseDefaultingRulesService(
 
     handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(dates, originalBooking, trancheOneCommencementDate, standardReleaseResult, breakdownByReleaseDateType)
 
+    overriddenTranche = if (dates == standardReleaseResult.dates) {
+      SDSEarlyReleaseTranche.TRANCHE_0
+    } else {
+      allocatedTranche
+    }
+
     return CalculationResult(
       dates,
       breakdownByReleaseDateType,
