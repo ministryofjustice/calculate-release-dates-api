@@ -1,0 +1,109 @@
+{
+  "offender": {
+    "reference": "A123456",
+    "dateOfBirth": "1963-01-01",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 1234567,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2019-09-05",
+        "offenceCode": "MD71231"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 6,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "84d56e7e-0a2f-3e62-b3fb-0e0901a217fc",
+      "recallType": "STANDARD_RECALL",
+      "sentencedAt": "2020-08-13",
+      "caseSequence": 2,
+      "lineSequence": 2,
+      "caseReference": "LR",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-05-16",
+        "offenceCode": "MD71185"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 48
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "87276dcb-cceb-35da-9254-61686a43d663",
+      "recallType": null,
+      "sentencedAt": "2024-07-16",
+      "caseSequence": 3,
+      "lineSequence": 3,
+      "caseReference": "123456789A",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-05-21",
+        "offenceCode": "MD71526"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 12
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "e1a707b7-9a6c-37ad-b9dc-7385e9e63750",
+      "recallType": null,
+      "sentencedAt": "2024-07-16",
+      "caseSequence": 3,
+      "lineSequence": 4,
+      "caseReference": "123456789A",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "toDate": "2024-05-22",
+        "fromDate": "2024-05-22",
+        "numberOfDays": 1,
+        "appliesToSentencesFrom": "2024-07-16"
+      }
+    ],
+    "RECALL_REMAND": [
+      {
+        "toDate": "2020-08-12",
+        "fromDate": "2019-12-21",
+        "numberOfDays": 236,
+        "appliesToSentencesFrom": "2020-08-13"
+      },
+      {
+        "toDate": "2019-11-13",
+        "fromDate": "2019-10-02",
+        "numberOfDays": 43,
+        "appliesToSentencesFrom": "2020-08-13"
+      }
+    ]
+  },
+  "historicalTusedData": null,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}

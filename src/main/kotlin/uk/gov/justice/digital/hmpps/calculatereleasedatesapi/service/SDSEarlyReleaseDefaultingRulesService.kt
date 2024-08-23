@@ -48,12 +48,6 @@ class SDSEarlyReleaseDefaultingRulesService(
       }
     }
 
-    if (standardReleaseResult.dates[ReleaseDateType.CRD]?.isBefore(trancheCommencementDate) == true) {
-      overriddenTranche = SDSEarlyReleaseTranche.TRANCHE_0
-    } else if (earlyReleaseResult.dates[ReleaseDateType.CRD]?.isAfter(trancheCommencementDate) == true) {
-      overriddenTranche = SDSEarlyReleaseTranche.TRANCHE_0
-    }
-
     handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(dates, originalBooking, trancheOneCommencementDate, standardReleaseResult, breakdownByReleaseDateType)
 
     return CalculationResult(
