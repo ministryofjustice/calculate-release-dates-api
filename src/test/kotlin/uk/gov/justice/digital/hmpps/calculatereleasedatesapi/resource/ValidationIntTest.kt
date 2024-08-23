@@ -31,7 +31,7 @@ class ValidationIntTest : IntegrationTestBase() {
   fun `Run calculation where remand periods overlap with a sentence period`() {
     runValidationAndCheckMessages(
       REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID,
-      listOf(ValidationMessage(REMAND_OVERLAPS_WITH_SENTENCE, arguments = listOf("2001-04-29", "2001-02-25", "2000-04-28", "2000-04-30"))),
+      listOf(ValidationMessage(REMAND_OVERLAPS_WITH_SENTENCE, arguments = listOf("2000-04-29", "2001-02-25", "2000-04-28", "2000-04-30"))),
     )
   }
 
