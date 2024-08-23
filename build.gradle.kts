@@ -84,6 +84,16 @@ jacoco {
   toolVersion = "0.8.12"
 }
 
+tasks.jacocoTestCoverageVerification {
+  violationRules {
+    rule {
+      limit {
+        minimum = "0.8".toBigDecimal()
+      }
+    }
+  }
+}
+
 kotlin {
   jvmToolchain(21)
 }
