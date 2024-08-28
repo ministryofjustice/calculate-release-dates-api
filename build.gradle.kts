@@ -53,7 +53,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.3")
-  implementation("org.springframework.cloud:spring-cloud-aws-messaging:2.4.4.RELEASE")
+  implementation("io.awspring.cloud:spring-cloud-aws-messaging:2.4.4")
   implementation("org.springframework:spring-jms:6.1.12")
   implementation("com.google.code.gson:gson:2.11.0")
 
