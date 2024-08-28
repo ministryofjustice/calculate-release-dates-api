@@ -24,3 +24,6 @@ tranches,consec-terms-of-imprisonment,,alt-3-calculation-params
 tranches,calc-bug-1,,alt-3-calculation-params
 tranches,calc-bug-2,,alt-3-calculation-params
 tranches,calc-bug-3,,alt-3-calculation-params
+
+tranches,crs-2121_2x2.5,,alt-3-calculation-params
+tranches,crs-2121_2.5_plus_2.49,,alt-3-calculation-params
