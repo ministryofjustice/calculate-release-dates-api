@@ -116,7 +116,6 @@ openApi {
 
 afterEvaluate {
   tasks.named("forkedSpringBootRun") {
-    dependsOn("inspectClassesForKotlinIC")
     notCompatibleWithConfigurationCache(
       "See https://github.com/springdoc/springdoc-openapi-gradle-plugin/issues/102",
     )
