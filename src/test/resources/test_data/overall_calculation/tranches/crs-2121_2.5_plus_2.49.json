@@ -1,0 +1,73 @@
+{
+  "offender": {
+    "reference": "A4608EV",
+    "dateOfBirth": "2001-05-26",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 1,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2021-09-12",
+        "offenceCode": "MD71230"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 2,
+          "MONTHS": 6
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "b26081b5-2d29-3d5e-b49e-d9a773f4a04e",
+      "recallType": null,
+      "sentencedAt": "2023-02-16",
+      "caseSequence": 2,
+      "lineSequence": 1,
+      "caseReference": "T20220152",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2022-05-18",
+        "offenceCode": "MD71230"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 30,
+          "WEEKS": 0,
+          "YEARS": 2,
+          "MONTHS": 5
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "d2776338-c642-39ff-b9cd-49326afe9cef",
+      "recallType": null,
+      "sentencedAt": "2023-02-16",
+      "caseSequence": 1,
+      "lineSequence": 2,
+      "caseReference": "T20220103",
+      "consecutiveSentenceUUIDs": [
+        "b26081b5-2d29-3d5e-b49e-d9a773f4a04e"
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "toDate": "2023-02-15",
+        "fromDate": "2022-05-19",
+        "numberOfDays": 273,
+        "appliesToSentencesFrom": "2023-02-16"
+      }
+    ]
+  },
+  "historicalTusedData": null,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}
