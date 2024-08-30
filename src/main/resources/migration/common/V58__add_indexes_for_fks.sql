@@ -1,0 +1,4 @@
+CREATE INDEX idx_calculation_request_id ON calculation_outcome(calculation_request_id);
+CREATE INDEX idx_crui_request_id ON calculation_request_user_input(calculation_request_id);
+CREATE INDEX idx_ads_request_id ON approved_dates_submission(calculation_request_id);
+CREATE INDEX idx_tranche_outcome_request_id ON tranche_outcome(calculation_request_id);
