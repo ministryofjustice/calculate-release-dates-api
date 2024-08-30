@@ -123,9 +123,10 @@ class TrancheAllocationServiceTest {
     recallSentence.sentenceCalculation = SentenceCalculation(
       recallSentence,
       3,
+      4,
       4.0,
       4,
-      4,
+      4.0,
       testTranchOneCommencementDate,
       testTrancheTwoCommencementDate.minusDays(1),
       testTranchOneCommencementDate,
@@ -177,9 +178,10 @@ class TrancheAllocationServiceTest {
     recallSentence.sentenceCalculation = SentenceCalculation(
       recallSentence,
       3,
+      4,
       4.0,
       4,
-      4,
+      4.0,
       testTranchOneCommencementDate,
       testTrancheTwoCommencementDate,
       testTranchOneCommencementDate,

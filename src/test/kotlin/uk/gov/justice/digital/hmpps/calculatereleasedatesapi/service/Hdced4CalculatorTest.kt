@@ -397,9 +397,10 @@ class Hdced4CalculatorTest {
     SentenceCalculation(
       sentence,
       numberOfDaysToSED,
+      numberOfDaysToDeterminateReleaseDate,
       numberOfDaysToDeterminateReleaseDate.toDouble(),
       numberOfDaysToDeterminateReleaseDate,
-      numberOfDaysToDeterminateReleaseDate,
+      numberOfDaysToDeterminateReleaseDate.toDouble(),
       sentence.sentencedAt.plusDays(numberOfDaysToDeterminateReleaseDate.toLong() - 1),
       sentence.sentencedAt.plusDays(numberOfDaysToSED.toLong() - 1),
       sentence.sentencedAt.plusDays(numberOfDaysToDeterminateReleaseDate.toLong() - 1),
@@ -419,7 +420,7 @@ class Hdced4CalculatorTest {
   ) {
     val offender = Offender("ABC123", LocalDate.of(1980, 1, 1), isActiveSexOffender = isActiveSexOffender)
     if (calculator.doesHdced4DateApply(sentence, offender)) {
-      calculator.calculateHdced4(sentence, sentenceCalculation, extraDaysForSdsConsecutiveToBotus)
+      calculator.calculateHdced4(sentence, sentenceCalculation, extraDaysForSdsConsecutiveToBotus, false)
     }
   }
 }

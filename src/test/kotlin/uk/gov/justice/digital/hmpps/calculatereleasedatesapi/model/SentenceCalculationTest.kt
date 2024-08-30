@@ -21,9 +21,10 @@ internal class SentenceCalculationTest {
       standardSentence,
 
       3,
+      4,
       4.0,
       4,
-      4,
+      4.0,
       date,
       date,
       date,

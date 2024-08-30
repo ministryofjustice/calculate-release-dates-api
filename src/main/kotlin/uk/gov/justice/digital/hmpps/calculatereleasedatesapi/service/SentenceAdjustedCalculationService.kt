@@ -1,5 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.IMMEDIATE_RELEASE
@@ -22,13 +26,22 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import kotlin.math.ceil
 import kotlin.math.floor
 
 @Service
-class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, val tusedCalculator: TusedCalculator, val hdced4Calculator: Hdced4Calculator, val ersedCalculator: ErsedCalculator) {
+class SentenceAdjustedCalculationService(
+  val hdcedCalculator: HdcedCalculator,
+  val tusedCalculator: TusedCalculator,
+  val hdced4Calculator: Hdced4Calculator,
+  val ersedCalculator: ErsedCalculator,
+  @Value("\${sds-early-release-tranches.tranche-one-date}")
+  @DateTimeFormat(pattern = "yyyy-MM-dd")
+  private val trancheOneCommencementDate: LocalDate,
+) {
   /*
     This function calculates dates after adjustments have been decided.
     It can be run many times to recalculate dates. It needs to be run if there is a change to adjustments.
@@ -85,16 +98,38 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
     val extraDaysForSdsConsecutiveToBotus = getExtraDaysForSdsConsecutiveToBotus(sentence, booking)
 
     if (sentence.releaseDateTypes.contains(HDCED)) {
-      hdcedCalculator.calculateHdced(sentence, sentenceCalculation, booking.offender, extraDaysForSdsConsecutiveToBotus)
+      hdcedCalculator.calculateHdced(
+        sentence,
+        sentenceCalculation,
+        booking.offender,
+        extraDaysForSdsConsecutiveToBotus,
+        false,
+      )
+      if (
+        sentence.sentencedAt.isBefore(trancheOneCommencementDate) &&
+        sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isAfter(trancheOneCommencementDate) &&
+        sentenceCalculation.breakdownByReleaseDateType[HDCED] == null
+      ) {
+        log.info("Determining whether a HDCED applied from the half-way release (where one doesn't apply from the 40%)")
+        hdcedCalculator.calculateHdced(sentence, sentenceCalculation, booking.offender, extraDaysForSdsConsecutiveToBotus, useHistoricReleaseDate = true)
+      }
     }
     if (sentence.releaseDateTypes.contains(HDCED4PLUS)) {
-      hdced4Calculator.calculateHdced4(sentence, sentenceCalculation, extraDaysForSdsConsecutiveToBotus)
+      hdced4Calculator.calculateHdced4(sentence, sentenceCalculation, extraDaysForSdsConsecutiveToBotus, false)
+      if (
+        sentence.sentencedAt.isBefore(trancheOneCommencementDate) &&
+        sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isAfter(trancheOneCommencementDate) &&
+        sentenceCalculation.breakdownByReleaseDateType[HDCED4PLUS] == null
+      ) {
+        log.info("Determining whether a HDCED4 applied from the half-way release (where one doesn't apply from the 40%)")
+        hdced4Calculator.calculateHdced4(sentence, sentenceCalculation, extraDaysForSdsConsecutiveToBotus, useHistoricReleaseDate = true)
+      }
     }
 
     if (sentence.isBotusConsecutiveToSDS()) {
       resetHdcedAndTusedDatesIfBotusConsecutiveToSdsSentence(sentence, sentenceCalculation, booking)
     }
-    BookingCalculationService.log.info(sentence.buildString())
+    log.info(sentence.buildString())
     return sentenceCalculation
   }
 
@@ -296,11 +331,7 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
     private const val TWO = 2L
     private const val THREE = 3L
     private const val FOUR = 4L
-    private const val TWELVE = 12L
-    private const val FOURTEEN = 14L
-    private const val EIGHTEEN = 18L
-    private const val TWENTY_EIGHT = 28L
     private const val YEAR_IN_DAYS = 365
-    private const val ONE_HUNDRED_AND_THIRTY_FIVE = 135
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }

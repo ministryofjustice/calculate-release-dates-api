@@ -2232,9 +2232,10 @@ class ValidationServiceTest {
     val SENTENCE_CALCULATION = SentenceCalculation(
       STANDARD_SENTENCE,
       3,
+      4,
       4.0,
       4,
-      4,
+      4.0,
       FIRST_MAY_2018,
       FIRST_MAY_2018,
       FIRST_MAY_2018,

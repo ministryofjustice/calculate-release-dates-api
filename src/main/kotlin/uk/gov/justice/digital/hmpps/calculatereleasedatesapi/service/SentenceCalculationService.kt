@@ -135,9 +135,10 @@ class SentenceCalculationService(
     return SentenceCalculation(
       sentence,
       release.numberOfDaysToSentenceExpiryDate,
-      release.numberOfDaysToDeterminateReleaseDateDouble,
       release.numberOfDaysToDeterminateReleaseDate,
+      release.numberOfDaysToDeterminateReleaseDateDouble,
       historicRelease.numberOfDaysToDeterminateReleaseDate,
+      historicRelease.numberOfDaysToDeterminateReleaseDateDouble,
       unadjustedHistoricDeterminateReleaseDate,
       unadjustedExpiryDate,
       unadjustedDeterminateReleaseDate,
