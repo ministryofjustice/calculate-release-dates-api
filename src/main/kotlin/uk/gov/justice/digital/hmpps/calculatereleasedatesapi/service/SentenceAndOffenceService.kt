@@ -17,7 +17,7 @@ class SentenceAndOffenceService(
   fun getSentencesAndOffences(bookingId: Long): List<AnalysedSentenceAndOffence> {
     val sentencesAndOffences = prisonService.getSentencesAndOffences(bookingId)
 
-    return calculationRequestRepository.findLatestCalculation(bookingId)
+    return calculationRequestRepository.findFirstByBookingIdOrderByCalculatedAtDesc(bookingId)
       .map { latestCalculation -> determineSentencesAndOffences(sentencesAndOffences, latestCalculation) }
       .orElse(transform(SentenceAndOffenceAnalysis.NEW, sentencesAndOffences))
   }

@@ -32,7 +32,7 @@ class LatestCalculationService(
     return getLatestBookingFromPrisoner(prisonerId)
       .flatMap { bookingId -> prisonService.getOffenderKeyDates(bookingId).map { bookingId to it } }
       .map { (bookingId, prisonerCalculation) ->
-        val latestCrdsCalc = calculationRequestRepository.findLatestConfirmedCalculationForPrisoner(prisonerId)
+        val latestCrdsCalc = calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)
         if (latestCrdsCalc.isEmpty || !isSameCalc(prisonerCalculation, latestCrdsCalc.get())) {
           val nomisReason = prisonService.getNOMISCalcReasons().find { it.code == prisonerCalculation.reasonCode }?.description ?: prisonerCalculation.reasonCode
           toLatestCalculation(
