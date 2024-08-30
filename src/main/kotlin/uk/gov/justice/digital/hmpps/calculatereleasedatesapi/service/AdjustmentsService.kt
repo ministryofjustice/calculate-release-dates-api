@@ -19,7 +19,7 @@ class AdjustmentsService(
   fun getAnalyzedAdjustments(bookingId: Long): AnalyzedBookingAndSentenceAdjustments {
     val bookingAndSentenceAdjustments = prisonService.getBookingAndSentenceAdjustments(bookingId)
 
-    return calculationRequestRepository.findLatestCalculation(bookingId).map {
+    return calculationRequestRepository.findFirstByBookingIdOrderByCalculatedAtDesc(bookingId).map {
       val objectMapper = jacksonObjectMapper().findAndRegisterModules()
       if (it.adjustments == null) {
         return@map newAnalyzedBookingAndSentenceAdjustments(bookingAndSentenceAdjustments)

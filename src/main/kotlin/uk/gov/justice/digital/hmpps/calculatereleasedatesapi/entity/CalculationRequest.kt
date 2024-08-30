@@ -13,6 +13,8 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.NamedAttributeNode
+import jakarta.persistence.NamedEntityGraph
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
@@ -27,6 +29,16 @@ import java.util.UUID
 
 @Entity
 @Table
+@NamedEntityGraph(
+  name = "CalculationRequest.detail",
+  attributeNodes = [
+    NamedAttributeNode("calculationOutcomes"),
+    NamedAttributeNode("calculationRequestUserInput"),
+    NamedAttributeNode("reasonForCalculation"),
+    NamedAttributeNode("historicalTusedSource"),
+    NamedAttributeNode("allocatedSDSTranche"),
+  ],
+)
 data class CalculationRequest(
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -48,6 +48,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import java.util.UUID
 
 @Service
+@Transactional(readOnly = true)
 class CalculationTransactionalService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
