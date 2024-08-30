@@ -32,5 +32,5 @@ interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long>
   fun findFirstByBookingIdOrderByCalculatedAtDesc(bookingId: Long): Optional<CalculationRequest>
 
   @EntityGraph(value = "CalculationRequest.detail", type = EntityGraphType.LOAD)
-  fun findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId: String, status: CalculationStatus = CalculationStatus.CONFIRMED): Optional<CalculationRequest>
+  fun findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId: String, status: String = CalculationStatus.CONFIRMED.name): Optional<CalculationRequest>
 }
