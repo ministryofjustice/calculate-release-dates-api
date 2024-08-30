@@ -287,14 +287,18 @@ class BookingExtractionService(
           dates[LED] = latestNonDtoSentence.sentenceCalculation.licenceExpiryDate!!
         }
       }
-    } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
-      extractCrdOrArd(
-        mostRecentSentencesByReleaseDate,
-        concurrentOraAndNonOraDetails,
-        dates,
-        latestReleaseDate,
-        breakdownByReleaseDateType
-      )
+    } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() || booking.sentences.any { it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE } }) {
+      val mostRecentNonRecallSentence = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() }, SentenceCalculation::releaseDate)
+
+      if (mostRecentNonRecallSentence != null) {
+        extractCrdOrArd(
+          listOf(mostRecentNonRecallSentence),
+          concurrentOraAndNonOraDetails,
+          dates,
+          latestReleaseDate,
+          breakdownByReleaseDateType,
+        )
+      }
     }
 
     val latestPostRecallReleaseDate =
@@ -343,7 +347,12 @@ class BookingExtractionService(
     )
 
     /** --- ERSED --- **/
-    val ersedNotApplicableDueToDtoLaterThanCrd = extractErsedAndNotApplicableDueToDtoLaterThanCrdFlag(sentences, breakdownByReleaseDateType, dates, booking.sentenceGroups)
+    val ersedNotApplicableDueToDtoLaterThanCrd = extractErsedAndNotApplicableDueToDtoLaterThanCrdFlag(
+      sentences,
+      breakdownByReleaseDateType,
+      dates,
+      booking.sentenceGroups,
+    )
 
     if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
       dates[PRRD] = latestReleaseDate
