@@ -169,8 +169,9 @@ class CalculationTransactionalServiceTest {
     val calculatedReleaseDates: CalculatedReleaseDates
     val returnedValidationMessages: List<ValidationMessage>
     try {
-      calculatedReleaseDates = calculationTransactionalService(params, passedInServices = listOf(ValidationService::class.java.simpleName))
-        .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
+      calculatedReleaseDates =
+        calculationTransactionalService(params, passedInServices = listOf(ValidationService::class.java.simpleName))
+          .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
       val sentencesExtractionService = SentencesExtractionService()
       val trancheOne = TrancheOne(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
       val myValidationService = getActiveValidationService(sentencesExtractionService, trancheOne)
@@ -708,7 +709,13 @@ class CalculationTransactionalServiceTest {
     val hdced4Calculator = Hdced4Calculator(hdcedConfiguration, sentenceAggregator, releasePointMultiplierLookup)
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val sentenceAdjustedCalculationService =
-      SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
+      SentenceAdjustedCalculationService(
+        hdcedCalculator,
+        tusedCalculator,
+        hdced4Calculator,
+        ersedCalculator,
+        sdsEarlyReleaseTrancheOneDate(params),
+      )
     val sentenceCalculationService =
       SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup, sentenceAggregator)
     val sentencesExtractionService = SentencesExtractionService()
@@ -733,7 +740,10 @@ class CalculationTransactionalServiceTest {
     val trancheOne = TrancheOne(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
     val trancheTwo = TrancheTwo(sdsEarlyReleaseTrancheTwoDate(params))
 
-    val trancheAllocationService = TrancheAllocationService(TrancheOne(sdsEarlyReleaseTrancheOneDate(), sdsEarlyReleaseTrancheTwoDate()), TrancheTwo(sdsEarlyReleaseTrancheOneDate()))
+    val trancheAllocationService = TrancheAllocationService(
+      TrancheOne(sdsEarlyReleaseTrancheOneDate(), sdsEarlyReleaseTrancheTwoDate()),
+      TrancheTwo(sdsEarlyReleaseTrancheOneDate()),
+    )
     val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
 
     val calculationService = CalculationService(
@@ -773,8 +783,19 @@ class CalculationTransactionalServiceTest {
     )
   }
 
-  private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheOne: TrancheOne): ValidationService {
-    return ValidationService(sentencesExtractionService, featureToggles = FeatureToggles(true, true, false), trancheOne)
+  private fun getActiveValidationService(
+    sentencesExtractionService: SentencesExtractionService,
+    trancheOne: TrancheOne,
+  ): ValidationService {
+    return ValidationService(
+      sentencesExtractionService,
+      featureToggles = FeatureToggles(
+        botus = true,
+        sdsEarlyRelease = true,
+        sdsEarlyReleaseUnsupported = false,
+      ),
+      trancheOne,
+    )
   }
 
   companion object {
@@ -880,7 +901,16 @@ class CalculationTransactionalServiceTest {
       )
 
     val CALCULATION_REASON =
-      CalculationReason(-1, true, false, "Reason", false, nomisReason = "UPDATE", nomisComment = "NOMIS_COMMENT", null)
+      CalculationReason(
+        id = -1,
+        isActive = true,
+        isOther = false,
+        displayName = "Reason",
+        isBulk = false,
+        nomisReason = "UPDATE",
+        nomisComment = "NOMIS_COMMENT",
+        displayRank = null,
+      )
 
     val CALCULATION_REQUEST_WITH_OUTCOMES = CalculationRequest(
       id = CALCULATION_REQUEST_ID,

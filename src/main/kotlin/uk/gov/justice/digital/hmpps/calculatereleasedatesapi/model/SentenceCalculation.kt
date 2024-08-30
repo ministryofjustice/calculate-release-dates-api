@@ -21,9 +21,10 @@ data class SentenceCalculation(
   // values here are used to store working values
   var sentence: CalculableSentence,
   val numberOfDaysToSentenceExpiryDate: Int,
-  val numberOfDaysToDeterminateReleaseDateDouble: Double,
   val numberOfDaysToDeterminateReleaseDate: Int,
+  val numberOfDaysToDeterminateReleaseDateDouble: Double,
   val numberOfDaysToHistoricDeterminateReleaseDate: Int,
+  val numberOfDaysToHistoricDeterminateReleaseDateDouble: Double,
   val unadjustedHistoricDeterminateReleaseDate: LocalDate,
   val unadjustedExpiryDate: LocalDate,
   val unadjustedDeterminateReleaseDate: LocalDate,

@@ -59,7 +59,7 @@ class BookingHelperTest {
     booking.consecutiveSentences = chains.filter { it.size > 1 }
       .map {
         val cs = ConsecutiveSentence(it)
-        cs.sentenceCalculation = BookingHelperTest.SENTENCE_CALCULATION
+        cs.sentenceCalculation = SENTENCE_CALCULATION
         cs.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), it[0], booking.offender)
         cs
       }
@@ -75,35 +75,36 @@ class BookingHelperTest {
     private val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     private val ONE_DAY_DURATION = Duration(mapOf(ChronoUnit.DAYS to 1L))
     private val STANDARD_SENTENCE = StandardDeterminateSentence(
-      offence = BookingHelperTest.OFFENCE,
-      duration = BookingHelperTest.ONE_DAY_DURATION,
+      offence = OFFENCE,
+      duration = ONE_DAY_DURATION,
       sentencedAt = LocalDate.of(2020, 1, 1),
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     val SENTENCE_CALCULATION = SentenceCalculation(
-      BookingHelperTest.STANDARD_SENTENCE,
+      STANDARD_SENTENCE,
       3,
+      4,
       4.0,
       4,
-      4,
-      BookingHelperTest.FIRST_MAY_2018,
-      BookingHelperTest.FIRST_MAY_2018,
-      BookingHelperTest.FIRST_MAY_2018,
+      4.0,
+      FIRST_MAY_2018,
+      FIRST_MAY_2018,
+      FIRST_MAY_2018,
       1,
-      BookingHelperTest.FIRST_MAY_2018,
+      FIRST_MAY_2018,
       false,
       Adjustments(
         mutableMapOf(
           AdjustmentType.REMAND to mutableListOf(
             Adjustment(
               numberOfDays = 1,
-              appliesToSentencesFrom = BookingHelperTest.FIRST_MAY_2018,
+              appliesToSentencesFrom = FIRST_MAY_2018,
             ),
           ),
         ),
       ),
-      BookingHelperTest.FIRST_MAY_2018,
+      FIRST_MAY_2018,
     )
   }
 }

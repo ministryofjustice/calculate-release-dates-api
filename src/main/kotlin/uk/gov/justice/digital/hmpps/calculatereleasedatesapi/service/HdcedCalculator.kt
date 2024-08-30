@@ -23,49 +23,76 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
     sentenceCalculation: SentenceCalculation,
     offender: Offender,
     extraDaysForSdsConsecutiveToBotus: Int = 0,
+    useHistoricReleaseDate: Boolean = false,
   ) {
-    val custodialPeriod = sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble
-    if (isNotEligibleForHDC(offender, sentence, sentenceCalculation, custodialPeriod)) {
-      sentenceCalculation.homeDetentionCurfewEligibilityDate = null
-      sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = 0
+    val (custodialPeriod, custodialPeriodDouble) = determineCustodialPeriod(sentenceCalculation, !useHistoricReleaseDate)
+
+    if (isNotEligibleForHDC(offender, sentence, sentenceCalculation, custodialPeriodDouble)) {
+      resetHdcedCalculation(sentenceCalculation)
       return
     }
+
+    val (deductedDays, addedDays) = calculateDaysAdjustments(sentenceCalculation, extraDaysForSdsConsecutiveToBotus)
+
+    if (custodialPeriod < hdcedConfiguration.custodialPeriodMidPointDays) {
+      calculateHdcedUnderMidpoint(sentence.sentencedAt, deductedDays, addedDays, sentenceCalculation, custodialPeriodDouble)
+    } else {
+      calculateHdcedOverMidpoint(sentence.sentencedAt, deductedDays, addedDays, sentenceCalculation, custodialPeriod)
+    }
+  }
+
+  private fun determineCustodialPeriod(sentenceCalculation: SentenceCalculation, useCurrentRelease: Boolean): Pair<Int, Double> {
+    return if (useCurrentRelease) {
+      Pair(sentenceCalculation.numberOfDaysToDeterminateReleaseDate, sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble)
+    } else {
+      Pair(sentenceCalculation.numberOfDaysToHistoricDeterminateReleaseDate, sentenceCalculation.numberOfDaysToHistoricDeterminateReleaseDateDouble)
+    }
+  }
+
+  private fun isNotEligibleForHDC(offender: Offender, sentence: CalculableSentence, sentenceCalculation: SentenceCalculation, custodialPeriod: Double): Boolean {
+    return offender.isActiveSexOffender ||
+      sentenceLengthIsAboveOrEqualToMaximum(sentence) ||
+      adjustedReleasePointIsLessThanMinimumEligiblePeriod(sentenceCalculation, sentence) ||
+      unadjustedReleasePointIsLessThanMinimumCustodialPeriod(custodialPeriod)
+  }
+
+  private fun sentenceLengthIsAboveOrEqualToMaximum(sentence: CalculableSentence): Boolean {
+    return sentence.durationIsGreaterThanOrEqualTo(hdcedConfiguration.maximumSentenceLengthYears, ChronoUnit.YEARS)
+  }
+
+  private fun unadjustedReleasePointIsLessThanMinimumCustodialPeriod(custodialPeriod: Double): Boolean {
+    return custodialPeriod < hdcedConfiguration.minimumCustodialPeriodDays
+  }
+
+  private fun adjustedReleasePointIsLessThanMinimumEligiblePeriod(sentenceCalculation: SentenceCalculation, sentence: CalculableSentence): Boolean {
+    return sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc))
+  }
+
+  private fun resetHdcedCalculation(sentenceCalculation: SentenceCalculation) {
+    sentenceCalculation.homeDetentionCurfewEligibilityDate = null
+    sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = 0
+  }
+
+  private fun calculateDaysAdjustments(sentenceCalculation: SentenceCalculation, extraDaysForSdsConsecutiveToBotus: Int): Pair<Int, Int> {
     val deductedDays = sentenceCalculation.calculatedTotalDeductedDays
     val addedDays = sentenceCalculation.calculatedTotalAddedDays
       .plus(sentenceCalculation.calculatedTotalAwardedDays)
       .plus(extraDaysForSdsConsecutiveToBotus)
       .minus(sentenceCalculation.calculatedUnusedReleaseAda)
-
-    if (custodialPeriod < hdcedConfiguration.custodialPeriodMidPointDays) {
-      calculateHdcedUnderMidpoint(sentence.sentencedAt, deductedDays, addedDays, sentenceCalculation)
-    } else {
-      calculateHdcedOverMidpoint(sentence.sentencedAt, deductedDays, addedDays, sentenceCalculation)
-    }
+    return Pair(deductedDays, addedDays)
   }
-
-  private fun isNotEligibleForHDC(offender: Offender, sentence: CalculableSentence, sentenceCalculation: SentenceCalculation, custodialPeriod: Double) =
-    offender.isActiveSexOffender ||
-      sentenceLengthIsAboveOrEqualToMaximum(sentence) ||
-      adjustedReleasePointIsLessThanMinimumEligibilePeriod(sentenceCalculation, sentence) ||
-      unadjustedReleasePointIsLessThanMinimumCustodialPeriod(custodialPeriod)
-
-  private fun sentenceLengthIsAboveOrEqualToMaximum(sentence: CalculableSentence) = sentence.durationIsGreaterThanOrEqualTo(hdcedConfiguration.maximumSentenceLengthYears, ChronoUnit.YEARS)
-
-  private fun unadjustedReleasePointIsLessThanMinimumCustodialPeriod(custodialPeriod: Double) = custodialPeriod < hdcedConfiguration.minimumCustodialPeriodDays
-
-  private fun adjustedReleasePointIsLessThanMinimumEligibilePeriod(sentenceCalculation: SentenceCalculation, sentence: CalculableSentence) =
-    sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc))
 
   private fun calculateHdcedUnderMidpoint(
     sentenceDate: LocalDate,
     deductedDays: Int,
     addedDays: Int,
     sentenceCalculation: SentenceCalculation,
+    custodialPeriod: Double,
   ) {
     val adjustedDays = addedDays.minus(deductedDays)
     val halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod = max(
       hdcedConfiguration.custodialPeriodBelowMidpointMinimumDeductionDays,
-      ceil(sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble.div(HALF)).toLong(),
+      ceil(custodialPeriod.div(HALF)).toLong(),
     )
     setHDCED(sentenceCalculation, sentenceDate) { halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod.plus(adjustedDays) }
 
@@ -88,10 +115,11 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
     deductedDays: Int,
     addedDays: Int,
     sentenceCalculation: SentenceCalculation,
+    custodialPeriod: Int,
   ) {
     val adjustedDays = addedDays.minus(deductedDays)
     setHDCED(sentenceCalculation, sentenceDate) {
-      sentenceCalculation.numberOfDaysToDeterminateReleaseDate
+      custodialPeriod
         .minus(hdcedConfiguration.custodialPeriodAboveMidpointDeductionDays + 1) // Extra plus one because we use the numberOfDaysToDeterminateReleaseDate param and not the sentencedAt param
         .plus(adjustedDays)
     }

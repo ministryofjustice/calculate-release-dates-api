@@ -330,9 +330,10 @@ class HdcedCalculatorTest {
     SentenceCalculation(
       sentence,
       numberOfDaysToSED,
+      numberOfDaysToDeterminateReleaseDate,
       numberOfDaysToDeterminateReleaseDate.toDouble(),
       numberOfDaysToDeterminateReleaseDate,
-      numberOfDaysToDeterminateReleaseDate,
+      numberOfDaysToDeterminateReleaseDate.toDouble(),
       sentence.sentencedAt.plusDays(numberOfDaysToDeterminateReleaseDate.toLong() - 1),
       sentence.sentencedAt.plusDays(numberOfDaysToSED.toLong() - 1),
       sentence.sentencedAt.plusDays(numberOfDaysToDeterminateReleaseDate.toLong() - 1),
@@ -351,6 +352,6 @@ class HdcedCalculatorTest {
     extraDaysForSdsConsecutiveToBotus: Int = 0,
   ) {
     val offender = Offender("ABC123", LocalDate.of(1980, 1, 1), isActiveSexOffender = isActiveSexOffender)
-    calculator.calculateHdced(sentence, sentenceCalculation, offender, extraDaysForSdsConsecutiveToBotus)
+    calculator.calculateHdced(sentence, sentenceCalculation, offender, extraDaysForSdsConsecutiveToBotus, false)
   }
 }
