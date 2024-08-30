@@ -35,7 +35,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     val breakdownByReleaseDateType = earlyReleaseResult.breakdownByReleaseDateType.toMutableMap()
     var overriddenTranche = allocatedTranche
 
-    if (hasAnyReleaseBeforeTrancheCommencement(earlyReleaseResult, trancheCommencementDate)) {
+    if (hasAnyReleaseBeforeTrancheCommencement(earlyReleaseResult, standardReleaseResult, trancheCommencementDate)) {
       DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.forEach { releaseDateType ->
         mergeDate(
           releaseDateType,
@@ -102,11 +102,15 @@ class SDSEarlyReleaseDefaultingRulesService(
     anInitialCalc.sentences.any { it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE }
 
   fun hasAnyReleaseBeforeTrancheCommencement(
-    result: CalculationResult,
+    early: CalculationResult,
+    late: CalculationResult,
     trancheCommencementDate: LocalDate?,
   ): Boolean {
     return DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE
-      .mapNotNull { result.dates[it] }
+      .mapNotNull {
+          dateType ->
+        early.dates[dateType] ?: late.dates[dateType]
+      }
       .any { it < trancheCommencementDate }
   }
 
