@@ -40,12 +40,21 @@ interface Tranche {
 
       if (filteredSentences.any()) {
         val earliestSentencedAt = filteredSentences.minBy { it.sentencedAt }
-        filteredSentences.sumOf { it.getLengthInDays() }.let {
-          ChronoUnit.YEARS.between(
-            earliestSentencedAt.sentencedAt,
-            earliestSentencedAt.sentencedAt.plus(it.toLong(), ChronoUnit.DAYS),
-          )
+        var concurrentSentenceEndDate = earliestSentencedAt.sentencedAt
+
+        // Iterate over the sentences to update the concurrentSentenceEndDate
+        filteredSentences.forEach { sentence ->
+          // Update the concurrent end date by calculating the new end date from the current end date
+          concurrentSentenceEndDate = sentence.totalDuration().getEndDate(concurrentSentenceEndDate).plusDays(1)
         }
+
+        // Calculate the difference in years between the earliest sentenced date and the final concurrentSentenceEndDate
+        val yearsBetween = ChronoUnit.YEARS.between(
+          earliestSentencedAt.sentencedAt,
+          concurrentSentenceEndDate,
+        )
+
+        yearsBetween
       } else {
         0
       }
@@ -53,7 +62,7 @@ interface Tranche {
       if (filterOnType(sentenceToFilter, trancheCommencementDate, trancheTwoCommencementDate)) {
         ChronoUnit.YEARS.between(
           sentenceToFilter.sentencedAt,
-          sentenceToFilter.sentencedAt.plus(sentenceToFilter.getLengthInDays().toLong(), ChronoUnit.DAYS),
+          sentenceToFilter.sentencedAt.plus(sentenceToFilter.getLengthInDays().toLong(), ChronoUnit.DAYS).plusDays(1),
         )
       } else {
         0
