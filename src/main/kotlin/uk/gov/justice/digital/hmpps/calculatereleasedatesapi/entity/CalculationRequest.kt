@@ -20,6 +20,8 @@ import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import org.hibernate.Hibernate
+import org.hibernate.annotations.Fetch
+import org.hibernate.annotations.FetchMode
 import org.hibernate.annotations.Type
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import java.time.LocalDateTime
@@ -99,6 +101,7 @@ data class CalculationRequest(
 
   @JoinColumn(name = "calculationRequestId")
   @OneToMany
+  @Fetch(FetchMode.JOIN)
   val calculationOutcomes: List<CalculationOutcome> = ArrayList(),
 
   @Column
@@ -110,6 +113,7 @@ data class CalculationRequest(
 
   @JoinColumn(name = "calculationRequestId")
   @OneToMany
+  @Fetch(FetchMode.JOIN)
   val approvedDatesSubmissions: List<ApprovedDatesSubmission> = ArrayList(),
 
   @JoinColumn(name = "reasonForCalculation")
