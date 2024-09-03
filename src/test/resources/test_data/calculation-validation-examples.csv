@@ -1,2 +1,2 @@
-exampleType,exampleNumber,error,params
-validation,CRS-2078,,alt-3-calculation-params
+exampleType,exampleNumber,error,params,expectedValidationMessage
+validation,CRS-2078,,alt-3-calculation-params,ADJUSTMENT_AFTER_RELEASE_ADA
