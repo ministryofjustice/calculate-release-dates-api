@@ -1,0 +1,64 @@
+{
+  "offender": {
+    "reference": "A1234BC",
+    "dateOfBirth": "1980-01-01",
+    "isActiveSexOffender": false
+  },
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2022-07-25",
+        "offenceCode": "TH68027"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 20
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "6a60ec92-261d-31f9-9fe9-b7da71b9ad41",
+      "recallType": null,
+      "sentencedAt": "2024-02-16",
+      "caseSequence": 5,
+      "lineSequence": 5,
+      "caseReference": "1111111111111",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2022-07-23",
+        "offenceCode": "TH68026A"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 12
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "930ce5f8-f516-3aca-9daf-25ad8a43452a",
+      "recallType": null,
+      "sentencedAt": "2024-04-16",
+      "caseSequence": 4,
+      "lineSequence": 6,
+      "caseReference": "1111111111112",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "toDate": "2024-04-15",
+        "fromDate": "2024-03-29",
+        "numberOfDays": 18,
+        "appliesToSentencesFrom": "2024-02-16"
+      }
+    ]
+  }
+}
