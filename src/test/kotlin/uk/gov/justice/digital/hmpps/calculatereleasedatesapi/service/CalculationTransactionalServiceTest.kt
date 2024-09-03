@@ -205,7 +205,7 @@ class CalculationTransactionalServiceTest {
     assertEquals(bookingData.dates, calculatedReleaseDates.dates)
     assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
     assertThat(returnedValidationMessages).hasSize(1) // etc
-    assertEquals(returnedValidationMessages[0].code, expectedValidationMessage)
+    assertEquals(returnedValidationMessages[0].code.toString(), expectedValidationMessage)
   }
 
   @ParameterizedTest
