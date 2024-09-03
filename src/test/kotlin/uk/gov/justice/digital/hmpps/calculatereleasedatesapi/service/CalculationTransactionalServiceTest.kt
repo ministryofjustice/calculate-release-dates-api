@@ -130,7 +130,12 @@ class CalculationTransactionalServiceTest {
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
-  fun `Test Example`(exampleType: String, exampleNumber: String, error: String?, params: String) {
+  fun `Test Example`(
+    exampleType: String,
+    exampleNumber: String,
+    error: String?,
+    params: String,
+  ) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
@@ -160,7 +165,13 @@ class CalculationTransactionalServiceTest {
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-validation-examples.csv"], numLinesToSkip = 1)
-  fun `Test validation after calculations by example`(exampleType: String, exampleNumber: String, error: String?, params: String) {
+  fun `Test validation after calculations by example`(
+    exampleType: String,
+    exampleNumber: String,
+    error: String?,
+    params: String,
+    expectedValidationMessage: String,
+  ) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
@@ -194,6 +205,7 @@ class CalculationTransactionalServiceTest {
     assertEquals(bookingData.dates, calculatedReleaseDates.dates)
     assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
     assertThat(returnedValidationMessages).hasSize(1) // etc
+    assertEquals(returnedValidationMessages[0].code, expectedValidationMessage)
   }
 
   @ParameterizedTest
