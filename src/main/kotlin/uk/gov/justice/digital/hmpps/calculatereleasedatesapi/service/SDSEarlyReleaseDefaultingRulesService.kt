@@ -48,7 +48,14 @@ class SDSEarlyReleaseDefaultingRulesService(
       }
     }
 
-    handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(dates, originalBooking, trancheOneCommencementDate, standardReleaseResult, breakdownByReleaseDateType)
+    handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(
+      dates,
+      originalBooking,
+      trancheOneCommencementDate,
+      standardReleaseResult,
+      breakdownByReleaseDateType,
+    )
+    handleCRDorARDandPRRD(dates)
 
     overriddenTranche = if (dates == standardReleaseResult.dates) {
       SDSEarlyReleaseTranche.TRANCHE_0
@@ -66,6 +73,41 @@ class SDSEarlyReleaseDefaultingRulesService(
     )
   }
 
+  private fun handleCRDorARDandPRRD(
+    dates: MutableMap<ReleaseDateType, LocalDate>,
+  ) {
+    if ((dates.containsKey(ReleaseDateType.CRD).or(dates.containsKey(ReleaseDateType.ARD)))
+        .and(dates.containsKey(ReleaseDateType.PRRD))
+    ) {
+      val controllingDate = if (dates[ReleaseDateType.ARD] != null) ReleaseDateType.ARD to dates[ReleaseDateType.ARD] else ReleaseDateType.CRD to dates[ReleaseDateType.CRD]
+
+      if (controllingDate.second?.isAfter(dates[ReleaseDateType.PRRD]) == true) {
+        dates.remove(ReleaseDateType.PRRD)
+      } else {
+        dates.remove(controllingDate.first)
+      }
+    }
+  }
+
+  private fun defaultCRDIfApplicable(
+    earlyReleaseResult: CalculationResult,
+    standardReleaseResult: CalculationResult,
+    trancheCommencementDate: LocalDate?,
+    dates: MutableMap<ReleaseDateType, LocalDate>,
+    originalBooking: Booking,
+    trancheOneCommencementDate: LocalDate,
+    breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+  ) {
+    mergeDate(
+      ReleaseDateType.CRD,
+      earlyReleaseResult,
+      standardReleaseResult,
+      trancheCommencementDate,
+      dates,
+      breakdownByReleaseDateType,
+    )
+  }
+
   fun handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(
     dates: MutableMap<ReleaseDateType, LocalDate>,
     originalBooking: Booking,
@@ -73,7 +115,10 @@ class SDSEarlyReleaseDefaultingRulesService(
     standardReleaseResult: CalculationResult,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   ) {
-    val latestReleaseDate = extractionService.mostRecentSentence(originalBooking.getAllExtractableSentences(), SentenceCalculation::adjustedDeterminateReleaseDate).sentenceCalculation.adjustedDeterminateReleaseDate
+    val latestReleaseDate = extractionService.mostRecentSentence(
+      originalBooking.getAllExtractableSentences(),
+      SentenceCalculation::adjustedDeterminateReleaseDate,
+    ).sentenceCalculation.adjustedDeterminateReleaseDate
 
     if (dates.containsKey(ReleaseDateType.TUSED) && !latestReleaseDate.isAfterOrEqualTo(trancheOneCommencementDate)) {
       if (originalBooking.getAllExtractableSentences().any {
@@ -107,8 +152,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     trancheCommencementDate: LocalDate?,
   ): Boolean {
     return DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE
-      .mapNotNull {
-          dateType ->
+      .mapNotNull { dateType ->
         early.dates[dateType] ?: late.dates[dateType]
       }
       .any { it < trancheCommencementDate }
