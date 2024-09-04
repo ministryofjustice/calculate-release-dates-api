@@ -287,19 +287,17 @@ class BookingExtractionService(
           dates[LED] = latestNonDtoSentence.sentenceCalculation.licenceExpiryDate!!
         }
       }
-    } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
-      val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }
-      if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
-        dates[CRD] = latestReleaseDate
-        // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
-        val releaseDateType =
-          if (mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType.containsKey(CRD)) CRD else ARD
-        breakdownByReleaseDateType[CRD] =
-          mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]!!
-      } else {
-        dates[ARD] = latestReleaseDate
-        breakdownByReleaseDateType[ARD] =
-          mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
+    } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() || booking.sentences.any { it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE } }) {
+      val mostRecentNonRecallSentence = extractionService.mostRecentSentenceOrNull(sentences.filter { !it.isRecall() }, SentenceCalculation::releaseDate)
+
+      if (mostRecentNonRecallSentence != null) {
+        extractCrdOrArd(
+          listOf(mostRecentNonRecallSentence),
+          concurrentOraAndNonOraDetails,
+          dates,
+          latestReleaseDate,
+          breakdownByReleaseDateType,
+        )
       }
     }
 
@@ -349,7 +347,12 @@ class BookingExtractionService(
     )
 
     /** --- ERSED --- **/
-    val ersedNotApplicableDueToDtoLaterThanCrd = extractErsedAndNotApplicableDueToDtoLaterThanCrdFlag(sentences, breakdownByReleaseDateType, dates, booking.sentenceGroups)
+    val ersedNotApplicableDueToDtoLaterThanCrd = extractErsedAndNotApplicableDueToDtoLaterThanCrdFlag(
+      sentences,
+      breakdownByReleaseDateType,
+      dates,
+      booking.sentenceGroups,
+    )
 
     if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
       dates[PRRD] = latestReleaseDate
@@ -373,6 +376,28 @@ class BookingExtractionService(
       effectiveSentenceLength,
       ersedNotApplicableDueToDtoLaterThanCrd,
     )
+  }
+
+  fun extractCrdOrArd(
+    mostRecentSentencesByReleaseDate: List<CalculableSentence>,
+    concurrentOraAndNonOraDetails: ConcurrentOraAndNonOraDetails,
+    dates: MutableMap<ReleaseDateType, LocalDate>,
+    latestReleaseDate: LocalDate,
+    breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+  ) {
+    val mostRecentSentenceByReleaseDate = mostRecentSentencesByReleaseDate.first { !it.isRecall() }
+    if (concurrentOraAndNonOraDetails.isReleaseDateConditional) {
+      dates[CRD] = latestReleaseDate
+      // PSI Example 16 results in a situation where the latest calculated sentence has ARD associated but isReleaseDateConditional here is deemed true.
+      val releaseDateType =
+        if (mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType.containsKey(CRD)) CRD else ARD
+      breakdownByReleaseDateType[CRD] =
+        mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[releaseDateType]!!
+    } else {
+      dates[ARD] = latestReleaseDate
+      breakdownByReleaseDateType[ARD] =
+        mostRecentSentenceByReleaseDate.sentenceCalculation.breakdownByReleaseDateType[ARD]!!
+    }
   }
 
   private fun extractPedForBooking(
