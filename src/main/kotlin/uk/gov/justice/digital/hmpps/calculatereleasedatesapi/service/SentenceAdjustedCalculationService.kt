@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.IMMEDIATE_RELEASE
@@ -108,14 +110,18 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
     sentenceCalculation: SentenceCalculation,
     booking: Booking,
   ) {
-    val sdsSentenceCalculation = booking.sentences[0].sentenceCalculation
-    sentenceCalculation.homeDetentionCurfewEligibilityDate = sdsSentenceCalculation.homeDetentionCurfewEligibilityDate
-    sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate =
-      sdsSentenceCalculation.homeDetentionCurfew4PlusEligibilityDate
+    try {
+      val sdsSentenceCalculation = booking.sentences[0].sentenceCalculation
+      sentenceCalculation.homeDetentionCurfewEligibilityDate = sdsSentenceCalculation.homeDetentionCurfewEligibilityDate
+      sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate =
+        sdsSentenceCalculation.homeDetentionCurfew4PlusEligibilityDate
 
-    if (sentence.releaseDateTypes.contains(TUSED)) {
-      sentenceCalculation.topUpSupervisionDate =
-        sentenceCalculation.topUpSupervisionDate?.minusDays(booking.sentences[1].getLengthInDays().toLong())
+      if (sentence.releaseDateTypes.contains(TUSED)) {
+        sentenceCalculation.topUpSupervisionDate =
+          sentenceCalculation.topUpSupervisionDate?.minusDays(booking.sentences[1].getLengthInDays().toLong())
+      }
+    } catch (e: UninitializedPropertyAccessException) {
+      log.warn("Could not reset BOTUS HDCED and TUSED as Sentence calculation not yet initialised: ${e.message}")
     }
   }
 
@@ -296,11 +302,7 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
     private const val TWO = 2L
     private const val THREE = 3L
     private const val FOUR = 4L
-    private const val TWELVE = 12L
-    private const val FOURTEEN = 14L
-    private const val EIGHTEEN = 18L
-    private const val TWENTY_EIGHT = 28L
     private const val YEAR_IN_DAYS = 365
-    private const val ONE_HUNDRED_AND_THIRTY_FIVE = 135
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }
