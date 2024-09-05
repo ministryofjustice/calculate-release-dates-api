@@ -99,7 +99,7 @@ class SentenceCalculationService(
     }
 
     val expiryDateDaysToAdd = if (sentence.isBotusConsecutiveToSDS()) {
-      booking.sentences[0].sentenceCalculation.numberOfDaysToSentenceExpiryDate.toLong()
+      booking.sentences[0].totalDuration().getLengthInDays(booking.sentences[0].sentencedAt).toLong()
     } else {
       release.numberOfDaysToSentenceExpiryDate.toLong()
     }
