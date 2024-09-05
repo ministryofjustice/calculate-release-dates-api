@@ -18,12 +18,7 @@ import kotlin.math.max
 @Service
 class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
 
-  fun calculateHdced(
-    sentence: CalculableSentence,
-    sentenceCalculation: SentenceCalculation,
-    offender: Offender,
-    extraDaysForSdsConsecutiveToBotus: Int = 0,
-  ) {
+  fun calculateHdced(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation, offender: Offender) {
     val custodialPeriod = sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble
     if (isNotEligibleForHDC(offender, sentence, sentenceCalculation, custodialPeriod)) {
       sentenceCalculation.homeDetentionCurfewEligibilityDate = null
@@ -33,7 +28,6 @@ class HdcedCalculator(val hdcedConfiguration: HdcedConfiguration) {
     val deductedDays = sentenceCalculation.calculatedTotalDeductedDays
     val addedDays = sentenceCalculation.calculatedTotalAddedDays
       .plus(sentenceCalculation.calculatedTotalAwardedDays)
-      .plus(extraDaysForSdsConsecutiveToBotus)
       .minus(sentenceCalculation.calculatedUnusedReleaseAda)
 
     if (custodialPeriod < hdcedConfiguration.custodialPeriodMidPointDays) {
