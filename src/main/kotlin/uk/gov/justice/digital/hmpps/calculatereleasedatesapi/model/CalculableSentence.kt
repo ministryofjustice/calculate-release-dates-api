@@ -109,16 +109,6 @@ interface CalculableSentence {
   }
 
   @JsonIgnore
-  fun isBotusConsecutiveToSDS(): Boolean {
-    return false
-  }
-
-  @JsonIgnore
-  fun isSdsConsecutiveToBotus(): Boolean {
-    return false
-  }
-
-  @JsonIgnore
   fun hasAnyEdsOrSopcSentence(): Boolean
 
   @JsonIgnore
