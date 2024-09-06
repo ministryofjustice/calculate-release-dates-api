@@ -70,7 +70,7 @@ class SDSEarlyReleaseDefaultingRulesService(
       earlyReleaseResult.effectiveSentenceLength,
       sdsEarlyReleaseAllocatedTranche = overriddenTranche,
       sdsEarlyReleaseTranche = overriddenTranche,
-      affectedBySds40 = (dates == standardReleaseResult.dates),
+      affectedBySds40 = (dates != standardReleaseResult.dates),
     )
   }
 
