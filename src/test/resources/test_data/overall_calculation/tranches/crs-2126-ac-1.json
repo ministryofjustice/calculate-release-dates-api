@@ -1,0 +1,32 @@
+{
+  "offender": {
+    "reference": "A2630EZ",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2023-05-10",
+        "offenceCode": "LA05033"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "sentencedAt": "2024-09-10"
+    },
+    {
+      "offence": {
+        "committedAt": "2023-05-10",
+        "offenceCode": "LA05033"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "sentencedAt": "2024-09-11"
+    }
+  ]
+}

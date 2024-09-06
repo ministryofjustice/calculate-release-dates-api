@@ -1,0 +1,21 @@
+{
+  "offender": {
+    "reference": "A2630EZ",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2024-09-10",
+        "offenceCode": "SX03002"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 6
+        }
+      },
+      "sentencedAt": "2024-09-12",
+      "isSDSPlus" : true
+    }
+  ]
+}
