@@ -1,0 +1,29 @@
+{
+  "offender": {
+    "reference": "A2630EZ",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2020-09-10",
+        "offenceCode": "CE79172"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 5
+        }
+      },
+      "sentencedAt": "2024-09-12",
+      "sentenceType": "ADIMP"
+    }
+  ],
+  "adjustments": {
+    "TAGGED_BAIL": [
+      {
+        "appliesToSentencesFrom": "2024-09-12",
+        "numberOfDays": 520
+      }
+    ]
+  }
+}
