@@ -74,7 +74,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     "HDCED",
   )
   fun `should use standard release point if that is also before commencement and take it's breakdown`(type: ReleaseDateType) {
-
     val early = CalculationResult(
       mapOf(type to LocalDate.of(2024, 7, 25)),
       mapOf(
@@ -99,14 +98,16 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
     )
 
-    assertThat(service.mergeResults(
-      early,
-      standard,
-      testCommencementDate,
-      SDSEarlyReleaseTranche.TRANCHE_0,
-      createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE),
-      LocalDate.now(),
-    )).isEqualTo(
+    assertThat(
+      service.mergeResults(
+        early,
+        standard,
+        testCommencementDate,
+        SDSEarlyReleaseTranche.TRANCHE_0,
+        createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE),
+        LocalDate.now(),
+      ),
+    ).isEqualTo(
       CalculationResult(
         mapOf(type to LocalDate.of(2024, 7, 26)),
         mapOf(
