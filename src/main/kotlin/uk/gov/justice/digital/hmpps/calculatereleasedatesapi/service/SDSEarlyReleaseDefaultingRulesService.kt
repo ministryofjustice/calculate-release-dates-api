@@ -92,6 +92,17 @@ class SDSEarlyReleaseDefaultingRulesService(
     }
   }
 
+  private fun handleDefaultedHDCEDBeforePRRD(
+    dates: MutableMap<ReleaseDateType, LocalDate>,
+  ) {
+    if ((dates.containsKey(ReleaseDateType.PRRD))
+        .and(dates.containsKey(ReleaseDateType.HDCED))
+        .and()
+    ) {
+        dates.remove(ReleaseDateType.HDCED)
+    }
+  }
+
   fun handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(
     dates: MutableMap<ReleaseDateType, LocalDate>,
     originalBooking: Booking,

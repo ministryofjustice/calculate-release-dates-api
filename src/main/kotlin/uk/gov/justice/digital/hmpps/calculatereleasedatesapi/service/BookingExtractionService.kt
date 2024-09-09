@@ -361,6 +361,7 @@ class BookingExtractionService(
 
       if (dates[CRD] == dates[PRRD] ||
         (dates[PRRD] != null && (latestDateEntry == null || dates[PRRD]!!.isAfter(latestDateEntry.value)))
+        && booking.sentences.none { it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE }
       ) {
         dates.remove(HDCED)
         dates.remove(HDCED4PLUS)
