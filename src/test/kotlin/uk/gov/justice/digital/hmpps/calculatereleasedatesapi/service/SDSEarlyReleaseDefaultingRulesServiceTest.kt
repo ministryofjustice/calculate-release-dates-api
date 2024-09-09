@@ -285,6 +285,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       Period.ofYears(5),
       sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
+      affectedBySds40 = true
     )
 
     val standard = CalculationResult(
@@ -293,6 +294,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       emptyMap(),
       Period.ofYears(5),
       sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
+      affectedBySds40 = true
     )
 
     assertThat(service.mergeResults(early, standard, testCommencementDate, SDSEarlyReleaseTranche.TRANCHE_1, createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE), LocalDate.now())).isEqualTo(
@@ -309,6 +311,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         Period.ofYears(5),
         sdsEarlyReleaseAllocatedTranche = SDSEarlyReleaseTranche.TRANCHE_1,
         sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
+        affectedBySds40 = true
       ),
     )
   }
