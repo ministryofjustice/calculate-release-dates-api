@@ -80,7 +80,8 @@ class SDSEarlyReleaseDefaultingRulesService(
     if ((dates.containsKey(ReleaseDateType.CRD).or(dates.containsKey(ReleaseDateType.ARD)))
         .and(dates.containsKey(ReleaseDateType.PRRD))
     ) {
-      val controllingDate = if (dates[ReleaseDateType.ARD] != null) ReleaseDateType.ARD to dates[ReleaseDateType.ARD] else ReleaseDateType.CRD to dates[ReleaseDateType.CRD]
+      val controllingDate =
+        if (dates[ReleaseDateType.ARD] != null) ReleaseDateType.ARD to dates[ReleaseDateType.ARD] else ReleaseDateType.CRD to dates[ReleaseDateType.CRD]
 
       if (controllingDate.second?.isAfter(dates[ReleaseDateType.PRRD]) == true) {
         dates.remove(ReleaseDateType.PRRD)
@@ -152,6 +153,10 @@ class SDSEarlyReleaseDefaultingRulesService(
     late: CalculationResult,
     trancheCommencementDate: LocalDate?,
   ): Boolean {
+    if (trancheCommencementDate == null) {
+      return false
+    }
+
     return DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE
       .mapNotNull { dateType ->
         early.dates[dateType] ?: late.dates[dateType]
