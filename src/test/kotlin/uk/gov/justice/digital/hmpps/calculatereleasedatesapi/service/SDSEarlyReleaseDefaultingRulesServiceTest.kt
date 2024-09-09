@@ -103,7 +103,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         mapOf(type to LocalDate.of(2024, 7, 26)),
         mapOf(
           type to ReleaseDateCalculationBreakdown(
-            setOf(CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE),
+            setOf(CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE, CalculationRule.SDS_STANDARD_RELEASE_APPLIES),
           ),
         ),
         emptyMap(),
@@ -290,7 +290,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         mapOf(type to testCommencementDate),
         mapOf(
           type to ReleaseDateCalculationBreakdown(
-            setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_COMMENCEMENT),
+            setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT),
             releaseDate = testCommencementDate,
             unadjustedDate = LocalDate.of(2024, 7, 25),
           ),
@@ -342,7 +342,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         ),
         mapOf(
           ReleaseDateType.HDCED to ReleaseDateCalculationBreakdown(
-            setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_COMMENCEMENT),
+            setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT),
             releaseDate = testCommencementDate,
             unadjustedDate = LocalDate.of(2024, 7, 25),
           ),

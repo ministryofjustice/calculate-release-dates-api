@@ -1,0 +1,86 @@
+{
+  "concurrentSentences": [],
+  "consecutiveSentence": {
+    "sentencedAt": "2019-07-19",
+    "sentenceLength": "13 years 14 months",
+    "sentenceLengthDays": 5176,
+    "dates": {
+      "SLED": {
+        "unadjusted": "2033-09-18",
+        "adjusted": "2033-03-12",
+        "daysFromSentenceStart": 5176,
+        "adjustedByDays": 190
+      },
+      "CRD": {
+        "unadjusted": "2025-03-19",
+        "adjusted": "2024-09-10",
+        "daysFromSentenceStart": 2071,
+        "adjustedByDays": 190
+      }
+    },
+    "sentenceParts": [
+      {
+        "lineSequence": 1,
+        "caseSequence": 1,
+        "caseReference": null,
+        "sentenceLength": "13 years",
+        "sentenceLengthDays": 4749,
+        "consecutiveToLineSequence": null,
+        "consecutiveToCaseSequence": null
+      },
+      {
+        "lineSequence": 2,
+        "caseSequence": 1,
+        "caseReference": null,
+        "sentenceLength": "14 months",
+        "sentenceLengthDays": 428,
+        "consecutiveToLineSequence": 1,
+        "consecutiveToCaseSequence": 1
+      }
+    ]
+  },
+  "breakdownByReleaseDateType": {
+    "CRD": {
+      "rules": [
+        "SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT"
+      ],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2024-10-22",
+      "unadjustedDate": "2024-09-10"
+    },
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -190,
+      "releaseDate": "2033-03-12",
+      "unadjustedDate": "2033-09-18"
+    },
+    "ERSED": {
+      "rules": [
+        "ERSED_MAX_PERIOD",
+        "SDS_STANDARD_RELEASE_APPLIES"
+      ],
+      "rulesWithExtraAdjustments": {
+        "ERSED_MAX_PERIOD": {
+          "adjustmentValue": -544,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": -190,
+      "releaseDate": "2024-08-14",
+      "unadjustedDate": "2026-08-18"
+    },
+    "HDCED4PLUS": {
+      "rules": [
+        "SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT"
+      ],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2024-10-22",
+      "unadjustedDate": "2024-03-15"
+    }
+  },
+  "otherDates": {},
+  "ersedNotApplicableDueToDtoLaterThanCrd": false
+}

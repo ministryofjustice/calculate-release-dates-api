@@ -1,0 +1,44 @@
+{
+  "offender": {
+    "reference": "A6154EA",
+    "dateOfBirth": "2000-10-01",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 1219289,
+  "sentences": [
+    {
+      "type": "SopcSentence",
+      "offence": {
+        "committedAt": "2022-03-19",
+        "offenceCode": "SX03015"
+      },
+      "sdopcu18": false,
+      "isSDSPlus": false,
+      "identifier": "4cc46942-7235-338e-b699-6d2980a1626a",
+      "recallType": null,
+      "sentencedAt": "2022-11-17",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": null,
+      "custodialDuration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 45
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 1,
+          "MONTHS": 0
+        }
+      },
+      "consecutiveSentenceUUIDs": []
+    }
+  ],
+  "adjustments": {},
+  "calculateErsed": true
+}

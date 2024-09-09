@@ -41,6 +41,7 @@ class SDSEarlyReleaseDefaultingRulesService(
           releaseDateType,
           earlyReleaseResult,
           standardReleaseResult,
+          allocatedTranche,
           trancheCommencementDate,
           dates,
           breakdownByReleaseDateType,
@@ -87,25 +88,6 @@ class SDSEarlyReleaseDefaultingRulesService(
         dates.remove(controllingDate.first)
       }
     }
-  }
-
-  private fun defaultCRDIfApplicable(
-    earlyReleaseResult: CalculationResult,
-    standardReleaseResult: CalculationResult,
-    trancheCommencementDate: LocalDate?,
-    dates: MutableMap<ReleaseDateType, LocalDate>,
-    originalBooking: Booking,
-    trancheOneCommencementDate: LocalDate,
-    breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
-  ) {
-    mergeDate(
-      ReleaseDateType.CRD,
-      earlyReleaseResult,
-      standardReleaseResult,
-      trancheCommencementDate,
-      dates,
-      breakdownByReleaseDateType,
-    )
   }
 
   fun handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(
@@ -162,6 +144,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     dateType: ReleaseDateType,
     earlyReleaseResult: CalculationResult,
     standardReleaseResult: CalculationResult,
+    allocatedTranche: SDSEarlyReleaseTranche,
     commencementDate: LocalDate?,
     dates: MutableMap<ReleaseDateType, LocalDate>,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
@@ -171,14 +154,16 @@ class SDSEarlyReleaseDefaultingRulesService(
     if (commencementDate != null && early != null && early < commencementDate && standard != null && standard >= commencementDate) {
       dates[dateType] = commencementDate
       breakdownByReleaseDateType[dateType] = ReleaseDateCalculationBreakdown(
-        setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_COMMENCEMENT),
+        setOf(if (allocatedTranche == SDSEarlyReleaseTranche.TRANCHE_1) CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT else CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT),
         releaseDate = commencementDate,
         unadjustedDate = early,
       )
     } else if (standard != null && ((commencementDate != null && standard.isBefore(commencementDate)) || commencementDate == null)) {
       dates[dateType] = standard
       standardReleaseResult.breakdownByReleaseDateType[dateType]?.let {
-        breakdownByReleaseDateType[dateType] = it
+        breakdownByReleaseDateType[dateType] = it.copy(
+          rules = it.rules + CalculationRule.SDS_STANDARD_RELEASE_APPLIES,
+        )
       }
       // Handle TUSED adjustment to standard when normal CRD is being used.
       if (dateType == ReleaseDateType.CRD && standardReleaseResult.dates.containsKey(ReleaseDateType.TUSED)) {
@@ -188,6 +173,12 @@ class SDSEarlyReleaseDefaultingRulesService(
         standardReleaseResult.breakdownByReleaseDateType[ReleaseDateType.TUSED]?.let {
           breakdownByReleaseDateType[ReleaseDateType.TUSED] = it
         }
+      }
+    } else {
+      breakdownByReleaseDateType[dateType]?.let {
+        breakdownByReleaseDateType[dateType] = it.copy(
+          rules = it.rules + CalculationRule.SDS_EARLY_RELEASE_APPLIES,
+        )
       }
     }
   }

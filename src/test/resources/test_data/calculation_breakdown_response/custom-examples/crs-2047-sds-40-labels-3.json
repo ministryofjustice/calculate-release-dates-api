@@ -1,0 +1,101 @@
+{
+  "concurrentSentences": [
+    {
+      "sentencedAt": "2024-05-20",
+      "sentenceLength": "18 months",
+      "sentenceLengthDays": 549,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2025-11-19",
+          "adjusted": "2025-08-10",
+          "daysFromSentenceStart": 549,
+          "adjustedByDays": 101
+        },
+        "CRD": {
+          "unadjusted": "2024-12-25",
+          "adjusted": "2024-09-15",
+          "daysFromSentenceStart": 220,
+          "adjustedByDays": 101
+        }
+      },
+      "lineSequence": 1,
+      "caseSequence": 1,
+      "caseReference": null
+    }
+  ],
+  "consecutiveSentence": null,
+  "breakdownByReleaseDateType": {
+    "CRD": {
+      "rules": [
+        "SDS_EARLY_RELEASE_APPLIES"
+      ],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -101,
+      "releaseDate": "2024-09-15",
+      "unadjustedDate": "2024-12-25"
+    },
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -101,
+      "releaseDate": "2025-08-10",
+      "unadjustedDate": "2025-11-19"
+    },
+    "ERSED": {
+      "rules": [
+        "ERSED_MIN_EFFECTIVE_DATE",
+        "SDS_STANDARD_RELEASE_APPLIES"
+      ],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -101,
+      "releaseDate": "2024-06-26",
+      "unadjustedDate": "2024-10-05"
+    },
+    "TUSED": {
+      "rules": [
+        "TUSED_LICENCE_PERIOD_LT_1Y"
+      ],
+      "rulesWithExtraAdjustments": {
+        "TUSED_LICENCE_PERIOD_LT_1Y": {
+          "adjustmentValue": 12,
+          "type": "MONTHS"
+        }
+      },
+      "adjustedDays": -101,
+      "releaseDate": "2025-09-15",
+      "unadjustedDate": "2024-12-25"
+    },
+    "HDCED": {
+      "rules": [
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT",
+        "SDS_STANDARD_RELEASE_APPLIES"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
+          "adjustmentValue": 138,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": -101,
+      "releaseDate": "2024-06-26",
+      "unadjustedDate": "2024-05-20"
+    },
+    "HDCED4PLUS": {
+      "rules": [
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT",
+        "SDS_STANDARD_RELEASE_APPLIES"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
+          "adjustmentValue": 138,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": -101,
+      "releaseDate": "2024-06-26",
+      "unadjustedDate": "2024-05-20"
+    }
+  },
+  "otherDates": {},
+  "ersedNotApplicableDueToDtoLaterThanCrd": false
+}

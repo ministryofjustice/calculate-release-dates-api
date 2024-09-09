@@ -31,6 +31,18 @@ class CalculationResultEnrichmentService(
       ReleaseDateType.MTD,
       ReleaseDateType.LTD,
     )
+    private val earlyReleaseHintTypes = listOf(
+      ReleaseDateType.CRD,
+      ReleaseDateType.ARD,
+      ReleaseDateType.HDCED,
+      ReleaseDateType.ERSED,
+      ReleaseDateType.PED,
+    )
+    private val standardReleaseHintTypes = listOf(
+      ReleaseDateType.HDCED,
+      ReleaseDateType.ERSED,
+      ReleaseDateType.PED,
+    )
     private val dtoSentenceTypes = listOf(SentenceCalculationType.DTO_ORA.name, SentenceCalculationType.DTO.name)
   }
 
@@ -61,6 +73,7 @@ class CalculationResultEnrichmentService(
   ): List<ReleaseDateHint> {
     val hints = mutableListOf<ReleaseDateHint?>()
     hints += nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type, date)
+    hints += sds40Hint(type, calculationBreakdown)
     hints += ardHints(type, date, sentenceAndOffences, releaseDates)
     hints += crdHints(type, date, sentenceAndOffences, releaseDates)
     hints += pedHints(type, date, sentenceAndOffences, releaseDates, calculationBreakdown)
@@ -234,5 +247,41 @@ class CalculationResultEnrichmentService(
     return sentencesAndOffences != null &&
       sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType in dtoSentenceTypes } &&
       sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType !in dtoSentenceTypes }
+  }
+  private fun sds40Hint(type: ReleaseDateType, calculationBreakdown: CalculationBreakdown?): ReleaseDateHint? {
+    if (calculationBreakdown != null && calculationBreakdown.breakdownByReleaseDateType.containsKey(type)) {
+      val rules = calculationBreakdown.breakdownByReleaseDateType[type]!!.rules
+      if (rules.contains(CalculationRule.SDS_EARLY_RELEASE_APPLIES) && earlyReleaseHintTypes.contains(type)) {
+        return ReleaseDateHint("40% date has been applied")
+      }
+      if ((
+          rules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT) || rules.contains(
+            CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT,
+          )
+          ) &&
+        earlyReleaseHintTypes.contains(type)
+      ) {
+        val trancheText =
+          if (rules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT)) "1" else "2"
+        return ReleaseDateHint("Defaulted to tranche $trancheText commencement")
+      }
+      if (rules.contains(CalculationRule.SDS_STANDARD_RELEASE_APPLIES) && standardReleaseHintTypes.contains(type)) {
+        return ReleaseDateHint("50% date has been applied")
+      }
+    }
+    if (type == ReleaseDateType.TUSED && calculationBreakdown != null &&
+      calculationBreakdown.breakdownByReleaseDateType.containsKey(ReleaseDateType.CRD)
+    ) {
+      val crdRules = calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.CRD]!!.rules
+      if (crdRules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT) ||
+        crdRules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT)
+      ) {
+        return ReleaseDateHint("Anniversary of 40% CRD - CRD has been defaulted to tranche commencement date")
+      }
+      if (crdRules.contains(CalculationRule.SDS_EARLY_RELEASE_APPLIES)) {
+        return ReleaseDateHint("Anniversary of 40% CRD")
+      }
+    }
+    return null
   }
 }
