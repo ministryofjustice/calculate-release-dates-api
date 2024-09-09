@@ -1,0 +1,90 @@
+{
+  "concurrentSentences": [
+    {
+      "sentencedAt": "2022-12-23",
+      "sentenceLength": "4 years 4 months",
+      "sentenceLengthDays": 1582,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2027-04-22",
+          "adjusted": "2027-03-25",
+          "daysFromSentenceStart": 1582,
+          "adjustedByDays": 28
+        },
+        "CRD": {
+          "unadjusted": "2025-02-20",
+          "adjusted": "2025-01-23",
+          "daysFromSentenceStart": 791,
+          "adjustedByDays": 28
+        }
+      },
+      "lineSequence": 1,
+      "caseSequence": 1,
+      "caseReference": null
+    },
+    {
+      "sentencedAt": "2024-04-23",
+      "sentenceLength": "2 months",
+      "sentenceLengthDays": 61,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2024-06-22",
+          "adjusted": "2024-05-19",
+          "daysFromSentenceStart": 61,
+          "adjustedByDays": 34
+        },
+        "CRD": {
+          "unadjusted": "2024-05-23",
+          "adjusted": "2024-04-23",
+          "daysFromSentenceStart": 31,
+          "adjustedByDays": 30
+        }
+      },
+      "lineSequence": 2,
+      "caseSequence": 2,
+      "caseReference": null
+    }
+  ],
+  "consecutiveSentence": null,
+  "breakdownByReleaseDateType": {
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -28,
+      "releaseDate": "2027-03-25",
+      "unadjustedDate": "2027-04-22"
+    },
+    "CRD": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -28,
+      "releaseDate": "2025-01-23",
+      "unadjustedDate": "2025-02-20"
+    },
+    "HDCED4PLUS": {
+      "rules": [
+        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD": {
+          "adjustmentValue": -179,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": -28,
+      "releaseDate": "2024-07-28",
+      "unadjustedDate": "2025-01-23"
+    },
+    "ERSED": {
+      "rules": [
+        "ERSED_MIN_EFFECTIVE_DATE"
+      ],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -28,
+      "releaseDate": "2023-12-26",
+      "unadjustedDate": "2024-01-23"
+    }
+  },
+  "otherDates": {},
+  "ersedNotApplicableDueToDtoLaterThanCrd": false
+}

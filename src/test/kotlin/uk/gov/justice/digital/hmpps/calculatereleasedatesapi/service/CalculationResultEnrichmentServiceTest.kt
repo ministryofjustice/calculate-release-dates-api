@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -792,6 +793,82 @@ class CalculationResultEnrichmentServiceTest {
     val calculationBreakdown = CalculationBreakdown(emptyList(), null)
     val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown, source)
     assertThat(results[tusedType.type]?.hints).isEqualTo(listOf(ReleaseDateHint("TUSED recorded in NOMIS at time of release")))
+  }
+
+  @Nested
+  inner class SDS40ReleaseHintTests {
+
+    @Test
+    fun `should have standard release message`() {
+      val (ersedDate, ersedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ERSED, LocalDate.of(2021, 2, 3))
+
+      val releaseDates = listOf(ReleaseDate(ersedDate, ersedType))
+      val calculationBreakdown = CalculationBreakdown(
+        emptyList(),
+        null,
+        mapOf(ReleaseDateType.ERSED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_STANDARD_RELEASE_APPLIES))),
+      )
+      val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
+      assertThat(results[ersedType]?.hints).isEqualTo(listOf(ReleaseDateHint("50% date has been applied")))
+    }
+
+    @Test
+    fun `should have early release message`() {
+      val (ersedDate, ersedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ERSED, LocalDate.of(2021, 2, 3))
+
+      val releaseDates = listOf(ReleaseDate(ersedDate, ersedType))
+      val calculationBreakdown = CalculationBreakdown(
+        emptyList(),
+        null,
+        mapOf(ReleaseDateType.ERSED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES))),
+      )
+      val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
+      assertThat(results[ersedType]?.hints).isEqualTo(listOf(ReleaseDateHint("40% date has been applied")))
+    }
+
+    @Test
+    fun `should have early commencement date message`() {
+      val (ersedDate, ersedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ERSED, LocalDate.of(2021, 2, 3))
+
+      val releaseDates = listOf(ReleaseDate(ersedDate, ersedType))
+      val calculationBreakdown = CalculationBreakdown(
+        emptyList(),
+        null,
+        mapOf(ReleaseDateType.ERSED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT))),
+      )
+      val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
+      assertThat(results[ersedType]?.hints).isEqualTo(listOf(ReleaseDateHint("Defaulted to tranche 2 commencement")))
+    }
+
+    @Test
+    fun `should have tused early commencement date message`() {
+      val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
+      val (tusedDate, tusedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.TUSED, LocalDate.of(2022, 2, 3))
+
+      val releaseDates = listOf(ReleaseDate(crdDate, crdType), ReleaseDate(tusedDate, tusedType))
+      val calculationBreakdown = CalculationBreakdown(
+        emptyList(),
+        null,
+        mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT))),
+      )
+      val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
+      assertThat(results[tusedType]?.hints).isEqualTo(listOf(ReleaseDateHint("Anniversary of 40% CRD - CRD has been defaulted to tranche commencement date")))
+    }
+
+    @Test
+    fun `should have tused early date message`() {
+      val (crdDate, crdType) = getReleaseDateAndStubAdjustments(ReleaseDateType.CRD, LocalDate.of(2021, 2, 3))
+      val (tusedDate, tusedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.TUSED, LocalDate.of(2022, 2, 3))
+
+      val releaseDates = listOf(ReleaseDate(crdDate, crdType), ReleaseDate(tusedDate, tusedType))
+      val calculationBreakdown = CalculationBreakdown(
+        emptyList(),
+        null,
+        mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES))),
+      )
+      val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
+      assertThat(results[tusedType]?.hints).isEqualTo(listOf(ReleaseDateHint("Anniversary of 40% CRD")))
+    }
   }
 
   private fun getReleaseDateAndStubAdjustments(type: ReleaseDateType, date: LocalDate): ReleaseDate {

@@ -1,0 +1,71 @@
+{
+  "offender": {
+    "reference": "A6143EA",
+    "dateOfBirth": "2000-06-01",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 1219279,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2018-10-25",
+        "offenceCode": "CE79097C"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 13,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "0549ff5e-93b1-3f22-8095-a97ab6c60f4b",
+      "recallType": null,
+      "sentencedAt": "2019-07-19",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": null,
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2017-05-30",
+        "offenceCode": "PC02021"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 14
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "0113337a-e3e0-35f7-a44d-462fb4c1ea38",
+      "recallType": null,
+      "sentencedAt": "2019-07-19",
+      "caseSequence": 1,
+      "lineSequence": 2,
+      "caseReference": null,
+      "consecutiveSentenceUUIDs": [
+        "0549ff5e-93b1-3f22-8095-a97ab6c60f4b"
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "toDate": "2019-07-18",
+        "fromDate": "2019-01-10",
+        "numberOfDays": 190,
+        "appliesToSentencesFrom": "2019-07-19"
+      }
+    ]
+  },
+  "calculateErsed": true
+}

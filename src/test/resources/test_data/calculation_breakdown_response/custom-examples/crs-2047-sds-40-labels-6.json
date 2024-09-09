@@ -1,0 +1,31 @@
+{
+  "concurrentSentences": [],
+  "consecutiveSentence": null,
+  "breakdownByReleaseDateType": {
+    "CRD": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2026-08-16",
+      "unadjustedDate": "2026-08-16"
+    },
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2027-08-16",
+      "unadjustedDate": "2027-08-16"
+    },
+    "ERSED": {
+      "rules": [
+        "ERSED_MIN_EFFECTIVE_DATE"
+      ],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2024-02-17",
+      "unadjustedDate": "2024-02-17"
+    }
+  },
+  "otherDates": {},
+  "ersedNotApplicableDueToDtoLaterThanCrd": false
+}

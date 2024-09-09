@@ -291,7 +291,7 @@ class CalculationTransactionalServiceTest {
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
-  fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String, error: String?) {
+  fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String, error: String?, params: String = "calculation-params") {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
 
@@ -300,7 +300,7 @@ class CalculationTransactionalServiceTest {
 
     val calculationBreakdown: CalculationBreakdown?
     try {
-      calculationBreakdown = calculationTransactionalService().calculateWithBreakdown(
+      calculationBreakdown = calculationTransactionalService(params).calculateWithBreakdown(
         booking,
         CalculatedReleaseDates(
           calculation.dates,
