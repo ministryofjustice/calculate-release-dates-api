@@ -20,13 +20,17 @@ class TrancheAllocationService(
     // List of sentences allowable for SDS early release
     val sdsEarlyReleaseSentences =
       booking.sentences.filter { sentence -> sentence.identificationTrack.equals(SentenceIdentificationTrack.SDS_EARLY_RELEASE) }
+        .filter { it.sentencedAt.isBefore(trancheOne.trancheCommencementDate) }
 
     var resultTranche: SDSEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0
 
     sdsEarlyReleaseSentences.takeIf { it.isNotEmpty() }?.let {
+      // Exclude any sentences where sentencing was after T1 commencement - CRS-2126
+      val sentencesFromBooking = booking.getAllExtractableSentences()
       resultTranche = when {
-        trancheOne.isBookingApplicableForTrancheCriteria(calculationResult, booking) -> SDSEarlyReleaseTranche.TRANCHE_1
-        trancheTwo.isBookingApplicableForTrancheCriteria(calculationResult, booking) -> SDSEarlyReleaseTranche.TRANCHE_2
+        sentencesFromBooking.isEmpty() -> SDSEarlyReleaseTranche.TRANCHE_0
+        trancheOne.isBookingApplicableForTrancheCriteria(calculationResult, sentencesFromBooking) -> SDSEarlyReleaseTranche.TRANCHE_1
+        trancheTwo.isBookingApplicableForTrancheCriteria(calculationResult, sentencesFromBooking) -> SDSEarlyReleaseTranche.TRANCHE_2
         else -> resultTranche
       }
     }

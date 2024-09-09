@@ -1,0 +1,11 @@
+{
+  "dates": {
+    "SLED": "2028-09-27",
+    "CRD": "2026-09-27",
+    "PED": "2024-10-06",
+    "ESED": "2028-09-27"
+  },
+  "effectiveSentenceLength": "P8Y",
+  "sdsEarlyReleaseTranche": "TRANCHE_0",
+  "sdsEarlyReleaseAllocatedTranche": "TRANCHE_0"
+}

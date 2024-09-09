@@ -1,0 +1,35 @@
+{
+  "offender": {
+    "reference": "A2630EZ",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2024-09-10",
+        "offenceCode": "PU86003"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "sentencedAt": "2024-09-12",
+      "sentenceType": "ADIMP"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-09-10",
+        "offenceCode": "SX03002"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "sentencedAt": "2022-07-02",
+      "sentenceType": "ADIMP",
+      "isSDSPlus": true
+    }
+  ]
+}
