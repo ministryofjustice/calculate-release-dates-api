@@ -311,7 +311,14 @@ class CalculationTransactionalService(
     calculationResult.dates.forEach {
       calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
     }
-    trancheOutcomeRepository.save(TrancheOutcome(calculationRequest = calculationRequest, allocatedTranche = calculationResult.sdsEarlyReleaseAllocatedTranche, tranche = calculationResult.sdsEarlyReleaseTranche))
+    trancheOutcomeRepository.save(
+      TrancheOutcome(
+        calculationRequest = calculationRequest,
+        allocatedTranche = calculationResult.sdsEarlyReleaseAllocatedTranche,
+        tranche = calculationResult.sdsEarlyReleaseTranche,
+        affectedBySds40 = calculationResult.affectedBySds40,
+      ),
+    )
 
     return CalculatedReleaseDates(
       dates = calculationResult.dates,

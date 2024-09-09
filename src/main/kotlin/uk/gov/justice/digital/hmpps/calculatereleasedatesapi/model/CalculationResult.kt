@@ -15,4 +15,5 @@ data class CalculationResult(
   val historicalTusedSource: HistoricalTusedSource? = null,
   val sdsEarlyReleaseAllocatedTranche: SDSEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
   val sdsEarlyReleaseTranche: SDSEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
+  val affectedBySds40: Boolean = false,
 )

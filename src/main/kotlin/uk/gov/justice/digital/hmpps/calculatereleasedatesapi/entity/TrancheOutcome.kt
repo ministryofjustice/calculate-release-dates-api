@@ -34,5 +34,8 @@ data class TrancheOutcome(
   @Enumerated(value = EnumType.STRING)
   val tranche: SDSEarlyReleaseTranche,
 
+  @NotNull
+  val affectedBySds40: Boolean = false,
+
   val outcomeDate: LocalDate? = LocalDate.now(),
 )

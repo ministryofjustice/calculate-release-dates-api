@@ -696,7 +696,6 @@ class CalculationTransactionalServiceTest {
     val hdcedConfiguration =
       hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
     var hdced4Configuration = hdced4ConfigurationForTests()
-    val isNotDefaultParams = params != "calculation-params"
 
     hdced4Configuration = if (overriddenConfigurationParams.containsKey("hdc4CommencementDate")) {
       val overwrittenHdced4Config =
