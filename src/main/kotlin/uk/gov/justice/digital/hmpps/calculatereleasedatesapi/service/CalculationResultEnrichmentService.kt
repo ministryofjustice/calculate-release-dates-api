@@ -37,13 +37,11 @@ class CalculationResultEnrichmentService(
       ReleaseDateType.CRD,
       ReleaseDateType.ARD,
       ReleaseDateType.HDCED,
-      ReleaseDateType.HDCED4PLUS,
       ReleaseDateType.ERSED,
       ReleaseDateType.PED,
     )
     private val standardReleaseHintTypes = listOf(
       ReleaseDateType.HDCED,
-      ReleaseDateType.HDCED4PLUS,
       ReleaseDateType.ERSED,
       ReleaseDateType.PED,
     )
