@@ -11,6 +11,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -799,7 +800,7 @@ class CalculationResultEnrichmentServiceTest {
   inner class SDS40ReleaseHintTests {
 
     @Test
-    fun `should have standard release message`() {
+    fun `should not add hints if feature toggle off`() {
       val (ersedDate, ersedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ERSED, LocalDate.of(2021, 2, 3))
 
       val releaseDates = listOf(ReleaseDate(ersedDate, ersedType))
@@ -809,6 +810,20 @@ class CalculationResultEnrichmentServiceTest {
         mapOf(ReleaseDateType.ERSED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_STANDARD_RELEASE_APPLIES))),
       )
       val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
+      assertThat(results[ersedType]?.hints).isEqualTo(listOf<ReleaseDateHint>())
+    }
+
+    @Test
+    fun `should have standard release message`() {
+      val (ersedDate, ersedType) = getReleaseDateAndStubAdjustments(ReleaseDateType.ERSED, LocalDate.of(2021, 2, 3))
+
+      val releaseDates = listOf(ReleaseDate(ersedDate, ersedType))
+      val calculationBreakdown = CalculationBreakdown(
+        emptyList(),
+        null,
+        mapOf(ReleaseDateType.ERSED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_STANDARD_RELEASE_APPLIES))),
+      )
+      val results = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true)).addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
       assertThat(results[ersedType]?.hints).isEqualTo(listOf(ReleaseDateHint("50% date has been applied")))
     }
 
@@ -822,7 +837,7 @@ class CalculationResultEnrichmentServiceTest {
         null,
         mapOf(ReleaseDateType.ERSED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES))),
       )
-      val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
+      val results = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true)).addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
       assertThat(results[ersedType]?.hints).isEqualTo(listOf(ReleaseDateHint("40% date has been applied")))
     }
 
@@ -836,7 +851,7 @@ class CalculationResultEnrichmentServiceTest {
         null,
         mapOf(ReleaseDateType.ERSED to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT))),
       )
-      val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
+      val results = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true)).addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
       assertThat(results[ersedType]?.hints).isEqualTo(listOf(ReleaseDateHint("Defaulted to tranche 2 commencement")))
     }
 
@@ -851,7 +866,7 @@ class CalculationResultEnrichmentServiceTest {
         null,
         mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT))),
       )
-      val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
+      val results = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true)).addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
       assertThat(results[tusedType]?.hints).isEqualTo(listOf(ReleaseDateHint("Anniversary of 40% CRD - CRD has been defaulted to tranche commencement date")))
     }
 
@@ -866,7 +881,7 @@ class CalculationResultEnrichmentServiceTest {
         null,
         mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES))),
       )
-      val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
+      val results = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true)).addDetailToCalculationDates(releaseDates, null, calculationBreakdown)
       assertThat(results[tusedType]?.hints).isEqualTo(listOf(ReleaseDateHint("Anniversary of 40% CRD")))
     }
   }
@@ -907,8 +922,8 @@ class CalculationResultEnrichmentServiceTest {
     emptyList(),
   )
 
-  private fun calculationResultEnrichmentService(today: LocalDate = LocalDate.of(2000, 1, 1)): CalculationResultEnrichmentService {
+  private fun calculationResultEnrichmentService(today: LocalDate = LocalDate.of(2000, 1, 1), featureToggles: FeatureToggles = FeatureToggles()): CalculationResultEnrichmentService {
     val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-    return CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock)
+    return CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock, featureToggles)
   }
 }
