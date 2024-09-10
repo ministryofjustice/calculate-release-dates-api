@@ -16,6 +16,7 @@ generic-service:
     BOTUS_FEATURE_TOGGLE: "false"
     SDS_EARLY_RELEASE_FEATURE_TOGGLE: "true"
     SDS_EARLY_RELEASE_UNSUPPORTED_FEATURE_TOGGLE: "false"
+    SDS_EARLY_RELEASE_HINTS_FEATURE_TOGGLE: "false"
 
   serviceAccountName: calculate-release-dates-api-prod
 
