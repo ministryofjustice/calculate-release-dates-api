@@ -8,4 +8,6 @@ interface CalculationReasonRepository : JpaRepository<CalculationReason, Long> {
   fun findAllByIsActiveTrueOrderByDisplayRankAsc(): List<CalculationReason>
 
   fun findTopByIsBulkTrue(): Optional<CalculationReason>
+
+  fun findByDisplayName(display: String): CalculationReason?
 }

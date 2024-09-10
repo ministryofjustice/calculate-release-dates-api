@@ -5,4 +5,5 @@ enum class CalculationStatus {
   CONFIRMED,
   ERROR,
   TEST,
+  RECORD_A_RECALL,
 }
