@@ -64,11 +64,21 @@ open class IntegrationTestBase internal constructor() {
     roles: List<String> = listOf(),
   ): (HttpHeaders) -> Unit = jwtAuthHelper.setAuthorisation(user, roles)
 
-  protected fun createPreliminaryCalculation(prisonerid: String): CalculatedReleaseDates = webTestClient.post()
-    .uri("/calculation/$prisonerid")
+  protected fun createPreliminaryCalculation(prisonerId: String): CalculatedReleaseDates = webTestClient.post()
+    .uri("/calculation/$prisonerId")
     .accept(MediaType.APPLICATION_JSON)
     .bodyValue(CalculationRequestModel(CalculationUserInputs(), 1L))
     .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(CalculatedReleaseDates::class.java)
+    .returnResult().responseBody!!
+
+  protected fun createCalculationForRecordARecall(prisonerId: String): CalculatedReleaseDates = webTestClient.post()
+    .uri("/calculation/record-a-recall/$prisonerId")
+    .accept(MediaType.APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_RECORD_A_RECALL")))
     .exchange()
     .expectStatus().isOk
     .expectHeader().contentType(MediaType.APPLICATION_JSON)
