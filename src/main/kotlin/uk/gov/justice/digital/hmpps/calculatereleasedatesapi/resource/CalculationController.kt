@@ -42,6 +42,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.Calculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenderKeyDatesService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RecallService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RelevantRemandService
 
 @RestController
@@ -54,6 +55,7 @@ class CalculationController(
   private val latestCalculationService: LatestCalculationService,
   private val calculationBreakdownService: CalculationBreakdownService,
   private val offenderKeyDatesService: OffenderKeyDatesService,
+  private val recallService: RecallService,
 ) {
   @PostMapping(value = ["/{prisonerId}"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -79,6 +81,29 @@ class CalculationController(
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
     return calculationTransactionalService.calculate(prisonerId, calculationRequestModel)
+  }
+
+  @PostMapping(value = ["/record-a-recall/{prisonerId}"])
+  @PreAuthorize("hasRole('RECORD_A_RECALL')")
+  @ResponseBody
+  @Operation(
+    summary = "Calculate release dates for a prisoner - used explicitly by the record-a-recall service, this does not publish to NOMIS",
+    description = "This endpoint will calculate release dates based on a prisoners latest booking - this is a transitory calculation that will not be published to NOMIS",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns calculated dates"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun calculateForRecall(
+    @Parameter(required = true, example = "A1234AB", description = "The prisoners ID (aka nomsId)")
+    @PathVariable("prisonerId")
+    prisonerId: String,
+  ): CalculatedReleaseDates {
+    log.info("Request received to calculate release dates for a recall of $prisonerId")
+    return recallService.calculateForRecordARecall(prisonerId)
   }
 
   @PostMapping(value = ["/{prisonerId}/test"])
