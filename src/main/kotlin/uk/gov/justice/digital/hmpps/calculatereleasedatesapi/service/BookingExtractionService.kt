@@ -359,8 +359,11 @@ class BookingExtractionService(
       val filteredReleaseDates = dates.filter { (key, value) -> key == CRD || key == ARD || key == NPD }
       val latestDateEntry = filteredReleaseDates.maxByOrNull { (_, value) -> value }
 
-      if (dates[CRD] == dates[PRRD] ||
-        (dates[PRRD] != null && (latestDateEntry == null || dates[PRRD]!!.isAfter(latestDateEntry.value)))
+      if ((
+          dates[CRD] == dates[PRRD] ||
+            (dates[PRRD] != null && (latestDateEntry == null || dates[PRRD]?.isAfter(latestDateEntry.value) == true))
+          ) &&
+        booking.sentences.none { it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE }
       ) {
         dates.remove(HDCED)
         dates.remove(HDCED4PLUS)
