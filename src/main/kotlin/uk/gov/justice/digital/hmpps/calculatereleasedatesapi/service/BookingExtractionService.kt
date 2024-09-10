@@ -95,6 +95,10 @@ class BookingExtractionService(
       // After commencement date only produce HDCED using HDCED4 ruling.
       if (sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
         dates[HDCED] = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!
+        sentenceCalculation.breakdownByReleaseDateType[HDCED4PLUS]?.let {
+          sentenceCalculation.breakdownByReleaseDateType[HDCED] = it
+        }
+        sentenceCalculation.breakdownByReleaseDateType.remove(HDCED4PLUS)
       }
     } else {
       if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null) {
