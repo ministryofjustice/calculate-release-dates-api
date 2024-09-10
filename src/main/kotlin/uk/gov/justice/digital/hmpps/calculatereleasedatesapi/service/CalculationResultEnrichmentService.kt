@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -19,6 +20,7 @@ class CalculationResultEnrichmentService(
   private val nonFridayReleaseService: NonFridayReleaseService,
   private val workingDayService: WorkingDayService,
   private val clock: Clock,
+  private val featureToggles: FeatureToggles,
 ) {
   companion object {
     private val typesAllowedWeekendAdjustment = listOf(
@@ -35,11 +37,13 @@ class CalculationResultEnrichmentService(
       ReleaseDateType.CRD,
       ReleaseDateType.ARD,
       ReleaseDateType.HDCED,
+      ReleaseDateType.HDCED4PLUS,
       ReleaseDateType.ERSED,
       ReleaseDateType.PED,
     )
     private val standardReleaseHintTypes = listOf(
       ReleaseDateType.HDCED,
+      ReleaseDateType.HDCED4PLUS,
       ReleaseDateType.ERSED,
       ReleaseDateType.PED,
     )
@@ -249,6 +253,9 @@ class CalculationResultEnrichmentService(
       sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType !in dtoSentenceTypes }
   }
   private fun sds40Hint(type: ReleaseDateType, calculationBreakdown: CalculationBreakdown?): ReleaseDateHint? {
+    if (!featureToggles.sdsEarlyReleaseHints) {
+      return null
+    }
     if (calculationBreakdown != null && calculationBreakdown.breakdownByReleaseDateType.containsKey(type)) {
       val rules = calculationBreakdown.breakdownByReleaseDateType[type]!!.rules
       if (rules.contains(CalculationRule.SDS_EARLY_RELEASE_APPLIES) && earlyReleaseHintTypes.contains(type)) {
