@@ -7,4 +7,5 @@ data class FeatureToggles(
   var botus: Boolean = false,
   var sdsEarlyRelease: Boolean = false,
   var sdsEarlyReleaseUnsupported: Boolean = false,
+  var sds40Hints: Boolean = false,
 )

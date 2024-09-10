@@ -11,9 +11,11 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NonFridayReleaseDay
@@ -89,6 +91,97 @@ class CalculationResultEnrichmentServiceTest {
     )
     // Only checks weekend if non-working day doesn't apply
     verify(workingDayService, never()).previousWorkingDay(any())
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    "CRD",
+    "ARD",
+    "HDCED",
+    "ERSED",
+    "PED",
+  )
+  fun `should display hints in order - default tranche 1 commencement, Friday Desc`(type: ReleaseDateType) {
+    val originalDate = LocalDate.of(2024, 9, 10)
+    val adjustedDate = LocalDate.of(2024, 9, 10)
+    whenever(nonFridayReleaseService.getDate(ReleaseDate(originalDate, type))).thenReturn(NonFridayReleaseDay(originalDate, true))
+    whenever(workingDayService.nextWorkingDay(originalDate)).thenReturn(WorkingDay(adjustedDate, adjustedForWeekend = false, adjustedForBankHoliday = false))
+
+    val releaseDate = ReleaseDate(originalDate, type)
+    val releaseDates = listOf(releaseDate)
+    val results = calculationResultEnrichmentServiceSDS40().addDetailToCalculationDates(
+      releaseDates,
+      null,
+      CalculationBreakdown(emptyList(), null),
+      historicalTusedSource = null,
+      SDSEarlyReleaseTranche.TRANCHE_1,
+    )
+    assertThat(results[type]?.hints).isEqualTo(
+      listOf(
+        ReleaseDateHint(text = "Defaulted to tranche 1 commencement", link = null),
+        ReleaseDateHint(
+          text = "The Discretionary Friday/Pre-Bank Holiday Release Scheme Policy applies to this release date.",
+          link = "https://www.gov.uk/government/publications/discretionary-fridaypre-bank-holiday-release-scheme-policy-framework",
+        ),
+      ),
+    )
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    "HDCED",
+    "ERSED",
+    "PED",
+  )
+  fun `should display hint in order - 50 percent date has been applied, Friday Desc`(type: ReleaseDateType) {
+    val originalDate = LocalDate.of(2024, 4, 10)
+    val adjustedDate = LocalDate.of(2024, 4, 10)
+    whenever(nonFridayReleaseService.getDate(ReleaseDate(originalDate, type))).thenReturn(NonFridayReleaseDay(originalDate, true))
+    whenever(workingDayService.nextWorkingDay(originalDate)).thenReturn(WorkingDay(adjustedDate, adjustedForWeekend = false, adjustedForBankHoliday = false))
+
+    val releaseDate = ReleaseDate(originalDate, type)
+    val releaseDates = listOf(releaseDate)
+    val results = calculationResultEnrichmentServiceSDS40().addDetailToCalculationDates(
+      releaseDates,
+      null,
+      CalculationBreakdown(emptyList(), null),
+      historicalTusedSource = null,
+      SDSEarlyReleaseTranche.TRANCHE_1,
+    )
+    assertThat(results[type]?.hints).isEqualTo(
+      listOf(
+        ReleaseDateHint(text = "50% date has been applied", link = null),
+        ReleaseDateHint(
+          text = "The Discretionary Friday/Pre-Bank Holiday Release Scheme Policy applies to this release date.",
+          link = "https://www.gov.uk/government/publications/discretionary-fridaypre-bank-holiday-release-scheme-policy-framework",
+        ),
+      ),
+    )
+  }
+
+  @Test
+  fun `should calculate weekend adjustments as next working day for HDCED and default tranche 2 commencement`() {
+    val originalDate = LocalDate.of(2021, 2, 6)
+    val adjustedDate = LocalDate.of(2021, 2, 8)
+    val type = ReleaseDateType.HDCED
+    whenever(nonFridayReleaseService.getDate(ReleaseDate(originalDate, type))).thenReturn(NonFridayReleaseDay(originalDate, false))
+    whenever(workingDayService.nextWorkingDay(originalDate)).thenReturn(WorkingDay(adjustedDate, adjustedForWeekend = false, adjustedForBankHoliday = false))
+
+    val releaseDate = ReleaseDate(originalDate, type)
+    val releaseDates = listOf(releaseDate)
+    val results = calculationResultEnrichmentServiceSDS40().addDetailToCalculationDates(
+      releaseDates,
+      null,
+      CalculationBreakdown(emptyList(), null),
+      historicalTusedSource = null,
+      SDSEarlyReleaseTranche.TRANCHE_2,
+    )
+    assertThat(results[type]?.hints).isEqualTo(
+      listOf(
+        ReleaseDateHint(text = "Defaulted to tranche 2 commencement", link = null),
+        ReleaseDateHint(text = "Monday, 08 February 2021 when adjusted to a working day", link = null),
+      ),
+    )
   }
 
   @ParameterizedTest
@@ -909,6 +1002,25 @@ class CalculationResultEnrichmentServiceTest {
 
   private fun calculationResultEnrichmentService(today: LocalDate = LocalDate.of(2000, 1, 1)): CalculationResultEnrichmentService {
     val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-    return CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock)
+    return CalculationResultEnrichmentService(
+      nonFridayReleaseService,
+      workingDayService,
+      clock,
+      FeatureToggles(),
+      LocalDate.now(),
+      LocalDate.now(),
+    )
+  }
+
+  private fun calculationResultEnrichmentServiceSDS40(today: LocalDate = LocalDate.of(2000, 1, 1)): CalculationResultEnrichmentService {
+    val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
+    return CalculationResultEnrichmentService(
+      nonFridayReleaseService,
+      workingDayService,
+      clock,
+      FeatureToggles(false, false, false, true),
+      LocalDate.of(2024, 9, 10),
+      LocalDate.of(2021, 2, 6),
+    )
   }
 }

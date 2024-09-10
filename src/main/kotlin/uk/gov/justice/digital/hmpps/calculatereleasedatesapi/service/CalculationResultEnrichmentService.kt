@@ -1,9 +1,13 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
@@ -19,6 +23,12 @@ class CalculationResultEnrichmentService(
   private val nonFridayReleaseService: NonFridayReleaseService,
   private val workingDayService: WorkingDayService,
   private val clock: Clock,
+  private val featureToggles: FeatureToggles,
+  @Value("\${sds-early-release-tranches.tranche-one-date}")
+  @DateTimeFormat(pattern = "yyyy-MM-dd")
+  private val trancheOneCommencementDate: LocalDate,
+  @Value("\${sds-early-release-tranches.tranche-two-date}")
+  @DateTimeFormat(pattern = "yyyy-MM-dd") val trancheTwoCommencementDate: LocalDate,
 ) {
   companion object {
     private val typesAllowedWeekendAdjustment = listOf(
@@ -51,15 +61,84 @@ class CalculationResultEnrichmentService(
     sentenceAndOffences: List<SentenceAndOffence>?,
     calculationBreakdown: CalculationBreakdown?,
     historicalTusedSource: HistoricalTusedSource? = null,
+    sdsTrancheOutcome: SDSEarlyReleaseTranche? = null,
   ): Map<ReleaseDateType, DetailedDate> {
     val releaseDatesMap = releaseDates.associateBy { it.type }
-    return releaseDatesMap.mapValues { (_, releaseDate) ->
-      DetailedDate(
+    val regularAndSDS40Hints: MutableMap<ReleaseDateType, DetailedDate> = mutableMapOf()
+
+    if (featureToggles.sds40Hints && sdsTrancheOutcome !== null && sdsTrancheOutcome in listOf(SDSEarlyReleaseTranche.TRANCHE_1, SDSEarlyReleaseTranche.TRANCHE_2)) {
+      defaultedToTrancheCommencementDate(releaseDatesMap, sdsTrancheOutcome, regularAndSDS40Hints)
+      fiftyPercentDatesBeforeTranche(releaseDatesMap, sdsTrancheOutcome, regularAndSDS40Hints)
+    }
+
+    releaseDatesMap.forEach { (key, releaseDate) ->
+      val regularHintsForKey = getHints(releaseDate.type, releaseDate.date, calculationBreakdown, releaseDatesMap, sentenceAndOffences, historicalTusedSource)
+      val combinedHintsForKey = regularAndSDS40Hints[key]?.hints.orEmpty() + regularHintsForKey
+
+      regularAndSDS40Hints[key] = DetailedDate(
         releaseDate.type,
         releaseDate.type.description,
         releaseDate.date,
-        getHints(releaseDate.type, releaseDate.date, calculationBreakdown, releaseDatesMap, sentenceAndOffences, historicalTusedSource),
+        combinedHintsForKey,
       )
+    }
+
+    return regularAndSDS40Hints
+  }
+
+  private fun defaultedToTrancheCommencementDate(
+    releaseDatesMap: Map<ReleaseDateType, ReleaseDate>,
+    sdsTrancheOutcome: SDSEarlyReleaseTranche?,
+    regularAndSDS40Hints: MutableMap<ReleaseDateType, DetailedDate> = mutableMapOf(),
+  ) {
+    val releaseDateTypes = listOf(
+      ReleaseDateType.CRD,
+      ReleaseDateType.ARD,
+      ReleaseDateType.HDCED,
+      ReleaseDateType.ERSED,
+      ReleaseDateType.PED,
+    )
+
+    releaseDatesMap.filterKeys { it in releaseDateTypes }.forEach { (key, releaseDate) ->
+      val hint = when {
+        sdsTrancheOutcome == SDSEarlyReleaseTranche.TRANCHE_1 && releaseDate.date == trancheOneCommencementDate ->
+          "Defaulted to tranche 1 commencement"
+        sdsTrancheOutcome == SDSEarlyReleaseTranche.TRANCHE_2 && releaseDate.date == trancheTwoCommencementDate ->
+          "Defaulted to tranche 2 commencement"
+        else -> null
+      }
+
+      if (hint != null) {
+        val detailedDate = regularAndSDS40Hints.getOrPut(key) { DetailedDate(key, key.description, releaseDate.date, mutableListOf()) }
+        detailedDate.hints += ReleaseDateHint(hint)
+      }
+    }
+  }
+
+  private fun fiftyPercentDatesBeforeTranche(
+    releaseDatesMap: Map<ReleaseDateType, ReleaseDate>,
+    sdsTrancheOutcome: SDSEarlyReleaseTranche?,
+    regularAndSDS40Hints: MutableMap<ReleaseDateType, DetailedDate> = mutableMapOf(),
+  ) {
+    val releaseDateTypes = listOf(
+      ReleaseDateType.HDCED,
+      ReleaseDateType.ERSED,
+      ReleaseDateType.PED,
+    )
+
+    releaseDatesMap.filterKeys { it in releaseDateTypes }.forEach { (key, releaseDate) ->
+      val trancheCommencementDate = when {
+        sdsTrancheOutcome == SDSEarlyReleaseTranche.TRANCHE_1 ->
+          trancheOneCommencementDate
+        sdsTrancheOutcome == SDSEarlyReleaseTranche.TRANCHE_2 ->
+          trancheTwoCommencementDate
+        else -> null
+      }
+
+      if (trancheCommencementDate != null && releaseDate.date.isBefore(trancheCommencementDate)) {
+        val detailedDate = regularAndSDS40Hints.getOrPut(key) { DetailedDate(key, key.description, releaseDate.date, mutableListOf()) }
+        detailedDate.hints += ReleaseDateHint("50% date has been applied")
+      }
     }
   }
 
