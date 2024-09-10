@@ -56,6 +56,7 @@ class SDSEarlyReleaseDefaultingRulesService(
       standardReleaseResult,
       breakdownByReleaseDateType,
     )
+
     handleCRDorARDandPRRD(dates)
 
     overriddenTranche = if (dates == standardReleaseResult.dates) {
@@ -88,18 +89,12 @@ class SDSEarlyReleaseDefaultingRulesService(
         dates.remove(ReleaseDateType.PRRD)
       } else {
         dates.remove(controllingDate.first)
-      }
-    }
-  }
 
-  private fun handleDefaultedHDCEDBeforePRRD(
-    dates: MutableMap<ReleaseDateType, LocalDate>,
-  ) {
-    if ((dates.containsKey(ReleaseDateType.PRRD))
-        .and(dates.containsKey(ReleaseDateType.HDCED))
-        .and()
-    ) {
+        // PRRD is later than any other release date, therefore can not have a HDCED
+        // See BookingExtractionService#extractMultiple
+        dates.remove(ReleaseDateType.HDCED4PLUS)
         dates.remove(ReleaseDateType.HDCED)
+      }
     }
   }
 

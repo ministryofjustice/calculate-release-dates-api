@@ -1,13 +1,11 @@
 {
   "dates": {
-    "SLED": "2025-02-25",
-    "CRD": "2024-09-10",
-    "TUSED" : "2025-08-26",
-    "HDCED": "2024-07-12",
-    "HDCED4PLUS": "2024-08-31",
-    "ESED": "2025-02-28"
+    "SLED": "2028-03-23",
+    "CRD": "2024-10-22",
+    "HDCED4PLUS": "2024-10-22",
+    "ESED": "2028-03-23"
   },
-  "effectiveSentenceLength": "P1Y8M16D",
-  "sdsEarlyReleaseTranche": "TRANCHE_1",
-  "sdsEarlyReleaseAllocatedTranche": "TRANCHE_1"
+  "effectiveSentenceLength": "P9Y11M6D",
+  "sdsEarlyReleaseTranche": "TRANCHE_2",
+  "sdsEarlyReleaseAllocatedTranche": "TRANCHE_2"
 }
