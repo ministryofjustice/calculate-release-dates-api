@@ -30,11 +30,11 @@ class SDSEarlyReleaseDefaultingRulesService(
     allocatedTranche: SDSEarlyReleaseTranche,
     originalBooking: Booking,
     trancheOneCommencementDate: LocalDate,
+    tranche: TrancheOne,
   ): CalculationResult {
     val dates = earlyReleaseResult.dates.toMutableMap()
     val breakdownByReleaseDateType = earlyReleaseResult.breakdownByReleaseDateType.toMutableMap()
     var overriddenTranche = allocatedTranche
-
     if (hasAnyReleaseBeforeTrancheCommencement(earlyReleaseResult, standardReleaseResult, trancheCommencementDate)) {
       DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.forEach { releaseDateType ->
         mergeDate(
@@ -65,6 +65,8 @@ class SDSEarlyReleaseDefaultingRulesService(
       allocatedTranche
     }
 
+    handleCRDEqualsEligibilityDateAndTrancheDate(dates, tranche)
+
     return CalculationResult(
       dates,
       breakdownByReleaseDateType,
@@ -76,14 +78,19 @@ class SDSEarlyReleaseDefaultingRulesService(
     )
   }
 
+  private fun getControllingDate(
+    dates: MutableMap<ReleaseDateType, LocalDate>,
+  ): Pair<ReleaseDateType, LocalDate?> {
+    return if (dates[ReleaseDateType.ARD] != null) ReleaseDateType.ARD to dates[ReleaseDateType.ARD] else ReleaseDateType.CRD to dates[ReleaseDateType.CRD]
+  }
+
   private fun handleCRDorARDandPRRD(
     dates: MutableMap<ReleaseDateType, LocalDate>,
   ) {
     if ((dates.containsKey(ReleaseDateType.CRD).or(dates.containsKey(ReleaseDateType.ARD)))
         .and(dates.containsKey(ReleaseDateType.PRRD))
     ) {
-      val controllingDate =
-        if (dates[ReleaseDateType.ARD] != null) ReleaseDateType.ARD to dates[ReleaseDateType.ARD] else ReleaseDateType.CRD to dates[ReleaseDateType.CRD]
+      val controllingDate = getControllingDate(dates)
 
       if (controllingDate.second?.isAfter(dates[ReleaseDateType.PRRD]) == true) {
         dates.remove(ReleaseDateType.PRRD)
@@ -94,6 +101,26 @@ class SDSEarlyReleaseDefaultingRulesService(
         // See BookingExtractionService#extractMultiple
         dates.remove(ReleaseDateType.HDCED4PLUS)
         dates.remove(ReleaseDateType.HDCED)
+      }
+    }
+  }
+
+  fun handleCRDEqualsEligibilityDateAndTrancheDate(dates: MutableMap<ReleaseDateType, LocalDate>, tranche: TrancheOne) {
+    if (dates.containsKey(ReleaseDateType.CRD) || dates.containsKey(ReleaseDateType.ARD)) {
+      val controllingDate = getControllingDate(dates)
+
+      val eligibilityDates = listOf(
+        ReleaseDateType.HDCED4PLUS,
+        ReleaseDateType.HDCED,
+        ReleaseDateType.ERSED,
+      )
+
+      eligibilityDates.forEach { dateType ->
+        if (dates[dateType] == controllingDate.second &&
+          (dates[dateType] == tranche.trancheCommencementDate || dates[dateType] == tranche.trancheTwoCommencementDate)
+        ) {
+          dates.remove(dateType)
+        }
       }
     }
   }
