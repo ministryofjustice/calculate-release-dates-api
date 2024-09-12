@@ -201,7 +201,8 @@ class ValidationService(
     log.info("Validating booking after calculation")
     val messages = mutableListOf<ValidationMessage>()
     booking.sentenceGroups.forEach { messages += validateSentenceHasNotBeenExtinguished(it) }
-    messages += validateRemandOverlappingSentences(booking)
+    messages += validateRemandOverlappingRemand(booking)
+    messages += validateRemandOverlappingSentences(standardSDSBooking ?: booking, booking)
     messages += validateAdditionAdjustmentsInsideLatestReleaseDate(standardSDSBooking ?: booking, booking)
     messages += validateFixedTermRecallAfterCalc(booking)
     messages += validateUnsupportedRecallTypes(booking)
@@ -842,6 +843,34 @@ class ValidationService(
     return null
   }
 
+  private fun getLongestRelevantSentence(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<CalculableSentence> {
+    return sentences.zip(longestSentences).map { (sentence, longestSentence) ->
+      if (sentence.sentencedAt.isBefore(sds40TrancheOne.trancheTwoCommencementDate)) {
+        longestSentence
+      } else {
+        sentence
+      }
+    }
+  }
+
+  private fun getRelevantSentenceRanges(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<LocalDateRange> {
+    val longestRelevantSentences = sentences.zip(longestSentences).map { (sentence, longestSentence) ->
+      if (sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(sds40TrancheOne.trancheCommencementDate)) {
+        longestSentence
+      } else {
+        sentence
+      }
+    }
+    return longestRelevantSentences
+      .filter { !it.isRecall() }
+      .map {
+        LocalDateRange.of(
+          it.sentencedAt,
+          it.sentenceCalculation.unadjustedDeterminateReleaseDate,
+        )
+      }
+  }
+
   private fun validateAdditionAdjustmentsInsideLatestReleaseDate(longestBooking: Booking, booking: Booking): List<ValidationMessage> {
     val sentences = booking.getAllExtractableSentences()
     val longestSentences = longestBooking.getAllExtractableSentences()
@@ -851,16 +880,7 @@ class ValidationService(
       throw IllegalArgumentException("The number of sentences in longestBooking and booking must be the same.")
     }
 
-    // Create a new list of calculable sentences
-    val longestRelevantSentences = sentences.zip(longestSentences).map { (sentence, longestSentence) ->
-      if (sentence.sentencedAt.isBefore(sds40TrancheOne.trancheTwoCommencementDate)) {
-        // Use the corresponding sentence from longestBooking
-        longestSentence
-      } else {
-        // Otherwise use the standard sentence from booking
-        sentence
-      }
-    }
+    val longestRelevantSentences = this.getLongestRelevantSentence(sentences, longestSentences)
 
     val latestReleaseDatePreAddedDays =
       longestRelevantSentences.filter { it !is Term }.maxOfOrNull { it.sentenceCalculation.releaseDateWithoutAdditions }
@@ -882,59 +902,77 @@ class ValidationService(
     return emptyList()
   }
 
-  private fun validateRemandOverlappingSentences(booking: Booking): List<ValidationMessage> {
+  private fun validateRemandOverlappingSentences(longestBooking: Booking, booking: Booking): List<ValidationMessage> {
+    val sentences = booking.getAllExtractableSentences()
+    val longestSentences = longestBooking.getAllExtractableSentences()
+
     val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
+
+    val validationMessages = mutableListOf<ValidationMessage>()
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
-      val sentenceRanges = booking.getAllExtractableSentences()
-        .filter { !it.isRecall() }
-        .map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.adjustedDeterminateReleaseDate) }
 
-      val allRanges = (remandRanges + sentenceRanges).sortedBy { it.start }
-      var totalRange: LocalDateRange? = null
-      var previousRangeIsRemand: Boolean? = null
-      var previousRange: LocalDateRange? = null
+      val sentenceRanges = this.getRelevantSentenceRanges(sentences, longestSentences)
 
-      allRanges.forEach {
-        val isRemand = remandRanges.any { sentenceRange -> sentenceRange === it }
-        if (totalRange == null && previousRangeIsRemand == null) {
-          totalRange = it
-        } else if (it.isConnected(totalRange) && (previousRangeIsRemand!! || isRemand)) {
-          // Remand overlaps
-          if (previousRangeIsRemand!! && isRemand) {
-            val args = listOf(previousRange!!.toString(), it.toString())
-            log.warn(
-              String.format(
-                "Remand of range %s overlaps with remand of range %s",
-                *args.toTypedArray(),
+      remandRanges.forEach { remandRange ->
+        sentenceRanges.forEach { sentenceRange ->
+          if (remandRange.isConnected(sentenceRange)) {
+            logIntersectionWarning(remandRange, sentenceRange, "Remand of range %s overlaps with sentence of range %s")
+            validationMessages.add(
+              ValidationMessage(
+                REMAND_OVERLAPS_WITH_SENTENCE,
+                arguments = buildMessageArguments(sentenceRange, remandRange),
               ),
             )
-            val messageArgs = listOf(
-              it.start.toString(),
-              it.end.toString(),
-              previousRange!!.start.toString(),
-              previousRange!!.end.toString(),
-            )
-            return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_REMAND, arguments = messageArgs))
-          } else {
-            val remandRange = if (isRemand) it else previousRange!!
-            val sentenceRange = if (isRemand) previousRange!! else it
-            val messageArgs = listOf(
-              sentenceRange.start.toString(),
-              sentenceRange.end.toString(),
-              remandRange.start.toString(),
-              remandRange.end.toString(),
-            )
-            return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_SENTENCE, arguments = messageArgs))
           }
-        } else if (it.end.isAfter(totalRange!!.end)) {
-          totalRange = LocalDateRange.of(totalRange!!.start, it.end)
         }
-        previousRangeIsRemand = isRemand
-        previousRange = it
       }
     }
-    return emptyList()
+
+    return validationMessages
+  }
+  private fun validateRemandOverlappingRemand(booking: Booking): List<ValidationMessage> {
+    val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
+
+    val validationMessages = mutableListOf<ValidationMessage>()
+    if (remandPeriods.isNotEmpty()) {
+      val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
+
+      remandRanges.forEachIndexed { index, remandRange ->
+        remandRanges.drop(index + 1).forEach { otherRemandRange ->
+          if (remandRange.isConnected(otherRemandRange)) {
+            logIntersectionWarning(remandRange, otherRemandRange, "Remand of range %s overlaps with other remand of range %s")
+            validationMessages.add(
+              ValidationMessage(
+                REMAND_OVERLAPS_WITH_REMAND,
+                arguments = buildMessageArguments(remandRange, otherRemandRange),
+              ),
+            )
+          }
+        }
+      }
+    }
+
+    return validationMessages
+  }
+
+  private fun logIntersectionWarning(range1: LocalDateRange, range2: LocalDateRange, messageTemplate: String) {
+    val args = listOf(range1.toString(), range2.toString())
+    log.warn(
+      String.format(
+        messageTemplate,
+        *args.toTypedArray(),
+      ),
+    )
+  }
+
+  private fun buildMessageArguments(range1: LocalDateRange, range2: LocalDateRange): List<String> {
+    return listOf(
+      range1.start.toString(),
+      range1.end.toString(),
+      range2.start.toString(),
+      range2.end.toString(),
+    )
   }
 
   private fun validateSentenceHasNotBeenExtinguished(sentences: List<CalculableSentence>): List<ValidationMessage> {
