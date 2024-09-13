@@ -69,7 +69,7 @@ class CalculationService(
     trancheCommencementDate: LocalDate?,
     tranche: SDSEarlyReleaseTranche,
     trancheOneCommencementDate: LocalDate,
-    trancheDates: TrancheOne,
+    trancheOneIncludingDates: TrancheOne,
   ) = if (sdsEarlyReleaseDefaultingRulesService.requiresRecalculation(workingBookingForPossibleEarlyRelease, resultWithPossibleEarlyRelease, trancheCommencementDate)) {
     sdsEarlyReleaseDefaultingRulesService.mergeResults(
       resultWithPossibleEarlyRelease,
@@ -78,7 +78,7 @@ class CalculationService(
       tranche,
       standardWorkingBooking,
       trancheOneCommencementDate,
-      trancheDates,
+      trancheOneIncludingDates,
     )
   } else {
     resultWithPossibleEarlyRelease.copy(sdsEarlyReleaseAllocatedTranche = tranche, sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0)

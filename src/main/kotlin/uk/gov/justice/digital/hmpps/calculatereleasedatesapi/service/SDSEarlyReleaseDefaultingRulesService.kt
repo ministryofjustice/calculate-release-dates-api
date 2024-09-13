@@ -30,7 +30,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     allocatedTranche: SDSEarlyReleaseTranche,
     originalBooking: Booking,
     trancheOneCommencementDate: LocalDate,
-    tranche: TrancheOne,
+    trancheOneIncludingDates: TrancheOne,
   ): CalculationResult {
     val dates = earlyReleaseResult.dates.toMutableMap()
     val breakdownByReleaseDateType = earlyReleaseResult.breakdownByReleaseDateType.toMutableMap()
@@ -65,7 +65,7 @@ class SDSEarlyReleaseDefaultingRulesService(
       allocatedTranche
     }
 
-    handleCRDEqualsEligibilityDateAndTrancheDate(dates, tranche)
+    handleCRDEqualsEligibilityDateAndTrancheDate(dates, trancheOneIncludingDates)
 
     return CalculationResult(
       dates,
