@@ -106,6 +106,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         SDSEarlyReleaseTranche.TRANCHE_0,
         createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE),
         LocalDate.now(),
+        TrancheOne(LocalDate.now(), LocalDate.now()),
       ),
     ).isEqualTo(
       CalculationResult(
@@ -297,7 +298,17 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       affectedBySds40 = true,
     )
 
-    assertThat(service.mergeResults(early, standard, testCommencementDate, SDSEarlyReleaseTranche.TRANCHE_1, createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE), LocalDate.now())).isEqualTo(
+    assertThat(
+      service.mergeResults(
+        early,
+        standard,
+        testCommencementDate,
+        SDSEarlyReleaseTranche.TRANCHE_1,
+        createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE),
+        LocalDate.now(),
+        TrancheOne(LocalDate.now(), LocalDate.now()),
+      ),
+    ).isEqualTo(
       CalculationResult(
         mapOf(type to testCommencementDate),
         mapOf(
@@ -347,7 +358,17 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       affectedBySds40 = true,
     )
 
-    assertThat(service.mergeResults(early, standard, testCommencementDate, SDSEarlyReleaseTranche.TRANCHE_1, createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE), LocalDate.now())).isEqualTo(
+    assertThat(
+      service.mergeResults(
+        early,
+        standard,
+        testCommencementDate,
+        SDSEarlyReleaseTranche.TRANCHE_1,
+        createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE),
+        LocalDate.now(),
+        TrancheOne(LocalDate.now(), LocalDate.now()),
+      ),
+    ).isEqualTo(
       CalculationResult(
         mapOf(
           ReleaseDateType.CRD to LocalDate.of(2024, 8, 10),
