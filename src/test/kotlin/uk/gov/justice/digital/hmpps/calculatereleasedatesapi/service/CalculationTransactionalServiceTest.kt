@@ -744,7 +744,7 @@ class CalculationTransactionalServiceTest {
     val trancheOne = TrancheOne(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
     val trancheTwo = TrancheTwo(sdsEarlyReleaseTrancheTwoDate(params))
 
-    val trancheAllocationService = TrancheAllocationService(TrancheOne(sdsEarlyReleaseTrancheOneDate(), sdsEarlyReleaseTrancheTwoDate()), TrancheTwo(sdsEarlyReleaseTrancheOneDate()))
+    val trancheAllocationService = TrancheAllocationService(TrancheOne(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params)), TrancheTwo(sdsEarlyReleaseTrancheOneDate(params)))
     val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
 
     val calculationService = CalculationService(

@@ -16,7 +16,6 @@ class TrancheTwo(
   override fun isBookingApplicableForTrancheCriteria(calculationResult: CalculationResult, bookingSentences: List<CalculableSentence>): Boolean {
     return (
       bookingSentences
-        .filter { it.sentencedAt.isBefore(trancheCommencementDate) }
         .map { filterAndMapSentencesForNotIncludedTypesByDuration(it, trancheCommencementDate, trancheCommencementDate) }
         .any {
           it >= 5

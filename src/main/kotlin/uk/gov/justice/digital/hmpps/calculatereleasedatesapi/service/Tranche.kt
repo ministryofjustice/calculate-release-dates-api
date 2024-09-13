@@ -17,15 +17,10 @@ interface Tranche {
     trancheCommencementDate: LocalDate,
     trancheTwoCommencementDate: LocalDate? = null,
   ): Boolean {
-    if (sentenceToCheck.isRecall()) {
-      if (trancheTwoCommencementDate != null) {
-        // Recalls are only counted towards tranche classification IF the SLED is on OR after the T2 commencement date
-        return sentenceToCheck.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(trancheTwoCommencementDate)
-      }
+    if (!sentenceToCheck.isDto() && !sentenceToCheck.isBotus() && sentenceToCheck !is AFineSentence) {
       return sentenceToCheck.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(trancheCommencementDate)
     }
-
-    return !sentenceToCheck.isDto() && !sentenceToCheck.isBotus() && sentenceToCheck !is AFineSentence
+    return false
   }
 
   fun filterAndMapSentencesForNotIncludedTypesByDuration(
