@@ -1,0 +1,62 @@
+{
+  "offender": {
+    "reference": "A1234BC",
+    "dateOfBirth": "1980-01-01"
+  },
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2018-10-25",
+        "offenceCode": "CE79097C"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 13
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "92588a2b-c94d-33bc-87bb-239712986aa8",
+      "recallType": null,
+      "sentencedAt": "2019-07-19",
+      "caseSequence": 2,
+      "lineSequence": 2,
+      "caseReference": "T20197025-1",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2017-05-30",
+        "offenceCode": "PC02021"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 14
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "ab6c89cc-fb60-34e3-9693-dba1ead089fb",
+      "recallType": null,
+      "sentencedAt": "2019-07-19",
+      "caseSequence": 2,
+      "lineSequence": 3,
+      "caseReference": "T20197025-1",
+      "consecutiveSentenceUUIDs": [
+        "92588a2b-c94d-33bc-87bb-239712986aa8"
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "toDate": "2019-07-18",
+        "fromDate": "2019-01-10",
+        "numberOfDays": 190,
+        "appliesToSentencesFrom": "2019-07-19"
+      }
+    ]
+  }
+}
