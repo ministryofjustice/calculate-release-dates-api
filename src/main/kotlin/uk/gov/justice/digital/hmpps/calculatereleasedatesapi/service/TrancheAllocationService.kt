@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEar
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 
 @Service
 class TrancheAllocationService(
@@ -26,7 +27,7 @@ class TrancheAllocationService(
 
     sdsEarlyReleaseSentences.takeIf { it.isNotEmpty() }?.let {
       // Exclude any sentences where sentencing was after T1 commencement - CRS-2126
-      val sentencesFromBooking = booking.getAllExtractableSentences()
+      val sentencesFromBooking = booking.getAllExtractableSentences().filter { it.sentencedAt.isBefore(trancheOne.trancheCommencementDate)}.flatMap { if (it is ConsecutiveSentence) it.orderedSentences else listOf(it) }
       resultTranche = when {
         sentencesFromBooking.isEmpty() -> SDSEarlyReleaseTranche.TRANCHE_0
         trancheOne.isBookingApplicableForTrancheCriteria(calculationResult, sentencesFromBooking) -> SDSEarlyReleaseTranche.TRANCHE_1
