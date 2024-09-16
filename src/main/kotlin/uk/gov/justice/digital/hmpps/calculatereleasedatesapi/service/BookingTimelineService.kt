@@ -166,14 +166,14 @@ class BookingTimelineService(
     timelineTracker: TimelineTracker,
     it: CalculableSentence,
   ): LocalDate {
-    var release =
+    val release =
       if (timelineTracker.currentSentenceGroup.isEmpty()) it.sentenceCalculation.releaseDate else timelineTracker.currentSentenceGroup.maxOf { sentence -> sentence.sentenceCalculation.releaseDate }
     return maxOf(release, it.sentencedAt)
   }
 
   private fun readjustDates(it: CalculableSentence, booking: Booking) {
     sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, booking)
-    log.info(it.buildString())
+    log.trace(it.buildString())
   }
 
   companion object {

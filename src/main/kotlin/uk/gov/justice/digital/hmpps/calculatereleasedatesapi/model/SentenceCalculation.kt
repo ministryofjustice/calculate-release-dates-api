@@ -148,6 +148,7 @@ data class SentenceCalculation(
         adjustments.applyPeriodsOfUALIncrementally(
           startDate = sentence.sentencedAt.minusDays(1),
           initialEndDate = releaseDate,
+          maxEndDate = returnToCustodyDate,
         )
       }
     }
@@ -159,7 +160,7 @@ data class SentenceCalculation(
     )
   }
 
-  val calculatedFixedTermRecallAddedDays: Int
+  private val calculatedFixedTermRecallAddedDays: Int
     get() {
       return adjustments.applyPeriodsOfUALIncrementally(
         startDate = returnToCustodyDate,

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.LocalDate
 
@@ -36,10 +37,16 @@ data class Adjustments
   fun applyPeriodsOfUALIncrementally(
     startDate: LocalDate?,
     initialEndDate: LocalDate,
+    maxEndDate: LocalDate? = null,
   ): Int {
     val ualPeriods = mutableSetOf<Adjustment>()
+    var newEndDate = initialEndDate
 
-    gatherUALPeriods(this.adjustments, ualPeriods, startDate, initialEndDate)
+    if (maxEndDate != null && newEndDate.isAfterOrEqualTo(maxEndDate)) {
+      newEndDate = maxEndDate
+    }
+
+    gatherUALPeriods(this.adjustments, ualPeriods, startDate, newEndDate)
 
     return ualPeriods.sumOf { it.numberOfDays }
   }
@@ -49,6 +56,7 @@ data class Adjustments
     ualPeriods: MutableSet<Adjustment>,
     currentStartDate: LocalDate?,
     currentEndDate: LocalDate,
+    maxEndDate: LocalDate? = null,
   ) {
     val ual = AdjustmentType.UNLAWFULLY_AT_LARGE
 
@@ -61,7 +69,10 @@ data class Adjustments
       // Add the adjustment to the set to avoid duplicates
       if (ualPeriods.add(adjustment)) {
         // Extend the end date by the number of days in this UAL period
-        val newEndDate = currentEndDate.plusDays(adjustment.numberOfDays.toLong())
+        var newEndDate = currentEndDate.plusDays(adjustment.numberOfDays.toLong())
+        if (maxEndDate != null && newEndDate.isAfterOrEqualTo(maxEndDate)) {
+          newEndDate = maxEndDate
+        }
         // Recursively gather further UAL periods with the new end date
         gatherUALPeriods(adjustmentMap, ualPeriods, adjustment.appliesToSentencesFrom, newEndDate)
       }
