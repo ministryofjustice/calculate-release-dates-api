@@ -1,0 +1,48 @@
+{
+  "offender": {
+    "reference": "A2630EZ",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "identifier": "b71e09b6-3728-3b80-8e86-b1c40d52c812",
+      "offence": {
+        "committedAt": "2018-02-01",
+        "offenceCode": "TH68134"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 1,
+          "MONTHS": 9
+        }
+      },
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentencedAt": "2018-08-09",
+      "sentenceType": "ADIMP_ORA",
+      "lineSequence": 1
+    },
+    {
+      "type":"ExtendedDeterminateSentence",
+      "offence": {
+        "committedAt": "2018-01-07"
+      },
+      "custodialDuration":{
+        "durationElements":{
+          "YEARS":5
+        }
+      },
+      "extensionDuration":{
+        "durationElements":{
+          "YEARS":2
+        }
+      },
+      "consecutiveSentenceUUIDs": [
+        "b71e09b6-3728-3b80-8e86-b1c40d52c812"
+      ],
+      "automaticRelease":false,
+      "sentencedAt": "2018-08-09",
+      "sentenceType": "LASPO_DR",
+      "lineSequence": 2
+    }
+  ]
+}

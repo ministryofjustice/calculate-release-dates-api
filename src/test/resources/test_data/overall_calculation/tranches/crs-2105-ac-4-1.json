@@ -1,0 +1,48 @@
+{
+  "offender": {
+    "reference": "A2630EZ",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2024-02-01",
+        "offenceCode": "TH68134"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 7
+        }
+      },
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlus": true,
+      "sentencedAt": "2020-04-01",
+      "sentenceType": "ADIMP",
+      "lineSequence": 1
+    },
+    {
+      "offence": {
+        "committedAt": "2024-02-01"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 7
+        }
+      },
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentencedAt": "2024-08-20",
+      "sentenceType": "ADIMP_ORA",
+      "lineSequence": 2
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "toDate": "2020-03-31",
+        "fromDate": "2020-01-02",
+        "numberOfDays": 90,
+        "appliesToSentencesFrom": "2020-04-01"
+      }
+    ]
+  }
+}
