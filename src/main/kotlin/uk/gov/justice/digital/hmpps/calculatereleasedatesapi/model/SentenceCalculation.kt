@@ -128,7 +128,7 @@ data class SentenceCalculation(
         adjustments.applyADAsIncrementally(
           initialEndDate = unadjustedDeterminateReleaseDate,
           startDate = sentence.sentencedAt.minusDays(1),
-          )
+        )
       } else {
         getAdjustmentsAfterSentenceAtDate()
       }
