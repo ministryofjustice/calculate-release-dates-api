@@ -56,14 +56,14 @@ data class SentenceCalculation(
   }
 
   private fun getDeterminateAdjustmentsAfterSentenceAtDate(): Int {
-    return adjustments.applyADAsIncrementally(
+    return adjustments.applyPeriodsOfUALIncrementally(
       initialEndDate = latestConcurrentDeterminateRelease,
       startDate = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1),
     )
   }
 
   private fun getAdjustmentsAfterSentenceAtDate(): Int {
-    return adjustments.applyADAsIncrementally(
+    return adjustments.applyPeriodsOfUALIncrementally(
       startDate = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1),
       initialEndDate = latestConcurrentRelease,
     )
@@ -125,7 +125,7 @@ data class SentenceCalculation(
   val calculatedTotalAddedDaysForSled: Int
     get() {
       return if (isReleaseDateConditional && !sentence.isRecall()) {
-        adjustments.applyADAsIncrementally(
+        adjustments.applyPeriodsOfUALIncrementally(
           initialEndDate = unadjustedDeterminateReleaseDate,
           startDate = sentence.sentencedAt.minusDays(1),
         )
@@ -137,7 +137,7 @@ data class SentenceCalculation(
     get() {
       return if (sentence.isRecall() && !sentence.recallType!!.isFixedTermRecall) {
         if (returnToCustodyDate != null) {
-          adjustments.applyADAsIncrementally(
+          adjustments.applyPeriodsOfUALIncrementally(
             startDate = sentence.sentencedAt,
             initialEndDate = returnToCustodyDate,
           )
@@ -145,7 +145,7 @@ data class SentenceCalculation(
           getAdjustmentsAfterSentenceAtDate()
         }
       } else {
-        adjustments.applyADAsIncrementally(
+        adjustments.applyPeriodsOfUALIncrementally(
           startDate = sentence.sentencedAt.minusDays(1),
           initialEndDate = releaseDate,
         )
@@ -153,7 +153,7 @@ data class SentenceCalculation(
     }
 
   fun getTotalAddedDaysAfter(after: LocalDate): Int {
-    return adjustments.applyADAsIncrementally(
+    return adjustments.applyPeriodsOfUALIncrementally(
       startDate = after,
       initialEndDate = latestConcurrentRelease,
     )
@@ -161,7 +161,7 @@ data class SentenceCalculation(
 
   val calculatedFixedTermRecallAddedDays: Int
     get() {
-      return adjustments.applyADAsIncrementally(
+      return adjustments.applyPeriodsOfUALIncrementally(
         startDate = returnToCustodyDate,
         initialEndDate = latestConcurrentRelease,
       )

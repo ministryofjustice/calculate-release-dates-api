@@ -33,7 +33,7 @@ data class Adjustments
     adjustments[adjustmentType]!!.add(adjustment)
   }
 
-  fun applyADAsIncrementally(
+  fun applyPeriodsOfUALIncrementally(
     startDate: LocalDate?,
     initialEndDate: LocalDate,
   ): Int {
