@@ -10,7 +10,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
@@ -48,7 +47,7 @@ data class SentenceCalculation(
     )
   }
 
-  fun getDeterminateAdjustmentBeforeSentence(vararg adjustmentTypes: AdjustmentType): Int {
+  private fun getDeterminateAdjustmentBeforeSentence(vararg adjustmentTypes: AdjustmentType): Int {
     return adjustments.getOrZero(
       *adjustmentTypes,
       adjustmentsBefore = latestConcurrentDeterminateRelease,
@@ -56,23 +55,21 @@ data class SentenceCalculation(
     )
   }
 
-  fun getDeterminateAdjustmentsAfterSentenceAtDate(vararg adjustmentTypes: AdjustmentType): Int {
-    return adjustments.getOrZero(
-      *adjustmentTypes,
-      adjustmentsBefore = latestConcurrentDeterminateRelease,
-      adjustmentsAfter = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1),
+  private fun getDeterminateAdjustmentsAfterSentenceAtDate(): Int {
+    return adjustments.applyADAsIncrementally(
+      initialEndDate = latestConcurrentDeterminateRelease,
+      startDate = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1),
     )
   }
 
-  fun getAdjustmentsAfterSentenceAtDate(vararg adjustmentTypes: AdjustmentType): Int {
-    return adjustments.getOrZero(
-      *adjustmentTypes,
-      adjustmentsBefore = latestConcurrentRelease,
-      adjustmentsAfter = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1),
+  private fun getAdjustmentsAfterSentenceAtDate(): Int {
+    return adjustments.applyADAsIncrementally(
+      startDate = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1),
+      initialEndDate = latestConcurrentRelease,
     )
   }
 
-  fun getAdjustmentDuringSentence(vararg adjustmentTypes: AdjustmentType): Int {
+  private fun getAdjustmentDuringSentence(vararg adjustmentTypes: AdjustmentType): Int {
     return adjustments.getOrZero(
       *adjustmentTypes,
       adjustmentsBefore = latestConcurrentDeterminateRelease,
@@ -117,61 +114,56 @@ data class SentenceCalculation(
     }
   val calculatedDeterminateTotalAddedDays: Int
     get() {
-      return getDeterminateAdjustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
+      return getDeterminateAdjustmentsAfterSentenceAtDate()
     }
 
   val calculatedTotalAddedDays: Int
     get() {
-      return getAdjustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
+      return getAdjustmentsAfterSentenceAtDate()
     }
 
   val calculatedTotalAddedDaysForSled: Int
     get() {
-      if (isReleaseDateConditional && !sentence.isRecall()) {
-        return adjustments.getOrZero(
-          UNLAWFULLY_AT_LARGE,
-          adjustmentsBefore = unadjustedDeterminateReleaseDate,
-          adjustmentsAfter = sentence.sentencedAt.minusDays(1),
-        )
+      return if (isReleaseDateConditional && !sentence.isRecall()) {
+        adjustments.applyADAsIncrementally(
+          initialEndDate = unadjustedDeterminateReleaseDate,
+          startDate = sentence.sentencedAt.minusDays(1),
+          )
       } else {
-        return getAdjustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
+        getAdjustmentsAfterSentenceAtDate()
       }
     }
   val calculatedTotalAddedDaysForTused: Int
     get() {
       return if (sentence.isRecall() && !sentence.recallType!!.isFixedTermRecall) {
         if (returnToCustodyDate != null) {
-          adjustments.getOrZero(
-            UNLAWFULLY_AT_LARGE,
-            adjustmentsBefore = returnToCustodyDate,
-            adjustmentsAfter = sentence.sentencedAt,
+          adjustments.applyADAsIncrementally(
+            startDate = sentence.sentencedAt,
+            initialEndDate = returnToCustodyDate,
           )
         } else {
-          getAdjustmentsAfterSentenceAtDate(UNLAWFULLY_AT_LARGE)
+          getAdjustmentsAfterSentenceAtDate()
         }
       } else {
-        adjustments.getOrZero(
-          UNLAWFULLY_AT_LARGE,
-          adjustmentsBefore = releaseDate,
-          adjustmentsAfter = sentence.sentencedAt.minusDays(1),
+        adjustments.applyADAsIncrementally(
+          startDate = sentence.sentencedAt.minusDays(1),
+          initialEndDate = releaseDate,
         )
       }
     }
 
   fun getTotalAddedDaysAfter(after: LocalDate): Int {
-    return adjustments.getOrZero(
-      UNLAWFULLY_AT_LARGE,
-      adjustmentsBefore = latestConcurrentRelease,
-      adjustmentsAfter = after,
+    return adjustments.applyADAsIncrementally(
+      startDate = after,
+      initialEndDate = latestConcurrentRelease,
     )
   }
 
   val calculatedFixedTermRecallAddedDays: Int
     get() {
-      return adjustments.getOrZero(
-        UNLAWFULLY_AT_LARGE,
-        adjustmentsBefore = latestConcurrentRelease,
-        adjustmentsAfter = returnToCustodyDate,
+      return adjustments.applyADAsIncrementally(
+        startDate = returnToCustodyDate,
+        initialEndDate = latestConcurrentRelease,
       )
     }
 

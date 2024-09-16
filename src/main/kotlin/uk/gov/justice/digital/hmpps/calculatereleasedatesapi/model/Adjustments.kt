@@ -22,18 +22,6 @@ data class Adjustments
     }.reduceOrNull { acc, it -> acc + it } ?: 0
   }
 
-  fun getOrZero(vararg adjustmentTypes: AdjustmentType, adjustmentsAfter: LocalDate): Int {
-    return adjustmentTypes.mapNotNull { adjustmentType ->
-      if (adjustments.containsKey(adjustmentType)) {
-        val adjustments = adjustments[adjustmentType]!!
-        val adjustmentDays = adjustments.filter { it.appliesToSentencesFrom.isAfter(adjustmentsAfter) }
-          .map { it.numberOfDays }
-        adjustmentDays.reduceOrNull { acc, it -> acc + it }
-      } else {
-        0
-      }
-    }.reduceOrNull { acc, it -> acc + it } ?: 0
-  }
   fun getOrEmptyList(adjustmentType: AdjustmentType): List<Adjustment> {
     return adjustments.getOrDefault(adjustmentType, listOf())
   }
@@ -43,5 +31,40 @@ data class Adjustments
       adjustments[adjustmentType] = mutableListOf()
     }
     adjustments[adjustmentType]!!.add(adjustment)
+  }
+
+  fun applyADAsIncrementally(
+    startDate: LocalDate?,
+    initialEndDate: LocalDate,
+  ): Int {
+    val ualPeriods = mutableSetOf<Adjustment>()
+
+    gatherUALPeriods(this.adjustments, ualPeriods, startDate, initialEndDate)
+
+    return ualPeriods.sumOf { it.numberOfDays }
+  }
+
+  private fun gatherUALPeriods(
+    adjustmentMap: Map<AdjustmentType, List<Adjustment>>,
+    ualPeriods: MutableSet<Adjustment>,
+    currentStartDate: LocalDate?,
+    currentEndDate: LocalDate,
+  ) {
+    val ual = AdjustmentType.UNLAWFULLY_AT_LARGE
+
+    val ualAdjustments = adjustmentMap[ual]?.filter {
+      it.appliesToSentencesFrom.isAfter(currentStartDate ?: LocalDate.MIN) &&
+        it.appliesToSentencesFrom.isBeforeOrEqualTo(currentEndDate)
+    } ?: listOf()
+
+    ualAdjustments.forEach { adjustment ->
+      // Add the adjustment to the set to avoid duplicates
+      if (ualPeriods.add(adjustment)) {
+        // Extend the end date by the number of days in this UAL period
+        val newEndDate = currentEndDate.plusDays(adjustment.numberOfDays.toLong())
+        // Recursively gather further UAL periods with the new end date
+        gatherUALPeriods(adjustmentMap, ualPeriods, adjustment.appliesToSentencesFrom, newEndDate)
+      }
+    }
   }
 }
