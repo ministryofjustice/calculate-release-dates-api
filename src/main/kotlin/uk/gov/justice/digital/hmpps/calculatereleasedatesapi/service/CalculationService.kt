@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
@@ -36,7 +37,7 @@ class CalculationService(
     val latestReleaseDateFromStandardBooking = extractionService.mostRecentSentence(standardWorkingBooking.getAllExtractableSentences(), SentenceCalculation::adjustedDeterminateReleaseDate).sentenceCalculation.adjustedDeterminateReleaseDate
 
     val tranche =
-      if (returnLongestPossibleSentences || sds40Result.dates == standardResult.dates || latestReleaseDateFromStandardBooking.isBefore(trancheOne.trancheCommencementDate)) {
+      if (returnLongestPossibleSentences || areCalculationsTheSame(sds40Result, standardResult) || latestReleaseDateFromStandardBooking.isBefore(trancheOne.trancheCommencementDate)) {
         SDSEarlyReleaseTranche.TRANCHE_0
         return standardWorkingBooking to bookingExtractionService.extract(standardWorkingBooking)
       } else {
@@ -59,6 +60,16 @@ class CalculationService(
       trancheOne.trancheCommencementDate,
       trancheOne,
     )
+  }
+
+  private fun areCalculationsTheSame(sds40Result: CalculationResult, standardResult: CalculationResult): Boolean {
+    if (sds40Result.dates != standardResult.dates) {
+      return false
+    }
+    val sds40ImmediateRelease = sds40Result.breakdownByReleaseDateType.any { it.value.rules.contains(CalculationRule.IMMEDIATE_RELEASE) }
+    val standardResultImmediateRelease = sds40Result.breakdownByReleaseDateType.any { it.value.rules.contains(CalculationRule.IMMEDIATE_RELEASE) }
+    val bothCalculationsImmediateRelease = sds40ImmediateRelease && standardResultImmediateRelease
+    return !bothCalculationsImmediateRelease
   }
 
   private fun adjustResultsForSDSEarlyReleaseIfRequired(
