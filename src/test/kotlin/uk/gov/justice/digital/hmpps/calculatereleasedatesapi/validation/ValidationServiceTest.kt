@@ -223,6 +223,47 @@ class ValidationServiceTest {
   }
 
   @ParameterizedTest
+  @ValueSource(strings = ["PH97003", "PH97003B"])
+  fun `Test Sentences with unsupported offenceCodes PH97003 before 2020 and no error message`(offenceCode: String) {
+    // Arrange
+    val invalidSentence = validSdsSentence.copy(
+      sentenceDate = LocalDate.of(2020, 12, 1),
+      offence = validSdsSentence.offence.copy(offenceCode = offenceCode, offenceStartDate = LocalDate.of(2020, 11, 1)),
+    )
+
+    // Act
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(invalidSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        USER_INPUTS,
+      )
+
+    // Assert
+    assertThat(result).isEmpty()
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = ["PH97003", "PH97003B"])
+  fun `Test Sentences with unsupported offenceCodes PH97003 after Dec 2020 and inchoates to return validation message`(offenceCode: String) {
+    // Arrange
+    val invalidSentence = validSdsSentence.copy(
+      sentenceDate = LocalDate.of(2021, 2, 1),
+      offence = validSdsSentence.offence.copy(offenceCode = offenceCode, offenceStartDate = LocalDate.of(2021, 1, 1)),
+    )
+
+    // Act
+    val result =
+      validationService.validateBeforeCalculation(
+        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(invalidSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        USER_INPUTS,
+      )
+
+    // Assert
+    assertThat(result).isNotEmpty
+    assertThat(result[0].code).isEqualTo(ValidationCode.UNSUPPORTED_BREACH_97)
+  }
+
+  @ParameterizedTest
   @ValueSource(strings = ["SC07002", "SC07003", "SC07004", "SC07005", "SC07006", "SC07007", "SC07008", "SC07009", "SC07010", "SC07011", "SC07012", "SC07013"])
   fun `Test Sentences with unsupported offenceCodes SC07002 to SC07013 returns validation message`(offenceCode: String) {
     // Arrange
