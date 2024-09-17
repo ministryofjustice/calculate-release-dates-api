@@ -80,8 +80,8 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
     UNSUPPORTED_OFFENCE,
   ),
   UNSUPPORTED_BREACH_97(
-    "Any offences that include the inchoate ‘Encouraging/ Assisting’ should be recorded as the underlying act, ending in the letter ‘e’.\n" +
-      "For example, ‘Encouraging/Assisting’ a Rape SX03001 would be SX03001E.",
+    "Breaches of restraining orders committed on or after 01 December 2020 must be sentenced under the 2020 Sentencing Act.\n" +
+      "Go to NOMIS and change the offence code from PH97003 to SE20002.",
     UNSUPPORTED_OFFENCE,
   ),
   UNSUPPORTED_SUSPENDED_OFFENCE("Replace this offence in NOMIS with the original offence they were sentenced for, then reload this page.", SUSPENDED_OFFENCE),
