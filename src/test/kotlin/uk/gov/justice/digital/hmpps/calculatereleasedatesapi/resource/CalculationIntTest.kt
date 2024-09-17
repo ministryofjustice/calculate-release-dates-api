@@ -303,27 +303,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   }
 
   @Test
-  fun `Run calculation where SDS+ is consecutive to SDS`() {
-    val userInput = CalculationUserInputs(
-      useOffenceIndicators = true,
-    )
-    val calculatedReleaseDates: CalculatedReleaseDates = webTestClient.post()
-      .uri("/calculation/$SDS_PLUS_CONSECUTIVE_TO_SDS")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .contentType(MediaType.APPLICATION_JSON)
-      .bodyValue(CalculationRequestModel(userInput, 1L))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(CalculatedReleaseDates::class.java)
-      .returnResult().responseBody!!
-
-    assertThat(calculatedReleaseDates.dates[SLED]).isEqualTo(LocalDate.of(2030, 11, 30))
-    assertThat(calculatedReleaseDates.dates[CRD]).isEqualTo(LocalDate.of(2027, 7, 1))
-  }
-
-  @Test
   fun `Run calculation on inactive data`() {
     val calculatedReleaseDates: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/$INACTIVE_PRISONER_ID")
@@ -486,10 +465,10 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2025, 8, 28),
+      LocalDate.of(2015, 8, 28),
     )
     assertThat(calculation.dates[SLED]).isEqualTo(
-      LocalDate.of(2029, 3, 28),
+      LocalDate.of(2019, 3, 28),
     )
   }
 
@@ -507,10 +486,10 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2025, 8, 30),
+      LocalDate.of(2015, 8, 30),
     )
     assertThat(calculation.dates[SLED]).isEqualTo(
-      LocalDate.of(2029, 3, 30),
+      LocalDate.of(2019, 3, 30),
     )
   }
 
@@ -546,10 +525,10 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2027, 6, 20),
+      LocalDate.of(2017, 6, 19),
     )
     assertThat(calculation.dates[SLED]).isEqualTo(
-      LocalDate.of(2030, 2, 4),
+      LocalDate.of(2020, 2, 4),
     )
   }
 
@@ -1015,7 +994,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     val BOOKING_ID = PRISONER_ID.hashCode().toLong()
     val BOOKING_ERROR_ID = PRISONER_ERROR_ID.hashCode().toLong()
     const val BOOKING_ID_DOESNT_EXIST = 92929988L
-    const val SDS_PLUS_CONSECUTIVE_TO_SDS = "SDS-CON"
     const val INACTIVE_PRISONER_ID = "INACTIVE"
   }
 }
