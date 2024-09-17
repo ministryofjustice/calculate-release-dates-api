@@ -96,6 +96,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SOPC_LICENCE_TERM_NOT_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_BREACH_97
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
@@ -355,6 +356,13 @@ class ValidationService(
     return sentenceAndOffences.filter { it.offence.offenceCode in offenceCodesToFilter }
   }
 
+  private fun findUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<SentenceAndOffence> {
+    return sentencesAndOffence.filter {
+      it.offence.offenceCode.startsWith("PH97003") && it.offence.offenceStartDate != null &&
+        it.offence.offenceStartDate.isAfterOrEqualTo(AFTER_97_BREACH_PROVISION_INVALID)
+    }
+  }
+
   private fun findUnsupportedSuspendedOffenceCodes(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>): List<SentenceAndOffence> {
     val offenceCodesToFilter = listOf("SE20512", "CJ03523")
     return sentenceAndOffences.filter { it.offence.offenceCode in offenceCodesToFilter }
@@ -362,6 +370,7 @@ class ValidationService(
 
   private fun validateUnsupportedOffences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
     val messages = validateUnsupportedEncouragingOffences(sentencesAndOffence).toMutableList()
+    messages += validateUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence)
     messages += validateUnsupportedSuspendedOffences(sentencesAndOffence)
     return messages
   }
@@ -378,6 +387,13 @@ class ValidationService(
     val unSupportedEncouragingOffenceCodes = findUnsupportedEncouragingOffenceCodes(sentencesAndOffence)
     if (unSupportedEncouragingOffenceCodes.isNotEmpty()) {
       return listOf(ValidationMessage(UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING))
+    }
+    return emptyList()
+  }
+  private fun validateUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
+    val unSupportedEncouragingOffenceCodes = findUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence)
+    if (unSupportedEncouragingOffenceCodes.isNotEmpty()) {
+      return listOf(ValidationMessage(UNSUPPORTED_BREACH_97))
     }
     return emptyList()
   }
@@ -1023,6 +1039,8 @@ class ValidationService(
       UNLAWFULLY_AT_LARGE to ADJUSTMENT_FUTURE_DATED_UAL,
       RESTORED_ADDITIONAL_DAYS_AWARDED to ADJUSTMENT_FUTURE_DATED_RADA,
     )
+
+    private val AFTER_97_BREACH_PROVISION_INVALID = LocalDate.of(2020, 12, 1)
     private const val TWELVE = 12L
     private val log = LoggerFactory.getLogger(this::class.java)
   }

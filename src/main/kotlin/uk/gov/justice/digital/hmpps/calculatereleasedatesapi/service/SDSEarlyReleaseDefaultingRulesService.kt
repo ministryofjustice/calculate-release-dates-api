@@ -57,7 +57,7 @@ class SDSEarlyReleaseDefaultingRulesService(
       breakdownByReleaseDateType,
     )
 
-    handleCRDorARDandPRRD(dates)
+    handleCRDorARDAndPRRD(dates, earlyReleaseResult.otherDates.toMutableMap())
 
     overriddenTranche = if (dates == standardReleaseResult.dates) {
       SDSEarlyReleaseTranche.TRANCHE_0
@@ -84,25 +84,42 @@ class SDSEarlyReleaseDefaultingRulesService(
     return if (dates[ReleaseDateType.ARD] != null) ReleaseDateType.ARD to dates[ReleaseDateType.ARD] else ReleaseDateType.CRD to dates[ReleaseDateType.CRD]
   }
 
-  private fun handleCRDorARDandPRRD(
+  private fun handleCRDorARDAndPRRD(
     dates: MutableMap<ReleaseDateType, LocalDate>,
+    otherDates: MutableMap<ReleaseDateType, LocalDate>,
   ) {
-    if ((dates.containsKey(ReleaseDateType.CRD).or(dates.containsKey(ReleaseDateType.ARD)))
-        .and(dates.containsKey(ReleaseDateType.PRRD))
-    ) {
+    if (dates.containsKey(ReleaseDateType.CRD) || dates.containsKey(ReleaseDateType.ARD)) {
       val controllingDate = getControllingDate(dates)
 
-      if (controllingDate.second?.isAfter(dates[ReleaseDateType.PRRD]) == true) {
-        dates.remove(ReleaseDateType.PRRD)
-      } else {
-        dates.remove(controllingDate.first)
+      // override HDCED to the PRRD if the PRRD is later than the HDCED
+      dates[ReleaseDateType.HDCED4PLUS]?.let { hdcedDate ->
+        val prrdDate = dates[ReleaseDateType.PRRD] ?: otherDates[ReleaseDateType.PRRD]
+        prrdDate?.takeIf { it.isAfter(hdcedDate) }?.let {
+          setHDCEDDates(it, dates)
+        }
+      }
 
-        // PRRD is later than any other release date, therefore can not have a HDCED
-        // See BookingExtractionService#extractMultiple
-        dates.remove(ReleaseDateType.HDCED4PLUS)
-        dates.remove(ReleaseDateType.HDCED)
+      if (dates.containsKey(ReleaseDateType.PRRD)) {
+        if (controllingDate.second?.isAfter(dates[ReleaseDateType.PRRD]) == true) {
+          dates.remove(ReleaseDateType.PRRD)
+        } else {
+          dates.remove(controllingDate.first)
+
+          // PRRD is later than any other release date, therefore can not have a HDCED
+          // See BookingExtractionService#extractMultiple
+          removeHDCEDDates(dates)
+        }
       }
     }
+  }
+
+  private fun setHDCEDDates(date: LocalDate, dates: MutableMap<ReleaseDateType, LocalDate>) {
+    dates[ReleaseDateType.HDCED4PLUS] = date
+    dates[ReleaseDateType.HDCED] = date
+  }
+  private fun removeHDCEDDates(dates: MutableMap<ReleaseDateType, LocalDate>) {
+    dates.remove(ReleaseDateType.HDCED4PLUS)
+    dates.remove(ReleaseDateType.HDCED)
   }
 
   fun handleCRDEqualsEligibilityDateAndTrancheDate(dates: MutableMap<ReleaseDateType, LocalDate>, tranche: TrancheOne) {

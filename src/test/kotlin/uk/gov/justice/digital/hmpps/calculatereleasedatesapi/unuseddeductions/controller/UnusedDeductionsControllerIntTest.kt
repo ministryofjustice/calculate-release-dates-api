@@ -264,4 +264,35 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
 
     Assertions.assertThat(calculation.validationMessages).contains(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE))
   }
+
+  @Test
+  fun `Run unused deductions calculation with an SDS40 early release`() {
+    val adjustments = listOf(
+      AdjustmentServiceAdjustment(
+        fromDate = LocalDate.of(2020, 2, 1),
+        toDate = LocalDate.of(2021, 1, 31),
+        days = 60,
+        effectiveDays = 60,
+        bookingId = "UNUSED-E".hashCode().toLong(),
+        sentenceSequence = 4,
+        adjustmentType = AdjustmentServiceAdjustmentType.REMAND,
+        person = "UNUSED-E",
+        id = UUID.randomUUID(),
+      ),
+    )
+
+    val calculation: UnusedDeductionCalculationResponse = webTestClient.post()
+      .uri("/unused-deductions/UNUSED-E/calculation")
+      .accept(MediaType.APPLICATION_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(objectMapper.writeValueAsString(adjustments))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(UnusedDeductionCalculationResponse::class.java)
+      .returnResult().responseBody!!
+
+    Assertions.assertThat(calculation.unusedDeductions).isEqualTo(20)
+  }
 }
