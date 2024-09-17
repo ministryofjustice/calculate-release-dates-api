@@ -227,7 +227,7 @@ class ValidationServiceTest {
   fun `Test Sentences with unsupported offenceCodes PH97003 before 2020 and no error message`(offenceCode: String) {
     // Arrange
     val invalidSentence = validSdsSentence.copy(
-      sentenceDate = LocalDate.of(2020,12,1),
+      sentenceDate = LocalDate.of(2020, 12, 1),
       offence = validSdsSentence.offence.copy(offenceCode = offenceCode, offenceStartDate = LocalDate.of(2020, 11, 1)),
     )
 
@@ -247,7 +247,7 @@ class ValidationServiceTest {
   fun `Test Sentences with unsupported offenceCodes PH97003 after Dec 2020 and inchoates to return validation message`(offenceCode: String) {
     // Arrange
     val invalidSentence = validSdsSentence.copy(
-      sentenceDate = LocalDate.of(2021,2,1),
+      sentenceDate = LocalDate.of(2021, 2, 1),
       offence = validSdsSentence.offence.copy(offenceCode = offenceCode, offenceStartDate = LocalDate.of(2021, 1, 1)),
     )
 
