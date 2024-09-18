@@ -147,8 +147,7 @@ data class SentenceCalculation(
       } else {
         adjustments.applyPeriodsOfUALIncrementally(
           startDate = sentence.sentencedAt.minusDays(1),
-          initialEndDate = releaseDate,
-          maxEndDate = returnToCustodyDate,
+          initialEndDate = unadjustedExpiryDate,
         )
       }
     }
