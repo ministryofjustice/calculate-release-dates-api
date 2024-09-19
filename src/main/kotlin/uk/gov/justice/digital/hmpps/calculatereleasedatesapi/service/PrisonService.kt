@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import arrow.core.Either
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
@@ -24,16 +25,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 class PrisonService(
   private val prisonApiClient: PrisonApiClient,
   private val offenceSDSReleaseArrangementLookupService: OffenceSDSReleaseArrangementLookupService,
+  private val featureToggles: FeatureToggles,
   private val botusTusedService: BotusTusedService,
 ) {
   //  The activeDataOnly flag is only used by a test endpoint (1000 calcs test, which is used to test historic data)
-  fun getPrisonApiSourceData(prisonerId: String, activeDataOnly: Boolean = true): PrisonApiSourceData {
+  fun getPrisonApiSourceData(prisonerId: String, supportInactiveSentencesAndAdjustments: Boolean = featureToggles.supportInactiveSentencesAndAdjustments): PrisonApiSourceData {
     val prisonerDetails = getOffenderDetail(prisonerId)
-    val activeOnly = activeDataOnly || prisonerDetails.agencyId != "OUT"
-    return getPrisonApiSourceData(prisonerDetails, activeOnly)
+    return getPrisonApiSourceData(prisonerDetails, supportInactiveSentencesAndAdjustments)
   }
 
-  fun getPrisonApiSourceData(prisonerDetails: PrisonerDetails, activeDataOnly: Boolean = true): PrisonApiSourceData {
+  fun getPrisonApiSourceData(prisonerDetails: PrisonerDetails, supportInactiveSentencesAndAdjustments: Boolean = featureToggles.supportInactiveSentencesAndAdjustments): PrisonApiSourceData {
+    val activeDataOnly = !supportInactiveSentencesAndAdjustments
     val sentenceAndOffences = getSentencesAndOffences(prisonerDetails.bookingId, activeDataOnly)
     val bookingAndSentenceAdjustments = getBookingAndSentenceAdjustments(prisonerDetails.bookingId, activeDataOnly)
     val bookingHasFixedTermRecall = sentenceAndOffences.any { isSupported(it.sentenceCalculationType) && from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
@@ -111,7 +113,7 @@ class PrisonService(
     return calculableSentenceEnvelope
   }
 
-  fun getActiveBookingsByPrisonerIds(prisonerIds: List<String>, token: String): List<CalculableSentenceEnvelope> = prisonApiClient.getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds, token)
+  fun getBookingsByPrisonerIds(prisonerIds: List<String>, token: String): List<CalculableSentenceEnvelope> = prisonApiClient.getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds, token)
 
   fun getCalculationsForAPrisonerId(prisonerId: String): List<SentenceCalculationSummary> = prisonApiClient.getCalculationsForAPrisonerId(prisonerId)
 

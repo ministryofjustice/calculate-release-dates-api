@@ -95,7 +95,7 @@ class BulkComparisonService(
   @Async
   fun processManualComparison(comparison: Comparison, prisonerIds: List<String>, token: String) {
     setAuthTokenAndLog(token)
-    val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIds(prisonerIds, token)
+    val activeBookingsForPrisoners = prisonService.getBookingsByPrisonerIds(prisonerIds, token)
     processCalculableSentenceEnvelopes(activeBookingsForPrisoners, comparison)
     completeComparison(comparison)
   }

@@ -405,7 +405,7 @@ class BulkComparisonServiceTest {
 
     val prisonerIds = listOf("A7542DZ")
     val token = "a-token"
-    whenever(prisonService.getActiveBookingsByPrisonerIds(prisonerIds, token)).thenReturn(
+    whenever(prisonService.getBookingsByPrisonerIds(prisonerIds, token)).thenReturn(
       listOf(
         calculableSentenceEnvelope,
       ),

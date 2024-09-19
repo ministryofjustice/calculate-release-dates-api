@@ -130,9 +130,9 @@ class CalculationController(
   ): CalculationResults {
     log.info("Request received to calculate release dates for $prisonerId")
     val validationMessages = calculationTransactionalService.fullValidation(
-      prisonerId,
-      calculationRequestModel.calculationUserInputs ?: CalculationUserInputs(),
-      false,
+      prisonerId = prisonerId,
+      calculationUserInputs = calculationRequestModel.calculationUserInputs ?: CalculationUserInputs(),
+      supportInactiveSentencesAndAdjustments = true,
     )
 
     return if (validationMessages.isNotEmpty()) {

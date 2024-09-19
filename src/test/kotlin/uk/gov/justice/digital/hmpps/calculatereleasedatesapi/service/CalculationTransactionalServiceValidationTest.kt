@@ -69,7 +69,7 @@ class CalculationTransactionalServiceValidationTest {
     val fakeMessages = listOf<ValidationMessage>()
 
     // Mocking the behaviour of services
-    whenever(prisonService.getPrisonApiSourceData(prisonerId, true)).thenReturn(fakeSourceData)
+    whenever(prisonService.getPrisonApiSourceData(prisonerId)).thenReturn(fakeSourceData)
     whenever(validationService.validateBeforeCalculation(any(), eq(calculationUserInputs))).thenReturn(fakeMessages)
     whenever(bookingService.getBooking(any(), eq(calculationUserInputs))).thenReturn(BOOKING)
     whenever(calculationService.calculateReleaseDates(any(), eq(calculationUserInputs), eq(true))).thenReturn(
@@ -210,6 +210,7 @@ class CalculationTransactionalServiceValidationTest {
       nomisCommentService,
       TEST_BUILD_PROPERTIES,
       trancheOutcomeRepository,
+      featureToggles = FeatureToggles(supportInactiveSentencesAndAdjustments = false),
     )
   }
 
