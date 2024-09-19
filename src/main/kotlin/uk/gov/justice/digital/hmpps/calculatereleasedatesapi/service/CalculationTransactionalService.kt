@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -65,6 +66,7 @@ class CalculationTransactionalService(
   private val nomisCommentService: NomisCommentService,
   private val buildProperties: BuildProperties,
   private val trancheOutcomeRepository: TrancheOutcomeRepository,
+  private val featureToggles: FeatureToggles,
 ) {
 
   /*
@@ -74,16 +76,15 @@ class CalculationTransactionalService(
    * 3. Run the calculation and catch any errors thrown by the calculation algorithm
    * 4. Validate the post calculation Booking (The Booking is transformed during the calculation). e.g. Consecutive sentences (aggregates)
    *
-   * activeDataOnly is only used by the test 1000 calcs functionality
    */
   fun fullValidation(
     prisonerId: String,
     calculationUserInputs: CalculationUserInputs,
-    activeDataOnly: Boolean = true,
+    supportInactiveSentencesAndAdjustments: Boolean = featureToggles.supportInactiveSentencesAndAdjustments,
   ): List<ValidationMessage> {
     log.info("Full Validation for $prisonerId")
     log.info("Gathering source data from PrisonAPI")
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, supportInactiveSentencesAndAdjustments)
     val sourceDataJson = objectMapper.writeValueAsString(sourceData)
     log.info("Source data:\n$sourceDataJson")
 
@@ -161,7 +162,7 @@ class CalculationTransactionalService(
   }
 
   fun supportedValidation(prisonerId: String): List<ValidationMessage> {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly = true)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
     return validationService.validateSupportedSentencesAndCalculations(sourceData)
   }
 
@@ -173,7 +174,7 @@ class CalculationTransactionalService(
     activeDataOnly: Boolean = true,
     calculationType: CalculationStatus = PRELIMINARY,
   ): CalculatedReleaseDates {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
     val calculationUserInputs = calculationRequestModel.calculationUserInputs ?: CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     val reasonForCalculation = calculationReasonRepository.findById(calculationRequestModel.calculationReasonId)
@@ -527,7 +528,7 @@ class CalculationTransactionalService(
 
     return if (checkForChange) {
       log.info("Checking for change in data")
-      val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId, true)
+      val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId)
       val originalCalculationAdjustments =
         objectMapper.treeToValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
       val originalPrisonerDetails =
@@ -552,7 +553,7 @@ class CalculationTransactionalService(
   }
 
   fun validateForManualBooking(prisonerId: String): List<ValidationMessage> {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, true)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
     return validationService.validateSentenceForManualEntry(sourceData.sentenceAndOffences)
   }
 
