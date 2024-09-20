@@ -51,7 +51,7 @@ class BookingCalculationService(
       }
       sentenceIdentificationService.identify(booking.singleTermSentence!!, booking.offender, options)
       sentenceCalculationService.calculate(booking.singleTermSentence!!, booking, options)
-      log.info(booking.singleTermSentence!!.buildString())
+      log.trace(booking.singleTermSentence!!.buildString())
     }
     return booking
   }
@@ -77,7 +77,7 @@ class BookingCalculationService(
     booking.consecutiveSentences.forEach {
       sentenceIdentificationService.identify(it, booking.offender, options)
       sentenceCalculationService.calculate(it, booking, options)
-      log.info(it.buildString())
+      log.trace(it.buildString())
     }
     return booking
   }

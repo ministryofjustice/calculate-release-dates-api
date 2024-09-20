@@ -23,13 +23,13 @@ class WorkingDayService(
   private fun iterateOverNonWorkingDays(date: LocalDate, increment: (LocalDate) -> LocalDate): WorkingDay {
     var adjustedForWeekend = false
     var adjustedForBankHoliday = false
-    log.info("Fetching bank holidays data")
+    log.trace("Fetching bank holidays data")
     val bankHolidays = bankHolidayService.getBankHolidays()
       .englandAndWales
       .events
       .map { it.date }
 
-    log.info("Bank holidays data fetched successfully")
+    log.trace("Bank holidays data fetched successfully")
 
     var workingDate = date
     while (workingDate.isNonWorkingDay(bankHolidays)) {
@@ -37,7 +37,7 @@ class WorkingDayService(
       adjustedForBankHoliday = bankHolidays.contains(workingDate) || adjustedForBankHoliday
       workingDate = increment.invoke(workingDate)
     }
-    log.info("Next / previous working day determined to be: $workingDate")
+    log.trace("Next / previous working day determined to be: {}", workingDate)
     return WorkingDay(workingDate, adjustedForWeekend, adjustedForBankHoliday)
   }
 
