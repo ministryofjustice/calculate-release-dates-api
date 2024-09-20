@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -12,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlMergeMode
 import org.springframework.test.web.reactive.server.WebTestClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.helpers.JwtAuthHelper
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.BankHolidayApiExtension
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.ManageOffencesApiExtension
@@ -45,11 +48,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalcula
 )
 @ExtendWith(OAuthExtension::class, PrisonApiExtension::class, BankHolidayApiExtension::class, ManageOffencesApiExtension::class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-@Import(TestBuildPropertiesConfiguration::class)
+@Import(TestBuildPropertiesConfiguration::class, IntegrationTestBase.TestFeatureTogglesConfiguration::class)
 @ActiveProfiles("test")
-open class IntegrationTestBase internal constructor() {
+class IntegrationTestBase internal constructor() {
 
-  @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
   lateinit var webTestClient: WebTestClient
 
@@ -58,6 +60,9 @@ open class IntegrationTestBase internal constructor() {
 
   @Autowired
   lateinit var objectMapper: ObjectMapper
+
+  @Autowired
+  lateinit var featureToggles: FeatureToggles
 
   internal fun setAuthorisation(
     user: String = "test-client",
@@ -106,5 +111,13 @@ open class IntegrationTestBase internal constructor() {
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
       .expectBody(CalculatedReleaseDates::class.java)
       .returnResult().responseBody!!
+  }
+
+  @TestConfiguration
+  class TestFeatureTogglesConfiguration {
+    @Bean
+    fun featureToggles(): FeatureToggles {
+      return FeatureToggles(sdsEarlyReleaseUnsupported = false)
+    }
   }
 }

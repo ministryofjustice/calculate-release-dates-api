@@ -80,7 +80,10 @@ class CalculationController(
     calculationRequestModel: CalculationRequestModel,
   ): CalculatedReleaseDates {
     log.info("Request received to calculate release dates for $prisonerId")
-    return calculationTransactionalService.calculate(prisonerId, calculationRequestModel)
+    return calculationTransactionalService.calculate(
+      prisonerId = prisonerId,
+      calculationRequestModel = calculationRequestModel,
+    )
   }
 
   @PostMapping(value = ["/record-a-recall/{prisonerId}"])
@@ -140,10 +143,10 @@ class CalculationController(
     } else {
       CalculationResults(
         calculationTransactionalService.calculate(
-          prisonerId,
-          calculationRequestModel,
-          false,
-          TEST,
+          prisonerId = prisonerId,
+          calculationRequestModel = calculationRequestModel,
+          supportInactiveSentencesAndAdjustments = true,
+          calculationType = TEST,
         ),
       )
     }

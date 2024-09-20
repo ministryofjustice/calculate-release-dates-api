@@ -29,8 +29,15 @@ class PrisonService(
   private val botusTusedService: BotusTusedService,
 ) {
   //  The activeDataOnly flag is only used by a test endpoint (1000 calcs test, which is used to test historic data)
-  fun getPrisonApiSourceData(prisonerId: String, supportInactiveSentencesAndAdjustments: Boolean = featureToggles.supportInactiveSentencesAndAdjustments): PrisonApiSourceData {
+  fun getPrisonApiSourceData(prisonerId: String, supportInactiveSentencesAndAdjustments: Boolean): PrisonApiSourceData {
     val prisonerDetails = getOffenderDetail(prisonerId)
+    return getPrisonApiSourceData(prisonerDetails, supportInactiveSentencesAndAdjustments)
+  }
+
+  //  The activeDataOnly flag is only used by a test endpoint (1000 calcs test, which is used to test historic data)
+  fun getPrisonApiSourceData(prisonerId: String): PrisonApiSourceData {
+    val prisonerDetails = getOffenderDetail(prisonerId)
+    val supportInactiveSentencesAndAdjustments = featureToggles?.supportInactiveSentencesAndAdjustments ?: false
     return getPrisonApiSourceData(prisonerDetails, supportInactiveSentencesAndAdjustments)
   }
 
