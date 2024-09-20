@@ -141,7 +141,12 @@ class CalculationControllerTest {
 
     val calculationRequestModel = CalculationRequestModel(CalculationUserInputs(), -1L, "")
 
-    whenever(calculationTransactionalService.calculate(prisonerId, calculationRequestModel)).thenReturn(
+    whenever(
+      calculationTransactionalService.calculate(
+        prisonerId = prisonerId,
+        calculationRequestModel = calculationRequestModel,
+      ),
+    ).thenReturn(
       calculatedReleaseDates,
     )
 
@@ -158,7 +163,10 @@ class CalculationControllerTest {
     assertThat(mapper.readValue(result.response.contentAsString, CalculatedReleaseDates::class.java)).isEqualTo(
       calculatedReleaseDates,
     )
-    verify(calculationTransactionalService, times(1)).calculate(prisonerId, calculationRequestModel)
+    verify(calculationTransactionalService, times(1)).calculate(
+      prisonerId = prisonerId,
+      calculationRequestModel = calculationRequestModel,
+    )
   }
 
   @Test

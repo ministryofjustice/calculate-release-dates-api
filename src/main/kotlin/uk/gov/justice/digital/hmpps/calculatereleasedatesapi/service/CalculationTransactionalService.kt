@@ -77,7 +77,24 @@ class CalculationTransactionalService(
    * 4. Validate the post calculation Booking (The Booking is transformed during the calculation). e.g. Consecutive sentences (aggregates)
    *
    */
+
   fun fullValidation(
+    prisonerId: String,
+    calculationUserInputs: CalculationUserInputs,
+  ): List<ValidationMessage> {
+    val supportInactiveSentencesAndAdjustments = featureToggles?.supportInactiveSentencesAndAdjustments ?: false
+    return performFullValidation(prisonerId, calculationUserInputs, supportInactiveSentencesAndAdjustments)
+  }
+
+  fun fullValidation(
+    prisonerId: String,
+    calculationUserInputs: CalculationUserInputs,
+    supportInactiveSentencesAndAdjustments: Boolean,
+  ): List<ValidationMessage> {
+    return performFullValidation(prisonerId, calculationUserInputs, supportInactiveSentencesAndAdjustments)
+  }
+
+  private fun performFullValidation(
     prisonerId: String,
     calculationUserInputs: CalculationUserInputs,
     supportInactiveSentencesAndAdjustments: Boolean = featureToggles.supportInactiveSentencesAndAdjustments,
@@ -171,10 +188,10 @@ class CalculationTransactionalService(
   fun calculate(
     prisonerId: String,
     calculationRequestModel: CalculationRequestModel,
-    activeDataOnly: Boolean = true,
+    supportInactiveSentencesAndAdjustments: Boolean = false,
     calculationType: CalculationStatus = PRELIMINARY,
   ): CalculatedReleaseDates {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, supportInactiveSentencesAndAdjustments = supportInactiveSentencesAndAdjustments)
     val calculationUserInputs = calculationRequestModel.calculationUserInputs ?: CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     val reasonForCalculation = calculationReasonRepository.findById(calculationRequestModel.calculationReasonId)
