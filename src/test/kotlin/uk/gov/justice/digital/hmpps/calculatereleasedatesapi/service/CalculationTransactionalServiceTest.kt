@@ -672,7 +672,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES,
       ),
     )
-    whenever(prisonService.getPrisonApiSourceData(anyString(), eq(true))).thenReturn(SOURCE_DATA)
+    whenever(prisonService.getPrisonApiSourceData(anyString())).thenReturn(SOURCE_DATA)
     assertThrows<CalculationDataHasChangedError> {
       calculationTransactionalService().findCalculationResultsByCalculationReference(
         UUID.randomUUID().toString(),
@@ -781,6 +781,7 @@ class CalculationTransactionalServiceTest {
       nomisCommentService,
       TEST_BUILD_PROPERTIES,
       trancheOutcomeRepository,
+      FeatureToggles(supportInactiveSentencesAndAdjustments = false),
     )
   }
 
