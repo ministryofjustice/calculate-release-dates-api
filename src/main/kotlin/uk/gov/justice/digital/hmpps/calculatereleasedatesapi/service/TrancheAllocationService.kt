@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -11,31 +12,39 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 @Service
 class TrancheAllocationService(
   @Autowired
-  private val trancheOne: TrancheOne,
-
+    private val trancheOne: TrancheOne,
   @Autowired
-  private val trancheTwo: TrancheTwo,
+    private val trancheTwo: TrancheTwo,
+  @Autowired
+    private val trancheConfiguration: SDS40TrancheConfiguration,
 ) {
 
   fun calculateTranche(calculationResult: CalculationResult, booking: Booking): SDSEarlyReleaseTranche {
     // List of sentences allowable for SDS early release
+    // Exclude any sentences where sentencing was after T1 commencement - CRS-2126
     val sdsEarlyReleaseSentences =
       booking.sentences.filter { sentence -> sentence.identificationTrack.equals(SentenceIdentificationTrack.SDS_EARLY_RELEASE) }
-        .filter { it.sentencedAt.isBefore(trancheOne.trancheCommencementDate) }
+        .filter { it.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate) }
 
     var resultTranche: SDSEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0
 
     sdsEarlyReleaseSentences.takeIf { it.isNotEmpty() }?.let {
-      // Exclude any sentences where sentencing was after T1 commencement - CRS-2126
-      val sentencesFromBooking = booking.getAllExtractableSentences().filter { it.sentencedAt.isBefore(trancheOne.trancheCommencementDate)}.flatMap { if (it is ConsecutiveSentence) it.orderedSentences else listOf(it) }
+      val sentencesFromBooking = booking.getAllExtractableSentences()
       resultTranche = when {
         sentencesFromBooking.isEmpty() -> SDSEarlyReleaseTranche.TRANCHE_0
-        trancheOne.isBookingApplicableForTrancheCriteria(calculationResult, sentencesFromBooking) -> SDSEarlyReleaseTranche.TRANCHE_1
-        trancheTwo.isBookingApplicableForTrancheCriteria(calculationResult, sentencesFromBooking) -> SDSEarlyReleaseTranche.TRANCHE_2
+        trancheOne.isBookingApplicableForTrancheCriteria(
+            calculationResult,
+            sentencesFromBooking,
+        ) -> SDSEarlyReleaseTranche.TRANCHE_1
+
+        trancheTwo.isBookingApplicableForTrancheCriteria(
+            calculationResult,
+            sentencesFromBooking,
+        ) -> SDSEarlyReleaseTranche.TRANCHE_2
+
         else -> resultTranche
       }
     }
-
     return resultTranche
   }
 }

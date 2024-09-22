@@ -59,11 +59,11 @@ class SDSEarlyReleaseDefaultingRulesService(
 
     handleCRDorARDandPRRD(dates)
 
-    overriddenTranche = if (dates == standardReleaseResult.dates) {
-      SDSEarlyReleaseTranche.TRANCHE_0
-    } else {
-      allocatedTranche
-    }
+//    overriddenTranche = if (dates == standardReleaseResult.dates) {
+//      SDSEarlyReleaseTranche.TRANCHE_0
+//    } else {
+//      allocatedTranche
+//    }
 
     return CalculationResult(
       dates,

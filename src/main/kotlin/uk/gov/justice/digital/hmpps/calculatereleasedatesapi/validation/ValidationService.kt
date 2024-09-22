@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
@@ -110,7 +111,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 class ValidationService(
   private val extractionService: SentencesExtractionService,
   private val featureToggles: FeatureToggles,
-  private val sds40TrancheOne: TrancheOne,
+  private val trancheConfiguration: SDS40TrancheConfiguration,
 ) {
   fun validateBeforeCalculation(
     sourceData: PrisonApiSourceData,
@@ -220,7 +221,7 @@ class ValidationService(
             (it is ConsecutiveSentence && it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence })
           ) &&
         it.recallType != null &&
-        it.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(sds40TrancheOne.trancheCommencementDate)
+        it.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
     }.takeIf { it }?.let {
       result = listOf(
         ValidationMessage(
@@ -853,7 +854,7 @@ class ValidationService(
 
     // Create a new list of calculable sentences
     val longestRelevantSentences = sentences.zip(longestSentences).map { (sentence, longestSentence) ->
-      if (sentence.sentencedAt.isBefore(sds40TrancheOne.trancheTwoCommencementDate)) {
+      if (sentence.sentencedAt.isBefore(trancheConfiguration.trancheTwoCommencementDate)) {
         // Use the corresponding sentence from longestBooking
         longestSentence
       } else {

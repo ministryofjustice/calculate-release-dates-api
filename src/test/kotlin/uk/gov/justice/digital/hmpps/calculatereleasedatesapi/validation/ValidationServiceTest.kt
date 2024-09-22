@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.context.annotation.Profile
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -47,7 +48,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheOne
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.BookingHelperTest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA
@@ -97,7 +97,8 @@ import java.util.*
 
 @Profile("tests")
 class ValidationServiceTest {
-  private var validationService = ValidationService(SentencesExtractionService(), FeatureToggles(botus = true), SDS40_TRANCHE_ONE)
+  private var validationService =
+    ValidationService(SentencesExtractionService(), FeatureToggles(botus = true), TRANCHE_CONFIGURATION)
   private val validSdsSentence = NormalisedSentenceAndOffence(
     bookingId = 1L,
     sentenceSequence = 7,
@@ -213,7 +214,16 @@ class ValidationServiceTest {
     // Act
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(invalidSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          listOf(
+            SentenceAndOffenceWithReleaseArrangements(
+              invalidSentence,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            ),
+          ),
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -233,7 +243,16 @@ class ValidationServiceTest {
     // Act
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(invalidSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          listOf(
+            SentenceAndOffenceWithReleaseArrangements(
+              invalidSentence,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            ),
+          ),
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -253,7 +272,16 @@ class ValidationServiceTest {
     // Act
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(validSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          listOf(
+            SentenceAndOffenceWithReleaseArrangements(
+              validSentence,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            ),
+          ),
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -286,7 +314,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(sentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          listOf(
+            SentenceAndOffenceWithReleaseArrangements(
+              sentence,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            ),
+          ),
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -310,7 +347,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(sentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          listOf(
+            SentenceAndOffenceWithReleaseArrangements(
+              sentence,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            ),
+          ),
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -333,7 +379,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(sentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          listOf(
+            SentenceAndOffenceWithReleaseArrangements(
+              sentence,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            ),
+          ),
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -365,7 +420,19 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
+        ),
         USER_INPUTS,
       )
 
@@ -395,7 +462,19 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
+        ),
         USER_INPUTS,
       )
 
@@ -414,7 +493,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -462,7 +550,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -493,7 +590,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -524,7 +630,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -540,7 +655,13 @@ class ValidationServiceTest {
   fun `Test SOPC valid sentence should pass`() {
     val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
-        listOf(validSopcSentence).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+        listOf(validSopcSentence).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
         VALID_PRISONER,
         VALID_ADJUSTMENTS,
         listOf(),
@@ -574,7 +695,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -600,7 +730,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -615,7 +754,13 @@ class ValidationServiceTest {
   fun `Validate future dated adjustments`() {
     val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
-        listOf(validEdsSentence).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+        listOf(validEdsSentence).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
         VALID_PRISONER,
         BookingAndSentenceAdjustments(
           listOf(
@@ -685,7 +830,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -699,10 +853,20 @@ class ValidationServiceTest {
 
   @Test
   fun `Test SDS sentence is valid`() {
-    val sentences = listOf(SentenceAndOffenceWithReleaseArrangements(validSdsSentence, false, SDSEarlyReleaseExclusionType.NO))
+    val sentences =
+      listOf(SentenceAndOffenceWithReleaseArrangements(validSdsSentence, false, SDSEarlyReleaseExclusionType.NO))
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -714,7 +878,16 @@ class ValidationServiceTest {
     val sentences = listOf(validAFineSentence)
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -757,7 +930,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -783,7 +965,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -811,7 +1002,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -820,7 +1020,8 @@ class ValidationServiceTest {
 
   @Test
   fun `Test BOTUS feature toggle results in unsupported sentence type if disabled`() {
-    val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(botus = false), SDS40_TRANCHE_ONE)
+    val validationService =
+      ValidationService(SentencesExtractionService(), FeatureToggles(botus = false), TRANCHE_CONFIGURATION)
     val sentenceAndOffences = validSdsSentence.copy(
       sentenceCalculationType = SentenceCalculationType.BOTUS.name,
       terms = listOf(
@@ -829,14 +1030,25 @@ class ValidationServiceTest {
     )
     val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
-        sentenceAndOffences = listOf(sentenceAndOffences).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+        sentenceAndOffences = listOf(sentenceAndOffences).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
         prisonerDetails = VALID_PRISONER,
         bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
         returnToCustodyDate = null,
       ),
       USER_INPUTS,
     )
-    assertThat(result).containsExactly(ValidationMessage(UNSUPPORTED_SENTENCE_TYPE, listOf("2003", "This is a sentence type")))
+    assertThat(result).containsExactly(
+      ValidationMessage(
+        UNSUPPORTED_SENTENCE_TYPE,
+        listOf("2003", "This is a sentence type"),
+      ),
+    )
   }
 
   @Test
@@ -854,7 +1066,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -877,7 +1098,7 @@ class ValidationServiceTest {
         sentenceSequence = 2,
         consecutiveToSequence = 1,
 
-      ),
+        ),
       validSdsSentence.copy(
         sentenceSequence = 3,
         consecutiveToSequence = 2,
@@ -887,7 +1108,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -916,7 +1146,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -954,7 +1193,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, adjustments, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, adjustments, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -1004,7 +1252,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, adjustments, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, adjustments, listOf(), null,
+        ),
         USER_INPUTS,
       )
     assertThat(result).isEqualTo(
@@ -1027,7 +1284,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -1051,7 +1317,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -1101,7 +1376,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         USER_INPUTS,
       )
 
@@ -1121,7 +1405,16 @@ class ValidationServiceTest {
     )
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }, VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          sentences.map {
+            SentenceAndOffenceWithReleaseArrangements(
+              it,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            )
+          },
+          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        ),
         CalculationUserInputs(),
       )
 
@@ -1136,7 +1429,13 @@ class ValidationServiceTest {
   fun `Test Lawfully at Large adjustments at a booking level cause validation errors`() {
     val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
-        sentenceAndOffences = listOf(SentenceAndOffenceWithReleaseArrangements(validSdsSentence, false, SDSEarlyReleaseExclusionType.NO)),
+        sentenceAndOffences = listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            validSdsSentence,
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          ),
+        ),
         prisonerDetails = VALID_PRISONER,
         bookingAndSentenceAdjustments = lawfullyAtLargeBookingAdjustment,
         returnToCustodyDate = null,
@@ -1153,7 +1452,13 @@ class ValidationServiceTest {
   fun `Test Special Remission adjustments at a booking level cause validation errors`() {
     val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
-        sentenceAndOffences = listOf(SentenceAndOffenceWithReleaseArrangements(validSdsSentence, false, SDSEarlyReleaseExclusionType.NO)),
+        sentenceAndOffences = listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            validSdsSentence,
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          ),
+        ),
         prisonerDetails = VALID_PRISONER,
         bookingAndSentenceAdjustments = specialRemissionBookingAdjustment,
         returnToCustodyDate = null,
@@ -1169,7 +1474,16 @@ class ValidationServiceTest {
   @Test
   fun `Test EDS recalls supported`() {
     val result = validationService.validateBeforeCalculation(
-      PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(validEdsRecallSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+      PrisonApiSourceData(
+        listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            validEdsRecallSentence,
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          ),
+        ),
+        VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+      ),
       CalculationUserInputs(),
     )
 
@@ -1179,7 +1493,16 @@ class ValidationServiceTest {
   @Test
   fun `Test SOPC recalls supported`() {
     val result = validationService.validateBeforeCalculation(
-      PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(validSopcRecallSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+      PrisonApiSourceData(
+        listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            validSopcRecallSentence,
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          ),
+        ),
+        VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+      ),
       CalculationUserInputs(),
     )
 
@@ -1189,7 +1512,12 @@ class ValidationServiceTest {
   @Test
   fun `Test FTR validation precalc`() {
     val result = validationService.validateBeforeCalculation(
-      VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE, FTR_28_DAY_SENTENCE).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }),
+      VALID_FTR_SOURCE_DATA.copy(
+        sentenceAndOffences = listOf(
+          FTR_14_DAY_SENTENCE,
+          FTR_28_DAY_SENTENCE,
+        ).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+      ),
       USER_INPUTS,
     )
 
@@ -1200,7 +1528,13 @@ class ValidationServiceTest {
   fun `Test 14 day FTR sentence type and 28 day recall`() {
     val result = validationService.validateBeforeCalculation(
       VALID_FTR_SOURCE_DATA.copy(
-        sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+        sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
         fixedTermRecallDetails = FTR_DETAILS_28,
       ),
       USER_INPUTS,
@@ -1213,7 +1547,13 @@ class ValidationServiceTest {
   fun `Test 28 day FTR sentence type and 14 day recall`() {
     val result = validationService.validateBeforeCalculation(
       VALID_FTR_SOURCE_DATA.copy(
-        sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+        sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
         fixedTermRecallDetails = FTR_DETAILS_14,
       ),
       USER_INPUTS,
@@ -1244,7 +1584,12 @@ class ValidationServiceTest {
       @Test
       fun `Test FTR validation precalc`() {
         val result = validationService.validateBeforeCalculation(
-          VALID_FTR_SOURCE_DATA.copy(sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE, FTR_28_DAY_SENTENCE).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }),
+          VALID_FTR_SOURCE_DATA.copy(
+            sentenceAndOffences = listOf(
+              FTR_14_DAY_SENTENCE,
+              FTR_28_DAY_SENTENCE,
+            ).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+          ),
           USER_INPUTS,
         )
 
@@ -1255,7 +1600,13 @@ class ValidationServiceTest {
       fun `Test 14 day FTR sentence type and 28 day recall`() {
         val result = validationService.validateBeforeCalculation(
           VALID_FTR_SOURCE_DATA.copy(
-            sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+            sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map {
+              SentenceAndOffenceWithReleaseArrangements(
+                it,
+                false,
+                SDSEarlyReleaseExclusionType.NO,
+              )
+            },
             fixedTermRecallDetails = FTR_DETAILS_28,
           ),
           USER_INPUTS,
@@ -1268,7 +1619,13 @@ class ValidationServiceTest {
       fun `Test 28 day FTR sentence type and 14 day recall`() {
         val result = validationService.validateBeforeCalculation(
           VALID_FTR_SOURCE_DATA.copy(
-            sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+            sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE).map {
+              SentenceAndOffenceWithReleaseArrangements(
+                it,
+                false,
+                SDSEarlyReleaseExclusionType.NO,
+              )
+            },
             fixedTermRecallDetails = FTR_DETAILS_14,
           ),
           USER_INPUTS,
@@ -1489,7 +1846,13 @@ class ValidationServiceTest {
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
-            sentenceAndOffences = listOf(sentenceAndOffences).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+            sentenceAndOffences = listOf(sentenceAndOffences).map {
+              SentenceAndOffenceWithReleaseArrangements(
+                it,
+                false,
+                SDSEarlyReleaseExclusionType.NO,
+              )
+            },
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
@@ -1510,7 +1873,13 @@ class ValidationServiceTest {
 
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
-            sentenceAndOffences = listOf(sentenceAndOffences).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+            sentenceAndOffences = listOf(sentenceAndOffences).map {
+              SentenceAndOffenceWithReleaseArrangements(
+                it,
+                false,
+                SDSEarlyReleaseExclusionType.NO,
+              )
+            },
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
@@ -1530,7 +1899,13 @@ class ValidationServiceTest {
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
-            sentenceAndOffences = listOf(sentenceAndOffences).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+            sentenceAndOffences = listOf(sentenceAndOffences).map {
+              SentenceAndOffenceWithReleaseArrangements(
+                it,
+                false,
+                SDSEarlyReleaseExclusionType.NO,
+              )
+            },
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
@@ -1550,7 +1925,13 @@ class ValidationServiceTest {
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
-            sentenceAndOffences = listOf(sentenceAndOffences).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+            sentenceAndOffences = listOf(sentenceAndOffences).map {
+              SentenceAndOffenceWithReleaseArrangements(
+                it,
+                false,
+                SDSEarlyReleaseExclusionType.NO,
+              )
+            },
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
@@ -1570,7 +1951,13 @@ class ValidationServiceTest {
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
-            sentenceAndOffences = listOf(sentenceAndOffences).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+            sentenceAndOffences = listOf(sentenceAndOffences).map {
+              SentenceAndOffenceWithReleaseArrangements(
+                it,
+                false,
+                SDSEarlyReleaseExclusionType.NO,
+              )
+            },
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
@@ -1590,7 +1977,13 @@ class ValidationServiceTest {
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
-            sentenceAndOffences = listOf(sentenceAndOffences).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+            sentenceAndOffences = listOf(sentenceAndOffences).map {
+              SentenceAndOffenceWithReleaseArrangements(
+                it,
+                false,
+                SDSEarlyReleaseExclusionType.NO,
+              )
+            },
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
@@ -1609,7 +2002,13 @@ class ValidationServiceTest {
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
-            sentenceAndOffences = listOf(sentenceAndOffences).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+            sentenceAndOffences = listOf(sentenceAndOffences).map {
+              SentenceAndOffenceWithReleaseArrangements(
+                it,
+                false,
+                SDSEarlyReleaseExclusionType.NO,
+              )
+            },
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
             returnToCustodyDate = null,
@@ -1639,7 +2038,13 @@ class ValidationServiceTest {
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
-            sentenceAndOffences = listOf(SentenceAndOffenceWithReleaseArrangements(validSdsSentence, false, SDSEarlyReleaseExclusionType.NO)),
+            sentenceAndOffences = listOf(
+              SentenceAndOffenceWithReleaseArrangements(
+                validSdsSentence,
+                false,
+                SDSEarlyReleaseExclusionType.NO,
+              ),
+            ),
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = adjustment,
             returnToCustodyDate = null,
@@ -1668,7 +2073,13 @@ class ValidationServiceTest {
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
-            sentenceAndOffences = listOf(SentenceAndOffenceWithReleaseArrangements(validSdsSentence, false, SDSEarlyReleaseExclusionType.NO)),
+            sentenceAndOffences = listOf(
+              SentenceAndOffenceWithReleaseArrangements(
+                validSdsSentence,
+                false,
+                SDSEarlyReleaseExclusionType.NO,
+              ),
+            ),
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = adjustment,
             returnToCustodyDate = null,
@@ -1697,7 +2108,13 @@ class ValidationServiceTest {
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
-            sentenceAndOffences = listOf(SentenceAndOffenceWithReleaseArrangements(validSdsSentence, false, SDSEarlyReleaseExclusionType.NO)),
+            sentenceAndOffences = listOf(
+              SentenceAndOffenceWithReleaseArrangements(
+                validSdsSentence,
+                false,
+                SDSEarlyReleaseExclusionType.NO,
+              ),
+            ),
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = adjustment,
             returnToCustodyDate = null,
@@ -1726,7 +2143,13 @@ class ValidationServiceTest {
         )
         val result = validationService.validateBeforeCalculation(
           PrisonApiSourceData(
-            sentenceAndOffences = listOf(SentenceAndOffenceWithReleaseArrangements(validSdsSentence, false, SDSEarlyReleaseExclusionType.NO)),
+            sentenceAndOffences = listOf(
+              SentenceAndOffenceWithReleaseArrangements(
+                validSdsSentence,
+                false,
+                SDSEarlyReleaseExclusionType.NO,
+              ),
+            ),
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = adjustment,
             returnToCustodyDate = null,
@@ -1926,11 +2349,21 @@ class ValidationServiceTest {
 
   @Test
   fun `Validate that SDS sentences are unsupported for before SDS early release is implemented`() {
-    val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyReleaseUnsupported = true), SDS40_TRANCHE_ONE)
+    val validationService = ValidationService(
+      SentencesExtractionService(),
+      FeatureToggles(sdsEarlyReleaseUnsupported = true),
+      TRANCHE_CONFIGURATION,
+    )
 
     val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
-        listOf(validSdsSentence).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+        listOf(validSdsSentence).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
         VALID_PRISONER,
         VALID_ADJUSTMENTS,
         listOf(),
@@ -1950,11 +2383,21 @@ class ValidationServiceTest {
 
   @Test
   fun `Validate that SDS+ sentences are supported for before SDS early release is implemented`() {
-    val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyReleaseUnsupported = true), SDS40_TRANCHE_ONE)
+    val validationService = ValidationService(
+      SentencesExtractionService(),
+      FeatureToggles(sdsEarlyReleaseUnsupported = true),
+      TRANCHE_CONFIGURATION,
+    )
 
     val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
-        listOf(validSdsSentence).map { SentenceAndOffenceWithReleaseArrangements(it, true, SDSEarlyReleaseExclusionType.NO) },
+        listOf(validSdsSentence).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            true,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
         VALID_PRISONER,
         VALID_ADJUSTMENTS,
         listOf(),
@@ -1968,7 +2411,8 @@ class ValidationServiceTest {
 
   @Test
   fun `Test LR_ORA with CRD after tranche commencement returns a validation error`() {
-    val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), SDS40_TRANCHE_ONE)
+    val validationService =
+      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
     val lrOraSentence = LR_ORA.copy()
 
     lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
@@ -1980,7 +2424,8 @@ class ValidationServiceTest {
       ),
       adjustments = Adjustments(),
     )
-    lrOraSentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
+    lrOraSentence.releaseDateTypes =
+      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
 
     workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
 
@@ -1997,7 +2442,8 @@ class ValidationServiceTest {
 
   @Test
   fun `Test consecutive sentence with LR_ORA with CRD after tranche commencement returns a validation error`() {
-    val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), SDS40_TRANCHE_ONE)
+    val validationService =
+      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
 
     val testIdentifierUUID = UUID.randomUUID()
 
@@ -2018,13 +2464,15 @@ class ValidationServiceTest {
       ),
       adjustments = Adjustments(),
     )
-    lrOraSentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
+    lrOraSentence.releaseDateTypes =
+      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
 
     workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
     workingBooking.consecutiveSentences[0].sentenceCalculation = SENTENCE_CALCULATION.copy(
       unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
     )
-    workingBooking.consecutiveSentences[0].releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
+    workingBooking.consecutiveSentences[0].releaseDateTypes =
+      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
 
     val result = validationService.validateBookingAfterCalculation(
       workingBooking,
@@ -2039,7 +2487,8 @@ class ValidationServiceTest {
 
   @Test
   fun `Test LR_ORA with CRD before tranche commencement returns no error`() {
-    val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), SDS40_TRANCHE_ONE)
+    val validationService =
+      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
     val lrOraSentence = LR_ORA.copy()
 
     lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
@@ -2051,7 +2500,8 @@ class ValidationServiceTest {
       ),
       adjustments = Adjustments(),
     )
-    lrOraSentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
+    lrOraSentence.releaseDateTypes =
+      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
 
     workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
 
@@ -2064,7 +2514,8 @@ class ValidationServiceTest {
 
   @Test
   fun `Test LR with no TUSED after tranche commencement returns no error`() {
-    val validationService = ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), SDS40_TRANCHE_ONE)
+    val validationService =
+      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
     val lrOraSentence = LR_ORA.copy()
 
     lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
@@ -2076,7 +2527,8 @@ class ValidationServiceTest {
       ),
       adjustments = Adjustments(),
     )
-    lrOraSentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.CRD), lrOraSentence, workingBooking.offender)
+    lrOraSentence.releaseDateTypes =
+      ReleaseDateTypes(listOf(ReleaseDateType.CRD), lrOraSentence, workingBooking.offender)
 
     workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
 
@@ -2119,7 +2571,7 @@ class ValidationServiceTest {
     val NINE_MONTH_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 9L, YEARS to 0L))
     val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     val DOB: LocalDate = LocalDate.of(1980, 1, 1)
-    val SDS40_TRANCHE_ONE = TrancheOne(LocalDate.of(2024, 9, 10), LocalDate.of(2024, 10, 22))
+    val TRANCHE_CONFIGURATION = SDS40TrancheConfiguration(LocalDate.of(2024, 9, 10), LocalDate.of(2024, 10, 22))
 
     const val PRISONER_ID = "A123456A"
     const val SEQUENCE = 153
@@ -2187,7 +2639,13 @@ class ValidationServiceTest {
       consecutiveToSequence = null,
     )
     private val VALID_FTR_SOURCE_DATA = PrisonApiSourceData(
-      sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+      sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map {
+        SentenceAndOffenceWithReleaseArrangements(
+          it,
+          false,
+          SDSEarlyReleaseExclusionType.NO,
+        )
+      },
       prisonerDetails = VALID_PRISONER,
       bookingAndSentenceAdjustments = VALID_ADJUSTMENTS,
       returnToCustodyDate = null,
@@ -2228,7 +2686,13 @@ class ValidationServiceTest {
 
     val ONE_DAY_DURATION = Duration(mapOf(DAYS to 1L))
     val OFFENCE = Offence(LocalDate.of(2020, 1, 1))
-    val STANDARD_SENTENCE = StandardDeterminateSentence(OFFENCE, ONE_DAY_DURATION, LocalDate.of(2020, 1, 1), isSDSPlus = false, hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO)
+    val STANDARD_SENTENCE = StandardDeterminateSentence(
+      OFFENCE,
+      ONE_DAY_DURATION,
+      LocalDate.of(2020, 1, 1),
+      isSDSPlus = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
     val SENTENCE_CALCULATION = SentenceCalculation(
       STANDARD_SENTENCE,
       3,
