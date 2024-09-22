@@ -59,11 +59,11 @@ class SDSEarlyReleaseDefaultingRulesService(
 
     handleCRDorARDAndPRRD(dates, earlyReleaseResult.otherDates.toMutableMap())
 
-    overriddenTranche = if (dates == standardReleaseResult.dates) {
-      SDSEarlyReleaseTranche.TRANCHE_0
-    } else {
-      allocatedTranche
-    }
+//    overriddenTranche = if (dates == standardReleaseResult.dates) {
+//      SDSEarlyReleaseTranche.TRANCHE_0
+//    } else {
+//      allocatedTranche
+//    }
 
     handleCRDEqualsEligibilityDateAndTrancheDate(dates, trancheOneIncludingDates)
 
