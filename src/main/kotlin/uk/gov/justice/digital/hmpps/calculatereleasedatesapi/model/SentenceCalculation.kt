@@ -57,14 +57,14 @@ data class SentenceCalculation(
 
   private fun getDeterminateAdjustmentsAfterSentenceAtDate(): Int {
     return adjustments.applyPeriodsOfUALIncrementally(
+      startDate = sentence.sentencedAt.minusDays(1),
       initialEndDate = latestConcurrentDeterminateRelease,
-      startDate = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1),
     )
   }
 
   private fun getAdjustmentsAfterSentenceAtDate(): Int {
     return adjustments.applyPeriodsOfUALIncrementally(
-      startDate = if (adjustmentsAfter != null) adjustmentsAfter else sentence.sentencedAt.minusDays(1),
+      startDate = sentence.sentencedAt.minusDays(1),
       initialEndDate = latestConcurrentRelease,
     )
   }
