@@ -71,8 +71,10 @@ class BookingCalculationService(
       createSentenceChain(it, chain, sentencesByPrevious, chains)
     }
 
-    booking.consecutiveSentences = chains.filter { it.size > 1 }
-      .map { ConsecutiveSentence(it) }
+    booking.consecutiveSentences = collapseDuplicateConsecutiveSentences(
+      chains.filter { it.size > 1 }
+        .map { ConsecutiveSentence(it) },
+    )
 
     booking.consecutiveSentences.forEach {
       sentenceIdentificationService.identify(it, booking.offender, options)
@@ -80,6 +82,17 @@ class BookingCalculationService(
       log.trace(it.buildString())
     }
     return booking
+  }
+
+  /*
+    The service created a consecutive sentence for every possible combination of offence.
+     It does this in case a sentence within the chain has multiple offences, which may have different release conditions
+     However here we reduce the list by any duplicated offences with the same release conditions, to improve calculation time.
+   */
+  private fun collapseDuplicateConsecutiveSentences(consecutiveSentences: List<ConsecutiveSentence>): List<ConsecutiveSentence> {
+    return consecutiveSentences.distinctBy {
+      it.orderedSentences.joinToString { sentence -> "${sentence.sentencedAt}${sentence.identificationTrack}${sentence.totalDuration()}${sentence.javaClass}" }
+    }
   }
 
   private fun createSentenceChain(
