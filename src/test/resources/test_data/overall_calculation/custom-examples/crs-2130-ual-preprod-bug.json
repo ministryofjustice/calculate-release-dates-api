@@ -1,0 +1,66 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-06-14"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 6
+        }
+      },
+      "sentencedAt": "2024-06-15",
+      "identifier": "5ef4f460-9124-3b10-ac3a-7632d879c74a",
+      "recallType": "FIXED_TERM_RECALL_14",
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-06-14"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 9
+        }
+      },
+      "sentencedAt": "2024-06-15",
+      "identifier": "705a9fb8-a12f-37c6-8c2a-444ca51290ba",
+      "recallType": "FIXED_TERM_RECALL_14",
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    }
+  ],
+  "adjustments": {
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "appliesToSentencesFrom": "2024-08-03",
+        "numberOfDays": 9,
+        "fromDate": "2024-08-03",
+        "toDate": "2024-08-11"
+      },
+      {
+        "appliesToSentencesFrom": "2024-07-19",
+        "numberOfDays": 3,
+        "fromDate": "2024-07-19",
+        "toDate": "2024-07-21"
+      },
+      {
+        "appliesToSentencesFrom": "2024-08-24",
+        "numberOfDays": 8,
+        "fromDate": "2024-08-24",
+        "toDate": "2024-08-31"
+      }
+    ]
+  },
+  "returnToCustodyDate": "2024-09-01",
+  "fixedTermRecallDetails": {
+    "bookingId": 1,
+    "returnToCustodyDate": "2024-09-01",
+    "recallLength": 14
+  }
+}
