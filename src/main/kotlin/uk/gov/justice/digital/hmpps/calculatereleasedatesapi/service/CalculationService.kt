@@ -55,7 +55,7 @@ class CalculationService(
       )?.sentenceCalculation?.adjustedDeterminateReleaseDate
 
     val tranche =
-      if (returnLongestPossibleSentences || /*areCalculationsTheSame(sds40Result, standardResult) ||*/ (
+      if (returnLongestPossibleSentences || (
           latestSDSReleaseDateFromStandardBooking != null && latestSDSReleaseDateFromStandardBooking.isBefore(
             trancheConfiguration.trancheOneCommencementDate,
           )
