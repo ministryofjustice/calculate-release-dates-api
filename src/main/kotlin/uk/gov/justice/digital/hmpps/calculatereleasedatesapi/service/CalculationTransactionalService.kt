@@ -161,7 +161,7 @@ class CalculationTransactionalService(
   }
 
   fun supportedValidation(prisonerId: String): List<ValidationMessage> {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly = true)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
     return validationService.validateSupportedSentencesAndCalculations(sourceData)
   }
 
@@ -170,10 +170,10 @@ class CalculationTransactionalService(
   fun calculate(
     prisonerId: String,
     calculationRequestModel: CalculationRequestModel,
-    activeDataOnly: Boolean = true,
+    overrideSupportInactiveSentencesAndAdjustments: Boolean? = null,
     calculationType: CalculationStatus = PRELIMINARY,
   ): CalculatedReleaseDates {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, overrideSupportInactiveSentencesAndAdjustments)
     val calculationUserInputs = calculationRequestModel.calculationUserInputs ?: CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     val reasonForCalculation = calculationReasonRepository.findById(calculationRequestModel.calculationReasonId)
@@ -527,7 +527,7 @@ class CalculationTransactionalService(
 
     return if (checkForChange) {
       log.info("Checking for change in data")
-      val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId, true)
+      val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId)
       val originalCalculationAdjustments =
         objectMapper.treeToValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
       val originalPrisonerDetails =
@@ -552,7 +552,7 @@ class CalculationTransactionalService(
   }
 
   fun validateForManualBooking(prisonerId: String): List<ValidationMessage> {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, true)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
     return validationService.validateSentenceForManualEntry(sourceData.sentenceAndOffences)
   }
 
