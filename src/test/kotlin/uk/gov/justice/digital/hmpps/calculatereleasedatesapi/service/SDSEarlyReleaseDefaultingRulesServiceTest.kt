@@ -2,8 +2,12 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -30,10 +34,16 @@ import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
 import java.util.*
 
+@ExtendWith(MockitoExtension::class)
 class SDSEarlyReleaseDefaultingRulesServiceTest {
 
   private val testCommencementDate = LocalDate.of(2024, 7, 29)
-  private val service = SDSEarlyReleaseDefaultingRulesService(SentencesExtractionService())
+  private val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
+
+  @Mock
+  private val trancheConfiguration = SDS40TrancheConfiguration(testCommencementDate, testTrancheTwoCommencementDate)
+
+  private val service = SDSEarlyReleaseDefaultingRulesService(SentencesExtractionService(), trancheConfiguration)
 
   @Test
   fun `should not require recalculation if no SDS early release`() {
@@ -105,7 +115,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         testCommencementDate,
         SDSEarlyReleaseTranche.TRANCHE_0,
         createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE),
-        LocalDate.now(),
       ),
     ).isEqualTo(
       CalculationResult(
@@ -191,7 +200,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
 
     val resultDates = mutableMapOf<ReleaseDateType, LocalDate>(ReleaseDateType.TUSED to LocalDate.now())
     val resultBreakdown = mutableMapOf<ReleaseDateType, ReleaseDateCalculationBreakdown>()
-    service.handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(resultDates, recallBooking, testCommencementDate, standard, resultBreakdown)
+    service.handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(resultDates, recallBooking, standard, resultBreakdown)
 
     assertThat(resultDates[ReleaseDateType.TUSED]).isEqualTo(LocalDate.of(2024, 8, 1))
     assertThat(resultBreakdown[ReleaseDateType.TUSED]).isEqualTo(testBreakdown)
@@ -265,7 +274,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
 
     val resultDates = mutableMapOf<ReleaseDateType, LocalDate>(ReleaseDateType.TUSED to date)
     val resultBreakdown = mutableMapOf<ReleaseDateType, ReleaseDateCalculationBreakdown>()
-    service.handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(resultDates, recallBooking, testCommencementDate, standard, resultBreakdown)
+    service.handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(resultDates, recallBooking, standard, resultBreakdown)
 
     assertThat(resultDates[ReleaseDateType.TUSED]).isEqualTo(date)
     assertThat(resultBreakdown).doesNotContainKeys(ReleaseDateType.TUSED)
@@ -297,7 +306,15 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       affectedBySds40 = true,
     )
 
-    assertThat(service.mergeResults(early, standard, testCommencementDate, SDSEarlyReleaseTranche.TRANCHE_1, createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE), LocalDate.now())).isEqualTo(
+    assertThat(
+      service.mergeResults(
+        early,
+        standard,
+        testCommencementDate,
+        SDSEarlyReleaseTranche.TRANCHE_1,
+        createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE),
+      ),
+    ).isEqualTo(
       CalculationResult(
         mapOf(type to testCommencementDate),
         mapOf(
@@ -347,7 +364,15 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       affectedBySds40 = true,
     )
 
-    assertThat(service.mergeResults(early, standard, testCommencementDate, SDSEarlyReleaseTranche.TRANCHE_1, createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE), LocalDate.now())).isEqualTo(
+    assertThat(
+      service.mergeResults(
+        early,
+        standard,
+        testCommencementDate,
+        SDSEarlyReleaseTranche.TRANCHE_1,
+        createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE),
+      ),
+    ).isEqualTo(
       CalculationResult(
         mapOf(
           ReleaseDateType.CRD to LocalDate.of(2024, 8, 10),

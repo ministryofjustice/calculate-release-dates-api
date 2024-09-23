@@ -45,7 +45,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheOne
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA
@@ -97,6 +96,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SOPC_LICENCE_TERM_NOT_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_BREACH_97
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
@@ -202,7 +202,8 @@ class ValidationService(
     log.info("Validating booking after calculation")
     val messages = mutableListOf<ValidationMessage>()
     booking.sentenceGroups.forEach { messages += validateSentenceHasNotBeenExtinguished(it) }
-    messages += validateRemandOverlappingSentences(booking)
+    messages += validateRemandOverlappingRemand(booking)
+    messages += validateRemandOverlappingSentences(standardSDSBooking ?: booking, booking)
     messages += validateAdditionAdjustmentsInsideLatestReleaseDate(standardSDSBooking ?: booking, booking)
     messages += validateFixedTermRecallAfterCalc(booking)
     messages += validateUnsupportedRecallTypes(booking)
@@ -355,6 +356,13 @@ class ValidationService(
     return sentenceAndOffences.filter { it.offence.offenceCode in offenceCodesToFilter }
   }
 
+  private fun findUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<SentenceAndOffence> {
+    return sentencesAndOffence.filter {
+      it.offence.offenceCode.startsWith("PH97003") && it.offence.offenceStartDate != null &&
+        it.offence.offenceStartDate.isAfterOrEqualTo(AFTER_97_BREACH_PROVISION_INVALID)
+    }
+  }
+
   private fun findUnsupportedSuspendedOffenceCodes(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>): List<SentenceAndOffence> {
     val offenceCodesToFilter = listOf("SE20512", "CJ03523")
     return sentenceAndOffences.filter { it.offence.offenceCode in offenceCodesToFilter }
@@ -362,6 +370,7 @@ class ValidationService(
 
   private fun validateUnsupportedOffences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
     val messages = validateUnsupportedEncouragingOffences(sentencesAndOffence).toMutableList()
+    messages += validateUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence)
     messages += validateUnsupportedSuspendedOffences(sentencesAndOffence)
     return messages
   }
@@ -378,6 +387,13 @@ class ValidationService(
     val unSupportedEncouragingOffenceCodes = findUnsupportedEncouragingOffenceCodes(sentencesAndOffence)
     if (unSupportedEncouragingOffenceCodes.isNotEmpty()) {
       return listOf(ValidationMessage(UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING))
+    }
+    return emptyList()
+  }
+  private fun validateUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
+    val unSupportedEncouragingOffenceCodes = findUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence)
+    if (unSupportedEncouragingOffenceCodes.isNotEmpty()) {
+      return listOf(ValidationMessage(UNSUPPORTED_BREACH_97))
     }
     return emptyList()
   }
@@ -843,6 +859,34 @@ class ValidationService(
     return null
   }
 
+  private fun getLongestRelevantSentence(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<CalculableSentence> {
+    return sentences.zip(longestSentences).map { (sentence, longestSentence) ->
+      if (sentence.sentencedAt.isBefore(trancheConfiguration.trancheTwoCommencementDate)) {
+        longestSentence
+      } else {
+        sentence
+      }
+    }
+  }
+
+  private fun getRelevantSentenceRanges(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<LocalDateRange> {
+    val longestRelevantSentences = sentences.zip(longestSentences).map { (sentence, longestSentence) ->
+      if (sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(trancheConfiguration.trancheOneCommencementDate)) {
+        longestSentence
+      } else {
+        sentence
+      }
+    }
+    return longestRelevantSentences
+      .filter { !it.isRecall() }
+      .map {
+        LocalDateRange.of(
+          it.sentencedAt,
+          it.sentenceCalculation.unadjustedDeterminateReleaseDate,
+        )
+      }
+  }
+
   private fun validateAdditionAdjustmentsInsideLatestReleaseDate(longestBooking: Booking, booking: Booking): List<ValidationMessage> {
     val sentences = booking.getAllExtractableSentences()
     val longestSentences = longestBooking.getAllExtractableSentences()
@@ -852,16 +896,7 @@ class ValidationService(
       throw IllegalArgumentException("The number of sentences in longestBooking and booking must be the same.")
     }
 
-    // Create a new list of calculable sentences
-    val longestRelevantSentences = sentences.zip(longestSentences).map { (sentence, longestSentence) ->
-      if (sentence.sentencedAt.isBefore(trancheConfiguration.trancheTwoCommencementDate)) {
-        // Use the corresponding sentence from longestBooking
-        longestSentence
-      } else {
-        // Otherwise use the standard sentence from booking
-        sentence
-      }
-    }
+    val longestRelevantSentences = this.getLongestRelevantSentence(sentences, longestSentences)
 
     val latestReleaseDatePreAddedDays =
       longestRelevantSentences.filter { it !is Term }.maxOfOrNull { it.sentenceCalculation.releaseDateWithoutAdditions }
@@ -883,59 +918,77 @@ class ValidationService(
     return emptyList()
   }
 
-  private fun validateRemandOverlappingSentences(booking: Booking): List<ValidationMessage> {
+  private fun validateRemandOverlappingSentences(longestBooking: Booking, booking: Booking): List<ValidationMessage> {
+    val sentences = booking.getAllExtractableSentences()
+    val longestSentences = longestBooking.getAllExtractableSentences()
+
     val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
+
+    val validationMessages = mutableListOf<ValidationMessage>()
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
-      val sentenceRanges = booking.getAllExtractableSentences()
-        .filter { !it.isRecall() }
-        .map { LocalDateRange.of(it.sentencedAt, it.sentenceCalculation.adjustedDeterminateReleaseDate) }
 
-      val allRanges = (remandRanges + sentenceRanges).sortedBy { it.start }
-      var totalRange: LocalDateRange? = null
-      var previousRangeIsRemand: Boolean? = null
-      var previousRange: LocalDateRange? = null
+      val sentenceRanges = this.getRelevantSentenceRanges(sentences, longestSentences)
 
-      allRanges.forEach {
-        val isRemand = remandRanges.any { sentenceRange -> sentenceRange === it }
-        if (totalRange == null && previousRangeIsRemand == null) {
-          totalRange = it
-        } else if (it.isConnected(totalRange) && (previousRangeIsRemand!! || isRemand)) {
-          // Remand overlaps
-          if (previousRangeIsRemand!! && isRemand) {
-            val args = listOf(previousRange!!.toString(), it.toString())
-            log.warn(
-              String.format(
-                "Remand of range %s overlaps with remand of range %s",
-                *args.toTypedArray(),
+      remandRanges.forEach { remandRange ->
+        sentenceRanges.forEach { sentenceRange ->
+          if (remandRange.isConnected(sentenceRange)) {
+            logIntersectionWarning(remandRange, sentenceRange, "Remand of range %s overlaps with sentence of range %s")
+            validationMessages.add(
+              ValidationMessage(
+                REMAND_OVERLAPS_WITH_SENTENCE,
+                arguments = buildMessageArguments(sentenceRange, remandRange),
               ),
             )
-            val messageArgs = listOf(
-              it.start.toString(),
-              it.end.toString(),
-              previousRange!!.start.toString(),
-              previousRange!!.end.toString(),
-            )
-            return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_REMAND, arguments = messageArgs))
-          } else {
-            val remandRange = if (isRemand) it else previousRange!!
-            val sentenceRange = if (isRemand) previousRange!! else it
-            val messageArgs = listOf(
-              sentenceRange.start.toString(),
-              sentenceRange.end.toString(),
-              remandRange.start.toString(),
-              remandRange.end.toString(),
-            )
-            return listOf(ValidationMessage(REMAND_OVERLAPS_WITH_SENTENCE, arguments = messageArgs))
           }
-        } else if (it.end.isAfter(totalRange!!.end)) {
-          totalRange = LocalDateRange.of(totalRange!!.start, it.end)
         }
-        previousRangeIsRemand = isRemand
-        previousRange = it
       }
     }
-    return emptyList()
+
+    return validationMessages
+  }
+  private fun validateRemandOverlappingRemand(booking: Booking): List<ValidationMessage> {
+    val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
+
+    val validationMessages = mutableListOf<ValidationMessage>()
+    if (remandPeriods.isNotEmpty()) {
+      val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
+
+      remandRanges.forEachIndexed { index, remandRange ->
+        remandRanges.drop(index + 1).forEach { otherRemandRange ->
+          if (remandRange.isConnected(otherRemandRange)) {
+            logIntersectionWarning(remandRange, otherRemandRange, "Remand of range %s overlaps with other remand of range %s")
+            validationMessages.add(
+              ValidationMessage(
+                REMAND_OVERLAPS_WITH_REMAND,
+                arguments = buildMessageArguments(remandRange, otherRemandRange),
+              ),
+            )
+          }
+        }
+      }
+    }
+
+    return validationMessages
+  }
+
+  private fun logIntersectionWarning(range1: LocalDateRange, range2: LocalDateRange, messageTemplate: String) {
+    val args = listOf(range1.toString(), range2.toString())
+    log.warn(
+      String.format(
+        messageTemplate,
+        *args.toTypedArray(),
+      ),
+    )
+  }
+
+  private fun buildMessageArguments(range1: LocalDateRange, range2: LocalDateRange): List<String> {
+    return listOf(
+      range1.start.toString(),
+      range1.end.toString(),
+      range2.start.toString(),
+      range2.end.toString(),
+    )
   }
 
   private fun validateSentenceHasNotBeenExtinguished(sentences: List<CalculableSentence>): List<ValidationMessage> {
@@ -986,6 +1039,8 @@ class ValidationService(
       UNLAWFULLY_AT_LARGE to ADJUSTMENT_FUTURE_DATED_UAL,
       RESTORED_ADDITIONAL_DAYS_AWARDED to ADJUSTMENT_FUTURE_DATED_RADA,
     )
+
+    private val AFTER_97_BREACH_PROVISION_INVALID = LocalDate.of(2020, 12, 1)
     private const val TWELVE = 12L
     private val log = LoggerFactory.getLogger(this::class.java)
   }

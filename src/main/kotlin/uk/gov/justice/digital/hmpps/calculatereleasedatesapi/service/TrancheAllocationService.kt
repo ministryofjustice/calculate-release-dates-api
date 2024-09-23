@@ -7,16 +7,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEar
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 
 @Service
 class TrancheAllocationService(
   @Autowired
-    private val trancheOne: TrancheOne,
+  private val trancheOne: TrancheOne,
   @Autowired
-    private val trancheTwo: TrancheTwo,
+  private val trancheTwo: TrancheTwo,
   @Autowired
-    private val trancheConfiguration: SDS40TrancheConfiguration,
+  private val trancheConfiguration: SDS40TrancheConfiguration,
 ) {
 
   fun calculateTranche(calculationResult: CalculationResult, booking: Booking): SDSEarlyReleaseTranche {
@@ -33,13 +32,13 @@ class TrancheAllocationService(
       resultTranche = when {
         sentencesFromBooking.isEmpty() -> SDSEarlyReleaseTranche.TRANCHE_0
         trancheOne.isBookingApplicableForTrancheCriteria(
-            calculationResult,
-            sentencesFromBooking,
+          calculationResult,
+          sentencesFromBooking,
         ) -> SDSEarlyReleaseTranche.TRANCHE_1
 
         trancheTwo.isBookingApplicableForTrancheCriteria(
-            calculationResult,
-            sentencesFromBooking,
+          calculationResult,
+          sentencesFromBooking,
         ) -> SDSEarlyReleaseTranche.TRANCHE_2
 
         else -> resultTranche
