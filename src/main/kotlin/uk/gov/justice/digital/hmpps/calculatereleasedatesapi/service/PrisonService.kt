@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import arrow.core.Either
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
@@ -25,11 +26,13 @@ class PrisonService(
   private val prisonApiClient: PrisonApiClient,
   private val offenceSDSReleaseArrangementLookupService: OffenceSDSReleaseArrangementLookupService,
   private val botusTusedService: BotusTusedService,
+  private val featureToggles: FeatureToggles,
 ) {
   //  The activeDataOnly flag is only used by a test endpoint (1000 calcs test, which is used to test historic data)
-  fun getPrisonApiSourceData(prisonerId: String, activeDataOnly: Boolean = true): PrisonApiSourceData {
+  fun getPrisonApiSourceData(prisonerId: String, overrideSupportInactiveSentencesAndAdjustments: Boolean? = null): PrisonApiSourceData {
     val prisonerDetails = getOffenderDetail(prisonerId)
-    val activeOnly = activeDataOnly || prisonerDetails.agencyId != "OUT"
+    var activeOnly = overrideSupportInactiveSentencesAndAdjustments ?: featureToggles.supportInactiveSentencesAndAdjustments
+    activeOnly = activeOnly || prisonerDetails.agencyId != "OUT"
     return getPrisonApiSourceData(prisonerDetails, activeOnly)
   }
 

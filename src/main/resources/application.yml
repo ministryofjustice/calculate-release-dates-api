@@ -146,3 +146,4 @@ feature-toggles:
   sds-early-release: ${SDS_EARLY_RELEASE_FEATURE_TOGGLE:false}
   sds-early-release-unsupported: ${SDS_EARLY_RELEASE_UNSUPPORTED_FEATURE_TOGGLE:false}
   sds-early-release-hints: ${SDS_EARLY_RELEASE_HINTS_FEATURE_TOGGLE:false}
+  support-inactive-sentences-and-adjustments: ${SUPPORT_INACTIVE_SENTENCES_AND_ADJUSTMENTS:false}

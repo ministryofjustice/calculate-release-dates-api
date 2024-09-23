@@ -8,4 +8,5 @@ data class FeatureToggles(
   var sdsEarlyRelease: Boolean = false,
   var sdsEarlyReleaseUnsupported: Boolean = false,
   var sdsEarlyReleaseHints: Boolean = false,
+  var supportInactiveSentencesAndAdjustments: Boolean = false,
 )
