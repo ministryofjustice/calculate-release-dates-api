@@ -185,7 +185,6 @@ class CalculationTransactionalServiceTest {
         .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
       val sentencesExtractionService = SentencesExtractionService()
       val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
-      val trancheOne = TrancheOne(trancheConfiguration)
       val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration)
       returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
         calculatedReleaseDates.calculatedBooking!!,
@@ -726,7 +725,13 @@ class CalculationTransactionalServiceTest {
       SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup, sentenceAggregator)
     val sentencesExtractionService = SentencesExtractionService()
     val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdced4Calculator)
-    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService)
+
+    val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
+    val trancheOne = TrancheOne(trancheConfiguration)
+    val trancheTwo = TrancheTwo(trancheConfiguration)
+
+    val trancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService, trancheConfiguration)
     val bookingCalculationService = BookingCalculationService(
       sentenceCalculationService,
       sentenceIdentificationService,
@@ -743,11 +748,6 @@ class CalculationTransactionalServiceTest {
       sdsEarlyReleaseTrancheOneDate(),
     )
 
-    val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
-
-    val trancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
     val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
 
     val calculationService = CalculationService(

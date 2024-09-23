@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
@@ -45,8 +44,10 @@ class TrancheAllocationServiceTest {
       bookingWithSentences(
         listOf(
           createBookingOfSDSSentencesOfTypeWithDuration(
-            SentenceIdentificationTrack.SDS_EARLY_RELEASE,
-            5L,
+            identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE,
+            durationYears = 5L,
+            crd = TRANCHE_ONE_COMMENCEMENT_DATE,
+            sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusDays(10),
           ),
         ),
       ),
@@ -74,8 +75,9 @@ class TrancheAllocationServiceTest {
       bookingWithSentences(
         listOf(
           createBookingOfSDSSentencesOfTypeWithDuration(
-            SentenceIdentificationTrack.SDS_EARLY_RELEASE,
-            6L,
+            identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE,
+            durationYears = 6L,
+            sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusDays(10),
           ),
         ),
       ),
@@ -102,14 +104,20 @@ class TrancheAllocationServiceTest {
     val result = testTrancheAllocationService.calculateTranche(
       early,
       bookingWithSentences(
-        listOf(createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_STANDARD_RELEASE, 4L)),
+        listOf(
+          createBookingOfSDSSentencesOfTypeWithDuration(
+            identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE,
+            durationYears = 4L,
+            sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusDays(10),
+          ),
+        ),
       ),
     )
     assertThat(result).isEqualTo(SDSEarlyReleaseTranche.TRANCHE_0)
   }
 
   @Test
-  fun `Recall time is discounted if SLED is before T2 commencement`() {
+  fun `Recall time is discounted if SLED is before T1 commencement`() {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 10)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
     val trancheConfiguration = SDS40TrancheConfiguration(testTranchOneCommencementDate, testTrancheTwoCommencementDate)
@@ -132,9 +140,9 @@ class TrancheAllocationServiceTest {
       4.0,
       4,
       4,
-      testTranchOneCommencementDate,
-      testTrancheTwoCommencementDate.minusDays(1),
-      testTranchOneCommencementDate,
+      testTranchOneCommencementDate.minusDays(15),
+      testTranchOneCommencementDate.minusDays(1),
+      testTranchOneCommencementDate.minusDays(15),
       1,
       testTranchOneCommencementDate,
       false,
@@ -146,9 +154,10 @@ class TrancheAllocationServiceTest {
     val booking = bookingWithSentences(
       listOf(
         createBookingOfSDSSentencesOfTypeWithDuration(
-          SentenceIdentificationTrack.SDS_EARLY_RELEASE,
+          identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE,
           durationYears = 4L,
           durationDays = 360L,
+          sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE,
         ),
         recallSentence,
       ),
@@ -164,7 +173,7 @@ class TrancheAllocationServiceTest {
   }
 
   @Test
-  fun `Recall time is included if SLED is on T2 commencement`() {
+  fun `Recall time is included if SLED is on T1 commencement`() {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 10)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
     val trancheConfiguration = SDS40TrancheConfiguration(testTranchOneCommencementDate, testTrancheTwoCommencementDate)
@@ -187,9 +196,9 @@ class TrancheAllocationServiceTest {
       4.0,
       4,
       4,
+      testTranchOneCommencementDate.minusDays(10),
       testTranchOneCommencementDate,
-      testTrancheTwoCommencementDate,
-      testTranchOneCommencementDate,
+      testTranchOneCommencementDate.minusDays(10),
       1,
       testTranchOneCommencementDate,
       false,
@@ -201,9 +210,10 @@ class TrancheAllocationServiceTest {
     val booking = bookingWithSentences(
       listOf(
         createBookingOfSDSSentencesOfTypeWithDuration(
-          SentenceIdentificationTrack.SDS_EARLY_RELEASE,
+          identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE,
           durationYears = 4L,
           durationDays = 360L,
+          sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusDays(15),
         ),
         recallSentence,
       ),
@@ -237,8 +247,16 @@ class TrancheAllocationServiceTest {
       early,
       bookingWithSentences(
         listOf(
-          createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_STANDARD_RELEASE, 4L),
-          createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_EARLY_RELEASE, 5L),
+          createBookingOfSDSSentencesOfTypeWithDuration(
+            identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE,
+            durationYears = 4L,
+            sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusYears(2),
+          ),
+          createBookingOfSDSSentencesOfTypeWithDuration(
+            identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE,
+            durationYears = 5L,
+            sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusYears(1),
+          ),
         ),
       ),
     )
@@ -264,8 +282,16 @@ class TrancheAllocationServiceTest {
       early,
       bookingWithSentences(
         listOf(
-          createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_STANDARD_RELEASE, 4L),
-          createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_EARLY_RELEASE, 6L),
+          createBookingOfSDSSentencesOfTypeWithDuration(
+            identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE,
+            durationYears = 4L,
+            sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusYears(2),
+          ),
+          createBookingOfSDSSentencesOfTypeWithDuration(
+            identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE,
+            durationYears = 6L,
+            sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusYears(1),
+          ),
         ),
       ),
     )
@@ -290,8 +316,16 @@ class TrancheAllocationServiceTest {
 
     val booking = bookingWithSentences(
       listOf(
-        createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_STANDARD_RELEASE, 3L),
-        createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_EARLY_RELEASE, 1L),
+        createBookingOfSDSSentencesOfTypeWithDuration(
+          identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE,
+          durationYears = 3L,
+          sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusYears(1),
+        ),
+        createBookingOfSDSSentencesOfTypeWithDuration(
+          identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE,
+          durationYears = 1L,
+          sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusDays(1),
+        ),
       ),
     )
 
@@ -322,8 +356,16 @@ class TrancheAllocationServiceTest {
 
     val booking = bookingWithSentences(
       listOf(
-        createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_STANDARD_RELEASE, 3L),
-        createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_EARLY_RELEASE, 2L),
+        createBookingOfSDSSentencesOfTypeWithDuration(
+          identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE,
+          durationYears = 3L,
+          sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusYears(2),
+        ),
+        createBookingOfSDSSentencesOfTypeWithDuration(
+          identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE,
+          durationYears = 2L,
+          sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusYears(1),
+        ),
       ),
     )
 
@@ -355,11 +397,16 @@ class TrancheAllocationServiceTest {
     val booking = bookingWithSentences(
       listOf(
         createBookingOfSDSSentencesOfTypeWithDuration(
-          SentenceIdentificationTrack.SDS_STANDARD_RELEASE,
-          2L,
+          identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE,
+          durationYears = 2L,
           durationDays = 364L,
+          sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusYears(1),
         ),
-        createBookingOfSDSSentencesOfTypeWithDuration(SentenceIdentificationTrack.SDS_EARLY_RELEASE, 2L),
+        createBookingOfSDSSentencesOfTypeWithDuration(
+          identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE,
+          durationYears = 2L,
+          sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusDays(1),
+        ),
       ),
     )
 
@@ -391,8 +438,9 @@ class TrancheAllocationServiceTest {
     val booking = bookingWithSentences(
       listOf(
         createBookingOfSDSSentencesOfTypeWithDuration(
-          SentenceIdentificationTrack.SDS_EARLY_RELEASE,
+          identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE,
           durationMonths = 61L,
+          sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusDays(1),
         ),
       ),
     )
@@ -409,9 +457,11 @@ class TrancheAllocationServiceTest {
     durationYears: Long = 0L,
     durationMonths: Long = 0L,
     durationDays: Long = 0L,
+    sentencedAt: LocalDate = LocalDate.of(2020, 1, 1),
+    crd: LocalDate = LocalDate.now(),
   ): StandardDeterminateSentence {
     val sentence = StandardDeterminateSentence(
-      sentencedAt = LocalDate.of(2020, 1, 1),
+      sentencedAt = sentencedAt,
       duration = Duration(
         mutableMapOf(
           ChronoUnit.DAYS to durationDays,
@@ -428,6 +478,24 @@ class TrancheAllocationServiceTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     sentence.identificationTrack = identificationTrack
+    sentence.sentenceCalculation = SentenceCalculation(
+      sentence,
+      3,
+      4.0,
+      4,
+      4,
+      LocalDate.now(),
+      TRANCHE_TWO_COMMENCEMENT_DATE.plusYears(durationYears)
+        .plusMonths(durationMonths)
+        .plusDays(durationDays + 1),
+      crd,
+      1,
+      crd,
+      false,
+      Adjustments(),
+      crd,
+      crd,
+    )
 
     return sentence
   }
@@ -472,5 +540,9 @@ class TrancheAllocationServiceTest {
     )
     booking.consecutiveSentences = emptyList()
     return booking
+  }
+  companion object {
+    private val TRANCHE_ONE_COMMENCEMENT_DATE = LocalDate.of(2022, 9, 10)
+    private val TRANCHE_TWO_COMMENCEMENT_DATE = LocalDate.of(2022, 10, 22)
   }
 }

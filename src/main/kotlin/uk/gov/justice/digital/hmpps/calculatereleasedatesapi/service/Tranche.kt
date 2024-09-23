@@ -18,56 +18,57 @@ interface Tranche {
   ): Boolean
 
   fun filterOnType(
-    sentenceToCheck: CalculableSentence
+    sentenceToCheck: CalculableSentence,
   ): Boolean {
-    //Filter any types excluded by the SI
-    //DTO, BOTUS, Fines (terms of imprisonment)
+    // Filter any types excluded by the SI
+    // DTO, BOTUS, Fines (terms of imprisonment)
     if (!sentenceToCheck.isDto() && !sentenceToCheck.isBotus() && sentenceToCheck !is AFineSentence) {
       return sentenceToCheck.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate) && sentenceToCheck.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(
-          trancheConfiguration.trancheOneCommencementDate)
+        trancheConfiguration.trancheOneCommencementDate,
+      )
     }
-  return false
-}
+    return false
+  }
 
-fun filterAndMapSentencesForNotIncludedTypesByDuration(
-  sentenceToFilter: CalculableSentence,
-  tranche: Tranche,
-): Long {
-  //If the consec sentence's sentencedAt (min of all sentenced at in the chain) was after T1 commencement there is no point in
-  // continuing to check its constituent sentences
-  return if (sentenceToFilter is ConsecutiveSentence && sentenceToFilter.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)) {
-    val filteredSentences = sentenceToFilter.orderedSentences
-      .filter { filterOnType(it) }
+  fun filterAndMapSentencesForNotIncludedTypesByDuration(
+    sentenceToFilter: CalculableSentence,
+    tranche: Tranche,
+  ): Long {
+    // If the consec sentence's sentencedAt (min of all sentenced at in the chain) was after T1 commencement there is no point in
+    // continuing to check its constituent sentences
+    return if (sentenceToFilter is ConsecutiveSentence && sentenceToFilter.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)) {
+      val filteredSentences = sentenceToFilter.orderedSentences
+        .filter { filterOnType(it) }
 
-    if (filteredSentences.any()) {
-      val earliestSentencedAt = filteredSentences.minBy { it.sentencedAt }
-      var concurrentSentenceEndDate = earliestSentencedAt.sentencedAt
+      if (filteredSentences.any()) {
+        val earliestSentencedAt = filteredSentences.minBy { it.sentencedAt }
+        var concurrentSentenceEndDate = earliestSentencedAt.sentencedAt
 
-      // Iterate over the sentences to update the concurrentSentenceEndDate
-      filteredSentences.forEach { sentence ->
-        // Update the concurrent end date by calculating the new end date from the current end date
-        concurrentSentenceEndDate = sentence.totalDuration().getEndDate(concurrentSentenceEndDate).plusDays(1)
+        // Iterate over the sentences to update the concurrentSentenceEndDate
+        filteredSentences.forEach { sentence ->
+          // Update the concurrent end date by calculating the new end date from the current end date
+          concurrentSentenceEndDate = sentence.totalDuration().getEndDate(concurrentSentenceEndDate).plusDays(1)
+        }
+
+        // Calculate the difference in years between the earliest sentenced date and the final concurrentSentenceEndDate
+        val yearsBetween = ChronoUnit.YEARS.between(
+          earliestSentencedAt.sentencedAt,
+          concurrentSentenceEndDate,
+        )
+
+        yearsBetween
+      } else {
+        0
       }
-
-      // Calculate the difference in years between the earliest sentenced date and the final concurrentSentenceEndDate
-      val yearsBetween = ChronoUnit.YEARS.between(
-        earliestSentencedAt.sentencedAt,
-        concurrentSentenceEndDate,
-      )
-
-      yearsBetween
     } else {
-      0
-    }
-  } else {
-    if (filterOnType(sentenceToFilter)) {
-      ChronoUnit.YEARS.between(
-        sentenceToFilter.sentencedAt,
-        sentenceToFilter.sentencedAt.plus(sentenceToFilter.getLengthInDays().toLong(), ChronoUnit.DAYS).plusDays(1),
-      )
-    } else {
-      0
+      if (filterOnType(sentenceToFilter)) {
+        ChronoUnit.YEARS.between(
+          sentenceToFilter.sentencedAt,
+          sentenceToFilter.sentencedAt.plus(sentenceToFilter.getLengthInDays().toLong(), ChronoUnit.DAYS).plusDays(1),
+        )
+      } else {
+        0
+      }
     }
   }
-}
 }

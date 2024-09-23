@@ -222,7 +222,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             ),
           ),
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -292,7 +295,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             ),
           ),
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -321,7 +327,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             ),
           ),
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -363,7 +372,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             ),
           ),
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -396,7 +408,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             ),
           ),
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -428,7 +443,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             ),
           ),
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -542,7 +560,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -599,7 +620,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -639,7 +663,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -679,7 +706,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -744,7 +774,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -779,7 +812,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -879,7 +915,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -906,7 +945,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -927,7 +969,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -979,7 +1024,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -1014,7 +1062,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -1051,7 +1102,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -1115,7 +1169,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -1139,7 +1196,7 @@ class ValidationServiceTest {
         sentenceSequence = 2,
         consecutiveToSequence = 1,
 
-        ),
+      ),
       validSdsSentence.copy(
         sentenceSequence = 3,
         consecutiveToSequence = 2,
@@ -1157,7 +1214,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -1195,7 +1255,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -1242,7 +1305,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, adjustments, listOf(), null,
+          VALID_PRISONER,
+          adjustments,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -1301,7 +1367,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, adjustments, listOf(), null,
+          VALID_PRISONER,
+          adjustments,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -1333,7 +1402,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -1366,7 +1438,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -1425,7 +1500,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         USER_INPUTS,
       )
@@ -1454,7 +1532,10 @@ class ValidationServiceTest {
               SDSEarlyReleaseExclusionType.NO,
             )
           },
-          VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
         ),
         CalculationUserInputs(),
       )
@@ -1523,7 +1604,10 @@ class ValidationServiceTest {
             SDSEarlyReleaseExclusionType.NO,
           ),
         ),
-        VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
       ),
       CalculationUserInputs(),
     )
@@ -1542,7 +1626,10 @@ class ValidationServiceTest {
             SDSEarlyReleaseExclusionType.NO,
           ),
         ),
-        VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null,
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
       ),
       CalculationUserInputs(),
     )

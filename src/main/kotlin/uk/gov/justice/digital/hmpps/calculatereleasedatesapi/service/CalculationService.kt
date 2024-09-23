@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
@@ -45,16 +45,22 @@ class CalculationService(
       .mostRecentSentenceOrNull(
         standardWorkingBooking.getAllExtractableSentences()
           .filter { calculableSentence ->
-            (calculableSentence is StandardDeterminateSentence && !calculableSentence.isSDSPlus && calculableSentence.sentencedAt.isBefore(
-              trancheConfiguration.trancheOneCommencementDate,
-            )) || (calculableSentence is ConsecutiveSentence && calculableSentence.orderedSentences.any { it is StandardDeterminateSentence && !it.isSDSPlus })
+            (
+              calculableSentence is StandardDeterminateSentence && !calculableSentence.isSDSPlus && calculableSentence.sentencedAt.isBefore(
+                trancheConfiguration.trancheOneCommencementDate,
+              )
+              ) || (calculableSentence is ConsecutiveSentence && calculableSentence.orderedSentences.any { it is StandardDeterminateSentence && !it.isSDSPlus })
           },
         SentenceCalculation::adjustedDeterminateReleaseDate,
       )?.sentenceCalculation?.adjustedDeterminateReleaseDate
 
     val tranche =
-      if (returnLongestPossibleSentences || areCalculationsTheSame(sds40Result, standardResult) || (latestSDSReleaseDateFromStandardBooking != null && latestSDSReleaseDateFromStandardBooking.isBefore(
-          trancheConfiguration.trancheOneCommencementDate))) {
+      if (returnLongestPossibleSentences || /*areCalculationsTheSame(sds40Result, standardResult) ||*/ (
+          latestSDSReleaseDateFromStandardBooking != null && latestSDSReleaseDateFromStandardBooking.isBefore(
+            trancheConfiguration.trancheOneCommencementDate,
+          )
+          )
+      ) {
         SDSEarlyReleaseTranche.TRANCHE_0
         return standardWorkingBooking to bookingExtractionService.extract(standardWorkingBooking)
       } else {
@@ -73,7 +79,8 @@ class CalculationService(
       standardWorkingBooking,
       standardResult,
       trancheCommencementDate,
-      tranche)
+      tranche,
+    )
   }
 
   private fun areCalculationsTheSame(sds40Result: CalculationResult, standardResult: CalculationResult): Boolean {
@@ -105,7 +112,6 @@ class CalculationService(
       trancheCommencementDate,
       tranche,
       standardWorkingBooking,
-      trancheConfiguration.trancheOneCommencementDate,
     )
   } else {
     resultWithPossibleEarlyRelease.copy(
