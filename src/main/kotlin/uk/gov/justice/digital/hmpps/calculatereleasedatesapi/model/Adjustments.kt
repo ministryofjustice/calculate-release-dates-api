@@ -61,7 +61,7 @@ data class Adjustments
       // Add the adjustment to the set to avoid duplicates
       if (ualPeriods.add(adjustment)) {
         // Recursively gather further UAL periods with the new end date
-        gatherUALPeriods(adjustmentMap, ualPeriods, adjustment.appliesToSentencesFrom, currentEndDate)
+        gatherUALPeriods(adjustmentMap, ualPeriods, adjustment.appliesToSentencesFrom, currentEndDate.plusDays(adjustment.numberOfDays.toLong()))
       }
     }
   }
