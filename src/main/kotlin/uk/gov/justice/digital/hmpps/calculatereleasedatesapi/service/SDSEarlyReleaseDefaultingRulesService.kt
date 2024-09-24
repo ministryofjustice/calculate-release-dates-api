@@ -114,10 +114,8 @@ class SDSEarlyReleaseDefaultingRulesService(
 
   private fun setHDC4Dates(date: LocalDate, dates: MutableMap<ReleaseDateType, LocalDate>) {
     dates[ReleaseDateType.HDCED4PLUS] = date
-    // dates[ReleaseDateType.HDCED] = date
   }
   private fun setHDCEDDates(date: LocalDate, dates: MutableMap<ReleaseDateType, LocalDate>) {
-    // dates[ReleaseDateType.HDCED4PLUS] = date
     dates[ReleaseDateType.HDCED] = date
   }
   private fun removeHDCEDDates(dates: MutableMap<ReleaseDateType, LocalDate>) {
