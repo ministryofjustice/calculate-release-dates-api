@@ -44,7 +44,7 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
     }
 
     return oraCondition && lapsoCondition &&
-      sentence.durationIsLessThanEqualTo(TWO, ChronoUnit.YEARS) &&
+      sentence.durationIsLessThan(TWO, ChronoUnit.YEARS) &&
       sentence.getLengthInDays() > INT_ONE &&
       offender.getAgeOnDate(sentence.getHalfSentenceDate()) > INT_EIGHTEEN
   }
