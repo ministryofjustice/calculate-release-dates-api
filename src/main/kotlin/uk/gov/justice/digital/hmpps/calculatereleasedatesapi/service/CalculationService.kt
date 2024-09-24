@@ -47,13 +47,12 @@ class CalculationService(
       isLatestReleaseDateBeforeTrancheOne,
     )
 
-    val tranche =
-      if (returnLongestPossibleSentences || areCalculationsTheSame || isLatestReleaseDateBeforeTrancheOne) {
-        // will return with Tranche 0
-        return standardWorkingBooking to bookingExtractionService.extract(standardWorkingBooking)
-      } else {
-        trancheAllocationService.calculateTranche(sds40Result, sds40WorkingBooking)
-      }
+    if (returnLongestPossibleSentences || areCalculationsTheSame || isLatestReleaseDateBeforeTrancheOne) {
+      // will return with Tranche 0
+      return standardWorkingBooking to bookingExtractionService.extract(standardWorkingBooking)
+    }
+
+    val tranche = trancheAllocationService.calculateTranche(sds40Result, sds40WorkingBooking)
 
     val trancheCommencementDate = when (tranche) {
       SDSEarlyReleaseTranche.TRANCHE_0 -> null
