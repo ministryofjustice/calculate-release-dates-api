@@ -37,9 +37,9 @@ class Hdced4Calculator(
   private data class Hdced4Params(
     val custodialPeriod: Double,
     val dateHdcAppliesFrom: LocalDate,
-    val deductedDays: Int,
-    val addedDays: Int,
-    val adjustedDays: Int = addedDays.minus(deductedDays),
+    val deductedDays: Long,
+    val addedDays: Long,
+    val adjustedDays: Long = addedDays.minus(deductedDays),
   )
 
   fun calculateHdced4(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
@@ -82,7 +82,7 @@ class Hdced4Calculator(
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED4PLUS] =
         ReleaseDateCalculationBreakdown(
           rules = setOf(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT),
-          rulesWithExtraAdjustments = mapOf(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT to AdjustmentDuration(halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod.toInt())),
+          rulesWithExtraAdjustments = mapOf(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT to AdjustmentDuration(halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod)),
           adjustedDays = params.adjustedDays,
           releaseDate = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
           unadjustedDate = sentence.sentencedAt,
@@ -108,7 +108,7 @@ class Hdced4Calculator(
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED4PLUS] =
         ReleaseDateCalculationBreakdown(
           rules = setOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD),
-          rulesWithExtraAdjustments = mapOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD to AdjustmentDuration(-hdcedConfiguration.custodialPeriodAboveMidpointDeductionDays.toInt())),
+          rulesWithExtraAdjustments = mapOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD to AdjustmentDuration(-hdcedConfiguration.custodialPeriodAboveMidpointDeductionDays)),
           adjustedDays = params.adjustedDays,
           releaseDate = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
           unadjustedDate = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!.plusDays(
@@ -120,9 +120,9 @@ class Hdced4Calculator(
 
   private fun getAddedDays(sentenceCalculation: SentenceCalculation) = sentenceCalculation.calculatedTotalAddedDays
     .plus(sentenceCalculation.calculatedTotalAwardedDays)
-    .minus(sentenceCalculation.calculatedUnusedReleaseAda)
+    .minus(sentenceCalculation.unusedAdaDays)
 
-  private fun getDeductedDays(sentenceCalculation: SentenceCalculation) = sentenceCalculation.calculatedTotalDeductedDays
+  private fun getDeductedDays(sentenceCalculation: SentenceCalculation) = sentenceCalculation.calculatedTotalDeductedDays.toLong()
 
   private fun calculateHdcedMinimumCustodialPeriod(
     sentence: CalculableSentence,
@@ -135,7 +135,7 @@ class Hdced4Calculator(
     sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED4PLUS] =
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, parentRule),
-        rulesWithExtraAdjustments = mapOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD to AdjustmentDuration(hdcedConfiguration.minimumDaysOnHdc.toInt())),
+        rulesWithExtraAdjustments = mapOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD to AdjustmentDuration(hdcedConfiguration.minimumDaysOnHdc)),
         adjustedDays = params.addedDays,
         releaseDate = sentenceCalculation.homeDetentionCurfew4PlusEligibilityDate!!,
         unadjustedDate = sentence.sentencedAt,

@@ -6,7 +6,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.LICENSE_UNUSED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_TAGGED_BAIL
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RELEASE_UNUSED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
@@ -37,6 +36,7 @@ data class SentenceCalculation(
   var adjustmentsAfter: LocalDate? = null,
   val returnToCustodyDate: LocalDate? = null,
   val numberOfDaysToParoleEligibilityDate: Long? = null,
+  var unusedAdaDays: Long = 0,
 ) {
 
   fun getAdjustmentBeforeSentence(vararg adjustmentTypes: AdjustmentType): Int {
@@ -179,11 +179,6 @@ data class SentenceCalculation(
       )
     }
 
-  val calculatedUnusedReleaseAda: Int
-    get() {
-      return getAdjustmentDuringSentence(RELEASE_UNUSED_ADA)
-    }
-
   val calculatedUnusedLicenseAda: Int
     get() {
       return getAdjustmentDuringSentence(LICENSE_UNUSED_ADA)
@@ -228,7 +223,7 @@ data class SentenceCalculation(
 
   val adjustedDeterminateReleaseDate: LocalDate
     get() {
-      val date = adjustedUncappedDeterminateReleaseDate.minusDays(calculatedUnusedReleaseAda.toLong())
+      val date = adjustedUncappedDeterminateReleaseDate.minusDays(unusedAdaDays)
       return if (date.isAfter(sentence.sentencedAt)) {
         date
       } else {
@@ -244,7 +239,7 @@ data class SentenceCalculation(
         calculatedDeterminateTotalAddedDays.toLong(),
       ).plusDays(
         calculatedTotalAwardedDays.toLong(),
-      ).minusDays(calculatedUnusedReleaseAda.toLong())
+      ).minusDays(unusedAdaDays)
       return if (date.isAfter(sentence.sentencedAt)) {
         date
       } else {

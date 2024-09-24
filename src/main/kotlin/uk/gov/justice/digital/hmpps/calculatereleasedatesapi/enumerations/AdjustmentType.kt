@@ -11,6 +11,5 @@ enum class AdjustmentType(
   ADDITIONAL_DAYS_SERVED("Additional days served"),
   RECALL_REMAND("Recall remand"),
   RECALL_TAGGED_BAIL("Recall tagged bail"),
-  RELEASE_UNUSED_ADA("Release date unused ada"),
   LICENSE_UNUSED_ADA("License date unused ada"),
 }

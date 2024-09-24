@@ -30,7 +30,7 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
           ReleaseDateCalculationBreakdown(
             releaseDate = sentence.sentencedAt.plusDays(addedDays.toLong()),
             unadjustedDate = sentence.sentencedAt,
-            adjustedDays = addedDays,
+            adjustedDays = addedDays.toLong(),
             rules = setOf(CalculationRule.ERSED_BEFORE_SENTENCE_DATE),
           )
       } else {
@@ -68,9 +68,9 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
       adjustedDays = ChronoUnit.DAYS.between(
         sentenceCalculation.unadjustedDeterminateReleaseDate,
         sentenceCalculation.adjustedDeterminateReleaseDate,
-      ).toInt(),
+      ),
       rulesWithExtraAdjustments = mapOf(
-        CalculationRule.ERSED_MAX_PERIOD to AdjustmentDuration(-ersedConfiguration.maxPeriodDays, ChronoUnit.DAYS),
+        CalculationRule.ERSED_MAX_PERIOD to AdjustmentDuration(-ersedConfiguration.maxPeriodDays.toLong(), ChronoUnit.DAYS),
       ),
     )
     val release = sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate
@@ -89,7 +89,7 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
       rules = setOf(CalculationRule.ERSED_MIN_EFFECTIVE_DATE),
       releaseDate = minimumEffectiveErsed,
       unadjustedDate = unadjustedErsed,
-      adjustedDays = ChronoUnit.DAYS.between(unadjustedErsed, minimumEffectiveErsed).toInt(),
+      adjustedDays = ChronoUnit.DAYS.between(unadjustedErsed, minimumEffectiveErsed),
     )
 
     log.info("Minimum effective ERSED: $minimumEffectiveErsed, Maximum effective ERSED $maxEffectiveErsed")

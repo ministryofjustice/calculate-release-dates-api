@@ -650,7 +650,7 @@ class BookingExtractionService(
       rules = setOf(calculationRule),
       releaseDate = adjustedReleaseDate,
       unadjustedDate = hdcedSentenceDate,
-      adjustedDays = ChronoUnit.DAYS.between(adjustedReleaseDate, hdcedSentenceDate).toInt(),
+      adjustedDays = ChronoUnit.DAYS.between(adjustedReleaseDate, hdcedSentenceDate),
     )
   }
 

@@ -17,7 +17,7 @@ data class ReleaseDateCalculationBreakdown(
   @Schema(description = "Adjustments details associated that are specifically added as part of a rule")
   val rulesWithExtraAdjustments: Map<CalculationRule, AdjustmentDuration> = emptyMap(),
   @Schema(description = "Amount of adjustment in days")
-  val adjustedDays: Int = 0,
+  val adjustedDays: Long = 0,
   @Schema(description = "Final release date (after all adjustments have been applied)")
   val releaseDate: LocalDate = LocalDate.now(),
   @Schema(description = "Based on the screen design, the unadjusted date isn't derived in a consistent manner but is set as per the screen design")

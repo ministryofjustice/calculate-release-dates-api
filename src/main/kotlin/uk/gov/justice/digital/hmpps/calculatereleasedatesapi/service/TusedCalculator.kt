@@ -71,7 +71,7 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
       rules = setOf(CalculationRule.TUSED_LICENCE_PERIOD_LT_1Y) + if (sentenceCalculation.isImmediateRelease()) setOf(CalculationRule.IMMEDIATE_RELEASE) else emptySet(),
       rulesWithExtraAdjustments = mapOf(
         CalculationRule.TUSED_LICENCE_PERIOD_LT_1Y to AdjustmentDuration(
-          TWELVE.toInt(),
+          TWELVE,
           ChronoUnit.MONTHS,
         ),
       ),
@@ -81,8 +81,8 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
     )
   }
 
-  private fun getAdjustedDays(sentenceCalculation: SentenceCalculation): Int {
-    return sentenceCalculation.calculatedTotalAddedDays.minus(sentenceCalculation.calculatedTotalDeductedDays)
+  private fun getAdjustedDays(sentenceCalculation: SentenceCalculation): Long {
+    return sentenceCalculation.calculatedTotalAddedDays.minus(sentenceCalculation.calculatedTotalDeductedDays).toLong()
   }
 
   companion object {

@@ -125,24 +125,23 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
       adjustedDays = DAYS.between(
         sentenceCalculation.unadjustedExpiryDate,
         sentenceCalculation.adjustedExpiryDate,
-      )
-        .toInt(),
+      ),
     )
 
   private fun getBreakdownForReleaseDate(sentenceCalculation: SentenceCalculation): ReleaseDateCalculationBreakdown {
     val daysBetween = DAYS.between(
       sentenceCalculation.unadjustedDeterminateReleaseDate,
       sentenceCalculation.adjustedDeterminateReleaseDate,
-    ).toInt()
+    )
     return ReleaseDateCalculationBreakdown(
       releaseDate = sentenceCalculation.adjustedDeterminateReleaseDate,
       unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
       rules = if (sentenceCalculation.isImmediateRelease()) setOf(IMMEDIATE_RELEASE) else emptySet(),
       adjustedDays = daysBetween,
-      rulesWithExtraAdjustments = if (sentenceCalculation.calculatedUnusedReleaseAda != 0) {
+      rulesWithExtraAdjustments = if (sentenceCalculation.unusedAdaDays != 0L) {
         mapOf(
           CalculationRule.UNUSED_ADA to AdjustmentDuration(
-            sentenceCalculation.calculatedUnusedReleaseAda,
+            sentenceCalculation.unusedAdaDays,
             DAYS,
           ),
         )
@@ -175,14 +174,14 @@ class SentenceAdjustedCalculationService(val hdcedCalculator: HdcedCalculator, v
         DAYS.between(sentence.sentencedAt, sentenceCalculation.licenceExpiryDate)
       // The LED is calculated from the adjusted release date, therefore unused ADA from the release date has also been applied.
       val unusedAda =
-        sentenceCalculation.calculatedUnusedReleaseAda + sentenceCalculation.calculatedUnusedLicenseAda
+        sentenceCalculation.unusedAdaDays + sentenceCalculation.calculatedUnusedLicenseAda
       sentenceCalculation.breakdownByReleaseDateType[LED] =
         ReleaseDateCalculationBreakdown(
           rules = setOf(LED_CONSEC_ORA_AND_NON_ORA),
-          adjustedDays = adjustment.toInt(),
+          adjustedDays = adjustment,
           releaseDate = sentenceCalculation.licenceExpiryDate!!,
           unadjustedDate = sentenceCalculation.adjustedDeterminateReleaseDate,
-          rulesWithExtraAdjustments = if (unusedAda != 0) {
+          rulesWithExtraAdjustments = if (unusedAda != 0L) {
             mapOf(
               CalculationRule.UNUSED_ADA to AdjustmentDuration(
                 unusedAda,
