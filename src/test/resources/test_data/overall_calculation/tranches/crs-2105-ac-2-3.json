@@ -1,0 +1,38 @@
+{
+  "offender": {
+    "reference": "A2630EZ",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "identifier": "b71e09b6-3728-3b80-8e86-b1c40d52c812",
+      "offence": {
+        "committedAt": "2014-01-07"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 10
+        }
+      },
+      "sentencedAt": "2014-02-22",
+      "sentenceType": "LR",
+      "recallType": "STANDARD_RECALL",
+      "lineSequence": 1
+    },
+    {
+      "offence": {
+        "committedAt": "2024-04-10",
+        "offenceCode": "PU86003"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentencedAt": "2023-10-17",
+      "sentenceType": "ADIMP",
+      "lineSequence": 2
+    }
+  ]
+}

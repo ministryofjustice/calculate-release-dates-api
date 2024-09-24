@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
@@ -44,7 +45,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheOne
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA
@@ -111,7 +111,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 class ValidationService(
   private val extractionService: SentencesExtractionService,
   private val featureToggles: FeatureToggles,
-  private val sds40TrancheOne: TrancheOne,
+  private val trancheConfiguration: SDS40TrancheConfiguration,
 ) {
   fun validateBeforeCalculation(
     sourceData: PrisonApiSourceData,
@@ -222,7 +222,7 @@ class ValidationService(
             (it is ConsecutiveSentence && it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence })
           ) &&
         it.recallType != null &&
-        it.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(sds40TrancheOne.trancheCommencementDate)
+        it.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
     }.takeIf { it }?.let {
       result = listOf(
         ValidationMessage(
@@ -861,7 +861,7 @@ class ValidationService(
 
   private fun getLongestRelevantSentence(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<CalculableSentence> {
     return sentences.zip(longestSentences).map { (sentence, longestSentence) ->
-      if (sentence.sentencedAt.isBefore(sds40TrancheOne.trancheTwoCommencementDate)) {
+      if (sentence.sentencedAt.isBefore(trancheConfiguration.trancheTwoCommencementDate)) {
         longestSentence
       } else {
         sentence
@@ -871,7 +871,7 @@ class ValidationService(
 
   private fun getRelevantSentenceRanges(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<LocalDateRange> {
     val longestRelevantSentences = sentences.zip(longestSentences).map { (sentence, longestSentence) ->
-      if (sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(sds40TrancheOne.trancheCommencementDate)) {
+      if (sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(trancheConfiguration.trancheOneCommencementDate)) {
         longestSentence
       } else {
         sentence

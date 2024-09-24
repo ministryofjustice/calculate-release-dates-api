@@ -1,0 +1,38 @@
+{
+  "offender": {
+    "reference": "A2630EZ",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2020-02-01",
+        "offenceCode": "PU86003"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 8
+        }
+      },
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentencedAt": "2020-08-22",
+      "sentenceType": "ADIMP",
+      "lineSequence": 1
+    },
+    {
+      "offence": {
+        "committedAt": "2022-02-01",
+        "offenceCode": "PU86003"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentencedAt": "2022-10-20",
+      "sentenceType": "ADIMP",
+      "lineSequence": 2
+    }
+  ]
+}

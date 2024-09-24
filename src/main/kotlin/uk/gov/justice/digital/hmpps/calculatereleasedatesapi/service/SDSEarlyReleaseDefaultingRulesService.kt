@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
@@ -17,6 +18,7 @@ import java.time.LocalDate
 @Service
 class SDSEarlyReleaseDefaultingRulesService(
   val extractionService: SentencesExtractionService,
+  val trancheConfiguration: SDS40TrancheConfiguration,
 ) {
 
   fun requiresRecalculation(booking: Booking, result: CalculationResult, trancheCommencementDate: LocalDate?): Boolean {
@@ -29,12 +31,9 @@ class SDSEarlyReleaseDefaultingRulesService(
     trancheCommencementDate: LocalDate?,
     allocatedTranche: SDSEarlyReleaseTranche,
     originalBooking: Booking,
-    trancheOneCommencementDate: LocalDate,
-    trancheOneIncludingDates: TrancheOne,
   ): CalculationResult {
     val dates = earlyReleaseResult.dates.toMutableMap()
     val breakdownByReleaseDateType = earlyReleaseResult.breakdownByReleaseDateType.toMutableMap()
-    var overriddenTranche = allocatedTranche
     if (hasAnyReleaseBeforeTrancheCommencement(earlyReleaseResult, standardReleaseResult, trancheCommencementDate)) {
       DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.forEach { releaseDateType ->
         mergeDate(
@@ -52,28 +51,21 @@ class SDSEarlyReleaseDefaultingRulesService(
     handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(
       dates,
       originalBooking,
-      trancheOneCommencementDate,
       standardReleaseResult,
       breakdownByReleaseDateType,
     )
 
     handleCRDorARDAndPRRD(dates, earlyReleaseResult.otherDates.toMutableMap())
 
-    overriddenTranche = if (dates == standardReleaseResult.dates) {
-      SDSEarlyReleaseTranche.TRANCHE_0
-    } else {
-      allocatedTranche
-    }
-
-    handleCRDEqualsEligibilityDateAndTrancheDate(dates, trancheOneIncludingDates)
+    handleCRDEqualsEligibilityDateAndTrancheDate(dates)
 
     return CalculationResult(
       dates,
       breakdownByReleaseDateType,
       earlyReleaseResult.otherDates,
       earlyReleaseResult.effectiveSentenceLength,
-      sdsEarlyReleaseAllocatedTranche = overriddenTranche,
-      sdsEarlyReleaseTranche = overriddenTranche,
+      sdsEarlyReleaseAllocatedTranche = allocatedTranche,
+      sdsEarlyReleaseTranche = allocatedTranche,
       affectedBySds40 = (dates != standardReleaseResult.dates),
     )
   }
@@ -122,7 +114,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     dates.remove(ReleaseDateType.HDCED)
   }
 
-  fun handleCRDEqualsEligibilityDateAndTrancheDate(dates: MutableMap<ReleaseDateType, LocalDate>, tranche: TrancheOne) {
+  fun handleCRDEqualsEligibilityDateAndTrancheDate(dates: MutableMap<ReleaseDateType, LocalDate>) {
     if (dates.containsKey(ReleaseDateType.CRD) || dates.containsKey(ReleaseDateType.ARD)) {
       val controllingDate = getControllingDate(dates)
 
@@ -134,7 +126,7 @@ class SDSEarlyReleaseDefaultingRulesService(
 
       eligibilityDates.forEach { dateType ->
         if (dates[dateType] == controllingDate.second &&
-          (dates[dateType] == tranche.trancheCommencementDate || dates[dateType] == tranche.trancheTwoCommencementDate)
+          (dates[dateType] == trancheConfiguration.trancheOneCommencementDate || dates[dateType] == trancheConfiguration.trancheTwoCommencementDate)
         ) {
           dates.remove(dateType)
         }
@@ -145,7 +137,6 @@ class SDSEarlyReleaseDefaultingRulesService(
   fun handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(
     dates: MutableMap<ReleaseDateType, LocalDate>,
     originalBooking: Booking,
-    trancheOneCommencementDate: LocalDate,
     standardReleaseResult: CalculationResult,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   ) {
@@ -154,7 +145,7 @@ class SDSEarlyReleaseDefaultingRulesService(
       SentenceCalculation::adjustedDeterminateReleaseDate,
     ).sentenceCalculation.adjustedDeterminateReleaseDate
 
-    if (dates.containsKey(ReleaseDateType.TUSED) && !latestReleaseDate.isAfterOrEqualTo(trancheOneCommencementDate)) {
+    if (dates.containsKey(ReleaseDateType.TUSED) && !latestReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)) {
       if (originalBooking.getAllExtractableSentences().any {
           it.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
             (
