@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
@@ -35,14 +37,22 @@ class CalculationService(
       calcAndExtract(deepCopy(booking), sds40Options.copy(allowSDSEarlyRelease = false))
 
     val latestReleaseDateFromStandardBooking = extractionService.mostRecentSentence(standardWorkingBooking.getAllExtractableSentences(), SentenceCalculation::adjustedDeterminateReleaseDate).sentenceCalculation.adjustedDeterminateReleaseDate
+    val areCalculationsTheSame = areCalculationsTheSame(sds40Result, standardResult)
+    val isLatestReleaseDateBeforeTrancheOne = latestReleaseDateFromStandardBooking.isBefore(trancheOne.trancheCommencementDate)
 
-    val tranche =
-      if (returnLongestPossibleSentences || areCalculationsTheSame(sds40Result, standardResult) || latestReleaseDateFromStandardBooking.isBefore(trancheOne.trancheCommencementDate)) {
-        SDSEarlyReleaseTranche.TRANCHE_0
-        return standardWorkingBooking to bookingExtractionService.extract(standardWorkingBooking)
-      } else {
-        trancheAllocationService.calculateTranche(sds40Result, sds40WorkingBooking)
-      }
+    log.info(
+      "Return Longest Possible Sentences?: {}, Are Calculations the Same?: {}, Is Latest Release Date Before Tranche One?: {}",
+      returnLongestPossibleSentences,
+      areCalculationsTheSame,
+      isLatestReleaseDateBeforeTrancheOne,
+    )
+
+    if (returnLongestPossibleSentences || areCalculationsTheSame || isLatestReleaseDateBeforeTrancheOne) {
+      // will return with Tranche 0
+      return standardWorkingBooking to bookingExtractionService.extract(standardWorkingBooking)
+    }
+
+    val tranche = trancheAllocationService.calculateTranche(sds40Result, sds40WorkingBooking)
 
     val trancheCommencementDate = when (tranche) {
       SDSEarlyReleaseTranche.TRANCHE_0 -> null
@@ -129,5 +139,9 @@ class CalculationService(
       .walkTimelineOfBooking(workingBooking)
 
     return workingBooking
+  }
+
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }
