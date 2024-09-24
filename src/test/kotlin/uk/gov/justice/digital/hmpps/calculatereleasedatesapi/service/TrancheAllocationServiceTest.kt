@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40Tranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -157,13 +158,13 @@ class TrancheAllocationServiceTest {
           identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE,
           durationYears = 4L,
           durationDays = 360L,
-          sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE,
+          sentencedAt = TRANCHE_ONE_COMMENCEMENT_DATE.minusDays(1),
         ),
         recallSentence,
       ),
     )
 
-    booking.consecutiveSentences = listOf(ConsecutiveSentence(booking.sentences))
+    booking.consecutiveSentences = listOf(createConsecutiveSentence(booking.sentences, sled = TRANCHE_ONE_COMMENCEMENT_DATE.minusDays(10)))
 
     val result = testTrancheAllocationService.calculateTranche(
       early,
@@ -219,7 +220,7 @@ class TrancheAllocationServiceTest {
       ),
     )
 
-    booking.consecutiveSentences = listOf(ConsecutiveSentence(booking.sentences))
+    booking.consecutiveSentences = listOf(createConsecutiveSentence(booking.sentences, sled = TRANCHE_ONE_COMMENCEMENT_DATE))
 
     val result = testTrancheAllocationService.calculateTranche(
       early,
@@ -329,7 +330,7 @@ class TrancheAllocationServiceTest {
       ),
     )
 
-    booking.consecutiveSentences = listOf(ConsecutiveSentence(booking.sentences))
+    booking.consecutiveSentences = listOf(createConsecutiveSentence(booking.sentences))
 
     val result = testTrancheAllocationService.calculateTranche(
       early,
@@ -369,7 +370,7 @@ class TrancheAllocationServiceTest {
       ),
     )
 
-    booking.consecutiveSentences = listOf(ConsecutiveSentence(booking.sentences))
+    booking.consecutiveSentences = listOf(createConsecutiveSentence(booking.sentences))
 
     val result = testTrancheAllocationService.calculateTranche(
       early,
@@ -410,7 +411,7 @@ class TrancheAllocationServiceTest {
       ),
     )
 
-    booking.consecutiveSentences = listOf(ConsecutiveSentence(booking.sentences))
+    booking.consecutiveSentences = listOf(createConsecutiveSentence(booking.sentences))
 
     val result = testTrancheAllocationService.calculateTranche(
       early,
@@ -529,6 +530,27 @@ class TrancheAllocationServiceTest {
     return sentence
   }
 
+  private fun createConsecutiveSentence(sentences: List<AbstractSentence>, crd: LocalDate = LocalDate.now(), sled: LocalDate = LocalDate.now()): ConsecutiveSentence {
+    val consecutiveSentence = ConsecutiveSentence(sentences)
+    consecutiveSentence.sentenceCalculation = SentenceCalculation(
+      consecutiveSentence,
+      3,
+      4.0,
+      4,
+      4,
+      LocalDate.now(),
+      sled,
+      crd,
+      1,
+      crd,
+      false,
+      Adjustments(),
+      crd,
+      crd,
+    )
+    return consecutiveSentence
+  }
+
   private fun bookingWithSentences(sentences: List<StandardDeterminateSentence>): Booking {
     val booking = Booking(
       Offender("a", LocalDate.of(1980, 1, 1), true),
@@ -542,7 +564,7 @@ class TrancheAllocationServiceTest {
     return booking
   }
   companion object {
-    private val TRANCHE_ONE_COMMENCEMENT_DATE = LocalDate.of(2022, 9, 10)
-    private val TRANCHE_TWO_COMMENCEMENT_DATE = LocalDate.of(2022, 10, 22)
+    private val TRANCHE_ONE_COMMENCEMENT_DATE = LocalDate.of(2024, 9, 10)
+    private val TRANCHE_TWO_COMMENCEMENT_DATE = LocalDate.of(2024, 10, 22)
   }
 }

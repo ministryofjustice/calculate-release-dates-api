@@ -22,7 +22,7 @@ class TrancheAllocationService(
     // List of sentences allowable for SDS early release
     // Exclude any sentences where sentencing was after T1 commencement - CRS-2126
     val sdsEarlyReleaseSentences =
-      booking.sentences.filter { sentence -> sentence.identificationTrack.equals(SentenceIdentificationTrack.SDS_EARLY_RELEASE) }
+      booking.sentences.filter { sentence -> sentence.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE }
         .filter { it.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate) }
 
     var resultTranche: SDSEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0

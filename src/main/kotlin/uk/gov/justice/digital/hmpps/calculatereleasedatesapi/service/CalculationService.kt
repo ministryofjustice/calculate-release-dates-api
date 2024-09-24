@@ -54,18 +54,17 @@ class CalculationService(
         SentenceCalculation::adjustedDeterminateReleaseDate,
       )?.sentenceCalculation?.adjustedDeterminateReleaseDate
 
-    val tranche =
-      if (returnLongestPossibleSentences || (
-          latestSDSReleaseDateFromStandardBooking != null && latestSDSReleaseDateFromStandardBooking.isBefore(
-            trancheConfiguration.trancheOneCommencementDate,
-          )
-          )
-      ) {
-        SDSEarlyReleaseTranche.TRANCHE_0
-        return standardWorkingBooking to bookingExtractionService.extract(standardWorkingBooking)
-      } else {
-        trancheAllocationService.calculateTranche(sds40Result, sds40WorkingBooking)
-      }
+    if (returnLongestPossibleSentences || (
+        latestSDSReleaseDateFromStandardBooking != null && latestSDSReleaseDateFromStandardBooking.isBefore(
+          trancheConfiguration.trancheOneCommencementDate,
+        )
+        )
+    ) {
+      // Tranche 0
+      return standardWorkingBooking to bookingExtractionService.extract(standardWorkingBooking)
+    }
+
+    val tranche = trancheAllocationService.calculateTranche(sds40Result, sds40WorkingBooking)
 
     val trancheCommencementDate = when (tranche) {
       SDSEarlyReleaseTranche.TRANCHE_0 -> null
