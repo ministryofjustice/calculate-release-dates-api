@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_SERVED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.LICENSE_UNUSED_ADA
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RELEASE_UNUSED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
@@ -116,24 +115,30 @@ class BookingTimelineService(
   }
 
   private fun capDatesByExpiry(
-    expiry: LocalDate,
+    mostRecentExpiry: LocalDate,
     sentenceGroups: List<List<CalculableSentence>>,
     booking: Booking,
   ) {
     val adjustments = sentenceGroups[0][0].sentenceCalculation.adjustments
     sentenceGroups.forEach { group ->
-      val unusedDays = group.filter { it.sentenceCalculation.releaseDate.isAfter(expiry) }.maxOfOrNull { DAYS.between(expiry, it.sentenceCalculation.releaseDate) }
-      if (unusedDays != null && unusedDays > 0) {
-        adjustments.addAdjustment(RELEASE_UNUSED_ADA, Adjustment(group.minOf { it.sentencedAt }, unusedDays.toInt()))
+      var anyUnusedAdas = false
+      group.forEach {
+        val expiry = minOf(mostRecentExpiry, it.sentenceCalculation.expiryDate)
+        if (it.sentenceCalculation.releaseDate.isAfter(expiry)) {
+          it.sentenceCalculation.unusedAdaDays = DAYS.between(expiry, it.sentenceCalculation.releaseDate)
+          anyUnusedAdas = true
+        }
+      }
+      if (anyUnusedAdas) {
         group.forEach {
           readjustDates(it, booking)
         }
       }
       val unusedLicenseDays = group.filter {
         val ledBreakdown = it.sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.LED]
-        ledBreakdown != null && ledBreakdown.rules.contains(CalculationRule.LED_CONSEC_ORA_AND_NON_ORA) && it.sentenceCalculation.licenceExpiryDate!!.isAfter(expiry)
+        ledBreakdown != null && ledBreakdown.rules.contains(CalculationRule.LED_CONSEC_ORA_AND_NON_ORA) && it.sentenceCalculation.licenceExpiryDate!!.isAfter(mostRecentExpiry)
       }.maxOfOrNull {
-        DAYS.between(expiry, it.sentenceCalculation.licenceExpiryDate!!)
+        DAYS.between(mostRecentExpiry, it.sentenceCalculation.licenceExpiryDate!!)
       }
 
       if (unusedLicenseDays != null && unusedLicenseDays > 0) {
