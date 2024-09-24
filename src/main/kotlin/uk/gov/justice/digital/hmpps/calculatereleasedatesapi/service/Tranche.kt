@@ -1,41 +1,29 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
-import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 interface Tranche {
 
-  fun isBookingApplicableForTrancheCriteria(calculationResult: CalculationResult, bookingSentences: List<CalculableSentence>): Boolean
+  val trancheConfiguration: SDS40TrancheConfiguration
 
-  fun filterOnType(
-    sentenceToCheck: CalculableSentence,
-    trancheCommencementDate: LocalDate,
-    trancheTwoCommencementDate: LocalDate? = null,
-  ): Boolean {
-    if (sentenceToCheck.isRecall()) {
-      if (trancheTwoCommencementDate != null) {
-        // Recalls are only counted towards tranche classification IF the SLED is on OR after the T2 commencement date
-        return sentenceToCheck.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(trancheTwoCommencementDate)
-      }
-      return sentenceToCheck.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(trancheCommencementDate)
-    }
-
-    return !sentenceToCheck.isDto() && !sentenceToCheck.isBotus() && sentenceToCheck !is AFineSentence
-  }
+  fun isBookingApplicableForTrancheCriteria(
+    calculationResult: CalculationResult,
+    bookingSentences: List<CalculableSentence>,
+  ): Boolean
 
   fun filterAndMapSentencesForNotIncludedTypesByDuration(
     sentenceToFilter: CalculableSentence,
-    trancheCommencementDate: LocalDate,
-    trancheTwoCommencementDate: LocalDate? = null,
+    tranche: Tranche,
   ): Long {
-    return if (sentenceToFilter is ConsecutiveSentence) {
+    return if (sentenceToFilter is ConsecutiveSentence && filterOnSentenceExpiryDates(sentenceToFilter)) {
       val filteredSentences = sentenceToFilter.orderedSentences
-        .filter { filterOnType(it, trancheCommencementDate, trancheTwoCommencementDate) }
+        .filter { filterOnType(it) && filterOnSentenceDate(it) }
 
       if (filteredSentences.any()) {
         val earliestSentencedAt = filteredSentences.minBy { it.sentencedAt }
@@ -58,7 +46,7 @@ interface Tranche {
         0
       }
     } else {
-      if (filterOnType(sentenceToFilter, trancheCommencementDate, trancheTwoCommencementDate)) {
+      if (filterOnType(sentenceToFilter) && filterOnSentenceDate(sentenceToFilter) && filterOnSentenceExpiryDates(sentenceToFilter)) {
         ChronoUnit.YEARS.between(
           sentenceToFilter.sentencedAt,
           sentenceToFilter.sentencedAt.plus(sentenceToFilter.getLengthInDays().toLong(), ChronoUnit.DAYS).plusDays(1),
@@ -67,5 +55,25 @@ interface Tranche {
         0
       }
     }
+  }
+
+  private fun filterOnType(
+    sentence: CalculableSentence,
+  ): Boolean {
+    // Filter any types excluded by the SI
+    // DTO, BOTUS, Fines (terms of imprisonment)
+    return !sentence.isDto() && !sentence.isBotus() && sentence !is AFineSentence
+  }
+
+  private fun filterOnSentenceDate(sentence: CalculableSentence): Boolean {
+    return sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)
+  }
+
+  private fun filterOnSentenceExpiryDates(
+    sentence: CalculableSentence,
+  ): Boolean {
+    return sentence.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(
+      trancheConfiguration.trancheOneCommencementDate,
+    )
   }
 }

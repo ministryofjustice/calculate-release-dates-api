@@ -1,0 +1,43 @@
+{
+  "offender": {
+    "reference": "A2630EZ",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "type":"SopcSentence",
+      "identifier": "b71e09b6-3728-3b80-8e86-b1c40d52c812",
+      "offence": {
+        "committedAt": "2014-01-07"
+      },
+      "custodialDuration":{
+        "durationElements":{
+          "YEARS":5
+        }
+      },
+      "extensionDuration":{
+        "durationElements":{
+          "YEARS":1
+        }
+      },
+      "sentencedAt": "2019-02-06",
+      "sentenceType": "LR_SOPC21",
+      "lineSequence": 1
+    },
+    {
+      "offence": {
+        "committedAt": "2024-04-10",
+        "offenceCode": "PU86003"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 23
+        }
+      },
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentencedAt": "2024-07-30",
+      "sentenceType": "ADIMP_ORA",
+      "lineSequence": 2
+    }
+  ]
+}

@@ -1,16 +1,17 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import java.time.LocalDate
 
 @Service
@@ -20,9 +21,8 @@ class CalculationService(
   private val bookingTimelineService: BookingTimelineService,
   private val sdsEarlyReleaseDefaultingRulesService: SDSEarlyReleaseDefaultingRulesService,
   private val trancheAllocationService: TrancheAllocationService,
-  private val trancheOne: TrancheOne,
-  private val trancheTwo: TrancheTwo,
   private val extractionService: SentencesExtractionService,
+  private val trancheConfiguration: SDS40TrancheConfiguration,
   private val objectMapper: ObjectMapper,
 ) {
 
@@ -30,25 +30,37 @@ class CalculationService(
     val json = objectToJson(sourceBooking, objectMapper)
     return objectMapper.readValue(json.toString(), Booking::class.java)
   }
-  fun calculateReleaseDates(booking: Booking, calculationUserInputs: CalculationUserInputs, returnLongestPossibleSentences: Boolean = false): Pair<Booking, CalculationResult> {
+
+  fun calculateReleaseDates(
+    booking: Booking,
+    calculationUserInputs: CalculationUserInputs,
+    returnLongestPossibleSentences: Boolean = false,
+  ): Pair<Booking, CalculationResult> {
     val sds40Options = CalculationOptions(calculationUserInputs.calculateErsed, allowSDSEarlyRelease = true)
     val (sds40WorkingBooking, sds40Result) = calcAndExtract(deepCopy(booking), sds40Options)
     val (standardWorkingBooking, standardResult) =
       calcAndExtract(deepCopy(booking), sds40Options.copy(allowSDSEarlyRelease = false))
 
-    val latestReleaseDateFromStandardBooking = extractionService.mostRecentSentence(standardWorkingBooking.getAllExtractableSentences(), SentenceCalculation::adjustedDeterminateReleaseDate).sentenceCalculation.adjustedDeterminateReleaseDate
-    val areCalculationsTheSame = areCalculationsTheSame(sds40Result, standardResult)
-    val isLatestReleaseDateBeforeTrancheOne = latestReleaseDateFromStandardBooking.isBefore(trancheOne.trancheCommencementDate)
+    val latestSDSReleaseDateFromStandardBooking = extractionService
+      .mostRecentSentenceOrNull(
+        standardWorkingBooking.getAllExtractableSentences()
+          .filter { calculableSentence ->
+            (
+              calculableSentence is StandardDeterminateSentence && !calculableSentence.isSDSPlus && calculableSentence.sentencedAt.isBefore(
+                trancheConfiguration.trancheOneCommencementDate,
+              )
+              ) || (calculableSentence is ConsecutiveSentence && calculableSentence.orderedSentences.any { it is StandardDeterminateSentence && !it.isSDSPlus })
+          },
+        SentenceCalculation::adjustedDeterminateReleaseDate,
+      )?.sentenceCalculation?.adjustedDeterminateReleaseDate
 
-    log.info(
-      "Return Longest Possible Sentences?: {}, Are Calculations the Same?: {}, Is Latest Release Date Before Tranche One?: {}",
-      returnLongestPossibleSentences,
-      areCalculationsTheSame,
-      isLatestReleaseDateBeforeTrancheOne,
-    )
-
-    if (returnLongestPossibleSentences || areCalculationsTheSame || isLatestReleaseDateBeforeTrancheOne) {
-      // will return with Tranche 0
+    if (returnLongestPossibleSentences || (
+        latestSDSReleaseDateFromStandardBooking != null && latestSDSReleaseDateFromStandardBooking.isBefore(
+          trancheConfiguration.trancheOneCommencementDate,
+        )
+        )
+    ) {
+      // Tranche 0
       return standardWorkingBooking to bookingExtractionService.extract(standardWorkingBooking)
     }
 
@@ -56,8 +68,8 @@ class CalculationService(
 
     val trancheCommencementDate = when (tranche) {
       SDSEarlyReleaseTranche.TRANCHE_0 -> null
-      SDSEarlyReleaseTranche.TRANCHE_1 -> trancheOne.trancheCommencementDate
-      SDSEarlyReleaseTranche.TRANCHE_2 -> trancheTwo.trancheCommencementDate
+      SDSEarlyReleaseTranche.TRANCHE_1 -> trancheConfiguration.trancheOneCommencementDate
+      SDSEarlyReleaseTranche.TRANCHE_2 -> trancheConfiguration.trancheTwoCommencementDate
     }
 
     return sds40WorkingBooking to adjustResultsForSDSEarlyReleaseIfRequired(
@@ -67,8 +79,6 @@ class CalculationService(
       standardResult,
       trancheCommencementDate,
       tranche,
-      trancheOne.trancheCommencementDate,
-      trancheOne,
     )
   }
 
@@ -89,20 +99,24 @@ class CalculationService(
     standardCalculationResult: CalculationResult,
     trancheCommencementDate: LocalDate?,
     tranche: SDSEarlyReleaseTranche,
-    trancheOneCommencementDate: LocalDate,
-    trancheOneIncludingDates: TrancheOne,
-  ) = if (sdsEarlyReleaseDefaultingRulesService.requiresRecalculation(workingBookingForPossibleEarlyRelease, resultWithPossibleEarlyRelease, trancheCommencementDate)) {
+  ) = if (sdsEarlyReleaseDefaultingRulesService.requiresRecalculation(
+      workingBookingForPossibleEarlyRelease,
+      resultWithPossibleEarlyRelease,
+      trancheCommencementDate,
+    )
+  ) {
     sdsEarlyReleaseDefaultingRulesService.mergeResults(
       resultWithPossibleEarlyRelease,
       standardCalculationResult,
       trancheCommencementDate,
       tranche,
       standardWorkingBooking,
-      trancheOneCommencementDate,
-      trancheOneIncludingDates,
     )
   } else {
-    resultWithPossibleEarlyRelease.copy(sdsEarlyReleaseAllocatedTranche = tranche, sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0)
+    resultWithPossibleEarlyRelease.copy(
+      sdsEarlyReleaseAllocatedTranche = tranche,
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
+    )
   }
 
   private fun calcAndExtract(
@@ -139,9 +153,5 @@ class CalculationService(
       .walkTimelineOfBooking(workingBooking)
 
     return workingBooking
-  }
-
-  companion object {
-    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }

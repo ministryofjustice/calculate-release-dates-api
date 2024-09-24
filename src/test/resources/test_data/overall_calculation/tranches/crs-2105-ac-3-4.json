@@ -1,0 +1,50 @@
+{
+  "offender": {
+    "reference": "A2630EZ",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2020-02-01",
+        "offenceCode": "PU86003"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 5
+        }
+      },
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentencedAt": "2019-09-10",
+      "sentenceType": "FTR",
+      "recallType":"FIXED_TERM_RECALL_28",
+      "lineSequence": 1
+    },
+    {
+      "offence": {
+        "committedAt": "2024-02-01",
+        "offenceCode": "PU86003"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 24
+        }
+      },
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentencedAt": "2024-08-15",
+      "sentenceType": "ADIMP_ORA",
+      "lineSequence": 2
+    }
+  ],
+  "adjustments": {
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "toDate": "2022-05-09",
+        "fromDate": "2022-05-10",
+        "numberOfDays": 2,
+        "appliesToSentencesFrom": "2019-09-10"
+      }
+    ]
+  },
+  "returnToCustodyDate":"2022-05-11"
+}

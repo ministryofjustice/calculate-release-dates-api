@@ -35,6 +35,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationP
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -183,8 +184,8 @@ class CalculationTransactionalServiceTest {
       calculatedReleaseDates = calculationTransactionalService(params, passedInServices = listOf(ValidationService::class.java.simpleName))
         .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
       val sentencesExtractionService = SentencesExtractionService()
-      val trancheOne = TrancheOne(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
-      val myValidationService = getActiveValidationService(sentencesExtractionService, trancheOne)
+      val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
+      val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration)
       returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
         calculatedReleaseDates.calculatedBooking!!,
       )
@@ -725,7 +726,13 @@ class CalculationTransactionalServiceTest {
       SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup, sentenceAggregator)
     val sentencesExtractionService = SentencesExtractionService()
     val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdced4Calculator)
-    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService)
+
+    val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
+    val trancheOne = TrancheOne(trancheConfiguration)
+    val trancheTwo = TrancheTwo(trancheConfiguration)
+
+    val trancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService, trancheConfiguration)
     val bookingCalculationService = BookingCalculationService(
       sentenceCalculationService,
       sentenceIdentificationService,
@@ -742,10 +749,6 @@ class CalculationTransactionalServiceTest {
       sdsEarlyReleaseTrancheOneDate(),
     )
 
-    val trancheOne = TrancheOne(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
-    val trancheTwo = TrancheTwo(sdsEarlyReleaseTrancheTwoDate(params))
-
-    val trancheAllocationService = TrancheAllocationService(TrancheOne(sdsEarlyReleaseTrancheOneDate(), sdsEarlyReleaseTrancheTwoDate()), TrancheTwo(sdsEarlyReleaseTrancheOneDate()))
     val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
 
     val calculationService = CalculationService(
@@ -754,14 +757,13 @@ class CalculationTransactionalServiceTest {
       bookingTimelineService,
       sdsEarlyReleaseDefaultingRulesService,
       trancheAllocationService,
-      trancheOne,
-      trancheTwo,
       sentencesExtractionService,
+      trancheConfiguration,
       TestUtil.objectMapper(),
     )
 
     val validationServiceToUse = if (passedInServices.contains(ValidationService::class.java.simpleName)) {
-      getActiveValidationService(sentencesExtractionService, trancheOne)
+      getActiveValidationService(sentencesExtractionService, trancheConfiguration)
     } else {
       validationService
     }
@@ -785,8 +787,8 @@ class CalculationTransactionalServiceTest {
     )
   }
 
-  private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheOne: TrancheOne): ValidationService {
-    return ValidationService(sentencesExtractionService, featureToggles = FeatureToggles(true, true, false), trancheOne)
+  private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheConfiguration: SDS40TrancheConfiguration): ValidationService {
+    return ValidationService(sentencesExtractionService, featureToggles = FeatureToggles(true, true, false), trancheConfiguration)
   }
 
   companion object {
