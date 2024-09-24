@@ -18,7 +18,7 @@ class BookingAnonymiser {
 //  @Test
   fun anonymiseTestCase() {
     val exampleType = "custom-examples"
-    val exampleNumber = "crs-2131-ada-crd-defaulting"
+    val exampleNumber = "crs-2136-incorrect-tused-length"
     var (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
 
     booking = booking.copy(

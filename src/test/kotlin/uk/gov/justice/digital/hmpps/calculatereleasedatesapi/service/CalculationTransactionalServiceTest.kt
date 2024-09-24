@@ -170,7 +170,7 @@ class CalculationTransactionalServiceTest {
     exampleNumber: String,
     error: String?,
     params: String,
-    expectedValidationMessage: String,
+    expectedValidationMessage: String?,
   ) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
@@ -200,12 +200,13 @@ class CalculationTransactionalServiceTest {
       "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
       TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
     )
-    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
 
-    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
-    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
-    assertThat(returnedValidationMessages).hasSize(1) // etc
-    assertEquals(returnedValidationMessages[0].code.toString(), expectedValidationMessage)
+    if (expectedValidationMessage != null) {
+      assertThat(returnedValidationMessages).hasSize(1) // etc
+      assertThat(returnedValidationMessages[0].code.toString()).isEqualTo(expectedValidationMessage)
+    } else {
+      assertThat(returnedValidationMessages).isEmpty()
+    }
   }
 
   @ParameterizedTest

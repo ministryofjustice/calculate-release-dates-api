@@ -1,0 +1,41 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2023-07-31"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "sentencedAt": "2024-03-12",
+      "identifier": "e3335303-905d-3800-99ec-55ff7a0ebedd",
+      "recallType": "STANDARD_RECALL",
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    }
+  ],
+  "adjustments": {
+    "RECALL_REMAND": [
+      {
+        "appliesToSentencesFrom": "2024-03-12",
+        "numberOfDays": 201,
+        "fromDate": "2023-08-24",
+        "toDate": "2024-03-11"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "appliesToSentencesFrom": "2024-06-18",
+        "numberOfDays": 39,
+        "fromDate": "2024-06-18",
+        "toDate": "2024-07-26"
+      }
+    ]
+  }
+}
