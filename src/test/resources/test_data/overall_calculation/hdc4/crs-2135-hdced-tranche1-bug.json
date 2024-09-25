@@ -76,7 +76,7 @@
       "sentencedAt":"2024-04-09",
       "caseSequence":4,
       "lineSequence":3,
-      "caseReference":"01PY1388023",
+      "caseReference":"CASEREF001",
       "consecutiveSentenceUUIDs":[
       ],
       "hasAnSDSEarlyReleaseExclusion":"DOMESTIC_ABUSE"
@@ -101,7 +101,7 @@
       "sentencedAt":"2024-04-09",
       "caseSequence":4,
       "lineSequence":4,
-      "caseReference":"01PY1388023",
+      "caseReference":"CASEREF001",
       "consecutiveSentenceUUIDs":[
       ],
       "hasAnSDSEarlyReleaseExclusion":"NO"
