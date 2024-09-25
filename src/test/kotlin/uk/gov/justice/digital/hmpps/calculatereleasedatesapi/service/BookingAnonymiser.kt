@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import org.mockito.kotlin.any
 import org.springframework.core.io.ClassPathResource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
@@ -17,8 +18,8 @@ class BookingAnonymiser {
 
 //  @Test
   fun anonymiseTestCase() {
-    val exampleType = "custom-examples"
-    val exampleNumber = "crs-2136-incorrect-tused-length"
+    val exampleType = "hdc4"
+    val exampleNumber = "crs-2135-hdced-tranche1-bug"
     var (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
 
     booking = booking.copy(
@@ -57,7 +58,13 @@ class BookingAnonymiser {
         }
       },
     )
-    TestUtil.minimalTestCaseMapper().writeValue(ClassPathResource("test_data/overall_calculation/$exampleType/$exampleNumber.json").file, booking)
+
+    val mapper = TestUtil.minimalTestCaseMapper()
+
+    val jsonTree: ObjectNode = mapper.valueToTree(booking)
+    jsonTree.put("calculateErsed", calculationUserInputs.calculateErsed)
+
+    TestUtil.minimalTestCaseMapper().writeValue(ClassPathResource("test_data/overall_calculation/$exampleType/$exampleNumber.json").file, jsonTree)
 
     // Then copy file manually from build dir.
   }
