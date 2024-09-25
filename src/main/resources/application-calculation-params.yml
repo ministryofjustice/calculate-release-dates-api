@@ -16,10 +16,11 @@ hdced4:
     unit: DAYS
   minimum-custodial-period-days: 14
   deduction-days: 179
-  hdc4-commencement-date: 2024-06-17
+  hdc4-commencement-date: 2024-06-10
 
 ersed:
   max-period-days: 544
+
 release-point-multipliers:
   multipliers:
     - tracks:
@@ -35,9 +36,15 @@ release-point-multipliers:
         - BOTUS
         - BOTUS_WITH_HISTORIC_TUSED
       multiplier: 1.0
+    - tracks:
+        - SDS_EARLY_RELEASE
+      multiplier: 0.40
+  historicMultipliers:
+    - tracks:
+        - SDS_EARLY_RELEASE
+      multiplier: 0.5
   default: 0.5
-
 sds-early-release-tranches:
-  tranche-one-date: 2024-09-03
-  tranche-two-date: 2024-10-15
+  tranche-one-date: 2024-09-10
+  tranche-two-date: 2024-10-22
 

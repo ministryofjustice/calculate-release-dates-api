@@ -7,7 +7,7 @@ generic-service:
     host: calculate-release-dates-api.hmpps.service.justice.gov.uk
 
   env:
-    SPRING_PROFILES_ACTIVE: "alt-3-calculation-params"
+    SPRING_PROFILES_ACTIVE: "calculation-params"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     HMPPS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
     PRISON_API_URL: https://prison-api.prison.service.justice.gov.uk

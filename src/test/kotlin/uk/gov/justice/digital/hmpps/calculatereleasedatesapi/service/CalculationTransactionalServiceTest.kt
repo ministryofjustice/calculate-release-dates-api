@@ -126,6 +126,13 @@ class CalculationTransactionalServiceTest {
     null,
   )
 
+  private fun defaultParams(params: String?): String {
+    if (params == null) {
+      return "calculation-params"
+    }
+    return params
+  }
+
   @Captor
   lateinit var updatedOffenderDatesArgumentCaptor: ArgumentCaptor<UpdateOffenderDates>
 
@@ -135,7 +142,7 @@ class CalculationTransactionalServiceTest {
     exampleType: String,
     exampleNumber: String,
     error: String?,
-    params: String,
+    params: String?,
   ) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
@@ -144,7 +151,7 @@ class CalculationTransactionalServiceTest {
     val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculatedReleaseDates: CalculatedReleaseDates
     try {
-      calculatedReleaseDates = calculationTransactionalService(params)
+      calculatedReleaseDates = calculationTransactionalService(defaultParams(params))
         .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
@@ -170,7 +177,7 @@ class CalculationTransactionalServiceTest {
     exampleType: String,
     exampleNumber: String,
     error: String?,
-    params: String,
+    params: String?,
     expectedValidationMessage: String?,
   ) {
     log.info("Testing example $exampleType/$exampleNumber")
@@ -181,10 +188,10 @@ class CalculationTransactionalServiceTest {
     val calculatedReleaseDates: CalculatedReleaseDates
     val returnedValidationMessages: List<ValidationMessage>
     try {
-      calculatedReleaseDates = calculationTransactionalService(params, passedInServices = listOf(ValidationService::class.java.simpleName))
+      calculatedReleaseDates = calculationTransactionalService(defaultParams(params), passedInServices = listOf(ValidationService::class.java.simpleName))
         .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
       val sentencesExtractionService = SentencesExtractionService()
-      val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
+      val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(defaultParams(params)), sdsEarlyReleaseTrancheTwoDate(defaultParams(params)))
       val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration)
       returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
         calculatedReleaseDates.calculatedBooking!!,
@@ -201,6 +208,7 @@ class CalculationTransactionalServiceTest {
       "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
       TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
     )
+    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
 
     if (expectedValidationMessage != null) {
       assertThat(returnedValidationMessages).hasSize(1) // etc
@@ -208,6 +216,9 @@ class CalculationTransactionalServiceTest {
     } else {
       assertThat(returnedValidationMessages).isEmpty()
     }
+
+    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
+    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
   }
 
   @ParameterizedTest
@@ -216,7 +227,7 @@ class CalculationTransactionalServiceTest {
     exampleType: String,
     exampleNumber: String,
     error: String?,
-    params: String,
+    params: String = "calculation-params",
   ) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
@@ -259,7 +270,7 @@ class CalculationTransactionalServiceTest {
     exampleType: String,
     exampleNumber: String,
     error: String?,
-    params: String,
+    params: String?,
   ) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
@@ -269,7 +280,7 @@ class CalculationTransactionalServiceTest {
     val calculatedReleaseDates: CalculatedReleaseDates
     try {
       calculatedReleaseDates =
-        calculationTransactionalService(params)
+        calculationTransactionalService(defaultParams(params))
           .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
@@ -293,7 +304,7 @@ class CalculationTransactionalServiceTest {
 
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
-  fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String, error: String?, params: String = "calculation-params") {
+  fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String, error: String?, params: String?) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
 
@@ -302,7 +313,7 @@ class CalculationTransactionalServiceTest {
 
     val calculationBreakdown: CalculationBreakdown?
     try {
-      calculationBreakdown = calculationTransactionalService(params).calculateWithBreakdown(
+      calculationBreakdown = calculationTransactionalService(defaultParams(params)).calculateWithBreakdown(
         booking,
         CalculatedReleaseDates(
           calculation.dates,

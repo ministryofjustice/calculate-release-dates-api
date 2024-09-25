@@ -75,3 +75,6 @@ Run the following commands from the root directory of the project:
 2. docker-compose -f docker-compose-test.yml up --no-start
 3. docker-compose -f docker-compose-test.yml start hmpps-auth calculate-release-dates-db prison-api
 4. ./run-local.sh
+
+# profiles
+[How we use application profile files to configure calculation variables](docs/profile.md)
