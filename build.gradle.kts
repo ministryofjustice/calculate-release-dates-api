@@ -67,7 +67,7 @@ dependencies {
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.4.1")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.22")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.11.1")
   testImplementation("com.h2database:h2")
   testImplementation("io.github.hakky54:logcaptor:2.9.3")
 
