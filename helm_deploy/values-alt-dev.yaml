@@ -14,7 +14,7 @@ generic-service:
       SecAction "id:900000,phase:1,nolog,pass,t:none,setvar:tx.paranoia_level=2"
 
   env:
-    SPRING_PROFILES_ACTIVE: "alt-4-calculation-params"
+    SPRING_PROFILES_ACTIVE: "calculation-params"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     HMPPS_AUTH_URL: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
     PRISON_API_URL: https://prison-api-dev.prison.service.justice.gov.uk

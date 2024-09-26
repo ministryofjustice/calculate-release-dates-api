@@ -14,7 +14,7 @@ release-point-multipliers:
       multiplier: 1.0
     - tracks:
         - SDS_EARLY_RELEASE
-      multiplier: 0.40
+      multiplier: 0.45
   historicMultipliers:
     - tracks:
         - SDS_EARLY_RELEASE
