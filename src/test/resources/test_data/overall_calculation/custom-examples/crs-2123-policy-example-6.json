@@ -1,0 +1,46 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2021-07-31"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 7
+        }
+      },
+      "sentencedAt": "2021-11-13",
+      "identifier": "e3335303-905d-3800-99ec-55ff7a0ebedd",
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2021-07-31"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2024-10-02",
+      "identifier": "bd8eabd6-b1fb-4a14-9e30-cdeb0ef2274c",
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2024-10-02",
+        "numberOfDays": 50,
+        "fromDate": "2021-09-24",
+        "toDate": "2021-11-12"
+      }
+    ]
+  }
+}
