@@ -55,7 +55,7 @@ class SDSEarlyReleaseDefaultingRulesService(
       breakdownByReleaseDateType,
     )
 
-    handleCRDorARDAndPRRD(dates, earlyReleaseResult.otherDates.toMutableMap())
+    handleCRDorARDAndPRRD(dates, earlyReleaseResult.otherDates.toMutableMap(), breakdownByReleaseDateType, standardReleaseResult)
 
     handleCRDEqualsEligibilityDateAndTrancheDate(dates)
 
@@ -79,6 +79,8 @@ class SDSEarlyReleaseDefaultingRulesService(
   private fun handleCRDorARDAndPRRD(
     dates: MutableMap<ReleaseDateType, LocalDate>,
     otherDates: MutableMap<ReleaseDateType, LocalDate>,
+    breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+    standardReleaseResult: CalculationResult,
   ) {
     if (dates.containsKey(ReleaseDateType.CRD) || dates.containsKey(ReleaseDateType.ARD)) {
       val controllingDate = getControllingDate(dates)
@@ -95,6 +97,11 @@ class SDSEarlyReleaseDefaultingRulesService(
         val prrdDate = dates[ReleaseDateType.PRRD] ?: otherDates[ReleaseDateType.PRRD]
         prrdDate?.takeIf { it.isAfter(hdcedDate) }?.let {
           setHDCEDDates(it, dates)
+          standardReleaseResult.breakdownByReleaseDateType[ReleaseDateType.HDCED]?.let { breakdown ->
+            breakdownByReleaseDateType[ReleaseDateType.HDCED] = breakdown.copy(
+              rules = breakdown.rules + CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_PRRD,
+            )
+          }
         }
       }
 
@@ -214,7 +221,7 @@ class SDSEarlyReleaseDefaultingRulesService(
         releaseDate = commencementDate,
         unadjustedDate = early,
       )
-    } else if (standard != null && ((commencementDate != null && standard.isBefore(commencementDate)) || commencementDate == null)) {
+    } else if (standard != null && ((commencementDate != null && standard.isBefore(commencementDate)) || commencementDate == null || standard == early)) {
       dates[dateType] = standard
       standardReleaseResult.breakdownByReleaseDateType[dateType]?.let {
         breakdownByReleaseDateType[dateType] = it.copy(
