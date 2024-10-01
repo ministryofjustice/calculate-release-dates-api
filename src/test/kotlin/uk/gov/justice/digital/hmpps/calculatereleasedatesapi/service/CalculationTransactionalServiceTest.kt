@@ -313,7 +313,13 @@ class CalculationTransactionalServiceTest {
 
     val calculationBreakdown: CalculationBreakdown?
     try {
-      calculationBreakdown = calculationTransactionalService(defaultParams(params)).calculateWithBreakdown(
+      // TODO this dynamic setting of the HDCED commencement date can be removed when we address the hdc4 tech debt ticket CRS-2141
+      val hdc4CommencementDate = if (exampleType == "hdc4") {
+        DateTime.now().minusDays(1).toDate()
+      } else {
+        DateTime.now().plusDays(1).toDate()
+      }
+      calculationBreakdown = calculationTransactionalService(defaultParams(params), mapOf(Pair("hdc4CommencementDate", hdc4CommencementDate))).calculateWithBreakdown(
         booking,
         CalculatedReleaseDates(
           calculation.dates,
