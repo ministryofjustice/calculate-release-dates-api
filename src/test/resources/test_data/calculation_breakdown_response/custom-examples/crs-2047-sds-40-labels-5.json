@@ -55,7 +55,7 @@
       "unadjustedDate": "2027-04-22"
     },
     "CRD": {
-      "rules": ["SDS_EARLY_RELEASE_APPLIES"],
+      "rules": ["SDS_STANDARD_RELEASE_APPLIES"],
       "rulesWithExtraAdjustments": {},
       "adjustedDays": -28,
       "releaseDate": "2025-01-23",
