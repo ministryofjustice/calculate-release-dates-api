@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,7 +35,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPer
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
@@ -311,8 +309,16 @@ class ComparisonServiceTest {
     ).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(comparisonPersons)
 
-    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(calculationOutcomes)
-    whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("AYI", "Aylesbury (HMP)"), Agency("BMI", "Birmingham (HMP)"), Agency("DAI", "Dartmoor (HMP)")))
+    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(
+      calculationOutcomes,
+    )
+    whenever(prisonService.getAgenciesByType("INST")).thenReturn(
+      listOf(
+        Agency("AYI", "Aylesbury (HMP)"),
+        Agency("BMI", "Birmingham (HMP)"),
+        Agency("DAI", "Dartmoor (HMP)"),
+      ),
+    )
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
@@ -439,7 +445,9 @@ class ComparisonServiceTest {
     ).thenReturn(comparison)
     whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(comparisonPersons)
 
-    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(calculationOutcomes)
+    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(
+      calculationOutcomes,
+    )
 
     val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
 
@@ -452,172 +460,6 @@ class ComparisonServiceTest {
     assertEquals(comparisonPerson4.person, result.mismatches[4].personId)
     assertEquals(comparisonPerson1.person, result.mismatches[5].personId)
     assertEquals(comparisonPerson3.person, result.mismatches[6].personId)
-  }
-
-  @Test
-  fun `Returns CRD for HDC4+ mismatches as release date if the prisoner has one`() {
-    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
-    val comparison = aComparison()
-    val comparisonPerson1WithCRD = aComparisonPerson(
-      1,
-      comparison.id,
-      1,
-      "person 1",
-      hdcedFourPlusDate = LocalDate.of(2028, 6, 19),
-    )
-    val calculationOutcomeCRD = CalculationOutcome(
-      calculationDateType = ReleaseDateType.CRD.name,
-      outcomeDate = LocalDate.of(2036, 2, 20),
-      calculationRequestId = 1,
-    )
-
-    val comparisonPersons = listOf(comparisonPerson1WithCRD)
-    val calculationOutcomes = listOf(calculationOutcomeCRD)
-    whenever(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
-    whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(emptyList())
-    whenever(comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)).thenReturn(comparisonPersons)
-    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(calculationOutcomes)
-    whenever(calculationOutcomeRepository.findForComparisonAndHdcedFourPlusDateIsNotNull(any())).thenReturn(calculationOutcomes)
-
-    val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
-
-    assertEquals(1, result.hdc4PlusCalculated.size)
-    assertEquals(ReleaseDate(LocalDate.of(2036, 2, 20), ReleaseDateType.CRD), result.hdc4PlusCalculated[0].releaseDate)
-  }
-
-  @Test
-  fun `Returns ARD for HDC4+ mismatches as release date if the prisoner has one`() {
-    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
-    val comparison = aComparison()
-    val comparisonPersonWithARD = aComparisonPerson(
-      1,
-      comparison.id,
-      1,
-      "person 1",
-      hdcedFourPlusDate = LocalDate.of(2028, 6, 19),
-    )
-    val calculationOutcomeARD = CalculationOutcome(
-      calculationDateType = ReleaseDateType.ARD.name,
-      outcomeDate = LocalDate.of(2036, 2, 21),
-      calculationRequestId = 1,
-    )
-
-    val comparisonPersons = listOf(comparisonPersonWithARD)
-    val calculationOutcomes = listOf(calculationOutcomeARD)
-    whenever(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
-    whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(emptyList())
-    whenever(comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)).thenReturn(comparisonPersons)
-    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(calculationOutcomes)
-    whenever(calculationOutcomeRepository.findForComparisonAndHdcedFourPlusDateIsNotNull(any())).thenReturn(calculationOutcomes)
-
-    val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
-
-    assertEquals(1, result.hdc4PlusCalculated.size)
-    assertEquals(ReleaseDate(LocalDate.of(2036, 2, 21), ReleaseDateType.ARD), result.hdc4PlusCalculated[0].releaseDate)
-  }
-
-  @Test
-  fun `Returns latest of ARD or CRD for HDC4+ mismatches as release date if the prisoner has both`() {
-    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
-    val comparison = aComparison()
-    val comparisonPersonWithARD = aComparisonPerson(
-      1,
-      comparison.id,
-      1,
-      "person 1",
-      hdcedFourPlusDate = LocalDate.of(2028, 6, 19),
-    )
-    val calculationOutcomeARD = CalculationOutcome(
-      calculationDateType = ReleaseDateType.ARD.name,
-      outcomeDate = LocalDate.of(2036, 2, 20),
-      calculationRequestId = 1,
-    )
-    val calculationOutcomeCRD = CalculationOutcome(
-      calculationDateType = ReleaseDateType.CRD.name,
-      outcomeDate = LocalDate.of(2036, 2, 21),
-      calculationRequestId = 1,
-    )
-
-    val comparisonPersons = listOf(comparisonPersonWithARD)
-    val calculationOutcomes = listOf(calculationOutcomeARD, calculationOutcomeCRD)
-    whenever(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
-    whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(emptyList())
-    whenever(comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)).thenReturn(comparisonPersons)
-    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(calculationOutcomes)
-    whenever(calculationOutcomeRepository.findForComparisonAndHdcedFourPlusDateIsNotNull(any())).thenReturn(calculationOutcomes)
-
-    val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
-
-    assertEquals(1, result.hdc4PlusCalculated.size)
-    assertEquals(ReleaseDate(LocalDate.of(2036, 2, 21), ReleaseDateType.CRD), result.hdc4PlusCalculated[0].releaseDate)
-  }
-
-  @Test
-  fun `Returns no release date for HDC4+ mismatches as release date if the prisoner has neither ARD or CRD (not expected if HDC4+ was calculated)`() {
-    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
-    val comparison = aComparison()
-    val comparisonPersonWithARD = aComparisonPerson(
-      1,
-      comparison.id,
-      1,
-      "person 1",
-      hdcedFourPlusDate = LocalDate.of(2028, 6, 19),
-    )
-
-    val comparisonPersons = listOf(comparisonPersonWithARD)
-    whenever(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
-    whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(emptyList())
-    whenever(comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)).thenReturn(comparisonPersons)
-    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(emptyList())
-
-    val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
-
-    assertEquals(1, result.hdc4PlusCalculated.size)
-    assertNull(result.hdc4PlusCalculated[0].releaseDate)
-  }
-
-  @Test
-  fun `Matches the date to the person`() {
-    whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
-    val comparison = aComparison()
-    val comparisonPersonWithARD = aComparisonPerson(
-      1,
-      comparison.id,
-      1,
-      "person 1",
-      hdcedFourPlusDate = LocalDate.of(2028, 6, 19),
-    )
-    val comparisonPersonWithCRD = aComparisonPerson(
-      2,
-      comparison.id,
-      2,
-      "person 2",
-      hdcedFourPlusDate = LocalDate.of(2028, 6, 19),
-    )
-    val calculationOutcomeARD = CalculationOutcome(
-      calculationDateType = ReleaseDateType.ARD.name,
-      outcomeDate = LocalDate.of(2036, 2, 20),
-      calculationRequestId = 1,
-    )
-    val calculationOutcomeCRD = CalculationOutcome(
-      calculationDateType = ReleaseDateType.CRD.name,
-      outcomeDate = LocalDate.of(2036, 2, 21),
-      calculationRequestId = 2,
-    )
-
-    val comparisonPersons = listOf(comparisonPersonWithARD, comparisonPersonWithCRD)
-    val calculationOutcomes = listOf(calculationOutcomeARD, calculationOutcomeCRD)
-    whenever(comparisonRepository.findByComparisonShortReference("ABCD1234")).thenReturn(comparison)
-    whenever(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)).thenReturn(emptyList())
-    whenever(comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id)).thenReturn(comparisonPersons)
-    whenever(calculationOutcomeRepository.findForComparisonAndReleaseDatesMismatch(any())).thenReturn(calculationOutcomes)
-    whenever(calculationOutcomeRepository.findForComparisonAndHdcedFourPlusDateIsNotNull(any())).thenReturn(calculationOutcomes)
-
-    val result = comparisonService.getComparisonByComparisonReference("ABCD1234")
-
-    assertEquals(2, result.hdc4PlusCalculated.size)
-    assertEquals(ReleaseDate(LocalDate.of(2036, 2, 20), ReleaseDateType.ARD), result.hdc4PlusCalculated[0].releaseDate)
-    assertEquals(ReleaseDate(LocalDate.of(2036, 2, 21), ReleaseDateType.CRD), result.hdc4PlusCalculated[1].releaseDate)
   }
 
   @Test
@@ -640,7 +482,16 @@ class ComparisonServiceTest {
       priority = DiscrepancyPriority.HIGH_RISK,
       action = "action",
     )
-    val discrepancy = ComparisonPersonDiscrepancy(1, comparisonPerson, discrepancyImpact, emptyList(), discrepancyPriority = discrepancyPriority, detail = "detail", action = "action", createdBy = USERNAME)
+    val discrepancy = ComparisonPersonDiscrepancy(
+      1,
+      comparisonPerson,
+      discrepancyImpact,
+      emptyList(),
+      discrepancyPriority = discrepancyPriority,
+      detail = "detail",
+      action = "action",
+      createdBy = USERNAME,
+    )
     whenever(
       comparisonRepository.findByComparisonShortReference(comparison.comparisonShortReference),
     ).thenReturn(comparison)
@@ -658,7 +509,11 @@ class ComparisonServiceTest {
       priority = discrepancyPriority.priority,
       action = discrepancy.action,
     )
-    val returnedSummary = comparisonService.createDiscrepancy(comparison.comparisonShortReference, comparisonPerson.shortReference, discrepancyRequest)
+    val returnedSummary = comparisonService.createDiscrepancy(
+      comparison.comparisonShortReference,
+      comparisonPerson.shortReference,
+      discrepancyRequest,
+    )
 
     verify(bulkComparisonService).createDiscrepancy(any(), any(), any())
     assertEquals(discrepancySummary, returnedSummary)
@@ -758,7 +613,6 @@ class ComparisonServiceTest {
     calculationRequestId: Long,
     person: String,
     establishment: String? = null,
-    hdcedFourPlusDate: LocalDate? = null,
   ): ComparisonPerson {
     val emptyObjectNode = objectMapper.createObjectNode()
     val emptyList: List<ValidationMessage> = emptyList()
@@ -780,7 +634,6 @@ class ComparisonServiceTest {
       calculationRequestId = calculationRequestId,
       sdsPlusSentencesIdentified = emptyObjectNode,
       establishment = establishment,
-      hdcedFourPlusDate = hdcedFourPlusDate,
     )
   }
 

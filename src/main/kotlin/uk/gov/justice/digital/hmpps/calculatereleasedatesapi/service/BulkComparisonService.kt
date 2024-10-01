@@ -19,7 +19,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
@@ -101,7 +100,11 @@ class BulkComparisonService(
   }
 
   @Transactional
-  fun createDiscrepancy(comparison: Comparison, comparisonPerson: ComparisonPerson, discrepancyRequest: CreateComparisonDiscrepancyRequest): ComparisonDiscrepancySummary {
+  fun createDiscrepancy(
+    comparison: Comparison,
+    comparisonPerson: ComparisonPerson,
+    discrepancyRequest: CreateComparisonDiscrepancyRequest,
+  ): ComparisonDiscrepancySummary {
     val existingDiscrepancy =
       comparisonPersonDiscrepancyRepository.findTopByComparisonPersonShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
         comparisonPerson.shortReference,
@@ -135,7 +138,10 @@ class BulkComparisonService(
     return transform(discrepancy, discrepancyCauses)
   }
 
-  fun getComparisonPersonDiscrepancy(comparison: Comparison, comparisonPerson: ComparisonPerson): ComparisonDiscrepancySummary {
+  fun getComparisonPersonDiscrepancy(
+    comparison: Comparison,
+    comparisonPerson: ComparisonPerson,
+  ): ComparisonDiscrepancySummary {
     val discrepancy =
       comparisonPersonDiscrepancyRepository.findTopByComparisonPersonShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
         comparisonPerson.shortReference,
@@ -163,10 +169,18 @@ class BulkComparisonService(
     comparisonRepository.save(comparison)
   }
 
-  private fun saveComparisonPersonWithFatalError(comparison: Comparison, envelope: CalculableSentenceEnvelope, establishment: String?, lastException: Throwable) {
+  private fun saveComparisonPersonWithFatalError(
+    comparison: Comparison,
+    envelope: CalculableSentenceEnvelope,
+    establishment: String?,
+    lastException: Throwable,
+  ) {
     val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
     val trimmedException = lastException.message?.trim()?.take(256) ?: "Exception had no message"
-    log.error("Failed to create comparison for ${envelope.person.prisonerNumber} due to \"$trimmedException\"", lastException)
+    log.error(
+      "Failed to create comparison for ${envelope.person.prisonerNumber} due to \"$trimmedException\"",
+      lastException,
+    )
     comparisonPersonRepository.save(
       ComparisonPerson(
         comparisonId = comparison.id,
@@ -197,12 +211,12 @@ class BulkComparisonService(
     comparison: Comparison,
     establishment: String?,
   ) {
-    val sentenceAndOffencesWithReleaseArrangementsForBooking = pcscLookupService.populateReleaseArrangements(normalisedSentenceAndOffences(envelope))
+    val sentenceAndOffencesWithReleaseArrangementsForBooking =
+      pcscLookupService.populateReleaseArrangements(normalisedSentenceAndOffences(envelope))
     val sdsPlusSentenceAndOffences = sentenceAndOffencesWithReleaseArrangementsForBooking.filter { it.isSDSPlus }
     val mismatch = buildMismatch(envelope, sentenceAndOffencesWithReleaseArrangementsForBooking)
-    val hdced4PlusDate = getHdced4PlusDate(mismatch)
 
-    if (comparison.shouldStoreMismatch(mismatch, hdced4PlusDate != null)) {
+    if (comparison.shouldStoreMismatch(mismatch)) {
       val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
       comparisonPersonRepository.save(
         ComparisonPerson(
@@ -225,7 +239,6 @@ class BulkComparisonService(
             ?: objectMapper.createObjectNode(),
           isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
           sdsPlusSentencesIdentified = objectMapper.valueToTree(sdsPlusSentenceAndOffences),
-          hdcedFourPlusDate = hdced4PlusDate,
           establishment = establishmentValue,
         ),
       )
@@ -245,32 +258,18 @@ class BulkComparisonService(
     return establishmentValue
   }
 
-  private fun normalisedSentenceAndOffences(envelope: CalculableSentenceEnvelope) = envelope.sentenceAndOffences.flatMap { sentenceAndOffences ->
-    sentenceAndOffences.offences.map { offence -> NormalisedSentenceAndOffence(sentenceAndOffences, offence) }
-  }
-
-  private fun getHdced4PlusDate(mismatch: Mismatch): LocalDate? {
-    val hdced4Plus = mismatch.calculatedReleaseDates?.dates?.getOrDefault(ReleaseDateType.HDCED4PLUS, null)
-    val hdced = mismatch.calculatedReleaseDates?.dates?.getOrDefault(ReleaseDateType.HDCED, null)
-    if (hdced4Plus == null && hdced == null) {
-      return null
+  private fun normalisedSentenceAndOffences(envelope: CalculableSentenceEnvelope) =
+    envelope.sentenceAndOffences.flatMap { sentenceAndOffences ->
+      sentenceAndOffences.offences.map { offence -> NormalisedSentenceAndOffence(sentenceAndOffences, offence) }
     }
-    if (hdced4Plus != null && hdced == null) {
-      return hdced4Plus
-    }
-    return if (hdced4Plus == hdced) {
-      null
-    } else {
-      hdced4Plus
-    }
-  }
 
   fun buildMismatch(
     calculableSentenceEnvelope: CalculableSentenceEnvelope,
     sentenceAndOffenceWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>,
   ): Mismatch {
     val validationResult = validate(calculableSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements)
-    val mismatchType = determineMismatchType(validationResult, calculableSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements)
+    val mismatchType =
+      determineMismatchType(validationResult, calculableSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements)
 
     return Mismatch(
       isMatch = mismatchType == MismatchType.NONE,
@@ -297,7 +296,11 @@ class BulkComparisonService(
     val unsupportedSentenceType =
       validationResult.messages.any { it.code == ValidationCode.UNSUPPORTED_SENTENCE_TYPE || it.code.validationType == ValidationType.UNSUPPORTED_CALCULATION }
     if (unsupportedSentenceType) {
-      if (isPotentialHdc4PlusUnsupportedSentenceType(calculableSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements)) {
+      if (isPotentialHdc4PlusUnsupportedSentenceType(
+          calculableSentenceEnvelope,
+          sentenceAndOffenceWithReleaseArrangements,
+        )
+      ) {
         return MismatchType.UNSUPPORTED_SENTENCE_TYPE_FOR_HDC4_PLUS
       }
       return MismatchType.UNSUPPORTED_SENTENCE_TYPE
@@ -310,14 +313,18 @@ class BulkComparisonService(
     return MismatchType.VALIDATION_ERROR
   }
 
-  private fun validate(calculableSentenceEnvelope: CalculableSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>): ValidationResult {
+  private fun validate(
+    calculableSentenceEnvelope: CalculableSentenceEnvelope,
+    sentenceAndOffenceWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>,
+  ): ValidationResult {
     val calculationUserInput = CalculationUserInputs(
       listOf(),
       calculableSentenceEnvelope.sentenceCalcDates?.earlyRemovalSchemeEligibilityDate != null,
       true,
     )
 
-    val prisonApiSourceData: PrisonApiSourceData = this.convert(calculableSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements)
+    val prisonApiSourceData: PrisonApiSourceData =
+      this.convert(calculableSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements)
 
     val bulkCalculationReason = calculationReasonRepository.findTopByIsBulkTrue().orElseThrow {
       EntityNotFoundException("The bulk calculation reason was not found.")
@@ -345,7 +352,10 @@ class BulkComparisonService(
     return true
   }
 
-  private fun convert(source: CalculableSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>): PrisonApiSourceData {
+  private fun convert(
+    source: CalculableSentenceEnvelope,
+    sentenceAndOffenceWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>,
+  ): PrisonApiSourceData {
     val prisonerDetails = PrisonerDetails(
       bookingId = source.bookingId,
       offenderNo = source.person.prisonerNumber,
@@ -422,12 +432,18 @@ class BulkComparisonService(
     }
   }
 
-  private fun isPotentialHdc4Plus(calculableSentenceEnvelope: CalculableSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>): Boolean {
+  private fun isPotentialHdc4Plus(
+    calculableSentenceEnvelope: CalculableSentenceEnvelope,
+    sentenceAndOffenceWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>,
+  ): Boolean {
     if (calculableSentenceEnvelope.person.isActiveSexOffender()) {
       return false
     }
 
-    if (!hasSdsSentenceWithValidHdc4Duration(sentenceAndOffenceWithReleaseArrangements) && !hasConsecutiveSdsSentencesWithValidHdc4Duration(sentenceAndOffenceWithReleaseArrangements)) {
+    if (!hasSdsSentenceWithValidHdc4Duration(sentenceAndOffenceWithReleaseArrangements) && !hasConsecutiveSdsSentencesWithValidHdc4Duration(
+        sentenceAndOffenceWithReleaseArrangements,
+      )
+    ) {
       return false
     }
 
@@ -452,7 +468,10 @@ class BulkComparisonService(
 
     val hasValidSdsSentence =
       hasNonSdsPlusSentenceWithValidHdc4Duration(sentenceAndOffencesWithReleaseArrangements)
-    if (!hasValidSdsSentence && !hasConsecutiveNonSdsPlusSentencesWithValidHdc4Duration(sentenceAndOffencesWithReleaseArrangements)) {
+    if (!hasValidSdsSentence && !hasConsecutiveNonSdsPlusSentencesWithValidHdc4Duration(
+        sentenceAndOffencesWithReleaseArrangements,
+      )
+    ) {
       return false
     }
 
@@ -589,11 +608,13 @@ class BulkComparisonService(
     val applicableSentences = sentencesAndOffences.filter { isHdc4PlusSentenceType(it.sentenceCalculationType) }
 
     val (baseSentences, consecutiveSentences) = applicableSentences.partition { it.consecutiveToSequence == null }
-    val baseSentenceToConsecutiveSentencesMap: Map<Int, List<SentenceAndOffenceWithReleaseArrangements>> = consecutiveSentences.groupBy {
-      it.consecutiveToSequence!!
-    }
+    val baseSentenceToConsecutiveSentencesMap: Map<Int, List<SentenceAndOffenceWithReleaseArrangements>> =
+      consecutiveSentences.groupBy {
+        it.consecutiveToSequence!!
+      }
 
-    val sentenceChains: MutableList<MutableList<SentenceAndOffenceWithReleaseArrangements>> = mutableListOf(mutableListOf())
+    val sentenceChains: MutableList<MutableList<SentenceAndOffenceWithReleaseArrangements>> =
+      mutableListOf(mutableListOf())
     baseSentences.forEach {
       val sentenceChain: MutableList<SentenceAndOffenceWithReleaseArrangements> = mutableListOf()
       sentenceChains.add(sentenceChain)
@@ -665,11 +686,7 @@ class BulkComparisonService(
     log.info("Using token: {}", UserContext.getAuthToken())
   }
 
-  private fun Comparison.shouldStoreMismatch(mismatch: Mismatch, hasHdced: Boolean): Boolean {
-    if (comparisonType == ComparisonType.ESTABLISHMENT_HDCED4PLUS) {
-      return mismatch.type == MismatchType.VALIDATION_ERROR_HDC4_PLUS || mismatch.type == MismatchType.UNSUPPORTED_SENTENCE_TYPE_FOR_HDC4_PLUS || hasHdced
-    }
-
+  private fun Comparison.shouldStoreMismatch(mismatch: Mismatch): Boolean {
     return true
   }
 }

@@ -47,15 +47,6 @@
       "adjustedDays": -69,
       "releaseDate": "2022-09-10",
       "unadjustedDate": "2022-07-03"
-    },
-    "HDCED4PLUS": {
-      "rules": [
-        "HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE"
-      ],
-      "rulesWithExtraAdjustments": {},
-      "adjustedDays": -69,
-      "releaseDate": "2022-09-10",
-      "unadjustedDate": "2022-07-03"
     }
   },
   "otherDates": {},

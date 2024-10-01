@@ -61,20 +61,6 @@
       "adjustedDays": 0,
       "releaseDate": "2010-12-01",
       "unadjustedDate": "2010-08-31"
-    },
-    "HDCED4PLUS": {
-      "rules": [
-        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT"
-      ],
-      "rulesWithExtraAdjustments": {
-        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
-          "adjustmentValue": 92,
-          "type": "DAYS"
-        }
-      },
-      "adjustedDays": 0,
-      "releaseDate": "2010-12-01",
-      "unadjustedDate": "2010-08-31"
     }
   },
   "otherDates": {},

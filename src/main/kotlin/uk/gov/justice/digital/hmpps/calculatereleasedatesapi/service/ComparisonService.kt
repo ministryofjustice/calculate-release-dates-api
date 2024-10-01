@@ -18,9 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOve
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HdcFourPlusComparisonMismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
@@ -78,7 +76,8 @@ class ComparisonService(
   }
 
   fun getComparisonByComparisonReference(comparisonReference: String): ComparisonOverview {
-    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
+    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
+      ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
     return if (userIsAllowedToViewThisComparison(comparison)) {
       val mismatches = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)
 
@@ -102,43 +101,67 @@ class ComparisonService(
           Pair(mismatch, emptyList())
         }
       }
-
-      val hdc4PlusResults =
-        comparisonPersonRepository.findByComparisonIdIsAndHdcedFourPlusDateIsNotNull(comparison.id).map { mismatch ->
-          mismatch.establishment = agencyIdToDescriptionMap[mismatch.establishment]?.description
-          mismatch
-        }
-
-      val hdc4PlusCalculationOutcomes = calculationOutcomeRepository
-        .findForComparisonAndHdcedFourPlusDateIsNotNull(comparison.id)
-        .filter { it.calculationDateType in listOf(ReleaseDateType.CRD.name, ReleaseDateType.ARD.name) }
-
       val mismatchesSortedByReleaseDate = mismatchesAndCrdsDates.sortedWith(::establishmentAndReleaseDateComparator)
-      transform(comparison, mismatchesSortedByReleaseDate.map { it.first }, transformToHdcFourPlusComparisonMismatch(hdc4PlusResults, hdc4PlusCalculationOutcomes), objectMapper)
+      transform(comparison, mismatchesSortedByReleaseDate.map { it.first }, emptyList(), objectMapper)
     } else {
       throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
     }
   }
 
-  fun getComparisonPersonByShortReference(comparisonReference: String, comparisonPersonReference: String): ComparisonPersonOverview {
-    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
+  fun getComparisonPersonByShortReference(
+    comparisonReference: String,
+    comparisonPersonReference: String,
+  ): ComparisonPersonOverview {
+    val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
+      ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
     return if (userIsAllowedToViewThisComparison(comparison)) {
-      val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference)
-        ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
+      val comparisonPerson =
+        comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference)
+          ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
       val hasDiscrepancyRecorded = comparisonPersonDiscrepancyRepository.existsByComparisonPerson(comparisonPerson)
-      val calculatedReleaseDates = comparisonPerson.calculationRequestId?.let { calculationTransactionalService.findCalculationResults(it) }
-      val nomisDates = objectMapper.convertValue(comparisonPerson.nomisDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
-      val overrideDates = objectMapper.convertValue(comparisonPerson.overrideDates, object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {})
-      val breakdownByReleaseDateType = objectMapper.convertValue(comparisonPerson.breakdownByReleaseDateType, object : TypeReference<Map<ReleaseDateType, ReleaseDateCalculationBreakdown>>() {})
+      val calculatedReleaseDates =
+        comparisonPerson.calculationRequestId?.let { calculationTransactionalService.findCalculationResults(it) }
+      val nomisDates = objectMapper.convertValue(
+        comparisonPerson.nomisDates,
+        object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {},
+      )
+      val overrideDates = objectMapper.convertValue(
+        comparisonPerson.overrideDates,
+        object : TypeReference<Map<ReleaseDateType, LocalDate?>>() {},
+      )
+      val breakdownByReleaseDateType = objectMapper.convertValue(
+        comparisonPerson.breakdownByReleaseDateType,
+        object : TypeReference<Map<ReleaseDateType, ReleaseDateCalculationBreakdown>>() {},
+      )
       val sdsPlusSentences =
-        if (comparisonPerson.sdsPlusSentencesIdentified.isEmpty) emptyList() else objectMapper.convertValue(comparisonPerson.sdsPlusSentencesIdentified, object : TypeReference<List<SentenceAndOffenceWithReleaseArrangements>>() {})
-      transform(comparisonPerson, nomisDates, calculatedReleaseDates, overrideDates, breakdownByReleaseDateType, sdsPlusSentences, hasDiscrepancyRecorded, objectMapper)
+        if (comparisonPerson.sdsPlusSentencesIdentified.isEmpty) {
+          emptyList()
+        } else {
+          objectMapper.convertValue(
+            comparisonPerson.sdsPlusSentencesIdentified,
+            object : TypeReference<List<SentenceAndOffenceWithReleaseArrangements>>() {},
+          )
+        }
+      transform(
+        comparisonPerson,
+        nomisDates,
+        calculatedReleaseDates,
+        overrideDates,
+        breakdownByReleaseDateType,
+        sdsPlusSentences,
+        hasDiscrepancyRecorded,
+        objectMapper,
+      )
     } else {
       throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
     }
   }
 
-  private fun userIsAllowedToViewThisComparison(comparison: Comparison) = comparison.prison != null && (prisonService.getCurrentUserPrisonsList().contains(comparison.prison) || comparison.prison == "all")
+  private fun userIsAllowedToViewThisComparison(comparison: Comparison) =
+    comparison.prison != null && (
+      prisonService.getCurrentUserPrisonsList()
+        .contains(comparison.prison) || comparison.prison == "all"
+      )
 
   fun createDiscrepancy(
     comparisonReference: String,
@@ -149,8 +172,11 @@ class ComparisonService(
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
       ?: throw EntityNotFoundException("Could not find comparison with reference: $comparisonReference ")
     val comparisonPerson =
-      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("Could not find comparison person with reference: $comparisonPersonReference")
-    if (comparisonPerson.establishment != null && prisonService.getCurrentUserPrisonsList().contains(comparisonPerson.establishment)) {
+      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference)
+        ?: throw EntityNotFoundException("Could not find comparison person with reference: $comparisonPersonReference")
+    if (comparisonPerson.establishment != null && prisonService.getCurrentUserPrisonsList()
+        .contains(comparisonPerson.establishment)
+    ) {
       return bulkComparisonService.createDiscrepancy(comparison, comparisonPerson, discrepancyRequest)
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
@@ -163,7 +189,8 @@ class ComparisonService(
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference)
       ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
     val comparisonPerson =
-      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("Could not find comparison person with reference: $comparisonPersonReference")
+      comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference)
+        ?: throw EntityNotFoundException("Could not find comparison person with reference: $comparisonPersonReference")
     if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
       return bulkComparisonService.getComparisonPersonDiscrepancy(comparison, comparisonPerson)
     }
@@ -209,14 +236,6 @@ class ComparisonService(
     }
 
     return earliestReleaseDateA.compareTo(earliestReleaseDateB)
-  }
-
-  private fun transformToHdcFourPlusComparisonMismatch(hdc4PlusResults: List<ComparisonPerson>, hdc4PlusCalculationOutcomes: List<CalculationOutcome>): List<HdcFourPlusComparisonMismatch> = hdc4PlusResults.map { comparisonPerson ->
-    val releaseDate = hdc4PlusCalculationOutcomes
-      .filter { outcome -> comparisonPerson.calculationRequestId?.let { id -> id == outcome.calculationRequestId } ?: false }
-      .filter { outcome -> outcome.outcomeDate != null }.maxByOrNull { outcome -> outcome.outcomeDate!! }
-      ?.let { nonNullOutcome -> ReleaseDate(nonNullOutcome.outcomeDate!!, ReleaseDateType.valueOf(nonNullOutcome.calculationDateType)) }
-    HdcFourPlusComparisonMismatch(comparisonPerson.person, comparisonPerson.lastName, comparisonPerson.mismatchType, comparisonPerson.hdcedFourPlusDate!!, comparisonPerson.establishment, releaseDate, comparisonPerson.fatalException)
   }
 
   companion object {

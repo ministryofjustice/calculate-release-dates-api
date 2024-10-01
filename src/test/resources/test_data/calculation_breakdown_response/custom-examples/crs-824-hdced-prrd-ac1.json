@@ -140,15 +140,6 @@
       "adjustedDays": -7,
       "releaseDate": "2021-12-16",
       "unadjustedDate": "2022-06-13"
-    },
-    "HDCED4PLUS": {
-      "rules": [
-        "HDCED_ADJUSTED_TO_CONCURRENT_PRRD"
-      ],
-      "rulesWithExtraAdjustments": {},
-      "adjustedDays": -102,
-      "releaseDate": "2022-03-28",
-      "unadjustedDate": "2021-12-16"
     }
   },
   "otherDates": {

@@ -723,20 +723,19 @@ class CalculationTransactionalServiceTest {
     val ersedConfiguration = ersedConfigurationForTests()
     val releasePointMultipliersConfiguration = releasePointMultiplierConfigurationForTests(params)
 
-    val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
     val workingDayService = WorkingDayService(bankHolidayService)
     val tusedCalculator = TusedCalculator(workingDayService)
     val sentenceAggregator = SentenceAggregator()
     val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultipliersConfiguration)
 
-    val hdced4Calculator = Hdced4Calculator(hdcedConfiguration, sentenceAggregator, releasePointMultiplierLookup)
+    val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val sentenceAdjustedCalculationService =
-      SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
+      SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
     val sentenceCalculationService =
       SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup, sentenceAggregator)
     val sentencesExtractionService = SentencesExtractionService()
-    val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdced4Calculator)
+    val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
 
     val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
     val trancheOne = TrancheOne(trancheConfiguration)

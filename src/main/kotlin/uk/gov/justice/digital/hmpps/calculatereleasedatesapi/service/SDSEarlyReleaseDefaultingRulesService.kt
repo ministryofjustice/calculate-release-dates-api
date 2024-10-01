@@ -83,14 +83,6 @@ class SDSEarlyReleaseDefaultingRulesService(
     if (dates.containsKey(ReleaseDateType.CRD) || dates.containsKey(ReleaseDateType.ARD)) {
       val controllingDate = getControllingDate(dates)
 
-      // Override HDCED or HDCED4PLUS to PRRD if PRRD is later than HDCED or HDCED4PLUS
-      // This check and set on HDCED4PLUS can be removed I think, left in due to tests relying on it. but when we remove the hdc4 commencement switch we can get rid of it
-      dates[ReleaseDateType.HDCED4PLUS]?.let { hdcedDate ->
-        val prrdDate = dates[ReleaseDateType.PRRD] ?: otherDates[ReleaseDateType.PRRD]
-        prrdDate?.takeIf { it.isAfter(hdcedDate) }?.let {
-          setHDC4Dates(it, dates)
-        }
-      }
       dates[ReleaseDateType.HDCED]?.let { hdcedDate ->
         val prrdDate = dates[ReleaseDateType.PRRD] ?: otherDates[ReleaseDateType.PRRD]
         prrdDate?.takeIf { it.isAfter(hdcedDate) }?.let {
@@ -112,14 +104,11 @@ class SDSEarlyReleaseDefaultingRulesService(
     }
   }
 
-  private fun setHDC4Dates(date: LocalDate, dates: MutableMap<ReleaseDateType, LocalDate>) {
-    dates[ReleaseDateType.HDCED4PLUS] = date
-  }
   private fun setHDCEDDates(date: LocalDate, dates: MutableMap<ReleaseDateType, LocalDate>) {
     dates[ReleaseDateType.HDCED] = date
   }
+
   private fun removeHDCEDDates(dates: MutableMap<ReleaseDateType, LocalDate>) {
-    dates.remove(ReleaseDateType.HDCED4PLUS)
     dates.remove(ReleaseDateType.HDCED)
   }
 
@@ -128,7 +117,6 @@ class SDSEarlyReleaseDefaultingRulesService(
       val controllingDate = getControllingDate(dates)
 
       val eligibilityDates = listOf(
-        ReleaseDateType.HDCED4PLUS,
         ReleaseDateType.HDCED,
         ReleaseDateType.ERSED,
       )
@@ -244,7 +232,6 @@ class SDSEarlyReleaseDefaultingRulesService(
       ReleaseDateType.CRD,
       ReleaseDateType.ERSED,
       ReleaseDateType.HDCED,
-      ReleaseDateType.HDCED4PLUS,
       ReleaseDateType.PED,
     )
   }

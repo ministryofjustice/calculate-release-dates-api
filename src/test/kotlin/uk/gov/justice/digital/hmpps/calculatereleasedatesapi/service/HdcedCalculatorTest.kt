@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDur
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -27,19 +26,6 @@ class HdcedCalculatorTest {
 
   private val config: HdcedConfiguration = hdcedConfigurationForTests()
   private val calculator = HdcedCalculator(config)
-
-  @Test
-  fun `shouldn't calculate a date for a sex offender`() {
-    val sentencedAt = LocalDate.of(2020, 1, 1)
-    val duration = Duration(mapOf(ChronoUnit.DAYS to 150L))
-    val offence = Offence(LocalDate.of(2020, 1, 1))
-    val sentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = false, hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO)
-    val sentenceCalculation = sentenceCalculation(sentence, 150, 75, Adjustments())
-
-    calc(sentenceCalculation, sentence, isActiveSexOffender = true)
-
-    assertHasNoHDCED(sentenceCalculation)
-  }
 
   @Test
   fun `shouldn't calculate a date when the custodial period is less than the minimum`() {
@@ -103,7 +89,7 @@ class HdcedCalculatorTest {
 
     calc(sentenceCalculation, sentence)
 
-    assertHasNoHDCED(sentenceCalculation)
+    assertHasHDCED(sentenceCalculation)
   }
 
   @Test
@@ -325,9 +311,7 @@ class HdcedCalculatorTest {
   private fun calc(
     sentenceCalculation: SentenceCalculation,
     sentence: StandardDeterminateSentence,
-    isActiveSexOffender: Boolean = false,
   ) {
-    val offender = Offender("ABC123", LocalDate.of(1980, 1, 1), isActiveSexOffender = isActiveSexOffender)
-    calculator.calculateHdced(sentence, sentenceCalculation, offender)
+    calculator.calculateHdced(sentence, sentenceCalculation)
   }
 }
