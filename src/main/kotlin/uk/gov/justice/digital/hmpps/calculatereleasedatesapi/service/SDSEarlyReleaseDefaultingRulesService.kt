@@ -97,9 +97,9 @@ class SDSEarlyReleaseDefaultingRulesService(
         val prrdDate = dates[ReleaseDateType.PRRD] ?: otherDates[ReleaseDateType.PRRD]
         prrdDate?.takeIf { it.isAfter(hdcedDate) }?.let {
           setHDCEDDates(it, dates)
-          standardReleaseResult.breakdownByReleaseDateType[ReleaseDateType.HDCED]?.let { breakdown ->
-            breakdownByReleaseDateType[ReleaseDateType.HDCED] = breakdown.copy(
-              rules = breakdown.rules + CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_PRRD,
+          standardReleaseResult.breakdownByReleaseDateType[ReleaseDateType.HDCED]?.apply {
+            breakdownByReleaseDateType[ReleaseDateType.HDCED] = copy(
+              rules = rules + CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_PRRD,
             )
           }
         }
@@ -221,7 +221,7 @@ class SDSEarlyReleaseDefaultingRulesService(
         releaseDate = commencementDate,
         unadjustedDate = early,
       )
-    } else if (standard != null && ((commencementDate != null && standard.isBefore(commencementDate)) || commencementDate == null || standard == early)) {
+    } else if (standard != null && (commencementDate == null || standard.isBefore(commencementDate) || standard == early)) {
       dates[dateType] = standard
       standardReleaseResult.breakdownByReleaseDateType[dateType]?.let {
         breakdownByReleaseDateType[dateType] = it.copy(
