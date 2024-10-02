@@ -2,7 +2,8 @@
   "dates": {
     "SLED": "2014-06-27",
     "CRD": "2012-06-27",
-    "ESED": "2014-06-27"
+    "ESED": "2014-06-27",
+    "HDCED": "2011-12-31"
   },
   "effectiveSentenceLength": "P4Y"
 }

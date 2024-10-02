@@ -2,6 +2,7 @@
   "dates": {
     "SLED": "2026-06-30",
     "CRD": "2024-06-30",
+    "HDCED": "2024-02-05",
     "ESED": "2026-06-30"
   },
   "effectiveSentenceLength": "P4Y"

@@ -340,10 +340,7 @@ class CalculationTransactionalServiceTest {
       TestUtil.objectMapper().writeValueAsString(calculationBreakdown),
     )
 
-    assertEquals(
-      jsonTransformation.loadCalculationBreakdown("$exampleType/$exampleNumber"),
-      calculationBreakdown,
-    )
+    assertThat(jsonTransformation.loadCalculationBreakdown("$exampleType/$exampleNumber")).isEqualTo(calculationBreakdown)
   }
 
   @Test
