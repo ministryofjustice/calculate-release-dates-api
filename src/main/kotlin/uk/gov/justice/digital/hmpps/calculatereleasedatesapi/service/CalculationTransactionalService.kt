@@ -131,6 +131,7 @@ class CalculationTransactionalService(
     return finalValidationMessages
   }
 
+  @Transactional
   fun validateAndCalculate(
     prisonerId: String,
     calculationUserInputs: CalculationUserInputs,
