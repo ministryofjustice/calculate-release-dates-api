@@ -18,9 +18,6 @@ object CalculationParamsTestConfigHelper {
   fun hdcedConfigurationForTests(params: String = "calculation-params"): HdcedConfiguration {
     return Binder(propertySource(params)).bind("hdced", HdcedConfiguration::class.java).get()
   }
-  fun hdced4ConfigurationForTests(params: String = "calculation-params"): Hdced4Configuration {
-    return Binder(propertySource(params)).bind("hdced4", Hdced4Configuration::class.java).get()
-  }
 
   fun ersedConfigurationForTests(params: String = "calculation-params"): ErsedConfiguration {
     return Binder(propertySource(params)).bind("ersed", ErsedConfiguration::class.java).get()

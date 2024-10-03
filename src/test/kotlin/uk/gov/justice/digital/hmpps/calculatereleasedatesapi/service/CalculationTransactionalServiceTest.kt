@@ -29,7 +29,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdced4ConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
@@ -95,7 +94,6 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.Date
 import java.util.Optional
 import java.util.UUID
 
@@ -144,6 +142,39 @@ class CalculationTransactionalServiceTest {
     error: String?,
     params: String?,
   ) {
+    log.info("Testing example $exampleType/$exampleNumber")
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+
+    val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
+    val calculatedReleaseDates: CalculatedReleaseDates
+    try {
+      calculatedReleaseDates = calculationTransactionalService(defaultParams(params))
+        .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
+    } catch (e: Exception) {
+      if (!error.isNullOrEmpty()) {
+        assertEquals(error, e.javaClass.simpleName)
+        return
+      } else {
+        throw e
+      }
+    }
+    log.info(
+      "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
+      TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
+    )
+    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
+
+    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
+    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
+  }
+
+  @Test
+  fun `Test Joel Example`() {
+    val exampleType = "alternative-release-point"
+    val exampleNumber = "35"
+    val error: String? = null
+    val params: String? = null
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
@@ -705,17 +736,6 @@ class CalculationTransactionalServiceTest {
   ): CalculationTransactionalService {
     val hdcedConfiguration =
       hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
-    var hdced4Configuration = hdced4ConfigurationForTests()
-
-    hdced4Configuration = if (overriddenConfigurationParams.containsKey("hdc4CommencementDate")) {
-      val overwrittenHdced4Config =
-        hdced4Configuration.copy(hdc4CommencementDate = overriddenConfigurationParams["hdc4CommencementDate"] as Date)
-      overwrittenHdced4Config
-    } else {
-      // If using alternate release config then set the HDC4 commencement date to tomorrow
-      val overwrittenHdced4Config = hdced4Configuration.copy(hdc4CommencementDate = DateTime.now().plusDays(1).toDate())
-      overwrittenHdced4Config
-    }
 
     val ersedConfiguration = ersedConfigurationForTests()
     val releasePointMultipliersConfiguration = releasePointMultiplierConfigurationForTests(params)
@@ -744,10 +764,13 @@ class CalculationTransactionalServiceTest {
       sentenceCalculationService,
       sentenceIdentificationService,
     )
-    val bookingExtractionService = BookingExtractionService(
+
+    val hdcedExtractionService = HdcedExtractionService(
       sentencesExtractionService,
-      hdcedConfiguration,
-      hdced4Configuration,
+    )
+    val bookingExtractionService = BookingExtractionService(
+      hdcedExtractionService,
+      sentencesExtractionService,
     )
     val bookingTimelineService = BookingTimelineService(
       sentenceAdjustedCalculationService,

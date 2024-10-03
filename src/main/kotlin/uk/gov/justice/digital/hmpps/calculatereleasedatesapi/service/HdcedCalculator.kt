@@ -60,7 +60,7 @@ class HdcedCalculator(
     }
   }
 
-  private data class Hdced4Params(
+  private data class HdcedParams(
     val custodialPeriod: Double,
     val dateHdcAppliesFrom: LocalDate,
     val deductedDays: Long,
@@ -71,7 +71,7 @@ class HdcedCalculator(
   fun calculateHdced(sentence: CalculableSentence, sentenceCalculation: SentenceCalculation) {
     val custodialPeriod = sentenceCalculation.numberOfDaysToDeterminateReleaseDateDouble
 
-    val params = Hdced4Params(
+    val params = HdcedParams(
       custodialPeriod,
       sentence.sentencedAt,
       getDeductedDays(sentenceCalculation),
@@ -100,7 +100,7 @@ class HdcedCalculator(
   private fun calculateHdcedUnderMidpoint(
     sentenceCalculation: SentenceCalculation,
     sentence: CalculableSentence,
-    params: Hdced4Params,
+    params: HdcedParams,
   ) {
     val halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod = max(
       hdcedConfiguration.custodialPeriodBelowMidpointMinimumDeductionDays,
@@ -138,7 +138,7 @@ class HdcedCalculator(
   private fun calculateHdcedOverMidpoint(
     sentenceCalculation: SentenceCalculation,
     sentence: CalculableSentence,
-    params: Hdced4Params,
+    params: HdcedParams,
   ) {
     sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate =
       sentenceCalculation.numberOfDaysToDeterminateReleaseDate
@@ -179,7 +179,7 @@ class HdcedCalculator(
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation,
     parentRule: CalculationRule,
-    params: Hdced4Params,
+    params: HdcedParams,
   ) {
     sentenceCalculation.homeDetentionCurfewEligibilityDate =
       sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc).plusDays(
@@ -204,7 +204,7 @@ class HdcedCalculator(
   private fun isCalculatedHdcLessThanTheMinimumHDCPeriod(
     sentence: CalculableSentence,
     sentenceCalculation: SentenceCalculation,
-    params: Hdced4Params,
+    params: HdcedParams,
   ) =
     // Is the HDCED date BEFORE additional days are added less than the minimum.
     sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc)
