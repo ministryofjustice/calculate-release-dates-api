@@ -5,6 +5,8 @@
   },
   "sentences": [
     {
+
+      "sentenceType": "SEC250_ORA",
       "offence": {
         "committedAt": "2010-06-28"
       },

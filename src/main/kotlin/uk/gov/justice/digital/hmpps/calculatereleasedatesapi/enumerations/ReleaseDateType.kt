@@ -24,5 +24,4 @@ enum class ReleaseDateType(val description: String) {
   None("None of the above dates apply"),
   Tariff("known as the Tariff expiry date"),
   ROTL("Release on temporary licence"),
-  HDCED4PLUS("HDCED4+"),
 }

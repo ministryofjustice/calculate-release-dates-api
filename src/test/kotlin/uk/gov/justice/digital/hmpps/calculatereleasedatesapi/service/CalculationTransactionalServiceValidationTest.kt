@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import nl.altindag.log.LogCaptor
-import org.joda.time.DateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -14,7 +13,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdced4ConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
@@ -37,7 +35,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.Calculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.LocalDate
-import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class CalculationTransactionalServiceValidationTest {
@@ -125,48 +122,39 @@ class CalculationTransactionalServiceValidationTest {
   ): CalculationTransactionalService {
     val hdcedConfiguration =
       hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
-    var hdced4Configuration = hdced4ConfigurationForTests()
-
-    hdced4Configuration = if (overriddenConfigurationParams.containsKey("hdc4CommencementDate")) {
-      val overwrittenHdced4Config =
-        hdced4Configuration.copy(hdc4CommencementDate = overriddenConfigurationParams["hdc4CommencementDate"] as Date)
-      overwrittenHdced4Config
-    } else {
-      // If using alternate release config then set the HDC4 commencement date to tomorrow
-      val overwrittenHdced4Config = hdced4Configuration.copy(hdc4CommencementDate = DateTime.now().plusDays(1).toDate())
-      overwrittenHdced4Config
-    }
 
     val ersedConfiguration = ersedConfigurationForTests()
     val releasePointMultipliersConfiguration = releasePointMultiplierConfigurationForTests(params)
 
-    val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
     val workingDayService = WorkingDayService(bankHolidayService)
     val tusedCalculator = TusedCalculator(workingDayService)
     val sentenceAggregator = SentenceAggregator()
     val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultipliersConfiguration)
 
-    val hdced4Calculator = Hdced4Calculator(hdcedConfiguration, sentenceAggregator, releasePointMultiplierLookup)
+    val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val sentenceAdjustedCalculationService =
-      SentenceAdjustedCalculationService(hdcedCalculator, tusedCalculator, hdced4Calculator, ersedCalculator)
+      SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
     val sentenceCalculationService =
       SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup, sentenceAggregator)
     val sentencesExtractionService = SentencesExtractionService()
-    val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdced4Calculator)
+    val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
     val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
     val trancheOne = TrancheOne(trancheConfiguration)
     val trancheTwo = TrancheTwo(trancheConfiguration)
     val trancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
     val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService, trancheConfiguration)
+    val hdcedExtractionService = HdcedExtractionService(
+      sentencesExtractionService,
+    )
+
     val bookingCalculationService = BookingCalculationService(
       sentenceCalculationService,
       sentenceIdentificationService,
     )
     val bookingExtractionService = BookingExtractionService(
+      hdcedExtractionService,
       sentencesExtractionService,
-      hdcedConfiguration,
-      hdced4Configuration,
     )
     val bookingTimelineService = BookingTimelineService(
       sentenceAdjustedCalculationService,

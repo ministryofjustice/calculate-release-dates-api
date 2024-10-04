@@ -80,7 +80,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideResponse
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HdcFourPlusComparisonMismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
@@ -732,7 +731,6 @@ fun transform(comparison: Comparison): ComparisonSummary = ComparisonSummary(
 fun transform(
   comparison: Comparison,
   mismatches: List<ComparisonPerson>,
-  hdc4PlusResults: List<HdcFourPlusComparisonMismatch>,
   objectMapper: ObjectMapper,
 ): ComparisonOverview = ComparisonOverview(
   comparison.comparisonShortReference,
@@ -745,25 +743,6 @@ fun transform(
   comparison.numberOfPeopleComparisonFailedFor,
   mismatches.map { transform(it, objectMapper) },
   comparison.comparisonStatus.name,
-  hdc4PlusResults,
-)
-
-fun transform(
-  comparison: Comparison,
-  mismatches: List<ComparisonPerson>,
-  objectMapper: ObjectMapper,
-): ComparisonOverview = ComparisonOverview(
-  comparison.comparisonShortReference,
-  comparison.prison,
-  comparison.comparisonType,
-  comparison.calculatedAt,
-  comparison.calculatedByUsername,
-  comparison.numberOfMismatches,
-  comparison.numberOfPeopleCompared,
-  comparison.numberOfPeopleComparisonFailedFor,
-  mismatches.map { transform(it, objectMapper) },
-  comparison.comparisonStatus.name,
-  emptyList(),
 )
 
 internal fun transform(comparisonPerson: ComparisonPerson, objectMapper: ObjectMapper): ComparisonMismatchSummary = ComparisonMismatchSummary(

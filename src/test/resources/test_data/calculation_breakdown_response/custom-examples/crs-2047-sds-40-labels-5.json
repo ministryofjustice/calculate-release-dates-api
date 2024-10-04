@@ -61,7 +61,7 @@
       "releaseDate": "2025-01-23",
       "unadjustedDate": "2025-02-20"
     },
-    "HDCED4PLUS": {
+    "HDCED": {
       "rules": [
         "HDCED_GE_MIDPOINT_LT_MAX_PERIOD",
         "SDS_STANDARD_RELEASE_APPLIES"
