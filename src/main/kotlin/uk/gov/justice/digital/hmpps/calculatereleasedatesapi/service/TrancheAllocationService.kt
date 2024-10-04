@@ -26,9 +26,13 @@ class TrancheAllocationService(
     //
     // That looks at movements and date of release to determine release conditions applicable is yet to be implemented.
     val sentencesConsideredForTrancheRules =
-      booking.sentences.filter { sentence -> (sentence.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE
-        || sentence.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE)
-        && (!sentence.isRecall() && sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate))}
+      booking.sentences.filter { sentence ->
+        (
+          sentence.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE ||
+            sentence.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE
+          ) &&
+          (!sentence.isRecall() && sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate))
+      }
         .filter { it.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate) }
 
     var resultTranche: SDSEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0
