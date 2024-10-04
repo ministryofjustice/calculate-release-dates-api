@@ -179,7 +179,7 @@ class BookingExtractionService(
      */
 
     val latestHDCEDAndBreakdown =
-      hdcedExtractionService.extractManyHomeDetentionCurfew4PlusEligibilityDate(sentences, mostRecentSentencesByReleaseDate)
+      hdcedExtractionService.extractManyHomeDetentionCurfewEligibilityDate(sentences, mostRecentSentencesByReleaseDate)
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
       extractManyTopUpSuperVisionDate(sentences, latestLicenseExpiryDate)

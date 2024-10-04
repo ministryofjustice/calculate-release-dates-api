@@ -15,7 +15,7 @@ class HdcedExtractionService(
   val extractionService: SentencesExtractionService,
 ) {
 
-  fun extractManyHomeDetentionCurfew4PlusEligibilityDate(
+  fun extractManyHomeDetentionCurfewEligibilityDate(
     sentences: List<CalculableSentence>,
     mostRecentSentencesByReleaseDate: List<CalculableSentence>,
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
@@ -41,7 +41,7 @@ class HdcedExtractionService(
     return null
   }
 
-  private fun getLatestConflictingNonHdcOrHdc4Sentence(
+  private fun getLatestConflictingSentence(
     sentenceGroup: List<CalculableSentence>,
     calculatedHDCED: LocalDate?,
     hdcSentence: CalculableSentence?,
@@ -118,7 +118,7 @@ class HdcedExtractionService(
     hdcedDate: LocalDate?,
     hdcedSentence: CalculableSentence?,
   ): Pair<CalculableSentence?, LocalDate?> {
-    return getLatestConflictingNonHdcOrHdc4Sentence(
+    return getLatestConflictingSentence(
       sentences.filter { it.sentenceCalculation.homeDetentionCurfewEligibilityDate == null },
       hdcedDate,
       hdcedSentence,
