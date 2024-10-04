@@ -25,6 +25,8 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.skyscreamer.jsonassert.JSONAssert
+import org.skyscreamer.jsonassert.JSONCompareMode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
@@ -370,8 +372,16 @@ class CalculationTransactionalServiceTest {
       "Example $exampleType/$exampleNumber outcome CalculationBreakdown: {}",
       TestUtil.objectMapper().writeValueAsString(calculationBreakdown),
     )
+    val actualJson: String? = TestUtil.objectMapper().writeValueAsString(calculationBreakdown)
+    val expectedJson: String? = jsonTransformation.getJsonTest("$exampleType/$exampleNumber.json", "calculation_breakdown_response")
 
-    assertThat(jsonTransformation.loadCalculationBreakdown("$exampleType/$exampleNumber")).isEqualTo(calculationBreakdown)
+    JSONAssert.assertEquals(
+      expectedJson,
+      actualJson,
+      JSONCompareMode.LENIENT,
+    )
+
+    assertThat(calculationBreakdown).isEqualTo(jsonTransformation.loadCalculationBreakdown("$exampleType/$exampleNumber"))
   }
 
   @Test

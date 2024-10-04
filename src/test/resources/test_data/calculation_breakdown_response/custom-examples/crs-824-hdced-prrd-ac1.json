@@ -129,17 +129,12 @@
     },
     "HDCED": {
       "rules": [
-        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD"
+        "HDCED_ADJUSTED_TO_CONCURRENT_PRRD"
       ],
-      "rulesWithExtraAdjustments": {
-        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD": {
-          "adjustmentValue": -179,
-          "type": "DAYS"
-        }
-      },
-      "adjustedDays": -7,
-      "releaseDate": "2021-12-16",
-      "unadjustedDate": "2022-06-13"
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -102,
+      "releaseDate": "2022-03-28",
+      "unadjustedDate": "2021-12-16"
     }
   },
   "otherDates": {
