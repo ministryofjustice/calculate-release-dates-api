@@ -33,7 +33,7 @@ ux-examples,2,,sds-50
 ux-examples,3,,sds-50
 custom-examples,14-day-hdced-rule-1,,sds-50
 custom-examples,14-day-hdced-rule-2,,sds-50
-custom-examples,consecutive-sentences-one-tuesd-one-without,,sds-50
+custom-examples,consecutive-sentences-one-tused-one-without,,sds-50
 custom-examples,consecutive-sentences-one-hdced-one-without,,sds-50
 custom-examples,week-calculation-1,,sds-50
 custom-examples,week-calculation-2,,sds-50
@@ -71,7 +71,7 @@ custom-examples,crs-698-hdced-14-days-rule-concurrent-sentences-different-day,,s
 custom-examples,crs-698-hdced-14-days-rule-concurrent-sentences-same-day,,sds-50
 custom-examples,crs-698-hdced-14-days-rule-consecutive-sentence,,sds-50
 custom-examples,crs-698-hdced-14-days-rule-single-sentence,,sds-50
-custom-examples,hdced-extration-bug,,sds-50
+custom-examples,hdced-extraction-bug,,sds-50
 custom-examples,crs-723-remand-s2,,sds-50
 custom-examples,crs-730-pre-prod-error-1,,sds-50
 custom-examples,crs-732-consecutive-sentence-chain-bug,,sds-50

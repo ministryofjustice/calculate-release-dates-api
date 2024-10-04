@@ -156,20 +156,6 @@
       "adjustedDays": -18,
       "releaseDate": "2022-09-06",
       "unadjustedDate": "2023-03-04"
-    },
-    "HDCED4PLUS": {
-      "rules": [
-        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD"
-      ],
-      "rulesWithExtraAdjustments": {
-        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD": {
-          "adjustmentValue": -179,
-          "type": "DAYS"
-        }
-      },
-      "adjustedDays": -18,
-      "releaseDate": "2022-09-06",
-      "unadjustedDate": "2023-03-04"
     }
   },
   "otherDates": {}

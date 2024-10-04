@@ -86,7 +86,7 @@
       "releaseDate": "2024-08-27",
       "unadjustedDate": "2025-10-07"
     },
-    "HDCED4PLUS": {
+    "HDCED": {
       "rules": [
         "HDCED_GE_MIDPOINT_LT_MAX_PERIOD"
       ],

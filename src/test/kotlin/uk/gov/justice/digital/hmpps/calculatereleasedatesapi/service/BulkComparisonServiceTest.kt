@@ -49,7 +49,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Alert
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.Person
@@ -104,7 +103,16 @@ class BulkComparisonServiceTest {
     prisonerId = "ABC123DEF",
     calculationStatus = CalculationStatus.CONFIRMED,
     calculationReference = UUID.randomUUID(),
-    calculationReason = CalculationReason(1, true, false, "Bulk Calculation", true, "UPDATE", nomisComment = "NOMIS_COMMENT", null),
+    calculationReason = CalculationReason(
+      1,
+      true,
+      false,
+      "Bulk Calculation",
+      true,
+      "UPDATE",
+      nomisComment = "NOMIS_COMMENT",
+      null,
+    ),
     calculationDate = LocalDate.of(2024, 1, 1),
   )
 
@@ -214,7 +222,9 @@ class BulkComparisonServiceTest {
     val booking =
       Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(validationResult)
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
+      validationResult,
+    )
 
     whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
       listOf(
@@ -320,7 +330,11 @@ class BulkComparisonServiceTest {
       validationResult,
     )
 
-    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(listOf(calculableSentenceEnvelope))
+    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
+      listOf(
+        calculableSentenceEnvelope,
+      ),
+    )
 
     val aReallyLongException = List(25) { "ABCDEFGHIJKLMNOPQRSTUVWXYZ" }.joinToString()
     assertThat(aReallyLongException).hasSizeGreaterThan(256)
@@ -446,453 +460,19 @@ class BulkComparisonServiceTest {
 
     val mismatch = bulkComparisonService.buildMismatch(
       calculableSentenceEnvelope,
-      calculableSentenceEnvelope.sentenceAndOffences.flatMap { sentence -> sentence.offences.map { NormalisedSentenceAndOffence(sentence, it) } }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+      calculableSentenceEnvelope.sentenceAndOffences.flatMap { sentence ->
+        sentence.offences.map {
+          NormalisedSentenceAndOffence(
+            sentence,
+            it,
+          )
+        }
+      }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
     )
 
     assertTrue(mismatch.isValid)
     assertTrue(mismatch.isMatch)
     assertEquals(MismatchType.NONE, mismatch.type)
-  }
-
-  @Test
-  fun `Determine mismatch invalid and not potential HDC4+ due being a sex offender`() {
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(
-      listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)),
-      booking,
-      calculatedReleaseDates,
-      null,
-    )
-
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-
-    val mismatch = bulkComparisonService.buildMismatch(
-      sexOffenderCalculableSentenceEnvelope,
-      sexOffenderCalculableSentenceEnvelope.sentenceAndOffences.flatMap { sentence -> sentence.offences.map { NormalisedSentenceAndOffence(sentence, it) } }
-        .map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
-    )
-
-    assertFalse(mismatch.isValid)
-    assertFalse(mismatch.isMatch)
-    assertEquals(MismatchType.VALIDATION_ERROR, mismatch.type)
-  }
-
-  @Test
-  fun `Determine mismatch invalid and not potential HDC4+ due to sentence type`() {
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(
-      listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)),
-      booking,
-      calculatedReleaseDates,
-      null,
-    )
-
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-
-    val notHdc4SentenceTypeEnvelope = calculableSentenceEnvelope.copy(
-      sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.SEC236A.name)),
-    )
-    val mismatch = bulkComparisonService.buildMismatch(
-      notHdc4SentenceTypeEnvelope,
-      notHdc4SentenceTypeEnvelope.sentenceAndOffences.flatMap { sentence -> sentence.offences.map { NormalisedSentenceAndOffence(sentence, it) } }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
-    )
-
-    assertFalse(mismatch.isValid)
-    assertFalse(mismatch.isMatch)
-    assertEquals(MismatchType.VALIDATION_ERROR, mismatch.type)
-  }
-
-  @Test
-  fun `Determine mismatch invalid and not potential HDC4+ due to sentence length under 4 years`() {
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(
-      listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)),
-      booking,
-      calculatedReleaseDates,
-      null,
-    )
-
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-
-    val threeYearSentenceEnvelope = calculableSentenceEnvelope.copy(
-      sentenceAndOffences = listOf(sentenceAndOffence.copy(terms = listOf(SentenceTerms(years = 3)))),
-    )
-    val mismatch = bulkComparisonService.buildMismatch(
-      threeYearSentenceEnvelope,
-      threeYearSentenceEnvelope.sentenceAndOffences.flatMap { sentence -> sentence.offences.map { NormalisedSentenceAndOffence(sentence, it) } }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
-    )
-
-    assertFalse(mismatch.isValid)
-    assertFalse(mismatch.isMatch)
-    assertEquals(MismatchType.VALIDATION_ERROR, mismatch.type)
-  }
-
-  @Test
-  fun `Determine validation error mismatch not potential HDC4+ when there is a EDS sentence consecutive to an SDS sentence`() {
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(
-      listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)),
-      booking,
-      calculatedReleaseDates,
-      null,
-    )
-
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-
-    val sdsSentence =
-      sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.ADIMP.name, sentenceSequence = 1)
-    val edsSentence = sentenceAndOffence.copy(
-      sentenceCalculationType = SentenceCalculationType.EDS18.name,
-      consecutiveToSequence = sdsSentence.sentenceSequence,
-    )
-    val sentencesAndOffences = listOf(sdsSentence, edsSentence)
-    val consecutiveSentencesEnvelope = calculableSentenceEnvelope.copy(
-      sentenceAndOffences = sentencesAndOffences,
-    )
-
-    val mismatch = bulkComparisonService.buildMismatch(
-      consecutiveSentencesEnvelope,
-      consecutiveSentencesEnvelope.sentenceAndOffences.flatMap { sentence -> sentence.offences.map { NormalisedSentenceAndOffence(sentence, it) } }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
-    )
-
-    assertFalse(mismatch.isValid)
-    assertFalse(mismatch.isMatch)
-    assertEquals(MismatchType.VALIDATION_ERROR, mismatch.type)
-  }
-
-  @Test
-  fun `Determine validation error mismatch not potential HDC4+ when there is a SDS sentence consecutive to an SOPC sentence`() {
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(
-      listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)),
-      booking,
-      calculatedReleaseDates,
-      null,
-    )
-
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-
-    val sdsSentence =
-      sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.SOPC21.name, sentenceSequence = 56)
-    val edsSentence = sentenceAndOffence.copy(
-      sentenceCalculationType = SentenceCalculationType.SEC91_03_ORA.name,
-      consecutiveToSequence = sdsSentence.sentenceSequence,
-    )
-    val sentencesAndOffences = listOf(sdsSentence, edsSentence)
-    val consecutiveSentencesEnvelope = calculableSentenceEnvelope.copy(
-      sentenceAndOffences = sentencesAndOffences,
-    )
-
-    val mismatch = bulkComparisonService.buildMismatch(
-      consecutiveSentencesEnvelope,
-      consecutiveSentencesEnvelope.sentenceAndOffences.flatMap { sentence -> sentence.offences.map { NormalisedSentenceAndOffence(sentence, it) } }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
-    )
-
-    assertFalse(mismatch.isValid)
-    assertFalse(mismatch.isMatch)
-    assertEquals(MismatchType.VALIDATION_ERROR, mismatch.type)
-  }
-
-  @Test
-  fun `Determine potential HDC4+ mismatch`() {
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(
-      listOf(ValidationMessage(ValidationCode.SENTENCE_HAS_NO_IMPRISONMENT_TERM)),
-      booking,
-      calculatedReleaseDates,
-      null,
-    )
-
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-
-    val mismatch = bulkComparisonService.buildMismatch(
-      calculableSentenceEnvelope,
-      calculableSentenceEnvelope.sentenceAndOffences.flatMap { sentence -> sentence.offences.map { NormalisedSentenceAndOffence(sentence, it) } }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
-    )
-
-    assertFalse(mismatch.isValid)
-    assertFalse(mismatch.isMatch)
-    assertEquals(MismatchType.VALIDATION_ERROR_HDC4_PLUS, mismatch.type)
-  }
-
-  @Test
-  fun `Determine unsupported sentence type not HDC4+ because active sex offender`() {
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(
-      listOf(ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE)),
-      booking,
-      calculatedReleaseDates,
-      null,
-    )
-
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-
-    val mismatch = bulkComparisonService.buildMismatch(
-      sexOffenderCalculableSentenceEnvelope,
-      sexOffenderCalculableSentenceEnvelope.sentenceAndOffences.flatMap { sentence -> sentence.offences.map { NormalisedSentenceAndOffence(sentence, it) } }
-        .map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
-    )
-
-    assertFalse(mismatch.isValid)
-    assertFalse(mismatch.isMatch)
-    assertEquals(MismatchType.UNSUPPORTED_SENTENCE_TYPE, mismatch.type)
-  }
-
-  @Test
-  fun `Determine unsupported sentence type not HDC4+ because indeterminate sentence type`() {
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(
-      listOf(
-        ValidationMessage(ValidationCode.FTR_28_DAYS_SENTENCE_LT_12_MONTHS),
-        ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE),
-      ),
-      booking,
-      calculatedReleaseDates,
-      null,
-    )
-
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-
-    val indeterminateSentenceEnvelope = calculableSentenceEnvelope.copy(
-      sentenceAndOffences = listOf(sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.LIFE.name)),
-    )
-    val mismatch = bulkComparisonService.buildMismatch(
-      indeterminateSentenceEnvelope,
-      indeterminateSentenceEnvelope.sentenceAndOffences.flatMap { sentence -> sentence.offences.map { NormalisedSentenceAndOffence(sentence, it) } }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
-    )
-
-    assertFalse(mismatch.isValid)
-    assertFalse(mismatch.isMatch)
-    assertEquals(MismatchType.UNSUPPORTED_SENTENCE_TYPE, mismatch.type)
-  }
-
-  @Test
-  fun `Determine unsupported sentence type not HDC4+ because duration less than 4 years`() {
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(
-      listOf(
-        ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE),
-      ),
-      booking,
-      calculatedReleaseDates,
-      null,
-    )
-
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-    val unsupportedSdsThreeYearsSentenceEnvelope = calculableSentenceEnvelope.copy(
-      sentenceAndOffences = listOf(
-        sentenceAndOffence.copy(
-          sentenceCalculationType = SentenceCalculationType.LR_EPP.name,
-          terms = listOf(
-            SentenceTerms(years = 3),
-          ),
-        ),
-      ),
-    )
-
-    val mismatch = bulkComparisonService.buildMismatch(
-      unsupportedSdsThreeYearsSentenceEnvelope,
-      unsupportedSdsThreeYearsSentenceEnvelope.sentenceAndOffences.flatMap { sentence -> sentence.offences.map { NormalisedSentenceAndOffence(sentence, it) } }
-        .map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
-    )
-
-    assertFalse(mismatch.isValid)
-    assertFalse(mismatch.isMatch)
-    assertEquals(MismatchType.UNSUPPORTED_SENTENCE_TYPE, mismatch.type)
-  }
-
-  @Test
-  fun `Determine unsupported sentence type not HDC4+ because of SDS+ offence`() {
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(
-      listOf(
-        ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE),
-      ),
-      booking,
-      calculatedReleaseDates,
-      null,
-    )
-
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
-
-    val sdsPlusSentence = sentenceAndOffence.copy(
-      sentenceCalculationType = SentenceCalculationType.SEC91_03.name,
-      offences = listOf(offenderOffence),
-    )
-
-    val nonSdsPlusSentence = sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.CIVIL.name)
-    val unsupportedSdsPlusSentenceEnvelope = calculableSentenceEnvelope.copy(
-      sentenceAndOffences = listOf(
-        nonSdsPlusSentence,
-        sdsPlusSentence,
-      ),
-    )
-    val sentenceAndOffenceWithReleaseArrangements = listOf(
-      SentenceAndOffenceWithReleaseArrangements(nonSdsPlusSentence, nonSdsPlusSentence.offences[0], false, SDSEarlyReleaseExclusionType.NO),
-      SentenceAndOffenceWithReleaseArrangements(sdsPlusSentence, sdsPlusSentence.offences[0], true, SDSEarlyReleaseExclusionType.NO),
-    )
-
-    val mismatch = bulkComparisonService.buildMismatch(unsupportedSdsPlusSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements)
-
-    assertFalse(mismatch.isValid)
-    assertFalse(mismatch.isMatch)
-    assertEquals(MismatchType.UNSUPPORTED_SENTENCE_TYPE, mismatch.type)
-  }
-
-  @Test
-  fun `Determine if a mismatch report is not valid due to unsupported sentence type and potential HDC4+`() {
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(
-      listOf(
-        ValidationMessage(ValidationCode.FTR_28_DAYS_SENTENCE_LT_12_MONTHS),
-        ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE),
-      ),
-      booking,
-      calculatedReleaseDates,
-      null,
-    )
-
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
-
-    val sentenceAndOffences = listOf(
-      sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.LR_EPP.name),
-      sentenceAndOffence.copy(sentenceCalculationType = SentenceCalculationType.ADIMP.name),
-    )
-    val unsupportedAndSdsFiveYearsSentenceEnvelope = calculableSentenceEnvelope.copy(
-      sentenceAndOffences = sentenceAndOffences,
-    )
-    val mismatch = bulkComparisonService.buildMismatch(
-      unsupportedAndSdsFiveYearsSentenceEnvelope,
-      sentenceAndOffences.flatMap { sentence -> sentence.offences.map { NormalisedSentenceAndOffence(sentence, it) } }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
-    )
-
-    assertFalse(mismatch.isValid)
-    assertFalse(mismatch.isMatch)
-    assertEquals(MismatchType.UNSUPPORTED_SENTENCE_TYPE_FOR_HDC4_PLUS, mismatch.type)
-  }
-
-  @Test
-  fun `should be unsupported sentence type for HDC4+ when unsupported sentence and consecutive SDS sentences of more than 4 years`() {
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(
-      listOf(
-        ValidationMessage(ValidationCode.FTR_28_DAYS_SENTENCE_LT_12_MONTHS),
-        ValidationMessage(ValidationCode.UNSUPPORTED_SENTENCE_TYPE),
-      ),
-      booking,
-      calculatedReleaseDates,
-      null,
-    )
-
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
-
-    val sentence1 =
-      sentenceAndOffence.copy(
-        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-        sentenceSequence = 1,
-        terms = listOf(
-          SentenceTerms(months = 4),
-        ),
-      )
-    val sentence2 = sentenceAndOffence.copy(
-      sentenceCalculationType = SentenceCalculationType.SEC91_03.name,
-      sentenceSequence = 2,
-      terms = listOf(
-        SentenceTerms(years = 1),
-      ),
-    )
-    val sentence3 =
-      sentenceAndOffence.copy(
-        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-        sentenceSequence = 3,
-        consecutiveToSequence = 1,
-        terms = listOf(
-          SentenceTerms(years = 3),
-        ),
-      )
-    val sentence4 =
-      sentenceAndOffence.copy(
-        sentenceCalculationType = SentenceCalculationType.YOI_ORA.name,
-        sentenceSequence = 4,
-        consecutiveToSequence = 2,
-        terms = listOf(
-          SentenceTerms(months = 3),
-        ),
-      )
-    val sentence5 =
-      sentenceAndOffence.copy(
-        sentenceCalculationType = SentenceCalculationType.SEC250.name,
-        sentenceSequence = 5,
-        terms = listOf(
-          SentenceTerms(days = 5),
-        ),
-      )
-    val sentence6 =
-      sentenceAndOffence.copy(
-        sentenceCalculationType = SentenceCalculationType.SEC91_03.name,
-        sentenceSequence = 6,
-        consecutiveToSequence = 3,
-        terms = listOf(
-          SentenceTerms(years = 1),
-        ),
-      )
-    val sentence7 =
-      sentenceAndOffence.copy(
-        sentenceCalculationType = SentenceCalculationType.LR_EPP.name,
-        sentenceSequence = 7,
-        consecutiveToSequence = 6,
-      )
-    val sentencesAndOffences = listOf(sentence1, sentence2, sentence3, sentence4, sentence5, sentence6, sentence7)
-    val consecutiveSentencesEnvelope = calculableSentenceEnvelope.copy(
-      sentenceAndOffences = sentencesAndOffences,
-    )
-
-    val mismatch = bulkComparisonService.buildMismatch(
-      consecutiveSentencesEnvelope,
-      sentencesAndOffences.flatMap { sentence -> sentence.offences.map { NormalisedSentenceAndOffence(sentence, it) } }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
-    )
-    assertThat(mismatch.type).isEqualTo(MismatchType.UNSUPPORTED_SENTENCE_TYPE_FOR_HDC4_PLUS)
   }
 
   @Test
@@ -919,7 +499,14 @@ class BulkComparisonServiceTest {
     )
     val mismatch = bulkComparisonService.buildMismatch(
       indeterminateSentenceEnvelope,
-      indeterminateSentenceEnvelope.sentenceAndOffences.flatMap { sentence -> sentence.offences.map { NormalisedSentenceAndOffence(sentence, it) } }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+      indeterminateSentenceEnvelope.sentenceAndOffences.flatMap { sentence ->
+        sentence.offences.map {
+          NormalisedSentenceAndOffence(
+            sentence,
+            it,
+          )
+        }
+      }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
     )
 
     assertFalse(mismatch.isValid)
@@ -955,143 +542,19 @@ class BulkComparisonServiceTest {
 
     val mismatch = bulkComparisonService.buildMismatch(
       calculableSentenceEnvelope,
-      calculableSentenceEnvelope.sentenceAndOffences.flatMap { sentence -> sentence.offences.map { NormalisedSentenceAndOffence(sentence, it) } }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+      calculableSentenceEnvelope.sentenceAndOffences.flatMap { sentence ->
+        sentence.offences.map {
+          NormalisedSentenceAndOffence(
+            sentence,
+            it,
+          )
+        }
+      }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
     )
 
     assertTrue(mismatch.isValid)
     assertFalse(mismatch.isMatch)
     assertEquals(MismatchType.RELEASE_DATES_MISMATCH, mismatch.type)
-  }
-
-  @Test
-  fun `Should set HDCED4PLUS date if not the same as HDCED`() {
-    val comparison = aBasicComparison()
-    val duplicateReleaseDates = releaseDates.toMutableMap()
-    duplicateReleaseDates[ReleaseDateType.HDCED4PLUS] = LocalDate.of(2022, 1, 1)
-
-    val duplicatedReleaseDates = CalculatedReleaseDates(
-      dates = duplicateReleaseDates,
-      calculationRequestId = 123,
-      bookingId = 123,
-      prisonerId = "ABC123DEF",
-      calculationStatus = CalculationStatus.CONFIRMED,
-      calculationReference = UUID.randomUUID(),
-      calculationReason = bulkCalculationReason,
-      calculationDate = LocalDate.of(2024, 1, 1),
-    )
-
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
-
-    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
-      listOf(
-        sexOffenderCalculableSentenceEnvelope,
-      ),
-    )
-
-    bulkComparisonService.processPrisonComparison(comparison, "")
-
-    val comparisonPersonCaptor = ArgumentCaptor.forClass(ComparisonPerson::class.java)
-    verify(comparisonPersonRepository).save(comparisonPersonCaptor.capture())
-
-    val comparisonPerson = comparisonPersonCaptor.value
-    assertThat(comparisonPerson.hdcedFourPlusDate).isEqualTo(LocalDate.of(2022, 1, 1))
-  }
-
-  @Test
-  fun `Should record HDCED4PLUS date mismatch for ESTABLISHMENT_HDCED4PLUS comparison type`() {
-    val comparison = Comparison(
-      1,
-      UUID.randomUUID(),
-      "ABCD1234",
-      objectMapper.createObjectNode(),
-      "BMI",
-      ComparisonType.ESTABLISHMENT_HDCED4PLUS,
-      LocalDateTime.now(),
-      "SOMEONE",
-      ComparisonStatus(ComparisonStatusValue.PROCESSING),
-    )
-    val duplicateReleaseDates = releaseDates.toMutableMap()
-    duplicateReleaseDates[ReleaseDateType.HDCED4PLUS] = LocalDate.of(2022, 1, 1)
-
-    val duplicatedReleaseDates = CalculatedReleaseDates(
-      dates = duplicateReleaseDates,
-      calculationRequestId = 123,
-      bookingId = 123,
-      prisonerId = "ABC123DEF",
-      calculationStatus = CalculationStatus.CONFIRMED,
-      calculationReference = UUID.randomUUID(),
-      calculationReason = bulkCalculationReason,
-      calculationDate = LocalDate.of(2024, 1, 1),
-    )
-
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
-    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
-      listOf(
-        sexOffenderCalculableSentenceEnvelope,
-      ),
-    )
-
-    bulkComparisonService.processPrisonComparison(comparison, "")
-
-    val comparisonPersonCaptor = ArgumentCaptor.forClass(ComparisonPerson::class.java)
-    verify(comparisonPersonRepository).save(comparisonPersonCaptor.capture())
-
-    val comparisonPerson = comparisonPersonCaptor.value
-    assertThat(comparisonPerson.hdcedFourPlusDate).isEqualTo(LocalDate.of(2022, 1, 1))
-  }
-
-  @Test
-  fun `Should set HDCED4PLUS date to null if same`() {
-    val comparison = aBasicComparison()
-    val duplicateReleaseDates = releaseDates.toMutableMap()
-    duplicateReleaseDates[ReleaseDateType.HDCED4PLUS] = LocalDate.of(2026, 1, 1)
-
-    val duplicatedReleaseDates = CalculatedReleaseDates(
-      dates = duplicateReleaseDates,
-      calculationRequestId = 123,
-      bookingId = 123,
-      prisonerId = "ABC123DEF",
-      calculationStatus = CalculationStatus.CONFIRMED,
-      calculationReference = UUID.randomUUID(),
-      calculationReason = bulkCalculationReason,
-      calculationDate = LocalDate.of(2024, 1, 1),
-    )
-
-    val booking =
-      Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
-    val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), any())).thenReturn(
-      validationResult,
-    )
-
-    whenever(calculationReasonRepository.findTopByIsBulkTrue()).thenReturn(Optional.of(bulkCalculationReason))
-
-    whenever(prisonService.getActiveBookingsByEstablishment(comparison.prison!!, "")).thenReturn(
-      listOf(
-        sexOffenderCalculableSentenceEnvelope,
-      ),
-    )
-
-    bulkComparisonService.processPrisonComparison(comparison, "")
-
-    val comparisonPersonCaptor = ArgumentCaptor.forClass(ComparisonPerson::class.java)
-    verify(comparisonPersonRepository).save(comparisonPersonCaptor.capture())
-
-    val comparisonPerson = comparisonPersonCaptor.value
-    assertThat(comparisonPerson.hdcedFourPlusDate).isNull()
   }
 
   private fun aBasicComparison() = Comparison(
@@ -1235,7 +698,8 @@ class BulkComparisonServiceTest {
     assertEquals(discrepancyCause.subCategory, causes[0].subCategory)
   }
 
-  private val bulkCalculationReason = CalculationReason(1, true, false, "Bulk Calculation", true, "UPDATE", nomisComment = "NOMIS_COMMENT", null)
+  private val bulkCalculationReason =
+    CalculationReason(1, true, false, "Bulk Calculation", true, "UPDATE", nomisComment = "NOMIS_COMMENT", null)
 
   private fun someReleaseDates(): MutableMap<ReleaseDateType, LocalDate> {
     val releaseDates = mutableMapOf<ReleaseDateType, LocalDate>()

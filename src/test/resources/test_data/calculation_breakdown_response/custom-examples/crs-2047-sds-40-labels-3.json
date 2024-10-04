@@ -79,21 +79,6 @@
       "adjustedDays": -101,
       "releaseDate": "2024-06-26",
       "unadjustedDate": "2024-05-20"
-    },
-    "HDCED4PLUS": {
-      "rules": [
-        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT",
-        "SDS_STANDARD_RELEASE_APPLIES"
-      ],
-      "rulesWithExtraAdjustments": {
-        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
-          "adjustmentValue": 138,
-          "type": "DAYS"
-        }
-      },
-      "adjustedDays": -101,
-      "releaseDate": "2024-06-26",
-      "unadjustedDate": "2024-05-20"
     }
   },
   "otherDates": {},

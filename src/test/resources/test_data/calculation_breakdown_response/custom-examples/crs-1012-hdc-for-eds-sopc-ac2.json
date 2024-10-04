@@ -61,15 +61,6 @@
       "adjustedDays": -56,
       "releaseDate": "2023-03-09",
       "unadjustedDate": "2023-01-12"
-    },
-    "HDCED4PLUS": {
-      "rules": [
-        "HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE"
-      ],
-      "rulesWithExtraAdjustments": {},
-      "adjustedDays": -56,
-      "releaseDate": "2023-03-09",
-      "unadjustedDate": "2023-01-12"
     }
   },
   "otherDates": {},
