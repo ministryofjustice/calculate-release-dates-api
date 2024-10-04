@@ -19,15 +19,21 @@ class TrancheAllocationService(
 ) {
 
   fun calculateTranche(calculationResult: CalculationResult, booking: Booking): SDSEarlyReleaseTranche {
-    // List of sentences allowable for SDS early release
     // Exclude any sentences where sentencing was after T1 commencement - CRS-2126
-    val sdsEarlyReleaseSentences =
-      booking.sentences.filter { sentence -> sentence.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE }
+    // For the purposes of tranching any SDS is considered, Early release track is predicated on NOT having any exclusions
+    //
+    // Recalls sentenced before T1 commencement CAN NOT be recall for a SDS40 sentence, however a full implementation
+    //
+    // That looks at movements and date of release to determine release conditions applicable is yet to be implemented.
+    val sentencesConsideredForTrancheRules =
+      booking.sentences.filter { sentence -> (sentence.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE
+        || sentence.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE)
+        && (!sentence.isRecall() && sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate))}
         .filter { it.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate) }
 
     var resultTranche: SDSEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0
 
-    sdsEarlyReleaseSentences.takeIf { it.isNotEmpty() }?.let {
+    sentencesConsideredForTrancheRules.takeIf { it.isNotEmpty() }?.let {
       val sentencesFromBooking = booking.getAllExtractableSentences()
       resultTranche = when {
         sentencesFromBooking.isEmpty() -> SDSEarlyReleaseTranche.TRANCHE_0
