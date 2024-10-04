@@ -102,7 +102,7 @@ class ComparisonService(
         }
       }
       val mismatchesSortedByReleaseDate = mismatchesAndCrdsDates.sortedWith(::establishmentAndReleaseDateComparator)
-      transform(comparison, mismatchesSortedByReleaseDate.map { it.first }, emptyList(), objectMapper)
+      transform(comparison, mismatchesSortedByReleaseDate.map { it.first }, objectMapper)
     } else {
       throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
     }

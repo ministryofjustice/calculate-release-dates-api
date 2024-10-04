@@ -23,7 +23,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
@@ -38,8 +37,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
@@ -51,8 +48,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 @Service
 class BulkComparisonService(
@@ -160,7 +155,7 @@ class BulkComparisonService(
         { processSingleEnvelope(envelope, comparison, establishment) },
         {
           numberOfFailures++
-          saveComparisonPersonWithFatalError(comparison, envelope, establishment, it.lastThrowable)
+          it.lastThrowable?.let { it1 -> saveComparisonPersonWithFatalError(comparison, envelope, establishment, it1) }
         },
       )
     }
@@ -216,7 +211,7 @@ class BulkComparisonService(
     val sdsPlusSentenceAndOffences = sentenceAndOffencesWithReleaseArrangementsForBooking.filter { it.isSDSPlus }
     val mismatch = buildMismatch(envelope, sentenceAndOffencesWithReleaseArrangementsForBooking)
 
-    if (comparison.shouldStoreMismatch(mismatch)) {
+    if (shouldStoreMismatch()) {
       val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
       comparisonPersonRepository.save(
         ComparisonPerson(
@@ -296,18 +291,7 @@ class BulkComparisonService(
     val unsupportedSentenceType =
       validationResult.messages.any { it.code == ValidationCode.UNSUPPORTED_SENTENCE_TYPE || it.code.validationType == ValidationType.UNSUPPORTED_CALCULATION }
     if (unsupportedSentenceType) {
-      if (isPotentialHdc4PlusUnsupportedSentenceType(
-          calculableSentenceEnvelope,
-          sentenceAndOffenceWithReleaseArrangements,
-        )
-      ) {
-        return MismatchType.UNSUPPORTED_SENTENCE_TYPE_FOR_HDC4_PLUS
-      }
       return MismatchType.UNSUPPORTED_SENTENCE_TYPE
-    }
-
-    if (isPotentialHdc4Plus(calculableSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements)) {
-      return MismatchType.VALIDATION_ERROR_HDC4_PLUS
     }
 
     return MismatchType.VALIDATION_ERROR
@@ -432,252 +416,12 @@ class BulkComparisonService(
     }
   }
 
-  private fun isPotentialHdc4Plus(
-    calculableSentenceEnvelope: CalculableSentenceEnvelope,
-    sentenceAndOffenceWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>,
-  ): Boolean {
-    if (calculableSentenceEnvelope.person.isActiveSexOffender()) {
-      return false
-    }
-
-    if (!hasSdsSentenceWithValidHdc4Duration(sentenceAndOffenceWithReleaseArrangements) && !hasConsecutiveSdsSentencesWithValidHdc4Duration(
-        sentenceAndOffenceWithReleaseArrangements,
-      )
-    ) {
-      return false
-    }
-
-    if (hasEdsOrSopcConsecutiveToSds(calculableSentenceEnvelope)) {
-      return false
-    }
-
-    return true
-  }
-
-  private fun isPotentialHdc4PlusUnsupportedSentenceType(
-    calculableSentenceEnvelope: CalculableSentenceEnvelope,
-    sentenceAndOffencesWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>,
-  ): Boolean {
-    if (calculableSentenceEnvelope.person.isActiveSexOffender()) {
-      return false
-    }
-
-    if (hasUnsupportedIndeterminateSentence(calculableSentenceEnvelope)) {
-      return false
-    }
-
-    val hasValidSdsSentence =
-      hasNonSdsPlusSentenceWithValidHdc4Duration(sentenceAndOffencesWithReleaseArrangements)
-    if (!hasValidSdsSentence && !hasConsecutiveNonSdsPlusSentencesWithValidHdc4Duration(
-        sentenceAndOffencesWithReleaseArrangements,
-      )
-    ) {
-      return false
-    }
-
-    if (hasEdsOrSopcConsecutiveToSds(calculableSentenceEnvelope)) {
-      return false
-    }
-
-    return true
-  }
-
-  private fun hasUnsupportedIndeterminateSentence(calculableSentenceEnvelope: CalculableSentenceEnvelope): Boolean {
-    val unsupportedSentences = calculableSentenceEnvelope.sentenceAndOffences.filter {
-      !SentenceCalculationType.isSupported(it.sentenceCalculationType)
-    }
-
-    val unsupportedIndeterminateSentences = unsupportedSentences.filter {
-      SentenceCalculationType.isIndeterminate(it.sentenceCalculationType)
-    }
-
-    return unsupportedIndeterminateSentences.isNotEmpty()
-  }
-
-  private fun isHdc4PlusSentenceType(sentenceCalculationType: String): Boolean {
-    return try {
-      return SentenceCalculationType.from(sentenceCalculationType) in HDC4_PLUS_SENTENCE_TYPES
-    } catch (error: IllegalArgumentException) {
-      false
-    }
-  }
-
-  private fun sentenceHasValidHdc4PlusDuration(sentence: SentenceAndOffenceWithReleaseArrangements): Boolean {
-    val validDuration = sentence.terms.any { term ->
-      val duration = Duration(
-        mapOf(
-          ChronoUnit.YEARS to term.years.toLong(),
-          ChronoUnit.MONTHS to term.months.toLong(),
-          ChronoUnit.DAYS to term.days.toLong(),
-          ChronoUnit.WEEKS to term.weeks.toLong(),
-        ),
-      )
-      isValidHdc4PlusDuration(sentence.sentenceDate, duration)
-    }
-    return validDuration
-  }
-
-  private fun isValidHdc4PlusDuration(sentenceDate: LocalDate, duration: Duration): Boolean {
-    val daysInFourYears = 1460
-    return duration.getLengthInDays(sentenceDate) >= daysInFourYears
-  }
-
-  private fun hasSdsSentenceWithValidHdc4Duration(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>): Boolean {
-    val sdsSentencesWithValidDuration = sentenceAndOffences
-      .filter { isHdc4PlusSentenceType(it.sentenceCalculationType) }
-      .filter { sentence -> sentenceHasValidHdc4PlusDuration(sentence) }
-    return sdsSentencesWithValidDuration.isNotEmpty()
-  }
-
-  private fun hasNonSdsPlusSentenceWithValidHdc4Duration(
-    sentencesAndOffencesWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>,
-  ): Boolean {
-    val sdsSentencesWithValidDuration = sentencesAndOffencesWithReleaseArrangements
-      .filter { isHdc4PlusSentenceType(it.sentenceCalculationType) }
-      .filter { sentence -> sentenceHasValidHdc4PlusDuration(sentence) }
-      .filter { !it.isSDSPlus }
-
-    return sdsSentencesWithValidDuration.isNotEmpty()
-  }
-
-  private fun hasConsecutiveNonSdsPlusSentencesWithValidHdc4Duration(
-    sentenceAndOffenceWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>,
-  ): Boolean {
-    val consecutiveSdsSentenceChains =
-      createConsecutiveSdsSentencesForHdc4(sentenceAndOffenceWithReleaseArrangements)
-
-    val nonSdsPlusChains = consecutiveSdsSentenceChains.filter { sentenceChain ->
-      sentenceChain.none { it.isSDSPlus }
-    }
-    return nonSdsPlusChains.any { sentenceChain ->
-      val sentenceStartDate = sentenceChain.minBy { sentence -> sentence.sentenceDate }.sentenceDate
-      val totalDuration = getCombinedDuration(sentenceChain)
-      isValidHdc4PlusDuration(sentenceStartDate, totalDuration)
-    }
-  }
-
-  private fun hasConsecutiveSdsSentencesWithValidHdc4Duration(sentenceAndOffenceWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>): Boolean {
-    val consecutiveSdsSentenceChains =
-      createConsecutiveSdsSentencesForHdc4(sentenceAndOffenceWithReleaseArrangements)
-    return consecutiveSdsSentenceChains.any { sentenceChain ->
-      val sentenceStartDate = sentenceChain.minBy { sentence -> sentence.sentenceDate }.sentenceDate
-      val totalDuration = getCombinedDuration(sentenceChain)
-      isValidHdc4PlusDuration(sentenceStartDate, totalDuration)
-    }
-  }
-
-  private fun getCombinedDuration(consecutiveSentences: List<SentenceAndOffence>): Duration {
-    val totalDuration = consecutiveSentences.map {
-      val sentenceTerms = it.terms[0]
-      Duration(
-        mapOf(
-          ChronoUnit.YEARS to sentenceTerms.years.toLong(),
-          ChronoUnit.MONTHS to sentenceTerms.months.toLong(),
-          ChronoUnit.DAYS to sentenceTerms.days.toLong(),
-          ChronoUnit.WEEKS to sentenceTerms.weeks.toLong(),
-        ),
-      )
-    }.reduce { acc, duration -> acc.appendAll(duration.durationElements) }
-    return totalDuration
-  }
-
-  private fun hasEdsOrSopcConsecutiveToSds(calculableSentenceEnvelope: CalculableSentenceEnvelope): Boolean {
-    val edsAndSopcSentenceTypes = EDS_SENTENCE_TYPES + SOPC_SENTENCE_TYPES
-    val sentenceAndOffences = calculableSentenceEnvelope.sentenceAndOffences
-    val consecutiveSentences = sentenceAndOffences.filter { it.consecutiveToSequence != null }
-    val consecutiveEdsOrSopcToSds =
-      consecutiveSentences.filter { consecutiveSentence ->
-        val consecutiveToSentence =
-          sentenceAndOffences.firstOrNull { it.sentenceSequence == consecutiveSentence.consecutiveToSequence }
-        if (consecutiveToSentence != null) {
-          val consecutiveSentenceType = SentenceCalculationType.from(consecutiveSentence.sentenceCalculationType)
-          val consecutiveToSentenceType = SentenceCalculationType.from(consecutiveToSentence.sentenceCalculationType)
-          if (consecutiveSentenceType in HDC4_PLUS_SENTENCE_TYPES && consecutiveToSentenceType in edsAndSopcSentenceTypes) {
-            return@filter true
-          }
-          if (consecutiveSentenceType in edsAndSopcSentenceTypes && consecutiveToSentenceType in HDC4_PLUS_SENTENCE_TYPES) {
-            return@filter true
-          }
-        }
-        return@filter false
-      }
-    return consecutiveEdsOrSopcToSds.isNotEmpty()
-  }
-
-  private fun createConsecutiveSdsSentencesForHdc4(sentencesAndOffences: List<SentenceAndOffenceWithReleaseArrangements>): List<MutableList<SentenceAndOffenceWithReleaseArrangements>> {
-    val applicableSentences = sentencesAndOffences.filter { isHdc4PlusSentenceType(it.sentenceCalculationType) }
-
-    val (baseSentences, consecutiveSentences) = applicableSentences.partition { it.consecutiveToSequence == null }
-    val baseSentenceToConsecutiveSentencesMap: Map<Int, List<SentenceAndOffenceWithReleaseArrangements>> =
-      consecutiveSentences.groupBy {
-        it.consecutiveToSequence!!
-      }
-
-    val sentenceChains: MutableList<MutableList<SentenceAndOffenceWithReleaseArrangements>> =
-      mutableListOf(mutableListOf())
-    baseSentences.forEach {
-      val sentenceChain: MutableList<SentenceAndOffenceWithReleaseArrangements> = mutableListOf()
-      sentenceChains.add(sentenceChain)
-      sentenceChain.add(it)
-      createSentenceChain(it, sentenceChain, baseSentenceToConsecutiveSentencesMap, sentenceChains)
-    }
-
-    return sentenceChains.filter { it.size > 1 }
-  }
-
-  private fun createSentenceChain(
-    start: SentenceAndOffenceWithReleaseArrangements,
-    chain: MutableList<SentenceAndOffenceWithReleaseArrangements>,
-    baseSentencesToConsecutiveSentencesMap: Map<Int, List<SentenceAndOffenceWithReleaseArrangements>>,
-    chains: MutableList<MutableList<SentenceAndOffenceWithReleaseArrangements>> = mutableListOf(mutableListOf()),
-  ) {
-    val originalSentenceChain = chain.toMutableList()
-    baseSentencesToConsecutiveSentencesMap[start.sentenceSequence]?.forEachIndexed { index, it ->
-      if (index == 0) {
-        chain.add(it)
-        createSentenceChain(it, chain, baseSentencesToConsecutiveSentencesMap, chains)
-      } else {
-        // This sentence has two sentences consecutive to it. This is not allowed in practice, however it can happen
-        // when a sentence in NOMIS has multiple offices, which means it becomes multiple sentences in our model.
-        val chainCopy = originalSentenceChain.toMutableList()
-        chains.add(chainCopy)
-        chainCopy.add(it)
-        createSentenceChain(it, chainCopy, baseSentencesToConsecutiveSentencesMap, chains)
-      }
-    }
-  }
-
   private fun completeComparison(comparison: Comparison) {
     comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
     comparisonRepository.save(comparison)
   }
 
   companion object {
-    val HDC4_PLUS_SENTENCE_TYPES = listOf(
-      SentenceCalculationType.ADIMP,
-      SentenceCalculationType.ADIMP_ORA,
-      SentenceCalculationType.SEC91_03,
-      SentenceCalculationType.SEC91_03_ORA,
-      SentenceCalculationType.SEC250,
-      SentenceCalculationType.SEC250_ORA,
-      SentenceCalculationType.YOI,
-      SentenceCalculationType.YOI_ORA,
-    )
-
-    val EDS_SENTENCE_TYPES = listOf(
-      SentenceCalculationType.LASPO_AR,
-      SentenceCalculationType.LASPO_DR,
-      SentenceCalculationType.EDS18,
-      SentenceCalculationType.EDS21,
-      SentenceCalculationType.EDSU18,
-    )
-
-    val SOPC_SENTENCE_TYPES = listOf(
-      SentenceCalculationType.SDOPCU18,
-      SentenceCalculationType.SOPC18,
-      SentenceCalculationType.SOPC21,
-      SentenceCalculationType.SEC236A,
-    )
     private val log: Logger = LoggerFactory.getLogger(BulkComparisonService::class.java)
   }
 
@@ -686,7 +430,7 @@ class BulkComparisonService(
     log.info("Using token: {}", UserContext.getAuthToken())
   }
 
-  private fun Comparison.shouldStoreMismatch(mismatch: Mismatch): Boolean {
+  private fun shouldStoreMismatch(): Boolean {
     return true
   }
 }
