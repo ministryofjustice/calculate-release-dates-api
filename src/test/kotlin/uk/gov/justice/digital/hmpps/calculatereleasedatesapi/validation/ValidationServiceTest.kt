@@ -12,10 +12,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40Tranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
@@ -84,11 +86,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SOPC_LICENCE_TERM_NOT_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SENTENCE_TYPE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ZERO_IMPRISONMENT_TERM
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
@@ -248,7 +252,19 @@ class ValidationServiceTest {
     // Act
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(invalidSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          listOf(
+            SentenceAndOffenceWithReleaseArrangements(
+              invalidSentence,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            ),
+          ),
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
+        ),
         USER_INPUTS,
       )
 
@@ -258,7 +274,9 @@ class ValidationServiceTest {
 
   @ParameterizedTest
   @ValueSource(strings = ["PH97003", "PH97003B"])
-  fun `Test Sentences with unsupported offenceCodes PH97003 after Dec 2020 and inchoates to return validation message`(offenceCode: String) {
+  fun `Test Sentences with unsupported offenceCodes PH97003 after Dec 2020 and inchoates to return validation message`(
+    offenceCode: String,
+  ) {
     // Arrange
     val invalidSentence = validSdsSentence.copy(
       sentenceDate = LocalDate.of(2020, 12, 1),
@@ -268,7 +286,19 @@ class ValidationServiceTest {
     // Act
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(invalidSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          listOf(
+            SentenceAndOffenceWithReleaseArrangements(
+              invalidSentence,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            ),
+          ),
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
+        ),
         USER_INPUTS,
       )
 
@@ -2639,6 +2669,212 @@ class ValidationServiceTest {
       workingBooking,
     )
 
+    assertThat(result).isEmpty()
+  }
+
+  @Test
+  fun `Tranche 2 Prisoner with consecutive SDS on T1 commencement date returns error`() {
+    val validationService =
+      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
+
+    val testIdentifierUUID = UUID.randomUUID()
+
+    val standardSentenceOne = STANDARD_SENTENCE.copy(
+      identifier = testIdentifierUUID,
+    )
+    val standardSentenceTwo = STANDARD_SENTENCE.copy(
+      consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
+      sentencedAt = TRANCHE_CONFIGURATION.trancheOneCommencementDate,
+    )
+
+    var workingBooking = BOOKING.copy(
+      sentences = listOf(
+        standardSentenceOne,
+        standardSentenceTwo,
+      ),
+      adjustments = Adjustments(),
+    )
+
+    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+
+    val result = validationService.validateBookingAfterCalculation(
+      workingBooking,
+      null,
+      CalculationResult(
+        emptyMap(),
+        emptyMap(),
+        emptyMap(),
+        Period.of(6, 0, 0),
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+      ),
+    )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS),
+      ),
+    )
+  }
+
+  @Test
+  fun `Tranche 2 Prisoner with consecutive SDS the day before T2 commencement date returns error`() {
+    val validationService =
+      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
+
+    val testIdentifierUUID = UUID.randomUUID()
+
+    val standardSentenceOne = STANDARD_SENTENCE.copy(
+      identifier = testIdentifierUUID,
+    )
+    val standardSentenceTwo = STANDARD_SENTENCE.copy(
+      consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
+      sentencedAt = TRANCHE_CONFIGURATION.trancheTwoCommencementDate.minusDays(1),
+    )
+
+    var workingBooking = BOOKING.copy(
+      sentences = listOf(
+        standardSentenceOne,
+        standardSentenceTwo,
+      ),
+      adjustments = Adjustments(),
+    )
+
+    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+
+    val result = validationService.validateBookingAfterCalculation(
+      workingBooking,
+      null,
+      CalculationResult(
+        emptyMap(),
+        emptyMap(),
+        emptyMap(),
+        Period.of(6, 0, 0),
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+      ),
+    )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS),
+      ),
+    )
+  }
+
+  @Test
+  fun `Tranche 2 Prisoner with consecutive SDS+ sentenced on T1 commencement date returns NO error`() {
+    val validationService =
+      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
+
+    val testIdentifierUUID = UUID.randomUUID()
+
+    val standardSentenceOne = STANDARD_SENTENCE.copy(
+      identifier = testIdentifierUUID,
+    )
+    val consecSdsPlusSentence = STANDARD_SENTENCE.copy(
+      consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
+      sentencedAt = TRANCHE_CONFIGURATION.trancheOneCommencementDate,
+      isSDSPlus = true,
+    )
+
+    var workingBooking = BOOKING.copy(
+      sentences = listOf(
+        standardSentenceOne,
+        consecSdsPlusSentence,
+      ),
+      adjustments = Adjustments(),
+    )
+
+    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+
+    val result = validationService.validateBookingAfterCalculation(
+      workingBooking,
+      null,
+      CalculationResult(
+        emptyMap(),
+        emptyMap(),
+        emptyMap(),
+        Period.of(6, 0, 0),
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+      ),
+    )
+    assertThat(result).isEmpty()
+  }
+
+  @Test
+  fun `Tranche 2 Prisoner with consecutive SDS sentenced on T2 commencement dates returns NO error`() {
+    val validationService =
+      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
+
+    val testIdentifierUUID = UUID.randomUUID()
+
+    val standardSentenceOne = STANDARD_SENTENCE.copy(
+      identifier = testIdentifierUUID,
+    )
+    val standardSentenceTwo = STANDARD_SENTENCE.copy(
+      consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
+      sentencedAt = TRANCHE_CONFIGURATION.trancheTwoCommencementDate,
+    )
+
+    var workingBooking = BOOKING.copy(
+      sentences = listOf(
+        standardSentenceOne,
+        standardSentenceTwo,
+      ),
+      adjustments = Adjustments(),
+    )
+
+    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+
+    val result = validationService.validateBookingAfterCalculation(
+      workingBooking,
+      null,
+      CalculationResult(
+        emptyMap(),
+        emptyMap(),
+        emptyMap(),
+        Period.of(6, 0, 0),
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+      ),
+    )
+    assertThat(result).isEmpty()
+  }
+
+  @Test
+  fun `Tranche 1 Prisoner with consecutive SDS on T1 commencement date returns NO error`() {
+    val validationService =
+      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
+
+    val testIdentifierUUID = UUID.randomUUID()
+
+    val standardSentenceOne = STANDARD_SENTENCE.copy(
+      identifier = testIdentifierUUID,
+    )
+    val standardSentenceTwo = STANDARD_SENTENCE.copy(
+      consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
+      sentencedAt = TRANCHE_CONFIGURATION.trancheOneCommencementDate,
+    )
+
+    var workingBooking = BOOKING.copy(
+      sentences = listOf(
+        standardSentenceOne,
+        standardSentenceTwo,
+      ),
+      adjustments = Adjustments(),
+    )
+
+    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+
+    val result = validationService.validateBookingAfterCalculation(
+      workingBooking,
+      null,
+      CalculationResult(
+        emptyMap(),
+        emptyMap(),
+        emptyMap(),
+        Period.of(6, 0, 0),
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
+      ),
+    )
     assertThat(result).isEmpty()
   }
 

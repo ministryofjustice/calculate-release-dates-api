@@ -113,7 +113,7 @@ class CalculationTransactionalService(
     log.info("Booking validation passed")
 
     log.info("Stage 3: Calculating release dates")
-    val (bookingAfterCalculation, _) = calculationService.calculateReleaseDates(booking, calculationUserInputs, false)
+    val (bookingAfterCalculation, calculationResult) = calculationService.calculateReleaseDates(booking, calculationUserInputs, false)
     log.info("Release dates calculated")
 
     log.info("Calculating release dates for longest possible sentences")
@@ -121,7 +121,7 @@ class CalculationTransactionalService(
     log.info("Longest possible release dates calculated")
 
     log.info("Stage 4: Running final booking validation after calculation")
-    val finalValidationMessages = validationService.validateBookingAfterCalculation(bookingAfterCalculation, longestPossibleSdsBookingAfterCalculation)
+    val finalValidationMessages = validationService.validateBookingAfterCalculation(bookingAfterCalculation, longestPossibleSdsBookingAfterCalculation, calculationResult)
 
     if (finalValidationMessages.isNotEmpty()) {
       log.warn("Final validation returned messages")
