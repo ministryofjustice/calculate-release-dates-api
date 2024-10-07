@@ -48,7 +48,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesApiClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.BookingHelperTest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA
@@ -99,13 +99,13 @@ import java.util.UUID
 
 @Profile("tests")
 class ValidationServiceTest {
-  private var manageOffencesApiClient: ManageOffencesApiClient = mock<ManageOffencesApiClient>()
+  private var manageOffencesService: ManageOffencesService = mock<ManageOffencesService>()
   private var validationService =
     ValidationService(
       SentencesExtractionService(),
       FeatureToggles(botus = true),
       TRANCHE_CONFIGURATION,
-      manageOffencesApiClient,
+      manageOffencesService,
     )
   private val validSdsSentence = NormalisedSentenceAndOffence(
     bookingId = 1L,
@@ -1154,7 +1154,7 @@ class ValidationServiceTest {
         SentencesExtractionService(),
         FeatureToggles(botus = false),
         TRANCHE_CONFIGURATION,
-        manageOffencesApiClient,
+        manageOffencesService,
       )
     val sentenceAndOffences = validSdsSentence.copy(
       sentenceCalculationType = SentenceCalculationType.BOTUS.name,
@@ -2520,7 +2520,7 @@ class ValidationServiceTest {
       SentencesExtractionService(),
       FeatureToggles(sdsEarlyReleaseUnsupported = true),
       TRANCHE_CONFIGURATION,
-      manageOffencesApiClient,
+      manageOffencesService,
     )
 
     val result = validationService.validateBeforeCalculation(
@@ -2555,7 +2555,7 @@ class ValidationServiceTest {
       SentencesExtractionService(),
       FeatureToggles(sdsEarlyReleaseUnsupported = true),
       TRANCHE_CONFIGURATION,
-      manageOffencesApiClient,
+      manageOffencesService,
     )
 
     val result = validationService.validateBeforeCalculation(
@@ -2585,7 +2585,7 @@ class ValidationServiceTest {
         SentencesExtractionService(),
         FeatureToggles(sdsEarlyRelease = true),
         TRANCHE_CONFIGURATION,
-        manageOffencesApiClient,
+        manageOffencesService,
       )
     val lrOraSentence = LR_ORA.copy()
 
@@ -2621,7 +2621,7 @@ class ValidationServiceTest {
         SentencesExtractionService(),
         FeatureToggles(sdsEarlyRelease = true),
         TRANCHE_CONFIGURATION,
-        manageOffencesApiClient,
+        manageOffencesService,
       )
 
     val testIdentifierUUID = UUID.randomUUID()
@@ -2671,7 +2671,7 @@ class ValidationServiceTest {
         SentencesExtractionService(),
         FeatureToggles(sdsEarlyRelease = true),
         TRANCHE_CONFIGURATION,
-        manageOffencesApiClient,
+        manageOffencesService,
       )
     val lrOraSentence = LR_ORA.copy()
 
@@ -2703,7 +2703,7 @@ class ValidationServiceTest {
         SentencesExtractionService(),
         FeatureToggles(sdsEarlyRelease = true),
         TRANCHE_CONFIGURATION,
-        manageOffencesApiClient,
+        manageOffencesService,
       )
     val lrOraSentence = LR_ORA.copy()
 

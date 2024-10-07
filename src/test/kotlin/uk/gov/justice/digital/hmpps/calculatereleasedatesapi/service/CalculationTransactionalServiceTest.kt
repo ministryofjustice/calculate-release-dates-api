@@ -105,7 +105,7 @@ class CalculationTransactionalServiceTest {
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
-  private val manageOffencesApiClient = mock<ManageOffencesApiClient>()
+  private val manageOffencesService = mock<ManageOffencesService>()
   private val prisonService = mock<PrisonService>()
   private val eventService = mock<EventService>()
   private val bookingService = mock<BookingService>()
@@ -835,7 +835,7 @@ class CalculationTransactionalServiceTest {
   }
 
   private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheConfiguration: SDS40TrancheConfiguration): ValidationService {
-    return ValidationService(sentencesExtractionService, featureToggles = FeatureToggles(true, true, false), trancheConfiguration, manageOffencesApiClient)
+    return ValidationService(sentencesExtractionService, featureToggles = FeatureToggles(true, true, false), trancheConfiguration, manageOffencesService)
   }
 
   companion object {

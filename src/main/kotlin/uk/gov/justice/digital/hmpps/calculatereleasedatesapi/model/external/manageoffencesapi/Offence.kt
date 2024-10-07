@@ -23,6 +23,6 @@ data class Offence(
   val paragraphTitle: String? = null,
   val parentOffenceId: Int? = null,
   val revisionId: Int? = null,
-  val schedules: List<Any>,
+  val schedules: List<Schedule>? = listOf(),
   val startDate: String,
 )

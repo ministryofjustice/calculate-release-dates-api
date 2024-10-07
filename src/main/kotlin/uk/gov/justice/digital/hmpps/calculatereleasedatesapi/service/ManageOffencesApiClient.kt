@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.util.retry.Retry
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotGetMoOffenceInformation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionForOffenceCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.Schedule
@@ -60,23 +61,24 @@ class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private v
       .block() ?: throw CouldNotGetMoOffenceInformation("Sds early release exclusions schedule otherwise failed for offence lookup failed for $offencesList, cannot proceed to perform a sentence calculation")
   }
 
-  fun getScheduleOffences(scheduleId: Long): Schedule {
+  fun getOffences(offenceCodes: List<String>): List<Offence> {
+    val offenceCodeString = offenceCodes.joinToString(",")
     return webClient.get()
-      .uri("/schedule/by-id/$scheduleId")
+      .uri("/offences/code/multiple?offenceCodes=$offenceCodeString")
       .retrieve()
-      .bodyToMono(typeReference<Schedule>())
+      .bodyToMono(typeReference<List<Offence>>())
       .retryWhen(
         Retry
           .backoff(5, Duration.ofMillis(100))
           .maxBackoff(Duration.ofSeconds(5))
           .doBeforeRetry { retrySignal ->
-            log.warn("getTORERAOffenceCodes: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
+            log.warn("getOffences: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
           }
           .onRetryExhaustedThrow { _, _ ->
-            throw MaxRetryAchievedException("getTORERAOffenceCodes: Max retries - lookup failed for $scheduleId, cannot proceed to perform a sentence calculation")
+            throw MaxRetryAchievedException("getOffences: Max retries - lookup failed for codes $offenceCodeString, cannot proceed to perform a sentence calculation")
           },
       )
-      .block() ?: throw CouldNotGetMoOffenceInformation("Schedule offences failed to load for ID $scheduleId")
+      .block() ?: throw CouldNotGetMoOffenceInformation("Offences request failed to load for codes $offenceCodeString")
   }
 
   class MaxRetryAchievedException(message: String?) : RuntimeException(message)

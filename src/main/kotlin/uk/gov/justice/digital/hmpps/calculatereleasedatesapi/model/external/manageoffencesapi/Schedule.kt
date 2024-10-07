@@ -4,6 +4,10 @@ data class Schedule(
   val act: String,
   val code: String,
   val id: Int,
-  val scheduleParts: List<SchedulePart>,
   val url: String,
+  val partNumber: Long? = null,
+  val paragraphNumber: String? = null,
+  val paragraphTitle: String? = null,
+  val lineReference: String? = null,
+  val legislationText: String? = null,
 )
