@@ -87,7 +87,7 @@ class TrancheAllocationServiceTest {
   }
 
   @Test
-  fun `Single 4 year SDS not identified as early release track should be allocated to tranche 0`() {
+  fun `Single 4 year SDS not identified as early release track should be allocated to tranche 1`() {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 10)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
     val trancheConfiguration = SDS40TrancheConfiguration(testTranchOneCommencementDate, testTrancheTwoCommencementDate)
@@ -99,7 +99,7 @@ class TrancheAllocationServiceTest {
       emptyMap(),
       emptyMap(),
       Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
+      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
     )
 
     val result = testTrancheAllocationService.calculateTranche(
@@ -114,7 +114,7 @@ class TrancheAllocationServiceTest {
         ),
       ),
     )
-    assertThat(result).isEqualTo(SDSEarlyReleaseTranche.TRANCHE_0)
+    assertThat(result).isEqualTo(SDSEarlyReleaseTranche.TRANCHE_1)
   }
 
   @Test

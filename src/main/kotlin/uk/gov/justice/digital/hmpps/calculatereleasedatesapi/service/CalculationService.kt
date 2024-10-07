@@ -115,7 +115,7 @@ class CalculationService(
   } else {
     resultWithPossibleEarlyRelease.copy(
       sdsEarlyReleaseAllocatedTranche = tranche,
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
+      sdsEarlyReleaseTranche = tranche,
     )
   }
 
