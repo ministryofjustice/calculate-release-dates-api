@@ -7,10 +7,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggl
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
@@ -99,6 +101,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_BREACH_97
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SENTENCE_TYPE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SUSPENDED_OFFENCE
@@ -198,6 +201,7 @@ class ValidationService(
   fun validateBookingAfterCalculation(
     booking: Booking,
     standardSDSBooking: Booking? = null,
+    calculationResult: CalculationResult? = null,
   ): List<ValidationMessage> {
     log.info("Validating booking after calculation")
     val messages = mutableListOf<ValidationMessage>()
@@ -207,8 +211,30 @@ class ValidationService(
     messages += validateAdditionAdjustmentsInsideLatestReleaseDate(standardSDSBooking ?: booking, booking)
     messages += validateFixedTermRecallAfterCalc(booking)
     messages += validateUnsupportedRecallTypes(booking)
+    messages += validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationResult)
 
     return messages
+  }
+
+  private fun validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(
+    booking: Booking,
+    calculationResult: CalculationResult?,
+  ): List<ValidationMessage> {
+    if (calculationResult != null) {
+      if (calculationResult.sdsEarlyReleaseTranche == SDSEarlyReleaseTranche.TRANCHE_2 &&
+        booking.consecutiveSentences.any { consecutiveSentence ->
+          consecutiveSentence.orderedSentences.any {
+            it is StandardDeterminateSentence &&
+              !it.isSDSPlus &&
+              it.sentencedAt.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate) &&
+              it.sentencedAt.isBefore(trancheConfiguration.trancheTwoCommencementDate)
+          }
+        }
+      ) {
+        return listOf(ValidationMessage(UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS))
+      }
+    }
+    return emptyList()
   }
 
   private fun validateUnsupportedRecallTypes(
@@ -338,7 +364,9 @@ class ValidationService(
     val recallLength = ftrDetails.recallLength
     val bookingsSentenceTypes = sentencesAndOffences.map { from(it.sentenceCalculationType) }
     val has14DayFTRSentence = bookingsSentenceTypes.any { it == FTR_14_ORA }
-    val has28DayFTRSentence = SentenceCalculationType.entries.any { it.isFixedTermRecall && it != FTR_14_ORA && bookingsSentenceTypes.contains(it) }
+    val has28DayFTRSentence = SentenceCalculationType.entries.any {
+      it.isFixedTermRecall && it != FTR_14_ORA && bookingsSentenceTypes.contains(it)
+    }
     return Triple(recallLength, has14DayFTRSentence, has28DayFTRSentence)
   }
 
@@ -390,6 +418,7 @@ class ValidationService(
     }
     return emptyList()
   }
+
   private fun validateUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
     val unSupportedEncouragingOffenceCodes = findUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence)
     if (unSupportedEncouragingOffenceCodes.isNotEmpty()) {
@@ -859,7 +888,10 @@ class ValidationService(
     return null
   }
 
-  private fun getLongestRelevantSentence(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<CalculableSentence> {
+  private fun getLongestRelevantSentence(
+    sentences: List<CalculableSentence>,
+    longestSentences: List<CalculableSentence>,
+  ): List<CalculableSentence> {
     return sentences.zip(longestSentences).map { (sentence, longestSentence) ->
       if (sentence.sentencedAt.isBefore(trancheConfiguration.trancheTwoCommencementDate)) {
         longestSentence
@@ -869,7 +901,10 @@ class ValidationService(
     }
   }
 
-  private fun getRelevantSentenceRanges(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<LocalDateRange> {
+  private fun getRelevantSentenceRanges(
+    sentences: List<CalculableSentence>,
+    longestSentences: List<CalculableSentence>,
+  ): List<LocalDateRange> {
     val longestRelevantSentences = sentences.zip(longestSentences).map { (sentence, longestSentence) ->
       if (sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(trancheConfiguration.trancheOneCommencementDate)) {
         longestSentence
@@ -887,7 +922,10 @@ class ValidationService(
       }
   }
 
-  private fun validateAdditionAdjustmentsInsideLatestReleaseDate(longestBooking: Booking, booking: Booking): List<ValidationMessage> {
+  private fun validateAdditionAdjustmentsInsideLatestReleaseDate(
+    longestBooking: Booking,
+    booking: Booking,
+  ): List<ValidationMessage> {
     val sentences = booking.getAllExtractableSentences()
     val longestSentences = longestBooking.getAllExtractableSentences()
 
@@ -947,6 +985,7 @@ class ValidationService(
 
     return validationMessages
   }
+
   private fun validateRemandOverlappingRemand(booking: Booking): List<ValidationMessage> {
     val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
 
@@ -957,7 +996,11 @@ class ValidationService(
       remandRanges.forEachIndexed { index, remandRange ->
         remandRanges.drop(index + 1).forEach { otherRemandRange ->
           if (remandRange.isConnected(otherRemandRange)) {
-            logIntersectionWarning(remandRange, otherRemandRange, "Remand of range %s overlaps with other remand of range %s")
+            logIntersectionWarning(
+              remandRange,
+              otherRemandRange,
+              "Remand of range %s overlaps with other remand of range %s",
+            )
             validationMessages.add(
               ValidationMessage(
                 REMAND_OVERLAPS_WITH_REMAND,
