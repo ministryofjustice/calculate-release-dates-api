@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import org.mockito.kotlin.mock
 import org.springframework.context.annotation.Profile
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
@@ -47,6 +48,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.BookingHelperTest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA
@@ -93,12 +95,18 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.*
+import java.util.UUID
 
 @Profile("tests")
 class ValidationServiceTest {
+  private var manageOffencesApiClient: ManageOffencesApiClient = mock<ManageOffencesApiClient>()
   private var validationService =
-    ValidationService(SentencesExtractionService(), FeatureToggles(botus = true), TRANCHE_CONFIGURATION)
+    ValidationService(
+      SentencesExtractionService(),
+      FeatureToggles(botus = true),
+      TRANCHE_CONFIGURATION,
+      manageOffencesApiClient,
+    )
   private val validSdsSentence = NormalisedSentenceAndOffence(
     bookingId = 1L,
     sentenceSequence = 7,
@@ -247,7 +255,19 @@ class ValidationServiceTest {
     // Act
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(invalidSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          listOf(
+            SentenceAndOffenceWithReleaseArrangements(
+              invalidSentence,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            ),
+          ),
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
+        ),
         USER_INPUTS,
       )
 
@@ -257,7 +277,9 @@ class ValidationServiceTest {
 
   @ParameterizedTest
   @ValueSource(strings = ["PH97003", "PH97003B"])
-  fun `Test Sentences with unsupported offenceCodes PH97003 after Dec 2020 and inchoates to return validation message`(offenceCode: String) {
+  fun `Test Sentences with unsupported offenceCodes PH97003 after Dec 2020 and inchoates to return validation message`(
+    offenceCode: String,
+  ) {
     // Arrange
     val invalidSentence = validSdsSentence.copy(
       sentenceDate = LocalDate.of(2020, 12, 1),
@@ -267,7 +289,19 @@ class ValidationServiceTest {
     // Act
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(invalidSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
+        PrisonApiSourceData(
+          listOf(
+            SentenceAndOffenceWithReleaseArrangements(
+              invalidSentence,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            ),
+          ),
+          VALID_PRISONER,
+          VALID_ADJUSTMENTS,
+          listOf(),
+          null,
+        ),
         USER_INPUTS,
       )
 
@@ -1116,7 +1150,12 @@ class ValidationServiceTest {
   @Test
   fun `Test BOTUS feature toggle results in unsupported sentence type if disabled`() {
     val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(botus = false), TRANCHE_CONFIGURATION)
+      ValidationService(
+        SentencesExtractionService(),
+        FeatureToggles(botus = false),
+        TRANCHE_CONFIGURATION,
+        manageOffencesApiClient,
+      )
     val sentenceAndOffences = validSdsSentence.copy(
       sentenceCalculationType = SentenceCalculationType.BOTUS.name,
       terms = listOf(
@@ -2481,6 +2520,7 @@ class ValidationServiceTest {
       SentencesExtractionService(),
       FeatureToggles(sdsEarlyReleaseUnsupported = true),
       TRANCHE_CONFIGURATION,
+      manageOffencesApiClient,
     )
 
     val result = validationService.validateBeforeCalculation(
@@ -2515,6 +2555,7 @@ class ValidationServiceTest {
       SentencesExtractionService(),
       FeatureToggles(sdsEarlyReleaseUnsupported = true),
       TRANCHE_CONFIGURATION,
+      manageOffencesApiClient,
     )
 
     val result = validationService.validateBeforeCalculation(
@@ -2540,7 +2581,12 @@ class ValidationServiceTest {
   @Test
   fun `Test LR_ORA with CRD after tranche commencement returns a validation error`() {
     val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
+      ValidationService(
+        SentencesExtractionService(),
+        FeatureToggles(sdsEarlyRelease = true),
+        TRANCHE_CONFIGURATION,
+        manageOffencesApiClient,
+      )
     val lrOraSentence = LR_ORA.copy()
 
     lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
@@ -2571,7 +2617,12 @@ class ValidationServiceTest {
   @Test
   fun `Test consecutive sentence with LR_ORA with CRD after tranche commencement returns a validation error`() {
     val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
+      ValidationService(
+        SentencesExtractionService(),
+        FeatureToggles(sdsEarlyRelease = true),
+        TRANCHE_CONFIGURATION,
+        manageOffencesApiClient,
+      )
 
     val testIdentifierUUID = UUID.randomUUID()
 
@@ -2616,7 +2667,12 @@ class ValidationServiceTest {
   @Test
   fun `Test LR_ORA with CRD before tranche commencement returns no error`() {
     val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
+      ValidationService(
+        SentencesExtractionService(),
+        FeatureToggles(sdsEarlyRelease = true),
+        TRANCHE_CONFIGURATION,
+        manageOffencesApiClient,
+      )
     val lrOraSentence = LR_ORA.copy()
 
     lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
@@ -2643,7 +2699,12 @@ class ValidationServiceTest {
   @Test
   fun `Test LR with no TUSED after tranche commencement returns no error`() {
     val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
+      ValidationService(
+        SentencesExtractionService(),
+        FeatureToggles(sdsEarlyRelease = true),
+        TRANCHE_CONFIGURATION,
+        manageOffencesApiClient,
+      )
     val lrOraSentence = LR_ORA.copy()
 
     lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(

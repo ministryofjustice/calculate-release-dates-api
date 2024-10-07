@@ -59,6 +59,8 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   SENTENCE_HAS_NO_LICENCE_TERM("Court case %s count %s must include a licence term."),
   SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT("The sentence type for court case %s count %s is invalid for the sentence date entered."),
   SOPC_LICENCE_TERM_NOT_12_MONTHS("Court case %s count %s must include a licence term of 12 months or 1 year."),
+  SDS_TORERA_EXCLUSION("SDS TORERA offences must be calculated manually"),
+  SPOC_TORERA_EXCLUSION("SPOC TORERA offences must be calculated manually"),
   UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE(
     "There is a Lawfully at Large (LAL) adjustment on the associated booking",
     UNSUPPORTED_CALCULATION,

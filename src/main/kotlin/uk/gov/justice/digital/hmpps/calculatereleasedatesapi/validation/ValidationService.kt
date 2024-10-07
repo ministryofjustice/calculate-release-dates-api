@@ -42,8 +42,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.DTO_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesApiClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA
@@ -112,6 +114,7 @@ class ValidationService(
   private val extractionService: SentencesExtractionService,
   private val featureToggles: FeatureToggles,
   private val trancheConfiguration: SDS40TrancheConfiguration,
+  private val manageOffencesApiClient: ManageOffencesApiClient,
 ) {
   fun validateBeforeCalculation(
     sourceData: PrisonApiSourceData,
@@ -162,6 +165,8 @@ class ValidationService(
     val sortedSentences = sentencesAndOffences.sortedWith(this::sortByCaseNumberAndLineSequence)
     val validationMessages = mutableListOf<ValidationMessage>()
     validationMessages += validateSupportedSentences(sortedSentences)
+    // TODO implement feature toggle for TORERA validation
+    validationMessages += validateToreraExempt(sourceData.sentenceAndOffences)
     if (validationMessages.isEmpty()) {
       validationMessages += validateUnsupportedCalculation(sourceData)
     }
@@ -338,7 +343,9 @@ class ValidationService(
     val recallLength = ftrDetails.recallLength
     val bookingsSentenceTypes = sentencesAndOffences.map { from(it.sentenceCalculationType) }
     val has14DayFTRSentence = bookingsSentenceTypes.any { it == FTR_14_ORA }
-    val has28DayFTRSentence = SentenceCalculationType.entries.any { it.isFixedTermRecall && it != FTR_14_ORA && bookingsSentenceTypes.contains(it) }
+    val has28DayFTRSentence = SentenceCalculationType.entries.any {
+      it.isFixedTermRecall && it != FTR_14_ORA && bookingsSentenceTypes.contains(it)
+    }
     return Triple(recallLength, has14DayFTRSentence, has28DayFTRSentence)
   }
 
@@ -390,6 +397,7 @@ class ValidationService(
     }
     return emptyList()
   }
+
   private fun validateUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
     val unSupportedEncouragingOffenceCodes = findUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence)
     if (unSupportedEncouragingOffenceCodes.isNotEmpty()) {
@@ -859,7 +867,10 @@ class ValidationService(
     return null
   }
 
-  private fun getLongestRelevantSentence(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<CalculableSentence> {
+  private fun getLongestRelevantSentence(
+    sentences: List<CalculableSentence>,
+    longestSentences: List<CalculableSentence>,
+  ): List<CalculableSentence> {
     return sentences.zip(longestSentences).map { (sentence, longestSentence) ->
       if (sentence.sentencedAt.isBefore(trancheConfiguration.trancheTwoCommencementDate)) {
         longestSentence
@@ -869,7 +880,10 @@ class ValidationService(
     }
   }
 
-  private fun getRelevantSentenceRanges(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<LocalDateRange> {
+  private fun getRelevantSentenceRanges(
+    sentences: List<CalculableSentence>,
+    longestSentences: List<CalculableSentence>,
+  ): List<LocalDateRange> {
     val longestRelevantSentences = sentences.zip(longestSentences).map { (sentence, longestSentence) ->
       if (sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(trancheConfiguration.trancheOneCommencementDate)) {
         longestSentence
@@ -887,7 +901,10 @@ class ValidationService(
       }
   }
 
-  private fun validateAdditionAdjustmentsInsideLatestReleaseDate(longestBooking: Booking, booking: Booking): List<ValidationMessage> {
+  private fun validateAdditionAdjustmentsInsideLatestReleaseDate(
+    longestBooking: Booking,
+    booking: Booking,
+  ): List<ValidationMessage> {
     val sentences = booking.getAllExtractableSentences()
     val longestSentences = longestBooking.getAllExtractableSentences()
 
@@ -947,6 +964,7 @@ class ValidationService(
 
     return validationMessages
   }
+
   private fun validateRemandOverlappingRemand(booking: Booking): List<ValidationMessage> {
     val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
 
@@ -957,7 +975,11 @@ class ValidationService(
       remandRanges.forEachIndexed { index, remandRange ->
         remandRanges.drop(index + 1).forEach { otherRemandRange ->
           if (remandRange.isConnected(otherRemandRange)) {
-            logIntersectionWarning(remandRange, otherRemandRange, "Remand of range %s overlaps with other remand of range %s")
+            logIntersectionWarning(
+              remandRange,
+              otherRemandRange,
+              "Remand of range %s overlaps with other remand of range %s",
+            )
             validationMessages.add(
               ValidationMessage(
                 REMAND_OVERLAPS_WITH_REMAND,
@@ -1029,6 +1051,55 @@ class ValidationService(
       return listOf(ValidationMessage(SDS_EARLY_RELEASE_UNSUPPORTED))
     }
     return emptyList()
+  }
+
+  private fun validateToreraExempt(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
+    val messages = mutableListOf<ValidationMessage>()
+    val schedule = manageOffencesApiClient.getScheduleOffences(5)
+    val schedule19ZACodes = schedule.scheduleParts.filter { it.offences is List<Offence> }
+      .flatMap { it.offences!! }
+      .map { it.code }
+
+    /**
+     * Any SDS sentences with a sentence date greater than 2005-04-04 must not include any offence codes
+     * present within Schedule 19ZA
+     */
+    val sdsCodes = sentenceAndOffences
+      .filter {
+        listOf(
+          SentenceCalculationType.ADIMP.name,
+          SentenceCalculationType.ADIMP_ORA.name,
+          SentenceCalculationType.SEC250.name,
+          SentenceCalculationType.SEC250_ORA.name,
+          SentenceCalculationType.YOI.name,
+          SentenceCalculationType.YOI_ORA.name,
+        ).contains(it.sentenceCalculationType) && it.sentenceDate > LocalDate.parse("2005-04-04")
+      }
+      .map { it.offence.offenceCode }.toSet()
+
+    if (sdsCodes.isNotEmpty() && schedule19ZACodes.intersect(sdsCodes).isNotEmpty()) {
+      messages += listOf(ValidationMessage(ValidationCode.SDS_TORERA_EXCLUSION))
+    }
+
+    /**
+     * Any SPOC sentences with a sentence date before 2022-06-28 must not include any offence codes
+     * present within Schedule 19ZA
+     */
+    val spocCodes = sentenceAndOffences
+      .filter {
+        listOf(
+          SentenceCalculationType.SEC236A.name,
+          SentenceCalculationType.SOPC18.name,
+          SentenceCalculationType.SOPC21.name,
+        ).contains(it.sentenceCalculationType) && it.sentenceDate < LocalDate.parse("2022-06-28")
+      }
+      .map { it.offence.offenceCode }.toSet()
+
+    if (spocCodes.isNotEmpty() && schedule19ZACodes.intersect(spocCodes).isNotEmpty()) {
+      messages += listOf(ValidationMessage(ValidationCode.SPOC_TORERA_EXCLUSION))
+    }
+
+    return messages
   }
 
   companion object {

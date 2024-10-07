@@ -7,8 +7,9 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.util.retry.Retry
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotGetMoOffenceInformation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SDSEarlyReleaseExclusionForOffenceCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionForOffenceCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.Schedule
 import java.time.Duration
 
 @Service
@@ -57,6 +58,25 @@ class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private v
           },
       )
       .block() ?: throw CouldNotGetMoOffenceInformation("Sds early release exclusions schedule otherwise failed for offence lookup failed for $offencesList, cannot proceed to perform a sentence calculation")
+  }
+
+  fun getScheduleOffences(scheduleId: Long): Schedule {
+    return webClient.get()
+      .uri("/schedule/by-id/$scheduleId")
+      .retrieve()
+      .bodyToMono(typeReference<Schedule>())
+      .retryWhen(
+        Retry
+          .backoff(5, Duration.ofMillis(100))
+          .maxBackoff(Duration.ofSeconds(5))
+          .doBeforeRetry { retrySignal ->
+            log.warn("getTORERAOffenceCodes: Retrying [Attempt: ${retrySignal.totalRetries() + 1}] due to ${retrySignal.failure().message}. ")
+          }
+          .onRetryExhaustedThrow { _, _ ->
+            throw MaxRetryAchievedException("getTORERAOffenceCodes: Max retries - lookup failed for $scheduleId, cannot proceed to perform a sentence calculation")
+          },
+      )
+      .block() ?: throw CouldNotGetMoOffenceInformation("Schedule offences failed to load for ID $scheduleId")
   }
 
   class MaxRetryAchievedException(message: String?) : RuntimeException(message)
