@@ -44,6 +44,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_DYO_TORERA_START_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SOPC_TORERA_END_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
@@ -164,8 +166,9 @@ class ValidationService(
     val sortedSentences = sentencesAndOffences.sortedWith(this::sortByCaseNumberAndLineSequence)
     val validationMessages = mutableListOf<ValidationMessage>()
     validationMessages += validateSupportedSentences(sortedSentences)
-    // TODO implement feature toggle for TORERA validation
-    validationMessages += validateToreraExempt(sourceData.sentenceAndOffences)
+    if (featureToggles.toreraOffenceToManualJourney) {
+      validationMessages += validateToreraExempt(sourceData.sentenceAndOffences)
+    }
     if (validationMessages.isEmpty()) {
       validationMessages += validateUnsupportedCalculation(sourceData)
     }
@@ -1054,55 +1057,45 @@ class ValidationService(
 
   private fun validateToreraExempt(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
-
-    /**
-     * Any SDS sentences with a sentence date greater than 2005-04-04 must not include any offence codes
-     * present within Schedule 19ZA
-     */
-    val sdsCodes = sentenceAndOffences
-      .filter {
-        listOf(
-          SentenceCalculationType.ADIMP.name,
-          SentenceCalculationType.ADIMP_ORA.name,
-          SentenceCalculationType.SEC250.name,
-          SentenceCalculationType.SEC250_ORA.name,
-          SentenceCalculationType.YOI.name,
-          SentenceCalculationType.YOI_ORA.name,
-        ).contains(it.sentenceCalculationType) && it.sentenceDate > LocalDate.parse("2005-04-04")
-      }
-      .map { it.offence.offenceCode }
-
-    /**
-     * Any SPOC sentences with a sentence date before 2022-06-28 must not include any offence codes
-     * present within Schedule 19ZA
-     */
-    val spocCodes = sentenceAndOffences
-      .filter {
-        listOf(
-          SentenceCalculationType.SEC236A.name,
-          SentenceCalculationType.SOPC18.name,
-          SentenceCalculationType.SOPC21.name,
-        ).contains(it.sentenceCalculationType) && it.sentenceDate < LocalDate.parse("2022-06-28")
-      }
-      .map { it.offence.offenceCode }
-
-    // get all Offences where Schedule 19ZA includes the offence code
-    val scheduleOffenceCodes = manageOffencesService.getOffences(sdsCodes.plus(spocCodes))
-      .filter { offence -> offence.schedules?.any { schedule -> schedule.code == "19ZA" } ?: false }
-      .map { it.code }
+    val sdsCodes = getToreraSdsOffenceCodes(sentenceAndOffences)
+    val sopcCodes = getToreraSopcOffenceCodes(sentenceAndOffences)
+    val scheduleOffenceCodes = getToreraRelatedCodes(sdsCodes.plus(sopcCodes))
 
     // if any offence SDS offence is part of schedule 19ZA, trigger error
-    if (sdsCodes.isNotEmpty() && scheduleOffenceCodes.intersect(sdsCodes.toSet()).isNotEmpty()) {
+    if (sdsCodes.isNotEmpty() && scheduleOffenceCodes.any { it in sdsCodes }) {
       messages += listOf(ValidationMessage(ValidationCode.SDS_TORERA_EXCLUSION))
     }
 
-    // if any offence SPOC offence is part of schedule 19ZA, trigger error
-    if (spocCodes.isNotEmpty() && scheduleOffenceCodes.intersect(spocCodes.toSet()).isNotEmpty()) {
-      messages += listOf(ValidationMessage(ValidationCode.SPOC_TORERA_EXCLUSION))
+    // if any offence SOPC offence is part of schedule 19ZA, trigger error
+    if (sopcCodes.isNotEmpty() && scheduleOffenceCodes.any { it in sopcCodes }) {
+      messages += listOf(ValidationMessage(ValidationCode.SOPC_TORERA_EXCLUSION))
     }
 
     return messages
   }
+
+  /**
+   * Any SDS sentences with a sentence date greater than 2005-04-04
+   */
+  private fun getToreraSdsOffenceCodes(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>) =
+    sentenceAndOffences
+      .filter { SentenceCalculationType.isSds(it.sentenceCalculationType) && it.sentenceDate > SDS_DYO_TORERA_START_DATE }
+      .map { it.offence.offenceCode }
+
+  /**
+   * Any SOPC sentences with a sentence date before 2022-06-28
+   */
+  private fun getToreraSopcOffenceCodes(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>) =
+    sentencesAndOffence
+      .filter { SentenceCalculationType.isSopc(it.sentenceCalculationType) && it.sentenceDate < SOPC_TORERA_END_DATE }
+      .map { it.offence.offenceCode }
+
+  /**
+   * Get all Offence codes which are included within Schedule 19ZA
+   */
+  private fun getToreraRelatedCodes(offenceCodes: List<String>) = manageOffencesService.getOffences(offenceCodes)
+    .filter { offence -> offence.schedules?.any { schedule -> schedule.code == "19ZA" } ?: false }
+    .map { it.code }
 
   companion object {
     private val BOOKING_ADJUSTMENTS_TO_VALIDATE =

@@ -10,7 +10,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNot
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionForOffenceCode
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.Schedule
 import java.time.Duration
 
 @Service

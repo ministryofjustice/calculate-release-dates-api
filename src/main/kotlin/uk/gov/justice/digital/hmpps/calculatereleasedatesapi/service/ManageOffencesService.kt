@@ -18,6 +18,6 @@ class ManageOffencesService(
   }
 
   fun getOffences(offenceCodes: List<String>): List<Offence> {
-    return manageOffencesApiClient.getOffences(offenceCodes)
+    return manageOffencesApiClient.getOffences(offenceCodes.distinct())
   }
 }

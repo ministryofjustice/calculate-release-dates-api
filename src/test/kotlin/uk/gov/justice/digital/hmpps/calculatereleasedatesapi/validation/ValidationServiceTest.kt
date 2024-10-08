@@ -6,14 +6,15 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.springframework.context.annotation.Profile
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -47,6 +48,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.Schedule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
@@ -96,6 +98,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
 import java.util.UUID
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.Offence as ScheduleOffence
 
 @Profile("tests")
 class ValidationServiceTest {
@@ -103,7 +106,7 @@ class ValidationServiceTest {
   private var validationService =
     ValidationService(
       SentencesExtractionService(),
-      FeatureToggles(botus = true),
+      FeatureToggles(botus = true, toreraOffenceToManualJourney = true),
       TRANCHE_CONFIGURATION,
       manageOffencesService,
     )
@@ -2728,26 +2731,224 @@ class ValidationServiceTest {
     assertThat(result).isEmpty()
   }
 
-  private fun createSentenceChain(
-    start: AbstractSentence,
-    chain: MutableList<AbstractSentence>,
-    sentencesByPrevious: Map<UUID, List<AbstractSentence>>,
-    chains: MutableList<MutableList<AbstractSentence>> = mutableListOf(mutableListOf()),
-  ) {
-    val originalChain = chain.toMutableList()
-    sentencesByPrevious[start.identifier]?.forEachIndexed { index, it ->
-      if (index == 0) {
-        chain.add(it)
-        createSentenceChain(it, chain, sentencesByPrevious, chains)
-      } else {
-        // This sentence has two sentences consecutive to it. This is not allowed in practice, however it can happen
-        // when a sentence in NOMIS has multiple offices, which means it becomes multiple sentences in our model.
-        val chainCopy = originalChain.toMutableList()
-        chains.add(chainCopy)
-        chainCopy.add(it)
-        createSentenceChain(it, chainCopy, sentencesByPrevious, chains)
-      }
-    }
+  @Test
+  fun `Test validateToreraExempt returns SDS_TORERA_EXCLUSION exception`() {
+    val toreraOffenceCodes = listOf(
+      TORERA_SCHEDULE_OFFENCE,
+      TORERA_SCHEDULE_OFFENCE.copy(offenceType = SentenceCalculationType.SEC236A.name),
+    )
+    whenever(manageOffencesService.getOffences(any())).thenReturn(toreraOffenceCodes)
+    val result = validationService.validateSupportedSentencesAndCalculations(
+      PrisonApiSourceData(
+        listOf(
+          validSdsSentence.copy(sentenceDate = ImportantDates.SDS_DYO_TORERA_START_DATE.plusDays(1)),
+        ).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            true,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+    )
+    assertThat(result.count()).isEqualTo(1)
+    assertThat(result.first()).isEqualTo(ValidationMessage(ValidationCode.SDS_TORERA_EXCLUSION))
+  }
+
+  @Test
+  fun `Test validateToreraExempt returns SOPC_TORERA_EXCLUSION exception with sentenced date prior to SOPC_TORERA_END_DATE`() {
+    val toreraOffenceCodes = listOf(
+      TORERA_SCHEDULE_OFFENCE.copy(
+        offenceType = SentenceCalculationType.SOPC21.name,
+      ),
+      TORERA_SCHEDULE_OFFENCE.copy(offenceType = SentenceCalculationType.EDSU18.name),
+    )
+    whenever(manageOffencesService.getOffences(any())).thenReturn(toreraOffenceCodes)
+    val result = validationService.validateSupportedSentencesAndCalculations(
+      PrisonApiSourceData(
+        listOf(validSopcSentence.copy(sentenceDate = ImportantDates.SOPC_TORERA_END_DATE.minusDays(1))).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            true,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+    )
+    assertThat(result.count()).isEqualTo(1)
+    assertThat(result.first()).isEqualTo(ValidationMessage(ValidationCode.SOPC_TORERA_EXCLUSION))
+  }
+
+  @Test
+  fun `Test validateToreraExempt returns SDS_TORERA_EXCLUSION and SOPC_TORERA_EXCLUSION exception`() {
+    val toreraOffenceCodes = listOf(
+      TORERA_SCHEDULE_OFFENCE,
+      TORERA_SCHEDULE_OFFENCE.copy(
+        offenceType = SentenceCalculationType.SOPC21.name,
+      ),
+      TORERA_SCHEDULE_OFFENCE.copy(offenceType = SentenceCalculationType.EDSU18.name),
+    )
+    whenever(manageOffencesService.getOffences(any())).thenReturn(toreraOffenceCodes)
+    val result = validationService.validateSupportedSentencesAndCalculations(
+      PrisonApiSourceData(
+        listOf(validSopcSentence, validSdsSentence).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            true,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+    )
+    assertThat(result.count()).isEqualTo(2)
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(ValidationCode.SDS_TORERA_EXCLUSION),
+        ValidationMessage(ValidationCode.SOPC_TORERA_EXCLUSION),
+      ),
+    )
+  }
+
+  @Test
+  fun `Test validateToreraExempt does not trigger for SDS sentence with no offence codes in schedule 19ZA`() {
+    val toreraOffenceCodes = listOf(
+      TORERA_SCHEDULE_OFFENCE.copy(
+        schedules = listOf(
+          Schedule(
+            id = 111,
+            code = "NOT_19ZA",
+            act = "",
+            url = "https://example.com",
+          ),
+        ),
+      ),
+    )
+    whenever(manageOffencesService.getOffences(any())).thenReturn(toreraOffenceCodes)
+    val result = validationService.validateSupportedSentencesAndCalculations(
+      PrisonApiSourceData(
+        listOf(validSdsSentence).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            true,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+    )
+    assertThat(result.count()).isEqualTo(0)
+  }
+
+  @Test
+  fun `Test validateToreraExempt does not trigger for SOPC sentence with no offence codes in schedule 19ZA`() {
+    val toreraOffenceCodes = listOf(
+      TORERA_SCHEDULE_OFFENCE.copy(
+        schedules = listOf(
+          Schedule(
+            id = 111,
+            code = "NOT_19ZA",
+            act = "",
+            url = "https://example.com",
+          ),
+        ),
+      ),
+    )
+    whenever(manageOffencesService.getOffences(any())).thenReturn(toreraOffenceCodes)
+    val result = validationService.validateSupportedSentencesAndCalculations(
+      PrisonApiSourceData(
+        listOf(validSopcSentence).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            true,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+    )
+    assertThat(result.count()).isEqualTo(0)
+  }
+
+  @Test
+  fun `Test validateToreraExempt does not trigger for SDS sentence with sentenced date on before SDS_DYO_TORERA_START_DATE`() {
+    val toreraOffenceCodes = listOf(
+      TORERA_SCHEDULE_OFFENCE.copy(
+        code = "ABC",
+      ),
+      TORERA_SCHEDULE_OFFENCE.copy(
+        code = "XYZ",
+      ),
+    )
+    whenever(manageOffencesService.getOffences(any())).thenReturn(toreraOffenceCodes)
+    val result = validationService.validateSupportedSentencesAndCalculations(
+      PrisonApiSourceData(
+        listOf(
+          validSdsSentence.copy(sentenceDate = ImportantDates.SDS_DYO_TORERA_START_DATE),
+          validSdsSentence.copy(sentenceDate = ImportantDates.SDS_DYO_TORERA_START_DATE.minusDays(1)),
+        ).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            true,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+    )
+    assertThat(result.count()).isEqualTo(0)
+  }
+
+  @Test
+  fun `Test validateToreraExempt does not trigger for SOPC sentence with sentenced date on or after 28-06-2022`() {
+    val toreraOffenceCodes = listOf(
+      TORERA_SCHEDULE_OFFENCE.copy(
+        code = "ABC",
+      ),
+      TORERA_SCHEDULE_OFFENCE.copy(
+        code = "XYZ",
+      ),
+    )
+    whenever(manageOffencesService.getOffences(any())).thenReturn(toreraOffenceCodes)
+    val result = validationService.validateSupportedSentencesAndCalculations(
+      PrisonApiSourceData(
+        listOf(
+          validSopcSentence.copy(sentenceDate = ImportantDates.SOPC_TORERA_END_DATE),
+          validSopcSentence.copy(sentenceDate = ImportantDates.SOPC_TORERA_END_DATE.plusDays(1)),
+        ).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            true,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+    )
+    assertThat(result.count()).isEqualTo(0)
   }
 
   private companion object {
@@ -2935,6 +3136,25 @@ class ValidationServiceTest {
               toDate = FIRST_JAN_2015.minusDays(1),
             ),
           ),
+        ),
+      ),
+    )
+
+    private val TORERA_SCHEDULE_OFFENCE = ScheduleOffence(
+      id = 111,
+      code = "A123456",
+      changedDate = "2019-02-04",
+      description = "OffenceOne",
+      startDate = "2019-02-10",
+      isChild = false,
+      maxPeriodIsLife = false,
+      offenceType = SentenceCalculationType.ADIMP.name,
+      schedules = listOf(
+        Schedule(
+          id = 1,
+          code = "19ZA",
+          act = "",
+          url = "https://example.com",
         ),
       ),
     )
