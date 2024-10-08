@@ -1,0 +1,79 @@
+{
+  "concurrentSentences": [
+    {
+      "sentencedAt": "2024-08-09",
+      "sentenceLength": "25 months",
+      "sentenceLengthDays": 761,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2026-09-08",
+          "adjusted": "2026-08-11",
+          "daysFromSentenceStart": 761,
+          "adjustedByDays": 28
+        },
+        "CRD": {
+          "unadjusted": "2025-06-09",
+          "adjusted": "2025-05-12",
+          "daysFromSentenceStart": 305,
+          "adjustedByDays": 28
+        }
+      },
+      "lineSequence": 1,
+      "caseSequence": 1,
+      "caseReference": "05B40003923"
+    },
+    {
+      "sentencedAt": "2024-08-09",
+      "sentenceLength": "2 weeks",
+      "sentenceLengthDays": 14,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2024-08-22",
+          "adjusted": "2024-07-25",
+          "daysFromSentenceStart": 14,
+          "adjustedByDays": 28
+        },
+        "CRD": {
+          "unadjusted": "2024-08-14",
+          "adjusted": "2024-08-09",
+          "daysFromSentenceStart": 6,
+          "adjustedByDays": 5
+        }
+      },
+      "lineSequence": 2,
+      "caseSequence": 1,
+      "caseReference": "05B40003923"
+    }
+  ],
+  "consecutiveSentence": null,
+  "breakdownByReleaseDateType": {
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -28,
+      "releaseDate": "2026-08-11",
+      "unadjustedDate": "2026-09-08"
+    },
+    "CRD": {
+      "rules": ["SDS_EARLY_RELEASE_APPLIES"],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -28,
+      "releaseDate": "2025-05-12",
+      "unadjustedDate": "2025-06-09"
+    },
+    "HDCED": {
+      "rules": ["HDCED_GE_MIN_PERIOD_LT_MIDPOINT", "SDS_EARLY_RELEASE_APPLIES"],
+      "rulesWithExtraAdjustments": {
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
+          "adjustmentValue": 153,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": -28,
+      "releaseDate": "2024-12-12",
+      "unadjustedDate": "2024-08-09"
+    }
+  },
+  "otherDates": {},
+  "ersedNotApplicableDueToDtoLaterThanCrd": false
+}
