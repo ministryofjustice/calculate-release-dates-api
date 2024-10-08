@@ -17,7 +17,7 @@ class ManageOffencesService(
     return manageOffencesApiClient.getSdsExclusionsForOffenceCodes(offenceCodes)
   }
 
-  fun getOffences(offenceCodes: List<String>): List<Offence> {
-    return manageOffencesApiClient.getOffences(offenceCodes.distinct())
+  fun getOffences(offenceCodes: Set<String>): List<Offence> {
+    return manageOffencesApiClient.getOffences(offenceCodes)
   }
 }

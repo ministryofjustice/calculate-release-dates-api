@@ -60,7 +60,7 @@ class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private v
       .block() ?: throw CouldNotGetMoOffenceInformation("Sds early release exclusions schedule otherwise failed for offence lookup failed for $offencesList, cannot proceed to perform a sentence calculation")
   }
 
-  fun getOffences(offenceCodes: List<String>): List<Offence> {
+  fun getOffences(offenceCodes: Set<String>): List<Offence> {
     val offenceCodeString = offenceCodes.joinToString(",")
     return webClient.get()
       .uri("/offences/code/multiple?offenceCodes=$offenceCodeString")

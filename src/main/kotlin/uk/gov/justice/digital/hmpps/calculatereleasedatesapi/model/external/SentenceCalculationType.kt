@@ -136,7 +136,7 @@ enum class SentenceCalculationType(
         false
       }
 
-    fun isSds(sentenceCalculationType: String): Boolean = listOf(
+    fun isToreraSds(sentenceCalculationType: String): Boolean = listOf(
       ADIMP.name,
       ADIMP_ORA.name,
       SEC250.name,
@@ -145,7 +145,7 @@ enum class SentenceCalculationType(
       YOI_ORA.name,
     ).contains(sentenceCalculationType)
 
-    fun isSopc(sentenceCalculationType: String): Boolean = listOf(
+    fun isToreraSopc(sentenceCalculationType: String): Boolean = listOf(
       SEC236A.name,
       SOPC18.name,
       SOPC21.name,

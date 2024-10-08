@@ -1079,23 +1079,26 @@ class ValidationService(
    */
   private fun getToreraSdsOffenceCodes(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>) =
     sentenceAndOffences
-      .filter { SentenceCalculationType.isSds(it.sentenceCalculationType) && it.sentenceDate > SDS_DYO_TORERA_START_DATE }
+      .filter { SentenceCalculationType.isToreraSds(it.sentenceCalculationType) && it.sentenceDate > SDS_DYO_TORERA_START_DATE }
       .map { it.offence.offenceCode }
+      .toSet()
 
   /**
    * Any SOPC sentences with a sentence date before 2022-06-28
    */
   private fun getToreraSopcOffenceCodes(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>) =
     sentencesAndOffence
-      .filter { SentenceCalculationType.isSopc(it.sentenceCalculationType) && it.sentenceDate < SOPC_TORERA_END_DATE }
+      .filter { SentenceCalculationType.isToreraSopc(it.sentenceCalculationType) && it.sentenceDate < SOPC_TORERA_END_DATE }
       .map { it.offence.offenceCode }
+      .toSet()
 
   /**
    * Get all Offence codes which are included within Schedule 19ZA
    */
-  private fun getToreraRelatedCodes(offenceCodes: List<String>) = manageOffencesService.getOffences(offenceCodes)
+  private fun getToreraRelatedCodes(offenceCodes: Set<String>) = manageOffencesService.getOffences(offenceCodes)
     .filter { offence -> offence.schedules?.any { schedule -> schedule.code == "19ZA" } ?: false }
     .map { it.code }
+    .toSet()
 
   companion object {
     private val BOOKING_ADJUSTMENTS_TO_VALIDATE =
