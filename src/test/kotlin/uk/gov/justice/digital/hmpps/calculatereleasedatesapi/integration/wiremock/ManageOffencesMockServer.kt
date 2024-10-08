@@ -215,14 +215,16 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
       .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")
-          .withBody((
-            """
+          .withBody(
+            (
+              """
               []
-            """.trimIndent()
-            ))
+              """.trimIndent()
+              ),
+          )
           .withStatus(200)
           .withTransformers("response-template"),
-      )
+      ),
   )
 }
 
