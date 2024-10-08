@@ -35,6 +35,7 @@ class ManageOffencesApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEa
     manageOffencesApi.stub500Response()
     manageOffencesApi.stubBaseResponse()
     manageOffencesApi.stubSdsExclusionsDefaultToNo()
+    manageOffencesApi.subOffencesFromCodes()
   }
 
   override fun afterAll(context: ExtensionContext?) {
@@ -206,6 +207,22 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
           .withStatus(200)
           .withTransformers("response-template"),
       ),
+  )
+
+  fun subOffencesFromCodes(): StubMapping = stubFor(
+    get(urlMatching("/offences/code/multiple\\?offenceCodes=([A-Za-z0-9,]+)"))
+      .atPriority(Int.MAX_VALUE)
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody((
+            """
+              []
+            """.trimIndent()
+            ))
+          .withStatus(200)
+          .withTransformers("response-template"),
+      )
   )
 }
 

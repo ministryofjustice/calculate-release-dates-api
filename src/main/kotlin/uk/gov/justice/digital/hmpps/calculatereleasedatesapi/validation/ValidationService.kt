@@ -1059,7 +1059,14 @@ class ValidationService(
     val messages = mutableListOf<ValidationMessage>()
     val sdsCodes = getToreraSdsOffenceCodes(sentenceAndOffences)
     val sopcCodes = getToreraSopcOffenceCodes(sentenceAndOffences)
-    val scheduleOffenceCodes = getToreraRelatedCodes(sdsCodes.plus(sopcCodes))
+    val sdsAndSopcOffenceCodes = sdsCodes.plus(sopcCodes)
+
+    // if no SDS or SOPC offence codes are present, torera is not valid
+    if (sdsAndSopcOffenceCodes.isEmpty()) {
+      return messages
+    }
+
+    val scheduleOffenceCodes = getToreraRelatedCodes(sdsAndSopcOffenceCodes)
 
     // if any offence SDS offence is part of schedule 19ZA, trigger error
     if (sdsCodes.isNotEmpty() && scheduleOffenceCodes.any { it in sdsCodes }) {
