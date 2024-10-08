@@ -24,6 +24,7 @@ generic-service:
     SDS_EARLY_RELEASE_UNSUPPORTED_FEATURE_TOGGLE: "false"
     SDS_EARLY_RELEASE_HINTS_FEATURE_TOGGLE: "true"
     SUPPORT_INACTIVE_SENTENCES_AND_ADJUSTMENTS: "true"
+    TORERA_OFFENCE_TO_MANUAL_JOURNEY: "false"
 
   serviceAccountName: calculate-release-dates-api-preprod
 
