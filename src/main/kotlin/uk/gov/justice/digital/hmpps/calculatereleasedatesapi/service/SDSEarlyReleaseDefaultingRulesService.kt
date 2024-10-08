@@ -46,6 +46,16 @@ class SDSEarlyReleaseDefaultingRulesService(
           breakdownByReleaseDateType,
         )
       }
+    } else {
+      DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.forEach { releaseDateType ->
+        applyReleaseRules(
+          releaseDateType,
+          earlyReleaseResult,
+          standardReleaseResult,
+          trancheCommencementDate,
+          breakdownByReleaseDateType,
+        )
+      }
     }
 
     handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(
@@ -224,6 +234,30 @@ class SDSEarlyReleaseDefaultingRulesService(
         standardReleaseResult.breakdownByReleaseDateType[ReleaseDateType.TUSED]?.let {
           breakdownByReleaseDateType[ReleaseDateType.TUSED] = it
         }
+      }
+    } else {
+      breakdownByReleaseDateType[dateType]?.let {
+        breakdownByReleaseDateType[dateType] = it.copy(
+          rules = it.rules + CalculationRule.SDS_EARLY_RELEASE_APPLIES,
+        )
+      }
+    }
+  }
+
+  private fun applyReleaseRules(
+    dateType: ReleaseDateType,
+    earlyReleaseResult: CalculationResult,
+    standardReleaseResult: CalculationResult,
+    commencementDate: LocalDate?,
+    breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+  ) {
+    val early = earlyReleaseResult.dates[dateType]
+    val standard = standardReleaseResult.dates[dateType]
+    if (standard != null && (commencementDate == null || standard.isBefore(commencementDate) || standard == early)) {
+      standardReleaseResult.breakdownByReleaseDateType[dateType]?.let {
+        breakdownByReleaseDateType[dateType] = it.copy(
+          rules = it.rules + CalculationRule.SDS_STANDARD_RELEASE_APPLIES,
+        )
       }
     } else {
       breakdownByReleaseDateType[dateType]?.let {
