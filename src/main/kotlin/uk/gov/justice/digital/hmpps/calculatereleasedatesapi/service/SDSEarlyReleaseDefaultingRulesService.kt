@@ -46,7 +46,7 @@ class SDSEarlyReleaseDefaultingRulesService(
           breakdownByReleaseDateType,
         )
       }
-    } else {
+    } else if (allocatedTranche != SDSEarlyReleaseTranche.TRANCHE_0) {
       DATE_TYPES_TO_ADJUST_TO_COMMENCEMENT_DATE.forEach { releaseDateType ->
         applyReleaseRules(
           releaseDateType,
