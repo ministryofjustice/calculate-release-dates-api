@@ -23,23 +23,15 @@ class RecallValidationService(
 ) {
 
   internal fun validateFixedTermRecall(sourceData: PrisonApiSourceData): List<ValidationMessage> {
-    val sentencesAndOffences = sourceData.sentenceAndOffences
     val ftrDetails = sourceData.fixedTermRecallDetails ?: return emptyList()
-    val (recallLength, has14DayFTRSentence, has28DayFTRSentence) = getFtrValidationDetails(
-      ftrDetails,
-      sentencesAndOffences,
-    )
+    val (recallLength, has14DayFTRSentence, has28DayFTRSentence) = getFtrValidationDetails(ftrDetails, sourceData.sentenceAndOffences)
 
-    if (has14DayFTRSentence && has28DayFTRSentence) {
-      return listOf(
-        ValidationMessage(
-          ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER,
-        ),
-      )
+    return when {
+      has14DayFTRSentence && has28DayFTRSentence -> listOf(ValidationMessage(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER))
+      has14DayFTRSentence && recallLength == 28 -> listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28))
+      has28DayFTRSentence && recallLength == 14 -> listOf(ValidationMessage(ValidationCode.FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14))
+      else -> emptyList()
     }
-    if (has14DayFTRSentence && recallLength == 28) return listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28))
-    if (has28DayFTRSentence && recallLength == 14) return listOf(ValidationMessage(ValidationCode.FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14))
-    return emptyList()
   }
 
   internal fun getFtrValidationDetails(
@@ -53,26 +45,20 @@ class RecallValidationService(
     return Triple(recallLength, has14DayFTRSentence, has28DayFTRSentence)
   }
 
-  internal fun validateUnsupportedRecallTypes(
-    booking: Booking,
-  ): List<ValidationMessage> {
-    var result = emptyList<ValidationMessage>()
-    booking.getAllExtractableSentences().any {
+  internal fun validateUnsupportedRecallTypes(booking: Booking): List<ValidationMessage> {
+    return if (hasUnsupportedRecallType(booking)) {
+      listOf(ValidationMessage(ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE))
+    } else {
+      emptyList()
+    }
+  }
+  private fun hasUnsupportedRecallType(booking: Booking): Boolean {
+    return booking.getAllExtractableSentences().any {
       it.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
-        (
-          it is StandardDeterminateSentence ||
-            (it is ConsecutiveSentence && it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence })
-          ) &&
+        (it is StandardDeterminateSentence || (it is ConsecutiveSentence && it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence })) &&
         it.recallType != null &&
         it.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
-    }.takeIf { it }?.let {
-      result = listOf(
-        ValidationMessage(
-          ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE,
-        ),
-      )
     }
-    return result
   }
 
   internal fun validateFixedTermRecall(booking: Booking): List<ValidationMessage> {

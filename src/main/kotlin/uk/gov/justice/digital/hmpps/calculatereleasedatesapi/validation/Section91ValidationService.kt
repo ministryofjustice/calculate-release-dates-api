@@ -10,14 +10,29 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 @Service
 class Section91ValidationService(private val validationUtilities: ValidationUtilities) {
 
-  internal fun validateThatSec91SentenceTypeCorrectlyApplied(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
+  internal fun validate(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
 
-    if (sentenceCalculationType == SentenceCalculationType.SEC91_03 || sentenceCalculationType == SentenceCalculationType.SEC91_03_ORA) {
-      if (sentencesAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.SEC_91_END_DATE)) {
-        return ValidationMessage(SEC_91_SENTENCE_TYPE_INCORRECT, validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence))
-      }
+    if (isNotSec91SentenceType(sentenceCalculationType)) {
+      return null
     }
-    return null
+
+    return if (isAfterSec91EndDate(sentencesAndOffence)) {
+      ValidationMessage(
+        SEC_91_SENTENCE_TYPE_INCORRECT,
+        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+      )
+    } else {
+      null
+    }
+  }
+
+  private fun isNotSec91SentenceType(sentenceCalculationType: SentenceCalculationType): Boolean {
+    return sentenceCalculationType != SentenceCalculationType.SEC91_03 &&
+      sentenceCalculationType != SentenceCalculationType.SEC91_03_ORA
+  }
+
+  private fun isAfterSec91EndDate(sentencesAndOffence: SentenceAndOffence): Boolean {
+    return sentencesAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.SEC_91_END_DATE)
   }
 }

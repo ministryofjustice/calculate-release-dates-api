@@ -55,9 +55,9 @@ class SentenceValidationService(
       validateOffenceDateAfterSentenceDate(it),
       validateOffenceRangeDateAfterSentenceDate(it),
     ) + validateDuration(it) + listOfNotNull(
-      section91ValidationService.validateThatSec91SentenceTypeCorrectlyApplied(it),
-      edsValidationService.validateEdsSentenceTypesCorrectlyApplied(it),
-      sopcValidationService.validateSopcSentenceTypesCorrectlyApplied(it),
+      section91ValidationService.validate(it),
+      edsValidationService.validate(it),
+      sopcValidationService.validate(it).firstOrNull(),
       fineValidationService.validateFineAmount(it),
     )
   }

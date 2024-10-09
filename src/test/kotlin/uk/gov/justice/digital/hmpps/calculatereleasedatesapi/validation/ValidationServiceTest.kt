@@ -1988,7 +1988,7 @@ class ValidationServiceTest {
           ),
           USER_INPUTS,
         )
-        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.UNSUPPORTED_DTO_RECALL_SEC104_SEC105))
       }
 
       @Test
@@ -2015,7 +2015,7 @@ class ValidationServiceTest {
           ),
           USER_INPUTS,
         )
-        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.UNSUPPORTED_DTO_RECALL_SEC104_SEC105))
       }
 
       @Test
@@ -2067,7 +2067,7 @@ class ValidationServiceTest {
           ),
           USER_INPUTS,
         )
-        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.UNSUPPORTED_DTO_RECALL_SEC104_SEC105))
       }
 
       @Test
@@ -2093,7 +2093,7 @@ class ValidationServiceTest {
           ),
           USER_INPUTS,
         )
-        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.UNSUPPORTED_DTO_RECALL_SEC104_SEC105))
       }
 
       @Test
@@ -2144,7 +2144,7 @@ class ValidationServiceTest {
           ),
           USER_INPUTS,
         )
-        assertThat(result).doesNotContain(ValidationMessage(ValidationCode.DTO_RECALL))
+        assertThat(result).doesNotContain(ValidationMessage(ValidationCode.UNSUPPORTED_DTO_RECALL_SEC104_SEC105))
       }
     }
 

@@ -11,28 +11,37 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 @Service
 class EDSValidationService(private val validationUtilities: ValidationUtilities) {
 
-  internal fun validateEdsSentenceTypesCorrectlyApplied(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
-    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
+  internal fun validate(sentenceAndOffence: SentenceAndOffence): ValidationMessage? {
+    val sentenceCalculationType = SentenceCalculationType.from(sentenceAndOffence.sentenceCalculationType)
 
-    if (listOf(
-        SentenceCalculationType.EDS18,
-        SentenceCalculationType.EDS21,
-        SentenceCalculationType.EDSU18,
-      ).contains(
-        sentenceCalculationType,
-      )
-    ) {
-      if (sentencesAndOffence.sentenceDate.isBefore(ImportantDates.EDS18_SENTENCE_TYPES_START_DATE)) {
-        return ValidationMessage(
-          EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT,
-          validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
-        )
+    return when {
+      isEds(sentenceCalculationType) && isBeforeEdsStartDate(sentenceAndOffence) -> {
+        createValidationMessage(EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT, sentenceAndOffence)
       }
-    } else if (sentenceCalculationType == SentenceCalculationType.LASPO_AR) {
-      if (sentencesAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE)) {
-        return ValidationMessage(LASPO_AR_SENTENCE_TYPE_INCORRECT, validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence))
+      isLaspo(sentenceCalculationType) && isAfterLaspoEndDate(sentenceAndOffence) -> {
+        createValidationMessage(LASPO_AR_SENTENCE_TYPE_INCORRECT, sentenceAndOffence)
       }
+      else -> null
     }
-    return null
+  }
+
+  private fun isEds(type: SentenceCalculationType): Boolean {
+    return type in listOf(SentenceCalculationType.EDS18, SentenceCalculationType.EDS21, SentenceCalculationType.EDSU18)
+  }
+
+  private fun isBeforeEdsStartDate(sentenceAndOffence: SentenceAndOffence): Boolean {
+    return sentenceAndOffence.sentenceDate.isBefore(ImportantDates.EDS18_SENTENCE_TYPES_START_DATE)
+  }
+
+  private fun isLaspo(type: SentenceCalculationType): Boolean {
+    return type == SentenceCalculationType.LASPO_AR
+  }
+
+  private fun isAfterLaspoEndDate(sentenceAndOffence: SentenceAndOffence): Boolean {
+    return sentenceAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.LASPO_AR_SENTENCE_TYPES_END_DATE)
+  }
+
+  private fun createValidationMessage(validationCode: ValidationCode, sentenceAndOffence: SentenceAndOffence): ValidationMessage {
+    return ValidationMessage(validationCode, validationUtilities.getCaseSeqAndLineSeq(sentenceAndOffence))
   }
 }

@@ -10,34 +10,61 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 class FineValidationService(private val validationUtilities: ValidationUtilities) {
 
   fun validateFineSentenceSupported(prisonApiSourceData: PrisonApiSourceData): List<ValidationMessage> {
-    val validationMessages = mutableListOf<ValidationMessage>()
-    val fineSentences =
-      prisonApiSourceData.sentenceAndOffences.filter { SentenceCalculationType.from(it.sentenceCalculationType).sentenceClazz == AFineSentence::class.java }
-    if (fineSentences.isNotEmpty()) {
-      if (prisonApiSourceData.offenderFinePayments.isNotEmpty()) {
-        validationMessages.add(ValidationMessage(ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS))
-      }
-      if (fineSentences.any { it.consecutiveToSequence != null }) {
-        validationMessages.add(ValidationMessage(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE_TO))
-      }
-      val sequenceToSentenceMap = prisonApiSourceData.sentenceAndOffences.associateBy { it.sentenceSequence }
-      if (prisonApiSourceData.sentenceAndOffences.any {
-          it.consecutiveToSequence != null && fineSentences.contains(sequenceToSentenceMap[(it.consecutiveToSequence)])
-        }
-      ) {
-        validationMessages.add(ValidationMessage(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE))
-      }
+    val fineSentences = getFineSentences(prisonApiSourceData)
+
+    if (fineSentences.isEmpty()) {
+      return emptyList()
     }
+
+    val validationMessages = mutableListOf<ValidationMessage>()
+
+    if (hasFinePayments(prisonApiSourceData)) {
+      validationMessages.add(ValidationMessage(ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS))
+    }
+
+    if (hasConsecutiveFineSentence(fineSentences)) {
+      validationMessages.add(ValidationMessage(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE_TO))
+    }
+
+    if (hasConsecutiveToFineSentence(prisonApiSourceData, fineSentences)) {
+      validationMessages.add(ValidationMessage(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE))
+    }
+
     return validationMessages
   }
 
+  private fun getFineSentences(sourceData: PrisonApiSourceData): List<SentenceAndOffence> {
+    return sourceData.sentenceAndOffences.filter {
+      SentenceCalculationType.from(it.sentenceCalculationType).sentenceClazz == AFineSentence::class.java
+    }
+  }
+
+  private fun hasFinePayments(sourceData: PrisonApiSourceData): Boolean {
+    return sourceData.offenderFinePayments.isNotEmpty()
+  }
+
+  private fun hasConsecutiveFineSentence(fineSentences: List<SentenceAndOffence>): Boolean {
+    return fineSentences.any { it.consecutiveToSequence != null }
+  }
+
+  private fun hasConsecutiveToFineSentence(sourceData: PrisonApiSourceData, fineSentences: List<SentenceAndOffence>): Boolean {
+    val sentenceSequenceMap: Map<Int?, SentenceAndOffence> = sourceData.sentenceAndOffences.associateBy { it.sentenceSequence }
+    return sourceData.sentenceAndOffences.any {
+      it.consecutiveToSequence != null && fineSentences.contains(sentenceSequenceMap[it.consecutiveToSequence])
+    }
+  }
+
   internal fun validateFineAmount(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
-    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
-    if (sentenceCalculationType.sentenceClazz == AFineSentence::class.java) {
-      if (sentencesAndOffence.fineAmount == null) {
-        return ValidationMessage(ValidationCode.A_FINE_SENTENCE_MISSING_FINE_AMOUNT, validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence))
-      }
+    if (isFineSentence(sentencesAndOffence) && sentencesAndOffence.fineAmount == null) {
+      return ValidationMessage(
+        ValidationCode.A_FINE_SENTENCE_MISSING_FINE_AMOUNT,
+        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+      )
     }
     return null
+  }
+
+  private fun isFineSentence(sentencesAndOffence: SentenceAndOffence): Boolean {
+    return SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType).sentenceClazz == AFineSentence::class.java
   }
 }

@@ -24,6 +24,7 @@ class UnsupportedValidationService {
     }
     return emptyList()
   }
+
   internal fun validateUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
     val unSupportedEncouragingOffenceCodes = findUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence)
     if (unSupportedEncouragingOffenceCodes.isNotEmpty()) {

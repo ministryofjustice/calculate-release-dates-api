@@ -11,21 +11,67 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 @Service
 class SOPCValidationService(private val validationUtilities: ValidationUtilities) {
 
+  internal fun validate(
+    sentencesAndOffence: SentenceAndOffence,
+  ): List<ValidationMessage> {
+    val messages = mutableListOf<ValidationMessage>()
+    messages.addAll(validateSOPC(sentencesAndOffence))
+    messages.addAll(validateSec236A(sentencesAndOffence))
+    return messages
+  }
+
+  private fun validateSOPC(sentencesAndOffence: SentenceAndOffence): List<ValidationMessage> {
+    val messages = mutableListOf<ValidationMessage>()
+    if (isSopc(SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)) && isBeforeSec91EndDate(sentencesAndOffence)) {
+      messages.add(
+        ValidationMessage(
+          SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT,
+          validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+        ),
+      )
+    }
+    return messages
+  }
+
+  private fun validateSec236A(sentencesAndOffence: SentenceAndOffence): List<ValidationMessage> {
+    val messages = mutableListOf<ValidationMessage>()
+    if (isSopc(SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)) && isBeforeSec91EndDate(sentencesAndOffence)) {
+      messages.add(
+        ValidationMessage(
+          SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT,
+          validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+        ),
+      )
+    }
+    return messages
+  }
+
   internal fun validateSopcSentenceTypesCorrectlyApplied(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
 
-    if (listOf(SentenceCalculationType.SOPC18, SentenceCalculationType.SOPC21).contains(sentenceCalculationType)) {
-      if (sentencesAndOffence.sentenceDate.isBefore(ImportantDates.SEC_91_END_DATE)) {
-        return ValidationMessage(
-          SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT,
-          validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
-        )
-      }
-    } else if (sentenceCalculationType == SentenceCalculationType.SEC236A) {
-      if (sentencesAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.SEC_91_END_DATE)) {
-        return ValidationMessage(SEC236A_SENTENCE_TYPE_INCORRECT, validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence))
-      }
+    if (isSec236A(sentenceCalculationType) && isAfterOrEqualToSec91EndDate(sentencesAndOffence)) {
+      return ValidationMessage(
+        SEC236A_SENTENCE_TYPE_INCORRECT,
+        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+      )
     }
+
     return null
+  }
+
+  private fun isSopc(sentenceCalculationType: SentenceCalculationType): Boolean {
+    return sentenceCalculationType == SentenceCalculationType.SOPC18 || sentenceCalculationType == SentenceCalculationType.SOPC21
+  }
+
+  private fun isSec236A(sentenceCalculationType: SentenceCalculationType): Boolean {
+    return sentenceCalculationType == SentenceCalculationType.SEC236A
+  }
+
+  private fun isBeforeSec91EndDate(sentencesAndOffence: SentenceAndOffence): Boolean {
+    return sentencesAndOffence.sentenceDate.isBefore(ImportantDates.SEC_91_END_DATE)
+  }
+
+  private fun isAfterOrEqualToSec91EndDate(sentencesAndOffence: SentenceAndOffence): Boolean {
+    return sentencesAndOffence.sentenceDate.isAfterOrEqualTo(ImportantDates.SEC_91_END_DATE)
   }
 }

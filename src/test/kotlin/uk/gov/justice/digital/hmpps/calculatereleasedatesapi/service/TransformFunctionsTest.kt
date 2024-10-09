@@ -368,12 +368,12 @@ class TransformFunctionsTest {
     assertThat(comparisonMismatchSummary.mismatches[0].validationMessages.size).isEqualTo(0)
 
     val validationMessages = listOf(
-      ValidationMessage(ValidationCode.DTO_RECALL),
+      ValidationMessage(ValidationCode.UNSUPPORTED_DTO_RECALL_SEC104_SEC105),
       ValidationMessage(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE),
     )
     comparisonMismatchSummary = transform(comparison, listOf(getComparisonPerson(validationMessages)), objectMapper)
     assertThat(comparisonMismatchSummary.mismatches[0].validationMessages.size).isEqualTo(2)
-    assertTrue(comparisonMismatchSummary.mismatches[0].validationMessages.contains(ValidationMessage(ValidationCode.DTO_RECALL)))
+    assertTrue(comparisonMismatchSummary.mismatches[0].validationMessages.contains(ValidationMessage(ValidationCode.UNSUPPORTED_DTO_RECALL_SEC104_SEC105)))
     assertTrue(comparisonMismatchSummary.mismatches[0].validationMessages.contains(ValidationMessage(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE)))
   }
 
