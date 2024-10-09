@@ -35,28 +35,15 @@ class SOPCValidationService(private val validationUtilities: ValidationUtilities
 
   private fun validateSec236A(sentencesAndOffence: SentenceAndOffence): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
-    if (isSopc(SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)) && isBeforeSec91EndDate(sentencesAndOffence)) {
+    if (isSec236A(SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)) && isAfterOrEqualToSec91EndDate(sentencesAndOffence)) {
       messages.add(
         ValidationMessage(
-          SOPC18_SOPC21_SENTENCE_TYPE_INCORRECT,
+          SEC236A_SENTENCE_TYPE_INCORRECT,
           validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
         ),
       )
     }
     return messages
-  }
-
-  internal fun validateSopcSentenceTypesCorrectlyApplied(sentencesAndOffence: SentenceAndOffence): ValidationMessage? {
-    val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
-
-    if (isSec236A(sentenceCalculationType) && isAfterOrEqualToSec91EndDate(sentencesAndOffence)) {
-      return ValidationMessage(
-        SEC236A_SENTENCE_TYPE_INCORRECT,
-        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
-      )
-    }
-
-    return null
   }
 
   private fun isSopc(sentenceCalculationType: SentenceCalculationType): Boolean {
