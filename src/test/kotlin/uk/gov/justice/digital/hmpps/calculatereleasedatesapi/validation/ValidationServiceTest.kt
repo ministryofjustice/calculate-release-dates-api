@@ -97,8 +97,9 @@ import java.util.*
 
 @Profile("tests")
 class ValidationServiceTest {
-  private var validationService =
-    ValidationService(SentencesExtractionService(), FeatureToggles(botus = true), TRANCHE_CONFIGURATION)
+  val validationService =
+    getActiveValidationService(trancheConfiguration = TRANCHE_CONFIGURATION, sentencesExtractionService = SentencesExtractionService())
+
   private val validSdsSentence = NormalisedSentenceAndOffence(
     bookingId = 1L,
     sentenceSequence = 7,
@@ -1116,7 +1117,7 @@ class ValidationServiceTest {
   @Test
   fun `Test BOTUS feature toggle results in unsupported sentence type if disabled`() {
     val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(botus = false), TRANCHE_CONFIGURATION)
+      getActiveValidationService(trancheConfiguration = TRANCHE_CONFIGURATION, sentencesExtractionService = SentencesExtractionService(), botus = false)
     val sentenceAndOffences = validSdsSentence.copy(
       sentenceCalculationType = SentenceCalculationType.BOTUS.name,
       terms = listOf(
@@ -2476,44 +2477,9 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Validate that SDS sentences are unsupported for before SDS early release is implemented`() {
-    val validationService = ValidationService(
-      SentencesExtractionService(),
-      FeatureToggles(sdsEarlyReleaseUnsupported = true),
-      TRANCHE_CONFIGURATION,
-    )
-
-    val result = validationService.validateBeforeCalculation(
-      PrisonApiSourceData(
-        listOf(validSdsSentence).map {
-          SentenceAndOffenceWithReleaseArrangements(
-            it,
-            false,
-            SDSEarlyReleaseExclusionType.NO,
-          )
-        },
-        VALID_PRISONER,
-        VALID_ADJUSTMENTS,
-        listOf(),
-        null,
-      ),
-      USER_INPUTS,
-    )
-
-    assertThat(result).isEqualTo(
-      listOf(
-        ValidationMessage(
-          ValidationCode.SDS_EARLY_RELEASE_UNSUPPORTED,
-        ),
-      ),
-    )
-  }
-
-  @Test
   fun `Validate that SDS+ sentences are supported for before SDS early release is implemented`() {
-    val validationService = ValidationService(
+    val validationService = getActiveValidationService(
       SentencesExtractionService(),
-      FeatureToggles(sdsEarlyReleaseUnsupported = true),
       TRANCHE_CONFIGURATION,
     )
 
@@ -2539,8 +2505,11 @@ class ValidationServiceTest {
 
   @Test
   fun `Test LR_ORA with CRD after tranche commencement returns a validation error`() {
-    val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
+
     val lrOraSentence = LR_ORA.copy()
 
     lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
@@ -2570,8 +2539,10 @@ class ValidationServiceTest {
 
   @Test
   fun `Test consecutive sentence with LR_ORA with CRD after tranche commencement returns a validation error`() {
-    val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
 
     val testIdentifierUUID = UUID.randomUUID()
 
@@ -2615,8 +2586,10 @@ class ValidationServiceTest {
 
   @Test
   fun `Test LR_ORA with CRD before tranche commencement returns no error`() {
-    val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
     val lrOraSentence = LR_ORA.copy()
 
     lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
@@ -2642,8 +2615,10 @@ class ValidationServiceTest {
 
   @Test
   fun `Test LR with no TUSED after tranche commencement returns no error`() {
-    val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
     val lrOraSentence = LR_ORA.copy()
 
     lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
@@ -2876,6 +2851,43 @@ class ValidationServiceTest {
           ),
         ),
       ),
+    )
+  }
+  private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheConfiguration: SDS40TrancheConfiguration, botus: Boolean = true): ValidationService {
+    val featureToggles = FeatureToggles(botus, true, false)
+    val validationUtilities = ValidationUtilities()
+    val fineValidationService = FineValidationService(validationUtilities)
+    val adjustmentValidationService = AdjustmentValidationService(trancheConfiguration)
+    val dtoValidationService = DtoValidationService()
+    val botusValidationService = BotusValidationService()
+    val recallValidationService = RecallValidationService(trancheConfiguration)
+    val unsupportedValidationService = UnsupportedValidationService()
+    val section91ValidationService = Section91ValidationService(validationUtilities)
+    val sopcValidationService = SOPCValidationService(validationUtilities)
+    val edsValidationService = EDSValidationService(validationUtilities)
+    val sentenceValidationService = SentenceValidationService(
+      validationUtilities,
+      sentencesExtractionService,
+      section91ValidationService = section91ValidationService,
+      sopcValidationService = sopcValidationService,
+      fineValidationService,
+      edsValidationService = edsValidationService,
+    )
+    val preCalculationValidationService = PreCalculationValidationService(
+      featureToggles = featureToggles,
+      fineValidationService = fineValidationService,
+      adjustmentValidationService = adjustmentValidationService,
+      dtoValidationService = dtoValidationService,
+      botusValidationService = botusValidationService,
+      unsupportedValidationService = unsupportedValidationService,
+    )
+
+    return ValidationService(
+      preCalculationValidationService = preCalculationValidationService,
+      adjustmentValidationService = adjustmentValidationService,
+      recallValidationService = recallValidationService,
+      sentenceValidationService = sentenceValidationService,
+      validationUtilities = validationUtilities,
     )
   }
 }
