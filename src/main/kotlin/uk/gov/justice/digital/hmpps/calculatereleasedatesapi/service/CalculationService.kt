@@ -46,9 +46,7 @@ class CalculationService(
         standardWorkingBooking.getAllExtractableSentences()
           .filter { calculableSentence ->
             (
-              calculableSentence is StandardDeterminateSentence && !calculableSentence.isSDSPlus && calculableSentence.sentencedAt.isBefore(
-                trancheConfiguration.trancheOneCommencementDate,
-              )
+              calculableSentence is StandardDeterminateSentence && !calculableSentence.isSDSPlus
               ) || (calculableSentence is ConsecutiveSentence && calculableSentence.orderedSentences.any { it is StandardDeterminateSentence && !it.isSDSPlus })
           },
         SentenceCalculation::adjustedDeterminateReleaseDate,
