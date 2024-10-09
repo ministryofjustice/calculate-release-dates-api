@@ -1,0 +1,148 @@
+{
+  "concurrentSentences": [
+    {
+      "sentencedAt": "2024-08-27",
+      "sentenceLength": "3 months",
+      "sentenceLengthDays": 92,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2024-11-26",
+          "adjusted": "2024-04-15",
+          "daysFromSentenceStart": 92,
+          "adjustedByDays": 225
+        },
+        "PRRD": {
+          "unadjusted": "2024-10-02",
+          "adjusted": "2024-08-27",
+          "daysFromSentenceStart": 37,
+          "adjustedByDays": 36
+        }
+      },
+      "lineSequence": 3,
+      "caseSequence": 1,
+      "caseReference": "16XP2320723"
+    },
+    {
+      "sentencedAt": "2024-08-27",
+      "sentenceLength": "3 months",
+      "sentenceLengthDays": 92,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2024-11-26",
+          "adjusted": "2024-04-15",
+          "daysFromSentenceStart": 92,
+          "adjustedByDays": 225
+        },
+        "PRRD": {
+          "unadjusted": "2024-10-02",
+          "adjusted": "2024-08-27",
+          "daysFromSentenceStart": 37,
+          "adjustedByDays": 36
+        }
+      },
+      "lineSequence": 3,
+      "caseSequence": 1,
+      "caseReference": "16XP2320723"
+    },
+    {
+      "sentencedAt": "2024-09-18",
+      "sentenceLength": "4 months",
+      "sentenceLengthDays": 122,
+      "dates": {
+        "SLED": {
+          "unadjusted": "2025-01-17",
+          "adjusted": "2025-01-16",
+          "daysFromSentenceStart": 122,
+          "adjustedByDays": 1
+        },
+        "CRD": {
+          "unadjusted": "2024-11-05",
+          "adjusted": "2024-11-04",
+          "daysFromSentenceStart": 49,
+          "adjustedByDays": 1
+        }
+      },
+      "lineSequence": 4,
+      "caseSequence": 2,
+      "caseReference": "16XP1748224"
+    }
+  ],
+  "consecutiveSentence": {
+    "sentencedAt": "2024-08-27",
+    "sentenceLength": "16 months 1 day",
+    "sentenceLengthDays": 488,
+    "dates": {
+      "SLED": {
+        "unadjusted": "2025-12-27",
+        "adjusted": "2025-05-16",
+        "daysFromSentenceStart": 488,
+        "adjustedByDays": 225
+      },
+      "PRRD": {
+        "unadjusted": "2025-03-10",
+        "adjusted": "2024-08-27",
+        "daysFromSentenceStart": 196,
+        "adjustedByDays": 195
+      }
+    },
+    "sentenceParts": [
+      {
+        "lineSequence": 1,
+        "caseSequence": 1,
+        "caseReference": "16XP2320723",
+        "sentenceLength": "1 day",
+        "sentenceLengthDays": 1,
+        "consecutiveToLineSequence": null,
+        "consecutiveToCaseSequence": null
+      },
+      {
+        "lineSequence": 2,
+        "caseSequence": 1,
+        "caseReference": "16XP2320723",
+        "sentenceLength": "16 months",
+        "sentenceLengthDays": 487,
+        "consecutiveToLineSequence": 1,
+        "consecutiveToCaseSequence": 1
+      }
+    ]
+  },
+  "breakdownByReleaseDateType": {
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -225,
+      "releaseDate": "2025-05-16",
+      "unadjustedDate": "2025-12-27"
+    },
+    "CRD": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -1,
+      "releaseDate": "2024-11-04",
+      "unadjustedDate": "2024-11-05"
+    },
+    "TUSED": {
+      "rules": ["TUSED_LICENCE_PERIOD_LT_1Y"],
+      "rulesWithExtraAdjustments": {
+        "TUSED_LICENCE_PERIOD_LT_1Y": {
+          "adjustmentValue": 12,
+          "type": "MONTHS"
+        }
+      },
+      "adjustedDays": -1,
+      "releaseDate": "2025-11-04",
+      "unadjustedDate": "2024-11-05"
+    },
+    "HDCED": {
+      "rules": ["HDCED_ADJUSTED_TO_CONCURRENT_PRRD"],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -210,
+      "releaseDate": "2025-05-16",
+      "unadjustedDate": "2024-10-18"
+    }
+  },
+  "otherDates": {
+    "PRRD": "2025-05-16"
+  },
+  "ersedNotApplicableDueToDtoLaterThanCrd": false
+}
