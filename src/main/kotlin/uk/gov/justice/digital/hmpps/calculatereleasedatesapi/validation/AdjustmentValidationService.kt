@@ -19,45 +19,21 @@ import java.time.LocalDate
 class AdjustmentValidationService(
   private val trancheConfiguration: SDS40TrancheConfiguration,
 ) {
+
   internal fun validateSupportedAdjustments(adjustments: List<BookingAdjustment>): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
-    if (adjustments.any { it.type == BookingAdjustmentType.LAWFULLY_AT_LARGE }) {
-      messages.add(
-        ValidationMessage(
-          ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE,
-        ),
-      )
-    }
-    if (adjustments.any { it.type == BookingAdjustmentType.SPECIAL_REMISSION }) {
-      messages.add(
-        ValidationMessage(
-          ValidationCode.UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION,
-        ),
-      )
-    }
+    messages.addAll(lawfullyAtLargeIsNotSupported(adjustments))
+    messages.addAll(specialRemissionIsNotSupported(adjustments))
     return messages
   }
 
   internal fun validateAdjustments(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
-    val validationMessages =
-      adjustments.sentenceAdjustments.mapNotNull { validateSentenceAdjustment(it) }.toMutableList()
-    validationMessages.addAll(validateBookingAdjustment(adjustments.bookingAdjustments))
-    validationMessages += validateRemandOverlappingRemand(adjustments)
-    return validationMessages
+    val messages = mutableListOf<ValidationMessage>()
+    messages.addAll(validateAllSentenceAdjustmentsHaveFromOrToDates(adjustments))
+    messages.addAll(validateBookingAdjustment(adjustments.bookingAdjustments))
+    messages += validateRemandOverlappingRemand(adjustments)
+    return messages
   }
-
-  private fun validateSentenceAdjustment(sentenceAdjustment: SentenceAdjustment): ValidationMessage? {
-    if (sentenceAdjustment.type == SentenceAdjustmentType.REMAND && (sentenceAdjustment.fromDate == null || sentenceAdjustment.toDate == null)) {
-      return ValidationMessage(ValidationCode.REMAND_FROM_TO_DATES_REQUIRED)
-    }
-    return null
-  }
-
-  private fun validateBookingAdjustment(bookingAdjustments: List<BookingAdjustment>): List<ValidationMessage> =
-    bookingAdjustments.filter {
-      val dateToValidate = if (it.type == BookingAdjustmentType.UNLAWFULLY_AT_LARGE && it.toDate != null) it.toDate else it.fromDate
-      BOOKING_ADJUSTMENTS_TO_VALIDATE.contains(it.type) && dateToValidate.isAfter(LocalDate.now())
-    }.map { it.type }.distinct().map { ValidationMessage(ADJUSTMENT_FUTURE_DATED_MAP[it]!!) }
 
   internal fun validateRemandOverlappingRemand(booking: Booking): List<ValidationMessage> {
     val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
@@ -83,6 +59,73 @@ class AdjustmentValidationService(
 
     return validationMessages
   }
+
+  internal fun validateAdditionAdjustmentsInsideLatestReleaseDate(longestBooking: Booking, booking: Booking): List<ValidationMessage> {
+    val sentences = booking.getAllExtractableSentences()
+    val longestSentences = longestBooking.getAllExtractableSentences()
+
+    // Ensure both lists have the same size before proceeding
+    if (sentences.size != longestSentences.size) {
+      throw IllegalArgumentException("The number of sentences in longestBooking and booking must be the same.")
+    }
+
+    val longestRelevantSentences = this.getLongestRelevantSentence(sentences, longestSentences)
+
+    val latestReleaseDatePreAddedDays =
+      longestRelevantSentences.filter { it !is Term }.maxOfOrNull { it.sentenceCalculation.releaseDateWithoutAdditions }
+        ?: return emptyList()
+
+    val adas = booking.adjustments.getOrEmptyList(AdjustmentType.ADDITIONAL_DAYS_AWARDED).toSet()
+    val radas = booking.adjustments.getOrEmptyList(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED).toSet()
+    val adjustments = adas + radas
+
+    val adjustmentsAfterRelease =
+      adjustments.filter { it.appliesToSentencesFrom.isAfter(latestReleaseDatePreAddedDays) }.toSet()
+    if (adjustmentsAfterRelease.isNotEmpty()) {
+      val anyAda = adjustmentsAfterRelease.intersect(adas).isNotEmpty()
+      val anyRada = adjustmentsAfterRelease.intersect(radas).isNotEmpty()
+
+      if (anyAda) return listOf(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA))
+      if (anyRada) return listOf(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA))
+    }
+    return emptyList()
+  }
+
+  private fun validateAllSentenceAdjustmentsHaveFromOrToDates(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
+    return adjustments.sentenceAdjustments.flatMap { validateSentenceAdjustmentHaveFromOrToDates(it) }.toMutableList()
+  }
+
+  private fun validateSentenceAdjustmentHaveFromOrToDates(sentenceAdjustment: SentenceAdjustment): List<ValidationMessage> {
+    return if (sentenceAdjustment.type == SentenceAdjustmentType.REMAND &&
+      (sentenceAdjustment.fromDate == null || sentenceAdjustment.toDate == null)
+    ) {
+      listOf(ValidationMessage(ValidationCode.REMAND_FROM_TO_DATES_REQUIRED))
+    } else {
+      emptyList()
+    }
+  }
+
+  private fun lawfullyAtLargeIsNotSupported(adjustments: List<BookingAdjustment>): List<ValidationMessage> {
+    return if (adjustments.any { it.type == BookingAdjustmentType.LAWFULLY_AT_LARGE }) {
+      listOf(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE))
+    } else {
+      emptyList()
+    }
+  }
+
+  private fun specialRemissionIsNotSupported(adjustments: List<BookingAdjustment>): List<ValidationMessage> {
+    return if (adjustments.any { it.type == BookingAdjustmentType.SPECIAL_REMISSION }) {
+      listOf(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION))
+    } else {
+      emptyList()
+    }
+  }
+
+  private fun validateBookingAdjustment(bookingAdjustments: List<BookingAdjustment>): List<ValidationMessage> =
+    bookingAdjustments.filter {
+      val dateToValidate = if (it.type == BookingAdjustmentType.UNLAWFULLY_AT_LARGE && it.toDate != null) it.toDate else it.fromDate
+      BOOKING_ADJUSTMENTS_TO_VALIDATE.contains(it.type) && dateToValidate.isAfter(LocalDate.now())
+    }.map { it.type }.distinct().map { ValidationMessage(ADJUSTMENT_FUTURE_DATED_MAP[it]!!) }
 
   private fun logIntersectionWarning(range1: LocalDateRange, range2: LocalDateRange, messageTemplate: String) {
     val args = listOf(range1.toString(), range2.toString())
@@ -131,37 +174,6 @@ class AdjustmentValidationService(
     }
 
     return validationMessages
-  }
-
-  internal fun validateAdditionAdjustmentsInsideLatestReleaseDate(longestBooking: Booking, booking: Booking): List<ValidationMessage> {
-    val sentences = booking.getAllExtractableSentences()
-    val longestSentences = longestBooking.getAllExtractableSentences()
-
-    // Ensure both lists have the same size before proceeding
-    if (sentences.size != longestSentences.size) {
-      throw IllegalArgumentException("The number of sentences in longestBooking and booking must be the same.")
-    }
-
-    val longestRelevantSentences = this.getLongestRelevantSentence(sentences, longestSentences)
-
-    val latestReleaseDatePreAddedDays =
-      longestRelevantSentences.filter { it !is Term }.maxOfOrNull { it.sentenceCalculation.releaseDateWithoutAdditions }
-        ?: return emptyList()
-
-    val adas = booking.adjustments.getOrEmptyList(AdjustmentType.ADDITIONAL_DAYS_AWARDED).toSet()
-    val radas = booking.adjustments.getOrEmptyList(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED).toSet()
-    val adjustments = adas + radas
-
-    val adjustmentsAfterRelease =
-      adjustments.filter { it.appliesToSentencesFrom.isAfter(latestReleaseDatePreAddedDays) }.toSet()
-    if (adjustmentsAfterRelease.isNotEmpty()) {
-      val anyAda = adjustmentsAfterRelease.intersect(adas).isNotEmpty()
-      val anyRada = adjustmentsAfterRelease.intersect(radas).isNotEmpty()
-
-      if (anyAda) return listOf(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA))
-      if (anyRada) return listOf(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA))
-    }
-    return emptyList()
   }
 
   private fun getLongestRelevantSentence(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<CalculableSentence> {
