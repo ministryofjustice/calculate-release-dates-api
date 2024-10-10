@@ -20,4 +20,8 @@ class ManageOffencesService(
   fun getOffences(offenceCodes: Set<String>): List<Offence> {
     return manageOffencesApiClient.getOffences(offenceCodes)
   }
+
+  fun getToreraOffenceCodes(): List<String> {
+    return manageOffencesApiClient.getToreraOffences()
+  }
 }

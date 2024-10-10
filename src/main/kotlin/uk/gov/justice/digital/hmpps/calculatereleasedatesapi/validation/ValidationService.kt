@@ -1066,7 +1066,7 @@ class ValidationService(
       return messages
     }
 
-    val scheduleOffenceCodes = getToreraRelatedCodes(sdsAndSopcOffenceCodes)
+    val scheduleOffenceCodes = manageOffencesService.getToreraOffenceCodes()
 
     // if any offence SDS offence is part of schedule 19ZA, trigger error
     if (sdsCodes.isNotEmpty() && scheduleOffenceCodes.any { it in sdsCodes }) {
@@ -1098,14 +1098,6 @@ class ValidationService(
       .filter { SentenceCalculationType.isToreraSopc(it.sentenceCalculationType) && it.sentenceDate < SOPC_TORERA_END_DATE }
       .map { it.offence.offenceCode }
       .toSet()
-
-  /**
-   * Get all Offence codes which are included within Schedule 19ZA
-   */
-  private fun getToreraRelatedCodes(offenceCodes: Set<String>) = manageOffencesService.getOffences(offenceCodes)
-    .filter { offence -> offence.schedules?.any { schedule -> schedule.code == "19ZA" } ?: false }
-    .map { it.code }
-    .toSet()
 
   companion object {
     private val BOOKING_ADJUSTMENTS_TO_VALIDATE =
