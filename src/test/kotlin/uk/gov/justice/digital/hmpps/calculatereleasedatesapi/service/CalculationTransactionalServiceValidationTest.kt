@@ -32,8 +32,20 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalServiceTest.Companion.BOOKING
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalServiceTest.Companion.cachedBankHolidays
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.AdjustmentValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.BotusValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DtoValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.EDSValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.FineValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.PreCalculationValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.RecallValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SOPCValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Section91ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SentenceValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.UnsupportedValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
 import java.time.LocalDate
 
 @ExtendWith(MockitoExtension::class)
@@ -213,6 +225,40 @@ class CalculationTransactionalServiceValidationTest {
   )
 
   private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheConfiguration: SDS40TrancheConfiguration): ValidationService {
-    return ValidationService(sentencesExtractionService, featureToggles = FeatureToggles(true, true, false), trancheConfiguration)
+    val featureToggles = FeatureToggles(true, true, false)
+    val validationUtilities = ValidationUtilities()
+    val fineValidationService = FineValidationService(validationUtilities)
+    val adjustmentValidationService = AdjustmentValidationService(trancheConfiguration)
+    val dtoValidationService = DtoValidationService()
+    val botusValidationService = BotusValidationService()
+    val recallValidationService = RecallValidationService(trancheConfiguration)
+    val unsupportedValidationService = UnsupportedValidationService()
+    val section91ValidationService = Section91ValidationService(validationUtilities)
+    val sopcValidationService = SOPCValidationService(validationUtilities)
+    val edsValidationService = EDSValidationService(validationUtilities)
+    val sentenceValidationService = SentenceValidationService(
+      validationUtilities,
+      sentencesExtractionService,
+      section91ValidationService = section91ValidationService,
+      sopcValidationService = sopcValidationService,
+      fineValidationService,
+      edsValidationService = edsValidationService,
+    )
+    val preCalculationValidationService = PreCalculationValidationService(
+      featureToggles = featureToggles,
+      fineValidationService = fineValidationService,
+      adjustmentValidationService = adjustmentValidationService,
+      dtoValidationService = dtoValidationService,
+      botusValidationService = botusValidationService,
+      unsupportedValidationService = unsupportedValidationService,
+    )
+
+    return ValidationService(
+      preCalculationValidationService = preCalculationValidationService,
+      adjustmentValidationService = adjustmentValidationService,
+      recallValidationService = recallValidationService,
+      sentenceValidationService = sentenceValidationService,
+      validationUtilities = validationUtilities,
+    )
   }
 }

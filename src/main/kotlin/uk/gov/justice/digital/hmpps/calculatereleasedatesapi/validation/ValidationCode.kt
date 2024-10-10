@@ -24,7 +24,6 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   A_FINE_SENTENCE_WITH_PAYMENTS("Any of the fine amount for a default term has been paid.", UNSUPPORTED_CALCULATION),
   CUSTODIAL_PERIOD_EXTINGUISHED_REMAND("The release date cannot be before the sentence date. Go back to NOMIS and reduce the amount of remand entered"),
   CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL("The release date cannot be before the sentence date. Go back to NOMIS and reduce the amount of tagged bail entered"),
-  DTO_RECALL("A detention and training order has a SEC104 or SEC105 breach term.", UNSUPPORTED_CALCULATION),
   DTO_CONSECUTIVE_TO_SENTENCE("A DTO is consecutive to a sentence type that is not a DTO", UNSUPPORTED_CALCULATION),
   DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT("A sentence type that is not a DTO is consecutive to a DTO", UNSUPPORTED_CALCULATION),
   EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT("The sentence type for court case %s count %s is invalid for the sentence date entered."),
@@ -67,12 +66,12 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
     "There is a Special Remission (SR) adjustment on the associated booking",
     UNSUPPORTED_CALCULATION,
   ),
+  UNSUPPORTED_DTO_RECALL_SEC104_SEC105("A detention and training order has a SEC104 or SEC105 breach term.", UNSUPPORTED_CALCULATION),
   UNSUPPORTED_SENTENCE_TYPE("Unsupported sentence type %s %s", UNSUPPORTED_SENTENCE),
   ZERO_IMPRISONMENT_TERM("Court case %s count %s must include an imprisonment term greater than zero."),
   UNSUPPORTED_CALCULATION_DTO_WITH_RECALL("Unsupported calculation - DTO and recall", UNSUPPORTED_CALCULATION),
   PRE_PCSC_DTO_WITH_ADJUSTMENT("If a Detention and training order (DTO) has a sentence date before 28 June 2022, %s cannot be applied."),
   BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE("BOTUS concurrent/consecutive with other sentence type", UNSUPPORTED_CALCULATION),
-  SDS_EARLY_RELEASE_UNSUPPORTED("SDS40 Early release is not currently supported", UNSUPPORTED_CALCULATION),
   UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE("Unsupported recalls for SDS40", UNSUPPORTED_SDS40_SENTENCE),
   UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING(
     "Any offences that include the inchoate ‘Encouraging/ Assisting’ should be recorded as the underlying act, ending in the letter ‘e’.\n" +
