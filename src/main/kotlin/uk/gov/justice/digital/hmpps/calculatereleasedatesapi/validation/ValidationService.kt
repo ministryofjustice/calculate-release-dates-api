@@ -2,15 +2,11 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 
 @Service
 class ValidationService(
@@ -19,7 +15,7 @@ class ValidationService(
   private val recallValidationService: RecallValidationService,
   private val sentenceValidationService: SentenceValidationService,
   private val validationUtilities: ValidationUtilities,
-  private val trancheConfiguration: SDS40TrancheConfiguration,
+  private val postCalculationValidationService: PostCalculationValidationService,
 ) {
 
   fun validateBeforeCalculation(
@@ -75,7 +71,7 @@ class ValidationService(
     messages += adjustmentValidationService.validateAdditionAdjustmentsInsideLatestReleaseDate(standardSDSBooking ?: booking, booking)
     messages += recallValidationService.validateFixedTermRecallAfterCalc(booking)
     messages += recallValidationService.validateUnsupportedRecallTypes(booking)
-    messages += validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationResult)
+    messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationResult)
 
     return messages
   }
@@ -89,27 +85,6 @@ class ValidationService(
       validationMessages += preCalculationValidationService.validateUnsupportedCalculation(sourceData)
     }
     return validationMessages.toList()
-  }
-
-  private fun validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(
-    booking: Booking,
-    calculationResult: CalculationResult?,
-  ): List<ValidationMessage> {
-    if (calculationResult != null) {
-      if (calculationResult.sdsEarlyReleaseTranche == SDSEarlyReleaseTranche.TRANCHE_2 &&
-        booking.consecutiveSentences.any { consecutiveSentence ->
-          consecutiveSentence.orderedSentences.any {
-            it is StandardDeterminateSentence &&
-              !it.isSDSPlus &&
-              it.sentencedAt.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate) &&
-              it.sentencedAt.isBefore(trancheConfiguration.trancheTwoCommencementDate)
-          }
-        }
-      ) {
-        return listOf(ValidationMessage(ValidationCode.UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS))
-      }
-    }
-    return emptyList()
   }
 
   fun validateBeforeCalculation(booking: Booking): List<ValidationMessage> {

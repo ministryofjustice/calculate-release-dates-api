@@ -3057,6 +3057,7 @@ class ValidationServiceTest {
     val botusValidationService = BotusValidationService()
     val recallValidationService = RecallValidationService(trancheConfiguration)
     val unsupportedValidationService = UnsupportedValidationService()
+    val postCalculationValidationService = PostCalculationValidationService(trancheConfiguration)
     val section91ValidationService = Section91ValidationService(validationUtilities)
     val sopcValidationService = SOPCValidationService(validationUtilities)
     val edsValidationService = EDSValidationService(validationUtilities)
@@ -3083,7 +3084,7 @@ class ValidationServiceTest {
       recallValidationService = recallValidationService,
       sentenceValidationService = sentenceValidationService,
       validationUtilities = validationUtilities,
-      trancheConfiguration = trancheConfiguration,
+      postCalculationValidationService = postCalculationValidationService,
     )
   }
 }
