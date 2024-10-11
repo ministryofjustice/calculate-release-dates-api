@@ -1,0 +1,24 @@
+[
+  {
+    "type": "SLED",
+    "date": "2024-08-14",
+    "hints": []
+  },
+  {
+    "type": "CRD",
+    "date": "2022-12-29",
+    "hints": []
+  },
+  {
+    "type": "HDCED",
+    "date": "2022-09-10",
+    "hints": [
+      "HDCED adjusted for the CRD of a concurrent sentence or default term"
+    ]
+  },
+  {
+    "type": "ESED",
+    "date": "2024-08-14",
+    "hints": []
+  }
+]
