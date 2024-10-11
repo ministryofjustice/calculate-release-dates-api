@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
@@ -14,6 +15,7 @@ class ValidationService(
   private val recallValidationService: RecallValidationService,
   private val sentenceValidationService: SentenceValidationService,
   private val validationUtilities: ValidationUtilities,
+  private val postCalculationValidationService: PostCalculationValidationService,
 ) {
 
   fun validateBeforeCalculation(
@@ -59,6 +61,7 @@ class ValidationService(
   fun validateBookingAfterCalculation(
     booking: Booking,
     standardSDSBooking: Booking? = null,
+    calculationResult: CalculationResult? = null,
   ): List<ValidationMessage> {
     log.info("Validating booking after calculation")
     val messages = mutableListOf<ValidationMessage>()
@@ -68,6 +71,7 @@ class ValidationService(
     messages += adjustmentValidationService.validateAdditionAdjustmentsInsideLatestReleaseDate(standardSDSBooking ?: booking, booking)
     messages += recallValidationService.validateFixedTermRecallAfterCalc(booking)
     messages += recallValidationService.validateUnsupportedRecallTypes(booking)
+    messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationResult)
 
     return messages
   }
