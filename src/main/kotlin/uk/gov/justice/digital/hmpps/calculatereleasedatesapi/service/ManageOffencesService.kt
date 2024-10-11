@@ -22,6 +22,6 @@ class ManageOffencesService(
   }
 
   fun getToreraOffenceCodes(): List<String> {
-    return manageOffencesApiClient.getToreraOffences()
+    return manageOffencesApiClient.getToreraOffenceCodes()
   }
 }

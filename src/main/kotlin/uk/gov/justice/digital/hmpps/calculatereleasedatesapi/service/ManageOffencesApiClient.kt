@@ -80,7 +80,7 @@ class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private v
       .block() ?: throw CouldNotGetMoOffenceInformation("Offences request failed to load for codes $offenceCodeString")
   }
 
-  fun getToreraOffences(): List<String> {
+  fun getToreraOffenceCodes(): List<String> {
     return webClient.get()
       .uri("/schedule/torera-offence-codes")
       .retrieve()
