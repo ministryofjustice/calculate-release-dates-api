@@ -2648,7 +2648,6 @@ class ValidationServiceTest {
 
   @Test
   fun `Tranche 2 Prisoner with consecutive SDS on T1 commencement date returns error`() {
-
     val testIdentifierUUID = UUID.randomUUID()
 
     val standardSentenceOne = STANDARD_SENTENCE.copy(
@@ -2690,7 +2689,6 @@ class ValidationServiceTest {
 
   @Test
   fun `Tranche 2 Prisoner with consecutive SDS the day before T2 commencement date returns error`() {
-
     val testIdentifierUUID = UUID.randomUUID()
 
     val standardSentenceOne = STANDARD_SENTENCE.copy(
