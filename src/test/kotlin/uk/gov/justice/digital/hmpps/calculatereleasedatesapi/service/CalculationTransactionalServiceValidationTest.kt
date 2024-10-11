@@ -94,7 +94,7 @@ class CalculationTransactionalServiceValidationTest {
         mock<CalculationResult>(),
       ),
     )
-    whenever(validationService.validateBookingAfterCalculation(any(), any())).thenReturn(fakeMessages)
+    whenever(validationService.validateBookingAfterCalculation(any(), any(), any())).thenReturn(fakeMessages)
 
     // Call the method under test
     calculationTransactionalService().fullValidation(prisonerId, calculationUserInputs)
