@@ -1,0 +1,107 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 1202687,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2015-01-01",
+        "offenceCode": null
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 10,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "287f14dd-d522-30ac-8e23-1cf9f857b36c",
+      "recallType": "FIXED_TERM_RECALL_28",
+      "sentencedAt": "2015-07-20",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": "T20220103",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "ExtendedDeterminateSentence",
+      "offence": {
+        "committedAt": "2020-04-22",
+        "offenceCode": null
+      },
+      "isSDSPlus": false,
+      "identifier": "2db15737-2361-3cff-a6fa-6f44fdcc5058",
+      "recallType": null,
+      "sentencedAt": "2020-09-15",
+      "caseSequence": 2,
+      "lineSequence": 2,
+      "caseReference": "T20220102",
+      "automaticRelease": false,
+      "custodialDuration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 6,
+          "MONTHS": 0
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 3,
+          "MONTHS": 0
+        }
+      },
+      "consecutiveSentenceUUIDs": []
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2020-04-22",
+        "offenceCode": null
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 6,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "8038b531-c5cf-3900-b47f-57bfc6a22516",
+      "recallType": null,
+      "sentencedAt": "2021-10-13",
+      "caseSequence": 3,
+      "lineSequence": 3,
+      "caseReference": "T20220101",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+    }
+  ],
+  "adjustments": {
+    "RECALL_REMAND": [
+      {
+        "toDate": "2015-07-19",
+        "fromDate": "2015-03-19",
+        "numberOfDays": 123,
+        "appliesToSentencesFrom": "2015-07-20"
+      }
+    ]
+  },
+  "historicalTusedData": null,
+  "returnToCustodyDate": "2025-02-19",
+  "fixedTermRecallDetails": {
+    "bookingId": 1202687,
+    "recallLength": 28,
+    "returnToCustodyDate": "2025-02-19"
+  }
+}
