@@ -6,7 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class FeatureToggles(
   var botus: Boolean = false,
   var sdsEarlyRelease: Boolean = false,
-  var sdsEarlyReleaseUnsupported: Boolean = false,
   var sdsEarlyReleaseHints: Boolean = false,
   var supportInactiveSentencesAndAdjustments: Boolean = false,
   var toreraOffenceToManualJourney: Boolean = false,

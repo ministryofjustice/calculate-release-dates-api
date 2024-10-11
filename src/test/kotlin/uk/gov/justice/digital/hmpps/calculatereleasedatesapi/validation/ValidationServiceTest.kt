@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
+import org.mockito.Mockito.mock
 import org.springframework.context.annotation.Profile
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
@@ -99,14 +98,9 @@ import java.util.UUID
 
 @Profile("tests")
 class ValidationServiceTest {
-  private var manageOffencesService: ManageOffencesService = mock<ManageOffencesService>()
-  private var validationService =
-    ValidationService(
-      SentencesExtractionService(),
-      FeatureToggles(botus = true, toreraOffenceToManualJourney = true),
-      TRANCHE_CONFIGURATION,
-      manageOffencesService,
-    )
+  val validationService =
+    getActiveValidationService(trancheConfiguration = TRANCHE_CONFIGURATION, sentencesExtractionService = SentencesExtractionService())
+
   private val validSdsSentence = NormalisedSentenceAndOffence(
     bookingId = 1L,
     sentenceSequence = 7,
@@ -255,19 +249,7 @@ class ValidationServiceTest {
     // Act
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(
-          listOf(
-            SentenceAndOffenceWithReleaseArrangements(
-              invalidSentence,
-              false,
-              SDSEarlyReleaseExclusionType.NO,
-            ),
-          ),
-          VALID_PRISONER,
-          VALID_ADJUSTMENTS,
-          listOf(),
-          null,
-        ),
+        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(invalidSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
         USER_INPUTS,
       )
 
@@ -277,9 +259,7 @@ class ValidationServiceTest {
 
   @ParameterizedTest
   @ValueSource(strings = ["PH97003", "PH97003B"])
-  fun `Test Sentences with unsupported offenceCodes PH97003 after Dec 2020 and inchoates to return validation message`(
-    offenceCode: String,
-  ) {
+  fun `Test Sentences with unsupported offenceCodes PH97003 after Dec 2020 and inchoates to return validation message`(offenceCode: String) {
     // Arrange
     val invalidSentence = validSdsSentence.copy(
       sentenceDate = LocalDate.of(2020, 12, 1),
@@ -289,19 +269,7 @@ class ValidationServiceTest {
     // Act
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(
-          listOf(
-            SentenceAndOffenceWithReleaseArrangements(
-              invalidSentence,
-              false,
-              SDSEarlyReleaseExclusionType.NO,
-            ),
-          ),
-          VALID_PRISONER,
-          VALID_ADJUSTMENTS,
-          listOf(),
-          null,
-        ),
+        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(invalidSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
         USER_INPUTS,
       )
 
@@ -1150,12 +1118,7 @@ class ValidationServiceTest {
   @Test
   fun `Test BOTUS feature toggle results in unsupported sentence type if disabled`() {
     val validationService =
-      ValidationService(
-        SentencesExtractionService(),
-        FeatureToggles(botus = false),
-        TRANCHE_CONFIGURATION,
-        manageOffencesService,
-      )
+      getActiveValidationService(trancheConfiguration = TRANCHE_CONFIGURATION, sentencesExtractionService = SentencesExtractionService(), botus = false)
     val sentenceAndOffences = validSdsSentence.copy(
       sentenceCalculationType = SentenceCalculationType.BOTUS.name,
       terms = listOf(
@@ -2026,7 +1989,7 @@ class ValidationServiceTest {
           ),
           USER_INPUTS,
         )
-        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.UNSUPPORTED_DTO_RECALL_SEC104_SEC105))
       }
 
       @Test
@@ -2053,7 +2016,7 @@ class ValidationServiceTest {
           ),
           USER_INPUTS,
         )
-        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.UNSUPPORTED_DTO_RECALL_SEC104_SEC105))
       }
 
       @Test
@@ -2105,7 +2068,7 @@ class ValidationServiceTest {
           ),
           USER_INPUTS,
         )
-        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.UNSUPPORTED_DTO_RECALL_SEC104_SEC105))
       }
 
       @Test
@@ -2131,7 +2094,7 @@ class ValidationServiceTest {
           ),
           USER_INPUTS,
         )
-        assertThat(result).containsExactly(ValidationMessage(ValidationCode.DTO_RECALL))
+        assertThat(result).containsExactly(ValidationMessage(ValidationCode.UNSUPPORTED_DTO_RECALL_SEC104_SEC105))
       }
 
       @Test
@@ -2182,7 +2145,7 @@ class ValidationServiceTest {
           ),
           USER_INPUTS,
         )
-        assertThat(result).doesNotContain(ValidationMessage(ValidationCode.DTO_RECALL))
+        assertThat(result).doesNotContain(ValidationMessage(ValidationCode.UNSUPPORTED_DTO_RECALL_SEC104_SEC105))
       }
     }
 
@@ -2515,47 +2478,10 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Validate that SDS sentences are unsupported for before SDS early release is implemented`() {
-    val validationService = ValidationService(
-      SentencesExtractionService(),
-      FeatureToggles(sdsEarlyReleaseUnsupported = true),
-      TRANCHE_CONFIGURATION,
-      manageOffencesService,
-    )
-
-    val result = validationService.validateBeforeCalculation(
-      PrisonApiSourceData(
-        listOf(validSdsSentence).map {
-          SentenceAndOffenceWithReleaseArrangements(
-            it,
-            false,
-            SDSEarlyReleaseExclusionType.NO,
-          )
-        },
-        VALID_PRISONER,
-        VALID_ADJUSTMENTS,
-        listOf(),
-        null,
-      ),
-      USER_INPUTS,
-    )
-
-    assertThat(result).isEqualTo(
-      listOf(
-        ValidationMessage(
-          ValidationCode.SDS_EARLY_RELEASE_UNSUPPORTED,
-        ),
-      ),
-    )
-  }
-
-  @Test
   fun `Validate that SDS+ sentences are supported for before SDS early release is implemented`() {
-    val validationService = ValidationService(
+    val validationService = getActiveValidationService(
       SentencesExtractionService(),
-      FeatureToggles(sdsEarlyReleaseUnsupported = true),
       TRANCHE_CONFIGURATION,
-      manageOffencesService,
     )
 
     val result = validationService.validateBeforeCalculation(
@@ -2580,13 +2506,11 @@ class ValidationServiceTest {
 
   @Test
   fun `Test LR_ORA with CRD after tranche commencement returns a validation error`() {
-    val validationService =
-      ValidationService(
-        SentencesExtractionService(),
-        FeatureToggles(sdsEarlyRelease = true),
-        TRANCHE_CONFIGURATION,
-        manageOffencesService,
-      )
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
+
     val lrOraSentence = LR_ORA.copy()
 
     lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
@@ -2616,13 +2540,10 @@ class ValidationServiceTest {
 
   @Test
   fun `Test consecutive sentence with LR_ORA with CRD after tranche commencement returns a validation error`() {
-    val validationService =
-      ValidationService(
-        SentencesExtractionService(),
-        FeatureToggles(sdsEarlyRelease = true),
-        TRANCHE_CONFIGURATION,
-        manageOffencesService,
-      )
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
 
     val testIdentifierUUID = UUID.randomUUID()
 
@@ -2666,13 +2587,10 @@ class ValidationServiceTest {
 
   @Test
   fun `Test LR_ORA with CRD before tranche commencement returns no error`() {
-    val validationService =
-      ValidationService(
-        SentencesExtractionService(),
-        FeatureToggles(sdsEarlyRelease = true),
-        TRANCHE_CONFIGURATION,
-        manageOffencesService,
-      )
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
     val lrOraSentence = LR_ORA.copy()
 
     lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
@@ -2698,13 +2616,10 @@ class ValidationServiceTest {
 
   @Test
   fun `Test LR with no TUSED after tranche commencement returns no error`() {
-    val validationService =
-      ValidationService(
-        SentencesExtractionService(),
-        FeatureToggles(sdsEarlyRelease = true),
-        TRANCHE_CONFIGURATION,
-        manageOffencesService,
-      )
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
     val lrOraSentence = LR_ORA.copy()
 
     lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
@@ -2726,186 +2641,6 @@ class ValidationServiceTest {
     )
 
     assertThat(result).isEmpty()
-  }
-
-  @Test
-  fun `Test validateToreraExempt returns SDS_TORERA_EXCLUSION exception`() {
-    val toreraOffenceCodes = listOf(
-      validSdsSentence.offence.offenceCode,
-      "NOT_19ZA",
-    )
-    whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(toreraOffenceCodes)
-    val result = validationService.validateSupportedSentencesAndCalculations(
-      PrisonApiSourceData(
-        listOf(
-          validSdsSentence.copy(sentenceDate = ImportantDates.SDS_DYO_TORERA_START_DATE.plusDays(1)),
-        ).map {
-          SentenceAndOffenceWithReleaseArrangements(
-            it,
-            true,
-            SDSEarlyReleaseExclusionType.NO,
-          )
-        },
-        VALID_PRISONER,
-        VALID_ADJUSTMENTS,
-        listOf(),
-        null,
-      ),
-    )
-    assertThat(result.count()).isEqualTo(1)
-    assertThat(result.first()).isEqualTo(ValidationMessage(ValidationCode.SDS_TORERA_EXCLUSION))
-  }
-
-  @Test
-  fun `Test validateToreraExempt returns SOPC_TORERA_EXCLUSION exception with sentenced date prior to SOPC_TORERA_END_DATE`() {
-    val toreraOffenceCodes = listOf(
-      validSdsSentence.offence.offenceCode,
-      "NOT_19ZA",
-    )
-    whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(toreraOffenceCodes)
-    val result = validationService.validateSupportedSentencesAndCalculations(
-      PrisonApiSourceData(
-        listOf(validSopcSentence.copy(sentenceDate = ImportantDates.SOPC_TORERA_END_DATE.minusDays(1))).map {
-          SentenceAndOffenceWithReleaseArrangements(
-            it,
-            true,
-            SDSEarlyReleaseExclusionType.NO,
-          )
-        },
-        VALID_PRISONER,
-        VALID_ADJUSTMENTS,
-        listOf(),
-        null,
-      ),
-    )
-    assertThat(result.count()).isEqualTo(1)
-    assertThat(result.first()).isEqualTo(ValidationMessage(ValidationCode.SOPC_TORERA_EXCLUSION))
-  }
-
-  @Test
-  fun `Test validateToreraExempt returns SDS_TORERA_EXCLUSION and SOPC_TORERA_EXCLUSION exception`() {
-    val toreraOffenceCodes = listOf(
-      validSdsSentence.offence.offenceCode,
-      "NOT_19ZA",
-      "NOT_19ZA_ABC"
-    )
-    whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(toreraOffenceCodes)
-    val result = validationService.validateSupportedSentencesAndCalculations(
-      PrisonApiSourceData(
-        listOf(validSopcSentence, validSdsSentence).map {
-          SentenceAndOffenceWithReleaseArrangements(
-            it,
-            true,
-            SDSEarlyReleaseExclusionType.NO,
-          )
-        },
-        VALID_PRISONER,
-        VALID_ADJUSTMENTS,
-        listOf(),
-        null,
-      ),
-    )
-    assertThat(result.count()).isEqualTo(2)
-    assertThat(result).isEqualTo(
-      listOf(
-        ValidationMessage(ValidationCode.SDS_TORERA_EXCLUSION),
-        ValidationMessage(ValidationCode.SOPC_TORERA_EXCLUSION),
-      ),
-    )
-  }
-
-  @Test
-  fun `Test validateToreraExempt does not trigger for SDS sentence with no offence codes in schedule 19ZA`() {
-    val toreraOffenceCodes = listOf("NOT_19ZA")
-    whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(toreraOffenceCodes)
-    val result = validationService.validateSupportedSentencesAndCalculations(
-      PrisonApiSourceData(
-        listOf(validSdsSentence).map {
-          SentenceAndOffenceWithReleaseArrangements(
-            it,
-            true,
-            SDSEarlyReleaseExclusionType.NO,
-          )
-        },
-        VALID_PRISONER,
-        VALID_ADJUSTMENTS,
-        listOf(),
-        null,
-      ),
-    )
-    assertThat(result.count()).isEqualTo(0)
-  }
-
-  @Test
-  fun `Test validateToreraExempt does not trigger for SOPC sentence with no offence codes in schedule 19ZA`() {
-    val toreraOffenceCodes = listOf("NOT_19ZA")
-    whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(toreraOffenceCodes)
-    val result = validationService.validateSupportedSentencesAndCalculations(
-      PrisonApiSourceData(
-        listOf(validSopcSentence).map {
-          SentenceAndOffenceWithReleaseArrangements(
-            it,
-            true,
-            SDSEarlyReleaseExclusionType.NO,
-          )
-        },
-        VALID_PRISONER,
-        VALID_ADJUSTMENTS,
-        listOf(),
-        null,
-      ),
-    )
-    assertThat(result.count()).isEqualTo(0)
-  }
-
-  @Test
-  fun `Test validateToreraExempt does not trigger for SDS sentence with sentenced date on before SDS_DYO_TORERA_START_DATE`() {
-    val toreraOffenceCodes = listOf("NOT_19ZA", validSdsSentence.offence.offenceCode)
-    whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(toreraOffenceCodes)
-    val result = validationService.validateSupportedSentencesAndCalculations(
-      PrisonApiSourceData(
-        listOf(
-          validSdsSentence.copy(sentenceDate = ImportantDates.SDS_DYO_TORERA_START_DATE),
-          validSdsSentence.copy(sentenceDate = ImportantDates.SDS_DYO_TORERA_START_DATE.minusDays(1)),
-        ).map {
-          SentenceAndOffenceWithReleaseArrangements(
-            it,
-            true,
-            SDSEarlyReleaseExclusionType.NO,
-          )
-        },
-        VALID_PRISONER,
-        VALID_ADJUSTMENTS,
-        listOf(),
-        null,
-      ),
-    )
-    assertThat(result.count()).isEqualTo(0)
-  }
-
-  @Test
-  fun `Test validateToreraExempt does not trigger for SOPC sentence with sentenced date on or after 28-06-2022`() {
-    val toreraOffenceCodes = listOf(validSdsSentence.offence.offenceCode)
-    whenever(manageOffencesService.getToreraOffenceCodes()).thenReturn(toreraOffenceCodes)
-    val result = validationService.validateSupportedSentencesAndCalculations(
-      PrisonApiSourceData(
-        listOf(
-          validSopcSentence.copy(sentenceDate = ImportantDates.SOPC_TORERA_END_DATE),
-          validSopcSentence.copy(sentenceDate = ImportantDates.SOPC_TORERA_END_DATE.plusDays(1)),
-        ).map {
-          SentenceAndOffenceWithReleaseArrangements(
-            it,
-            true,
-            SDSEarlyReleaseExclusionType.NO,
-          )
-        },
-        VALID_PRISONER,
-        VALID_ADJUSTMENTS,
-        listOf(),
-        null,
-      ),
-    )
-    assertThat(result.count()).isEqualTo(0)
   }
 
   private companion object {
@@ -3095,6 +2830,47 @@ class ValidationServiceTest {
           ),
         ),
       ),
+    )
+  }
+
+  private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheConfiguration: SDS40TrancheConfiguration, botus: Boolean = true): ValidationService {
+    val featureToggles = FeatureToggles(botus, true, false)
+    val validationUtilities = ValidationUtilities()
+    val fineValidationService = FineValidationService(validationUtilities)
+    val adjustmentValidationService = AdjustmentValidationService(trancheConfiguration)
+    val dtoValidationService = DtoValidationService()
+    val botusValidationService = BotusValidationService()
+    val recallValidationService = RecallValidationService(trancheConfiguration)
+    val unsupportedValidationService = UnsupportedValidationService()
+    val section91ValidationService = Section91ValidationService(validationUtilities)
+    val sopcValidationService = SOPCValidationService(validationUtilities)
+    val edsValidationService = EDSValidationService(validationUtilities)
+    val manageOffencesService = mock<ManageOffencesService>()
+    val toreraValidationService = ToreraValidationService(manageOffencesService)
+    val sentenceValidationService = SentenceValidationService(
+      validationUtilities,
+      sentencesExtractionService,
+      section91ValidationService = section91ValidationService,
+      sopcValidationService = sopcValidationService,
+      fineValidationService,
+      edsValidationService = edsValidationService,
+    )
+    val preCalculationValidationService = PreCalculationValidationService(
+      featureToggles = featureToggles,
+      fineValidationService = fineValidationService,
+      adjustmentValidationService = adjustmentValidationService,
+      dtoValidationService = dtoValidationService,
+      botusValidationService = botusValidationService,
+      unsupportedValidationService = unsupportedValidationService,
+      toreraValidationService = toreraValidationService,
+    )
+
+    return ValidationService(
+      preCalculationValidationService = preCalculationValidationService,
+      adjustmentValidationService = adjustmentValidationService,
+      recallValidationService = recallValidationService,
+      sentenceValidationService = sentenceValidationService,
+      validationUtilities = validationUtilities,
     )
   }
 }

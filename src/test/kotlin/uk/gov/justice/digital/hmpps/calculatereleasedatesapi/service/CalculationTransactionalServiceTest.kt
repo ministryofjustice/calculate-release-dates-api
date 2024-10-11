@@ -88,8 +88,21 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.AdjustmentValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.BotusValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DtoValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.EDSValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.FineValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.PreCalculationValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.RecallValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SOPCValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Section91ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SentenceValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ToreraValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.UnsupportedValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
@@ -222,10 +235,18 @@ class CalculationTransactionalServiceTest {
     val calculatedReleaseDates: CalculatedReleaseDates
     val returnedValidationMessages: List<ValidationMessage>
     try {
-      calculatedReleaseDates = calculationTransactionalService(defaultParams(params), passedInServices = listOf(ValidationService::class.java.simpleName))
+      calculatedReleaseDates = calculationTransactionalService(
+        defaultParams(params),
+        passedInServices = listOf(
+          ValidationService::class.java.simpleName,
+        ),
+      )
         .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
       val sentencesExtractionService = SentencesExtractionService()
-      val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(defaultParams(params)), sdsEarlyReleaseTrancheTwoDate(defaultParams(params)))
+      val trancheConfiguration = SDS40TrancheConfiguration(
+        sdsEarlyReleaseTrancheOneDate(defaultParams(params)),
+        sdsEarlyReleaseTrancheTwoDate(defaultParams(params)),
+      )
       val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration)
       returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
         calculatedReleaseDates.calculatedBooking!!,
@@ -353,7 +374,10 @@ class CalculationTransactionalServiceTest {
       } else {
         DateTime.now().plusDays(1).toDate()
       }
-      calculationBreakdown = calculationTransactionalService(defaultParams(params), mapOf(Pair("hdc4CommencementDate", hdc4CommencementDate))).calculateWithBreakdown(
+      calculationBreakdown = calculationTransactionalService(
+        defaultParams(params),
+        mapOf(Pair("hdc4CommencementDate", hdc4CommencementDate)),
+      ).calculateWithBreakdown(
         booking,
         CalculatedReleaseDates(
           calculation.dates,
@@ -380,7 +404,8 @@ class CalculationTransactionalServiceTest {
       TestUtil.objectMapper().writeValueAsString(calculationBreakdown),
     )
     val actualJson: String? = TestUtil.objectMapper().writeValueAsString(calculationBreakdown)
-    val expectedJson: String? = jsonTransformation.getJsonTest("$exampleType/$exampleNumber.json", "calculation_breakdown_response")
+    val expectedJson: String? =
+      jsonTransformation.getJsonTest("$exampleType/$exampleNumber.json", "calculation_breakdown_response")
 
     JSONAssert.assertEquals(
       expectedJson,
@@ -771,12 +796,14 @@ class CalculationTransactionalServiceTest {
     val sentencesExtractionService = SentencesExtractionService()
     val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
 
-    val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
+    val trancheConfiguration =
+      SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
     val trancheOne = TrancheOne(trancheConfiguration)
     val trancheTwo = TrancheTwo(trancheConfiguration)
 
     val trancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
-    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService, trancheConfiguration)
+    val sdsEarlyReleaseDefaultingRulesService =
+      SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService, trancheConfiguration)
     val bookingCalculationService = BookingCalculationService(
       sentenceCalculationService,
       sentenceIdentificationService,
@@ -834,8 +861,47 @@ class CalculationTransactionalServiceTest {
     )
   }
 
-  private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheConfiguration: SDS40TrancheConfiguration): ValidationService {
-    return ValidationService(sentencesExtractionService, featureToggles = FeatureToggles(true, true, false), trancheConfiguration, manageOffencesService)
+  private fun getActiveValidationService(
+    sentencesExtractionService: SentencesExtractionService,
+    trancheConfiguration: SDS40TrancheConfiguration,
+  ): ValidationService {
+    val featureToggles = FeatureToggles(true, true, false)
+    val validationUtilities = ValidationUtilities()
+    val fineValidationService = FineValidationService(validationUtilities)
+    val adjustmentValidationService = AdjustmentValidationService(trancheConfiguration)
+    val dtoValidationService = DtoValidationService()
+    val botusValidationService = BotusValidationService()
+    val recallValidationService = RecallValidationService(trancheConfiguration)
+    val unsupportedValidationService = UnsupportedValidationService()
+    val section91ValidationService = Section91ValidationService(validationUtilities)
+    val sopcValidationService = SOPCValidationService(validationUtilities)
+    val edsValidationService = EDSValidationService(validationUtilities)
+    val toreraValidationService = ToreraValidationService(manageOffencesService)
+    val sentenceValidationService = SentenceValidationService(
+      validationUtilities,
+      sentencesExtractionService,
+      section91ValidationService = section91ValidationService,
+      sopcValidationService = sopcValidationService,
+      fineValidationService,
+      edsValidationService = edsValidationService,
+    )
+    val preCalculationValidationService = PreCalculationValidationService(
+      featureToggles = featureToggles,
+      fineValidationService = fineValidationService,
+      adjustmentValidationService = adjustmentValidationService,
+      dtoValidationService = dtoValidationService,
+      botusValidationService = botusValidationService,
+      unsupportedValidationService = unsupportedValidationService,
+      toreraValidationService = toreraValidationService,
+    )
+
+    return ValidationService(
+      preCalculationValidationService = preCalculationValidationService,
+      adjustmentValidationService = adjustmentValidationService,
+      recallValidationService = recallValidationService,
+      sentenceValidationService = sentenceValidationService,
+      validationUtilities = validationUtilities,
+    )
   }
 
   companion object {

@@ -1,0 +1,43 @@
+{
+  "concurrentSentences": [],
+  "consecutiveSentence": null,
+  "breakdownByReleaseDateType": {
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2026-01-12",
+      "unadjustedDate": "2026-01-12"
+    },
+    "CRD": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": 0,
+      "releaseDate": "2025-03-26",
+      "unadjustedDate": "2025-03-26"
+    },
+    "TUSED": {
+      "rules": ["TUSED_LICENCE_PERIOD_LT_1Y"],
+      "rulesWithExtraAdjustments": {
+        "TUSED_LICENCE_PERIOD_LT_1Y": {
+          "adjustmentValue": 12,
+          "type": "MONTHS"
+        }
+      },
+      "adjustedDays": 0,
+      "releaseDate": "2026-03-26",
+      "unadjustedDate": "2025-03-26"
+    },
+    "HDCED": {
+      "rules": ["HDCED_ADJUSTED_TO_CONCURRENT_PRRD"],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -78,
+      "releaseDate": "2025-03-08",
+      "unadjustedDate": "2024-12-20"
+    }
+  },
+  "otherDates": {
+    "PRRD": "2025-03-08"
+  },
+  "ersedNotApplicableDueToDtoLaterThanCrd": false
+}
