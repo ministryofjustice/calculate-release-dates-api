@@ -1,0 +1,94 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 1203117,
+  "sentences": [
+    {
+      "type": "ExtendedDeterminateSentence",
+      "offence": {
+        "committedAt": "2020-08-10",
+        "offenceCode": null
+      },
+      "isSDSPlus": false,
+      "identifier": "8770993b-c6ed-3b89-a0e5-aab4644b7aae",
+      "recallType": null,
+      "sentencedAt": "2020-09-11",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": null,
+      "automaticRelease": false,
+      "custodialDuration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 2,
+          "MONTHS": 0
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 1,
+          "MONTHS": 0
+        }
+      },
+      "consecutiveSentenceUUIDs": []
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2020-08-12",
+        "offenceCode": null
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 3,
+          "MONTHS": 3
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "f026066a-c49f-32d3-9e32-e3a0b5dc9b99",
+      "recallType": null,
+      "sentencedAt": "2021-05-15",
+      "caseSequence": 2,
+      "lineSequence": 2,
+      "caseReference": null,
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "AFineSentence",
+      "offence": {
+        "committedAt": "2020-12-10",
+        "offenceCode": null
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 14,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "fineAmount": 400,
+      "identifier": "6a9c4c95-e6ce-3065-accd-07ce90d39ba0",
+      "recallType": null,
+      "sentencedAt": "2022-09-02",
+      "caseSequence": 2,
+      "lineSequence": 3,
+      "caseReference": null,
+      "consecutiveSentenceUUIDs": []
+    }
+  ],
+  "adjustments": {},
+  "historicalTusedData": null,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}

@@ -187,7 +187,7 @@ class HintTextTest {
     trancheOutcomeRepository,
   )
 
-  private val today: LocalDate = LocalDate.of(2000, 1, 1)
+  private val today: LocalDate = LocalDate.now()
   private val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
   private val featureToggles = FeatureToggles(sdsEarlyReleaseHints = true)
 
