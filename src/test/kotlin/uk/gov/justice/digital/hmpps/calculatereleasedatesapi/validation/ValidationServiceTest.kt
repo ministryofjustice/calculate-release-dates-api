@@ -252,19 +252,7 @@ class ValidationServiceTest {
     // Act
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(
-          listOf(
-            SentenceAndOffenceWithReleaseArrangements(
-              invalidSentence,
-              false,
-              SDSEarlyReleaseExclusionType.NO,
-            ),
-          ),
-          VALID_PRISONER,
-          VALID_ADJUSTMENTS,
-          listOf(),
-          null,
-        ),
+        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(invalidSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
         USER_INPUTS,
       )
 
@@ -274,9 +262,7 @@ class ValidationServiceTest {
 
   @ParameterizedTest
   @ValueSource(strings = ["PH97003", "PH97003B"])
-  fun `Test Sentences with unsupported offenceCodes PH97003 after Dec 2020 and inchoates to return validation message`(
-    offenceCode: String,
-  ) {
+  fun `Test Sentences with unsupported offenceCodes PH97003 after Dec 2020 and inchoates to return validation message`(offenceCode: String) {
     // Arrange
     val invalidSentence = validSdsSentence.copy(
       sentenceDate = LocalDate.of(2020, 12, 1),
@@ -286,19 +272,7 @@ class ValidationServiceTest {
     // Act
     val result =
       validationService.validateBeforeCalculation(
-        PrisonApiSourceData(
-          listOf(
-            SentenceAndOffenceWithReleaseArrangements(
-              invalidSentence,
-              false,
-              SDSEarlyReleaseExclusionType.NO,
-            ),
-          ),
-          VALID_PRISONER,
-          VALID_ADJUSTMENTS,
-          listOf(),
-          null,
-        ),
+        PrisonApiSourceData(listOf(SentenceAndOffenceWithReleaseArrangements(invalidSentence, false, SDSEarlyReleaseExclusionType.NO)), VALID_PRISONER, VALID_ADJUSTMENTS, listOf(), null),
         USER_INPUTS,
       )
 
@@ -2674,8 +2648,6 @@ class ValidationServiceTest {
 
   @Test
   fun `Tranche 2 Prisoner with consecutive SDS on T1 commencement date returns error`() {
-    val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
 
     val testIdentifierUUID = UUID.randomUUID()
 
@@ -2718,8 +2690,6 @@ class ValidationServiceTest {
 
   @Test
   fun `Tranche 2 Prisoner with consecutive SDS the day before T2 commencement date returns error`() {
-    val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
 
     val testIdentifierUUID = UUID.randomUUID()
 
@@ -2762,9 +2732,6 @@ class ValidationServiceTest {
 
   @Test
   fun `Tranche 2 Prisoner with consecutive SDS+ sentenced on T1 commencement date returns NO error`() {
-    val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
-
     val testIdentifierUUID = UUID.randomUUID()
 
     val standardSentenceOne = STANDARD_SENTENCE.copy(
@@ -2802,9 +2769,6 @@ class ValidationServiceTest {
 
   @Test
   fun `Tranche 2 Prisoner with consecutive SDS sentenced on T2 commencement dates returns NO error`() {
-    val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
-
     val testIdentifierUUID = UUID.randomUUID()
 
     val standardSentenceOne = STANDARD_SENTENCE.copy(
@@ -2841,9 +2805,6 @@ class ValidationServiceTest {
 
   @Test
   fun `Tranche 1 Prisoner with consecutive SDS on T1 commencement date returns NO error`() {
-    val validationService =
-      ValidationService(SentencesExtractionService(), FeatureToggles(sdsEarlyRelease = true), TRANCHE_CONFIGURATION)
-
     val testIdentifierUUID = UUID.randomUUID()
 
     val standardSentenceOne = STANDARD_SENTENCE.copy(
@@ -3124,6 +3085,7 @@ class ValidationServiceTest {
       recallValidationService = recallValidationService,
       sentenceValidationService = sentenceValidationService,
       validationUtilities = validationUtilities,
+      trancheConfiguration = trancheConfiguration,
     )
   }
 }

@@ -259,6 +259,7 @@ class CalculationTransactionalServiceValidationTest {
       recallValidationService = recallValidationService,
       sentenceValidationService = sentenceValidationService,
       validationUtilities = validationUtilities,
+      trancheConfiguration = trancheConfiguration,
     )
   }
 }
