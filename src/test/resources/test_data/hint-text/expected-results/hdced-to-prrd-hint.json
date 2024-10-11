@@ -1,0 +1,29 @@
+[
+  {
+    "type": "SLED",
+    "date": "2025-04-26",
+    "hints": []
+  },
+  {
+    "type": "CRD",
+    "date": "2024-06-10",
+    "hints": []
+  },
+  {
+    "type": "TUSED",
+    "date": "2025-06-10",
+    "hints": []
+  },
+  {
+    "type": "HDCED",
+    "date": "2024-04-18",
+    "hints": [
+      "HDCED adjusted for the PRRD of a recall"
+    ]
+  },
+  {
+    "type": "ESED",
+    "date": "2025-04-26",
+    "hints": []
+  }
+]
