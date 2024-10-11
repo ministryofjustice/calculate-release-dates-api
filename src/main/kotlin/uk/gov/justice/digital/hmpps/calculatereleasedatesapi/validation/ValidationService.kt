@@ -46,7 +46,7 @@ class ValidationService(
     }
 
     val validationMessages = sentenceValidationService.validateSentences(sortedSentences)
-    validationMessages += adjustmentValidationService.validateAdjustments(adjustments)
+    validationMessages += adjustmentValidationService.validate(adjustments)
     validationMessages += recallValidationService.validateFixedTermRecall(sourceData)
     validationMessages += preCalculationValidationService.validatePrePcscDtoDoesNotHaveRemandOrTaggedBail(sourceData)
 

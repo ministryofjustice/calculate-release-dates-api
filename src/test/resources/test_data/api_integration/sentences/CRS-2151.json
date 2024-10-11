@@ -1,0 +1,142 @@
+ [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2019-12-27",
+        "offenceCode": "TH68023"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 7,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": true,
+      "identifier": "24e6018f-98f4-3002-8443-5ee90b59249c",
+      "recallType": null,
+      "sentencedAt": "2020-09-16",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "sentenceStatus": "A",
+      "caseReference": "T20207015",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2020-01-02",
+        "offenceCode": "TH68023"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 7,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": true,
+      "identifier": "9d781e95-b3c4-31c6-9808-a02e3aa3dfd7",
+      "recallType": null,
+      "sentencedAt": "2020-09-16",
+      "caseSequence": 1,
+      "lineSequence": 2,
+      "sentenceStatus": "A",
+      "caseReference": "T20207015",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2020-01-03",
+        "offenceCode": "TH68023"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 7,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": true,
+      "identifier": "9d781e95-b3c4-31c6-9808-a02e3aa3dfd7",
+      "recallType": null,
+      "sentencedAt": "2020-09-16",
+      "caseSequence": 1,
+      "lineSequence": 2,
+      "sentenceStatus": "A",
+      "caseReference": "T20207015",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2020-01-03",
+        "offenceCode": "CJ88144"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 2,
+          "MONTHS": 0
+        }
+      },
+      "identifier": "7cf9e4ea-417f-3f71-858a-97501129b22c",
+      "sentencedAt": "2020-09-16",
+      "caseSequence": 1,
+      "lineSequence": 3,
+      "caseReference": "T20207015"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2019-12-04",
+        "offenceCode": "RT88026"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 12
+        }
+      },
+      "identifier": "31f7d44f-d6df-3061-9cd8-80d5213785ee",
+      "sentencedAt": "2020-09-16",
+      "caseSequence": 1,
+      "lineSequence": 4,
+      "sentenceStatus": "A",
+      "caseReference": "T20207015"
+    },
+    {
+      "type": "AFineSentence",
+      "offence": {
+        "committedAt": "2016-06-13",
+        "offenceCode": "RT88334"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 35,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "fineAmount": 1567.0,
+      "identifier": "2cc1406d-7825-37ba-8a20-4cd39b69d667",
+      "recallType": null,
+      "sentencedAt": "2023-10-31",
+      "caseSequence": 3,
+      "lineSequence": 5,
+      "caseReference": null,
+      "consecutiveSentenceUUIDs": []
+    }
+  ]

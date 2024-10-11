@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
@@ -20,19 +21,33 @@ class AdjustmentValidationService(
   private val trancheConfiguration: SDS40TrancheConfiguration,
 ) {
 
-  internal fun validateSupportedAdjustments(adjustments: List<BookingAdjustment>): List<ValidationMessage> {
-    val messages = mutableListOf<ValidationMessage>()
-    messages.addAll(lawfullyAtLargeIsNotSupported(adjustments))
-    messages.addAll(specialRemissionIsNotSupported(adjustments))
-    return messages
+  internal fun validateIfAdjustmentsAreSupported(adjustments: List<BookingAdjustment>): List<ValidationMessage> {
+    return mutableListOf<ValidationMessage>().apply {
+      addAll(lawfullyAtLargeIsNotSupported(adjustments))
+      addAll(specialRemissionIsNotSupported(adjustments))
+    }
   }
 
-  internal fun validateAdjustments(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
-    val messages = mutableListOf<ValidationMessage>()
-    messages.addAll(validateAllSentenceAdjustmentsHaveFromOrToDates(adjustments))
-    messages.addAll(validateBookingAdjustment(adjustments.bookingAdjustments))
-    messages += validateRemandOverlappingRemand(adjustments)
-    return messages
+  internal fun validate(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
+    return mutableListOf<ValidationMessage>().apply {
+      addAll(validateAllSentenceAdjustmentsHaveFromOrToDates(adjustments))
+      addAll(validateBookingAdjustment(adjustments.bookingAdjustments))
+      addAll(validateRemandOverlappingRemand(adjustments))
+    }
+  }
+
+  private fun validateAllSentenceAdjustmentsHaveFromOrToDates(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
+    return adjustments.sentenceAdjustments.flatMap { validateSentenceAdjustmentHaveFromOrToDates(it) }.toMutableList()
+  }
+
+  private fun validateSentenceAdjustmentHaveFromOrToDates(sentenceAdjustment: SentenceAdjustment): List<ValidationMessage> {
+    return if (sentenceAdjustment.type == SentenceAdjustmentType.REMAND &&
+      (sentenceAdjustment.fromDate == null || sentenceAdjustment.toDate == null)
+    ) {
+      listOf(ValidationMessage(ValidationCode.REMAND_FROM_TO_DATES_REQUIRED))
+    } else {
+      emptyList()
+    }
   }
 
   internal fun validateRemandOverlappingRemand(booking: Booking): List<ValidationMessage> {
@@ -64,44 +79,65 @@ class AdjustmentValidationService(
     val sentences = booking.getAllExtractableSentences()
     val longestSentences = longestBooking.getAllExtractableSentences()
 
-    // Ensure both lists have the same size before proceeding
+    validateSentenceCounts(sentences, longestSentences)
+
+    val latestReleaseDate = getLatestReleaseDateWithoutAdditions(sentences, longestSentences) ?: return emptyList()
+
+    val adjustments = getSortedAdjustments(booking)
+    return validate(adjustments, latestReleaseDate)
+  }
+
+  private fun validateSentenceCounts(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>) {
     if (sentences.size != longestSentences.size) {
       throw IllegalArgumentException("The number of sentences in longestBooking and booking must be the same.")
     }
+  }
 
-    val longestRelevantSentences = this.getLongestRelevantSentence(sentences, longestSentences)
+  private fun getLatestReleaseDateWithoutAdditions(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): LocalDate? {
+    val longestRelevantSentences = getLongestRelevantSentence(sentences, longestSentences)
+    return longestRelevantSentences
+      .filter { it !is Term }
+      .maxOfOrNull { it.sentenceCalculation.releaseDateWithoutAdditions }
+  }
 
-    val latestReleaseDatePreAddedDays =
-      longestRelevantSentences.filter { it !is Term }.maxOfOrNull { it.sentenceCalculation.releaseDateWithoutAdditions }
-        ?: return emptyList()
+  private fun getSortedAdjustments(booking: Booking): List<Pair<AdjustmentType, Adjustment>> {
+    val adas = booking.adjustments.getOrEmptyList(AdjustmentType.ADDITIONAL_DAYS_AWARDED)
+      .map { AdjustmentType.ADDITIONAL_DAYS_AWARDED to it }
 
-    val adas = booking.adjustments.getOrEmptyList(AdjustmentType.ADDITIONAL_DAYS_AWARDED).toSet()
-    val radas = booking.adjustments.getOrEmptyList(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED).toSet()
-    val adjustments = adas + radas
+    val radas = booking.adjustments.getOrEmptyList(AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED)
+      .map { AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED to it }
 
-    val adjustmentsAfterRelease =
-      adjustments.filter { it.appliesToSentencesFrom.isAfter(latestReleaseDatePreAddedDays) }.toSet()
-    if (adjustmentsAfterRelease.isNotEmpty()) {
-      val anyAda = adjustmentsAfterRelease.intersect(adas).isNotEmpty()
-      val anyRada = adjustmentsAfterRelease.intersect(radas).isNotEmpty()
+    return (adas + radas).sortedBy { it.second.appliesToSentencesFrom }
+  }
 
-      if (anyAda) return listOf(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA))
-      if (anyRada) return listOf(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA))
+  private fun validate(adjustments: List<Pair<AdjustmentType, Adjustment>>, initialReleaseDate: LocalDate): List<ValidationMessage> {
+    var latestReleaseDate = initialReleaseDate
+    val messages = mutableListOf<ValidationMessage>()
+    adjustments.forEach { (type, adjustment) ->
+      messages.addAll(adaOrRadaAfterSentenceLength(type, adjustment, latestReleaseDate))
+      latestReleaseDate = applyAdjustment(type, adjustment, latestReleaseDate)
+    }
+    return messages
+  }
+
+  private fun adaOrRadaAfterSentenceLength(type: AdjustmentType, adjustment: Adjustment, latestReleaseDate: LocalDate): List<ValidationMessage> {
+    if (adjustment.appliesToSentencesFrom.isAfter(latestReleaseDate)) {
+      return listOf(
+        if (type == AdjustmentType.ADDITIONAL_DAYS_AWARDED) {
+          ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA)
+        } else {
+          ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA)
+        },
+      )
     }
     return emptyList()
   }
 
-  private fun validateAllSentenceAdjustmentsHaveFromOrToDates(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
-    return adjustments.sentenceAdjustments.flatMap { validateSentenceAdjustmentHaveFromOrToDates(it) }.toMutableList()
-  }
-
-  private fun validateSentenceAdjustmentHaveFromOrToDates(sentenceAdjustment: SentenceAdjustment): List<ValidationMessage> {
-    return if (sentenceAdjustment.type == SentenceAdjustmentType.REMAND &&
-      (sentenceAdjustment.fromDate == null || sentenceAdjustment.toDate == null)
-    ) {
-      listOf(ValidationMessage(ValidationCode.REMAND_FROM_TO_DATES_REQUIRED))
+  private fun applyAdjustment(type: AdjustmentType, adjustment: Adjustment, releaseDate: LocalDate): LocalDate {
+    return if (type == AdjustmentType.ADDITIONAL_DAYS_AWARDED) {
+      releaseDate.plusDays(adjustment.numberOfDays.toLong())
     } else {
-      emptyList()
+      releaseDate.minusDays(adjustment.numberOfDays.toLong())
     }
   }
 

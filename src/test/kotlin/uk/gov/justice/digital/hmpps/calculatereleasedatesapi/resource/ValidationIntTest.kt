@@ -166,6 +166,11 @@ class ValidationIntTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `Run validation on rada after ada adjustment extends release date`() {
+    runValidationAndCheckMessages("CRS-2151", emptyList())
+  }
+
+  @Test
   fun `Run validate for manual entry missing offence start date`() {
     runValidateForManualEntry(
       MISSING_OFFENCE_START_DATE_SENTENCE,

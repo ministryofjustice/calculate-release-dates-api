@@ -1,0 +1,38 @@
+{
+  "REMAND": [
+    {
+      "toDate": "2020-09-15",
+      "fromDate": "2020-01-23",
+      "numberOfDays": 237,
+      "appliesToSentencesFrom": "2020-09-16"
+    }
+  ],
+  "ADDITIONAL_DAYS_AWARDED": [
+    {
+      "toDate": "2020-10-07",
+      "fromDate": "2020-09-07",
+      "numberOfDays": 28,
+      "appliesToSentencesFrom": "2020-09-07"
+    },
+    {
+      "toDate": "2021-01-18",
+      "fromDate": "2020-12-18",
+      "numberOfDays": 22,
+      "appliesToSentencesFrom": "2020-12-18"
+    },
+    {
+      "toDate": "2023-05-04",
+      "fromDate": "2023-05-04",
+      "numberOfDays": 24,
+      "appliesToSentencesFrom": "2023-05-04"
+    }
+  ],
+  "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
+    {
+      "toDate": "2024-10-02",
+      "fromDate": "2024-10-02",
+      "numberOfDays": 28,
+      "appliesToSentencesFrom": "2024-10-02"
+    }
+  ]
+}
