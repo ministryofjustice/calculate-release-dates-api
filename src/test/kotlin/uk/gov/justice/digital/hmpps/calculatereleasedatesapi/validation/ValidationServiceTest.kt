@@ -13,9 +13,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40Tranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
@@ -85,11 +88,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SOPC_LICENCE_TERM_NOT_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SENTENCE_TYPE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ZERO_IMPRISONMENT_TERM
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
@@ -2643,6 +2648,219 @@ class ValidationServiceTest {
     assertThat(result).isEmpty()
   }
 
+  @Test
+  fun `Tranche 2 Prisoner with consecutive SDS on T1 commencement date returns error`() {
+    val testIdentifierUUID = UUID.randomUUID()
+
+    val standardSentenceOne = STANDARD_SENTENCE.copy(
+      identifier = testIdentifierUUID,
+    )
+    val standardSentenceTwo = STANDARD_SENTENCE.copy(
+      consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
+      sentencedAt = TRANCHE_CONFIGURATION.trancheOneCommencementDate,
+    )
+
+    var workingBooking = BOOKING.copy(
+      sentences = listOf(
+        standardSentenceOne,
+        standardSentenceTwo,
+      ),
+      adjustments = Adjustments(),
+    )
+
+    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+
+    val result = validationService.validateBookingAfterCalculation(
+      workingBooking,
+      null,
+      CalculationResult(
+        emptyMap(),
+        emptyMap(),
+        emptyMap(),
+        Period.of(6, 0, 0),
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+      ),
+    )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS),
+      ),
+    )
+  }
+
+  @Test
+  fun `Tranche 2 Prisoner with consecutive SDS the day before T2 commencement date returns error`() {
+    val testIdentifierUUID = UUID.randomUUID()
+
+    val standardSentenceOne = STANDARD_SENTENCE.copy(
+      identifier = testIdentifierUUID,
+    )
+    val standardSentenceTwo = STANDARD_SENTENCE.copy(
+      consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
+      sentencedAt = TRANCHE_CONFIGURATION.trancheTwoCommencementDate.minusDays(1),
+    )
+
+    var workingBooking = BOOKING.copy(
+      sentences = listOf(
+        standardSentenceOne,
+        standardSentenceTwo,
+      ),
+      adjustments = Adjustments(),
+    )
+
+    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+
+    val result = validationService.validateBookingAfterCalculation(
+      workingBooking,
+      null,
+      CalculationResult(
+        emptyMap(),
+        emptyMap(),
+        emptyMap(),
+        Period.of(6, 0, 0),
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+      ),
+    )
+
+    assertThat(result).isEqualTo(
+      listOf(
+        ValidationMessage(UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS),
+      ),
+    )
+  }
+
+  @Test
+  fun `Tranche 2 Prisoner with consecutive SDS+ sentenced on T1 commencement date returns NO error`() {
+    val testIdentifierUUID = UUID.randomUUID()
+
+    val standardSentenceOne = STANDARD_SENTENCE.copy(
+      identifier = testIdentifierUUID,
+    )
+    val consecSdsPlusSentence = STANDARD_SENTENCE.copy(
+      consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
+      sentencedAt = TRANCHE_CONFIGURATION.trancheOneCommencementDate,
+      isSDSPlus = true,
+    )
+
+    var workingBooking = BOOKING.copy(
+      sentences = listOf(
+        standardSentenceOne,
+        consecSdsPlusSentence,
+      ),
+      adjustments = Adjustments(),
+    )
+
+    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+
+    val result = validationService.validateBookingAfterCalculation(
+      workingBooking,
+      null,
+      CalculationResult(
+        emptyMap(),
+        emptyMap(),
+        emptyMap(),
+        Period.of(6, 0, 0),
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+      ),
+    )
+    assertThat(result).isEmpty()
+  }
+
+  @Test
+  fun `Tranche 2 Prisoner with consecutive SDS sentenced on T2 commencement dates returns NO error`() {
+    val testIdentifierUUID = UUID.randomUUID()
+
+    val standardSentenceOne = STANDARD_SENTENCE.copy(
+      identifier = testIdentifierUUID,
+    )
+    val standardSentenceTwo = STANDARD_SENTENCE.copy(
+      consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
+      sentencedAt = TRANCHE_CONFIGURATION.trancheTwoCommencementDate,
+    )
+
+    var workingBooking = BOOKING.copy(
+      sentences = listOf(
+        standardSentenceOne,
+        standardSentenceTwo,
+      ),
+      adjustments = Adjustments(),
+    )
+
+    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+
+    val result = validationService.validateBookingAfterCalculation(
+      workingBooking,
+      null,
+      CalculationResult(
+        emptyMap(),
+        emptyMap(),
+        emptyMap(),
+        Period.of(6, 0, 0),
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+      ),
+    )
+    assertThat(result).isEmpty()
+  }
+
+  @Test
+  fun `Tranche 1 Prisoner with consecutive SDS on T1 commencement date returns NO error`() {
+    val testIdentifierUUID = UUID.randomUUID()
+
+    val standardSentenceOne = STANDARD_SENTENCE.copy(
+      identifier = testIdentifierUUID,
+    )
+    val standardSentenceTwo = STANDARD_SENTENCE.copy(
+      consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
+      sentencedAt = TRANCHE_CONFIGURATION.trancheOneCommencementDate,
+    )
+
+    var workingBooking = BOOKING.copy(
+      sentences = listOf(
+        standardSentenceOne,
+        standardSentenceTwo,
+      ),
+      adjustments = Adjustments(),
+    )
+
+    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+
+    val result = validationService.validateBookingAfterCalculation(
+      workingBooking,
+      null,
+      CalculationResult(
+        emptyMap(),
+        emptyMap(),
+        emptyMap(),
+        Period.of(6, 0, 0),
+        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
+      ),
+    )
+    assertThat(result).isEmpty()
+  }
+
+  private fun createSentenceChain(
+    start: AbstractSentence,
+    chain: MutableList<AbstractSentence>,
+    sentencesByPrevious: Map<UUID, List<AbstractSentence>>,
+    chains: MutableList<MutableList<AbstractSentence>> = mutableListOf(mutableListOf()),
+  ) {
+    val originalChain = chain.toMutableList()
+    sentencesByPrevious[start.identifier]?.forEachIndexed { index, it ->
+      if (index == 0) {
+        chain.add(it)
+        createSentenceChain(it, chain, sentencesByPrevious, chains)
+      } else {
+        // This sentence has two sentences consecutive to it. This is not allowed in practice, however it can happen
+        // when a sentence in NOMIS has multiple offices, which means it becomes multiple sentences in our model.
+        val chainCopy = originalChain.toMutableList()
+        chains.add(chainCopy)
+        chainCopy.add(it)
+        createSentenceChain(it, chainCopy, sentencesByPrevious, chains)
+      }
+    }
+  }
+
   private companion object {
     val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     val FIRST_MAY_2021: LocalDate = LocalDate.of(2021, 5, 1)
@@ -2842,6 +3060,7 @@ class ValidationServiceTest {
     val botusValidationService = BotusValidationService()
     val recallValidationService = RecallValidationService(trancheConfiguration)
     val unsupportedValidationService = UnsupportedValidationService()
+    val postCalculationValidationService = PostCalculationValidationService(trancheConfiguration)
     val section91ValidationService = Section91ValidationService(validationUtilities)
     val sopcValidationService = SOPCValidationService(validationUtilities)
     val edsValidationService = EDSValidationService(validationUtilities)
@@ -2871,6 +3090,7 @@ class ValidationServiceTest {
       recallValidationService = recallValidationService,
       sentenceValidationService = sentenceValidationService,
       validationUtilities = validationUtilities,
+      postCalculationValidationService = postCalculationValidationService,
     )
   }
 }

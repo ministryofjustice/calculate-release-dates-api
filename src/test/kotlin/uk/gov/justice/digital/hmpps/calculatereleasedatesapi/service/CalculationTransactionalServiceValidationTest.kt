@@ -37,6 +37,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.BotusVal
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DtoValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.EDSValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.FineValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.PostCalculationValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.PreCalculationValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.RecallValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SOPCValidationService
@@ -96,7 +97,7 @@ class CalculationTransactionalServiceValidationTest {
         mock<CalculationResult>(),
       ),
     )
-    whenever(validationService.validateBookingAfterCalculation(any(), any())).thenReturn(fakeMessages)
+    whenever(validationService.validateBookingAfterCalculation(any(), any(), any())).thenReturn(fakeMessages)
 
     // Call the method under test
     calculationTransactionalService().fullValidation(prisonerId, calculationUserInputs)
@@ -235,6 +236,7 @@ class CalculationTransactionalServiceValidationTest {
     val botusValidationService = BotusValidationService()
     val recallValidationService = RecallValidationService(trancheConfiguration)
     val unsupportedValidationService = UnsupportedValidationService()
+    val postCalculationValidationService = PostCalculationValidationService(trancheConfiguration)
     val section91ValidationService = Section91ValidationService(validationUtilities)
     val sopcValidationService = SOPCValidationService(validationUtilities)
     val edsValidationService = EDSValidationService(validationUtilities)
@@ -263,6 +265,7 @@ class CalculationTransactionalServiceValidationTest {
       recallValidationService = recallValidationService,
       sentenceValidationService = sentenceValidationService,
       validationUtilities = validationUtilities,
+      postCalculationValidationService = postCalculationValidationService,
     )
   }
 }

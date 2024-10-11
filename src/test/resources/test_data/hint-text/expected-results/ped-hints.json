@@ -1,0 +1,27 @@
+[
+  {
+    "type": "SLED",
+    "date": "2029-09-14",
+    "hints": []
+  },
+  {
+    "type": "CRD",
+    "date": "2026-09-14",
+    "hints": []
+  },
+  {
+    "type": "PED",
+    "date": "2024-10-12",
+    "hints": [
+      "Friday, 11 October 2024 when adjusted to a working day",
+      "50% date has been applied",
+      "PED adjusted for the CRD of a concurrent sentence or default term",
+      "The post recall release date (PRRD) of Tuesday, 18 March 2025 is later than the PED"
+    ]
+  },
+  {
+    "type": "ESED",
+    "date": "2029-09-14",
+    "hints": []
+  }
+]

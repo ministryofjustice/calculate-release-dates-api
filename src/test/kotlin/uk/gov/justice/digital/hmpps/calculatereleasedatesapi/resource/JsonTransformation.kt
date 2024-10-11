@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
-import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.core.type.TypeReference
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DatesAndHints
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -43,6 +44,18 @@ class JsonTransformation {
   fun loadCalculationBreakdown(testData: String): CalculationBreakdown {
     val json = getJsonTest("$testData.json", "calculation_breakdown_response")
     return mapper.readValue(json, CalculationBreakdown::class.java)
+  }
+
+  fun loadHintTextBooking(testCase: String): Pair<Booking, CalculationUserInputs> {
+    val json = getJsonTest("$testCase.json", "hint-text/input-data")
+    val jsonTree = mapper.readTree(json)
+    val calculateErsed = if (jsonTree.has("calculateErsed")) jsonTree.get("calculateErsed").booleanValue() else false
+    return mapper.readValue(json, Booking::class.java) to CalculationUserInputs(calculateErsed = calculateErsed)
+  }
+
+  fun loadHintTextResults(testCase: String): List<DatesAndHints> {
+    val json = getJsonTest("$testCase.json", "hint-text/expected-results")
+    return mapper.readValue(json, object : TypeReference<List<DatesAndHints>>() {})
   }
 
   fun getAllPrisonerDetails(): Map<String, PrisonerDetails> {
