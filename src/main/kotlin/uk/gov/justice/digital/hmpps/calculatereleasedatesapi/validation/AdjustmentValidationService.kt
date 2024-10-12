@@ -28,7 +28,7 @@ class AdjustmentValidationService(
     }
   }
 
-  internal fun validate(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
+  internal fun throwErrorIfAdditionAdjustmentsAfterLatestReleaseDate(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
     return mutableListOf<ValidationMessage>().apply {
       addAll(validateAllSentenceAdjustmentsHaveFromOrToDates(adjustments))
       addAll(validateBookingAdjustment(adjustments.bookingAdjustments))
@@ -84,7 +84,7 @@ class AdjustmentValidationService(
     val latestReleaseDate = getLatestReleaseDateWithoutAdditions(sentences, longestSentences) ?: return emptyList()
 
     val adjustments = getSortedAdjustments(booking)
-    return validate(adjustments, latestReleaseDate)
+    return throwErrorIfAdditionAdjustmentsAfterLatestReleaseDate(adjustments, latestReleaseDate)
   }
 
   private fun validateSentenceCounts(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>) {
@@ -110,14 +110,17 @@ class AdjustmentValidationService(
     return (adas + radas).sortedBy { it.second.appliesToSentencesFrom }
   }
 
-  private fun validate(adjustments: List<Pair<AdjustmentType, Adjustment>>, initialReleaseDate: LocalDate): List<ValidationMessage> {
+  private fun throwErrorIfAdditionAdjustmentsAfterLatestReleaseDate(adjustments: List<Pair<AdjustmentType, Adjustment>>, initialReleaseDate: LocalDate): List<ValidationMessage> {
     var latestReleaseDate = initialReleaseDate
-    val messages = mutableListOf<ValidationMessage>()
+    val messages = mutableSetOf<ValidationMessage>()
+
     adjustments.forEach { (type, adjustment) ->
+      log.info("latestReleaseDate $latestReleaseDate compared to ${adjustment.appliesToSentencesFrom}")
       messages.addAll(adaOrRadaAfterSentenceLength(type, adjustment, latestReleaseDate))
       latestReleaseDate = applyAdjustment(type, adjustment, latestReleaseDate)
     }
-    return messages
+
+    return messages.toList() // Convert set back to list
   }
 
   private fun adaOrRadaAfterSentenceLength(type: AdjustmentType, adjustment: Adjustment, latestReleaseDate: LocalDate): List<ValidationMessage> {
@@ -135,8 +138,10 @@ class AdjustmentValidationService(
 
   private fun applyAdjustment(type: AdjustmentType, adjustment: Adjustment, releaseDate: LocalDate): LocalDate {
     return if (type == AdjustmentType.ADDITIONAL_DAYS_AWARDED) {
+      log.info("adding ${adjustment.numberOfDays} days to release date $releaseDate ")
       releaseDate.plusDays(adjustment.numberOfDays.toLong())
     } else {
+      log.info("subtracting ${adjustment.numberOfDays} days to release date $releaseDate ")
       releaseDate.minusDays(adjustment.numberOfDays.toLong())
     }
   }
@@ -188,7 +193,7 @@ class AdjustmentValidationService(
 
     val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
 
-    val validationMessages = mutableListOf<ValidationMessage>()
+    val validationMessages = mutableSetOf<ValidationMessage>()
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
 
@@ -209,7 +214,7 @@ class AdjustmentValidationService(
       }
     }
 
-    return validationMessages
+    return validationMessages.toList()
   }
 
   private fun getLongestRelevantSentence(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<CalculableSentence> {

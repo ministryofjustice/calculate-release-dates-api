@@ -1,0 +1,31 @@
+[{
+  "bookingId": 2656920,
+  "sentenceSequence": 1,
+  "lineSequence": 1,
+  "caseSequence": 1,
+  "sentenceStatus": "A",
+  "sentenceCategory": "2003",
+  "sentenceCalculationType": "ADIMP",
+  "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+  "sentenceDate": "2020-02-16",
+  "terms": [{
+    "years": 0,
+    "months": 42,
+    "weeks": 0,
+    "days": 0
+  }],
+  "offences": [{
+    "offenderChargeId": 6091206,
+    "offenceStartDate": "2019-07-11",
+    "offenceEndDate": "2019-09-14",
+    "offenceCode": "MD71191",
+    "offenceDescription": "Being concerned in offer to supply controlled drug - Class A - diamorphine (heroin)",
+    "indicators": ["D", "86"]
+  }, {
+    "offenderChargeId": 6091209,
+    "offenceStartDate": "2019-08-01",
+    "offenceCode": "MD71134",
+    "offenceDescription": "Supply a controlled drug of Class A - Crack Cocaine",
+    "indicators": ["D", "86"]
+  }]
+}]

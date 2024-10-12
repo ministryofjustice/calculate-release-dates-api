@@ -17,7 +17,7 @@ class ManageOffencesApiClient(@Qualifier("manageOffencesApiWebClient") private v
   private val log = LoggerFactory.getLogger(this::class.java)
 
   fun getPCSCMarkersForOffences(offenceCodes: List<String>): List<OffencePcscMarkers> {
-    val offencesList = offenceCodes.joinToString(",")
+    val offencesList = offenceCodes.toSortedSet().joinToString(",")
     log.info("getPCSCMarkersForOffences : /schedule/pcsc-indicators?offenceCodes=$offencesList")
 
     return webClient.get()

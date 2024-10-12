@@ -4,8 +4,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL
@@ -26,7 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ZERO_IMPRISONMENT_TERM
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 
-class ValidationIntTest : IntegrationTestBase() {
+class ValidationIntTest(private val mockManageOffencesClient: MockManageOffencesClient) : IntegrationTestBase() {
   @Test
   fun `Run calculation where remand periods overlap with a sentence period`() {
     runValidationAndCheckMessages(
@@ -152,7 +156,24 @@ class ValidationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run validation on adjustment after release date 1`() {
-    runValidationAndCheckMessages("CRS-796-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
+    runValidationAndCheckMessages(
+      "CRS-796-1",
+      listOf(
+        ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA),
+        ValidationMessage(ADJUSTMENT_AFTER_RELEASE_RADA),
+      ),
+    )
+  }
+
+  @Test
+  fun `Run validation on adjustment after release date 1 with more RADA and ADA`() {
+    runValidationAndCheckMessages(
+      "CRS-796-1-more-adas-radas",
+      listOf(
+        ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA),
+        ValidationMessage(ADJUSTMENT_AFTER_RELEASE_RADA),
+      ),
+    )
   }
 
   @Test
@@ -167,6 +188,14 @@ class ValidationIntTest : IntegrationTestBase() {
 
   @Test
   fun `Run validation on rada after ada adjustment extends release date`() {
+    mockManageOffencesClient.withPCSCMarkersResponse(
+      OffencePcscMarkers(
+        offenceCode = "TR68132",
+        pcscMarkers = PcscMarkers(inListA = true, inListB = true, inListC = true, inListD = true),
+      ),
+      offences = "TR68132",
+    )
+
     runValidationAndCheckMessages("CRS-2151", emptyList())
   }
 
@@ -228,6 +257,5 @@ class ValidationIntTest : IntegrationTestBase() {
     const val UNSUPPORTED_PRISONER_PRISONER_ID = "UNSUPP_PRIS"
     const val INACTIVE_PRISONER_ID = "INACTIVE"
     const val MISSING_OFFENCE_START_DATE_SENTENCE = "CRS-1634-no-offence-start-date"
-    const val MISSING_OFFENCE_END_DATE_SENTENCE = "CRS-1634-no-offence-end-date"
   }
 }

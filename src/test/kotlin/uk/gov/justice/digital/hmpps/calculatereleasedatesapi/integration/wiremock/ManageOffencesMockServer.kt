@@ -13,8 +13,6 @@ import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ParameterContext
 import org.junit.jupiter.api.extension.ParameterResolver
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
 
@@ -22,7 +20,6 @@ class ManageOffencesApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEa
   companion object {
     @JvmField
     val manageOffencesApi = ManageOffencesMockServer()
-    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
   private val objectMapper = TestUtil.objectMapper()
@@ -111,7 +108,7 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubMOMultipleResults(): StubMapping =
     stubFor(
-      get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=COML025A,COML022"))
+      get(urlMatching("/schedule/pcsc-indicators\\?offenceCodes=COML022,COML025A"))
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
