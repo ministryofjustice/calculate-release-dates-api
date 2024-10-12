@@ -115,7 +115,6 @@ class AdjustmentValidationService(
     val messages = mutableSetOf<ValidationMessage>()
 
     adjustments.forEach { (type, adjustment) ->
-      log.info("latestReleaseDate $latestReleaseDate compared to ${adjustment.appliesToSentencesFrom}")
       messages.addAll(adaOrRadaAfterSentenceLength(type, adjustment, latestReleaseDate))
       latestReleaseDate = applyAdjustment(type, adjustment, latestReleaseDate)
     }
@@ -138,10 +137,8 @@ class AdjustmentValidationService(
 
   private fun applyAdjustment(type: AdjustmentType, adjustment: Adjustment, releaseDate: LocalDate): LocalDate {
     return if (type == AdjustmentType.ADDITIONAL_DAYS_AWARDED) {
-      log.info("adding ${adjustment.numberOfDays} days to release date $releaseDate ")
       releaseDate.plusDays(adjustment.numberOfDays.toLong())
     } else {
-      log.info("subtracting ${adjustment.numberOfDays} days to release date $releaseDate ")
       releaseDate.minusDays(adjustment.numberOfDays.toLong())
     }
   }
