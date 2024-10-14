@@ -1,0 +1,127 @@
+[
+  {
+    "bookingId": 1,
+    "sentenceSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2020-09-16",
+    "terms": [
+      {
+        "years": 7,
+        "months": 0,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 1,
+        "offenceStartDate": "2019-12-27",
+        "offenceCode": "TR68132",
+        "offenceDescription": "Offence description not available"
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 2,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2020-09-16",
+    "terms": [
+      {
+        "years": 7,
+        "months": 0,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 2,
+        "offenceStartDate": "2020-01-02",
+        "offenceCode": "TR68132",
+        "offenceDescription": "Offence description not available"
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 3,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2020-09-16",
+    "terms": [
+      {
+        "years": 2,
+        "months": 0,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3,
+        "offenceStartDate": "2020-01-03",
+        "offenceCode": "TR68132",
+        "offenceDescription": "Offence description not available"
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 4,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2020-09-16",
+    "terms": [
+      {
+        "years": 0,
+        "months": 12,
+        "weeks": 0,
+        "days": 0
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 4,
+        "offenceStartDate": "2019-12-04",
+        "offenceCode": "TR68132",
+        "offenceDescription": "Offence description not available"
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 5,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2023-10-31",
+    "terms": [
+      {
+        "years": 0,
+        "months": 0,
+        "weeks": 0,
+        "days": 35
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 5,
+        "offenceStartDate": "2016-06-13",
+        "offenceCode": "TR68132",
+        "offenceDescription": "Offence description not available"
+      }
+    ]
+  }
+]
