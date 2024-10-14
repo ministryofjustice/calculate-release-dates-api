@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 
@@ -25,35 +26,38 @@ class TrancheAllocationService(
     // Recalls sentenced before T1 commencement CAN NOT be recall for a SDS40 sentence, however a full implementation
     //
     // That looks at movements and date of release to determine release conditions applicable is yet to be implemented.
-    val sentencesConsideredForTrancheRules =
-      booking.sentences.filter { sentence ->
-        (
-          sentence.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE ||
-            sentence.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE
-          ) &&
-          (!sentence.isRecall() && sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate))
-      }
-        .filter { it.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate) }
+    val sentencesConsideredForTrancheRules = getSentencesForTrancheRules(booking)
 
-    var resultTranche: SDSEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0
-
-    sentencesConsideredForTrancheRules.takeIf { it.isNotEmpty() }?.let {
-      val sentencesFromBooking = booking.getAllExtractableSentences()
-      resultTranche = when {
-        sentencesFromBooking.isEmpty() -> SDSEarlyReleaseTranche.TRANCHE_0
-        trancheOne.isBookingApplicableForTrancheCriteria(
-          calculationResult,
-          sentencesFromBooking,
-        ) -> SDSEarlyReleaseTranche.TRANCHE_1
-
-        trancheTwo.isBookingApplicableForTrancheCriteria(
-          calculationResult,
-          sentencesFromBooking,
-        ) -> SDSEarlyReleaseTranche.TRANCHE_2
-
-        else -> resultTranche
-      }
+    return when {
+      sentencesConsideredForTrancheRules.isEmpty() -> SDSEarlyReleaseTranche.TRANCHE_0
+      isApplicableForTranche1(calculationResult, booking) -> SDSEarlyReleaseTranche.TRANCHE_1
+      isApplicableForTranche2(calculationResult, booking) -> SDSEarlyReleaseTranche.TRANCHE_2
+      else -> SDSEarlyReleaseTranche.TRANCHE_0
     }
-    return resultTranche
   }
+
+  private fun getSentencesForTrancheRules(booking: Booking): List<AbstractSentence> =
+    booking.sentences.filter { sentence ->
+      isEligibleForTrancheRules(sentence) &&
+        sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)
+    }
+
+  private fun isEligibleForTrancheRules(sentence: AbstractSentence): Boolean =
+    (
+      sentence.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE ||
+        sentence.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE
+      ) &&
+      !sentence.isRecall()
+
+  private fun isApplicableForTranche1(calculationResult: CalculationResult, booking: Booking): Boolean =
+    trancheOne.isBookingApplicableForTrancheCriteria(
+      calculationResult,
+      booking.getAllExtractableSentences(),
+    )
+
+  private fun isApplicableForTranche2(calculationResult: CalculationResult, booking: Booking): Boolean =
+    trancheTwo.isBookingApplicableForTrancheCriteria(
+      calculationResult,
+      booking.getAllExtractableSentences(),
+    )
 }

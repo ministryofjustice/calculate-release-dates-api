@@ -278,7 +278,6 @@ class CalculationTransactionalService(
     }
   }
 
-  // TODO Only called privately but is used by tests. Could be marked private if tests are refactored
   @Transactional
   fun calculate(
     booking: Booking,

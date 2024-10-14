@@ -5,7 +5,6 @@ import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
-import org.joda.time.DateTime
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -281,18 +280,11 @@ class CalculationTransactionalServiceTest {
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
 
-    val hdc4CommencementDate =
-      if (exampleNumber.contains("pre-")) {
-        DateTime.now().plusDays(1).toDate()
-      } else {
-        DateTime.now().minusDays(1).toDate()
-      }
-
     val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
     val calculatedReleaseDates: CalculatedReleaseDates
     try {
       calculatedReleaseDates =
-        calculationTransactionalService(params, mapOf(Pair("hdc4CommencementDate", hdc4CommencementDate)))
+        calculationTransactionalService(params)
           .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
@@ -361,13 +353,7 @@ class CalculationTransactionalServiceTest {
 
     val calculationBreakdown: CalculationBreakdown?
     try {
-      // TODO this dynamic setting of the HDCED commencement date can be removed when we address the hdc4 tech debt ticket CRS-2141
-      val hdc4CommencementDate = if (exampleType == "hdc4") {
-        DateTime.now().minusDays(1).toDate()
-      } else {
-        DateTime.now().plusDays(1).toDate()
-      }
-      calculationBreakdown = calculationTransactionalService(defaultParams(params), mapOf(Pair("hdc4CommencementDate", hdc4CommencementDate))).calculateWithBreakdown(
+      calculationBreakdown = calculationTransactionalService(defaultParams(params)).calculateWithBreakdown(
         booking,
         CalculatedReleaseDates(
           calculation.dates,
@@ -762,7 +748,6 @@ class CalculationTransactionalServiceTest {
 
   private fun calculationTransactionalService(
     params: String = "calculation-params",
-    overriddenConfigurationParams: Map<String, Any> = emptyMap(),
     passedInServices: List<String> = emptyList(),
   ): CalculationTransactionalService {
     val hdcedConfiguration =

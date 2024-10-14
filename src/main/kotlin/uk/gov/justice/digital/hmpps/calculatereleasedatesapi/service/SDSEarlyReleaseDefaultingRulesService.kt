@@ -20,12 +20,7 @@ class SDSEarlyReleaseDefaultingRulesService(
   val extractionService: SentencesExtractionService,
   val trancheConfiguration: SDS40TrancheConfiguration,
 ) {
-
-  fun requiresRecalculation(booking: Booking, result: CalculationResult, trancheCommencementDate: LocalDate?): Boolean {
-    return hasAnySDSEarlyRelease(booking)
-  }
-
-  fun mergeResults(
+  fun applySDSEarlyReleaseRulesAndFinalizeDates(
     earlyReleaseResult: CalculationResult,
     standardReleaseResult: CalculationResult,
     trancheCommencementDate: LocalDate?,
@@ -160,18 +155,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     ).sentenceCalculation.adjustedDeterminateReleaseDate
 
     if (dates.containsKey(ReleaseDateType.TUSED) && !latestReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)) {
-      if (originalBooking.getAllExtractableSentences().any {
-          it.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
-            (
-              it is StandardDeterminateSentence ||
-                (
-                  it is ConsecutiveSentence &&
-                    it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence }
-                  )
-              ) &&
-            it.recallType != null
-        }
-      ) {
+      if (hasEligibleSentenceForTUSED(originalBooking)) {
         standardReleaseResult.dates[ReleaseDateType.TUSED]?.let {
           dates[ReleaseDateType.TUSED] = it
         }
@@ -182,7 +166,20 @@ class SDSEarlyReleaseDefaultingRulesService(
     }
   }
 
-  private fun hasAnySDSEarlyRelease(anInitialCalc: Booking) =
+  private fun hasEligibleSentenceForTUSED(booking: Booking): Boolean {
+    return booking.getAllExtractableSentences().any { sentence ->
+      sentence.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
+        sentence.recallType != null &&
+        when (sentence) {
+          is StandardDeterminateSentence -> true
+          is ConsecutiveSentence -> hasStandardDeterminateSentence(sentence)
+          else -> false
+        }
+    }
+  }
+  private fun hasStandardDeterminateSentence(sentence: ConsecutiveSentence): Boolean = sentence.orderedSentences.any { it is StandardDeterminateSentence }
+
+  fun hasAnySDSEarlyRelease(anInitialCalc: Booking) =
     anInitialCalc.sentences.any { it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE }
 
   fun hasAnyReleaseBeforeTrancheCommencement(
