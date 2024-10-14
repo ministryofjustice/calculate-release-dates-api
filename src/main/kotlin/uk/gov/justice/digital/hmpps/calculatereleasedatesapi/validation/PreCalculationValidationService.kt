@@ -82,7 +82,7 @@ class PreCalculationValidationService(
 
   fun validateUnsupportedCalculation(sourceData: PrisonApiSourceData): List<ValidationMessage> {
     val messages = fineValidationService.validateFineSentenceSupported(sourceData).toMutableList()
-    messages += adjustmentValidationService.validateSupportedAdjustments(sourceData.bookingAndSentenceAdjustments.bookingAdjustments)
+    messages += adjustmentValidationService.validateIfAdjustmentsAreSupported(sourceData.bookingAndSentenceAdjustments.bookingAdjustments)
     messages += dtoValidationService.validate(sourceData)
     messages += botusValidationService.validate(sourceData)
     return messages
