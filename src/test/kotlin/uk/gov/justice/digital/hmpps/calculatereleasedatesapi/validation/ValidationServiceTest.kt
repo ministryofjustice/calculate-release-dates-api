@@ -3052,7 +3052,7 @@ class ValidationServiceTest {
   }
 
   private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheConfiguration: SDS40TrancheConfiguration, botus: Boolean = true): ValidationService {
-    val featureToggles = FeatureToggles(botus, true, false)
+    val featureToggles = FeatureToggles(botus, true, false, sds40ConsecutiveManualJourney = true)
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService(trancheConfiguration)
@@ -3060,7 +3060,7 @@ class ValidationServiceTest {
     val botusValidationService = BotusValidationService()
     val recallValidationService = RecallValidationService(trancheConfiguration)
     val unsupportedValidationService = UnsupportedValidationService()
-    val postCalculationValidationService = PostCalculationValidationService(trancheConfiguration)
+    val postCalculationValidationService = PostCalculationValidationService(trancheConfiguration, featureToggles)
     val section91ValidationService = Section91ValidationService(validationUtilities)
     val sopcValidationService = SOPCValidationService(validationUtilities)
     val edsValidationService = EDSValidationService(validationUtilities)

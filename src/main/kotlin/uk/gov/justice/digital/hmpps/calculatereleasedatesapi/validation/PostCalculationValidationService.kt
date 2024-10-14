@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -11,13 +12,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqual
 @Service
 class PostCalculationValidationService(
   private val trancheConfiguration: SDS40TrancheConfiguration,
+  private val featureToggles: FeatureToggles,
 ) {
 
   internal fun validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(
     booking: Booking,
     calculationResult: CalculationResult?,
   ): List<ValidationMessage> {
-    if (calculationResult != null) {
+    if (featureToggles.sds40ConsecutiveManualJourney && calculationResult != null) {
       if (calculationResult.sdsEarlyReleaseTranche == SDSEarlyReleaseTranche.TRANCHE_2 &&
         booking.consecutiveSentences.any { consecutiveSentence ->
           consecutiveSentence.orderedSentences.any {
