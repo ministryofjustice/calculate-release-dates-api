@@ -99,6 +99,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.RecallVa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SOPCValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Section91ValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SentenceValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ToreraValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.UnsupportedValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
@@ -118,6 +119,7 @@ class CalculationTransactionalServiceTest {
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
+  private val manageOffencesService = mock<ManageOffencesService>()
   private val prisonService = mock<PrisonService>()
   private val eventService = mock<EventService>()
   private val bookingService = mock<BookingService>()
@@ -859,6 +861,7 @@ class CalculationTransactionalServiceTest {
     val section91ValidationService = Section91ValidationService(validationUtilities)
     val sopcValidationService = SOPCValidationService(validationUtilities)
     val edsValidationService = EDSValidationService(validationUtilities)
+    val toreraValidationService = ToreraValidationService(manageOffencesService)
     val sentenceValidationService = SentenceValidationService(
       validationUtilities,
       sentencesExtractionService,
@@ -874,6 +877,7 @@ class CalculationTransactionalServiceTest {
       dtoValidationService = dtoValidationService,
       botusValidationService = botusValidationService,
       unsupportedValidationService = unsupportedValidationService,
+      toreraValidationService = toreraValidationService,
     )
 
     return ValidationService(
