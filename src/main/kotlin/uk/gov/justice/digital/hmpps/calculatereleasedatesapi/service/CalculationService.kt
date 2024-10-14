@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
@@ -38,8 +37,7 @@ class CalculationService(
   ): Pair<Booking, CalculationResult> {
     val sds40Options = CalculationOptions(calculationUserInputs.calculateErsed, allowSDSEarlyRelease = true)
     val (sds40WorkingBooking, sds40Result) = calcAndExtract(deepCopy(booking), sds40Options)
-    val (standardWorkingBooking, standardResult) =
-      calcAndExtract(deepCopy(booking), sds40Options.copy(allowSDSEarlyRelease = false))
+    val (standardWorkingBooking, standardResult) = calcAndExtract(deepCopy(booking), sds40Options.copy(allowSDSEarlyRelease = false))
 
     val latestSDSReleaseDateFromStandardBooking = extractionService
       .mostRecentSentenceOrNull(
@@ -80,16 +78,6 @@ class CalculationService(
     )
   }
 
-  private fun areCalculationsTheSame(sds40Result: CalculationResult, standardResult: CalculationResult): Boolean {
-    if (sds40Result.dates != standardResult.dates) {
-      return false
-    }
-    val sds40ImmediateRelease = sds40Result.breakdownByReleaseDateType.any { it.value.rules.contains(CalculationRule.IMMEDIATE_RELEASE) }
-    val standardResultImmediateRelease = sds40Result.breakdownByReleaseDateType.any { it.value.rules.contains(CalculationRule.IMMEDIATE_RELEASE) }
-    val bothCalculationsImmediateRelease = sds40ImmediateRelease && standardResultImmediateRelease
-    return !bothCalculationsImmediateRelease
-  }
-
   private fun adjustResultsForSDSEarlyReleaseIfRequired(
     workingBookingForPossibleEarlyRelease: Booking,
     resultWithPossibleEarlyRelease: CalculationResult,
@@ -97,13 +85,9 @@ class CalculationService(
     standardCalculationResult: CalculationResult,
     trancheCommencementDate: LocalDate?,
     tranche: SDSEarlyReleaseTranche,
-  ) = if (sdsEarlyReleaseDefaultingRulesService.requiresRecalculation(
-      workingBookingForPossibleEarlyRelease,
-      resultWithPossibleEarlyRelease,
-      trancheCommencementDate,
-    )
+  ) = if (sdsEarlyReleaseDefaultingRulesService.hasAnySDSEarlyRelease(workingBookingForPossibleEarlyRelease)
   ) {
-    sdsEarlyReleaseDefaultingRulesService.mergeResults(
+    sdsEarlyReleaseDefaultingRulesService.applySDSEarlyReleaseRulesAndFinalizeDates(
       resultWithPossibleEarlyRelease,
       standardCalculationResult,
       trancheCommencementDate,

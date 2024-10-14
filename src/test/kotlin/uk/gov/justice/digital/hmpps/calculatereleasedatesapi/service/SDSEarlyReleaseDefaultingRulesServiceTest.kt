@@ -48,32 +48,13 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
   @Test
   fun `should not require recalculation if no SDS early release`() {
     val booking = createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_STANDARD_RELEASE)
-    val result = CalculationResult(
-      mapOf(ReleaseDateType.CRD to LocalDate.of(2020, 1, 1)),
-      emptyMap(),
-      emptyMap(),
-      Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
-    )
-    assertThat(service.requiresRecalculation(booking, result, testCommencementDate)).isFalse()
+    assertThat(service.hasAnySDSEarlyRelease(booking)).isFalse()
   }
 
   @Test
   fun `should require recalculation if any single type requires recalc`() {
     val booking = createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE)
-    val result = CalculationResult(
-      mapOf(
-        ReleaseDateType.CRD to LocalDate.of(2024, 7, 29),
-        ReleaseDateType.PED to LocalDate.of(2024, 1, 29),
-        ReleaseDateType.ERSED to LocalDate.of(2024, 1, 29),
-        ReleaseDateType.HDCED to LocalDate.of(2020, 1, 1),
-      ),
-      emptyMap(),
-      emptyMap(),
-      Period.ofYears(5),
-      sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
-    )
-    assertThat(service.requiresRecalculation(booking, result, testCommencementDate)).isTrue()
+    assertThat(service.hasAnySDSEarlyRelease(booking)).isTrue()
   }
 
   @ParameterizedTest
@@ -87,9 +68,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     val early = CalculationResult(
       mapOf(type to LocalDate.of(2024, 7, 25)),
       mapOf(
-        type to ReleaseDateCalculationBreakdown(
-          setOf(CalculationRule.CONSECUTIVE_SENTENCE_HDCED_CALCULATION),
-        ),
+        type to ReleaseDateCalculationBreakdown(),
       ),
       emptyMap(),
       Period.ofYears(5),
@@ -109,7 +88,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     )
 
     assertThat(
-      service.mergeResults(
+      service.applySDSEarlyReleaseRulesAndFinalizeDates(
         early,
         standard,
         testCommencementDate,
@@ -134,9 +113,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
 
   @Test
   fun `should take original TUSED and breakdown if recall CRD is before Tranche 1 Commencement`() {
-    val testBreakdown = ReleaseDateCalculationBreakdown(
-      setOf(CalculationRule.CONSECUTIVE_SENTENCE_HDCED_CALCULATION),
-    )
+    val testBreakdown = ReleaseDateCalculationBreakdown()
 
     val standard = CalculationResult(
       mapOf(ReleaseDateType.TUSED to LocalDate.of(2024, 8, 1)),
@@ -208,9 +185,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
 
   @Test
   fun `should retain existing TUSED and breakdown if recall CRD is after Tranche 1 Commencement`() {
-    val testBreakdown = ReleaseDateCalculationBreakdown(
-      setOf(CalculationRule.CONSECUTIVE_SENTENCE_HDCED_CALCULATION),
-    )
+    val testBreakdown = ReleaseDateCalculationBreakdown()
 
     val standard = CalculationResult(
       mapOf(ReleaseDateType.TUSED to LocalDate.of(2024, 11, 1)),
@@ -307,7 +282,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     )
 
     assertThat(
-      service.mergeResults(
+      service.applySDSEarlyReleaseRulesAndFinalizeDates(
         early,
         standard,
         testCommencementDate,
@@ -365,7 +340,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     )
 
     assertThat(
-      service.mergeResults(
+      service.applySDSEarlyReleaseRulesAndFinalizeDates(
         early,
         standard,
         testCommencementDate,
