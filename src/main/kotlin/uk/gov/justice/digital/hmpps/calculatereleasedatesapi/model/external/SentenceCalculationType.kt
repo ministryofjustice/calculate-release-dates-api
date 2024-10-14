@@ -35,7 +35,13 @@ enum class SentenceCalculationType(
   LR_SEC91_ORA(STANDARD_RECALL),
   LRSEC250_ORA(STANDARD_RECALL),
   FTR_14_ORA(recallType = FIXED_TERM_RECALL_14, primaryName = "14FTR_ORA", isFixedTermRecall = true),
-  FTR_14_HDC_ORA(recallType = FIXED_TERM_RECALL_14, primaryName = "14FTRHDC_ORA", isFixedTermRecall = true, isSupported = false, isIndeterminate = false),
+  FTR_14_HDC_ORA(
+    recallType = FIXED_TERM_RECALL_14,
+    primaryName = "14FTRHDC_ORA",
+    isFixedTermRecall = true,
+    isSupported = false,
+    isIndeterminate = false,
+  ),
   FTR(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
   FTR_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
   FTR_HDC_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true, isSupported = false),
@@ -129,5 +135,20 @@ enum class SentenceCalculationType(
       } catch (error: IllegalArgumentException) {
         false
       }
+
+    fun isToreraSds(sentenceCalculationType: String): Boolean = listOf(
+      ADIMP.name,
+      ADIMP_ORA.name,
+      SEC250.name,
+      SEC250_ORA.name,
+      YOI.name,
+      YOI_ORA.name,
+    ).contains(sentenceCalculationType)
+
+    fun isToreraSopc(sentenceCalculationType: String): Boolean = listOf(
+      SEC236A.name,
+      SOPC18.name,
+      SOPC21.name,
+    ).contains(sentenceCalculationType)
   }
 }

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ParameterResolver
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffencePcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
 
 class ManageOffencesApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback, ParameterResolver {
   companion object {
@@ -35,6 +35,8 @@ class ManageOffencesApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEa
     manageOffencesApi.stub500Response()
     manageOffencesApi.stubBaseResponse()
     manageOffencesApi.stubSdsExclusionsDefaultToNo()
+    manageOffencesApi.subOffencesFromCodes()
+    manageOffencesApi.stubToreraOffenceCodes()
   }
 
   override fun afterAll(context: ExtensionContext?) {
@@ -202,6 +204,42 @@ class ManageOffencesMockServer : WireMockServer(WIREMOCK_PORT) {
                 {{/each}}
             ]
             """.trimIndent(),
+          )
+          .withStatus(200)
+          .withTransformers("response-template"),
+      ),
+  )
+
+  fun subOffencesFromCodes(): StubMapping = stubFor(
+    get(urlMatching("/offences/code/multiple\\?offenceCodes=([A-Za-z0-9,]+)"))
+      .atPriority(Int.MAX_VALUE)
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            (
+              """
+              []
+              """.trimIndent()
+              ),
+          )
+          .withStatus(200)
+          .withTransformers("response-template"),
+      ),
+  )
+
+  fun stubToreraOffenceCodes(): StubMapping = stubFor(
+    get(urlMatching("/schedule/torera-offence-codes"))
+      .atPriority(Int.MAX_VALUE)
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            (
+              """
+              []
+              """.trimIndent()
+              ),
           )
           .withStatus(200)
           .withTransformers("response-template"),

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import org.mockito.Mockito.mock
 import org.springframework.context.annotation.Profile
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
@@ -49,6 +50,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.BookingHelperTest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA
@@ -97,7 +99,7 @@ import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.WEEKS
 import java.time.temporal.ChronoUnit.YEARS
-import java.util.*
+import java.util.UUID
 
 @Profile("tests")
 class ValidationServiceTest {
@@ -3048,6 +3050,7 @@ class ValidationServiceTest {
       ),
     )
   }
+
   private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheConfiguration: SDS40TrancheConfiguration, botus: Boolean = true): ValidationService {
     val featureToggles = FeatureToggles(botus, true, false, sds40ConsecutiveManualJourney = true)
     val validationUtilities = ValidationUtilities()
@@ -3061,6 +3064,8 @@ class ValidationServiceTest {
     val section91ValidationService = Section91ValidationService(validationUtilities)
     val sopcValidationService = SOPCValidationService(validationUtilities)
     val edsValidationService = EDSValidationService(validationUtilities)
+    val manageOffencesService = mock<ManageOffencesService>()
+    val toreraValidationService = ToreraValidationService(manageOffencesService)
     val sentenceValidationService = SentenceValidationService(
       validationUtilities,
       sentencesExtractionService,
@@ -3076,6 +3081,7 @@ class ValidationServiceTest {
       dtoValidationService = dtoValidationService,
       botusValidationService = botusValidationService,
       unsupportedValidationService = unsupportedValidationService,
+      toreraValidationService = toreraValidationService,
     )
 
     return ValidationService(

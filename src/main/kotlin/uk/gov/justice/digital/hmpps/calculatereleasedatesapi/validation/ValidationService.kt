@@ -84,6 +84,7 @@ class ValidationService(
     if (validationMessages.isEmpty()) {
       validationMessages += preCalculationValidationService.validateUnsupportedCalculation(sourceData)
     }
+
     return validationMessages.toList()
   }
 

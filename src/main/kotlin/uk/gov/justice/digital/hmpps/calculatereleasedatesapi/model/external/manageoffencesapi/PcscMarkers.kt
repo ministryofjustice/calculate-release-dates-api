@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi
 
 data class PcscMarkers(
   val inListA: Boolean,

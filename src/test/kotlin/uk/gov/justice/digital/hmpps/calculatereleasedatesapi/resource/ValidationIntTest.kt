@@ -223,6 +223,5 @@ class ValidationIntTest : IntegrationTestBase() {
     const val UNSUPPORTED_PRISONER_PRISONER_ID = "UNSUPP_PRIS"
     const val INACTIVE_PRISONER_ID = "INACTIVE"
     const val MISSING_OFFENCE_START_DATE_SENTENCE = "CRS-1634-no-offence-start-date"
-    const val MISSING_OFFENCE_END_DATE_SENTENCE = "CRS-1634-no-offence-end-date"
   }
 }

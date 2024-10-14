@@ -75,4 +75,7 @@ sonar-project.properties
 .DS_Store
 /qodana.yaml
 
+#env files
+.env
+
 .run/

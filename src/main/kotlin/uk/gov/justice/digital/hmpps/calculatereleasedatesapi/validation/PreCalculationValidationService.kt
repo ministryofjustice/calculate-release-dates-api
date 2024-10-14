@@ -21,6 +21,7 @@ class PreCalculationValidationService(
   private val dtoValidationService: DtoValidationService,
   private val botusValidationService: BotusValidationService,
   private val unsupportedValidationService: UnsupportedValidationService,
+  private val toreraValidationService: ToreraValidationService,
 ) {
 
   internal fun validatePrePcscDtoDoesNotHaveRemandOrTaggedBail(sourceData: PrisonApiSourceData): List<ValidationMessage> {
@@ -71,6 +72,11 @@ class PreCalculationValidationService(
         )
       }
       .toMutableList()
+
+    if (featureToggles.toreraOffenceToManualJourney) {
+      validationMessages += toreraValidationService.validateToreraExempt(sentencesAndOffences)
+    }
+
     return validationMessages.toList()
   }
 
@@ -86,6 +92,7 @@ class PreCalculationValidationService(
     val messages = unsupportedValidationService.validateUnsupportedEncouragingOffences(sentencesAndOffence).toMutableList()
     messages += unsupportedValidationService.validateUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence)
     messages += unsupportedValidationService.validateUnsupportedSuspendedOffences(sentencesAndOffence)
+
     return messages
   }
 }
