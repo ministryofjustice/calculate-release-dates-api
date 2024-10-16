@@ -119,7 +119,7 @@ class SDSEarlyReleaseDefaultingRulesService(
       val (ardOrCrdType, ardOrCrdDate) = getArdOrCrd(dates)
 
       adjustHdcedForPrrd(dates, otherDates, breakdownByReleaseDateType, standardReleaseResult)
-      adjustPRRDForArdOrCrd(dates, ardOrCrdType, ardOrCrdDate)
+      adjustPrrdForArdOrCrd(dates, ardOrCrdType, ardOrCrdDate)
     }
   }
 
@@ -151,7 +151,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     }
   }
 
-  private fun adjustPRRDForArdOrCrd(
+  private fun adjustPrrdForArdOrCrd(
     dates: MutableMap<ReleaseDateType, LocalDate>,
     ardOrCrdType: ReleaseDateType,
     ardOrCrdDate: LocalDate?,
@@ -194,8 +194,8 @@ class SDSEarlyReleaseDefaultingRulesService(
   ) {
     val latestReleaseDate = getLatestReleaseDate(originalBooking)
 
-    if (shouldAdjustTUSED(dates, latestReleaseDate) && hasEligibleRecallTisedSentence(originalBooking)) {
-      applyStandardTUSED(dates, standardReleaseResult, breakdownByReleaseDateType)
+    if (shouldAdjustTused(dates, latestReleaseDate) && hasEligibleRecallTusedSentence(originalBooking)) {
+      applyStandardTused(dates, standardReleaseResult, breakdownByReleaseDateType)
     }
   }
 
@@ -204,10 +204,10 @@ class SDSEarlyReleaseDefaultingRulesService(
     SentenceCalculation::adjustedDeterminateReleaseDate,
   ).sentenceCalculation.adjustedDeterminateReleaseDate
 
-  private fun shouldAdjustTUSED(dates: Map<ReleaseDateType, LocalDate>, latestReleaseDate: LocalDate): Boolean =
+  private fun shouldAdjustTused(dates: Map<ReleaseDateType, LocalDate>, latestReleaseDate: LocalDate): Boolean =
     dates.containsKey(ReleaseDateType.TUSED) && !latestReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
 
-  private fun applyStandardTUSED(
+  private fun applyStandardTused(
     dates: MutableMap<ReleaseDateType, LocalDate>,
     standardReleaseResult: CalculationResult,
     breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
@@ -220,7 +220,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     }
   }
 
-  private fun hasEligibleRecallTisedSentence(booking: Booking): Boolean {
+  private fun hasEligibleRecallTusedSentence(booking: Booking): Boolean {
     return booking.getAllExtractableSentences().any { sentence ->
       sentence.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
         sentence.recallType != null &&
