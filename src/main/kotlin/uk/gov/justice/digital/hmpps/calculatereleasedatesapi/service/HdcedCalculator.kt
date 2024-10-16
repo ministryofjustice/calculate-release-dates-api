@@ -34,7 +34,7 @@ class HdcedCalculator(
 
   private fun isSexOffender(offender: Offender): Boolean {
     if (offender.isActiveSexOffender) {
-      log.info("HDCED Does not apply: Sex Offender")
+      log.trace("HDCED Does not apply: Sex Offender")
       return true
     }
     return false
@@ -42,11 +42,11 @@ class HdcedCalculator(
 
   private fun isHDCEligibleSentence(sentence: CalculableSentence): Boolean {
     if (sentence.isDto()) {
-      log.info("HDCED Does not apply: DTO")
+      log.trace("HDCED Does not apply: DTO")
       return false
     }
     if (hasSdsPlus(sentence)) {
-      log.info("HDCED Does not apply: SDS+")
+      log.trace("HDCED Does not apply: SDS+")
       return false
     }
     return true
