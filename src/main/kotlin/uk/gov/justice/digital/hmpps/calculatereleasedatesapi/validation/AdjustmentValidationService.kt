@@ -89,6 +89,7 @@ class AdjustmentValidationService(
 
   private fun validateSentenceCounts(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>) {
     if (sentences.size != longestSentences.size) {
+      log.error("$sentences is not the same length as $longestSentences")
       throw IllegalArgumentException("The number of sentences in longestBooking and booking must be the same.")
     }
   }
