@@ -177,7 +177,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
 
     val resultDates = mutableMapOf<ReleaseDateType, LocalDate>(ReleaseDateType.TUSED to LocalDate.now())
     val resultBreakdown = mutableMapOf<ReleaseDateType, ReleaseDateCalculationBreakdown>()
-    service.handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(resultDates, recallBooking, standard, resultBreakdown)
+    service.adjustTusedForPreTrancheOneRecalls(resultDates, recallBooking, standard, resultBreakdown)
 
     assertThat(resultDates[ReleaseDateType.TUSED]).isEqualTo(LocalDate.of(2024, 8, 1))
     assertThat(resultBreakdown[ReleaseDateType.TUSED]).isEqualTo(testBreakdown)
@@ -249,7 +249,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
 
     val resultDates = mutableMapOf<ReleaseDateType, LocalDate>(ReleaseDateType.TUSED to date)
     val resultBreakdown = mutableMapOf<ReleaseDateType, ReleaseDateCalculationBreakdown>()
-    service.handleTUSEDForSDSRecallsBeforeTrancheOneCommencement(resultDates, recallBooking, standard, resultBreakdown)
+    service.adjustTusedForPreTrancheOneRecalls(resultDates, recallBooking, standard, resultBreakdown)
 
     assertThat(resultDates[ReleaseDateType.TUSED]).isEqualTo(date)
     assertThat(resultBreakdown).doesNotContainKeys(ReleaseDateType.TUSED)
