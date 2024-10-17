@@ -40,8 +40,6 @@ class SDSEarlyReleaseDefaultingRulesService(
       breakdownByReleaseDateType,
     )
 
-    removeHdcedAndErsedIfMatchingRelease(dates)
-
     return createFinalCalculationResult(
       dates,
       breakdownByReleaseDateType,
@@ -82,6 +80,8 @@ class SDSEarlyReleaseDefaultingRulesService(
       breakdownByReleaseDateType,
       standardReleaseResult,
     )
+
+    removeHdcedAndErsedIfMatchingRelease(dates)
   }
 
   private fun createFinalCalculationResult(
