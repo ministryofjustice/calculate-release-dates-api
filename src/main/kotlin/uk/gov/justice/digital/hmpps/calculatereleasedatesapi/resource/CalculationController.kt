@@ -95,6 +95,7 @@ class CalculationController(
       ApiResponse(responseCode = "200", description = "Returns calculated dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "422", description = "Unprocessable request, the existing data cannot be used to perform a calculation"),
     ],
   )
   fun calculateForRecall(
