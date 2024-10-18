@@ -25,7 +25,7 @@ Cronjob resource names have a maximum length of 52 characters - see https://kube
 The default behaviour is to use the release name (truncated to 27) appended with `-data-analytics-extractor` giving a maximum length of 52.
 This behaviour can be overriden by providing a `cronJobNameOverride`. If provided in the values it will be used, truncated at 52.
 */}}
-{{- define "generic-data-analytics-extractor.cronjob-name" -}}
+{{- define "data-analytics-extractor-crds.cronjob-name" -}}
 {{- if .Values.cronJobNameOverride -}}
 {{- .Values.cronJobNameOverride | trunc 52 -}}
 {{- else -}}
