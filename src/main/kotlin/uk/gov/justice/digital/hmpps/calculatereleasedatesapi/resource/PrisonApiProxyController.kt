@@ -50,7 +50,7 @@ class PrisonApiProxyController(
   )
   @ApiResponses(
     value = [
-      ApiResponse(responseCode = "200", description = "Returns a List<AnalyzedSentenceAndOffences"),
+      ApiResponse(responseCode = "200", description = "Returns a List<AnalyzedBookingAndSentenceAdjustments"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
@@ -22,6 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoOffenceDatesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
@@ -398,6 +400,47 @@ class TransformFunctionsTest {
       establishment = "ABC",
     )
     return comparisonPerson
+  }
+
+  @Test
+  fun `Exception thrown when offence has no dates`() {
+    val bookingId = 1110022L
+    val sequence = 153
+    val lineSequence = 154
+    val caseSequence = 155
+    val consecutiveTo = 99
+    val offence = OffenderOffence(
+      offenderChargeId = 1L,
+      offenceStartDate = null,
+      offenceEndDate = null,
+      offenceCode = "RR1",
+      offenceDescription = "Littering",
+    )
+    val request = SentenceAndOffenceWithReleaseArrangements(
+      PrisonApiSentenceAndOffences(
+        bookingId = bookingId,
+        sentenceSequence = sequence,
+        consecutiveToSequence = consecutiveTo,
+        sentenceDate = FIRST_JAN_2015,
+        terms = listOf(
+          SentenceTerms(
+            years = 5,
+          ),
+        ),
+        sentenceStatus = "IMP",
+        sentenceCategory = "CAT",
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+        sentenceTypeDescription = "Standard Determinate",
+        offences = listOf(offence),
+        lineSequence = lineSequence,
+        caseSequence = caseSequence,
+      ),
+      offence,
+      isSdsPlus = true,
+      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+
+    assertThrows<NoOffenceDatesProvidedException> { transform(request, null) }
   }
 
   private companion object {
