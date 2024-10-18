@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDur
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -48,15 +49,8 @@ class SentenceAdjustedCalculationService(
       ersedCalculator.generateEarlyReleaseSchemeEligibilityDateBreakdown(sentence, sentenceCalculation)
     }
 
-    // PSI 03/2015: P53: The license period is one of at least 12 month.
-    // Hence, there is no requirement for a TUSED
-    if (sentenceCalculation.numberOfDaysToSentenceExpiryDate - sentenceCalculation.numberOfDaysToDeterminateReleaseDate < YEAR_IN_DAYS && sentence.releaseDateTypes.contains(
-        TUSED,
-      )
-    ) {
-      if (booking.offender.getAgeOnDate(sentence.sentenceCalculation.releaseDateWithoutAwarded) >= 18) {
-        calculateTUSED(sentenceCalculation)
-      }
+    if (sentence.releaseDateTypes.contains(TUSED)) {
+      calculateTUSED(sentenceCalculation, sentence, booking)
     }
 
     if (sentence.releaseDateTypes.contains(ReleaseDateType.ETD) && !sentenceCalculation.isImmediateRelease()) {
@@ -225,9 +219,20 @@ class SentenceAdjustedCalculationService(
     ).minusDays(ONE)
   }
 
-  private fun calculateTUSED(sentenceCalculation: SentenceCalculation) {
-    sentenceCalculation.topUpSupervisionDate = tusedCalculator.calculateTused(sentenceCalculation)
-    sentenceCalculation.breakdownByReleaseDateType[TUSED] = tusedCalculator.getCalculationBreakdown(sentenceCalculation)
+  private fun calculateTUSED(sentenceCalculation: SentenceCalculation, sentence: CalculableSentence, booking: Booking) {
+    if (sentence.isBotus() && booking.historicalTusedData is HistoricalTusedData) {
+      sentenceCalculation.topUpSupervisionDate = booking.historicalTusedData.tused
+      return
+    }
+
+    // PSI 03/2015: P53: The license period is one of at least 12 month.
+    // Hence, there is no requirement for a TUSED
+    val dateInterim = sentenceCalculation.numberOfDaysToSentenceExpiryDate - sentenceCalculation.numberOfDaysToDeterminateReleaseDate
+
+    if (dateInterim < YEAR_IN_DAYS && booking.offender.getAgeOnDate(sentence.sentenceCalculation.releaseDateWithoutAwarded) >= 18) {
+      sentenceCalculation.topUpSupervisionDate = tusedCalculator.calculateTused(sentenceCalculation)
+      sentenceCalculation.breakdownByReleaseDateType[TUSED] = tusedCalculator.getCalculationBreakdown(sentenceCalculation)
+    }
   }
 
   // If a sentence needs to calculate an NPD, but it is an aggregated sentence made up of "old" and "new" type sentences
