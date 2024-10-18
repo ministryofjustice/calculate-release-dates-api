@@ -58,6 +58,6 @@ generic-data-analytics-extractor:
   args: "extract_table_names.py && extract_psql_all_tables_to_csv.sh && transfer_local_to_s3.sh"
   resources:
     requests:
-      memory: 2G
-    limits:
       memory: 1G
+    limits:
+      memory: 2G
