@@ -1,0 +1,79 @@
+# Temporarily define a project specific version to allow specification of resources to job
+{{- $databaseSecretName := .Values.databaseSecretName | required ".Values.databaseSecretName is required." -}}
+{{- $destinationS3SecretName := .Values.destinationS3SecretName | required ".Values.destinationS3SecretName is required." -}}
+{{- $serviceAccountName := .Values.serviceAccountName | required ".Values.serviceAccountName is required." -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "data-analytics-extractor-crds.cronjob-name" . }}
+  labels:
+    app: {{ template "app.fullname" . }}
+    release: {{ .Release.Name }}
+spec:
+  {{- if not .Values.enabled }}
+  suspend: true
+  {{- end }}
+  schedule: {{ .Values.cronJobSchedule }}
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  # Check if we fail to create jobs within this 2 minute window and count as a missed schedule
+  # The Cron controller will stop creating jobs after 100 consecutive missed schedules
+  # https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#cron-job-limitations
+  startingDeadlineSeconds: 600
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          serviceAccountName: {{ $serviceAccountName }}
+          restartPolicy: "Never"
+          containers:
+            - name: {{ template "app.fullname" . }}
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: Always
+              args: [{{ .Values.args }}]
+              env:
+                - name: PGHOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ $databaseSecretName }}
+                      key: {{ .Values.databaseAddressSecretKey }}
+                - name: PGDATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ $databaseSecretName }}
+                      key: {{ .Values.databaseNameSecretKey }}
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ $databaseSecretName }}
+                      key: {{ .Values.databaseUsernameSecretKey }}
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ $databaseSecretName }}
+                      key: {{ .Values.databasePasswordSecretKey }}
+                - name: S3_DESTINATION
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ $destinationS3SecretName }}
+                      key: {{ .Values.destinationS3SecretKey }}
+                - name: AWS_DEFAULT_REGION
+                  value: "{{ .Values.awsDefaultRegion }}"
+                - name: SAVE_EVENTS_LOG
+                  value: "{{ .Values.saveEventsLog }}"
+                - name: DATA_PRODUCT_NAME
+                  value: "{{ .Values.dataProductName }}"
+              resources:
+                requests:
+                  memory: 2G
+                limits:
+                  memory: 1G
+  {{- if .Values.dataPlatformApiAuthSecretName }}
+  - name: API_AUTH
+    valueFrom:
+      secretKeyRef:
+        name: {{ .Values.dataPlatformApiAuthSecretName }}
+        key: {{ .Values.dataPlatformApiAuthSecretKey }}
+  {{- end }}

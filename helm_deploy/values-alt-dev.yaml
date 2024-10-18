@@ -37,6 +37,6 @@ generic-prometheus-alerts:
   businessHoursOnly: true
   alertSeverity: legacy-replacement-alerts-non-prod
 
-generic-data-analytics-extractor:
+data-analytics-extractor-crds:
   enabled: false
   cronJobNameOverride: calculate-release-dates-alt
