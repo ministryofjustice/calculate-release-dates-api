@@ -1,11 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import io.swagger.v3.oas.annotations.media.Schema
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.MANUAL_ENTRY_JOURNEY_REQUIRED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.SUSPENDED_OFFENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_CALCULATION
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_OFFENCE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_SDS40_CONSECUTIVE_SDS
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_SDS40_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.VALIDATION
 
@@ -75,10 +74,10 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   UNSUPPORTED_CALCULATION_DTO_WITH_RECALL("Unsupported calculation - DTO and recall", UNSUPPORTED_CALCULATION),
   PRE_PCSC_DTO_WITH_ADJUSTMENT("If a Detention and training order (DTO) has a sentence date before 28 June 2022, %s cannot be applied."),
   BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE("BOTUS concurrent/consecutive with other sentence type", UNSUPPORTED_CALCULATION),
-  UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE("Unsupported recalls for SDS40", UNSUPPORTED_SDS40_SENTENCE),
+  UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE("Unsupported recalls for SDS40", MANUAL_ENTRY_JOURNEY_REQUIRED),
   UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS(
     "Unsupported consecutive SDS for tranche 2 prisoner, sentenced between tranche commencement dates",
-    UNSUPPORTED_SDS40_CONSECUTIVE_SDS,
+    MANUAL_ENTRY_JOURNEY_REQUIRED,
   ),
   UNSUPPORTED_OFFENCE_ENCOURAGING_OR_ASSISTING(
     "Any offences that include the inchoate ‘Encouraging/ Assisting’ should be recorded as the underlying act, ending in the letter ‘e’.\n" +
