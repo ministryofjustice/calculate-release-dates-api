@@ -84,6 +84,10 @@ class CalculationTransactionalService(
     log.info("Full Validation for $prisonerId")
     log.info("Gathering source data from PrisonAPI")
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
+    return fullValidationFromSourceData(sourceData, calculationUserInputs)
+  }
+
+  fun fullValidationFromSourceData(sourceData: PrisonApiSourceData, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
     val sourceDataJson = objectMapper.writeValueAsString(sourceData)
     log.info("Source data:\n$sourceDataJson")
 
@@ -99,8 +103,13 @@ class CalculationTransactionalService(
 
     log.info("Retrieving booking information")
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
+
+    return fullValidationFromBookingData(booking, calculationUserInputs)
+  }
+
+  fun fullValidationFromBookingData(booking: Booking, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
     val bookingJson = objectMapper.writeValueAsString(booking)
-    log.info("Booking information:\n$bookingJson")
+    log.trace("Booking information:\n$bookingJson")
 
     log.info("Stage 2: Running booking-related calculation validations")
     val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
@@ -114,10 +123,12 @@ class CalculationTransactionalService(
 
     log.info("Stage 3: Calculating release dates")
     val (bookingAfterCalculation, calculationResult) = calculationService.calculateReleaseDates(booking, calculationUserInputs, false)
+    log.trace("bookingAfterCalculation: ${objectMapper.writeValueAsString(bookingAfterCalculation)}")
     log.info("Release dates calculated")
 
     log.info("Calculating release dates for longest possible sentences")
     val (longestPossibleSdsBookingAfterCalculation, _) = calculationService.calculateReleaseDates(booking, calculationUserInputs, true)
+    log.trace("longestPossibleSdsBookingAfterCalculation: ${objectMapper.writeValueAsString(longestPossibleSdsBookingAfterCalculation)}")
     log.info("Longest possible release dates calculated")
 
     log.info("Stage 4: Running final booking validation after calculation")
