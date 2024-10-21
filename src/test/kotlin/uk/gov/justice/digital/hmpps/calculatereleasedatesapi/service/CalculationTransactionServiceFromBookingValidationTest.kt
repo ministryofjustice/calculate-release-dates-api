@@ -130,6 +130,7 @@ class CalculationTransactionServiceFromBookingValidationTest {
   @Test
   fun `fullValidationFromBooking runs as expected messages`() {
     val logCaptor = LogCaptor.forClass(CalculationTransactionalService::class.java)
+    logCaptor.setLogLevelToTrace()
 
     val calculationUserInputs = CalculationUserInputs()
     val fakeMessages = listOf<ValidationMessage>()
@@ -158,8 +159,7 @@ class CalculationTransactionServiceFromBookingValidationTest {
 
     assertEquals(
       listOf(
-        "Booking information:\n$bookingJson",
-        fakeMessages.joinToString("\n"),
+        "Booking information: $bookingJson",
       ),
       traceLogMessages,
     )
@@ -206,7 +206,7 @@ class CalculationTransactionServiceFromBookingValidationTest {
       recallValidationService = recallValidationService,
       sentenceValidationService = sentenceValidationService,
       validationUtilities = validationUtilities,
-      postCalculationValidationService = postCalculationValidationService
+      postCalculationValidationService = postCalculationValidationService,
     )
   }
 

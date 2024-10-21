@@ -76,6 +76,7 @@ class CalculationTransactionalServiceValidationTest {
   @Test
   fun `fullValidation logs expected messages`() {
     val logCaptor = LogCaptor.forClass(CalculationTransactionalService::class.java)
+    logCaptor.setLogLevelToTrace()
 
     val prisonerId = "A1234BC"
     val calculationUserInputs = CalculationUserInputs()
@@ -102,7 +103,8 @@ class CalculationTransactionalServiceValidationTest {
     // Call the method under test
     calculationTransactionalService().fullValidation(prisonerId, calculationUserInputs)
     // Get the captured log messages
-    val logMessages = logCaptor.infoLogs
+    val infoLogMessages = logCaptor.infoLogs
+    val traceLogMessages = logCaptor.traceLogs
 
     val sourceDataJson = objectMapper.writeValueAsString(fakeSourceData)
     val bookingJson = objectMapper.writeValueAsString(BOOKING)
@@ -112,11 +114,9 @@ class CalculationTransactionalServiceValidationTest {
       listOf(
         "Full Validation for $prisonerId",
         "Gathering source data from PrisonAPI",
-        "Source data:\n$sourceDataJson",
         "Stage 1: Running initial calculation validations",
         "Initial validation passed",
         "Retrieving booking information",
-        "Booking information:\n$bookingJson",
         "Stage 2: Running booking-related calculation validations",
         "Booking validation passed",
         "Stage 3: Calculating release dates",
@@ -126,7 +126,15 @@ class CalculationTransactionalServiceValidationTest {
         "Stage 4: Running final booking validation after calculation",
         fakeMessages.joinToString("\n"),
       ),
-      logMessages,
+      infoLogMessages,
+    )
+    // Verify the expected log messages
+    assertEquals(
+      listOf(
+        "Source data:\n$sourceDataJson",
+        "Booking information: $bookingJson",
+      ),
+      traceLogMessages,
     )
   }
 

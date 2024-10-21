@@ -90,9 +90,9 @@ class BookingCalculationService(
      However here we reduce the list by any duplicated offences with the same release conditions, to improve calculation time.
    */
   private fun collapseDuplicateConsecutiveSentences(consecutiveSentences: List<ConsecutiveSentence>): List<ConsecutiveSentence> {
-    return consecutiveSentences.distinctBy {
-      it.orderedSentences.joinToString { sentence -> "${sentence.sentencedAt}${sentence.identificationTrack}${sentence.totalDuration()}${sentence.javaClass}" }
-    }
+    return consecutiveSentences
+      .sortedBy { it.getOrderedIdentifiers(true) }
+      .associateBy { it.getOrderedIdentifiers(false) }.values.toList()
   }
 
   private fun createSentenceChain(

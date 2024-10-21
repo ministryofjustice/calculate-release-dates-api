@@ -89,7 +89,7 @@ class CalculationTransactionalService(
 
   fun fullValidationFromSourceData(sourceData: PrisonApiSourceData, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
     val sourceDataJson = objectMapper.writeValueAsString(sourceData)
-    log.info("Source data:\n$sourceDataJson")
+    log.trace("Source data:\n$sourceDataJson")
 
     log.info("Stage 1: Running initial calculation validations")
     val initialValidationMessages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs)
@@ -109,7 +109,7 @@ class CalculationTransactionalService(
 
   fun fullValidationFromBookingData(booking: Booking, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
     val bookingJson = objectMapper.writeValueAsString(booking)
-    log.trace("Booking information:\n$bookingJson")
+    log.trace("Booking information: $bookingJson")
 
     log.info("Stage 2: Running booking-related calculation validations")
     val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
@@ -123,12 +123,10 @@ class CalculationTransactionalService(
 
     log.info("Stage 3: Calculating release dates")
     val (bookingAfterCalculation, calculationResult) = calculationService.calculateReleaseDates(booking, calculationUserInputs, false)
-    log.trace("bookingAfterCalculation: ${objectMapper.writeValueAsString(bookingAfterCalculation)}")
     log.info("Release dates calculated")
 
     log.info("Calculating release dates for longest possible sentences")
     val (longestPossibleSdsBookingAfterCalculation, _) = calculationService.calculateReleaseDates(booking, calculationUserInputs, true)
-    log.trace("longestPossibleSdsBookingAfterCalculation: ${objectMapper.writeValueAsString(longestPossibleSdsBookingAfterCalculation)}")
     log.info("Longest possible release dates calculated")
 
     log.info("Stage 4: Running final booking validation after calculation")

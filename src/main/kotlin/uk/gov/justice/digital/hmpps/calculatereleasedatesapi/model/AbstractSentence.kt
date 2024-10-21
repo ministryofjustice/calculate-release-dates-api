@@ -28,7 +28,7 @@ import java.util.*
 abstract class AbstractSentence(
   override val offence: Offence,
   override val sentencedAt: LocalDate,
-  open val identifier: UUID = UUID.randomUUID(),
+  override val identifier: UUID = UUID.randomUUID(),
   // Sentence UUIDS that this sentence is consecutive to.
   open val consecutiveSentenceUUIDs: List<UUID> = listOf(),
   open val caseSequence: Int? = null,
