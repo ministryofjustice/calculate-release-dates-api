@@ -54,7 +54,7 @@ dependencies {
 
   implementation("com.amazonaws:amazon-sqs-java-messaging-lib:2.1.3")
   implementation("io.awspring.cloud:spring-cloud-aws-messaging:2.4.4")
-  implementation("org.springframework:spring-jms:6.1.13")
+  implementation("org.springframework:spring-jms:6.1.14")
   implementation("com.google.code.gson:gson:2.11.0")
 
   // SQS
@@ -67,7 +67,7 @@ dependencies {
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.4.1")
   testImplementation("io.swagger.parser.v3:swagger-parser-v2-converter:2.1.22")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("org.junit.jupiter:junit-jupiter:5.11.2")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.11.3")
   testImplementation("com.h2database:h2")
   testImplementation("io.github.hakky54:logcaptor:2.9.3")
 
