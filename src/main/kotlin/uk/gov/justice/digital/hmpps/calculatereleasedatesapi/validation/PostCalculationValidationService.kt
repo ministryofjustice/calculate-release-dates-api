@@ -31,6 +31,7 @@ class PostCalculationValidationService(
           }
         }
       ) {
+        log.info("Unsupported SDS sentence consecutive between tranche dates for booking ${booking.bookingId}")
         return listOf(ValidationMessage(ValidationCode.UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS))
       }
     }
