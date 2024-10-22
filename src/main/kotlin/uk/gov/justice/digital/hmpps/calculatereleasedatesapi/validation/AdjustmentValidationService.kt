@@ -238,7 +238,7 @@ class AdjustmentValidationService(
       .map {
         LocalDateRange.of(
           it.sentencedAt,
-          it.sentenceCalculation.unadjustedDeterminateReleaseDate,
+          it.sentenceCalculation.adjustedDeterminateReleaseDate,
         )
       }
   }
