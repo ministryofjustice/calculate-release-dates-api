@@ -67,6 +67,7 @@ class ValidationService(
     val messages = mutableListOf<ValidationMessage>()
     booking.sentenceGroups.forEach { messages += sentenceValidationService.validateSentenceHasNotBeenExtinguished(it) }
     messages += adjustmentValidationService.validateRemandOverlappingRemand(booking)
+    // CRS-2162 XXX This rule shouldnt be firing
     messages += adjustmentValidationService.validateRemandOverlappingSentences(standardSDSBooking ?: booking, booking)
     messages += adjustmentValidationService.validateAdditionAdjustmentsInsideLatestReleaseDate(standardSDSBooking ?: booking, booking)
     messages += recallValidationService.validateFixedTermRecallAfterCalc(booking)

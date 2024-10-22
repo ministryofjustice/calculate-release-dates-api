@@ -1,5 +1,2 @@
 exampleType,exampleNumber,error,params,expectedValidationMessage
-validation,CRS-2078,,,ADJUSTMENT_AFTER_RELEASE_ADA
-validation,CRS-2082,,,REMAND_OVERLAPS_WITH_SENTENCE
-validation,CRS-2082_inttest,,,REMAND_OVERLAPS_WITH_SENTENCE
-custom-examples,crs-2136-incorrect-tused-length,,,
+validation,crs-2162-example-1,,,REMAND_OVERLAPS_WITH_SENTENCE
