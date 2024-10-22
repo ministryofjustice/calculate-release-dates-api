@@ -91,8 +91,8 @@ class BookingCalculationService(
    */
   private fun collapseDuplicateConsecutiveSentences(consecutiveSentences: List<ConsecutiveSentence>): List<ConsecutiveSentence> {
     return consecutiveSentences
-      .sortedBy { it.getOrderedIdentifiers(true) }
-      .associateBy { it.getOrderedIdentifiers(false) }.values.toList()
+      .sortedBy { it.getOrderedIdentifiers(includeCalculation = true) }
+      .associateBy { it.getOrderedIdentifiers(includeCalculation = false) }.values.toList()
   }
 
   private fun createSentenceChain(
