@@ -225,6 +225,7 @@ class AdjustmentValidationService(
     }
   }
 
+  // Range is 'sentenced at' to 'Release Date (CRD or ARD)'
   private fun getRelevantSentenceRanges(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<LocalDateRange> {
     val longestRelevantSentences = sentences.zip(longestSentences).map { (sentence, longestSentence) ->
       if (sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(trancheConfiguration.trancheOneCommencementDate)) {

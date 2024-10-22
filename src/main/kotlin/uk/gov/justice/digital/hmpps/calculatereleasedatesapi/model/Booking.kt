@@ -23,6 +23,7 @@ data class Booking(
   @JsonIgnore
   lateinit var sentenceGroups: List<List<CalculableSentence>>
 
+  // consec chains are combined into one sentence
   @JsonIgnore
   fun getAllExtractableSentences(): List<CalculableSentence> {
     val extractableSentences: MutableList<CalculableSentence> = consecutiveSentences.toMutableList()
