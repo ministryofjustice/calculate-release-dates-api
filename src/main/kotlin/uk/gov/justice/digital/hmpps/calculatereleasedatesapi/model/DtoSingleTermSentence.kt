@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import java.util.UUID
 
 class DtoSingleTermSentence(
   override val sentencedAt: LocalDate,
   override val offence: Offence,
   override val standardSentences: List<AbstractSentence>,
+  override val identifier: UUID = UUID.randomUUID(),
 ) : SingleTermed, Term {
   override val isSDSPlus = false
   constructor(standardSentences: List<AbstractSentence>) :

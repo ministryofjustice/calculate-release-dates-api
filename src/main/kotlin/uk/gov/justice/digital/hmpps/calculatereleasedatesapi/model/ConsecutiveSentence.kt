@@ -4,16 +4,26 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import java.util.UUID
 
 class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : CalculableSentence {
   override val sentencedAt: LocalDate = orderedSentences.minOf(CalculableSentence::sentencedAt)
   override val offence: Offence = orderedSentences.map(CalculableSentence::offence).minByOrNull(Offence::committedAt)!!
   override val isSDSPlus: Boolean = orderedSentences.all { it.isSDSPlus }
+  override val identifier: UUID = UUID.randomUUID()
 
   override val recallType: RecallType?
     get() {
       return orderedSentences[0].recallType
     }
+
+  fun getOrderedIdentifiers(includeCalculation: Boolean = false): String {
+    return if (includeCalculation) {
+      orderedSentences.joinToString(separator = "-") { it.identifier.toString() + '_' + it.hashCode().toString() + '_' + it.sentenceCalculation.hashCode().toString() }
+    } else {
+      orderedSentences.joinToString(separator = "-") { it.identifier.toString() + '_' + it.hashCode().toString() }
+    }
+  }
 
   @JsonIgnore
   override lateinit var sentenceCalculation: SentenceCalculation

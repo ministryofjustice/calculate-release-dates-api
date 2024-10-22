@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import java.util.UUID
 import kotlin.math.roundToLong
 
 /**
@@ -25,6 +26,7 @@ interface CalculableSentence {
   val offence: Offence
   var identificationTrack: SentenceIdentificationTrack
   val isSDSPlus: Boolean
+  val identifier: UUID
 
   @JsonIgnore
   fun getRangeOfSentenceBeforeAwardedDays(earlyReleaseCommencementDate: LocalDate): LocalDateRange {
