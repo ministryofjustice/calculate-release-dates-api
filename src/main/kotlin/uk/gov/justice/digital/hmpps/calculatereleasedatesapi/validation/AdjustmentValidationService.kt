@@ -186,16 +186,13 @@ class AdjustmentValidationService(
   }
 
   internal fun validateRemandOverlappingSentences(longestBooking: Booking, booking: Booking): List<ValidationMessage> {
-    val sentences = booking.getAllExtractableSentences()
-    val longestSentences = longestBooking.getAllExtractableSentences()
-
     val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
 
     val validationMessages = mutableSetOf<ValidationMessage>()
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
 
-      val sentenceRanges = this.getRelevantSentenceRanges(sentences, longestSentences)
+      val sentenceRanges = this.getRelevantSentenceRanges(longestBooking, booking)
 
       remandRanges.forEach { remandRange ->
         sentenceRanges.forEach { sentenceRange ->
@@ -225,22 +222,27 @@ class AdjustmentValidationService(
     }
   }
 
-  private fun getRelevantSentenceRanges(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<LocalDateRange> {
-    val longestRelevantSentences = sentences.zip(longestSentences).map { (sentence, longestSentence) ->
-      if (sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(trancheConfiguration.trancheOneCommencementDate)) {
-        longestSentence
+  private fun getRelevantSentenceRanges(longestBooking: Booking, booking: Booking): List<LocalDateRange> {
+    val longestRanges = longestBooking.sentenceGroups.mapNotNull { getRangeOfSentenceGroup(it) }
+    val shortestRanges = booking.sentenceGroups.mapNotNull { getRangeOfSentenceGroup(it) }
+
+    return shortestRanges.zip(longestRanges).map { (shortRange, longRange) ->
+      if (longRange.end.isBefore(trancheConfiguration.trancheOneCommencementDate)) {
+        longRange
       } else {
-        sentence
+        shortRange
       }
     }
-    return longestRelevantSentences
-      .filter { !it.isRecall() }
-      .map {
-        LocalDateRange.of(
-          it.sentencedAt,
-          it.sentenceCalculation.adjustedDeterminateReleaseDate,
-        )
-      }
+  }
+
+  private fun getRangeOfSentenceGroup(sentenceGroup: List<CalculableSentence>): LocalDateRange? {
+    val sentences = sentenceGroup.filter { !it.isRecall() }
+    if (sentences.isEmpty()) {
+      return null
+    }
+    val start = sentences.minOf { sentence -> sentence.sentencedAt }
+    val end = sentences.maxOf { sentence -> sentence.sentenceCalculation.adjustedDeterminateReleaseDate }
+    return LocalDateRange.of(start, end)
   }
 
   private fun validateRemandOverlappingRemand(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
