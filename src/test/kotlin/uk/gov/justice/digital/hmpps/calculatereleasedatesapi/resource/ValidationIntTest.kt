@@ -38,12 +38,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
       listOf(
         ValidationMessage(
           REMAND_OVERLAPS_WITH_SENTENCE,
-          arguments = listOf(
-            "2000-04-29",
-            "2001-02-27",
-            "2000-04-28",
-            "2000-04-30",
-          ),
+          arguments = listOf("2000-04-29", "2001-02-25", "2000-04-28", "2000-04-30"),
         ),
       ),
     )

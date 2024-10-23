@@ -229,10 +229,9 @@ class CalculationTransactionalServiceTest {
       assertThat(returnedValidationMessages[0].code.toString()).isEqualTo(expectedValidationMessage)
     } else {
       assertThat(returnedValidationMessages).isEmpty()
+      assertEquals(bookingData.dates, calculatedReleaseDates.dates)
+      assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
     }
-
-    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
-    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
   }
 
   @ParameterizedTest
