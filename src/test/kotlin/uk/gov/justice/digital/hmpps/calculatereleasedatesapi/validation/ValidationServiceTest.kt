@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -89,7 +88,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SENTENCE_TYPE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ZERO_IMPRISONMENT_TERM
 import java.math.BigDecimal
@@ -2510,92 +2508,12 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test LR_ORA with CRD after tranche commencement returns a validation error`() {
-    val validationService = getActiveValidationService(
-      SentencesExtractionService(),
-      TRANCHE_CONFIGURATION,
-    )
-
-    val lrOraSentence = LR_ORA.copy()
-
-    lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
-      unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
-    )
-    var workingBooking = BOOKING.copy(
-      sentences = listOf(
-        lrOraSentence,
-      ),
-      adjustments = Adjustments(),
-    )
-    lrOraSentence.releaseDateTypes =
-      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
-
-    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
-
-    val result = validationService.validateBookingAfterCalculation(
-      workingBooking,
-    )
-
-    assertThat(result).isEqualTo(
-      listOf(
-        ValidationMessage(UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE),
-      ),
-    )
-  }
-
-  @Test
-  fun `Test consecutive sentence with LR_ORA with CRD after tranche commencement returns a validation error`() {
-    val validationService = getActiveValidationService(
-      SentencesExtractionService(),
-      TRANCHE_CONFIGURATION,
-    )
-
-    val testIdentifierUUID = UUID.randomUUID()
-
-    val lrOraSentence = LR_ORA.copy(
-      identifier = testIdentifierUUID,
-    )
-    val standardSentence = STANDARD_SENTENCE.copy(
-      consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
-    )
-
-    lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
-      unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
-    )
-    var workingBooking = BOOKING.copy(
-      sentences = listOf(
-        lrOraSentence,
-        standardSentence,
-      ),
-      adjustments = Adjustments(),
-    )
-    lrOraSentence.releaseDateTypes =
-      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
-
-    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
-    workingBooking.consecutiveSentences[0].sentenceCalculation = SENTENCE_CALCULATION.copy(
-      unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
-    )
-    workingBooking.consecutiveSentences[0].releaseDateTypes =
-      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
-
-    val result = validationService.validateBookingAfterCalculation(
-      workingBooking,
-    )
-
-    assertThat(result).isEqualTo(
-      listOf(
-        ValidationMessage(UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE),
-      ),
-    )
-  }
-
-  @Test
   fun `Test LR_ORA with CRD before tranche commencement returns no error`() {
     val validationService = getActiveValidationService(
       SentencesExtractionService(),
       TRANCHE_CONFIGURATION,
     )
+
     val lrOraSentence = LR_ORA.copy()
 
     lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
@@ -2609,35 +2527,6 @@ class ValidationServiceTest {
     )
     lrOraSentence.releaseDateTypes =
       ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
-
-    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
-
-    val result = validationService.validateBookingAfterCalculation(
-      workingBooking,
-    )
-
-    assertThat(result).isEmpty()
-  }
-
-  @Test
-  fun `Test LR with no TUSED after tranche commencement returns no error`() {
-    val validationService = getActiveValidationService(
-      SentencesExtractionService(),
-      TRANCHE_CONFIGURATION,
-    )
-    val lrOraSentence = LR_ORA.copy()
-
-    lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
-      unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
-    )
-    var workingBooking = BOOKING.copy(
-      sentences = listOf(
-        lrOraSentence,
-      ),
-      adjustments = Adjustments(),
-    )
-    lrOraSentence.releaseDateTypes =
-      ReleaseDateTypes(listOf(ReleaseDateType.CRD), lrOraSentence, workingBooking.offender)
 
     workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
 
@@ -2839,29 +2728,7 @@ class ValidationServiceTest {
     assertThat(result).isEmpty()
   }
 
-  private fun createSentenceChain(
-    start: AbstractSentence,
-    chain: MutableList<AbstractSentence>,
-    sentencesByPrevious: Map<UUID, List<AbstractSentence>>,
-    chains: MutableList<MutableList<AbstractSentence>> = mutableListOf(mutableListOf()),
-  ) {
-    val originalChain = chain.toMutableList()
-    sentencesByPrevious[start.identifier]?.forEachIndexed { index, it ->
-      if (index == 0) {
-        chain.add(it)
-        createSentenceChain(it, chain, sentencesByPrevious, chains)
-      } else {
-        // This sentence has two sentences consecutive to it. This is not allowed in practice, however it can happen
-        // when a sentence in NOMIS has multiple offices, which means it becomes multiple sentences in our model.
-        val chainCopy = originalChain.toMutableList()
-        chains.add(chainCopy)
-        chainCopy.add(it)
-        createSentenceChain(it, chainCopy, sentencesByPrevious, chains)
-      }
-    }
-  }
-
-  private companion object {
+  companion object {
     val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     val FIRST_MAY_2021: LocalDate = LocalDate.of(2021, 5, 1)
     private const val LINE_SEQ = 2
@@ -3018,7 +2885,7 @@ class ValidationServiceTest {
       FIRST_MAY_2018,
     )
 
-    private val BOOKING = Booking(
+    val BOOKING = Booking(
       bookingId = 123456,
       returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
       offender = Offender(
