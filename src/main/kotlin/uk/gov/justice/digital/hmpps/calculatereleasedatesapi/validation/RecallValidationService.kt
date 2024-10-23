@@ -52,11 +52,13 @@ class RecallValidationService(
       emptyList()
     }
   }
+
   private fun hasUnsupportedRecallType(booking: Booking): Boolean {
     return booking.getAllExtractableSentences().any {
       it.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
         (it is StandardDeterminateSentence || (it is ConsecutiveSentence && it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence })) &&
         it.recallType != null &&
+        it.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate) &&
         it.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
     }
   }
