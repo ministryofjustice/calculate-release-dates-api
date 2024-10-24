@@ -46,6 +46,8 @@ class CalculationResultEnrichmentService(
       ReleaseDateType.PED,
     )
     private val dtoSentenceTypes = listOf(SentenceCalculationType.DTO_ORA.name, SentenceCalculationType.DTO.name)
+    private const val HDCED_ADJUSTMENT_HINT = "Adjusted for sentence date, plus 14 days as per HDC policy"
+    private const val HDC_POLICY_URL = "https://assets.publishing.service.gov.uk/media/66701aa6fdbf70d6d79d9705/Home_Detention_Curfew_V7___002_.pdf"
   }
 
   fun addDetailToCalculationDates(
@@ -162,11 +164,19 @@ class CalculationResultEnrichmentService(
     }
   }
 
+  // XXX HERE
   private fun hdcedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> {
     return if (type == ReleaseDateType.HDCED) {
       val hints = mutableListOf<ReleaseDateHint>()
       if (calculationBreakdown?.breakdownByReleaseDateType?.containsKey(ReleaseDateType.HDCED) == true) {
         val hdcRules = calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.HDCED]!!.rules
+
+        // Add the new HDCED adjustment hint if applicable
+        if (CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT in hdcRules ||
+          CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD in hdcRules
+        ) {
+          hints.add(ReleaseDateHint(HDCED_ADJUSTMENT_HINT, HDC_POLICY_URL))
+        }
         when {
           CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE in hdcRules -> {
             hints += ReleaseDateHint("HDCED adjusted for the CRD of a concurrent sentence or default term")
