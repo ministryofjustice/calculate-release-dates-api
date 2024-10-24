@@ -222,17 +222,17 @@ class CalculationTransactionalServiceTest {
       "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
       TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
     )
-    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
 
     if (expectedValidationMessage != null) {
       assertThat(returnedValidationMessages).hasSize(1) // etc
       assertThat(returnedValidationMessages[0].code.toString()).isEqualTo(expectedValidationMessage)
     } else {
+      val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
       assertThat(returnedValidationMessages).isEmpty()
+      // if the validation is thrown - CRDS can't always determine the correct release dates
+      assertEquals(bookingData.dates, calculatedReleaseDates.dates)
+      assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
     }
-
-    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
-    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
   }
 
   @ParameterizedTest
