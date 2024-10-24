@@ -56,7 +56,7 @@ class BookingCalculationService(
     return booking
   }
 
-  fun createConsecutiveSentences(booking: Booking, options: CalculationOptions): Booking {
+  fun createConsecutiveSentences(booking: Booking, options: CalculationOptions, isManualCalc: Boolean = false): Booking {
     val (baseSentences, consecutiveSentences) = booking.sentences.partition { it.consecutiveSentenceUUIDs.isEmpty() }
     val sentencesByPrevious = consecutiveSentences.groupBy {
       it.consecutiveSentenceUUIDs.first()
@@ -74,6 +74,7 @@ class BookingCalculationService(
     booking.consecutiveSentences = collapseDuplicateConsecutiveSentences(
       chains.filter { it.size > 1 }
         .map { ConsecutiveSentence(it) },
+      isManualCalc,
     )
 
     booking.consecutiveSentences.forEach {
@@ -89,9 +90,9 @@ class BookingCalculationService(
      It does this in case a sentence within the chain has multiple offences, which may have different release conditions
      However here we reduce the list by any duplicated offences with the same release conditions, to improve calculation time.
    */
-  private fun collapseDuplicateConsecutiveSentences(consecutiveSentences: List<ConsecutiveSentence>): List<ConsecutiveSentence> {
+  private fun collapseDuplicateConsecutiveSentences(consecutiveSentences: List<ConsecutiveSentence>, isManualCalc: Boolean = false): List<ConsecutiveSentence> {
     return consecutiveSentences
-      .sortedBy { it.getOrderedIdentifiers(includeCalculation = true) }
+      .sortedBy { it.getOrderedIdentifiers(includeCalculation = !isManualCalc) }
       .associateBy { it.getOrderedIdentifiers(includeCalculation = false) }.values.toList()
   }
 

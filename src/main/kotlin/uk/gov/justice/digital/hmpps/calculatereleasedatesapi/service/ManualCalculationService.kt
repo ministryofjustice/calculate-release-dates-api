@@ -64,7 +64,12 @@ class ManualCalculationService(
     val calculationUserInputs = CalculationUserInputs()
     var booking = bookingService.getBooking(sourceData, calculationUserInputs)
 
-    val effectiveSentenceLength = calculateEffectiveSentenceLength(booking, manualEntryRequest)
+    val effectiveSentenceLength = try {
+      calculateEffectiveSentenceLength(booking, manualEntryRequest)
+    } catch (ex: Exception) {
+      log.info("Exception caught calculating ESL for $prisonerId, setting to zero.")
+      Period.ZERO
+    }
 
     val reasonForCalculation = calculationReasonRepository.findById(manualEntryRequest.reasonForCalculationId)
       .orElse(null) // TODO: This should thrown an EntityNotFoundException when the reason is mandatory.
@@ -164,7 +169,7 @@ class ManualCalculationService(
     } else {
       val options = CalculationOptions(false, featureToggles.sdsEarlyRelease)
       val identifiedBooking = bookingCalculationService.identify(booking, options)
-      val consecutiveSentencesBooking = bookingCalculationService.createConsecutiveSentences(identifiedBooking, options)
+      val consecutiveSentencesBooking = bookingCalculationService.createConsecutiveSentences(identifiedBooking, options, isManualCalc = true)
       val sentences = consecutiveSentencesBooking.getAllExtractableSentences()
       val earliestSentenceDate = sentences.minOfOrNull { it.sentencedAt }
       val sed = getSED(manualEntryRequest)

@@ -96,7 +96,7 @@ class ManualCalculationServiceTest {
       )
       workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
       whenever(bookingCalculationService.identify(any(), any())).thenReturn(workingBooking)
-      whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenReturn(workingBooking)
+      whenever(bookingCalculationService.createConsecutiveSentences(any(), any(), any())).thenReturn(workingBooking)
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
           SentenceAndOffenceWithReleaseArrangements(
@@ -164,7 +164,7 @@ class ManualCalculationServiceTest {
       )
       workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
       whenever(bookingCalculationService.identify(any(), any())).thenReturn(workingBooking)
-      whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenReturn(workingBooking)
+      whenever(bookingCalculationService.createConsecutiveSentences(any(), any(), any())).thenReturn(workingBooking)
 
       // Act
       val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
@@ -235,7 +235,7 @@ class ManualCalculationServiceTest {
       )
       workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
       whenever(bookingCalculationService.identify(any(), any())).thenReturn(workingBooking)
-      whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenReturn(workingBooking)
+      whenever(bookingCalculationService.createConsecutiveSentences(any(), any(), any())).thenReturn(workingBooking)
 
       // Act
       val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
@@ -258,7 +258,7 @@ class ManualCalculationServiceTest {
       )
       workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
       whenever(bookingCalculationService.identify(any(), any())).thenReturn(workingBooking)
-      whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenReturn(workingBooking)
+      whenever(bookingCalculationService.createConsecutiveSentences(any(), any(), any())).thenReturn(workingBooking)
 
       // Act
       val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
@@ -286,7 +286,7 @@ class ManualCalculationServiceTest {
       )
       workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
       whenever(bookingCalculationService.identify(any(), any())).thenReturn(workingBooking)
-      whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenReturn(workingBooking)
+      whenever(bookingCalculationService.createConsecutiveSentences(any(), any(), any())).thenReturn(workingBooking)
 
       // Act
       val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
@@ -379,7 +379,7 @@ class ManualCalculationServiceTest {
     )
     booking = BookingHelperTest().createConsecutiveSentences(booking)
     whenever(bookingCalculationService.identify(any(), any())).thenReturn(booking)
-    whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenReturn(booking)
+    whenever(bookingCalculationService.createConsecutiveSentences(any(), any(), any())).thenReturn(booking)
     whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
@@ -415,7 +415,7 @@ class ManualCalculationServiceTest {
     )
     booking = BookingHelperTest().createConsecutiveSentences(booking)
     whenever(bookingCalculationService.identify(any(), any())).thenReturn(booking)
-    whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenReturn(booking)
+    whenever(bookingCalculationService.createConsecutiveSentences(any(), any(), any())).thenReturn(booking)
     whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
@@ -458,7 +458,7 @@ class ManualCalculationServiceTest {
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(bookingCalculationService.identify(any(), any())).thenReturn(booking)
-    whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenReturn(booking)
+    whenever(bookingCalculationService.createConsecutiveSentences(any(), any(), any())).thenReturn(booking)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
@@ -514,6 +514,44 @@ class ManualCalculationServiceTest {
   }
 
   @Test
+  fun `Check ESL is set to zero when exception is thrown calculating ESL`() {
+    val sentenceOne = StandardSENTENCE.copy(
+      consecutiveSentenceUUIDs = emptyList(),
+      sentencedAt = LocalDate.of(2022, 1, 1),
+    )
+    var booking = BOOKING.copy(
+      sentences = listOf(
+        sentenceOne,
+      ),
+    )
+    booking = BookingHelperTest().createConsecutiveSentences(booking)
+    whenever(bookingCalculationService.identify(any(), any())).thenReturn(booking)
+    whenever(bookingCalculationService.createConsecutiveSentences(any(), any(), any())).thenReturn(booking)
+    whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+    whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
+    whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+
+    // Throw exception during consecutive sentence creation
+    whenever(bookingCalculationService.createConsecutiveSentences(any(), any(), any())).thenThrow(NullPointerException("An error was thrown"))
+    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
+    val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
+
+    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
+
+    val updatedDatesCapture = argumentCaptor<UpdateOffenderDates>()
+    verify(calculationRequestRepository).save(calculationRequestArgumentCaptor.capture())
+    val actualRequest = calculationRequestArgumentCaptor.firstValue
+    assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
+    verify(prisonService).postReleaseDates(anyLong(), updatedDatesCapture.capture())
+    val updateOffenderDates = updatedDatesCapture.firstValue
+    assertThat(updateOffenderDates.keyDates.sentenceLength).isEqualTo("00/00/00")
+  }
+
+  @Test
   fun `Check type dates for bookings with fines can be manually set`() {
     val aFineSentence = AFineSentence(
       sentencedAt = THIRD_FEB_2021,
@@ -540,7 +578,7 @@ class ManualCalculationServiceTest {
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
     whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
     whenever(bookingCalculationService.identify(any(), any())).thenReturn(booking)
-    whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenReturn(booking)
+    whenever(bookingCalculationService.createConsecutiveSentences(any(), any(), any())).thenReturn(booking)
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
