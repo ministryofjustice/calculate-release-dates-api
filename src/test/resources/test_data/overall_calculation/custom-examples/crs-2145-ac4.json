@@ -5,6 +5,7 @@
   },
   "sentences": [
     {
+      "identifier": "d309682d-6733-3bfc-b7ad-7024162a341c",
       "offence": {
         "committedAt": "2022-12-31"
       },
@@ -28,7 +29,8 @@
       },
       "sentencedAt": "2024-09-18",
       "sentenceType": "FTR_ORA",
-      "recallType": "FIXED_TERM_RECALL_28"
+      "recallType": "FIXED_TERM_RECALL_28",
+      "consecutiveSentenceUUIDs": ["d309682d-6733-3bfc-b7ad-7024162a341c"]
     }
   ],
   "adjustments": {

@@ -5,6 +5,7 @@
   },
   "sentences": [
     {
+      "identifier": "d309682d-6733-3bfc-b7ad-7024162a341c",
       "offence": {
         "committedAt": "2022-12-31"
       },
@@ -28,7 +29,8 @@
       },
       "sentencedAt": "2024-09-11",
       "sentenceType": "LR_YOI_ORA",
-      "recallType": "STANDARD_RECALL"
+      "recallType": "STANDARD_RECALL",
+      "consecutiveSentenceUUIDs": ["d309682d-6733-3bfc-b7ad-7024162a341c"]
     }
   ],
   "adjustments": {
@@ -42,7 +44,7 @@
     ],
     "UNLAWFULLY_AT_LARGE": [
       {
-        "appliesToSentencesFrom": "2024-08-03",
+        "appliesToSentencesFrom": "2024-09-11",
         "numberOfDays": 3,
         "fromDate": "2025-06-08",
         "toDate": "2025-06-10"
