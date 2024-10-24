@@ -229,7 +229,6 @@ class CalculationTransactionalServiceTest {
     } else {
       val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
       assertThat(returnedValidationMessages).isEmpty()
-      // if the validation is thrown - CRDS can't always determine the correct release dates
       assertEquals(bookingData.dates, calculatedReleaseDates.dates)
       assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
     }
