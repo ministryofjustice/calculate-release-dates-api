@@ -3,3 +3,11 @@ validation,CRS-2078,,,ADJUSTMENT_AFTER_RELEASE_ADA
 validation,CRS-2082,,,REMAND_OVERLAPS_WITH_SENTENCE
 validation,CRS-2082_inttest,,,REMAND_OVERLAPS_WITH_SENTENCE
 custom-examples,crs-2136-incorrect-tused-length,,,
+custom-examples,crs-2145-ac1,,,
+custom-examples,crs-2145-ac2,,,
+custom-examples,crs-2145-ac3,,,
+custom-examples,crs-2145-ac4,,,
+custom-examples,crs-2145-ac5,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
+custom-examples,crs-2145-ac6,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
+custom-examples,crs-2145-ac7,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
+custom-examples,crs-2145-ac8,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE

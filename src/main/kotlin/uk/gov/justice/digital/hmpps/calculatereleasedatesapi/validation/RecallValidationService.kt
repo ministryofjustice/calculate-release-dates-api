@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -52,14 +54,26 @@ class RecallValidationService(
       emptyList()
     }
   }
-
   private fun hasUnsupportedRecallType(booking: Booking): Boolean {
-    return booking.getAllExtractableSentences().any {
-      it.releaseDateTypes.contains(ReleaseDateType.TUSED) &&
-        (it is StandardDeterminateSentence || (it is ConsecutiveSentence && it.orderedSentences.any { sentence -> sentence is StandardDeterminateSentence })) &&
-        it.recallType != null &&
-        it.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate) &&
-        it.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
+    return booking.getAllExtractableSentences().any { sentence ->
+      val hasTusedReleaseDateType = sentence.releaseDateTypes.contains(ReleaseDateType.TUSED)
+      val isDeterminateOrConsecutiveSentence = sentence is StandardDeterminateSentence ||
+        (sentence is ConsecutiveSentence && sentence.orderedSentences.any { it is StandardDeterminateSentence })
+      val sentencedBeforeCommencement = sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)
+      val adjustedReleaseDateAfterOrEqualCommencement = sentence.sentenceCalculation.adjustedHistoricDeterminateReleaseDate
+        .isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
+
+      val result = hasTusedReleaseDateType &&
+        isDeterminateOrConsecutiveSentence &&
+        sentence.isRecall() &&
+        sentencedBeforeCommencement &&
+        adjustedReleaseDateAfterOrEqualCommencement
+
+      if (result) {
+        log.info("Unsupported recall type found for sentence ${sentence.identifier} in booking for ${booking.offender.reference}.")
+      }
+
+      result
     }
   }
 
@@ -139,5 +153,6 @@ class RecallValidationService(
 
   companion object {
     private const val TWELVE = 12L
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }

@@ -1,0 +1,87 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2004-11-05"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2022-12-31"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 17
+        }
+      },
+      "sentencedAt": "2024-05-03",
+      "sentenceType": "FTR_ORA",
+      "recallType": "FIXED_TERM_RECALL_28",
+      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+    },
+    {
+      "offence": {
+        "committedAt": "2022-12-31"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 3
+        }
+      },
+      "sentencedAt": "2024-09-10",
+      "sentenceType": "FTR_ORA",
+      "recallType": "FIXED_TERM_RECALL_28",
+      "consecutiveSentenceUUIDs": [
+        "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+      ]
+    },
+    {
+      "offence": {
+        "committedAt": "2022-12-31"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 3
+        }
+      },
+      "sentencedAt": "2024-09-02",
+      "sentenceType": "FTR_ORA",
+      "recallType": "FIXED_TERM_RECALL_28",
+      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e8a"
+    },
+    {
+      "offence": {
+        "committedAt": "2022-12-31"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 2
+        }
+      },
+      "sentencedAt": "2024-09-02",
+      "sentenceType": "FTR_ORA",
+      "recallType": "FIXED_TERM_RECALL_28",
+      "consecutiveSentenceUUIDs": [
+        "a31d5d02-611f-43b0-8b1a-4b1edc955e8a"
+      ]
+    }
+  ],
+  "returnToCustodyDate": "2024-12-07",
+  "adjustments": {
+    "RECALL_REMAND": [
+      {
+        "numberOfDays": 15,
+        "appliesToSentencesFrom": "2024-04-18",
+        "fromDate": "2024-04-18",
+        "toDate": "2024-05-02"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "numberOfDays": 5,
+        "appliesToSentencesFrom": "2024-12-02",
+        "fromDate": "2024-12-02",
+        "toDate": "2024-12-06"
+      }
+    ]
+  }
+}
