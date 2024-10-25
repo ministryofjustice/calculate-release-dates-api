@@ -1,0 +1,21 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2004-11-05"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2022-12-31"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 1
+        }
+      },
+      "sentencedAt": "2024-09-10",
+      "sentenceType": "LR_ORA",
+      "recallType": "STANDARD_RECALL"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "offender": {
+    "reference": "ABC123D",
+    "dateOfBirth": "2004-11-05"
+  },
+  "sentences": [
+    {
+      "identifier": "d309682d-6733-3bfc-b7ad-7024162a341c",
+      "offence": {
+        "committedAt": "2022-12-31"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 10
+        }
+      },
+      "sentencedAt": "2024-09-11",
+      "sentenceType": "LR_YOI_ORA",
+      "recallType": "STANDARD_RECALL"
+    },
+    {
+      "offence": {
+        "committedAt": "2022-12-31"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 10
+        }
+      },
+      "sentencedAt": "2024-09-11",
+      "sentenceType": "LR_YOI_ORA",
+      "recallType": "STANDARD_RECALL",
+      "consecutiveSentenceUUIDs": ["d309682d-6733-3bfc-b7ad-7024162a341c"]
+    }
+  ],
+  "adjustments": {
+    "RECALL_REMAND": [
+      {
+        "numberOfDays": 20,
+        "appliesToSentencesFrom": "2020-12-15",
+        "fromDate": "2024-08-22",
+        "toDate": "2024-09-10"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "appliesToSentencesFrom": "2024-09-11",
+        "numberOfDays": 3,
+        "fromDate": "2025-06-08",
+        "toDate": "2025-06-10"
+      }
+    ]
+  }
+}
