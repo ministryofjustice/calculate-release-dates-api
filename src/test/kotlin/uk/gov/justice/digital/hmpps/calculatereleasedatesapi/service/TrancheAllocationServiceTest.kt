@@ -27,12 +27,11 @@ class TrancheAllocationServiceTest {
 
   @Test
   fun `Single 5 year SDS eligible for SDS Early Release should be allocated to tranche 2`() {
-    val testTranchOneCommencementDate = LocalDate.of(2024, 9, 10)
+    val testTrancheOneCommencementDate = LocalDate.of(2024, 9, 10)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
-    val trancheConfiguration = SDS40TrancheConfiguration(testTranchOneCommencementDate, testTrancheTwoCommencementDate)
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
-    val testTrancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val trancheConfiguration = SDS40TrancheConfiguration(testTrancheOneCommencementDate, testTrancheTwoCommencementDate)
+    val tranche = Tranche(trancheConfiguration)
+    val testTrancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val early = CalculationResult(
       mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
       emptyMap(),
@@ -61,9 +60,8 @@ class TrancheAllocationServiceTest {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 10)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
     val trancheConfiguration = SDS40TrancheConfiguration(testTranchOneCommencementDate, testTrancheTwoCommencementDate)
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
-    val testTrancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val tranche = Tranche(trancheConfiguration)
+    val testTrancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val early = CalculationResult(
       mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
       emptyMap(),
@@ -91,9 +89,8 @@ class TrancheAllocationServiceTest {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 10)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
     val trancheConfiguration = SDS40TrancheConfiguration(testTranchOneCommencementDate, testTrancheTwoCommencementDate)
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
-    val testTrancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val tranche = Tranche(trancheConfiguration)
+    val testTrancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val early = CalculationResult(
       mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
       emptyMap(),
@@ -122,9 +119,8 @@ class TrancheAllocationServiceTest {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 10)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
     val trancheConfiguration = SDS40TrancheConfiguration(testTranchOneCommencementDate, testTrancheTwoCommencementDate)
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
-    val testTrancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val tranche = Tranche(trancheConfiguration)
+    val testTrancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val early = CalculationResult(
       mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
       emptyMap(),
@@ -178,9 +174,8 @@ class TrancheAllocationServiceTest {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 10)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
     val trancheConfiguration = SDS40TrancheConfiguration(testTranchOneCommencementDate, testTrancheTwoCommencementDate)
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
-    val testTrancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val tranche = Tranche(trancheConfiguration)
+    val testTrancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val early = CalculationResult(
       mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
       emptyMap(),
@@ -234,9 +229,8 @@ class TrancheAllocationServiceTest {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 10)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
     val trancheConfiguration = SDS40TrancheConfiguration(testTranchOneCommencementDate, testTrancheTwoCommencementDate)
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
-    val testTrancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val tranche = Tranche(trancheConfiguration)
+    val testTrancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val early = CalculationResult(
       mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
       emptyMap(),
@@ -269,9 +263,8 @@ class TrancheAllocationServiceTest {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 10)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
     val trancheConfiguration = SDS40TrancheConfiguration(testTranchOneCommencementDate, testTrancheTwoCommencementDate)
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
-    val testTrancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val tranche = Tranche(trancheConfiguration)
+    val testTrancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val early = CalculationResult(
       mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
       emptyMap(),
@@ -304,9 +297,8 @@ class TrancheAllocationServiceTest {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 10)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
     val trancheConfiguration = SDS40TrancheConfiguration(testTranchOneCommencementDate, testTrancheTwoCommencementDate)
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
-    val testTrancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val tranche = Tranche(trancheConfiguration)
+    val testTrancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val early = CalculationResult(
       mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
       emptyMap(),
@@ -344,9 +336,8 @@ class TrancheAllocationServiceTest {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 10)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
     val trancheConfiguration = SDS40TrancheConfiguration(testTranchOneCommencementDate, testTrancheTwoCommencementDate)
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
-    val testTrancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val tranche = Tranche(trancheConfiguration)
+    val testTrancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val early = CalculationResult(
       mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
       emptyMap(),
@@ -384,9 +375,8 @@ class TrancheAllocationServiceTest {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 10)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
     val trancheConfiguration = SDS40TrancheConfiguration(testTranchOneCommencementDate, testTrancheTwoCommencementDate)
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
-    val testTrancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val tranche = Tranche(trancheConfiguration)
+    val testTrancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val early = CalculationResult(
       mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
       emptyMap(),
@@ -425,9 +415,8 @@ class TrancheAllocationServiceTest {
     val testTranchOneCommencementDate = LocalDate.of(2024, 9, 10)
     val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
     val trancheConfiguration = SDS40TrancheConfiguration(testTranchOneCommencementDate, testTrancheTwoCommencementDate)
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
-    val testTrancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val tranche = Tranche(trancheConfiguration)
+    val testTrancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val early = CalculationResult(
       mapOf(ReleaseDateType.CRD to LocalDate.of(2024, 7, 25)),
       emptyMap(),
