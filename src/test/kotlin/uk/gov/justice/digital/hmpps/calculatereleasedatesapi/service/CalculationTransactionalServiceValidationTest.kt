@@ -237,7 +237,9 @@ class CalculationTransactionalServiceValidationTest {
     val featureToggles = FeatureToggles(
       botus = true,
       sdsEarlyRelease = true,
-      sdsEarlyReleaseHints = false, sds40ConsecutiveManualJourney = true)
+      sdsEarlyReleaseHints = false,
+      sds40ConsecutiveManualJourney = true,
+    )
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService(trancheConfiguration)
