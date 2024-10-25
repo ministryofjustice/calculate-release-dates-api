@@ -140,7 +140,6 @@ class CalculationTransactionalServiceValidationTest {
 
   private fun calculationTransactionalService(
     params: String = "calculation-params",
-    overriddenConfigurationParams: Map<String, Any> = emptyMap(),
     passedInServices: List<String> = emptyList(),
   ): CalculationTransactionalService {
     val hdcedConfiguration =
@@ -163,9 +162,8 @@ class CalculationTransactionalServiceValidationTest {
     val sentencesExtractionService = SentencesExtractionService()
     val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
     val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
-    val trancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val tranche = Tranche(trancheConfiguration)
+    val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService, trancheConfiguration)
     val hdcedExtractionService = HdcedExtractionService(
       sentencesExtractionService,
@@ -236,7 +234,12 @@ class CalculationTransactionalServiceValidationTest {
   )
 
   private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheConfiguration: SDS40TrancheConfiguration): ValidationService {
-    val featureToggles = FeatureToggles(true, true, false, sds40ConsecutiveManualJourney = true)
+    val featureToggles = FeatureToggles(
+      botus = true,
+      sdsEarlyRelease = true,
+      sdsEarlyReleaseHints = false,
+      sds40ConsecutiveManualJourney = true,
+    )
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService(trancheConfiguration)

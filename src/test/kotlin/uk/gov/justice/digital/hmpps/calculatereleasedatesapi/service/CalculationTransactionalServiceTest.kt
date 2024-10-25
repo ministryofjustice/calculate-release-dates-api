@@ -737,10 +737,9 @@ class CalculationTransactionalServiceTest {
     val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
 
     val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
+    val tranche = Tranche(trancheConfiguration)
 
-    val trancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService, trancheConfiguration)
     val bookingCalculationService = BookingCalculationService(
       sentenceCalculationService,

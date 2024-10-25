@@ -169,15 +169,6 @@ class BookingExtractionService(
 
     val latestNonParoleDate: LocalDate? = extractManyNonParoleDate(sentences, latestReleaseDate)
 
-    /*
-    val latestHDCEDAndBreakdown =
-      extractManyHomeDetentionCurfewEligibilityDate(
-        booking.sentenceGroups,
-        sentences,
-        mostRecentSentencesByReleaseDate,
-      )
-     */
-
     val latestHDCEDAndBreakdown =
       hdcedExtractionService.extractManyHomeDetentionCurfewEligibilityDate(sentences, mostRecentSentencesByReleaseDate)
 

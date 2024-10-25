@@ -12,9 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRe
 @Service
 class TrancheAllocationService(
   @Autowired
-  private val trancheOne: TrancheOne,
-  @Autowired
-  private val trancheTwo: TrancheTwo,
+  private val tranche: Tranche,
   @Autowired
   private val trancheConfiguration: SDS40TrancheConfiguration,
 ) {
@@ -50,14 +48,16 @@ class TrancheAllocationService(
       !sentence.isRecall()
 
   private fun isApplicableForTranche1(calculationResult: CalculationResult, booking: Booking): Boolean =
-    trancheOne.isBookingApplicableForTrancheCriteria(
+    tranche.isBookingApplicableForTrancheCriteria(
       calculationResult,
       booking.getAllExtractableSentences(),
+      TrancheType.TRANCHE_ONE,
     )
 
   private fun isApplicableForTranche2(calculationResult: CalculationResult, booking: Booking): Boolean =
-    trancheTwo.isBookingApplicableForTrancheCriteria(
+    tranche.isBookingApplicableForTrancheCriteria(
       calculationResult,
       booking.getAllExtractableSentences(),
+      TrancheType.TRANCHE_TWO,
     )
 }

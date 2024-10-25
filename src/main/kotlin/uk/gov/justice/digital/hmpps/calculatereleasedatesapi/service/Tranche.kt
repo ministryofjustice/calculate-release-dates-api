@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
@@ -8,40 +9,41 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.temporal.ChronoUnit
 
-interface Tranche {
-
-  val trancheConfiguration: SDS40TrancheConfiguration
+@Component
+class Tranche(
+  private val trancheConfiguration: SDS40TrancheConfiguration,
+) {
 
   fun isBookingApplicableForTrancheCriteria(
     calculationResult: CalculationResult,
     bookingSentences: List<CalculableSentence>,
-  ): Boolean
+    trancheType: TrancheType,
+  ): Boolean {
+    val sentenceDurations = bookingSentences.map { filterAndMapSentencesForNotIncludedTypesByDuration(it) }
 
-  fun filterAndMapSentencesForNotIncludedTypesByDuration(
+    return when (trancheType) {
+      TrancheType.TRANCHE_ONE -> sentenceDurations.none { it >= 5 }
+      TrancheType.TRANCHE_TWO -> sentenceDurations.any { it >= 5 }
+    }
+  }
+
+  private fun filterAndMapSentencesForNotIncludedTypesByDuration(
     sentenceToFilter: CalculableSentence,
-    tranche: Tranche,
   ): Long {
     return if (sentenceToFilter is ConsecutiveSentence && filterOnSentenceExpiryDates(sentenceToFilter)) {
       val filteredSentences = sentenceToFilter.orderedSentences
         .filter { filterOnType(it) && filterOnSentenceDate(it) }
 
-      if (filteredSentences.any()) {
-        val earliestSentencedAt = filteredSentences.minBy { it.sentencedAt }
+      if (filteredSentences.isNotEmpty()) {
+        val earliestSentencedAt = filteredSentences.minByOrNull { it.sentencedAt } ?: return 0
         var concurrentSentenceEndDate = earliestSentencedAt.sentencedAt
 
-        // Iterate over the sentences to update the concurrentSentenceEndDate
         filteredSentences.forEach { sentence ->
-          // Update the concurrent end date by calculating the new end date from the current end date
-          concurrentSentenceEndDate = sentence.totalDuration().getEndDate(concurrentSentenceEndDate).plusDays(1)
+          concurrentSentenceEndDate = sentence.totalDuration()
+            .getEndDate(concurrentSentenceEndDate).plusDays(1)
         }
 
-        // Calculate the difference in years between the earliest sentenced date and the final concurrentSentenceEndDate
-        val yearsBetween = ChronoUnit.YEARS.between(
-          earliestSentencedAt.sentencedAt,
-          concurrentSentenceEndDate,
-        )
-
-        yearsBetween
+        ChronoUnit.YEARS.between(earliestSentencedAt.sentencedAt, concurrentSentenceEndDate)
       } else {
         0
       }
@@ -57,11 +59,7 @@ interface Tranche {
     }
   }
 
-  private fun filterOnType(
-    sentence: CalculableSentence,
-  ): Boolean {
-    // Filter any types excluded by the SI
-    // DTO, BOTUS, Fines (terms of imprisonment)
+  private fun filterOnType(sentence: CalculableSentence): Boolean {
     return !sentence.isDto() && !sentence.isBotus() && sentence !is AFineSentence
   }
 
@@ -69,11 +67,12 @@ interface Tranche {
     return sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)
   }
 
-  private fun filterOnSentenceExpiryDates(
-    sentence: CalculableSentence,
-  ): Boolean {
-    return sentence.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(
-      trancheConfiguration.trancheOneCommencementDate,
-    )
+  private fun filterOnSentenceExpiryDates(sentence: CalculableSentence): Boolean {
+    return sentence.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
   }
+}
+
+enum class TrancheType {
+  TRANCHE_ONE,
+  TRANCHE_TWO,
 }
