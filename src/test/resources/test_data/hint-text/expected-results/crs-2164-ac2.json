@@ -1,0 +1,29 @@
+[
+  {
+    "type": "SLED",
+    "date": "2025-03-19",
+    "hints": []
+  },
+  {
+    "type": "CRD",
+    "date": "2024-09-21",
+    "hints": []
+  },
+  {
+    "type": "TUSED",
+    "date": "2025-09-18",
+    "hints": []
+  },
+  {
+    "type": "HDCED",
+    "date": "2024-07-15",
+    "hints": [
+      "Adjusted for sentence date, plus 14 days as per HDC policy"
+    ]
+  },
+  {
+    "type": "ESED",
+    "date": "2025-06-27",
+    "hints": []
+  }
+]
