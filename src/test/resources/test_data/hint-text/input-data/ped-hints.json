@@ -7,6 +7,7 @@
   "bookingId": 1202687,
   "sentences": [
     {
+      "sentenceCalculationType": "ADIMP",
       "type": "StandardSentence",
       "offence": {
         "committedAt": "2015-01-01",
@@ -80,6 +81,7 @@
       "identifier": "8038b531-c5cf-3900-b47f-57bfc6a22516",
       "recallType": null,
       "sentencedAt": "2021-10-13",
+      "sentenceCalculationType": "ADIMP",
       "caseSequence": 3,
       "lineSequence": 3,
       "caseReference": "T20220101",

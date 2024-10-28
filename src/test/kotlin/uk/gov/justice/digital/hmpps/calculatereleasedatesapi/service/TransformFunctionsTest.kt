@@ -102,6 +102,7 @@ class TransformFunctionsTest {
     assertThat(transform(request, null)).isEqualTo(
       StandardDeterminateSentence(
         sentencedAt = FIRST_JAN_2015,
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
         duration = FIVE_YEAR_DURATION,
         offence = Offence(committedAt = SECOND_JAN_2015, offenceCode = "RR1"),
         identifier = UUID.nameUUIDFromBytes(("$bookingId-$sequence").toByteArray()),

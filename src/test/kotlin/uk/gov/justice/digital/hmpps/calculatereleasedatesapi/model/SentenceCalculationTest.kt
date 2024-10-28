@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -15,7 +16,14 @@ internal class SentenceCalculationTest {
       mapOf(ChronoUnit.DAYS to 1L),
     )
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val standardSentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = true, hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO)
+    val standardSentence = StandardDeterminateSentence(
+      offence,
+      duration,
+      sentencedAt,
+      SentenceCalculationType.ADIMP.name,
+      isSDSPlus = true,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
     val date = LocalDate.of(2021, 1, 1)
     val sentenceCalculation = SentenceCalculation(
       standardSentence,
@@ -31,7 +39,14 @@ internal class SentenceCalculationTest {
       date,
       false,
       Adjustments(
-        mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(numberOfDays = 1, appliesToSentencesFrom = date))),
+        mutableMapOf(
+          AdjustmentType.REMAND to mutableListOf(
+            Adjustment(
+              numberOfDays = 1,
+              appliesToSentencesFrom = date,
+            ),
+          ),
+        ),
       ),
       date,
       date,

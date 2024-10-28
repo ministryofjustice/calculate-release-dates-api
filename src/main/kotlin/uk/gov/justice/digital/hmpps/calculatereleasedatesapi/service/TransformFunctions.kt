@@ -146,6 +146,7 @@ fun transform(
       StandardDeterminateSentence::class.java -> {
         StandardDeterminateSentence(
           sentencedAt = sentence.sentenceDate,
+          sentenceCalculationType = sentence.sentenceCalculationType,
           duration = transform(sentence.terms[0]),
           offence = offence,
           identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
@@ -506,6 +507,8 @@ fun transform(
         sentence.duration.toString(),
         sentence.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
         extractDates(sentence),
+        sentence.sentenceCalculationType,
+        sentence.isSDSPlus,
         sentence.lineSequence ?: 0,
         sentence.caseSequence ?: 0,
         sentence.caseReference,
@@ -538,6 +541,8 @@ fun transform(
               sentencePart.lineSequence ?: 0,
               sentencePart.caseSequence ?: 0,
               sentencePart.caseReference,
+              if (sentencePart is StandardDeterminateSentence) sentencePart.sentenceCalculationType else "",
+              sentencePart.isSDSPlus,
               if (sentencePart is StandardDeterminateSentence) sentencePart.duration.toString() else "",
               sentencePart.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
               consecutiveToSentence?.lineSequence,

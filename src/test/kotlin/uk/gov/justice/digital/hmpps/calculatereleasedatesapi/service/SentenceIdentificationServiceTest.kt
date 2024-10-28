@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
@@ -257,6 +258,7 @@ class SentenceIdentificationServiceTest {
       Offence(offenceDate),
       Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L)),
       sentenceDate,
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = sdsPlus,
       hasAnSDSEarlyReleaseExclusion = exclusion,
     )

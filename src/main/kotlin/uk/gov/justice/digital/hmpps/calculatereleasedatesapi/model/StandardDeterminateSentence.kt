@@ -12,6 +12,7 @@ data class StandardDeterminateSentence(
   override val offence: Offence,
   val duration: Duration,
   override val sentencedAt: LocalDate,
+  val sentenceCalculationType: String,
   override val identifier: UUID = UUID.randomUUID(),
   override val consecutiveSentenceUUIDs: List<UUID> = listOf(),
   override val caseSequence: Int? = null,

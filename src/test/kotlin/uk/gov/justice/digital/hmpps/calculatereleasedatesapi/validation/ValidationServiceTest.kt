@@ -2846,6 +2846,7 @@ class ValidationServiceTest {
     )
     private val FTR_SDS_SENTENCE = StandardDeterminateSentence(
       sentencedAt = FIRST_JAN_2015,
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       duration = FIVE_YEAR_DURATION,
       offence = Offence(
         committedAt = FIRST_JAN_2015,
@@ -2864,6 +2865,7 @@ class ValidationServiceTest {
 
     private val LR_ORA = StandardDeterminateSentence(
       sentencedAt = LocalDate.of(2024, 1, 10),
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       duration = Duration(mapOf(MONTHS to 18L)),
       offence = Offence(
         committedAt = LocalDate.of(2023, 10, 10),
@@ -2883,6 +2885,7 @@ class ValidationServiceTest {
       OFFENCE,
       ONE_DAY_DURATION,
       LocalDate.of(2020, 1, 1),
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )

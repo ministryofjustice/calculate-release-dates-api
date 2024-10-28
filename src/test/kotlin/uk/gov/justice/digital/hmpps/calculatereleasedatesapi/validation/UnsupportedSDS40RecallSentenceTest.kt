@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyRelea
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.BookingHelperTest
@@ -266,6 +267,7 @@ class UnsupportedSDS40RecallSentenceTest {
 
     private val FTR_SDS_SENTENCE = StandardDeterminateSentence(
       sentencedAt = FIRST_JAN_2015,
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       duration = FIVE_YEAR_DURATION,
       offence = Offence(
         committedAt = FIRST_JAN_2015,
@@ -284,6 +286,7 @@ class UnsupportedSDS40RecallSentenceTest {
 
     private val LR_ORA = StandardDeterminateSentence(
       sentencedAt = LocalDate.of(2024, 1, 10),
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       duration = Duration(mapOf(MONTHS to 18L)),
       offence = Offence(
         committedAt = LocalDate.of(2023, 10, 10),
@@ -303,6 +306,7 @@ class UnsupportedSDS40RecallSentenceTest {
       OFFENCE,
       ONE_DAY_DURATION,
       LocalDate.of(2020, 1, 1),
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )

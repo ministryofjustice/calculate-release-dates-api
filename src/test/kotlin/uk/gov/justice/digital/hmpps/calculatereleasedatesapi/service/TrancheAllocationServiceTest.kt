@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
@@ -463,6 +464,7 @@ class TrancheAllocationServiceTest {
   ): StandardDeterminateSentence {
     val sentence = StandardDeterminateSentence(
       sentencedAt = sentencedAt,
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       duration = Duration(
         mutableMapOf(
           ChronoUnit.DAYS to durationDays,
@@ -509,6 +511,7 @@ class TrancheAllocationServiceTest {
   ): StandardDeterminateSentence {
     val sentence = StandardDeterminateSentence(
       sentencedAt = sentencedAt,
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       duration = Duration(
         mutableMapOf(
           ChronoUnit.DAYS to durationDays,

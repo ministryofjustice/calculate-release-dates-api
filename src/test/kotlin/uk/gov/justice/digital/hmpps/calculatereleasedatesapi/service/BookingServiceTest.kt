@@ -138,6 +138,7 @@ class BookingServiceTest {
         sentences = mutableListOf(
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,
@@ -194,6 +195,7 @@ class BookingServiceTest {
         sentences = mutableListOf(
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,
@@ -252,6 +254,7 @@ class BookingServiceTest {
         sentences = mutableListOf(
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,
@@ -308,6 +311,7 @@ class BookingServiceTest {
         sentences = mutableListOf(
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,
@@ -364,6 +368,7 @@ class BookingServiceTest {
         sentences = mutableListOf(
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,
