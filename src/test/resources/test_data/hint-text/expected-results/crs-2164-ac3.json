@@ -1,0 +1,27 @@
+[
+  {
+    "type": "SLED",
+    "date": "2028-01-18",
+    "hints": []
+  },
+  {
+    "type": "CRD",
+    "date": "2025-01-18",
+    "hints": [
+      "The Discretionary Friday/Pre-Bank Holiday Release Scheme Policy applies to this release date.",
+      "40% date has been applied"
+    ]
+  },
+  {
+    "type": "HDCED",
+    "date": "2024-10-22",
+    "hints": [
+      "Defaulted to tranche 2 commencement"
+    ]
+  },
+  {
+    "type": "ESED",
+    "date": "2029-07-11",
+    "hints": []
+  }
+]
