@@ -76,7 +76,7 @@ class HintTextTest {
     val (booking, calculationUserInputs) = jsonTransformation.loadHintTextBooking(testCase)
     val calculation = calculationService.calculateReleaseDates(booking, calculationUserInputs).second
     val calculatedReleaseDates = createCalculatedReleaseDates(calculation)
-    calculationService.calculateReleaseDates(booking, calculationUserInputs)
+
     val calculationBreakdown = performCalculationBreakdown(booking, calculatedReleaseDates, calculationUserInputs)
 
     val breakdownWithHints = enrichBreakdownWithHints(calculation.dates, calculationBreakdown)
