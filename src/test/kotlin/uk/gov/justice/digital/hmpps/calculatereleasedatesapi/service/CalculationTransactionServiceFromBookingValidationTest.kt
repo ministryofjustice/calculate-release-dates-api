@@ -45,9 +45,8 @@ class CalculationTransactionServiceFromBookingValidationTest {
   private val ersedConfiguration = ersedConfigurationForTests()
   private val hdcedConfiguration = hdcedConfigurationForTests()
   private val releasePointMultipliersConfiguration = releasePointMultiplierConfigurationForTests("calculation-params")
-  private val trancheOne = TrancheOne(TRANCHE_CONFIGURATION)
-  private val trancheTwo = TrancheTwo(TRANCHE_CONFIGURATION)
-  private val trancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, TRANCHE_CONFIGURATION)
+  private val tranche = Tranche(TRANCHE_CONFIGURATION)
+  private val trancheAllocationService = TrancheAllocationService(tranche, TRANCHE_CONFIGURATION)
 
   private val bankHolidayService = mock<BankHolidayService>()
   private val workingDayService = WorkingDayService(bankHolidayService)

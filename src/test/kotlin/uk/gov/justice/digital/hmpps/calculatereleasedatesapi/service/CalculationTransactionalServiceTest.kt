@@ -222,12 +222,12 @@ class CalculationTransactionalServiceTest {
       "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
       TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
     )
-    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
 
     if (expectedValidationMessage != null) {
       assertThat(returnedValidationMessages).hasSize(1) // etc
       assertThat(returnedValidationMessages[0].code.toString()).isEqualTo(expectedValidationMessage)
     } else {
+      val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
       assertThat(returnedValidationMessages).isEmpty()
       assertEquals(bookingData.dates, calculatedReleaseDates.dates)
       assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
@@ -737,10 +737,9 @@ class CalculationTransactionalServiceTest {
     val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
 
     val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
-    val trancheOne = TrancheOne(trancheConfiguration)
-    val trancheTwo = TrancheTwo(trancheConfiguration)
+    val tranche = Tranche(trancheConfiguration)
 
-    val trancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+    val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService, trancheConfiguration)
     val bookingCalculationService = BookingCalculationService(
       sentenceCalculationService,

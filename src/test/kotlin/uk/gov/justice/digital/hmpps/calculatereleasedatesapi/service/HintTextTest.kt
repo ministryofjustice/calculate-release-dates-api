@@ -76,7 +76,7 @@ class HintTextTest {
     val (booking, calculationUserInputs) = jsonTransformation.loadHintTextBooking(testCase)
     val calculation = calculationService.calculateReleaseDates(booking, calculationUserInputs).second
     val calculatedReleaseDates = createCalculatedReleaseDates(calculation)
-    calculationService.calculateReleaseDates(booking, calculationUserInputs)
+
     val calculationBreakdown = performCalculationBreakdown(booking, calculatedReleaseDates, calculationUserInputs)
 
     val breakdownWithHints = enrichBreakdownWithHints(calculation.dates, calculationBreakdown)
@@ -144,9 +144,8 @@ class HintTextTest {
   private val sentencesExtractionService = SentencesExtractionService()
   private val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
   private val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(), sdsEarlyReleaseTrancheTwoDate())
-  private val trancheOne = TrancheOne(trancheConfiguration)
-  private val trancheTwo = TrancheTwo(trancheConfiguration)
-  private val trancheAllocationService = TrancheAllocationService(trancheOne, trancheTwo, trancheConfiguration)
+  private val tranche = Tranche(trancheConfiguration)
+  private val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
   private val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService, trancheConfiguration)
   private val bookingCalculationService = BookingCalculationService(sentenceCalculationService, sentenceIdentificationService)
   private val hdcedExtractionService = HdcedExtractionService(sentencesExtractionService)
