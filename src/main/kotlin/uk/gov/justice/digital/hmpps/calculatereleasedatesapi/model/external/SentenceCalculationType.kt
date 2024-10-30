@@ -117,6 +117,7 @@ enum class SentenceCalculationType(
   VOO(isSupported = false, isIndeterminate = false),
   TISCS(isSupported = false, isIndeterminate = false),
   STS21(isSupported = false, isIndeterminate = false),
+  STS18(isSupported = false, isIndeterminate = false),
   ;
 
   companion object {
