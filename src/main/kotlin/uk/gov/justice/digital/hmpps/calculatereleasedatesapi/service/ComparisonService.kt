@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPer
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PersonComparisonJson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
@@ -196,6 +197,13 @@ class ComparisonService(
     }
 
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
+  }
+
+  fun getComparisonPersonJson(comparisonShortReference: String, shortReference: String): PersonComparisonJson {
+    val comparison = comparisonPersonRepository.getJsonForBulkComparison(comparisonShortReference, shortReference)
+      ?: throw EntityNotFoundException("Could not find person comparison with comparisonShortReference $comparisonShortReference and shortReference $shortReference")
+
+    return PersonComparisonJson(comparison.inputData, comparison.sentenceAndOffences, comparison.adjustments)
   }
 
   private fun establishmentAndReleaseDateComparator(
