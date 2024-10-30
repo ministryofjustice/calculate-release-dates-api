@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOve
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.PersonComparisonJson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ComparisonService
 
@@ -148,6 +149,30 @@ class ComparisonController(
     mismatchReference: String,
   ): ComparisonPersonOverview {
     return comparisonService.getComparisonPersonByShortReference(comparisonReference, mismatchReference)
+  }
+
+  @GetMapping("/{comparisonReference}/mismatch/{mismatchReference}/json")
+  @PreAuthorize("hasAnyRole('ROLE_RELEASE_DATE_COMPARER')")
+  @ResponseBody
+  @Operation(
+    summary = "Returns JSON data for a particular comparison",
+    description = "This endpoint returns JSON data mismatch for a particular comparison",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns JSON data for a comparison mismatch"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun getComparisonPersonJson(
+    @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the comparison")
+    @PathVariable("comparisonReference")
+    comparisonReference: String,
+    @Parameter(required = true, example = "A1B2C3D4", description = "The short reference of the mismatch")
+    @PathVariable("mismatchReference") mismatchReference: String,
+  ): PersonComparisonJson {
+    return comparisonService.getComparisonPersonJson(comparisonReference, mismatchReference)
   }
 
   @PostMapping(value = ["{comparisonReference}/mismatch/{mismatchReference}/discrepancy"])
