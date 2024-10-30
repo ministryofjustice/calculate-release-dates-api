@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_CUT_OFF_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS40_HINT_TEXT_CUTOFF_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isSdsCalcType
 import java.time.Clock
 import java.time.LocalDate
@@ -70,14 +70,14 @@ class CalculationResultEnrichmentService(
     if (!featureToggles.sdsEarlyReleaseHints) return false
 
     if (calculationBreakdown.concurrentSentences.any {
-        !it.isSDSPlus && (it.sentenceCalculationType.isSdsCalcType() && it.sentencedAt.isAfter(SDS_CUT_OFF_DATE))
+        !it.isSDSPlus && (it.sentenceCalculationType.isSdsCalcType() && it.sentencedAt.isAfter(SDS40_HINT_TEXT_CUTOFF_DATE))
       }
     ) {
       return false
     }
 
     return calculationBreakdown.consecutiveSentence?.let {
-      it.sentencedAt.isBefore(SDS_CUT_OFF_DATE) || it.sentenceParts.none {
+      it.sentencedAt.isBefore(SDS40_HINT_TEXT_CUTOFF_DATE) || it.sentenceParts.none {
           part ->
         !part.isSDSPlus && part.sentenceCalculationType.isSdsCalcType()
       }

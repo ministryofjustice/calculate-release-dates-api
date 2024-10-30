@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NonFridayReleaseDay
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
@@ -24,7 +25,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.WorkingDay
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
+import java.lang.reflect.Method
 import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
@@ -886,6 +889,153 @@ class CalculationResultEnrichmentServiceTest {
     }
   }
 
+  @Test
+  fun `SDS hints do not show when sdsEarlyReleaseHints is set to false`() {
+    val showSDS40 = getShowSDS40Hints()
+    val service = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = false))
+    assertThat(showSDS40.invoke(service, CalculationBreakdown(concurrentSentences = listOf(), consecutiveSentence = null))).isEqualTo(false)
+  }
+
+  @Test
+  fun `SDS hints show when sdsEarlyReleaseHints is set to true`() {
+    val showSDS40 = getShowSDS40Hints()
+    val service = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
+    assertThat(showSDS40.invoke(service, CalculationBreakdown(concurrentSentences = listOf(), consecutiveSentence = null))).isEqualTo(true)
+  }
+
+  @Test
+  fun `SDS Hints do not show with SDS sentenced at 17-1-24 and SDS sentenced at 17-9-24`() {
+    val showSDS40 = getShowSDS40Hints()
+    val service = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
+    val sentences = listOf(
+      concurrentSentenceBreakdown.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+        isSDSPlus = false,
+        sentencedAt = LocalDate.of(2024, 1, 17),
+      ),
+      concurrentSentenceBreakdown.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+        isSDSPlus = false,
+        sentencedAt = LocalDate.of(2024, 9, 24),
+      ),
+    )
+    assertThat(showSDS40.invoke(service, CalculationBreakdown(sentences, null))).isEqualTo(false)
+  }
+
+  @Test
+  fun `SDS Hints do not show with SDS sentenced at 14-06-24 and SDS sentenced at 18-9-24`() {
+    val showSDS40 = getShowSDS40Hints()
+    val service = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
+    val sentences = listOf(
+      concurrentSentenceBreakdown.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+        isSDSPlus = false,
+        sentencedAt = LocalDate.of(2024, 6, 24),
+      ),
+      concurrentSentenceBreakdown.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+        isSDSPlus = false,
+        sentencedAt = LocalDate.of(2024, 9, 18),
+      ),
+    )
+    assertThat(showSDS40.invoke(service, CalculationBreakdown(sentences, null))).isEqualTo(false)
+  }
+
+  @Test
+  fun `SDS Hints do not show with SDS sentenced at 14-10-22 and SDS sentenced at 13-9-24`() {
+    val showSDS40 = getShowSDS40Hints()
+    val service = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
+    val sentences = listOf(
+      concurrentSentenceBreakdown.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+        isSDSPlus = false,
+        sentencedAt = LocalDate.of(2022, 10, 22),
+      ),
+      concurrentSentenceBreakdown.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+        isSDSPlus = false,
+        sentencedAt = LocalDate.of(2024, 9, 13),
+      ),
+    )
+    assertThat(showSDS40.invoke(service, CalculationBreakdown(sentences, null))).isEqualTo(false)
+  }
+
+  @Test
+  fun `SDS Hints do not show with SDS sentenced at 17-01-24 and SDS sentenced at 17-9-24`() {
+    val showSDS40 = getShowSDS40Hints()
+    val service = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
+    val sentences = listOf(
+      concurrentSentenceBreakdown.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+        isSDSPlus = false,
+        sentencedAt = LocalDate.of(2024, 1, 17),
+      ),
+      concurrentSentenceBreakdown.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+        isSDSPlus = false,
+        sentencedAt = LocalDate.of(2024, 9, 17),
+      ),
+    )
+    assertThat(showSDS40.invoke(service, CalculationBreakdown(sentences, null))).isEqualTo(false)
+  }
+
+  @Test
+  fun `SDS Hints show with SDS+ and SDS sentence before 2024-9-23`() {
+    val showSDS40 = getShowSDS40Hints()
+    val service = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
+    val sentences = listOf(
+      concurrentSentenceBreakdown.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+        isSDSPlus = false,
+        sentencedAt = LocalDate.of(2024, 6, 24),
+      ),
+      concurrentSentenceBreakdown.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+        isSDSPlus = true,
+        sentencedAt = LocalDate.of(2024, 9, 13),
+      ),
+    )
+    assertThat(showSDS40.invoke(service, CalculationBreakdown(sentences, null))).isEqualTo(true)
+  }
+
+  @Test
+  fun `SDS Hints show with SDS sentenced at 18-03-2024 and SOPC21 sentenced at 17-9-24`() {
+    val showSDS40 = getShowSDS40Hints()
+    val service = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
+    val sentences = listOf(
+      concurrentSentenceBreakdown.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+        isSDSPlus = false,
+        sentencedAt = LocalDate.of(2024, 3, 18),
+      ),
+      concurrentSentenceBreakdown.copy(
+        sentenceCalculationType = SentenceCalculationType.SOPC21.name,
+        isSDSPlus = false,
+        sentencedAt = LocalDate.of(2024, 9, 17),
+      ),
+    )
+    assertThat(showSDS40.invoke(service, CalculationBreakdown(sentences, null))).isEqualTo(true)
+  }
+
+  @Test
+  fun `SDS Hints show with SDS sentenced at 17-01-2024 and A-FINE sentenced at 17-9-24`() {
+    val showSDS40 = getShowSDS40Hints()
+    val service = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
+    val sentences = listOf(
+      concurrentSentenceBreakdown.copy(
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+        isSDSPlus = false,
+        sentencedAt = LocalDate.of(2024, 1, 17),
+      ),
+      concurrentSentenceBreakdown.copy(
+        sentenceCalculationType = SentenceCalculationType.AFINE.name,
+        isSDSPlus = false,
+        sentencedAt = LocalDate.of(2024, 9, 24),
+      ),
+    )
+    assertThat(showSDS40.invoke(service, CalculationBreakdown(sentences, null))).isEqualTo(true)
+  }
+
   private fun getReleaseDateAndStubAdjustments(type: ReleaseDateType, date: LocalDate): ReleaseDate {
     whenever(nonFridayReleaseService.getDate(ReleaseDate(date, type))).thenReturn(NonFridayReleaseDay(date, false))
     whenever(workingDayService.previousWorkingDay(date)).thenReturn(WorkingDay(date, adjustedForWeekend = false, adjustedForBankHoliday = false))
@@ -922,8 +1072,26 @@ class CalculationResultEnrichmentServiceTest {
     emptyList(),
   )
 
+  private val concurrentSentenceBreakdown = ConcurrentSentenceBreakdown(
+    sentencedAt = LocalDate.now(),
+    sentenceLength = "",
+    sentenceLengthDays = 1,
+    dates = mapOf(),
+    sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+    isSDSPlus = false,
+    lineSequence = 1,
+    caseSequence = 1,
+    caseReference = "ref",
+  )
+
   private fun calculationResultEnrichmentService(today: LocalDate = LocalDate.of(2000, 1, 1), featureToggles: FeatureToggles = FeatureToggles()): CalculationResultEnrichmentService {
     val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
     return CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock, featureToggles)
+  }
+
+  private fun getShowSDS40Hints(): Method {
+    val showSDS40 = CalculationResultEnrichmentService::class.java.getDeclaredMethod("showSDS40Hints", CalculationBreakdown::class.java)
+    showSDS40.setAccessible(true)
+    return showSDS40
   }
 }
