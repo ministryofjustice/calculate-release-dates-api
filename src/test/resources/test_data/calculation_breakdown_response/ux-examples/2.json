@@ -18,6 +18,7 @@
           "adjustedByDays": 20
         }
       },
+      "sentenceCalculationType": "ADIMP",
       "lineSequence": 1,
       "caseSequence": 1,
       "caseReference": null
@@ -40,6 +41,7 @@
           "adjustedByDays": 20
         }
       },
+      "sentenceCalculationType": "ADIMP",
       "lineSequence": 2,
       "caseSequence": 2,
       "caseReference": null
@@ -62,6 +64,7 @@
           "adjustedByDays": 20
         }
       },
+      "sentenceCalculationType": "ADIMP",
       "lineSequence": 3,
       "caseSequence": 3,
       "caseReference": null

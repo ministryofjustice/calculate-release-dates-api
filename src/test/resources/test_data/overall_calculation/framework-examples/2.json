@@ -15,7 +15,8 @@
         }
       },
       "sentencedAt": "2024-05-10",
-      "isSDSPlus": true
+      "isSDSPlus": true,
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

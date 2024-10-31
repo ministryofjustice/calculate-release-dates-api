@@ -15,7 +15,8 @@
         }
       },
       "sentencedAt": "2021-02-12",
-      "recallType": "FIXED_TERM_RECALL_28"
+      "recallType": "FIXED_TERM_RECALL_28",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -27,7 +28,8 @@
         }
       },
       "sentencedAt": "2021-02-12",
-      "recallType": "FIXED_TERM_RECALL_28"
+      "recallType": "FIXED_TERM_RECALL_28",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {
@@ -40,5 +42,4 @@
       }
     ]
   }
-
 }

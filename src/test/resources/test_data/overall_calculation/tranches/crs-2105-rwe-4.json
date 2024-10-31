@@ -27,8 +27,11 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "A1234567489",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

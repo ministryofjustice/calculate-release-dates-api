@@ -15,7 +15,8 @@
         }
       },
       "recallType": "FIXED_TERM_RECALL_28",
-      "sentencedAt": "2020-01-03"
+      "sentencedAt": "2020-01-03",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -26,7 +27,8 @@
           "DAYS": 876
         }
       },
-      "sentencedAt": "2022-02-03"
+      "sentencedAt": "2022-02-03",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

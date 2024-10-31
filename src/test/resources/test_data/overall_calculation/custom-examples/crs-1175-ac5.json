@@ -6,22 +6,23 @@
   },
   "sentences": [
     {
-      "type":"ExtendedDeterminateSentence",
+      "type": "ExtendedDeterminateSentence",
       "sentenceType": "EDSU18",
-      "offence":{
-        "committedAt":"2021-04-28"
+      "offence": {
+        "committedAt": "2021-04-28"
       },
-      "custodialDuration":{
-        "durationElements":{
+      "custodialDuration": {
+        "durationElements": {
           "YEARS": 3
         }
       },
-      "extensionDuration":{
-        "durationElements":{
+      "extensionDuration": {
+        "durationElements": {
           "YEARS": 2
         }
       },
-      "sentencedAt":"2021-10-08"
+      "sentencedAt": "2021-10-08",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -34,7 +35,8 @@
       },
       "sentencedAt": "2021-12-16",
       "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

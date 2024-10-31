@@ -13,7 +13,8 @@
           "YEARS": 15
         }
       },
-      "sentencedAt": "2024-02-19"
+      "sentencedAt": "2024-02-19",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

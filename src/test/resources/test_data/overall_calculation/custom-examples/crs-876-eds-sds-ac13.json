@@ -13,7 +13,8 @@
           "MONTHS": 63
         }
       },
-      "sentencedAt": "2021-09-03"
+      "sentencedAt": "2021-09-03",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -24,7 +25,8 @@
           "MONTHS": 34
         }
       },
-      "sentencedAt": "2021-09-03"
+      "sentencedAt": "2021-09-03",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -43,7 +45,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2021-09-03"
+      "sentencedAt": "2021-09-03",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -62,7 +65,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2021-09-03"
+      "sentencedAt": "2021-09-03",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

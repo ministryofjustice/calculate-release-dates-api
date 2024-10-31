@@ -21,7 +21,10 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -39,7 +42,10 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "B1234567",
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -65,7 +71,8 @@
       },
       "consecutiveSentenceUUIDs": [
         "ca1bb9d1-88ce-3a64-bd32-26839082c2c5"
-      ]
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -91,7 +98,8 @@
       },
       "consecutiveSentenceUUIDs": [
         "ca1bb9d1-88ce-3a64-bd32-26839082c2c5"
-      ]
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

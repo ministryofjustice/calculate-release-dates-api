@@ -27,8 +27,11 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "A12345678",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -54,7 +57,8 @@
       "consecutiveSentenceUUIDs": [
         "d7449876-d80b-3769-916e-4a165431c6c3"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -77,8 +81,11 @@
       "caseSequence": 3,
       "lineSequence": 3,
       "caseReference": "05C10084722",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -101,8 +108,11 @@
       "caseSequence": 3,
       "lineSequence": 4,
       "caseReference": "05C10084722",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -125,8 +135,11 @@
       "caseSequence": 3,
       "lineSequence": 4,
       "caseReference": "05C10084722",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

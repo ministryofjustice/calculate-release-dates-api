@@ -10,13 +10,15 @@
       },
       "duration": {
         "durationElements": {
-          "YEARS" : 3,
+          "YEARS": 3,
           "MONTHS": 10
         }
       },
       "sentencedAt": "2021-09-03",
-      "sentenceType": "ADIMP_ORA"
-    },{
+      "sentenceType": "ADIMP_ORA",
+      "sentenceCalculationType": "ADIMP"
+    },
+    {
       "offence": {
         "committedAt": "2021-07-03"
       },
@@ -27,8 +29,10 @@
         }
       },
       "sentencedAt": "2022-12-27",
-      "sentenceType": "ADIMP_ORA"
-    },{
+      "sentenceType": "ADIMP_ORA",
+      "sentenceCalculationType": "ADIMP"
+    },
+    {
       "offence": {
         "committedAt": "2021-07-03"
       },
@@ -39,7 +43,8 @@
         }
       },
       "sentencedAt": "2023-01-27",
-      "sentenceType": "ADIMP_ORA"
+      "sentenceType": "ADIMP_ORA",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

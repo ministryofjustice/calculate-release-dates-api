@@ -14,7 +14,8 @@
         }
       },
       "sentencedAt": "2020-02-28",
-      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -25,7 +26,8 @@
           "MONTHS": 54
         }
       },
-      "sentencedAt": "2020-02-28"
+      "sentencedAt": "2020-02-28",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -39,7 +41,8 @@
       "sentencedAt": "2021-08-23",
       "consecutiveSentenceUUIDs": [
         "cb304745-d781-47d3-b931-4baa31551fc5"
-      ]
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

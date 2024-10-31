@@ -16,7 +16,8 @@
       },
       "sentencedAt": "2024-09-12",
       "sentenceType": "ADIMP_ORA",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

@@ -1,96 +1,101 @@
 {
-  "offender":{
+  "offender": {
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences":[
+  "sentences": [
     {
-      "offence":{
-        "committedAt":"2016-11-13"
+      "offence": {
+        "committedAt": "2016-11-13"
       },
-      "duration":{
-        "durationElements":{
-          "MONTHS":6,
-          "YEARS":4
+      "duration": {
+        "durationElements": {
+          "MONTHS": 6,
+          "YEARS": 4
         }
       },
-      "sentencedAt":"2017-11-03",
-      "caseSequence":2,
-      "lineSequence":1,
-      "caseReference":"STD LR",
-      "recallType":"STANDARD_RECALL"
+      "sentencedAt": "2017-11-03",
+      "caseSequence": 2,
+      "lineSequence": 1,
+      "caseReference": "STD LR",
+      "recallType": "STANDARD_RECALL",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "offence":{
-        "committedAt":"2016-11-13"
+      "offence": {
+        "committedAt": "2016-11-13"
       },
-      "duration":{
-        "durationElements":{
-          "YEARS":1
+      "duration": {
+        "durationElements": {
+          "YEARS": 1
         }
       },
-      "sentencedAt":"2017-11-03",
-      "caseSequence":2,
-      "lineSequence":2,
-      "caseReference":"STD LR",
-      "recallType":"STANDARD_RECALL"
+      "sentencedAt": "2017-11-03",
+      "caseSequence": 2,
+      "lineSequence": 2,
+      "caseReference": "STD LR",
+      "recallType": "STANDARD_RECALL",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "offence":{
-        "committedAt":"2020-05-22"
+      "offence": {
+        "committedAt": "2020-05-22"
       },
-      "duration":{
-        "durationElements":{
-          "MONTHS":38
+      "duration": {
+        "durationElements": {
+          "MONTHS": 38
         }
       },
-      "sentencedAt":"2020-11-20",
-      "caseSequence":1,
-      "lineSequence":3,
-      "caseReference":"T20207226"
+      "sentencedAt": "2020-11-20",
+      "caseSequence": 1,
+      "lineSequence": 3,
+      "caseReference": "T20207226",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "offence":{
-        "committedAt":"2020-05-22"
+      "offence": {
+        "committedAt": "2020-05-22"
       },
-      "duration":{
-        "durationElements":{
-          "MONTHS":15
+      "duration": {
+        "durationElements": {
+          "MONTHS": 15
         }
       },
-      "sentencedAt":"2020-11-20",
-      "caseSequence":1,
-      "lineSequence":4,
-      "caseReference":"T20207226"
+      "sentencedAt": "2020-11-20",
+      "caseSequence": 1,
+      "lineSequence": 4,
+      "caseReference": "T20207226",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "offence":{
-        "committedAt":"2020-05-22"
+      "offence": {
+        "committedAt": "2020-05-22"
       },
-      "duration":{
-        "durationElements":{
-          "MONTHS":12
+      "duration": {
+        "durationElements": {
+          "MONTHS": 12
         }
       },
-      "sentencedAt":"2020-11-20",
-      "caseSequence":1,
-      "lineSequence":5,
-      "caseReference":"T20207226"
+      "sentencedAt": "2020-11-20",
+      "caseSequence": 1,
+      "lineSequence": 5,
+      "caseReference": "T20207226",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-  "adjustments":{
-    "RECALL_REMAND":[
+  "adjustments": {
+    "RECALL_REMAND": [
       {
-        "appliesToSentencesFrom":"2017-11-03",
-        "numberOfDays":35
+        "appliesToSentencesFrom": "2017-11-03",
+        "numberOfDays": 35
       }
     ],
-    "REMAND":[
+    "REMAND": [
       {
-        "appliesToSentencesFrom":"2020-11-20",
-        "numberOfDays":7,
-        "fromDate":"2020-05-22",
-        "toDate":"2020-05-28"
+        "appliesToSentencesFrom": "2020-11-20",
+        "numberOfDays": 7,
+        "fromDate": "2020-05-22",
+        "toDate": "2020-05-28"
       }
     ]
   }

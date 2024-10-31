@@ -1,6 +1,6 @@
 {
   "calculateErsed": true,
-  "offender":{
+  "offender": {
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
@@ -14,7 +14,8 @@
           "YEARS": 6
         }
       },
-      "sentencedAt": "2021-08-24"
+      "sentencedAt": "2021-08-24",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

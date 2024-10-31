@@ -19,7 +19,8 @@
       "sentencedAt": "2021-09-21",
       "consecutiveSentenceUUIDs": [
         "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
-      ]
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "caseSequence": 1,
@@ -34,7 +35,8 @@
         }
       },
       "sentencedAt": "2021-09-21",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "caseSequence": 1,
@@ -48,7 +50,8 @@
           "MONTHS": 3
         }
       },
-      "sentencedAt": "2021-09-21"
+      "sentencedAt": "2021-09-21",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "caseSequence": 1,
@@ -62,7 +65,8 @@
           "YEARS": 1
         }
       },
-      "sentencedAt": "2021-09-21"
+      "sentencedAt": "2021-09-21",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "caseSequence": 1,
@@ -76,7 +80,8 @@
           "MONTHS": 18
         }
       },
-      "sentencedAt": "2021-09-21"
+      "sentencedAt": "2021-09-21",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "caseSequence": 1,
@@ -90,7 +95,8 @@
           "MONTHS": 6
         }
       },
-      "sentencedAt": "2021-09-21"
+      "sentencedAt": "2021-09-21",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

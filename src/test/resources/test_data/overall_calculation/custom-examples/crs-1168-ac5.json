@@ -14,7 +14,8 @@
         }
       },
       "sentencedAt": "2021-08-27",
-      "sentenceType": "SEC250_ORA"
+      "sentenceType": "SEC250_ORA",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -26,7 +27,8 @@
         }
       },
       "sentencedAt": "2021-12-20",
-      "sentenceType": "SEC250"
+      "sentenceType": "SEC250",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

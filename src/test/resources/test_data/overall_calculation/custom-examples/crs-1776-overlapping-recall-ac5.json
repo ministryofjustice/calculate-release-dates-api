@@ -1,53 +1,45 @@
 {
-  "offender":
-  {
+  "offender": {
     "reference": "ABC123",
     "dateOfBirth": "2000-01-01"
   },
   "bookingId": 1,
-  "sentences":
-  [
+  "sentences": [
     {
       "type": "StandardSentence",
-      "offence":
-      {
+      "offence": {
         "committedAt": "2023-10-09",
         "offenceCode": "CJ88144"
       },
-      "duration":
-      {
-        "durationElements":
-        {
+      "duration": {
+        "durationElements": {
           "MONTHS": 6
         }
       },
       "identifier": "05cc1964-eb68-33ae-9ee8-8048a3db5635",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2023-11-23"
+      "sentencedAt": "2023-11-23",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
-      "offence":
-      {
+      "offence": {
         "committedAt": "2024-01-28",
         "offenceCode": "OF61095"
       },
-      "duration":
-      {
-        "durationElements":
-        {
+      "duration": {
+        "durationElements": {
           "WEEKS": 12
         }
       },
       "identifier": "61859c05-a1f0-3b1f-b1bf-2c07a5e14733",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2024-01-29"
+      "sentencedAt": "2024-01-29",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-  "adjustments":
-  {
-    "RECALL_REMAND":
-    [
+  "adjustments": {
+    "RECALL_REMAND": [
       {
         "toDate": "2023-11-22",
         "fromDate": "2023-10-18",
@@ -55,8 +47,7 @@
         "appliesToSentencesFrom": "2023-11-23"
       }
     ],
-    "UNLAWFULLY_AT_LARGE":
-    [
+    "UNLAWFULLY_AT_LARGE": [
       {
         "toDate": "2024-01-27",
         "fromDate": "2024-01-27",
@@ -72,8 +63,7 @@
     ]
   },
   "returnToCustodyDate": "2024-04-02",
-  "fixedTermRecallDetails":
-  {
+  "fixedTermRecallDetails": {
     "bookingId": 1,
     "recallLength": 14,
     "returnToCustodyDate": "2024-04-02"

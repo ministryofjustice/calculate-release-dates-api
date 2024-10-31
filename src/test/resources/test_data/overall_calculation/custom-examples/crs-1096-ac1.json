@@ -16,7 +16,8 @@
       },
       "sentencedAt": "2021-05-23",
       "sentenceType": "DTO_ORA",
-      "isDto": true
+      "isDto": true,
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

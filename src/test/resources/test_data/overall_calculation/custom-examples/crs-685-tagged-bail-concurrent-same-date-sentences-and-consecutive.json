@@ -14,7 +14,8 @@
         }
       },
       "sentencedAt": "2021-03-08",
-      "identifier": "6555a75c-8c81-40f2-be30-719696d08142"
+      "identifier": "6555a75c-8c81-40f2-be30-719696d08142",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -26,7 +27,10 @@
         }
       },
       "sentencedAt": "2021-03-08",
-      "consecutiveSentenceUUIDs": ["6555a75c-8c81-40f2-be30-719696d08142"]
+      "consecutiveSentenceUUIDs": [
+        "6555a75c-8c81-40f2-be30-719696d08142"
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -37,7 +41,8 @@
           "MONTHS": 5
         }
       },
-      "sentencedAt": "2021-03-08"
+      "sentencedAt": "2021-03-08",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

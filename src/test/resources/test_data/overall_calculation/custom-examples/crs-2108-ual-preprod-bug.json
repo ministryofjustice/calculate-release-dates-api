@@ -20,7 +20,8 @@
       "caseSequence": 2,
       "lineSequence": 6,
       "caseReference": "072400004310",
-      "fineAmount": 154.0
+      "fineAmount": 154.0,
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -34,7 +35,8 @@
       },
       "sentencedAt": "2024-04-18",
       "identifier": "4cd8cb18-10c7-316e-8911-a08c534a0216",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -49,7 +51,8 @@
       "sentencedAt": "2023-11-23",
       "identifier": "be51b5b7-c018-36c9-b8c9-271467646418",
       "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -67,7 +70,8 @@
         "be51b5b7-c018-36c9-b8c9-271467646418"
       ],
       "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -85,7 +89,8 @@
         "47b27ae5-3aae-3d7b-a598-9bafcdd3c9b1"
       ],
       "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -100,7 +105,8 @@
       "sentencedAt": "2023-11-23",
       "identifier": "cde41934-a1d7-3f54-b8d9-06f8e886562c",
       "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -115,7 +121,8 @@
       "sentencedAt": "2023-11-23",
       "identifier": "a76a66d6-0368-37aa-9f51-0c88d9bc38b8",
       "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -129,7 +136,8 @@
       },
       "sentencedAt": "2024-07-15",
       "identifier": "4ed7a789-b195-31f0-a119-47e670a3c906",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -146,7 +154,8 @@
       "consecutiveSentenceUUIDs": [
         "4ed7a789-b195-31f0-a119-47e670a3c906"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -163,7 +172,8 @@
       "consecutiveSentenceUUIDs": [
         "5d83c5cf-2531-37ba-8b6b-bcc55c733936"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

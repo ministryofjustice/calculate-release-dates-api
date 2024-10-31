@@ -20,7 +20,8 @@
       },
       "lineSequence": 1,
       "caseSequence": 1,
-      "caseReference": null
+      "caseReference": null,
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "sentencedAt": "2024-04-23",
@@ -42,21 +43,28 @@
       },
       "lineSequence": 2,
       "caseSequence": 2,
-      "caseReference": null
+      "caseReference": null,
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "consecutiveSentence": null,
   "breakdownByReleaseDateType": {
     "SLED": {
-      "rules": [],
-      "rulesWithExtraAdjustments": {},
+      "rules": [
+
+      ],
+      "rulesWithExtraAdjustments": {
+      },
       "adjustedDays": -28,
       "releaseDate": "2027-03-25",
       "unadjustedDate": "2027-04-22"
     },
     "CRD": {
-      "rules": ["SDS_STANDARD_RELEASE_APPLIES"],
-      "rulesWithExtraAdjustments": {},
+      "rules": [
+        "SDS_STANDARD_RELEASE_APPLIES"
+      ],
+      "rulesWithExtraAdjustments": {
+      },
       "adjustedDays": -28,
       "releaseDate": "2025-01-23",
       "unadjustedDate": "2025-02-20"
@@ -81,12 +89,14 @@
         "ERSED_MIN_EFFECTIVE_DATE",
         "SDS_STANDARD_RELEASE_APPLIES"
       ],
-      "rulesWithExtraAdjustments": {},
+      "rulesWithExtraAdjustments": {
+      },
       "adjustedDays": -28,
       "releaseDate": "2023-12-26",
       "unadjustedDate": "2024-01-23"
     }
   },
-  "otherDates": {},
+  "otherDates": {
+  },
   "ersedNotApplicableDueToDtoLaterThanCrd": false
 }

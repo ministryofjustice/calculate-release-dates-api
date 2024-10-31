@@ -20,7 +20,8 @@
       "hasAnSDSEarlyReleaseExclusion": "NATIONAL_SECURITY",
       "sentenceSequence": 1,
       "lineSequence": 1,
-      "caseSequence": 1
+      "caseSequence": 1,
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "SEC250",
@@ -37,7 +38,8 @@
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentenceSequence": 2,
       "lineSequence": 1,
-      "caseSequence": 1
+      "caseSequence": 1,
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

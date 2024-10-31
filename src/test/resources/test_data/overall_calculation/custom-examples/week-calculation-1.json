@@ -13,7 +13,8 @@
           "WEEKS": 26
         }
       },
-      "sentencedAt": "2021-11-08"
+      "sentencedAt": "2021-11-08",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

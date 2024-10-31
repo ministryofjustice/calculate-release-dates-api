@@ -4,6 +4,7 @@
       "sentencedAt": "2023-10-27",
       "sentenceLength": "24 months",
       "sentenceLengthDays": 731,
+      "sentenceCalculationType": "ADIMP",
       "dates": {
         "SLED": {
           "unadjusted": "2025-10-26",
@@ -26,6 +27,7 @@
       "sentencedAt": "2024-04-09",
       "sentenceLength": "19 months",
       "sentenceLengthDays": 579,
+      "sentenceCalculationType": "ADIMP",
       "dates": {
         "SLED": {
           "unadjusted": "2025-11-08",
@@ -48,6 +50,7 @@
       "sentencedAt": "2024-04-09",
       "sentenceLength": "14 months",
       "sentenceLengthDays": 426,
+      "sentenceCalculationType": "ADIMP",
       "dates": {
         "SLED": {
           "unadjusted": "2025-06-08",

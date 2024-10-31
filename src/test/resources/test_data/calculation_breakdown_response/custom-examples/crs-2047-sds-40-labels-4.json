@@ -20,7 +20,8 @@
       },
       "lineSequence": 0,
       "caseSequence": 0,
-      "caseReference": null
+      "caseReference": null,
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "consecutiveSentence": {
@@ -43,6 +44,7 @@
     },
     "sentenceParts": [
       {
+        "sentenceCalculationType": "ADIMP",
         "lineSequence": 0,
         "caseSequence": 0,
         "caseReference": null,
@@ -52,6 +54,7 @@
         "consecutiveToCaseSequence": null
       },
       {
+        "sentenceCalculationType": "ADIMP",
         "lineSequence": 0,
         "caseSequence": 0,
         "caseReference": null,
@@ -61,6 +64,7 @@
         "consecutiveToCaseSequence": null
       },
       {
+        "sentenceCalculationType": "ADIMP",
         "lineSequence": 0,
         "caseSequence": 0,
         "caseReference": null,

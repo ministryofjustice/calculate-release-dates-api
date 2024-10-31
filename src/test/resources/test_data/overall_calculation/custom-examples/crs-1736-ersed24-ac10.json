@@ -22,17 +22,18 @@
       },
       "automaticRelease": true,
       "sentencedAt": "2015-03-05",
-      "sentenceType": "LASPO_AR"
+      "sentenceType": "LASPO_AR",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {
-  "REMAND": [
-    {
-      "appliesToSentencesFrom": "2015-03-05",
-      "numberOfDays": 50,
-      "fromDate": "2014-01-27",
-      "toDate": "2014-03-17"
-    }
-  ]
-}
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2015-03-05",
+        "numberOfDays": 50,
+        "fromDate": "2014-01-27",
+        "toDate": "2014-03-17"
+      }
+    ]
+  }
 }

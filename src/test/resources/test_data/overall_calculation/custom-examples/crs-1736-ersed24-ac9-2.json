@@ -21,7 +21,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2022-01-10"
+      "sentencedAt": "2022-01-10",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

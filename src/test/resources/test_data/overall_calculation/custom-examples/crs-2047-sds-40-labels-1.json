@@ -28,7 +28,8 @@
       "lineSequence": 1,
       "caseReference": null,
       "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -54,7 +55,8 @@
       "consecutiveSentenceUUIDs": [
         "0549ff5e-93b1-3f22-8095-a97ab6c60f4b"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

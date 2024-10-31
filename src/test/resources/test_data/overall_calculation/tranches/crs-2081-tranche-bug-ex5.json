@@ -27,8 +27,11 @@
       "caseSequence": 2,
       "lineSequence": 1,
       "caseReference": "Recall",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -51,8 +54,11 @@
       "caseSequence": 1,
       "lineSequence": 2,
       "caseReference": "123456789AB",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -75,8 +81,11 @@
       "caseSequence": 1,
       "lineSequence": 3,
       "caseReference": "123456789AB",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -99,8 +108,11 @@
       "caseSequence": 1,
       "lineSequence": 4,
       "caseReference": "123465789AB",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

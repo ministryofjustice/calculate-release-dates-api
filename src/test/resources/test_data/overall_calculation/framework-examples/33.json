@@ -17,7 +17,8 @@
       "sentencedAt": "2023-01-25",
       "consecutiveSentenceUUIDs": [
         "80a460be-4d39-4edc-b392-9744d913084a"
-      ]
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -31,7 +32,8 @@
       },
       "sentencedAt": "2023-01-25",
       "identifier": "80a460be-4d39-4edc-b392-9744d913084a",
-      "isSDSPlus": true
+      "isSDSPlus": true,
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

@@ -27,8 +27,11 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "T12346578",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -54,7 +57,8 @@
       "consecutiveSentenceUUIDs": [
         "e023d7e5-eb8d-3aa2-9fdd-381fb20bd13e"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -77,8 +81,11 @@
       "caseSequence": 2,
       "lineSequence": 3,
       "caseReference": "T12346578",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -101,8 +108,11 @@
       "caseSequence": 3,
       "lineSequence": 4,
       "caseReference": "T12346578",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -125,8 +135,11 @@
       "caseSequence": 3,
       "lineSequence": 5,
       "caseReference": "T12346578",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -149,8 +162,11 @@
       "caseSequence": 3,
       "lineSequence": 6,
       "caseReference": "T12346578",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

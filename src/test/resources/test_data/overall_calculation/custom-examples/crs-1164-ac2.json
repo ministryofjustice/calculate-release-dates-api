@@ -15,7 +15,8 @@
         }
       },
       "sentencedAt": "2021-06-14",
-      "sentenceType": "DTO_ORA"
+      "sentenceType": "DTO_ORA",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "DetentionAndTrainingOrderSentence",
@@ -28,7 +29,8 @@
         }
       },
       "sentencedAt": "2022-01-06",
-      "sentenceType": "DTO_ORA"
+      "sentenceType": "DTO_ORA",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

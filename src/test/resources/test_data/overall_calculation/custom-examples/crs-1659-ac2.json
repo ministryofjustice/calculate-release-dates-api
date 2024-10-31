@@ -14,7 +14,8 @@
         }
       },
       "sentencedAt": "2022-04-20",
-      "sentenceType": "SDS_ORA"
+      "sentenceType": "SDS_ORA",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -26,7 +27,8 @@
         }
       },
       "sentencedAt": "2022-07-11",
-      "sentenceType": "SDS_ORA"
+      "sentenceType": "SDS_ORA",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {
@@ -50,7 +52,8 @@
         "appliesToSentencesFrom": "2022-08-02",
         "fromDate": "2022-08-02",
         "toDate": "2022-08-03"
-      }],
+      }
+    ],
     "UNLAWFULLY_AT_LARGE": [
       {
         "appliesToSentencesFrom": "2022-11-01",

@@ -27,7 +27,10 @@
       "caseSequence": 1,
       "lineSequence": 4,
       "caseReference": "367858",
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "DetentionAndTrainingOrderSentence",
@@ -50,7 +53,10 @@
       "caseSequence": 1,
       "lineSequence": 4,
       "caseReference": "367858",
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -73,8 +79,11 @@
       "caseSequence": 6,
       "lineSequence": 9,
       "caseReference": "T20207124",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -97,8 +106,11 @@
       "caseSequence": 6,
       "lineSequence": 10,
       "caseReference": "T20207124",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -121,11 +133,15 @@
       "caseSequence": 7,
       "lineSequence": 11,
       "caseReference": "06A10741922",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-  "adjustments": {},
+  "adjustments": {
+  },
   "historicalTusedData": null,
   "returnToCustodyDate": null,
   "fixedTermRecallDetails": null

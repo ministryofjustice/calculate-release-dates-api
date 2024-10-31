@@ -8,30 +8,31 @@
     {
       "type": "SopcSentence",
       "offence": {
-        "committedAt":"2022-04-11"
+        "committedAt": "2022-04-11"
       },
       "custodialDuration": {
         "durationElements": {
           "YEARS": 14
         }
       },
-      "extensionDuration":{
-        "durationElements":{
+      "extensionDuration": {
+        "durationElements": {
           "YEARS": 1
         }
       },
-      "automaticRelease":false,
+      "automaticRelease": false,
       "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
-      "sentencedAt": "2021-06-14"
+      "sentencedAt": "2021-06-14",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-  "adjustments":{
-    "REMAND":[
+  "adjustments": {
+    "REMAND": [
       {
-        "appliesToSentencesFrom":"2021-06-14",
-        "numberOfDays":186,
-        "fromDate":"2020-12-10",
-        "toDate":"2021-06-13"
+        "appliesToSentencesFrom": "2021-06-14",
+        "numberOfDays": 186,
+        "fromDate": "2020-12-10",
+        "toDate": "2021-06-13"
       }
     ]
   }

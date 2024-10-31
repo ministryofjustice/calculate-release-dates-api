@@ -28,8 +28,11 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": null,
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -55,7 +58,8 @@
       "consecutiveSentenceUUIDs": [
         "38a0376c-44c9-3f5d-9f67-e83d1cd345a3"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -78,11 +82,15 @@
       "caseSequence": 1,
       "lineSequence": 3,
       "caseReference": null,
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-  "adjustments": {},
+  "adjustments": {
+  },
   "historicalTusedData": null,
   "returnToCustodyDate": "2024-06-14",
   "fixedTermRecallDetails": {

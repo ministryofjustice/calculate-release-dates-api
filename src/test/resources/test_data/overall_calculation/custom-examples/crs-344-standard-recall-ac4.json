@@ -15,7 +15,8 @@
       },
       "recallType": "STANDARD_RECALL",
       "sentencedAt": "2021-01-25",
-      "identifier": "87a3847a-aa56-4052-9f53-68b1ae44e11b"
+      "identifier": "87a3847a-aa56-4052-9f53-68b1ae44e11b",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -28,7 +29,10 @@
       },
       "recallType": "STANDARD_RECALL",
       "sentencedAt": "2021-01-25",
-      "consecutiveSentenceUUIDs": ["87a3847a-aa56-4052-9f53-68b1ae44e11b"]
+      "consecutiveSentenceUUIDs": [
+        "87a3847a-aa56-4052-9f53-68b1ae44e11b"
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

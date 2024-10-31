@@ -16,7 +16,8 @@
       },
       "sentencedAt": "2021-12-16",
       "sentenceType": "DTO",
-      "type": "DetentionAndTrainingOrderSentence"
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -28,7 +29,8 @@
         }
       },
       "sentencedAt": "2021-10-08",
-      "sentenceType": "YOI"
+      "sentenceType": "YOI",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

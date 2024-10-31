@@ -13,7 +13,8 @@
           "MONTHS": 8
         }
       },
-      "sentencedAt": "2012-12-17"
+      "sentencedAt": "2012-12-17",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

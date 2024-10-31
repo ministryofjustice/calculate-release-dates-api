@@ -13,7 +13,8 @@
           "DAYS": 7
         }
       },
-      "sentencedAt": "2024-04-26"
+      "sentencedAt": "2024-04-26",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "BotusSentence",
@@ -25,7 +26,8 @@
           "DAYS": 14
         }
       },
-      "sentencedAt": "2024-04-26"
+      "sentencedAt": "2024-04-26",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

@@ -20,21 +20,28 @@
       },
       "lineSequence": 0,
       "caseSequence": 0,
-      "caseReference": null
+      "caseReference": null,
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "consecutiveSentence": null,
   "breakdownByReleaseDateType": {
     "CRD": {
-      "rules": [],
-      "rulesWithExtraAdjustments": {},
+      "rules": [
+
+      ],
+      "rulesWithExtraAdjustments": {
+      },
       "adjustedDays": 0,
       "releaseDate": "2011-03-01",
       "unadjustedDate": "2011-03-01"
     },
     "SLED": {
-      "rules": [],
-      "rulesWithExtraAdjustments": {},
+      "rules": [
+
+      ],
+      "rulesWithExtraAdjustments": {
+      },
       "adjustedDays": 0,
       "releaseDate": "2011-08-30",
       "unadjustedDate": "2011-08-30"
@@ -43,7 +50,8 @@
       "rules": [
         "ERSED_MIN_EFFECTIVE_DATE"
       ],
-      "rulesWithExtraAdjustments": {},
+      "rulesWithExtraAdjustments": {
+      },
       "adjustedDays": 0,
       "releaseDate": "2010-12-01",
       "unadjustedDate": "2010-12-01"
@@ -63,6 +71,7 @@
       "unadjustedDate": "2010-08-31"
     }
   },
-  "otherDates": {},
+  "otherDates": {
+  },
   "ersedNotApplicableDueToDtoLaterThanCrd": false
 }

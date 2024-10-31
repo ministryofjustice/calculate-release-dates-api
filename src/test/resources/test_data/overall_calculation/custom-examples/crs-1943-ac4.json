@@ -13,7 +13,8 @@
           "YEARS": 2
         }
       },
-      "sentencedAt": "2019-08-26"
+      "sentencedAt": "2019-08-26",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -32,8 +33,10 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2019-05-20"
-    },{
+      "sentencedAt": "2019-05-20",
+      "sentenceCalculationType": "ADIMP"
+    },
+    {
       "type": "BotusSentence",
       "offence": {
         "committedAt": "2019-03-30"
@@ -43,7 +46,8 @@
           "DAYS": 8
         }
       },
-      "sentencedAt": "2020-04-09"
+      "sentencedAt": "2020-04-09",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

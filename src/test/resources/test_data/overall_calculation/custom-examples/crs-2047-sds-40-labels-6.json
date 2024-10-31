@@ -36,9 +36,13 @@
           "MONTHS": 0
         }
       },
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-  "adjustments": {},
+  "adjustments": {
+  },
   "calculateErsed": true
 }

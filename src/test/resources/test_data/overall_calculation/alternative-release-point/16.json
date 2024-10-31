@@ -27,7 +27,10 @@
           "YEARS": 1
         }
       },
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -45,7 +48,10 @@
       "caseSequence": 1,
       "lineSequence": 2,
       "caseReference": "B1234567",
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -63,7 +69,10 @@
       "caseSequence": 1,
       "lineSequence": 3,
       "caseReference": "C1234567",
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -81,7 +90,10 @@
       "caseSequence": 2,
       "lineSequence": 4,
       "caseReference": "D1234567",
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -99,7 +111,10 @@
       "caseSequence": 2,
       "lineSequence": 5,
       "caseReference": "E1234567",
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -117,7 +132,10 @@
       "caseSequence": 2,
       "lineSequence": 5,
       "caseReference": "F1234567",
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -141,7 +159,10 @@
           "YEARS": 1
         }
       },
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -159,9 +180,13 @@
       "caseSequence": 2,
       "lineSequence": 7,
       "caseReference": "H1234567",
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-  "adjustments": {},
+  "adjustments": {
+  },
   "calculateErsed": true
 }

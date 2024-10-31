@@ -17,8 +17,9 @@
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentencedAt": "2019-09-10",
       "sentenceType": "FTR",
-      "recallType":"FIXED_TERM_RECALL_28",
-      "lineSequence": 1
+      "recallType": "FIXED_TERM_RECALL_28",
+      "lineSequence": 1,
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -33,7 +34,8 @@
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentencedAt": "2024-08-15",
       "sentenceType": "ADIMP_ORA",
-      "lineSequence": 2
+      "lineSequence": 2,
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {
@@ -46,5 +48,5 @@
       }
     ]
   },
-  "returnToCustodyDate":"2022-05-11"
+  "returnToCustodyDate": "2022-05-11"
 }

@@ -22,7 +22,8 @@
       },
       "automaticRelease": false,
       "sentenceType": "LASPO_DR",
-      "sentencedAt": "2015-04-08"
+      "sentencedAt": "2015-04-08",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

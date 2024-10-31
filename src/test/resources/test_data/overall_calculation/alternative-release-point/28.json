@@ -20,7 +20,10 @@
       "sentencedAt": "2022-03-14",
       "caseSequence": 1,
       "lineSequence": 1,
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -39,7 +42,8 @@
       "lineSequence": 2,
       "consecutiveSentenceUUIDs": [
         "8ec85920-282c-3e49-8c7b-104e7b074d76"
-      ]
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

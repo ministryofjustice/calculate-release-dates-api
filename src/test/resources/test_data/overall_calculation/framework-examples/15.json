@@ -20,7 +20,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2015-02-19"
+      "sentencedAt": "2015-02-19",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

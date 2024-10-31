@@ -15,7 +15,8 @@
       },
       "sentencedAt": "2020-04-01",
       "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
-      "isSDSPlus": true
+      "isSDSPlus": true,
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -27,9 +28,13 @@
         }
       },
       "sentencedAt": "2020-04-01",
-      "consecutiveSentenceUUIDs": ["a31d5d02-611f-43b0-8b1a-4b1edc955e7e"],
-      "isSDSPlus": true
+      "consecutiveSentenceUUIDs": [
+        "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+      ],
+      "isSDSPlus": true,
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-  "adjustments": {}
+  "adjustments": {
+  }
 }

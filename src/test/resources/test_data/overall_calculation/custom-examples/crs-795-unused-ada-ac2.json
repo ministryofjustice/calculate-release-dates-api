@@ -14,7 +14,8 @@
           "WEEKS": 3
         }
       },
-      "sentencedAt": "2021-11-16"
+      "sentencedAt": "2021-11-16",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -25,7 +26,8 @@
           "MONTHS": 7
         }
       },
-      "sentencedAt": "2021-11-16"
+      "sentencedAt": "2021-11-16",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

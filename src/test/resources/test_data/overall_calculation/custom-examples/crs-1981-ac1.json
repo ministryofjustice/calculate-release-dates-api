@@ -18,7 +18,8 @@
       "sentencedAt": "2022-05-06",
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
-      "isSDSPlus": true
+      "isSDSPlus": true,
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -32,25 +33,27 @@
       },
       "sentencedAt": "2022-05-06",
       "hasAnSDSEarlyReleaseExclusion": "NO",
-      "consecutiveSentenceUUIDs": ["a31d5d02-611f-43b0-8b1a-4b1edc955e7e"]
+      "consecutiveSentenceUUIDs": [
+        "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {
-    "REMAND":[
+    "REMAND": [
       {
-        "appliesToSentencesFrom":"2022-05-06",
+        "appliesToSentencesFrom": "2022-05-06",
         "numberOfDays": 344,
-        "fromDate":"2021-05-27",
-        "toDate":"2022-05-05"
+        "fromDate": "2021-05-27",
+        "toDate": "2022-05-05"
       }
     ],
-    "TAGGED_BAIL":[
+    "TAGGED_BAIL": [
       {
-        "appliesToSentencesFrom":"2022-05-06",
+        "appliesToSentencesFrom": "2022-05-06",
         "numberOfDays": 143
       }
     ]
-
   },
   "calculateErsed": false
 }

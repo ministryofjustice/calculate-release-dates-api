@@ -1,19 +1,20 @@
 {
-  "offender":{
+  "offender": {
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences":[
+  "sentences": [
     {
-      "offence":{
+      "offence": {
         "committedAt": "2020-04-06"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "YEARS": 6
         }
       },
-      "sentencedAt": "2022-05-13"
+      "sentencedAt": "2022-05-13",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -31,7 +32,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2022-05-13"
+      "sentencedAt": "2022-05-13",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -49,7 +51,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2022-05-13"
+      "sentencedAt": "2022-05-13",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

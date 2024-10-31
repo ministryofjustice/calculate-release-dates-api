@@ -20,14 +20,18 @@
       },
       "lineSequence": 1,
       "caseSequence": 1,
-      "caseReference": null
+      "caseReference": null,
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "consecutiveSentence": null,
   "breakdownByReleaseDateType": {
     "SED": {
-      "rules": [],
-      "rulesWithExtraAdjustments": {},
+      "rules": [
+
+      ],
+      "rulesWithExtraAdjustments": {
+      },
       "adjustedDays": -62,
       "releaseDate": "2023-08-25",
       "unadjustedDate": "2023-10-26"
@@ -62,6 +66,7 @@
       "unadjustedDate": "2022-10-27"
     }
   },
-  "otherDates": {},
+  "otherDates": {
+  },
   "ersedNotApplicableDueToDtoLaterThanCrd": true
 }

@@ -14,7 +14,8 @@
         }
       },
       "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2017-08-28"
+      "sentencedAt": "2017-08-28",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -33,7 +34,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2019-03-20"
+      "sentencedAt": "2019-03-20",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

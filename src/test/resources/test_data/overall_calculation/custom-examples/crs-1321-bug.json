@@ -15,7 +15,8 @@
       },
       "sentencedAt": "2023-01-12",
       "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -28,7 +29,8 @@
       },
       "sentencedAt": "2023-01-12",
       "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -41,7 +43,8 @@
       },
       "sentencedAt": "2023-01-12",
       "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -54,7 +57,8 @@
       },
       "sentencedAt": "2022-10-07",
       "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -67,7 +71,8 @@
       },
       "sentencedAt": "2022-10-07",
       "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -80,10 +85,10 @@
       },
       "sentencedAt": "2022-10-07",
       "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-
   "adjustments": {
     "REMAND": [
       {

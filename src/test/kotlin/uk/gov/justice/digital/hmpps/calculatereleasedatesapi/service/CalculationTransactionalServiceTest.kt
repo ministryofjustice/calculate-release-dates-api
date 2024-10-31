@@ -933,13 +933,47 @@ class CalculationTransactionalServiceTest {
 
     val INPUT_DATA: JsonNode =
       JacksonUtil.toJsonNode(
-        "{\"historicalTusedData\":null, \"offender\":{\"reference\":\"A1234AJ\",\"dateOfBirth\":\"1980-01-01\",\"isActiveSexOffender\":false}," +
-          "\"sentences\":[{\"type\":\"StandardSentence\",\"offence\":{\"committedAt\":\"2021-02-03\"," +
-          "\"offenceCode\":null},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}}," +
-          "\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\"," +
-          "\"consecutiveSentenceUUIDs\":[],\"caseSequence\":1,\"lineSequence\":2,\"caseReference\":null," +
-          "\"recallType\":null,\"isSDSPlus\":false,\"hasAnSDSEarlyReleaseExclusion\":\"NO\"}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
-          "\"bookingId\":12345}",
+        """
+    {
+        "historicalTusedData": null,
+        "offender": {
+            "reference": "A1234AJ",
+            "dateOfBirth": "1980-01-01",
+            "isActiveSexOffender": false
+        },
+        "sentences": [
+            {
+                "type": "StandardSentence",
+                "offence": {
+                    "committedAt": "2021-02-03",
+                    "offenceCode": null
+                },
+                "duration": {
+                    "durationElements": {
+                        "DAYS": 0,
+                        "WEEKS": 0,
+                        "MONTHS": 0,
+                        "YEARS": 5
+                    }
+                },
+                "sentencedAt": "2021-02-03",
+                "sentenceCalculationType": "ADIMP",
+                "identifier": "5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa",
+                "consecutiveSentenceUUIDs": [],
+                "caseSequence": 1,
+                "lineSequence": 2,
+                "caseReference": null,
+                "recallType": null,
+                "isSDSPlus": false,
+                "hasAnSDSEarlyReleaseExclusion": "NO"
+            }
+        ],
+        "adjustments": {},
+        "returnToCustodyDate": null,
+        "fixedTermRecallDetails": null,
+        "bookingId": 12345
+    }
+        """.trimIndent(),
       )
 
     val CALCULATION_REASON =
@@ -953,11 +987,30 @@ class CalculationTransactionalServiceTest {
       calculationOutcomes = listOf(CALCULATION_OUTCOME_CRD, CALCULATION_OUTCOME_SED),
       calculationStatus = CONFIRMED.name,
       inputData = JacksonUtil.toJsonNode(
-        "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +
-          "\"dateOfBirth\":\"1970-03-03\"" + "}," + "\"sentences\":[" +
-          "{" + "\"caseSequence\":1," + "\"lineSequence\":2," +
-          "\"offence\":{" + "\"committedAt\":\"2013-09-19\"" + "}," + "\"duration\":{" +
-          "\"durationElements\":{" + "\"YEARS\":2" + "}" + "}," + "\"sentencedAt\":\"2013-09-21\"" + "}" + "]" + "}",
+        """
+      {
+          "offender": {
+              "reference": "ABC123D",
+              "dateOfBirth": "1970-03-03"
+          },
+          "sentences": [
+              {
+                  "caseSequence": 1,
+                  "lineSequence": 2,
+                  "sentenceCalculationType": "ADIMP",
+                  "offence": {
+                      "committedAt": "2013-09-19"
+                  },
+                  "duration": {
+                      "durationElements": {
+                          "YEARS": 2
+                      }
+                  },
+                  "sentencedAt": "2013-09-21"
+              }
+          ]
+      }
+        """.trimIndent(),
       ),
       reasonForCalculation = CALCULATION_REASON,
     )

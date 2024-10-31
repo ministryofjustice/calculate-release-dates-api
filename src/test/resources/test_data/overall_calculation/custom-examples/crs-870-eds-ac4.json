@@ -20,7 +20,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2021-01-21"
+      "sentencedAt": "2021-01-21",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -38,7 +39,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2021-01-21"
+      "sentencedAt": "2021-01-21",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

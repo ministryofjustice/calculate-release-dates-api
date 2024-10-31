@@ -16,9 +16,11 @@
         }
       },
       "sentencedAt": "2024-03-22",
-      "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+      "hasAnSDSEarlyReleaseExclusion": "VIOLENT",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-  "adjustments": {},
+  "adjustments": {
+  },
   "calculateErsed": true
 }

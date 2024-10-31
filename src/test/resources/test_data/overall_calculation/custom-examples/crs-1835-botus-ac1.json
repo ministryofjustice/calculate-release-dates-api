@@ -16,7 +16,8 @@
       },
       "sentencedAt": "2021-02-01",
       "lineSequence": 1,
-      "caseSequence": 1
+      "caseSequence": 1,
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

@@ -13,7 +13,8 @@
           "YEARS": 4
         }
       },
-      "sentencedAt": "2015-06-17"
+      "sentencedAt": "2015-06-17",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -33,7 +34,8 @@
       },
       "automaticRelease": true,
       "sentencedAt": "2015-03-03",
-      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
+      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -55,7 +57,8 @@
       "sentencedAt": "2015-06-17",
       "consecutiveSentenceUUIDs": [
         "e40f48b6-92df-49d0-af99-507194c380fa"
-      ]
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

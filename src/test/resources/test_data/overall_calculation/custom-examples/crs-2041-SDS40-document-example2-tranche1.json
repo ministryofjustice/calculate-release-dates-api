@@ -1,22 +1,23 @@
 {
   "calculateErsed": false,
-  "offender":{
+  "offender": {
     "reference": "ABC123D",
     "dateOfBirth": "2005-04-01"
   },
-  "sentences":[
+  "sentences": [
     {
-      "type":"StandardDeterminateSentence",
-      "offence":{
-        "committedAt":"2023-11-23"
+      "type": "StandardDeterminateSentence",
+      "offence": {
+        "committedAt": "2023-11-23"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "YEARS": 2
         }
       },
       "sentencedAt": "2023-11-23",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

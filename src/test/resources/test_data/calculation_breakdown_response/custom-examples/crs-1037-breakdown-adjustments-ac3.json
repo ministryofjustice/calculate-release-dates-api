@@ -1,17 +1,25 @@
 {
-  "concurrentSentences": [],
+  "concurrentSentences": [
+
+  ],
   "consecutiveSentence": null,
   "breakdownByReleaseDateType": {
     "SLED": {
-      "rules": [],
-      "rulesWithExtraAdjustments": {},
+      "rules": [
+
+      ],
+      "rulesWithExtraAdjustments": {
+      },
       "adjustedDays": 0,
       "releaseDate": "2023-09-10",
       "unadjustedDate": "2023-09-10"
     },
     "CRD": {
-      "rules": [],
-      "rulesWithExtraAdjustments": {},
+      "rules": [
+
+      ],
+      "rulesWithExtraAdjustments": {
+      },
       "adjustedDays": 0,
       "releaseDate": "2022-09-10",
       "unadjustedDate": "2022-09-10"
@@ -20,12 +28,14 @@
       "rules": [
         "PED_EQUAL_TO_LATEST_NON_PED_ACTUAL_RELEASE"
       ],
-      "rulesWithExtraAdjustments": {},
+      "rulesWithExtraAdjustments": {
+      },
       "adjustedDays": 0,
       "releaseDate": "2021-05-12",
       "unadjustedDate": "2021-05-11"
     }
   },
-  "otherDates": {},
+  "otherDates": {
+  },
   "ersedNotApplicableDueToDtoLaterThanCrd": false
 }

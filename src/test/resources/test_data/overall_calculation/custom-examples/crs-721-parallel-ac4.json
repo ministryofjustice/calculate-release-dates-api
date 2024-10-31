@@ -15,7 +15,8 @@
         }
       },
       "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2021-10-18"
+      "sentencedAt": "2021-10-18",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -27,7 +28,8 @@
         }
       },
       "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2021-10-18"
+      "sentencedAt": "2021-10-18",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -38,7 +40,8 @@
           "MONTHS": 9
         }
       },
-      "sentencedAt": "2022-01-07"
+      "sentencedAt": "2022-01-07",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -49,7 +52,8 @@
           "WEEKS": 26
         }
       },
-      "sentencedAt": "2022-01-17"
+      "sentencedAt": "2022-01-17",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

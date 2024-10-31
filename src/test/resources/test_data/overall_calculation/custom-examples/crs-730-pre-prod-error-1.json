@@ -1,41 +1,44 @@
 {
-  "offender":{
-    "reference":"PROD",
-    "dateOfBirth":"1995-03-08"
+  "offender": {
+    "reference": "PROD",
+    "dateOfBirth": "1995-03-08"
   },
-  "sentences":[
+  "sentences": [
     {
-      "offence":{
-        "committedAt":"2019-05-10"
+      "offence": {
+        "committedAt": "2019-05-10"
       },
-      "duration":{
-        "durationElements":{
-          "MONTHS":48
+      "duration": {
+        "durationElements": {
+          "MONTHS": 48
         }
       },
-      "sentencedAt":"2021-03-26"
+      "sentencedAt": "2021-03-26",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "offence":{
-        "committedAt":"2019-05-10"
+      "offence": {
+        "committedAt": "2019-05-10"
       },
-      "duration":{
-        "durationElements":{
-          "MONTHS":48
+      "duration": {
+        "durationElements": {
+          "MONTHS": 48
         }
       },
-      "sentencedAt":"2021-03-26"
+      "sentencedAt": "2021-03-26",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "offence":{
-        "committedAt":"2019-05-10"
+      "offence": {
+        "committedAt": "2019-05-10"
       },
-      "duration":{
-        "durationElements":{
-          "MONTHS":16
+      "duration": {
+        "durationElements": {
+          "MONTHS": 16
         }
       },
-      "sentencedAt":"2021-03-26"
+      "sentencedAt": "2021-03-26",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

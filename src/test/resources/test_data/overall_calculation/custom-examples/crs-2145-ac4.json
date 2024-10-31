@@ -16,7 +16,8 @@
       },
       "sentencedAt": "2024-09-18",
       "sentenceType": "FTR_ORA",
-      "recallType": "FIXED_TERM_RECALL_28"
+      "recallType": "FIXED_TERM_RECALL_28",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -30,7 +31,10 @@
       "sentencedAt": "2024-09-18",
       "sentenceType": "FTR_ORA",
       "recallType": "FIXED_TERM_RECALL_28",
-      "consecutiveSentenceUUIDs": ["d309682d-6733-3bfc-b7ad-7024162a341c"]
+      "consecutiveSentenceUUIDs": [
+        "d309682d-6733-3bfc-b7ad-7024162a341c"
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

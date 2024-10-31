@@ -16,7 +16,8 @@
       },
       "sentencedAt": "2020-03-30",
       "lineSequence": 1,
-      "caseSequence": 1
+      "caseSequence": 1,
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

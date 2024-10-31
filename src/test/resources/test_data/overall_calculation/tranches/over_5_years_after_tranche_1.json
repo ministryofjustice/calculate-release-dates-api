@@ -14,7 +14,8 @@
           "YEARS": 6
         }
       },
-      "sentencedAt": "2021-09-10"
+      "sentencedAt": "2021-09-10",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

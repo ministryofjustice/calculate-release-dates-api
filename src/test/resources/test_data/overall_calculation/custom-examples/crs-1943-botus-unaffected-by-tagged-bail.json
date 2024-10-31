@@ -14,7 +14,8 @@
           "DAYS": 12
         }
       },
-      "sentencedAt": "2016-12-20"
+      "sentencedAt": "2016-12-20",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

@@ -20,7 +20,8 @@
         }
       },
       "automaticRelease": true,
-      "sentencedAt": "2015-03-06"
+      "sentencedAt": "2015-03-06",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

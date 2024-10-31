@@ -7,7 +7,7 @@
     {
       "type": "SopcSentence",
       "offence": {
-        "committedAt":"2022-07-05"
+        "committedAt": "2022-07-05"
       },
       "custodialDuration": {
         "durationElements": {
@@ -19,13 +19,14 @@
           "YEARS": 1
         }
       },
-      "sentencedAt":"2022-07-29",
-      "identifier":"58db00dc-ee5e-310b-b586-a8db41558557"
+      "sentencedAt": "2022-07-29",
+      "identifier": "58db00dc-ee5e-310b-b586-a8db41558557",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "SopcSentence",
       "offence": {
-        "committedAt":"2022-07-05"
+        "committedAt": "2022-07-05"
       },
       "custodialDuration": {
         "durationElements": {
@@ -37,10 +38,11 @@
           "YEARS": 1
         }
       },
-      "sentencedAt":"2022-07-29",
-      "consecutiveSentenceUUIDs":[
+      "sentencedAt": "2022-07-29",
+      "consecutiveSentenceUUIDs": [
         "58db00dc-ee5e-310b-b586-a8db41558557"
-      ]
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

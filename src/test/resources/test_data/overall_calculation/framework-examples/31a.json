@@ -14,7 +14,8 @@
         }
       },
       "sentencedAt": "2024-11-14",
-      "identifier": "80a460be-4d39-4edc-b392-9744d913084a"
+      "identifier": "80a460be-4d39-4edc-b392-9744d913084a",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -35,7 +36,8 @@
       "sentencedAt": "2024-11-14",
       "consecutiveSentenceUUIDs": [
         "80a460be-4d39-4edc-b392-9744d913084a"
-      ]
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

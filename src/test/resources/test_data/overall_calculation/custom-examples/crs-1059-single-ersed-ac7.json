@@ -1,22 +1,23 @@
 {
   "calculateErsed": true,
-  "offender":{
+  "offender": {
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences":[
+  "sentences": [
     {
-      "type":"AFineSentence",
-      "offence":{
-        "committedAt":"2021-04-28"
+      "type": "AFineSentence",
+      "offence": {
+        "committedAt": "2021-04-28"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "DAYS": 28
         }
       },
-      "sentencedAt":"2021-04-29",
-      "fineAmount": 950
+      "sentencedAt": "2021-04-29",
+      "fineAmount": 950,
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

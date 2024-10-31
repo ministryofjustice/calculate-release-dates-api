@@ -22,7 +22,8 @@
       },
       "automaticRelease": false,
       "sentenceType": "SOPC18",
-      "sentencedAt": "2023-07-11"
+      "sentencedAt": "2023-07-11",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

@@ -19,7 +19,8 @@
       "hasAnSDSEarlyReleaseExclusion": "VIOLENT",
       "sentenceSequence": 1,
       "lineSequence": 1,
-      "caseSequence": 1
+      "caseSequence": 1,
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -35,16 +36,17 @@
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentenceSequence": 2,
       "lineSequence": 1,
-      "caseSequence": 1
+      "caseSequence": 1,
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {
-    "REMAND":[
+    "REMAND": [
       {
-        "appliesToSentencesFrom":"2024-04-17",
-        "numberOfDays":660,
-        "fromDate":"2022-06-27",
-        "toDate":"2024-04-16"
+        "appliesToSentencesFrom": "2024-04-17",
+        "numberOfDays": 660,
+        "fromDate": "2022-06-27",
+        "toDate": "2024-04-16"
       }
     ]
   },

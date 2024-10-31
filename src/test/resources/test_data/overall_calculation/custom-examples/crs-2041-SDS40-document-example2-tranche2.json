@@ -1,48 +1,52 @@
 {
   "calculateErsed": false,
-  "offender":{
+  "offender": {
     "reference": "ABC123D",
     "dateOfBirth": "2005-04-01"
   },
-  "sentences":[
+  "sentences": [
     {
-      "type":"SopcSentence",
-      "offence":{
-        "committedAt":"2023-09-19"
+      "type": "SopcSentence",
+      "offence": {
+        "committedAt": "2023-09-19"
       },
-      "custodialDuration":{
-        "durationElements":{
+      "custodialDuration": {
+        "durationElements": {
           "YEARS": 3
         }
       },
-      "extensionDuration":{
-        "durationElements":{
+      "extensionDuration": {
+        "durationElements": {
           "YEARS": 1
         }
       },
       "sentencedAt": "2023-09-19",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "type":"StandardDeterminateSentence",
-      "offence":{
-        "committedAt":"2023-09-19"
+      "type": "StandardDeterminateSentence",
+      "offence": {
+        "committedAt": "2023-09-19"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "MONTHS": 18
         }
       },
       "sentencedAt": "2023-09-19",
       "identifier": "3dfde034-b7d7-4c54-a86c-67d42a1fd668",
-      "consecutiveSentenceUUIDs": ["5dfde034-b7d7-4c54-a86c-67d42a1fd669"]
+      "consecutiveSentenceUUIDs": [
+        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {
-    "TAGGED_BAIL":[
+    "TAGGED_BAIL": [
       {
-        "appliesToSentencesFrom":"2023-09-19",
-        "numberOfDays":130
+        "appliesToSentencesFrom": "2023-09-19",
+        "numberOfDays": 130
       }
     ]
   }

@@ -18,7 +18,8 @@
       },
       "identifier": "5d396fa6-a4bd-34ce-bcf9-582cf8710b80",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2024-02-20"
+      "sentencedAt": "2024-02-20",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -33,7 +34,8 @@
       },
       "identifier": "8adf5a19-4ce0-3a47-9a74-56e78c9c080e",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2024-03-28"
+      "sentencedAt": "2024-03-28",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

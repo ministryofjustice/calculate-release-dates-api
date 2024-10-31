@@ -13,7 +13,8 @@
           "YEARS": 4
         }
       },
-      "sentencedAt": "2010-06-28"
+      "sentencedAt": "2010-06-28",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

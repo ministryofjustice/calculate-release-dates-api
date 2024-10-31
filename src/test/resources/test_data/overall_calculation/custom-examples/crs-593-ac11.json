@@ -14,7 +14,8 @@
         }
       },
       "sentencedAt": "2020-09-20",
-      "identifier": "70b10e6a-a5b2-43e7-a5db-3694d75bedec"
+      "identifier": "70b10e6a-a5b2-43e7-a5db-3694d75bedec",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -26,7 +27,10 @@
         }
       },
       "sentencedAt": "2021-07-15",
-      "consecutiveSentenceUUIDs": ["70b10e6a-a5b2-43e7-a5db-3694d75bedec"]
+      "consecutiveSentenceUUIDs": [
+        "70b10e6a-a5b2-43e7-a5db-3694d75bedec"
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

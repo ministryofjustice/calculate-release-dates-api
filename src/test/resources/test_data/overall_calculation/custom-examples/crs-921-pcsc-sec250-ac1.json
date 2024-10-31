@@ -15,7 +15,8 @@
         }
       },
       "sentencedAt": "2022-06-28",
-      "isSDSPlus": true
+      "isSDSPlus": true,
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

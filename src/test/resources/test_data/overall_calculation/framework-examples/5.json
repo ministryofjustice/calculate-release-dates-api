@@ -20,7 +20,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2025-04-16"
+      "sentencedAt": "2025-04-16",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

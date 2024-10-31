@@ -16,7 +16,8 @@
       "sentencedAt": "2022-10-27",
       "isDto": true,
       "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -29,7 +30,8 @@
       },
       "sentencedAt": "2022-10-27",
       "isDto": false,
-      "sentenceType": "ADIMP_ORA"
+      "sentenceType": "ADIMP_ORA",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

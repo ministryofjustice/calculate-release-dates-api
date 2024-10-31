@@ -27,8 +27,11 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "123456789AB",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -54,7 +57,8 @@
       "consecutiveSentenceUUIDs": [
         "f5b4cffe-d534-3ecd-b1d8-1aa368e09387"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -80,10 +84,12 @@
       "consecutiveSentenceUUIDs": [
         "154ea780-0c7a-3d77-a2d0-679eb8aafc8c"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-  "adjustments": {},
+  "adjustments": {
+  },
   "historicalTusedData": null,
   "returnToCustodyDate": null,
   "fixedTermRecallDetails": null

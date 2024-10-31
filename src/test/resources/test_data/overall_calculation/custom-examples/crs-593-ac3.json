@@ -14,7 +14,8 @@
           "MONTHS": 2
         }
       },
-      "sentencedAt": "2020-07-04"
+      "sentencedAt": "2020-07-04",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

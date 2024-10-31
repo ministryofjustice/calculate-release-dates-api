@@ -15,7 +15,8 @@
         }
       },
       "sentencedAt": "2024-09-12",
-      "sentenceType": "ADIMP_ORA"
+      "sentenceType": "ADIMP_ORA",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

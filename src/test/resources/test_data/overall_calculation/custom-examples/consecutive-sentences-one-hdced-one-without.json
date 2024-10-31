@@ -14,7 +14,8 @@
         }
       },
       "sentencedAt": "2021-11-01",
-      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
+      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -26,7 +27,10 @@
         }
       },
       "sentencedAt": "2021-11-01",
-      "consecutiveSentenceUUIDs": ["cb304745-d781-47d3-b931-4baa31551fc5"]
+      "consecutiveSentenceUUIDs": [
+        "cb304745-d781-47d3-b931-4baa31551fc5"
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

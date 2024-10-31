@@ -1,9 +1,9 @@
 {
-  "offender":{
+  "offender": {
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences":[
+  "sentences": [
     {
       "offence": {
         "committedAt": "2020-09-10"
@@ -20,32 +20,35 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2020-09-11"
+      "sentencedAt": "2020-09-11",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "offence":{
-        "committedAt":"2021-05-14"
+      "offence": {
+        "committedAt": "2021-05-14"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "YEARS": 3,
           "MONTHS": 3
         }
       },
-      "sentencedAt":"2021-05-15"
+      "sentencedAt": "2021-05-15",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "type":"AFineSentence",
-      "offence":{
-        "committedAt":"2022-09-01"
+      "type": "AFineSentence",
+      "offence": {
+        "committedAt": "2022-09-01"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "DAYS": 14
         }
       },
-      "sentencedAt":"2022-09-02",
-      "fineAmount": 400
+      "sentencedAt": "2022-09-02",
+      "fineAmount": 400,
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

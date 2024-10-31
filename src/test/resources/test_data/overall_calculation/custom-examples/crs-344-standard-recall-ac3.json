@@ -14,7 +14,8 @@
         }
       },
       "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2021-03-10"
+      "sentencedAt": "2021-03-10",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -26,7 +27,8 @@
         }
       },
       "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2021-06-06"
+      "sentencedAt": "2021-06-06",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

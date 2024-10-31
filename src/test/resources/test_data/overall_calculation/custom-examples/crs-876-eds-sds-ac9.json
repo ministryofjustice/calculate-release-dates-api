@@ -13,7 +13,8 @@
           "YEARS": 4
         }
       },
-      "sentencedAt": "2021-08-26"
+      "sentencedAt": "2021-08-26",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -33,7 +34,8 @@
       },
       "automaticRelease": false,
       "sentencedAt": "2021-08-26",
-      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
+      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -55,7 +57,8 @@
       "sentencedAt": "2021-08-26",
       "consecutiveSentenceUUIDs": [
         "e40f48b6-92df-49d0-af99-507194c380fa"
-      ]
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

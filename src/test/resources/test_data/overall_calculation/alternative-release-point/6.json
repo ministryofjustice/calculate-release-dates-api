@@ -21,7 +21,10 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "ABC1",
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -39,7 +42,10 @@
       "caseSequence": 1,
       "lineSequence": 2,
       "caseReference": "ABC2",
-      "consecutiveSentenceUUIDs": []
+      "consecutiveSentenceUUIDs": [
+
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

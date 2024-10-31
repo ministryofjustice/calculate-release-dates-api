@@ -1,51 +1,54 @@
 {
-  "offender":{
+  "offender": {
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences":[
+  "sentences": [
     {
-      "offence":{
-        "committedAt":"2003-09-13"
+      "offence": {
+        "committedAt": "2003-09-13"
       },
-      "duration":{
-        "durationElements":{
-          "YEARS":23
+      "duration": {
+        "durationElements": {
+          "YEARS": 23
         }
       },
-      "sentencedAt":"2006-11-14",
-      "recallType":"STANDARD_RECALL"
+      "sentencedAt": "2006-11-14",
+      "recallType": "STANDARD_RECALL",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "offence":{
-        "committedAt":"2003-07-30"
+      "offence": {
+        "committedAt": "2003-07-30"
       },
-      "duration":{
-        "durationElements":{
-          "YEARS":23
+      "duration": {
+        "durationElements": {
+          "YEARS": 23
         }
       },
-      "sentencedAt":"2006-11-14",
-      "recallType":"STANDARD_RECALL"
+      "sentencedAt": "2006-11-14",
+      "recallType": "STANDARD_RECALL",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "offence":{
-        "committedAt":"2003-03-31"
+      "offence": {
+        "committedAt": "2003-03-31"
       },
-      "duration":{
-        "durationElements":{
-          "YEARS":23
+      "duration": {
+        "durationElements": {
+          "YEARS": 23
         }
       },
-      "sentencedAt":"2006-11-14",
-      "recallType":"STANDARD_RECALL"
+      "sentencedAt": "2006-11-14",
+      "recallType": "STANDARD_RECALL",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-  "adjustments":{
-    "RECALL_TAGGED_BAIL":[
+  "adjustments": {
+    "RECALL_TAGGED_BAIL": [
       {
-        "appliesToSentencesFrom":"2006-11-14",
-        "numberOfDays":379
+        "appliesToSentencesFrom": "2006-11-14",
+        "numberOfDays": 379
       }
     ]
   }

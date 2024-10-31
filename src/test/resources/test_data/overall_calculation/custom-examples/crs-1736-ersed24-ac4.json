@@ -16,7 +16,8 @@
       },
       "sentencedAt": "2015-08-06",
       "isDto": false,
-      "sentenceType": "YOI"
+      "sentenceType": "YOI",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

@@ -17,7 +17,8 @@
       "sentencedAt": "2014-02-22",
       "sentenceType": "LR",
       "recallType": "STANDARD_RECALL",
-      "lineSequence": 1
+      "lineSequence": 1,
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -32,7 +33,8 @@
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentencedAt": "2023-10-17",
       "sentenceType": "ADIMP",
-      "lineSequence": 2
+      "lineSequence": 2,
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

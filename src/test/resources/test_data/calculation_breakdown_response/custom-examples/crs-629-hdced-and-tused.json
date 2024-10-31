@@ -20,21 +20,28 @@
       },
       "lineSequence": 1,
       "caseSequence": 1,
-      "caseReference": null
+      "caseReference": null,
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "consecutiveSentence": null,
   "breakdownByReleaseDateType": {
     "CRD": {
-      "rules": [],
-      "rulesWithExtraAdjustments": {},
+      "rules": [
+
+      ],
+      "rulesWithExtraAdjustments": {
+      },
       "adjustedDays": -21,
       "releaseDate": "2015-05-26",
       "unadjustedDate": "2015-06-16"
     },
     "SLED": {
-      "rules": [],
-      "rulesWithExtraAdjustments": {},
+      "rules": [
+
+      ],
+      "rulesWithExtraAdjustments": {
+      },
       "adjustedDays": -21,
       "releaseDate": "2015-09-24",
       "unadjustedDate": "2015-10-15"
@@ -68,6 +75,7 @@
       "unadjustedDate": "2015-02-16"
     }
   },
-  "otherDates": {},
+  "otherDates": {
+  },
   "ersedNotApplicableDueToDtoLaterThanCrd": false
 }

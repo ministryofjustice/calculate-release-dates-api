@@ -16,7 +16,8 @@
         }
       },
       "sentencedAt": "2024-03-22",
-      "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+      "hasAnSDSEarlyReleaseExclusion": "VIOLENT",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -29,17 +30,17 @@
         }
       },
       "sentencedAt": "2024-03-22",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     }
-
   ],
   "adjustments": {
-    "REMAND":[
+    "REMAND": [
       {
-        "appliesToSentencesFrom":"2024-03-22",
-        "numberOfDays":15,
-        "fromDate":"2024-03-07",
-        "toDate":"2024-03-21"
+        "appliesToSentencesFrom": "2024-03-22",
+        "numberOfDays": 15,
+        "fromDate": "2024-03-07",
+        "toDate": "2024-03-21"
       }
     ]
   },

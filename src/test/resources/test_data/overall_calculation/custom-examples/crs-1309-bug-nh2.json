@@ -16,7 +16,8 @@
       "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7",
       "sentencedAt": "2023-02-20",
       "sentenceType": "14FTR_ORA",
-      "recallType":"FIXED_TERM_RECALL_14"
+      "recallType": "FIXED_TERM_RECALL_14",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {
@@ -37,5 +38,5 @@
       }
     ]
   },
-  "returnToCustodyDate":"2023-03-10"
+  "returnToCustodyDate": "2023-03-10"
 }

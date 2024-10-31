@@ -11,10 +11,11 @@
       "duration": {
         "durationElements": {
           "YEARS": 5,
-          "MONTHS":8
+          "MONTHS": 8
         }
       },
-      "sentencedAt": "2024-09-12"
+      "sentencedAt": "2024-09-12",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

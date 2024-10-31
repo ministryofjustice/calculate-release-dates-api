@@ -4,6 +4,7 @@
       "sentencedAt": "2015-02-12",
       "sentenceLength": "6 months",
       "sentenceLengthDays": 181,
+      "sentenceCalculationType": "ADIMP",
       "dates": {
         "SLED": {
           "unadjusted": "2015-08-11",
@@ -26,6 +27,7 @@
       "sentencedAt": "2015-02-12",
       "sentenceLength": "8 months",
       "sentenceLengthDays": 242,
+      "sentenceCalculationType": "ADIMP",
       "dates": {
         "SED": {
           "unadjusted": "2015-10-11",

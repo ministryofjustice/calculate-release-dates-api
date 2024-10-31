@@ -13,7 +13,8 @@
           "MONTHS": 18
         }
       },
-      "sentencedAt": "2021-02-15"
+      "sentencedAt": "2021-02-15",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -24,7 +25,8 @@
           "MONTHS": 4
         }
       },
-      "sentencedAt": "2021-02-25"
+      "sentencedAt": "2021-02-25",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

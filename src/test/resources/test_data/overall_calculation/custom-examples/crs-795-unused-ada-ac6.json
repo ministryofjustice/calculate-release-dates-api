@@ -13,7 +13,8 @@
           "MONTHS": 5
         }
       },
-      "sentencedAt": "2020-10-05"
+      "sentencedAt": "2020-10-05",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -25,7 +26,8 @@
         }
       },
       "sentencedAt": "2020-11-07",
-      "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e1"
+      "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e1",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -36,7 +38,8 @@
           "MONTHS": 6
         }
       },
-      "sentencedAt": "2020-12-09"
+      "sentencedAt": "2020-12-09",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -48,7 +51,10 @@
         }
       },
       "sentencedAt": "2020-11-07",
-      "consecutiveSentenceUUIDs": ["0b10fc4b-1920-4b74-96e0-d95369adb5e1"]
+      "consecutiveSentenceUUIDs": [
+        "0b10fc4b-1920-4b74-96e0-d95369adb5e1"
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

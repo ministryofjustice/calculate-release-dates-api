@@ -4,6 +4,7 @@
       "sentencedAt": "2021-09-21",
       "sentenceLength": "18 months",
       "sentenceLengthDays": 546,
+      "sentenceCalculationType": "ADIMP",
       "dates": {
         "SLED": {
           "unadjusted": "2023-03-20",
@@ -26,6 +27,7 @@
       "sentencedAt": "2021-09-21",
       "sentenceLength": "18 months",
       "sentenceLengthDays": 546,
+      "sentenceCalculationType": "ADIMP",
       "dates": {
         "SLED": {
           "unadjusted": "2023-03-20",
@@ -48,6 +50,7 @@
       "sentencedAt": "2021-09-21",
       "sentenceLength": "3 months",
       "sentenceLengthDays": 91,
+      "sentenceCalculationType": "ADIMP",
       "dates": {
         "SLED": {
           "unadjusted": "2021-12-20",
@@ -70,6 +73,7 @@
       "sentencedAt": "2021-09-21",
       "sentenceLength": "1 year",
       "sentenceLengthDays": 365,
+      "sentenceCalculationType": "ADIMP",
       "dates": {
         "SLED": {
           "unadjusted": "2022-09-20",
@@ -92,6 +96,7 @@
       "sentencedAt": "2021-09-21",
       "sentenceLength": "18 months",
       "sentenceLengthDays": 546,
+      "sentenceCalculationType": "ADIMP",
       "dates": {
         "SLED": {
           "unadjusted": "2023-03-20",
@@ -114,6 +119,7 @@
       "sentencedAt": "2021-09-21",
       "sentenceLength": "6 months",
       "sentenceLengthDays": 181,
+      "sentenceCalculationType": "ADIMP",
       "dates": {
         "SLED": {
           "unadjusted": "2022-03-20",

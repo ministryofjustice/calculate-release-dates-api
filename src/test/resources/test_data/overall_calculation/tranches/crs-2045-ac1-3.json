@@ -17,7 +17,8 @@
       },
       "sentencedAt": "2024-03-22",
       "hasAnSDSEarlyReleaseExclusion": "NO",
-      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -31,9 +32,13 @@
       },
       "sentencedAt": "2024-03-22",
       "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE",
-      "consecutiveSentenceUUIDs": ["a31d5d02-611f-43b0-8b1a-4b1edc955e7e"]
+      "consecutiveSentenceUUIDs": [
+        "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-  "adjustments": {},
+  "adjustments": {
+  },
   "calculateErsed": false
 }

@@ -17,8 +17,10 @@
       "sentencedAt": "2024-03-01",
       "lineSequence": 1,
       "caseSequence": 1,
-      "identifier": "8c4ba56a-0eac-4641-b7e8-ae4c1498069d"
-    },{
+      "identifier": "8c4ba56a-0eac-4641-b7e8-ae4c1498069d",
+      "sentenceCalculationType": "ADIMP"
+    },
+    {
       "type": "BotusSentence",
       "offence": {
         "committedAt": "2024-02-25"
@@ -31,7 +33,10 @@
       "sentencedAt": "2024-03-05",
       "lineSequence": 2,
       "caseSequence": 1,
-      "consecutiveSentenceUUIDs": ["8c4ba56a-0eac-4641-b7e8-ae4c1498069d"]
+      "consecutiveSentenceUUIDs": [
+        "8c4ba56a-0eac-4641-b7e8-ae4c1498069d"
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

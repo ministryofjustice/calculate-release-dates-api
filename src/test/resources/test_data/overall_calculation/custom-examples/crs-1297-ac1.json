@@ -15,7 +15,8 @@
         }
       },
       "sentencedAt": "2022-10-26",
-      "sentenceType": "SEC250"
+      "sentenceType": "SEC250",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -28,7 +29,8 @@
         }
       },
       "sentencedAt": "2022-10-26",
-      "sentenceType": "SEC250"
+      "sentenceType": "SEC250",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -37,11 +39,12 @@
       "duration": {
         "durationElements": {
           "MONTHS": 4
-       }
+        }
       },
       "sentencedAt": "2022-11-22",
       "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

@@ -20,7 +20,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2020-12-30"
+      "sentencedAt": "2020-12-30",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -40,7 +41,8 @@
       },
       "automaticRelease": true,
       "sentencedAt": "2015-04-12",
-      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
+      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -62,7 +64,8 @@
       "sentencedAt": "2015-04-12",
       "consecutiveSentenceUUIDs": [
         "e40f48b6-92df-49d0-af99-507194c380fa"
-      ]
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

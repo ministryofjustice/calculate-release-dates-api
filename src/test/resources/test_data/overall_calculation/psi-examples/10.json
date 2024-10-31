@@ -13,7 +13,8 @@
           "YEARS": 3
         }
       },
-      "sentencedAt": "2012-12-15"
+      "sentencedAt": "2012-12-15",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

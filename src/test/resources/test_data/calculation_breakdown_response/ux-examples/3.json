@@ -18,6 +18,7 @@
           "adjustedByDays": 9
         }
       },
+      "sentenceCalculationType": "ADIMP",
       "lineSequence": 2,
       "caseSequence": 2,
       "caseReference": null
@@ -40,6 +41,7 @@
           "adjustedByDays": 9
         }
       },
+      "sentenceCalculationType": "ADIMP",
       "lineSequence": 4,
       "caseSequence": 4,
       "caseReference": null
@@ -65,6 +67,7 @@
     },
     "sentenceParts": [
       {
+        "sentenceCalculationType": "ADIMP",
         "lineSequence": 1,
         "caseSequence": 1,
         "caseReference": null,
@@ -74,6 +77,7 @@
         "consecutiveToCaseSequence": null
       },
       {
+        "sentenceCalculationType": "ADIMP",
         "lineSequence": 3,
         "caseSequence": 3,
         "caseReference": null,
@@ -83,6 +87,7 @@
         "consecutiveToCaseSequence": 1
       },
       {
+        "sentenceCalculationType": "ADIMP",
         "lineSequence": 5,
         "caseSequence": 5,
         "caseReference": null,

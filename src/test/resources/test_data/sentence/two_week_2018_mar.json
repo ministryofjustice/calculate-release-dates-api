@@ -2,6 +2,7 @@
   "offence": {
     "committedAt": "2018-03-09"
   },
+  "sentenceCalculationType": "ADIMP",
   "duration": {
     "durationElements": {
       "WEEKS": 2

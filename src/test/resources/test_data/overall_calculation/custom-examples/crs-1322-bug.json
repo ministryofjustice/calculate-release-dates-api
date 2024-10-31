@@ -15,112 +15,78 @@
       },
       "sentencedAt": "2022-10-28",
       "sentenceType": "DTO",
-      "type": "DetentionAndTrainingOrderSentence"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-01-12"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
-        }
-      },
-      "sentencedAt": "2022-10-28",
-      "sentenceType": "DTO",
-      "type": "DetentionAndTrainingOrderSentence"
-    },    {
-      "offence": {
-        "committedAt": "2021-01-12"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
-        }
-      },
-      "sentencedAt": "2022-10-28",
-      "sentenceType": "DTO",
-      "type": "DetentionAndTrainingOrderSentence"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-01-12"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-10-28",
-      "sentenceType": "DTO",
-      "type": "DetentionAndTrainingOrderSentence"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-01-12"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-10-28",
-      "sentenceType": "DTO",
-      "type": "DetentionAndTrainingOrderSentence"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-01-12"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-10-28",
-      "sentenceType": "DTO",
-      "type": "DetentionAndTrainingOrderSentence"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-01-12"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "sentencedAt": "2022-10-28",
-      "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-01-12"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
-        }
-      },
-      "sentencedAt": "2022-10-28",
-      "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
-    },
-    {
-      "offence": {
-        "committedAt": "2021-01-12"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 14
-        }
-      },
-      "sentencedAt": "2022-10-28",
-      "sentenceType": "DTO_ORA",
       "type": "DetentionAndTrainingOrderSentence",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
-
+      "sentenceCalculationType": "ADIMP"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-01-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 14
+        }
+      },
+      "sentencedAt": "2022-10-28",
+      "sentenceType": "DTO",
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-01-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 14
+        }
+      },
+      "sentencedAt": "2022-10-28",
+      "sentenceType": "DTO",
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-01-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2022-10-28",
+      "sentenceType": "DTO",
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-01-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2022-10-28",
+      "sentenceType": "DTO",
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-01-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2022-10-28",
+      "sentenceType": "DTO",
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -134,10 +100,55 @@
       "sentencedAt": "2022-10-28",
       "sentenceType": "DTO_ORA",
       "type": "DetentionAndTrainingOrderSentence",
-      "consecutiveSentenceUUIDs": ["5dfde034-b7d7-4c54-a86c-67d42a1fd669"]
+      "sentenceCalculationType": "ADIMP"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-01-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 14
+        }
+      },
+      "sentencedAt": "2022-10-28",
+      "sentenceType": "DTO_ORA",
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-01-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 14
+        }
+      },
+      "sentencedAt": "2022-10-28",
+      "sentenceType": "DTO_ORA",
+      "type": "DetentionAndTrainingOrderSentence",
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
+      "sentenceCalculationType": "ADIMP"
+    },
+    {
+      "offence": {
+        "committedAt": "2021-01-12"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2022-10-28",
+      "sentenceType": "DTO_ORA",
+      "type": "DetentionAndTrainingOrderSentence",
+      "consecutiveSentenceUUIDs": [
+        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-
   "adjustments": {
     "REMAND": [
       {

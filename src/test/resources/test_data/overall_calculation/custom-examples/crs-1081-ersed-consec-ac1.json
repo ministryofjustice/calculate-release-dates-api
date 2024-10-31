@@ -1,14 +1,14 @@
 {
   "calculateErsed": true,
-  "offender":{
+  "offender": {
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences":[
+  "sentences": [
     {
       "type": "ExtendedDeterminateSentence",
       "offence": {
-        "committedAt":"2022-08-04"
+        "committedAt": "2022-08-04"
       },
       "custodialDuration": {
         "durationElements": {
@@ -22,25 +22,29 @@
       },
       "automaticRelease": false,
       "sentencedAt": "2022-08-05",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "type":"SopcSentence",
-      "offence":{
-        "committedAt":"2022-08-04"
+      "type": "SopcSentence",
+      "offence": {
+        "committedAt": "2022-08-04"
       },
-      "custodialDuration":{
-        "durationElements":{
-          "YEARS":4
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 4
         }
       },
-      "extensionDuration":{
-        "durationElements":{
+      "extensionDuration": {
+        "durationElements": {
           "YEARS": 1
         }
       },
       "sentencedAt": "2022-08-05",
-      "consecutiveSentenceUUIDs": ["5dfde034-b7d7-4c54-a86c-67d42a1fd669"]
+      "consecutiveSentenceUUIDs": [
+        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

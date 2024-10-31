@@ -1,30 +1,32 @@
 {
-  "offender":{
-    "reference":"PROD-2",
-    "dateOfBirth":"1995-03-08"
+  "offender": {
+    "reference": "PROD-2",
+    "dateOfBirth": "1995-03-08"
   },
-  "sentences":[
+  "sentences": [
     {
-      "offence":{
-        "committedAt":"2020-05-19"
+      "offence": {
+        "committedAt": "2020-05-19"
       },
-      "duration":{
-        "durationElements":{
-          "MONTHS":3
+      "duration": {
+        "durationElements": {
+          "MONTHS": 3
         }
       },
-      "sentencedAt":"2021-07-01"
+      "sentencedAt": "2021-07-01",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "offence":{
-        "committedAt":"2020-05-19"
+      "offence": {
+        "committedAt": "2020-05-19"
       },
-      "duration":{
-        "durationElements":{
-          "MONTHS":4
+      "duration": {
+        "durationElements": {
+          "MONTHS": 4
         }
       },
-      "sentencedAt":"2021-07-05"
+      "sentencedAt": "2021-07-05",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

@@ -20,7 +20,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2013-01-21"
+      "sentencedAt": "2013-01-21",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

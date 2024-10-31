@@ -20,6 +20,7 @@
     },
     "sentenceParts": [
       {
+        "sentenceCalculationType": "ADIMP",
         "lineSequence": 1,
         "caseSequence": 1,
         "caseReference": null,
@@ -29,6 +30,7 @@
         "consecutiveToCaseSequence": null
       },
       {
+        "sentenceCalculationType": "ADIMP",
         "lineSequence": 2,
         "caseSequence": 1,
         "caseReference": null,

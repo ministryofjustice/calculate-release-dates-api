@@ -13,7 +13,8 @@
           "MONTHS": 10
         }
       },
-      "sentencedAt": "2012-11-05"
+      "sentencedAt": "2012-11-05",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -24,7 +25,8 @@
           "MONTHS": 12
         }
       },
-      "sentencedAt": "2012-12-17"
+      "sentencedAt": "2012-12-17",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

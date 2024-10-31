@@ -14,7 +14,8 @@
         }
       },
       "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2021-02-11"
+      "sentencedAt": "2021-02-11",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -26,7 +27,8 @@
         }
       },
       "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2021-02-11"
+      "sentencedAt": "2021-02-11",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -44,7 +46,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2022-01-28"
+      "sentencedAt": "2022-01-28",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -63,7 +66,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2022-01-28"
+      "sentencedAt": "2022-01-28",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

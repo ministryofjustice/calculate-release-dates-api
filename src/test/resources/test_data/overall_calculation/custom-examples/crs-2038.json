@@ -13,14 +13,15 @@
           "MONTHS": 18
         }
       },
-      "sentencedAt": "2024-09-26"
+      "sentencedAt": "2024-09-26",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {
-    "TAGGED_BAIL":[
+    "TAGGED_BAIL": [
       {
-        "appliesToSentencesFrom":"2024-09-26",
-        "numberOfDays":120
+        "appliesToSentencesFrom": "2024-09-26",
+        "numberOfDays": 120
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [

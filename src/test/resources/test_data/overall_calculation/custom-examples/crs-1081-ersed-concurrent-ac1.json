@@ -1,31 +1,33 @@
 {
   "calculateErsed": true,
-  "offender":{
+  "offender": {
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences":[
+  "sentences": [
     {
-      "offence":{
-        "committedAt":"2022-02-27"
+      "offence": {
+        "committedAt": "2022-02-27"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "YEARS": 8
         }
       },
-      "sentencedAt":"2022-02-28"
+      "sentencedAt": "2022-02-28",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "offence":{
-        "committedAt":"2022-02-27"
+      "offence": {
+        "committedAt": "2022-02-27"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "YEARS": 2
         }
       },
-      "sentencedAt":"2022-02-28"
+      "sentencedAt": "2022-02-28",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

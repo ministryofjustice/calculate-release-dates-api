@@ -13,7 +13,8 @@
           "YEARS": 5
         }
       },
-      "sentencedAt": "2019-12-19"
+      "sentencedAt": "2019-12-19",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -24,7 +25,8 @@
           "YEARS": 5
         }
       },
-      "sentencedAt": "2019-12-19"
+      "sentencedAt": "2019-12-19",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "offence": {
@@ -36,7 +38,8 @@
           "MONTHS": 9
         }
       },
-      "sentencedAt": "2020-10-20"
+      "sentencedAt": "2020-10-20",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

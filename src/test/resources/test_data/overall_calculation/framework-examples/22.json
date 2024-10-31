@@ -13,7 +13,8 @@
           "MONTHS": 18
         }
       },
-      "sentencedAt": "2022-10-11"
+      "sentencedAt": "2022-10-11",
+      "sentenceCalculationType": "ADIMP"
     }
   ]
 }

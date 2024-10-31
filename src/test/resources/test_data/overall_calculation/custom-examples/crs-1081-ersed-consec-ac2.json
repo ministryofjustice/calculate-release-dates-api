@@ -1,14 +1,14 @@
 {
   "calculateErsed": true,
-  "offender":{
+  "offender": {
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences":[
+  "sentences": [
     {
       "type": "SopcSentence",
       "offence": {
-        "committedAt":"2018-07-19"
+        "committedAt": "2018-07-19"
       },
       "custodialDuration": {
         "durationElements": {
@@ -21,28 +21,32 @@
         }
       },
       "sentencedAt": "2018-07-20",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "offence":{
-        "committedAt":"2018-07-19"
+      "offence": {
+        "committedAt": "2018-07-19"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "YEARS": 3
         }
       },
       "sentencedAt": "2018-07-20",
-      "consecutiveSentenceUUIDs": ["5dfde034-b7d7-4c54-a86c-67d42a1fd669"]
+      "consecutiveSentenceUUIDs": [
+        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      ],
+      "sentenceCalculationType": "ADIMP"
     }
   ],
-  "adjustments":{
-    "REMAND":[
+  "adjustments": {
+    "REMAND": [
       {
-        "appliesToSentencesFrom":"2018-07-20",
-        "numberOfDays":4,
-        "fromDate":"2018-07-15",
-        "toDate":"2018-07-19"
+        "appliesToSentencesFrom": "2018-07-20",
+        "numberOfDays": 4,
+        "fromDate": "2018-07-15",
+        "toDate": "2018-07-19"
       }
     ]
   }

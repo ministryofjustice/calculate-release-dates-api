@@ -15,25 +15,27 @@
       },
       "sentencedAt": "2022-07-19",
       "sentenceType": "DTO",
-      "type": "DetentionAndTrainingOrderSentence"
+      "type": "DetentionAndTrainingOrderSentence",
+      "sentenceCalculationType": "ADIMP"
     },
     {
-      "type":"ExtendedDeterminateSentence",
+      "type": "ExtendedDeterminateSentence",
       "sentenceType": "EDSU18",
-      "offence":{
-        "committedAt":"2021-04-28"
+      "offence": {
+        "committedAt": "2021-04-28"
       },
-      "custodialDuration":{
-        "durationElements":{
+      "custodialDuration": {
+        "durationElements": {
           "YEARS": 5
         }
       },
-      "extensionDuration":{
-        "durationElements":{
+      "extensionDuration": {
+        "durationElements": {
           "YEARS": 4
         }
       },
-      "sentencedAt":"2021-12-10"
+      "sentencedAt": "2021-12-10",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {

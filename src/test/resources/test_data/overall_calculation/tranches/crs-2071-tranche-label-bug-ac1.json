@@ -21,7 +21,8 @@
         }
       },
       "sentencedAt": "2021-06-04",
-      "identifier": "de1b2e0d-379b-34bd-9b56-ea796ab327d8"
+      "identifier": "de1b2e0d-379b-34bd-9b56-ea796ab327d8",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -42,7 +43,8 @@
       "identifier": "5b5bb570-cbfb-3e24-b88d-8e32ed0b84c3",
       "consecutiveSentenceUUIDs": [
         "650a05f6-ea3b-3948-a1f5-d6ce9fec8ef7"
-      ]
+      ],
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -60,7 +62,8 @@
         }
       },
       "sentencedAt": "2021-06-04",
-      "identifier": "c2d250fc-7d30-3c85-917a-be4f935eb64f"
+      "identifier": "c2d250fc-7d30-3c85-917a-be4f935eb64f",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -78,7 +81,8 @@
         }
       },
       "sentencedAt": "2021-06-04",
-      "identifier": "650a05f6-ea3b-3948-a1f5-d6ce9fec8ef7"
+      "identifier": "650a05f6-ea3b-3948-a1f5-d6ce9fec8ef7",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -96,7 +100,8 @@
         }
       },
       "sentencedAt": "2021-06-04",
-      "identifier": "27486d6d-2763-37b0-a2fc-a39677e4b47e"
+      "identifier": "27486d6d-2763-37b0-a2fc-a39677e4b47e",
+      "sentenceCalculationType": "ADIMP"
     },
     {
       "type": "StandardSentence",
@@ -110,7 +115,8 @@
       },
       "sentencedAt": "2021-06-04",
       "identifier": "f55f5e26-3274-3d73-9b29-064a0ba99dea",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "sentenceCalculationType": "ADIMP"
     }
   ],
   "adjustments": {
