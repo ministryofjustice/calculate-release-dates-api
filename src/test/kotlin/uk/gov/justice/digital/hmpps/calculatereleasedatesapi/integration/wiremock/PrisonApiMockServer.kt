@@ -99,6 +99,7 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
         prisonApi.stubGetReturnToCustody(it.hashCode().toLong(), returnToCustodyDates[it]!!)
       } else {
         log.info("No return to custody to stub for prisonerId $it, bookingId ${it.hashCode().toLong()}")
+        prisonApi.stubGetReturnToCustodyNotFound(it.hashCode().toLong())
       }
 
       val finePayment = if (finePayments.containsKey(it)) {
@@ -209,6 +210,18 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
             .withStatus(200),
         ),
     )
+
+  fun stubGetReturnToCustodyNotFound(bookingId: Long): StubMapping =
+    stubFor(
+      get("/api/bookings/$bookingId/fixed-term-recall")
+        .willReturn(
+          aResponse()
+            .withStatus(404)
+            .withHeader("Content-Type", "application/json")
+            .withBody("""{"error": "Fixed Term Recall details not found"}""")
+        )
+    )
+
 
   fun stubGetSentenceAdjustments(bookingId: Long, json: String): StubMapping =
     stubFor(
