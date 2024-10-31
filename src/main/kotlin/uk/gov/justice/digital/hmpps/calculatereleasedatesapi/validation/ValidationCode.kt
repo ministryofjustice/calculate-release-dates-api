@@ -20,6 +20,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
     "A default term is consecutive to another default term or sentence.",
     UNSUPPORTED_CALCULATION,
   ),
+  DTO_RECALL("A detention and training order has a SEC104 or SEC105 breach term.", UNSUPPORTED_CALCULATION), // can still be used when parsing historic comparisons
   A_FINE_SENTENCE_MISSING_FINE_AMOUNT("Court case %s count %s must include a fine amount."),
   A_FINE_SENTENCE_WITH_PAYMENTS("Any of the fine amount for a default term has been paid.", UNSUPPORTED_CALCULATION),
   CUSTODIAL_PERIOD_EXTINGUISHED_REMAND("The release date cannot be before the sentence date. Go back to NOMIS and reduce the amount of remand entered"),
