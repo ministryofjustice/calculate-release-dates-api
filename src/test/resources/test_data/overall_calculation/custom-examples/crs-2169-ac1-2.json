@@ -1,0 +1,61 @@
+{
+  "offender": {
+    "reference": "A123456",
+    "dateOfBirth": "2000-06-01",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 1234567,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "sentenceCalculationType": "ADIMP_ORA",
+      "offence": {
+        "committedAt": "2020-11-30",
+        "offenceCode": "SX03244"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 5,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "0549ff5e-93b1-3f22-8095-a97ab6c60f4b",
+      "recallType": null,
+      "sentencedAt": "2020-12-01",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": null,
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2019-10-19",
+        "offenceCode": "COML001"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 4,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "0113337a-e3e0-35f7-a44d-462fb4c1ea38",
+      "recallType": null,
+      "sentencedAt": "2023-05-10",
+      "caseSequence": 1,
+      "lineSequence": 2,
+      "caseReference": null,
+      "consecutiveSentenceUUIDs": [
+        "0549ff5e-93b1-3f22-8095-a97ab6c60f4b"
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    }
+  ]
+}
