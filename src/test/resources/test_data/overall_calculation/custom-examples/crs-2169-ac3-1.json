@@ -1,0 +1,35 @@
+{
+  "offender": {
+    "reference": "A123456",
+    "dateOfBirth": "2000-06-01",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 1234567,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "sentenceCalculationType": "ADIMP",
+      "offence": {
+        "committedAt": "2018-03-01",
+        "offenceCode": "SX03247"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 3,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "0549ff5e-93b1-3f22-8095-a97ab6c60f4b",
+      "recallType": null,
+      "sentencedAt": "2024-09-23",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": null,
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+    }
+  ]
+}
