@@ -1,0 +1,14 @@
+{
+  "offence": {
+    "committedAt": "2015-02-16"
+  },
+  "duration": {
+    "durationElements": {
+      "MONTHS": 8
+    }
+  },
+  "type": "BotusSentence",
+  "latestTusedDate": "2030-01-01",
+  "latestTusedSource": "NOMIS",
+  "sentencedAt": "2015-02-16"
+}
