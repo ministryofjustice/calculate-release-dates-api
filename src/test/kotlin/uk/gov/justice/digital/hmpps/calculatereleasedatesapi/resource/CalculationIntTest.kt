@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.entry
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
@@ -447,6 +448,23 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     assertThat(calculation.dates[PRRD]).isEqualTo(
       LocalDate.of(2022, 3, 28),
     )
+  }
+
+  @Test
+  fun `Run calculation on 14 day fixed term recall with no returntocustodydate`() {
+    webTestClient.post()
+      .uri("/calculation/BLANKFTR")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(calculationRequestModel)
+      .exchange()
+      .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+      .expectBody()
+      .consumeWith { response ->
+        val responseBody = response.responseBody?.let { String(it) } ?: ""
+        assertThat(responseBody).contains("No valid Return To Custody Date found") // Basic check for relevant message
+        assertThat(responseBody).contains("\"status\":500") // Check for field mention
+      }
   }
 
   @Test
