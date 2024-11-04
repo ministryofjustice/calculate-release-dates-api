@@ -70,6 +70,7 @@ class CalculationController(
       ApiResponse(responseCode = "200", description = "Returns calculated dates"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "500", description = "Unable to perform calculation"),
     ],
   )
   fun calculate(

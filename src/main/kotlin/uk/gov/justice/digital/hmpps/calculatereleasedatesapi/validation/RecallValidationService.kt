@@ -29,6 +29,7 @@ class RecallValidationService(
     val (recallLength, has14DayFTRSentence, has28DayFTRSentence) = getFtrValidationDetails(ftrDetails, sourceData.sentenceAndOffences)
 
     return when {
+      sourceData.returnToCustodyDate == null -> listOf(ValidationMessage(ValidationCode.FTR_NO_RETURN_TO_CUSTODY_DATE))
       has14DayFTRSentence && has28DayFTRSentence -> listOf(ValidationMessage(ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER))
       has14DayFTRSentence && recallLength == 28 -> listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28))
       has28DayFTRSentence && recallLength == 14 -> listOf(ValidationMessage(ValidationCode.FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14))
