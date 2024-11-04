@@ -461,10 +461,10 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       .expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
       .expectBody()
       .consumeWith { response ->
-      val responseBody = response.responseBody?.let { String(it) } ?: ""
-      assertThat(responseBody).contains("JSON decoding error")  // Basic check for relevant message
-      assertThat(responseBody).contains("returnToCustodyDate")  // Check for field mention
-    }
+        val responseBody = response.responseBody?.let { String(it) } ?: ""
+        assertThat(responseBody).contains("No valid Return To Custody Date found") // Basic check for relevant message
+        assertThat(responseBody).contains("\"status\":500") // Check for field mention
+      }
   }
 
   @Test

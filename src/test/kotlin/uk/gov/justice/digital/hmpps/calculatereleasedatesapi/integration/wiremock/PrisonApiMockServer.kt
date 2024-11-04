@@ -218,10 +218,9 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
           aResponse()
             .withStatus(404)
             .withHeader("Content-Type", "application/json")
-            .withBody("""{"error": "Fixed Term Recall details not found"}""")
-        )
+            .withBody("""{"error": "Fixed Term Recall details not found"}"""),
+        ),
     )
-
 
   fun stubGetSentenceAdjustments(bookingId: Long, json: String): StubMapping =
     stubFor(

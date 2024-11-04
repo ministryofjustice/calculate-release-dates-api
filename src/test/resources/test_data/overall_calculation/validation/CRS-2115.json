@@ -1,0 +1,24 @@
+{
+  "offender": {
+    "reference": "A1234BC",
+    "dateOfBirth": "1980-01-01",
+    "isActiveSexOffender": false
+  },
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-05-02",
+        "offenceCode": "TH68010"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 8
+        }
+      },
+      "identifier": "aa0b1a85-2d4f-3c3f-82c6-e2d24c71086b",
+      "recallType": "FIXED_TERM_RECALL_14",
+      "sentencedAt": "2024-05-08"
+    }
+  ]
+}
