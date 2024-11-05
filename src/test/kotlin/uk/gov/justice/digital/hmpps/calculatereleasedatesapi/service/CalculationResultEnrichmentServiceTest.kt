@@ -914,12 +914,16 @@ class CalculationResultEnrichmentServiceTest {
       mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES))),
     )
     val results = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
-      .addDetailToCalculationDates(releaseDates, listOf(
-        sentenceAndOffenceWithReleaseArrangements,
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name
-        )
-      ), calculationBreakdown)
+      .addDetailToCalculationDates(
+        releaseDates,
+        listOf(
+          sentenceAndOffenceWithReleaseArrangements,
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+          ),
+        ),
+        calculationBreakdown,
+      )
 
     assertThat(results[crdType]?.hints).isEqualTo(listOf(ReleaseDateHint("40% date has been applied")))
   }
@@ -934,15 +938,19 @@ class CalculationResultEnrichmentServiceTest {
       mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES))),
     )
     val results = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
-      .addDetailToCalculationDates(releaseDates, listOf(
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceDate = LocalDate.of(2024, 1, 17),
+      .addDetailToCalculationDates(
+        releaseDates,
+        listOf(
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceDate = LocalDate.of(2024, 1, 17),
+          ),
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceDate = LocalDate.of(2024, 9, 24),
+            sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+          ),
         ),
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceDate = LocalDate.of(2024, 9, 24),
-          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name
-        )
-      ), calculationBreakdown)
+        calculationBreakdown,
+      )
 
     assertThat(results[crdType]?.hints).isEmpty()
   }
@@ -957,16 +965,20 @@ class CalculationResultEnrichmentServiceTest {
       mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES))),
     )
     val results = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
-      .addDetailToCalculationDates(releaseDates, listOf(
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceCalculationType =  SentenceCalculationType.ADIMP.name,
-          sentenceDate = LocalDate.of(2024, 6, 24),
+      .addDetailToCalculationDates(
+        releaseDates,
+        listOf(
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+            sentenceDate = LocalDate.of(2024, 6, 24),
+          ),
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+            sentenceDate = LocalDate.of(2024, 9, 18),
+          ),
         ),
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
-          sentenceDate = LocalDate.of(2024, 9, 18),
-        )
-      ), calculationBreakdown)
+        calculationBreakdown,
+      )
 
     assertThat(results[crdType]?.hints).isEmpty()
   }
@@ -981,16 +993,20 @@ class CalculationResultEnrichmentServiceTest {
       mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES))),
     )
     val results = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
-      .addDetailToCalculationDates(releaseDates, listOf(
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
-          sentenceDate = LocalDate.of(2022, 10, 22),
+      .addDetailToCalculationDates(
+        releaseDates,
+        listOf(
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+            sentenceDate = LocalDate.of(2022, 10, 22),
+          ),
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+            sentenceDate = LocalDate.of(2024, 9, 13),
+          ),
         ),
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
-          sentenceDate = LocalDate.of(2024, 9, 13),
-        )
-      ), calculationBreakdown)
+        calculationBreakdown,
+      )
 
     assertThat(results[crdType]?.hints).isEmpty()
   }
@@ -1005,16 +1021,20 @@ class CalculationResultEnrichmentServiceTest {
       mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES))),
     )
     val results = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
-      .addDetailToCalculationDates(releaseDates, listOf(
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
-          sentenceDate = LocalDate.of(2024, 1, 17),
+      .addDetailToCalculationDates(
+        releaseDates,
+        listOf(
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+            sentenceDate = LocalDate.of(2024, 1, 17),
+          ),
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+            sentenceDate = LocalDate.of(2024, 9, 17),
+          ),
         ),
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
-          sentenceDate = LocalDate.of(2024, 9, 17),
-        )
-      ), calculationBreakdown)
+        calculationBreakdown,
+      )
 
     assertThat(results[crdType]?.hints).isEmpty()
   }
@@ -1029,17 +1049,21 @@ class CalculationResultEnrichmentServiceTest {
       mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES))),
     )
     val results = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
-      .addDetailToCalculationDates(releaseDates, listOf(
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
-          sentenceDate = LocalDate.of(2024, 6, 24),
+      .addDetailToCalculationDates(
+        releaseDates,
+        listOf(
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+            sentenceDate = LocalDate.of(2024, 6, 24),
+          ),
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+            sentenceDate = LocalDate.of(2024, 9, 13),
+            isSDSPlus = true,
+          ),
         ),
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
-          sentenceDate = LocalDate.of(2024, 9, 13),
-          isSDSPlus = true
-        )
-      ), calculationBreakdown)
+        calculationBreakdown,
+      )
 
     assertThat(results[crdType]?.hints).isEqualTo(listOf(ReleaseDateHint("40% date has been applied")))
   }
@@ -1054,16 +1078,20 @@ class CalculationResultEnrichmentServiceTest {
       mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES))),
     )
     val results = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
-      .addDetailToCalculationDates(releaseDates, listOf(
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
-          sentenceDate = LocalDate.of(2024, 3, 18),
+      .addDetailToCalculationDates(
+        releaseDates,
+        listOf(
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name,
+            sentenceDate = LocalDate.of(2024, 3, 18),
+          ),
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.SOPC21.name,
+            sentenceDate = LocalDate.of(2024, 9, 17),
+          ),
         ),
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceCalculationType = SentenceCalculationType.SOPC21.name,
-          sentenceDate = LocalDate.of(2024, 9, 17),
-        )
-      ), calculationBreakdown)
+        calculationBreakdown,
+      )
 
     assertThat(results[crdType]?.hints).isEqualTo(listOf(ReleaseDateHint("40% date has been applied")))
   }
@@ -1078,16 +1106,20 @@ class CalculationResultEnrichmentServiceTest {
       mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(setOf(CalculationRule.SDS_EARLY_RELEASE_APPLIES))),
     )
     val results = calculationResultEnrichmentService(featureToggles = FeatureToggles(sdsEarlyReleaseHints = true))
-      .addDetailToCalculationDates(releaseDates, listOf(
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceCalculationType = SentenceCalculationType.ADIMP.name,
-          sentenceDate = LocalDate.of(2024, 1, 17),
+      .addDetailToCalculationDates(
+        releaseDates,
+        listOf(
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+            sentenceDate = LocalDate.of(2024, 1, 17),
+          ),
+          sentenceAndOffenceWithReleaseArrangements.copy(
+            sentenceCalculationType = SentenceCalculationType.AFINE.name,
+            sentenceDate = LocalDate.of(2024, 9, 24),
+          ),
         ),
-        sentenceAndOffenceWithReleaseArrangements.copy(
-          sentenceCalculationType = SentenceCalculationType.AFINE.name,
-          sentenceDate = LocalDate.of(2024, 9, 24),
-        )
-      ), calculationBreakdown)
+        calculationBreakdown,
+      )
 
     assertThat(results[crdType]?.hints).isEqualTo(listOf(ReleaseDateHint("40% date has been applied")))
   }
