@@ -8,8 +8,6 @@ data class ConcurrentSentenceBreakdown(
   override val sentenceLength: String,
   override val sentenceLengthDays: Int,
   override val dates: Map<ReleaseDateType, DateBreakdown>,
-  val sentenceCalculationType: String,
-  val isSDSPlus: Boolean = false,
   val lineSequence: Int,
   val caseSequence: Int,
   val caseReference: String? = null,

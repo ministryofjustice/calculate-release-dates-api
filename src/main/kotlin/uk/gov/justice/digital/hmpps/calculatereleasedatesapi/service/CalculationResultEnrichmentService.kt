@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS40_HINT_TEXT_CUTOFF_DATE
@@ -24,9 +25,10 @@ class CalculationResultEnrichmentService(
   private val clock: Clock,
   private val featureToggles: FeatureToggles,
 ) {
+
   fun addDetailToCalculationDates(
     releaseDates: List<ReleaseDate>,
-    sentenceAndOffences: List<SentenceAndOffence>?,
+    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
     calculationBreakdown: CalculationBreakdown?,
     historicalTusedSource: HistoricalTusedSource? = null,
   ): Map<ReleaseDateType, DetailedDate> {
@@ -46,12 +48,12 @@ class CalculationResultEnrichmentService(
     date: LocalDate,
     calculationBreakdown: CalculationBreakdown?,
     releaseDates: Map<ReleaseDateType, ReleaseDate>,
-    sentenceAndOffences: List<SentenceAndOffence>?,
+    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
     historicalTusedSource: HistoricalTusedSource? = null,
   ): List<ReleaseDateHint> {
     val hints = mutableListOf<ReleaseDateHint?>()
     hints += nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type, date)
-    if (calculationBreakdown !== null && showSDS40Hints(calculationBreakdown)) {
+    if (calculationBreakdown !== null && sentenceAndOffences !== null && showSDS40Hints(sentenceAndOffences)) {
       hints += sds40Hint(type, calculationBreakdown)
     }
     hints += ardHints(type, date, sentenceAndOffences, releaseDates)
@@ -66,22 +68,13 @@ class CalculationResultEnrichmentService(
     return hints.filterNotNull()
   }
 
-  private fun showSDS40Hints(calculationBreakdown: CalculationBreakdown): Boolean {
+  private fun showSDS40Hints(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>): Boolean {
     if (!featureToggles.sdsEarlyReleaseHints) return false
 
-    if (calculationBreakdown.concurrentSentences.any {
-        !it.isSDSPlus && (it.sentenceCalculationType.isSdsCalcType() && it.sentencedAt.isAfter(SDS40_HINT_TEXT_CUTOFF_DATE))
-      }
-    ) {
-      return false
+    return sentenceAndOffences.none {
+      !it.isSDSPlus &&
+        (it.sentenceCalculationType.isSdsCalcType() && it.sentenceDate.isAfter(SDS40_HINT_TEXT_CUTOFF_DATE))
     }
-
-    return calculationBreakdown.consecutiveSentence?.let {
-      it.sentencedAt.isBefore(SDS40_HINT_TEXT_CUTOFF_DATE) || it.sentenceParts.none {
-          part ->
-        !part.isSDSPlus && part.sentenceCalculationType.isSdsCalcType()
-      }
-    } ?: true
   }
 
   private fun tusedHints(type: ReleaseDateType): List<ReleaseDateHint> {

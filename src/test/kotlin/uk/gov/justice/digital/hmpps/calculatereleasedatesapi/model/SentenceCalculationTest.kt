@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -20,7 +19,6 @@ internal class SentenceCalculationTest {
       offence,
       duration,
       sentencedAt,
-      SentenceCalculationType.ADIMP.name,
       isSDSPlus = true,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )

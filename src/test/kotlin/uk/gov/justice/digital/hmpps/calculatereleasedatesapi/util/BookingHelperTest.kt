@@ -13,7 +13,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTy
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -79,7 +78,6 @@ class BookingHelperTest {
       offence = OFFENCE,
       duration = BookingHelperTest.ONE_DAY_DURATION,
       sentencedAt = LocalDate.of(2020, 1, 1),
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )

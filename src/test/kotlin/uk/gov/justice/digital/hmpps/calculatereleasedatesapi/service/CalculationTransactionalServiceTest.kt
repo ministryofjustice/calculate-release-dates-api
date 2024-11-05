@@ -990,7 +990,6 @@ class CalculationTransactionalServiceTest {
 
     private val StandardSENTENCE = StandardDeterminateSentence(
       sentencedAt = THIRD_FEB_2021,
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       duration = FIVE_YEAR_DURATION,
       offence = Offence(committedAt = THIRD_FEB_2021),
       identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa"),

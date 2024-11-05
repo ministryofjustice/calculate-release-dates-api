@@ -18,7 +18,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCa
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
@@ -37,7 +36,6 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
@@ -57,7 +55,6 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
@@ -95,7 +92,6 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
@@ -120,7 +116,6 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
@@ -140,7 +135,6 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
@@ -162,7 +156,6 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
@@ -207,7 +200,6 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
@@ -235,7 +227,6 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
@@ -268,7 +259,6 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
@@ -303,7 +293,6 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
@@ -336,7 +325,6 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
@@ -362,7 +350,6 @@ class HdcedCalculatorTest {
       offence,
       duration,
       sentencedAt,
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )

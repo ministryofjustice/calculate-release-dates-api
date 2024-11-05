@@ -26,7 +26,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTy
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
@@ -130,7 +129,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
 
     val sentence = StandardDeterminateSentence(
       sentencedAt = LocalDate.of(2020, 1, 1),
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L)),
       offence = Offence(committedAt = LocalDate.of(2019, 1, 1)),
       identifier = UUID.randomUUID(),
@@ -203,7 +201,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
 
     val sentence = StandardDeterminateSentence(
       sentencedAt = LocalDate.of(2020, 1, 1),
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L)),
       offence = Offence(committedAt = LocalDate.of(2019, 1, 1)),
       identifier = UUID.randomUUID(),
@@ -377,7 +374,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
   private fun createBookingWithSDSSentenceOfType(identificationTrack: SentenceIdentificationTrack): Booking {
     val sentence = StandardDeterminateSentence(
       sentencedAt = LocalDate.of(2020, 1, 1),
-      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       duration = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L)),
       offence = Offence(committedAt = LocalDate.of(2019, 1, 1)),
       identifier = UUID.randomUUID(),
