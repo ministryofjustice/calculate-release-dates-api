@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.LatestCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 
 @Component
@@ -98,7 +98,7 @@ class LatestCalculationService(
     prisonerCalculation: OffenderKeyDates,
     reason: String,
     location: String?,
-    sentenceAndOffences: List<SentenceAndOffence>?,
+    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
     breakdown: CalculationBreakdown?,
     historicalTusedSource: HistoricalTusedSource? = null,
   ): LatestCalculation {
