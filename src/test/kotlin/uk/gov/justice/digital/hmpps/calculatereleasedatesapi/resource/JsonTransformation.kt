@@ -30,7 +30,7 @@ class JsonTransformation {
     return mapper.readValue(json, StandardDeterminateSentence::class.java)
   }
 
-  fun loadBotusSentence(testData: String): BotusSentence{
+  fun loadBotusSentence(testData: String): BotusSentence {
     val json = getJsonTest("$testData.json", "sentence")
     return mapper.readValue(json, BotusSentence::class.java)
   }

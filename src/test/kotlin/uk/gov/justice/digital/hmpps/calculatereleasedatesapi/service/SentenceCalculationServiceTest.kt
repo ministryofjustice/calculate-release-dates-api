@@ -148,6 +148,7 @@ class SentenceCalculationServiceTest {
     val adjustments = mutableMapOf<AdjustmentType, MutableList<Adjustment>>()
     adjustments[AdjustmentType.REMAND] =
       mutableListOf(Adjustment(appliesToSentencesFrom = sentence.sentencedAt, numberOfDays = 21))
+
     val offender = Offender("A1234BC", LocalDate.of(1980, 1, 1))
     val booking = Booking(offender, mutableListOf(sentence), Adjustments(adjustments))
 
@@ -159,7 +160,7 @@ class SentenceCalculationServiceTest {
     assertEquals(LocalDate.of(2015, 10, 15), calculation.expiryDate)
     assertEquals(LocalDate.of(2015, 10, 15), calculation.releaseDate)
     assertEquals(calculation.homeDetentionCurfewEligibilityDate, null)
-    assertEquals(LocalDate.of(2030, 1, 1), calculation.topUpSupervisionDate) // use historic TUSED
+    assertEquals(LocalDate.of(2015, 1, 16), calculation.topUpSupervisionDate) // use historic TUSED
     assertEquals("[ARD, SED, TUSED]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 

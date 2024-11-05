@@ -109,17 +109,15 @@ class BookingExtractionService(
       dates[LTD] = sentenceCalculation.latestTransferDate!!
     }
 
-    if (sentence.isBotus()) {
-      if (sentence is BotusSentence && sentence.latestTusedDate != null && sentenceCalculation.expiryDate.isBefore(
-          sentence.latestTusedDate,
-        )
-      ) {
-        dates[TUSED] = sentence.latestTusedDate!!
-        historicalTusedSource = sentence.latestTusedSource!!
-      }
-    } else {
-      dates[ESED] = sentenceCalculation.unadjustedExpiryDate
+    if (
+      sentence is BotusSentence &&
+      sentence.latestTusedDate != null && sentenceCalculation.expiryDate.isBefore(sentence.latestTusedDate)
+    ) {
+      dates[TUSED] = sentence.latestTusedDate!!
+      historicalTusedSource = sentence.latestTusedSource!!
     }
+
+    dates[ESED] = sentenceCalculation.unadjustedExpiryDate
 
     return CalculationResult(
       dates,
