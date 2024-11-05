@@ -118,7 +118,13 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason("NEW", "New Sentence")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(OffenderKeyDates(reasonCode = "NEW", calculatedAt = now, comment = "Not this one").right())
-    whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.of(CalculationRequest(calculationReference = UUID.randomUUID())))
+    whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(
+      Optional.of(
+        CalculationRequest(
+          calculationReference = UUID.randomUUID(),
+        ),
+      ),
+    )
 
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
@@ -139,7 +145,13 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason("NEW", "New Sentence")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(OffenderKeyDates(reasonCode = "NEW", calculatedAt = now).right())
-    whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.of(CalculationRequest(calculationReference = UUID.randomUUID())))
+    whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(
+      Optional.of(
+        CalculationRequest(
+          calculationReference = UUID.randomUUID(),
+        ),
+      ),
+    )
 
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
@@ -159,7 +171,13 @@ class LatestCalculationServiceTest {
   fun `Should use the NOMIS reason code for reason if we can't find the looked up code`() {
     whenever(prisonService.getOffenderDetail(prisonerId)).thenReturn(prisonerDetails)
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(OffenderKeyDates(reasonCode = "FOO", calculatedAt = now).right())
-    whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.of(CalculationRequest(calculationReference = UUID.randomUUID())))
+    whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(
+      Optional.of(
+        CalculationRequest(
+          calculationReference = UUID.randomUUID(),
+        ),
+      ),
+    )
 
     assertThat(service.latestCalculationForPrisoner(prisonerId)).isEqualTo(
       LatestCalculation(
@@ -275,7 +293,14 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
 
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(
-      Optional.of(CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC")),
+      Optional.of(
+        CalculationRequest(
+          id = 654321,
+          calculationReference = calculationReference,
+          calculatedAt = calculatedAt,
+          prisonerLocation = "ABC",
+        ),
+      ),
     )
 
     val dates = listOf(
@@ -315,7 +340,14 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
 
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(
-      Optional.of(CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "XYZ")),
+      Optional.of(
+        CalculationRequest(
+          id = 654321,
+          calculationReference = calculationReference,
+          calculatedAt = calculatedAt,
+          prisonerLocation = "XYZ",
+        ),
+      ),
     )
 
     val dates = listOf(
@@ -354,7 +386,13 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
 
-    val calculationRequest = CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", sentenceAndOffences = objectToJson(listOf(someSentence), objectMapper))
+    val calculationRequest = CalculationRequest(
+      id = 654321,
+      calculationReference = calculationReference,
+      calculatedAt = calculatedAt,
+      prisonerLocation = "ABC",
+      sentenceAndOffences = objectToJson(listOf(someSentence), objectMapper),
+    )
     val expectedBreakdown = CalculationBreakdown(emptyList(), null)
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.of(calculationRequest))
     whenever(calculationBreakdownService.getBreakdownSafely(calculationRequest)).thenReturn(expectedBreakdown.right())
@@ -393,7 +431,13 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
 
-    val calculationRequest = CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", sentenceAndOffences = objectToJson(listOf(someSentence), objectMapper))
+    val calculationRequest = CalculationRequest(
+      id = 654321,
+      calculationReference = calculationReference,
+      calculatedAt = calculatedAt,
+      prisonerLocation = "ABC",
+      sentenceAndOffences = objectToJson(listOf(someSentence), objectMapper),
+    )
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.of(calculationRequest))
     whenever(calculationBreakdownService.getBreakdownSafely(calculationRequest)).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(someSentence))
@@ -431,7 +475,13 @@ class LatestCalculationServiceTest {
     whenever(prisonService.getAgenciesByType("INST")).thenReturn(listOf(Agency("ABC", "HMP ABC")))
     whenever(prisonService.getOffenderKeyDates(bookingId)).thenReturn(offenderKeyDates.right())
 
-    val calculationRequest = CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", sentenceAndOffences = null)
+    val calculationRequest = CalculationRequest(
+      id = 654321,
+      calculationReference = calculationReference,
+      calculatedAt = calculatedAt,
+      prisonerLocation = "ABC",
+      sentenceAndOffences = null,
+    )
     val expectedBreakdown = CalculationBreakdown(emptyList(), null)
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.of(calculationRequest))
     whenever(calculationBreakdownService.getBreakdownSafely(calculationRequest)).thenReturn(expectedBreakdown.right())

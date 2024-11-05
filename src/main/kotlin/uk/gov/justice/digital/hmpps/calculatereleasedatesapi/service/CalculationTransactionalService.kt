@@ -33,9 +33,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
@@ -424,12 +424,9 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun findReturnToCustodyDateFromCalculation(calculationRequestId: Long): ReturnToCustodyDate? {
+  fun findFixedTermRecallDetailsFromCalculation(calculationRequestId: Long): FixedTermRecallDetails? {
     val calculationRequest = getCalculationRequest(calculationRequestId)
-    if (calculationRequest.returnToCustodyDate == null) {
-      return null
-    }
-    return prisonApiDataMapper.mapReturnToCustodyDate(calculationRequest)
+    return calculationRequest.returnToCustodyDate?.let { prisonApiDataMapper.mapFixedTermRecallDetails(calculationRequest) }
   }
 
   private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest {
@@ -544,13 +541,14 @@ class CalculationTransactionalService(
       val originalSentenceAndOffences = calculationRequest.sentenceAndOffences?.let {
         prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
       }
-      val originalReturnToCustodyDate =
-        objectMapper.treeToValue(calculationRequest.returnToCustodyDate, ReturnToCustodyDate::class.java)
+      val originalFixedTermRecallDetails = calculationRequest.fixedTermRecallDetails?.let {
+        objectMapper.readValue(it.toString(), FixedTermRecallDetails::class.java)
+      }
       val bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments
       val prisonerDetails = sourceData.prisonerDetails
       val sentenceAndOffences = sourceData.sentenceAndOffences
-      val returnToCustodyDate = sourceData.returnToCustodyDate
-      if (originalCalculationAdjustments == bookingAndSentenceAdjustments && prisonerDetails == originalPrisonerDetails && sentenceAndOffences == originalSentenceAndOffences && returnToCustodyDate == originalReturnToCustodyDate) {
+      val fixedTermRecallDetails = sourceData.fixedTermRecallDetails
+      if (originalCalculationAdjustments == bookingAndSentenceAdjustments && prisonerDetails == originalPrisonerDetails && sentenceAndOffences == originalSentenceAndOffences && fixedTermRecallDetails == originalFixedTermRecallDetails) {
         return transform(calculationRequest)
       } else {
         throw CalculationDataHasChangedError(calculationReference, calculationRequest.prisonerId)

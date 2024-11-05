@@ -25,7 +25,7 @@ open class CalculationBreakdownService(
     val prisonerDetails = calculationRequest.prisonerDetails?.let { prisonApiDataMapper.mapPrisonerDetails(calculationRequest) }
     val calculationUserInputs = transform(calculationRequest.calculationRequestUserInput)
     val bookingAndSentenceAdjustments = calculationRequest.adjustments?.let { prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequest) }
-    val returnToCustodyDate = calculationRequest.returnToCustodyDate?.let { prisonApiDataMapper.mapReturnToCustodyDate(calculationRequest) }
+    val fixedTermRecallDetails = calculationRequest.fixedTermRecallDetails?.let { prisonApiDataMapper.mapFixedTermRecallDetails(calculationRequest) }
     val calculation = transform(calculationRequest)
     return if (sentenceAndOffences != null && prisonerDetails != null && bookingAndSentenceAdjustments != null) {
       val booking = Booking(
@@ -33,7 +33,7 @@ open class CalculationBreakdownService(
         sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) },
         adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
         bookingId = prisonerDetails.bookingId,
-        returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,
+        fixedTermRecallDetails = fixedTermRecallDetails,
       )
       try {
         calculationTransactionalService.calculateWithBreakdown(booking, calculation, calculationUserInputs).right()
@@ -54,14 +54,14 @@ open class CalculationBreakdownService(
     val prisonerDetails = calculationTransactionalService.findPrisonerDetailsFromCalculation(calculationRequestId)
     val sentenceAndOffences = calculationTransactionalService.findSentenceAndOffencesFromCalculation(calculationRequestId)
     val bookingAndSentenceAdjustments = calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
-    val returnToCustodyDate = calculationTransactionalService.findReturnToCustodyDateFromCalculation(calculationRequestId)
+    val fixedTermRecallDetails = calculationTransactionalService.findFixedTermRecallDetailsFromCalculation(calculationRequestId)
     val calculation = calculationTransactionalService.findCalculationResults(calculationRequestId)
     val booking = Booking(
       offender = transform(prisonerDetails),
       sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) },
       adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
       bookingId = prisonerDetails.bookingId,
-      returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,
+      fixedTermRecallDetails = fixedTermRecallDetails,
     )
     return calculationTransactionalService.calculateWithBreakdown(booking, calculation, calculationUserInputs)
   }

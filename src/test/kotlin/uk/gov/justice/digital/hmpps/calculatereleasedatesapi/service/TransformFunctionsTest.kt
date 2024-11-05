@@ -462,6 +462,7 @@ class TransformFunctionsTest {
       prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID,
       calculationStatus = CalculationStatus.PRELIMINARY.name,
+      calculatedAt = LocalDateTime.of(2024, 1, 2, 10, 0, 0),
       calculationOutcomes = listOf(
         CalculationOutcome(
           calculationRequestId = CALCULATION_REQUEST_ID,
@@ -475,7 +476,7 @@ class TransformFunctionsTest {
         ),
       ),
       reasonForCalculation = CALCULATION_REASON,
-      calculatedAt = LocalDateTime.of(2024, 1, 2, 10, 0, 0),
+      fixedTermRecallDetails = null,
     )
 
     val CRD_DATE: LocalDate = LocalDate.of(2021, 2, 3)

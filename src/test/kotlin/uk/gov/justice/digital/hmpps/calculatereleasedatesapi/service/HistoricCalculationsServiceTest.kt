@@ -80,6 +80,14 @@ class HistoricCalculationsServiceTest {
   }
 
   private fun calculationRequest(): CalculationRequest {
-    return CalculationRequest(1, reference, "123", 4565, CalculationStatus.CONFIRMED.name, calculatedAt = LocalDateTime.now(), prisonerLocation = "CDI")
+    return CalculationRequest(
+      1,
+      reference,
+      "123",
+      4565,
+      CalculationStatus.CONFIRMED.name,
+      calculatedAt = LocalDateTime.now(),
+      prisonerLocation = "CDI",
+    )
   }
 }

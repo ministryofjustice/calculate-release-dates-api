@@ -35,7 +35,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Offe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
@@ -386,19 +385,11 @@ class BulkComparisonService(
       )
     }
 
-    val returnToCustodyDate = source.fixedTermRecallDetails?.let {
-      ReturnToCustodyDate(
-        it.bookingId!!,
-        it.returnToCustodyDate!!,
-      )
-    }
-
     return PrisonApiSourceData(
       sentenceAndOffenceWithReleaseArrangements,
       prisonerDetails,
       bookingAndSentenceAdjustments,
       offenderFinePayments,
-      returnToCustodyDate,
       fixedTermRecallDetails,
       getHistoricalTusedDataForBotus(source.sentenceAndOffences, prisonerDetails.offenderNo),
     )

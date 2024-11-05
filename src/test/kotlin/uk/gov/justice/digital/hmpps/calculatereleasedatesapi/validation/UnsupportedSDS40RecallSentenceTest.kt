@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTy
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.BookingHelperTest
@@ -218,7 +218,7 @@ class UnsupportedSDS40RecallSentenceTest {
 
   private val booking = Booking(
     bookingId = 123456,
-    returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
+    fixedTermRecallDetails = fixedTermRecallDetails,
     offender = Offender(
       dateOfBirth = DOB,
       reference = PRISONER_ID,
@@ -262,7 +262,7 @@ class UnsupportedSDS40RecallSentenceTest {
     const val COMPANION_BOOKING_ID = 123456L
     const val CONSECUTIVE_TO = 99
     const val OFFENCE_CODE = "RR1"
-    val returnToCustodyDate = ReturnToCustodyDate(COMPANION_BOOKING_ID, LocalDate.of(2022, 3, 15))
+    val fixedTermRecallDetails = FixedTermRecallDetails(COMPANION_BOOKING_ID, LocalDate.of(2022, 3, 15), 14)
 
     private val FTR_SDS_SENTENCE = StandardDeterminateSentence(
       sentencedAt = FIRST_JAN_2015,

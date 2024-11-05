@@ -23,6 +23,7 @@ import org.hibernate.Hibernate
 import org.hibernate.annotations.BatchSize
 import org.hibernate.annotations.Type
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -128,7 +129,12 @@ data class CalculationRequest(
   @OneToOne(mappedBy = "calculationRequest", cascade = [CascadeType.ALL])
   val allocatedSDSTranche: TrancheOutcome? = null,
 
+  @Type(value = JsonType::class)
+  @Column(columnDefinition = "jsonb")
+  val fixedTermRecallDetails: FixedTermRecallDetails? = null,
+
   val version: String = "1",
+
 ) {
   init {
     calculationRequestUserInput?.calculationRequest = this

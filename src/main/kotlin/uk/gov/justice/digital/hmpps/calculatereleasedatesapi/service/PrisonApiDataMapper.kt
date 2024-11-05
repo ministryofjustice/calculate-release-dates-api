@@ -7,11 +7,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithSDSPlus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiDataVersions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 
 @Service
 class PrisonApiDataMapper(private val objectMapper: ObjectMapper) {
@@ -48,9 +48,10 @@ class PrisonApiDataMapper(private val objectMapper: ObjectMapper) {
     return objectMapper.convertValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
   }
 
-  fun mapReturnToCustodyDate(calculationRequest: CalculationRequest): ReturnToCustodyDate {
-    return objectMapper.convertValue(calculationRequest.returnToCustodyDate, ReturnToCustodyDate::class.java)
+  fun mapFixedTermRecallDetails(calculationRequest: CalculationRequest): FixedTermRecallDetails? {
+    return objectMapper.convertValue(calculationRequest.fixedTermRecallDetails, FixedTermRecallDetails::class.java)
   }
+
   fun mapOffenderFinePayment(calculationRequest: CalculationRequest): List<OffenderFinePayment> {
     val reader = objectMapper.readerFor(object : TypeReference<List<OffenderFinePayment>>() {})
     return reader.readValue(calculationRequest.offenderFinePayments)

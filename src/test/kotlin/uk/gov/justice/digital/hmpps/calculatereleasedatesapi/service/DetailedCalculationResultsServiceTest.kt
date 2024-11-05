@@ -263,8 +263,8 @@ class DetailedCalculationResultsServiceTest {
     calculationReference = calculationReference,
     prisonerId = PRISONER_ID,
     bookingId = BOOKING_ID,
-    calculationOutcomes = listOf(calculationOutcomeCrd, calculationOutcomeSed),
     calculationStatus = CalculationStatus.CONFIRMED.name,
+    calculatedAt = LocalDateTime.of(2021, 1, 1, 10, 30),
     inputData = JacksonUtil.toJsonNode(
       "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +
         "\"dateOfBirth\":\"1970-03-03\"" + "}," + "\"sentences\":[" +
@@ -272,10 +272,11 @@ class DetailedCalculationResultsServiceTest {
         "\"offence\":{" + "\"committedAt\":\"2013-09-19\"" + "}," + "\"duration\":{" +
         "\"durationElements\":{" + "\"YEARS\":2" + "}" + "}," + "\"sentencedAt\":\"2013-09-21\"" + "}" + "]" + "}",
     ),
+    calculationOutcomes = listOf(calculationOutcomeCrd, calculationOutcomeSed),
+    calculationType = CalculationType.CALCULATED,
     reasonForCalculation = calcReason,
     otherReasonForCalculation = "foo",
-    calculatedAt = LocalDateTime.of(2021, 1, 1, 10, 30),
-    calculationType = CalculationType.CALCULATED,
+    fixedTermRecallDetails = null,
   )
 
   private val expectedCalcContext = CalculationContext(

@@ -19,7 +19,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.isSupported
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
@@ -44,7 +43,7 @@ class PrisonService(
     val sentenceAndOffences = getSentencesAndOffences(prisonerDetails.bookingId, activeDataOnly)
     val bookingAndSentenceAdjustments = getBookingAndSentenceAdjustments(prisonerDetails.bookingId, activeDataOnly)
     val bookingHasFixedTermRecall = sentenceAndOffences.any { isSupported(it.sentenceCalculationType) && from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
-    val (ftrDetails, returnToCustodyDate) = getFixedTermRecallDetails(prisonerDetails.bookingId, bookingHasFixedTermRecall)
+    val ftrDetails = getFixedTermRecallDetails(prisonerDetails.bookingId, bookingHasFixedTermRecall)
     val bookingHasAFine = sentenceAndOffences.any { isSupported(it.sentenceCalculationType) && from(it.sentenceCalculationType).sentenceClazz == AFineSentence::class.java }
     val offenderFinePayments = if (bookingHasAFine) prisonApiClient.getOffenderFinePayments(prisonerDetails.bookingId) else listOf()
     val tusedData = getLatestTusedDataForBotus(prisonerDetails.offenderNo).getOrNull()
@@ -56,7 +55,6 @@ class PrisonService(
       prisonerDetails,
       bookingAndSentenceAdjustments,
       offenderFinePayments,
-      returnToCustodyDate,
       ftrDetails,
       historicalTusedData,
     )
@@ -65,12 +63,10 @@ class PrisonService(
   private fun getFixedTermRecallDetails(
     bookingId: Long,
     bookingHasFixedTermRecall: Boolean,
-  ): Pair<FixedTermRecallDetails?, ReturnToCustodyDate?> {
-    if (!bookingHasFixedTermRecall) return Pair(null, null)
+  ): FixedTermRecallDetails? {
+    if (!bookingHasFixedTermRecall) return null
     return try {
-      val ftrDetails = prisonApiClient.getFixedTermRecallDetails(bookingId)
-      val returnToCustodyDate = transform(ftrDetails)
-      ftrDetails to returnToCustodyDate
+      prisonApiClient.getFixedTermRecallDetails(bookingId)
     } catch (ex: DecodingException) {
       throw NoValidReturnToCustodyDateException("No valid Return To Custody Date found for bookingId $bookingId")
     }
