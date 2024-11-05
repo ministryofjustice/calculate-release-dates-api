@@ -15,7 +15,13 @@ internal class SentenceCalculationTest {
       mapOf(ChronoUnit.DAYS to 1L),
     )
     val offence = Offence(LocalDate.of(2020, 1, 1))
-    val standardSentence = StandardDeterminateSentence(offence, duration, sentencedAt, isSDSPlus = true, hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO)
+    val standardSentence = StandardDeterminateSentence(
+      offence,
+      duration,
+      sentencedAt,
+      isSDSPlus = true,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
     val date = LocalDate.of(2021, 1, 1)
     val sentenceCalculation = SentenceCalculation(
       standardSentence,
@@ -31,7 +37,14 @@ internal class SentenceCalculationTest {
       date,
       false,
       Adjustments(
-        mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(numberOfDays = 1, appliesToSentencesFrom = date))),
+        mutableMapOf(
+          AdjustmentType.REMAND to mutableListOf(
+            Adjustment(
+              numberOfDays = 1,
+              appliesToSentencesFrom = date,
+            ),
+          ),
+        ),
       ),
       date,
       date,

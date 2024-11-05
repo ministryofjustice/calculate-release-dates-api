@@ -9,8 +9,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS40_HINT_TEXT_CUTOFF_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isSdsCalcType
 import java.time.Clock
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -22,9 +25,10 @@ class CalculationResultEnrichmentService(
   private val clock: Clock,
   private val featureToggles: FeatureToggles,
 ) {
+
   fun addDetailToCalculationDates(
     releaseDates: List<ReleaseDate>,
-    sentenceAndOffences: List<SentenceAndOffence>?,
+    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
     calculationBreakdown: CalculationBreakdown?,
     historicalTusedSource: HistoricalTusedSource? = null,
   ): Map<ReleaseDateType, DetailedDate> {
@@ -44,12 +48,14 @@ class CalculationResultEnrichmentService(
     date: LocalDate,
     calculationBreakdown: CalculationBreakdown?,
     releaseDates: Map<ReleaseDateType, ReleaseDate>,
-    sentenceAndOffences: List<SentenceAndOffence>?,
+    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
     historicalTusedSource: HistoricalTusedSource? = null,
   ): List<ReleaseDateHint> {
     val hints = mutableListOf<ReleaseDateHint?>()
     hints += nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type, date)
-    hints += sds40Hint(type, calculationBreakdown)
+    if (calculationBreakdown !== null && sentenceAndOffences !== null && showSDS40Hints(sentenceAndOffences)) {
+      hints += sds40Hint(type, calculationBreakdown)
+    }
     hints += ardHints(type, date, sentenceAndOffences, releaseDates)
     hints += crdHints(type, date, sentenceAndOffences, releaseDates)
     hints += pedHints(type, date, sentenceAndOffences, releaseDates, calculationBreakdown)
@@ -60,6 +66,15 @@ class CalculationResultEnrichmentService(
       hints += tusedHints(type)
     }
     return hints.filterNotNull()
+  }
+
+  private fun showSDS40Hints(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>): Boolean {
+    if (!featureToggles.sdsEarlyReleaseHints) return false
+
+    return sentenceAndOffences.none {
+      !it.isSDSPlus &&
+        (it.sentenceCalculationType.isSdsCalcType() && it.sentenceDate.isAfter(SDS40_HINT_TEXT_CUTOFF_DATE))
+    }
   }
 
   private fun tusedHints(type: ReleaseDateType): List<ReleaseDateHint> {
@@ -229,11 +244,9 @@ class CalculationResultEnrichmentService(
       sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType in dtoSentenceTypes } &&
       sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType !in dtoSentenceTypes }
   }
-  private fun sds40Hint(type: ReleaseDateType, calculationBreakdown: CalculationBreakdown?): ReleaseDateHint? {
-    if (!featureToggles.sdsEarlyReleaseHints) {
-      return null
-    }
-    if (calculationBreakdown != null && calculationBreakdown.breakdownByReleaseDateType.containsKey(type)) {
+
+  private fun sds40Hint(type: ReleaseDateType, calculationBreakdown: CalculationBreakdown): ReleaseDateHint? {
+    if (calculationBreakdown.breakdownByReleaseDateType.containsKey(type)) {
       val rules = calculationBreakdown.breakdownByReleaseDateType[type]!!.rules
       if (rules.contains(CalculationRule.SDS_EARLY_RELEASE_APPLIES) && earlyReleaseHintTypes.contains(type)) {
         return ReleaseDateHint("40% date has been applied")
@@ -242,22 +255,19 @@ class CalculationResultEnrichmentService(
           rules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT) || rules.contains(
             CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT,
           )
-          ) &&
-        earlyReleaseHintTypes.contains(type)
+          ) && earlyReleaseHintTypes.contains(type)
       ) {
-        val trancheText =
-          if (rules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT)) "1" else "2"
+        val trancheText = if (rules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT)) "1" else "2"
         return ReleaseDateHint("Defaulted to tranche $trancheText commencement")
       }
       if (rules.contains(CalculationRule.SDS_STANDARD_RELEASE_APPLIES) && standardReleaseHintTypes.contains(type)) {
         return ReleaseDateHint("50% date has been applied")
       }
     }
-    if (type == ReleaseDateType.TUSED && calculationBreakdown != null &&
-      calculationBreakdown.breakdownByReleaseDateType.containsKey(ReleaseDateType.CRD)
-    ) {
+    if (type == ReleaseDateType.TUSED && calculationBreakdown.breakdownByReleaseDateType.containsKey(ReleaseDateType.CRD)) {
       val crdRules = calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.CRD]!!.rules
-      if (crdRules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT) ||
+      if (
+        crdRules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT) ||
         crdRules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT)
       ) {
         return ReleaseDateHint("Anniversary of 40% CRD - CRD has been defaulted to tranche commencement date")
