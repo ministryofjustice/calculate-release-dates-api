@@ -93,11 +93,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
@@ -392,7 +390,8 @@ fun transform(
     prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
     adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments, objectMapper),
     offenderFinePayments = objectToJson(sourceData.offenderFinePayments, objectMapper),
-    returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
+    fixedTermRecallDetails = sourceData.fixedTermRecallDetails,
+    returnToCustodyDate = if (sourceData.fixedTermRecallDetails?.returnToCustodyDate != null) objectToJson(sourceData.fixedTermRecallDetails.returnToCustodyDate, objectMapper) else null,
     calculationRequestUserInput = transform(calculationUserInputs),
     breakdownHtml = calculationFragments?.breakdownHtml,
     calculationType = calculationType,
@@ -618,12 +617,6 @@ private fun extractDates(sentence: CalculableSentence): Map<ReleaseDateType, Dat
 
   return dates
 }
-
-fun transform(fixedTermRecallDetails: FixedTermRecallDetails): ReturnToCustodyDate =
-  ReturnToCustodyDate(
-    bookingId = fixedTermRecallDetails.bookingId,
-    returnToCustodyDate = fixedTermRecallDetails.returnToCustodyDate,
-  )
 
 fun transform(
   calculationRequest: CalculationRequest,

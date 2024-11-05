@@ -41,7 +41,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Offe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
@@ -1184,7 +1183,6 @@ class ValidationServiceTest {
         },
         prisonerDetails = VALID_PRISONER,
         bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
-        returnToCustodyDate = null,
       ),
       USER_INPUTS,
     )
@@ -1610,7 +1608,6 @@ class ValidationServiceTest {
         ),
         prisonerDetails = VALID_PRISONER,
         bookingAndSentenceAdjustments = lawfullyAtLargeBookingAdjustment,
-        returnToCustodyDate = null,
       ),
       USER_INPUTS,
     )
@@ -1633,7 +1630,6 @@ class ValidationServiceTest {
         ),
         prisonerDetails = VALID_PRISONER,
         bookingAndSentenceAdjustments = specialRemissionBookingAdjustment,
-        returnToCustodyDate = null,
       ),
       CalculationUserInputs(),
     )
@@ -1691,7 +1687,6 @@ class ValidationServiceTest {
   fun `Test FTR validation precalc`() {
     val result = validationService.validateBeforeCalculation(
       VALID_FTR_SOURCE_DATA.copy(
-        returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_14.returnToCustodyDate),
         sentenceAndOffences = listOf(
           FTR_14_DAY_SENTENCE,
           FTR_28_DAY_SENTENCE,
@@ -1714,7 +1709,6 @@ class ValidationServiceTest {
             SDSEarlyReleaseExclusionType.NO,
           )
         },
-        returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_28.returnToCustodyDate),
         fixedTermRecallDetails = FTR_DETAILS_28,
       ),
       USER_INPUTS,
@@ -1735,7 +1729,6 @@ class ValidationServiceTest {
           )
         },
         fixedTermRecallDetails = FTR_DETAILS_14,
-        returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_14.returnToCustodyDate),
       ),
       USER_INPUTS,
     )
@@ -1771,7 +1764,6 @@ class ValidationServiceTest {
               FTR_14_DAY_SENTENCE,
               FTR_28_DAY_SENTENCE,
             ).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
-            returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_14.returnToCustodyDate),
           ),
           USER_INPUTS,
         )
@@ -1791,7 +1783,6 @@ class ValidationServiceTest {
               )
             },
             fixedTermRecallDetails = FTR_DETAILS_28,
-            returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_28.returnToCustodyDate),
           ),
           USER_INPUTS,
         )
@@ -1811,7 +1802,6 @@ class ValidationServiceTest {
               )
             },
             fixedTermRecallDetails = FTR_DETAILS_14,
-            returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_14.returnToCustodyDate),
           ),
           USER_INPUTS,
         )
@@ -2040,7 +2030,6 @@ class ValidationServiceTest {
             },
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
-            returnToCustodyDate = null,
           ),
           USER_INPUTS,
         )
@@ -2067,7 +2056,6 @@ class ValidationServiceTest {
             },
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
-            returnToCustodyDate = null,
           ),
           USER_INPUTS,
         )
@@ -2093,7 +2081,6 @@ class ValidationServiceTest {
             },
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
-            returnToCustodyDate = null,
           ),
           USER_INPUTS,
         )
@@ -2119,7 +2106,6 @@ class ValidationServiceTest {
             },
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
-            returnToCustodyDate = null,
           ),
           USER_INPUTS,
         )
@@ -2145,7 +2131,6 @@ class ValidationServiceTest {
             },
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
-            returnToCustodyDate = null,
           ),
           USER_INPUTS,
         )
@@ -2171,7 +2156,6 @@ class ValidationServiceTest {
             },
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
-            returnToCustodyDate = null,
           ),
           USER_INPUTS,
         )
@@ -2196,7 +2180,6 @@ class ValidationServiceTest {
             },
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
-            returnToCustodyDate = null,
           ),
           USER_INPUTS,
         )
@@ -2232,7 +2215,6 @@ class ValidationServiceTest {
             ),
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = adjustment,
-            returnToCustodyDate = null,
           ),
           USER_INPUTS,
         )
@@ -2267,7 +2249,6 @@ class ValidationServiceTest {
             ),
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = adjustment,
-            returnToCustodyDate = null,
           ),
           USER_INPUTS,
         )
@@ -2302,7 +2283,6 @@ class ValidationServiceTest {
             ),
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = adjustment,
-            returnToCustodyDate = null,
           ),
           USER_INPUTS,
         )
@@ -2337,7 +2317,6 @@ class ValidationServiceTest {
             ),
             prisonerDetails = VALID_PRISONER,
             bookingAndSentenceAdjustments = adjustment,
-            returnToCustodyDate = null,
           ),
           USER_INPUTS,
         )
@@ -2799,7 +2778,6 @@ class ValidationServiceTest {
     const val COMPANION_BOOKING_ID = 123456L
     const val CONSECUTIVE_TO = 99
     const val OFFENCE_CODE = "RR1"
-    val returnToCustodyDate = ReturnToCustodyDate(COMPANION_BOOKING_ID, LocalDate.of(2022, 3, 15))
     private val USER_INPUTS = CalculationUserInputs()
     private val VALID_PRISONER = PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3))
     private val VALID_ADJUSTMENTS = BookingAndSentenceAdjustments(emptyList(), emptyList())
@@ -2868,7 +2846,6 @@ class ValidationServiceTest {
       },
       prisonerDetails = VALID_PRISONER,
       bookingAndSentenceAdjustments = VALID_ADJUSTMENTS,
-      returnToCustodyDate = null,
       fixedTermRecallDetails = FTR_DETAILS_14,
     )
     private val FTR_SDS_SENTENCE = StandardDeterminateSentence(
@@ -2940,7 +2917,6 @@ class ValidationServiceTest {
 
     val BOOKING = Booking(
       bookingId = 123456,
-      returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
       offender = Offender(
         dateOfBirth = DOB,
         reference = PRISONER_ID,

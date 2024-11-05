@@ -127,6 +127,7 @@ open class OffenderKeyDatesServiceTest {
       bookingId,
       CalculationStatus.CONFIRMED.name,
       calculatedAt = LocalDateTime.of(2024, 1, 1, 0, 0),
+      calculationType = CalculationType.CALCULATED,
       reasonForCalculation = CalculationReason(
         -1,
         false,
@@ -138,7 +139,6 @@ open class OffenderKeyDatesServiceTest {
         1,
       ),
       otherReasonForCalculation = null,
-      calculationType = CalculationType.CALCULATED,
     )
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
@@ -176,6 +176,7 @@ open class OffenderKeyDatesServiceTest {
       bookingId,
       CalculationStatus.CONFIRMED.name,
       calculatedAt = LocalDateTime.of(2024, 1, 1, 0, 0),
+      calculationType = CalculationType.CALCULATED,
       reasonForCalculation = CalculationReason(
         -1,
         false,
@@ -187,7 +188,6 @@ open class OffenderKeyDatesServiceTest {
         1,
       ),
       otherReasonForCalculation = null,
-      calculationType = CalculationType.CALCULATED,
     )
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(errorMessage.left())
@@ -218,6 +218,7 @@ open class OffenderKeyDatesServiceTest {
       bookingId,
       CalculationStatus.CONFIRMED.name,
       calculatedAt = LocalDateTime.of(2024, 1, 1, 0, 0),
+      calculationType = CalculationType.CALCULATED,
       reasonForCalculation = CalculationReason(
         -1,
         false,
@@ -229,7 +230,6 @@ open class OffenderKeyDatesServiceTest {
         1,
       ),
       otherReasonForCalculation = null,
-      calculationType = CalculationType.CALCULATED,
     )
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())

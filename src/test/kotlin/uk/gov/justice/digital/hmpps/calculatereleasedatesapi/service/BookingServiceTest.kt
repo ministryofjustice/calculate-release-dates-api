@@ -23,12 +23,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
@@ -118,9 +118,9 @@ class BookingServiceTest {
     firstName = "Harry",
     lastName = "Houdini",
   )
-  val returnToCustodyDate = ReturnToCustodyDate(bookingId, LocalDate.of(2022, 3, 15))
+  val fixedTermRecallDetails = FixedTermRecallDetails(bookingId, LocalDate.of(2022, 3, 15), 14)
   private val offenderFineFinePayment = listOf(OffenderFinePayment(bookingId = 1, paymentDate = LocalDate.of(1, 2, 3), paymentAmount = BigDecimal("10000.88")))
-  private val sourceData = PrisonApiSourceData(listOf(sentenceAndOffences), prisonerDetails, bookingAndSentenceAdjustment, offenderFineFinePayment, returnToCustodyDate)
+  private val sourceData = PrisonApiSourceData(listOf(sentenceAndOffences), prisonerDetails, bookingAndSentenceAdjustment, offenderFineFinePayment, fixedTermRecallDetails)
 
   @Test
   @Suppress("LongMethod")
@@ -130,7 +130,7 @@ class BookingServiceTest {
     assertThat(result).isEqualTo(
       Booking(
         bookingId = 123456,
-        returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
+        fixedTermRecallDetails = fixedTermRecallDetails,
         offender = Offender(
           dateOfBirth = DOB,
           reference = prisonerId,
@@ -186,7 +186,7 @@ class BookingServiceTest {
     assertThat(result).isEqualTo(
       Booking(
         bookingId = 123456,
-        returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
+        fixedTermRecallDetails = fixedTermRecallDetails,
         offender = Offender(
           dateOfBirth = DOB,
           reference = prisonerId,
@@ -244,7 +244,7 @@ class BookingServiceTest {
     assertThat(result).isEqualTo(
       Booking(
         bookingId = 123456,
-        returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
+        fixedTermRecallDetails = fixedTermRecallDetails,
         offender = Offender(
           dateOfBirth = DOB,
           reference = prisonerId,
@@ -300,7 +300,7 @@ class BookingServiceTest {
     assertThat(result).isEqualTo(
       Booking(
         bookingId = 123456,
-        returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
+        fixedTermRecallDetails = fixedTermRecallDetails,
         offender = Offender(
           dateOfBirth = DOB,
           reference = prisonerId,
@@ -356,7 +356,7 @@ class BookingServiceTest {
     assertThat(result).isEqualTo(
       Booking(
         bookingId = 123456,
-        returnToCustodyDate = returnToCustodyDate.returnToCustodyDate,
+        fixedTermRecallDetails = fixedTermRecallDetails,
         offender = Offender(
           dateOfBirth = DOB,
           reference = prisonerId,

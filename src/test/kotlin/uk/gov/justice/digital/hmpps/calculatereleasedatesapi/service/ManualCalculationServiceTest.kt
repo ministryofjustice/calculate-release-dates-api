@@ -643,7 +643,6 @@ class ManualCalculationServiceTest {
       calculationReference = CALCULATION_REFERENCE,
       prisonerId = PRISONER_ID,
       bookingId = BOOKING_ID,
-      calculationOutcomes = listOf(),
       calculationStatus = CalculationStatus.CONFIRMED.name,
       inputData = JacksonUtil.toJsonNode(
         "{" + "\"offender\":{" + "\"reference\":\"ABC123D\"," +
@@ -652,6 +651,7 @@ class ManualCalculationServiceTest {
           "\"offence\":{" + "\"committedAt\":\"2013-09-19\"" + "}," + "\"duration\":{" +
           "\"durationElements\":{" + "\"YEARS\":2" + "}" + "}," + "\"sentencedAt\":\"2013-09-21\"" + "}" + "]" + "}",
       ),
+      calculationOutcomes = listOf(),
       reasonForCalculation = CALCULATION_REASON,
     )
     private val OFFENDER = Offender(PRISONER_ID, LocalDate.of(1980, 1, 1))

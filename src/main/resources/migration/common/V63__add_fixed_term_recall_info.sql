@@ -1,0 +1,1 @@
+ALTER TABLE calculation_request ADD COLUMN fixed_term_recall_details JSONB;

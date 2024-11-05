@@ -89,7 +89,9 @@ class SentenceAndOffenceServiceTest {
   fun `If old version did not have SDS plus flag (defaults to false) ignore the difference`() {
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences.map { it.copy(isSDSPlus = true) })
     val defaultedSentencesAndOffences = sentenceAndOffences.map { it.copy(isSDSPlus = false) }
-    val calcRequestWithMissingSDSPlusFlag = CalculationRequest(sentenceAndOffences = objectToJson(defaultedSentencesAndOffences, jacksonObjectMapper().findAndRegisterModules()))
+    val calcRequestWithMissingSDSPlusFlag = CalculationRequest(
+      sentenceAndOffences = objectToJson(defaultedSentencesAndOffences, jacksonObjectMapper().findAndRegisterModules()),
+    )
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(defaultedSentencesAndOffences)
     whenever(calculationRequestRepository.findFirstByBookingIdOrderByCalculatedAtDesc(anyLong())).thenReturn(Optional.of(calcRequestWithMissingSDSPlusFlag))
     val response = underTest.getSentencesAndOffences(123)
@@ -256,6 +258,10 @@ class SentenceAndOffenceServiceTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
   }
-  val calculationRequest = CalculationRequest(sentenceAndOffences = objectToJson(listOf(sentenceAndOffences), jacksonObjectMapper().findAndRegisterModules()))
-  val changedCalculationRequest = CalculationRequest(sentenceAndOffences = objectToJson(listOf(changedSentenceAndOffences), jacksonObjectMapper().findAndRegisterModules()))
+  val calculationRequest = CalculationRequest(
+    sentenceAndOffences = objectToJson(listOf(sentenceAndOffences), jacksonObjectMapper().findAndRegisterModules()),
+  )
+  val changedCalculationRequest = CalculationRequest(
+    sentenceAndOffences = objectToJson(listOf(changedSentenceAndOffences), jacksonObjectMapper().findAndRegisterModules()),
+  )
 }

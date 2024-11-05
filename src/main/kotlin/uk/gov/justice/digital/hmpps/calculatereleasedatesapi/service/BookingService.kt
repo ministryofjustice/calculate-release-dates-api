@@ -22,7 +22,6 @@ class BookingService() {
       sentences = sentences,
       adjustments = adjustments,
       bookingId = prisonerDetails.bookingId,
-      returnToCustodyDate = prisonApiSourceData.returnToCustodyDate?.returnToCustodyDate,
       fixedTermRecallDetails = prisonApiSourceData.fixedTermRecallDetails,
       historicalTusedData = prisonApiSourceData.historicalTusedData,
     )
