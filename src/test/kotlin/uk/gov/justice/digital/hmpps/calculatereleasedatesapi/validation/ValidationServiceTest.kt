@@ -69,6 +69,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_14_DAYS_SENTENCE_GE_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_28_DAYS_AGGREGATE_LT_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_28_DAYS_SENTENCE_LT_12_MONTHS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_NO_RETURN_TO_CUSTODY_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_SENTENCES_CONFLICT_WITH_EACH_OTHER
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.FTR_TYPE_14_DAYS_BUT_LENGTH_IS_28
@@ -368,6 +369,24 @@ class ValidationServiceTest {
 
     // Assert
     assertThat(result).isEmpty()
+  }
+
+  @Test
+  fun `Test Fixed Term Recall with no return to custody date should fail`() {
+    val result = validationService.validateBeforeCalculation(
+      VALID_FTR_SOURCE_DATA.copy(
+        sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map {
+          SentenceAndOffenceWithReleaseArrangements(
+            it,
+            false,
+            SDSEarlyReleaseExclusionType.NO,
+          )
+        },
+        fixedTermRecallDetails = FTR_DETAILS_NO_RTC,
+      ),
+      USER_INPUTS,
+    )
+    assertThat(result).isEqualTo(listOf(ValidationMessage(FTR_NO_RETURN_TO_CUSTODY_DATE)))
   }
 
   @Test
@@ -1672,6 +1691,7 @@ class ValidationServiceTest {
   fun `Test FTR validation precalc`() {
     val result = validationService.validateBeforeCalculation(
       VALID_FTR_SOURCE_DATA.copy(
+        returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_14.returnToCustodyDate),
         sentenceAndOffences = listOf(
           FTR_14_DAY_SENTENCE,
           FTR_28_DAY_SENTENCE,
@@ -1694,6 +1714,7 @@ class ValidationServiceTest {
             SDSEarlyReleaseExclusionType.NO,
           )
         },
+        returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_28.returnToCustodyDate),
         fixedTermRecallDetails = FTR_DETAILS_28,
       ),
       USER_INPUTS,
@@ -1714,6 +1735,7 @@ class ValidationServiceTest {
           )
         },
         fixedTermRecallDetails = FTR_DETAILS_14,
+        returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_14.returnToCustodyDate),
       ),
       USER_INPUTS,
     )
@@ -1726,6 +1748,7 @@ class ValidationServiceTest {
     val result = validationService.validateBeforeCalculation(
       BOOKING.copy(
         fixedTermRecallDetails = FTR_DETAILS_14,
+        returnToCustodyDate = FTR_DETAILS_14.returnToCustodyDate,
         sentences = listOf(FTR_SDS_SENTENCE.copy(duration = FIVE_YEAR_DURATION)),
       ),
     )
@@ -1748,6 +1771,7 @@ class ValidationServiceTest {
               FTR_14_DAY_SENTENCE,
               FTR_28_DAY_SENTENCE,
             ).map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+            returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_14.returnToCustodyDate),
           ),
           USER_INPUTS,
         )
@@ -1767,6 +1791,7 @@ class ValidationServiceTest {
               )
             },
             fixedTermRecallDetails = FTR_DETAILS_28,
+            returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_28.returnToCustodyDate),
           ),
           USER_INPUTS,
         )
@@ -1786,6 +1811,7 @@ class ValidationServiceTest {
               )
             },
             fixedTermRecallDetails = FTR_DETAILS_14,
+            returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_14.returnToCustodyDate),
           ),
           USER_INPUTS,
         )
@@ -2781,6 +2807,7 @@ class ValidationServiceTest {
     private val RETURN_TO_CUSTODY_DATE = LocalDate.of(2022, 3, 15)
     private val FTR_DETAILS_14 = FixedTermRecallDetails(BOOKING_ID, RETURN_TO_CUSTODY_DATE, 14)
     private val FTR_DETAILS_28 = FixedTermRecallDetails(BOOKING_ID, RETURN_TO_CUSTODY_DATE, 28)
+    private val FTR_DETAILS_NO_RTC = mock(FixedTermRecallDetails::class.java)
     private val FTR_14_DAY_SENTENCE = NormalisedSentenceAndOffence(
       bookingId = 1L,
       sentenceSequence = 7,

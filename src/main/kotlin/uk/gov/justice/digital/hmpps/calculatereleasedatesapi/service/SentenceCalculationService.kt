@@ -1,8 +1,11 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.PED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
@@ -172,9 +175,14 @@ class SentenceCalculationService(
   }
 
   fun calculateFixedTermRecall(booking: Booking, days: Int): LocalDate {
-    return booking.returnToCustodyDate!!
-      .plusDays(days.toLong())
-      .minusDays(1)
+    try {
+      return booking.returnToCustodyDate!!
+        .plusDays(days.toLong())
+        .minusDays(1)
+    } catch (exception: Exception) {
+      log.error("There has been an error...")
+      throw NoValidReturnToCustodyDateException("No return to custody date available")
+    }
   }
 
   private fun determinePedMultiplier(identification: SentenceIdentificationTrack): Double {
@@ -194,4 +202,8 @@ class SentenceCalculationService(
     val numberOfDaysToDeterminateReleaseDate: Int,
     val numberOfDaysToParoleEligibilityDate: Long?,
   )
+
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
+  }
 }

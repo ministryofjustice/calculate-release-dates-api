@@ -1,8 +1,12 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import arrow.core.Either
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.core.codec.DecodingException
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
@@ -58,12 +62,18 @@ class PrisonService(
     )
   }
 
-  private fun getFixedTermRecallDetails(bookingId: Long, bookingHasFixedTermRecall: Boolean): Pair<FixedTermRecallDetails?, ReturnToCustodyDate?> {
-    // TODO Remove ReturnToCustodyDate - FixedTermRecallDetails is all that's required. Will be done as tech debt
+  private fun getFixedTermRecallDetails(
+    bookingId: Long,
+    bookingHasFixedTermRecall: Boolean,
+  ): Pair<FixedTermRecallDetails?, ReturnToCustodyDate?> {
     if (!bookingHasFixedTermRecall) return Pair(null, null)
-    val ftrDetails = prisonApiClient.getFixedTermRecallDetails(bookingId)
-    val returnToCustodyDate = transform(ftrDetails)
-    return ftrDetails to returnToCustodyDate
+    return try {
+      val ftrDetails = prisonApiClient.getFixedTermRecallDetails(bookingId)
+      val returnToCustodyDate = transform(ftrDetails)
+      ftrDetails to returnToCustodyDate
+    } catch (ex: DecodingException) {
+      throw NoValidReturnToCustodyDateException("No valid Return To Custody Date found for bookingId $bookingId")
+    }
   }
 
   fun getOffenderDetail(prisonerId: String): PrisonerDetails {
@@ -126,4 +136,8 @@ class PrisonService(
   fun getNOMISOffenderKeyDates(offenderSentCalcId: Long): Either<String, OffenderKeyDates> = prisonApiClient.getNOMISOffenderKeyDates(offenderSentCalcId)
 
   fun getLatestTusedDataForBotus(nomisId: String): Either<String, NomisTusedData> = prisonApiClient.getLatestTusedDataForBotus(nomisId)
+
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
+  }
 }
