@@ -13,8 +13,7 @@
           "DAYS": 10
         }
       },
-      "sentencedAt": "2020-10-01",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2020-10-01"
     },
     {
       "offence": {
@@ -25,8 +24,7 @@
           "DAYS": 10
         }
       },
-      "sentencedAt": "2020-10-02",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2020-10-02"
     }
   ],
   "adjustments": {

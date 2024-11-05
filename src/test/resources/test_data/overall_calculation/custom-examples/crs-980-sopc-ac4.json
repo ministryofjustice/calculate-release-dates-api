@@ -19,8 +19,7 @@
           "MONTHS": 12
         }
       },
-      "sentencedAt": "2023-01-17",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-01-17"
     },
     {
       "type": "SopcSentence",
@@ -37,8 +36,7 @@
           "MONTHS": 12
         }
       },
-      "sentencedAt": "2023-01-17",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-01-17"
     }
   ],
   "adjustments": {

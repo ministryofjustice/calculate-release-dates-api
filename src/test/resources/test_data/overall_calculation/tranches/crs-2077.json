@@ -27,11 +27,8 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": null,
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -54,11 +51,8 @@
       "caseSequence": 1,
       "lineSequence": 2,
       "caseReference": null,
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -81,11 +75,8 @@
       "caseSequence": 1,
       "lineSequence": 2,
       "caseReference": null,
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -111,8 +102,7 @@
       "consecutiveSentenceUUIDs": [
         "027f5df0-6e73-3088-8c1b-47f24df3607d"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -135,11 +125,8 @@
       "caseSequence": 1,
       "lineSequence": 4,
       "caseReference": null,
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -162,11 +149,8 @@
       "caseSequence": 2,
       "lineSequence": 5,
       "caseReference": "14XB1312723",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     }
   ],
   "adjustments": {

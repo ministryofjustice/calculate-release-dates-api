@@ -15,8 +15,7 @@
       },
       "sentencedAt": "2020-07-15",
       "sentenceType": "ADIMP",
-      "isSDSPlus": true,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": true
     },
     {
       "offence": {
@@ -30,8 +29,7 @@
       },
       "sentencedAt": "2023-11-23",
       "sentenceType": "ADIMP",
-      "isSDSPlus": false,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": false
     }
   ],
   "adjustments": {

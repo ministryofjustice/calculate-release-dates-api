@@ -22,8 +22,7 @@
       "lineSequence": 1,
       "consecutiveSentenceUUIDs": [
         "bc3cc930-f31d-382b-81df-3865df1e01b6"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "offence": {
@@ -39,10 +38,7 @@
       "sentencedAt": "2022-01-27",
       "caseSequence": 1,
       "lineSequence": 2,
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "offence": {
@@ -60,8 +56,7 @@
       "lineSequence": 3,
       "consecutiveSentenceUUIDs": [
         "ee91a161-dde2-3a7b-8611-624d255542a7"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "offence": {
@@ -79,8 +74,7 @@
       "lineSequence": 4,
       "consecutiveSentenceUUIDs": [
         "b79a6795-d543-31cb-9d4f-7c8ef71781f5"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "offence": {
@@ -98,8 +92,7 @@
       "lineSequence": 5,
       "consecutiveSentenceUUIDs": [
         "f25cab81-e6d9-367f-89d4-589ed75a2896"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "offence": {
@@ -117,8 +110,7 @@
       "lineSequence": 6,
       "consecutiveSentenceUUIDs": [
         "ab6340ce-69a7-3901-a1e2-aa8013bd9824"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "offence": {
@@ -136,10 +128,8 @@
       "lineSequence": 7,
       "consecutiveSentenceUUIDs": [
         "377e4f7b-d49c-331d-a21c-4db6f9761959"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     }
   ],
-  "adjustments": {
-  }
+  "adjustments": {}
 }

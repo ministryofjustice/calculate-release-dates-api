@@ -17,8 +17,7 @@
           "MONTHS": 20
         }
       },
-      "isSDSPlus": false,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": false
     }
   ],
   "adjustments": {
@@ -32,3 +31,5 @@
     ]
   }
 }
+
+

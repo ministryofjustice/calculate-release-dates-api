@@ -1,42 +1,40 @@
 {
   "calculateErsed": true,
-  "offender": {
+  "offender":{
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences": [
+  "sentences":[
     {
-      "type": "StandardDeterminateSentence",
+      "type":"StandardDeterminateSentence",
       "lineSequence": 1,
       "caseSequence": 1,
-      "offence": {
-        "committedAt": "2022-08-25"
+      "offence":{
+        "committedAt":"2022-08-25"
       },
-      "duration": {
-        "durationElements": {
+      "duration":{
+        "durationElements":{
           "MONTHS": 8
         }
       },
       "sentencedAt": "2022-10-27",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
     },
     {
       "type": "DetentionAndTrainingOrderSentence",
       "lineSequence": 2,
       "caseSequence": 1,
-      "offence": {
-        "committedAt": "2022-08-25"
+      "offence":{
+        "committedAt":"2022-08-25"
       },
-      "duration": {
-        "durationElements": {
+      "duration":{
+        "durationElements":{
           "MONTHS": 12
         }
       },
       "isDto": true,
       "sentencedAt": "2022-10-27",
-      "identifier": "8995cb19-1b7f-491e-bbdd-0a9c90e18c2a",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "8995cb19-1b7f-491e-bbdd-0a9c90e18c2a"
     }
   ],
   "adjustments": {

@@ -18,8 +18,7 @@
       "sentencedAt": "2019-09-01",
       "sentenceType": "LR",
       "recallType": "STANDARD_RECALL",
-      "lineSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 1
     },
     {
       "offence": {
@@ -37,8 +36,7 @@
       "sentencedAt": "2019-09-01",
       "sentenceType": "LR",
       "recallType": "STANDARD_RECALL",
-      "lineSequence": 2,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 2
     },
     {
       "offence": {
@@ -53,8 +51,7 @@
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentencedAt": "2024-08-06",
       "sentenceType": "ADIMP_ORA",
-      "lineSequence": 3,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 3
     }
   ]
 }

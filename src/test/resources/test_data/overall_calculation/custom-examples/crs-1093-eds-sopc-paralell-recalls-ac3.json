@@ -1,49 +1,47 @@
 {
   "calculateErsed": true,
-  "offender": {
+  "offender":{
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences": [
+  "sentences":[
     {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2015-01-09"
+      "type":"SopcSentence",
+      "offence":{
+        "committedAt":"2015-01-09"
       },
-      "custodialDuration": {
-        "durationElements": {
+      "custodialDuration":{
+        "durationElements":{
           "YEARS": 5
         }
       },
-      "extensionDuration": {
-        "durationElements": {
+      "extensionDuration":{
+        "durationElements":{
           "YEARS": 1
         }
       },
-      "automaticRelease": false,
-      "sentencedAt": "2018-09-26",
-      "recallType": "STANDARD_RECALL",
-      "sentenceCalculationType": "ADIMP"
+      "automaticRelease":false,
+      "sentencedAt":"2018-09-26",
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2015-01-09"
+      "type":"SopcSentence",
+      "offence":{
+        "committedAt":"2015-01-09"
       },
-      "custodialDuration": {
-        "durationElements": {
+      "custodialDuration":{
+        "durationElements":{
           "YEARS": 3,
           "MONTHS": 4
         }
       },
-      "extensionDuration": {
-        "durationElements": {
+      "extensionDuration":{
+        "durationElements":{
           "YEARS": 1
         }
       },
-      "automaticRelease": false,
-      "sentencedAt": "2021-03-04",
-      "sentenceCalculationType": "ADIMP"
+      "automaticRelease":false,
+      "sentencedAt":"2021-03-04"
     }
   ],
   "adjustments": {

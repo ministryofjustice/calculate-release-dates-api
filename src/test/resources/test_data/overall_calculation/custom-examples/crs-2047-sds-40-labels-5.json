@@ -27,11 +27,8 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": null,
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "VIOLENT",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
     },
     {
       "type": "StandardSentence",
@@ -54,11 +51,8 @@
       "caseSequence": 2,
       "lineSequence": 2,
       "caseReference": null,
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     }
   ],
   "adjustments": {

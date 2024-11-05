@@ -15,8 +15,7 @@
           "YEARS": 2
         }
       },
-      "sentencedAt": "2020-05-17",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2020-05-17"
     },
     {
       "caseSequence": 2,
@@ -29,8 +28,7 @@
           "MONTHS": 18
         }
       },
-      "sentencedAt": "2021-03-27",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2021-03-27"
     },
     {
       "caseSequence": 3,
@@ -43,8 +41,7 @@
           "YEARS": 2
         }
       },
-      "sentencedAt": "2021-08-05",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2021-08-05"
     }
   ],
   "adjustments": {

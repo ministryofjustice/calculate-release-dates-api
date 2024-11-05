@@ -18,8 +18,7 @@
       },
       "identifier": "ca2cf8de-abf4-30c5-b485-bdbb3ca65a56",
       "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2019-02-06",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2019-02-06"
     },
     {
       "type": "StandardSentence",
@@ -34,8 +33,7 @@
       },
       "identifier": "5dc7adf5-357e-3a26-9292-2a8184253c79",
       "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2023-02-09",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-02-09"
     }
   ],
   "adjustments": {

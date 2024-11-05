@@ -16,8 +16,7 @@
       },
       "sentencedAt": "2022-02-13",
       "sentenceType": "DTO_ORA",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
     },
     {
       "type": "DetentionAndTrainingOrderSentence",
@@ -31,10 +30,7 @@
       },
       "sentencedAt": "2022-04-02",
       "sentenceType": "DTO_ORA",
-      "consecutiveSentenceUUIDs": [
-        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": ["5dfde034-b7d7-4c54-a86c-67d42a1fd669"]
     }
   ],
   "adjustments": {

@@ -15,8 +15,7 @@
       },
       "sentencedAt": "2021-03-25",
       "sentenceType": "LR",
-      "recallType": "STANDARD_RECALL",
-      "sentenceCalculationType": "ADIMP"
+      "recallType": "STANDARD_RECALL"
     }
   ],
   "adjustments": {

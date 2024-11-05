@@ -27,11 +27,8 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "05B40003923",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -54,11 +51,8 @@
       "caseSequence": 1,
       "lineSequence": 2,
       "caseReference": "05B40003923",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     }
   ],
   "adjustments": {

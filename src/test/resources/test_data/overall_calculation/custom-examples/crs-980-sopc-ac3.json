@@ -1,34 +1,33 @@
 {
-  "offender": {
+  "offender":{
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences": [
+  "sentences":[
     {
-      "type": "SopcSentence",
-      "offence": {
-        "committedAt": "2022-05-15"
+      "type":"SopcSentence",
+      "offence":{
+        "committedAt":"2022-05-15"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 6
+      "custodialDuration":{
+        "durationElements":{
+          "YEARS":6
         }
       },
-      "extensionDuration": {
-        "durationElements": {
+      "extensionDuration":{
+        "durationElements":{
           "MONTHS": 12
         }
       },
       "sdopcu18": true,
-      "sentencedAt": "2022-07-15",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2022-07-15"
     }
   ],
-  "adjustments": {
-    "TAGGED_BAIL": [
+  "adjustments":{
+    "TAGGED_BAIL":[
       {
-        "appliesToSentencesFrom": "2022-07-15",
-        "numberOfDays": 10
+        "appliesToSentencesFrom":"2022-07-15",
+        "numberOfDays":10
       }
     ]
   }

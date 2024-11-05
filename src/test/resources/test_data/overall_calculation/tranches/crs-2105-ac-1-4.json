@@ -17,28 +17,26 @@
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentencedAt": "2024-08-27",
       "sentenceType": "ADIMP",
-      "lineSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 1
     },
     {
-      "type": "ExtendedDeterminateSentence",
-      "offence": {
-        "committedAt": "2024-02-15"
+      "type":"ExtendedDeterminateSentence",
+      "offence":{
+        "committedAt":"2024-02-15"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 1
+      "custodialDuration":{
+        "durationElements":{
+          "YEARS":1
         }
       },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 4
+      "extensionDuration":{
+        "durationElements":{
+          "YEARS":4
         }
       },
-      "automaticRelease": false,
+      "automaticRelease":false,
       "lineSequence": 2,
-      "sentencedAt": "2024-09-10",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2024-09-10"
     }
   ]
 }

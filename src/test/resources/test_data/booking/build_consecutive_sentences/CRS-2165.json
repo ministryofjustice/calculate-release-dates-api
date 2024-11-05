@@ -16,7 +16,6 @@
           "MONTHS": 16
         }
       },
-      "sentenceCalculationType": "ADIMP",
       "identifier": "927b2c34-4731-3f3f-9d16-20f9ea0d3b96",
       "sentencedAt": "2024-02-13",
       "caseSequence": 3,
@@ -35,7 +34,6 @@
           "MONTHS": 16
         }
       },
-      "sentenceCalculationType": "ADIMP",
       "identifier": "927b2c34-4731-3f3f-9d16-20f9ea0d3b96",
       "sentencedAt": "2024-02-13",
       "caseSequence": 3,
@@ -54,7 +52,6 @@
           "MONTHS": 16
         }
       },
-      "sentenceCalculationType": "ADIMP",
       "identifier": "927b2c34-4731-3f3f-9d16-20f9ea0d3b96",
       "sentencedAt": "2024-02-13",
       "caseSequence": 3,
@@ -73,7 +70,6 @@
           "MONTHS": 6
         }
       },
-      "sentenceCalculationType": "ADIMP",
       "identifier": "341e599f-82cd-32d1-aa08-d3ac1db46523",
       "sentencedAt": "2024-02-13",
       "caseSequence": 3,
@@ -92,7 +88,6 @@
           "MONTHS": 6
         }
       },
-      "sentenceCalculationType": "ADIMP",
       "identifier": "341e599f-82cd-32d1-aa08-d3ac1db46523",
       "sentencedAt": "2024-02-13",
       "caseSequence": 3,
@@ -111,7 +106,6 @@
           "MONTHS": 8
         }
       },
-      "sentenceCalculationType": "ADIMP",
       "identifier": "960ba273-798a-37eb-ac07-44a5f02560d5",
       "sentencedAt": "2024-02-13",
       "caseSequence": 4,
@@ -133,7 +127,6 @@
           "MONTHS": 8
         }
       },
-      "sentenceCalculationType": "ADIMP",
       "identifier": "960ba273-798a-37eb-ac07-44a5f02560d5",
       "sentencedAt": "2024-02-13",
       "caseSequence": 4,
@@ -155,7 +148,6 @@
           "MONTHS": 6
         }
       },
-      "sentenceCalculationType": "ADIMP",
       "identifier": "12c495a2-ab3b-3136-9a32-ac797710b011",
       "sentencedAt": "2024-03-14",
       "caseSequence": 5,
@@ -176,7 +168,6 @@
           "WEEKS": 6
         }
       },
-      "sentenceCalculationType": "ADIMP",
       "identifier": "87f3e62c-00d8-3e8c-aa22-56b3d44a2aff",
       "sentencedAt": "2024-09-30",
       "caseSequence": 6,
@@ -195,7 +186,6 @@
           "WEEKS": 3
         }
       },
-      "sentenceCalculationType": "ADIMP",
       "identifier": "f5e74e88-3559-3b72-8d70-921fd2cecd87",
       "sentencedAt": "2024-09-30",
       "caseSequence": 6,
@@ -214,7 +204,6 @@
           "WEEKS": 3
         }
       },
-      "sentenceCalculationType": "ADIMP",
       "identifier": "f5e74e88-3559-3b72-8d70-921fd2cecd87",
       "sentencedAt": "2024-09-30",
       "caseSequence": 6,

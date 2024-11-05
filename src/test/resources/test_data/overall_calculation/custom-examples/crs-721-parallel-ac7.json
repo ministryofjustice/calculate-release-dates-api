@@ -15,8 +15,7 @@
         }
       },
       "recallType": "FIXED_TERM_RECALL_28",
-      "sentencedAt": "2019-11-08",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2019-11-08"
     },
     {
       "offence": {
@@ -27,8 +26,7 @@
           "MONTHS": 2
         }
       },
-      "sentencedAt": "2022-03-16",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2022-03-16"
     }
   ],
   "adjustments": {

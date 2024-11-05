@@ -16,8 +16,7 @@
       },
       "sentencedAt": "2020-11-20",
       "identifier": "6eb5959e-e130-4b37-b18c-c5040dadecf8",
-      "isSDSPlus": false,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": false
     },
     {
       "type": "StandardSentence",
@@ -34,8 +33,7 @@
       "consecutiveSentenceUUIDs": [
         "6eb5959e-e130-4b37-b18c-c5040dadecf8"
       ],
-      "isSDSPlus": false,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": false
     },
     {
       "type": "StandardSentence",
@@ -51,8 +49,7 @@
       "consecutiveSentenceUUIDs": [
         "d64d8f8c-5d18-40ec-b34e-ed4a409983c1"
       ],
-      "isSDSPlus": false,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": false
     },
     {
       "type": "StandardSentence",
@@ -65,8 +62,7 @@
         }
       },
       "sentencedAt": "2021-05-24",
-      "isSDSPlus": true,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": true
     },
     {
       "type": "StandardSentence",
@@ -79,8 +75,7 @@
         }
       },
       "sentencedAt": "2021-05-24",
-      "isSDSPlus": false,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": false
     },
     {
       "type": "StandardSentence",
@@ -93,8 +88,7 @@
         }
       },
       "sentencedAt": "2021-05-24",
-      "isSDSPlus": false,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": false
     }
   ],
   "adjustments": {

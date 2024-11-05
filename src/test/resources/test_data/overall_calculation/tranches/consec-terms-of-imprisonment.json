@@ -21,30 +21,25 @@
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentenceSequence": 1,
       "lineSequence": 1,
-      "caseSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "caseSequence": 1
     },
     {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-01-18"
+      "type":"AFineSentence",
+      "offence":{
+        "committedAt":"2022-01-18"
       },
-      "duration": {
-        "durationElements": {
+      "duration":{
+        "durationElements":{
           "DAYS": 15
         }
       },
       "sentencedAt": "2023-09-05",
       "fineAmount": 4000,
       "caseSequence": 2,
-      "lineSequence": 2,
-      "consecutiveSentenceUUIDs": [
-        "cb304745-d781-47d3-b931-4baa31551fc5"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence" : 2,
+      "consecutiveSentenceUUIDs": ["cb304745-d781-47d3-b931-4baa31551fc5"]
     }
   ],
-  "adjustments": {
-  },
+  "adjustments": {},
   "calculateErsed": true
 }

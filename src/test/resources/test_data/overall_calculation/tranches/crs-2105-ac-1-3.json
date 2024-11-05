@@ -19,8 +19,7 @@
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentencedAt": "2022-11-30",
       "sentenceType": "ADIMP",
-      "lineSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 1
     },
     {
       "offence": {
@@ -38,8 +37,7 @@
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentencedAt": "2024-09-10",
       "sentenceType": "ADIMP_ORA",
-      "lineSequence": 2,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 2
     }
   ]
 }

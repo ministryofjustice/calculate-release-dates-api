@@ -15,8 +15,7 @@
           "MONTHS": 6
         }
       },
-      "sentencedAt": "2015-02-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2015-02-12"
     },
     {
       "caseSequence": 1,
@@ -29,8 +28,7 @@
           "MONTHS": 8
         }
       },
-      "sentencedAt": "2015-02-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2015-02-12"
     }
   ],
   "adjustments": {

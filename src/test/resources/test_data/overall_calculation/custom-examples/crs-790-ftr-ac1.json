@@ -15,8 +15,7 @@
         }
       },
       "sentencedAt": "2021-01-22",
-      "recallType": "FIXED_TERM_RECALL_28",
-      "sentenceCalculationType": "ADIMP"
+      "recallType": "FIXED_TERM_RECALL_28"
     }
   ],
   "adjustments": {

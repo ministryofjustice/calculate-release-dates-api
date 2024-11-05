@@ -1,22 +1,21 @@
 {
-  "offender": {
+  "offender":{
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences": [
+  "sentences":[
     {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-06-04"
+      "type":"AFineSentence",
+      "offence":{
+        "committedAt":"2022-06-04"
       },
-      "duration": {
-        "durationElements": {
+      "duration":{
+        "durationElements":{
           "YEARS": 7
         }
       },
-      "sentencedAt": "2022-06-05",
-      "fineAmount": 11000000,
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2022-06-05",
+      "fineAmount": 11000000
     }
   ]
 }

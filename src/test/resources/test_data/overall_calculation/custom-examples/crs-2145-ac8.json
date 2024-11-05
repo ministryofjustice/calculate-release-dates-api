@@ -16,8 +16,7 @@
       "sentencedAt": "2024-05-03",
       "sentenceType": "FTR_ORA",
       "recallType": "FIXED_TERM_RECALL_28",
-      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
     },
     {
       "offence": {
@@ -33,8 +32,7 @@
       "recallType": "FIXED_TERM_RECALL_28",
       "consecutiveSentenceUUIDs": [
         "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "offence": {
@@ -48,8 +46,7 @@
       "sentencedAt": "2024-09-02",
       "sentenceType": "FTR_ORA",
       "recallType": "FIXED_TERM_RECALL_28",
-      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e8a",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e8a"
     },
     {
       "offence": {
@@ -65,8 +62,7 @@
       "recallType": "FIXED_TERM_RECALL_28",
       "consecutiveSentenceUUIDs": [
         "a31d5d02-611f-43b0-8b1a-4b1edc955e8a"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     }
   ],
   "returnToCustodyDate": "2024-12-07",

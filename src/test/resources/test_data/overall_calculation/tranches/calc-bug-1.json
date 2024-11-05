@@ -27,11 +27,8 @@
       "caseSequence": 1,
       "lineSequence": 4,
       "caseReference": "STD LR",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -57,8 +54,7 @@
       "consecutiveSentenceUUIDs": [
         "cce245c0-a952-390c-9f37-e0f887eca15e"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -84,8 +80,7 @@
       "consecutiveSentenceUUIDs": [
         "4cf64448-e0bd-3d64-8863-305b91c56f9a"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -108,11 +103,8 @@
       "caseSequence": 4,
       "lineSequence": 7,
       "caseReference": "A12345678",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -138,8 +130,7 @@
       "consecutiveSentenceUUIDs": [
         "0b9957e6-d170-3968-87c8-501d95e3c40f"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     }
   ],
   "adjustments": {

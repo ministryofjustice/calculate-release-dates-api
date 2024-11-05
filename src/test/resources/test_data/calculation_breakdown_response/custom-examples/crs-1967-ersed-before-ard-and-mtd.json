@@ -20,26 +20,22 @@
       },
       "lineSequence": 1,
       "caseSequence": 1,
-      "caseReference": null,
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": null
     }
   ],
   "consecutiveSentence": null,
   "breakdownByReleaseDateType": {
     "SED": {
-      "rules": [
-
-      ],
-      "rulesWithExtraAdjustments": {
-      },
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
       "adjustedDays": -62,
       "releaseDate": "2023-08-25",
       "unadjustedDate": "2023-10-26"
     },
     "HDCED": {
       "rules": [
-        "HDCED_MINIMUM_CUSTODIAL_PERIOD",
-        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT"
+          "HDCED_MINIMUM_CUSTODIAL_PERIOD",
+          "HDCED_GE_MIN_PERIOD_LT_MIDPOINT"
       ],
       "rulesWithExtraAdjustments": {
         "HDCED_MINIMUM_CUSTODIAL_PERIOD": {
@@ -52,7 +48,6 @@
       "unadjustedDate": "2022-10-27"
     }
   },
-  "otherDates": {
-  },
+  "otherDates": {},
   "ersedNotApplicableDueToDtoLaterThanCrd": true
 }

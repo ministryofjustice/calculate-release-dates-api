@@ -32,7 +32,6 @@
       "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
-      "sentenceCalculationType": "ADIMP",
       "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2020-04-22",

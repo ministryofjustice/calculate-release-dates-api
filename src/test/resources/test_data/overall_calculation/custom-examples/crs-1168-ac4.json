@@ -14,8 +14,7 @@
         }
       },
       "sentencedAt": "2021-08-27",
-      "sentenceType": "SEC250",
-      "sentenceCalculationType": "ADIMP"
+      "sentenceType": "SEC250"
     },
     {
       "offence": {
@@ -27,8 +26,7 @@
         }
       },
       "sentencedAt": "2021-11-17",
-      "sentenceType": "SEC250",
-      "sentenceCalculationType": "ADIMP"
+      "sentenceType": "SEC250"
     }
   ],
   "adjustments": {

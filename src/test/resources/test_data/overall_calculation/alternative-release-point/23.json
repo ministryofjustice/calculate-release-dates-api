@@ -21,10 +21,7 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "StandardSentence",
@@ -42,10 +39,7 @@
       "caseSequence": 1,
       "lineSequence": 2,
       "caseReference": "B1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "StandardSentence",
@@ -63,10 +57,7 @@
       "caseSequence": 1,
       "lineSequence": 3,
       "caseReference": "C1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "AFineSentence",
@@ -85,10 +76,7 @@
       "caseSequence": 2,
       "lineSequence": 4,
       "caseReference": "D1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "AFineSentence",
@@ -107,10 +95,7 @@
       "caseSequence": 2,
       "lineSequence": 4,
       "caseReference": "E1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "AFineSentence",
@@ -129,10 +114,7 @@
       "caseSequence": 2,
       "lineSequence": 4,
       "caseReference": "F1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "AFineSentence",
@@ -151,10 +133,7 @@
       "caseSequence": 2,
       "lineSequence": 4,
       "caseReference": "G1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "AFineSentence",
@@ -173,10 +152,7 @@
       "caseSequence": 2,
       "lineSequence": 4,
       "caseReference": "H1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "AFineSentence",
@@ -195,10 +171,7 @@
       "caseSequence": 2,
       "lineSequence": 4,
       "caseReference": "H1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "AFineSentence",
@@ -216,10 +189,7 @@
       "sentencedAt": "2024-03-14",
       "caseSequence": 2,
       "lineSequence": 4,
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "AFineSentence",
@@ -238,10 +208,7 @@
       "caseSequence": 2,
       "lineSequence": 4,
       "caseReference": "I1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "AFineSentence",
@@ -260,13 +227,9 @@
       "caseSequence": 2,
       "lineSequence": 4,
       "caseReference": "J1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     }
   ],
-  "adjustments": {
-  },
+  "adjustments": {},
   "calculateErsed": true
 }

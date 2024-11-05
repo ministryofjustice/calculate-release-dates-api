@@ -14,10 +14,8 @@
         }
       },
       "sentencedAt": "2022-06-05",
-      "sentenceType": "ADIMP_ORA",
-      "sentenceCalculationType": "ADIMP"
-    },
-    {
+      "sentenceType": "ADIMP_ORA"
+    },{
       "offence": {
         "committedAt": "2021-09-24"
       },
@@ -27,18 +25,15 @@
         }
       },
       "sentencedAt": "2022-09-28",
-      "sentenceType": "ADIMP_ORA",
-      "sentenceCalculationType": "ADIMP"
+      "sentenceType": "ADIMP_ORA"
     }
   ],
-  "adjustments": {
-    "REMAND": [
-      {
-        "appliesToSentencesFrom": "2022-06-05",
-        "numberOfDays": 38,
-        "fromDate": "2022-04-28",
-        "toDate": "2022-06-04"
-      }
-    ]
-  }
+  "adjustments": {"REMAND": [
+    {
+      "appliesToSentencesFrom": "2022-06-05",
+      "numberOfDays": 38,
+      "fromDate": "2022-04-28",
+      "toDate": "2022-06-04"
+    }
+  ]}
 }

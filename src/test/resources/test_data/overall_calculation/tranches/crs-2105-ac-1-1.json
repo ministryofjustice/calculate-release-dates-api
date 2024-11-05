@@ -10,14 +10,13 @@
       },
       "duration": {
         "durationElements": {
-          "YEARS": 4
+          "YEARS":4
         }
       },
       "sentencedAt": "2020-08-03",
       "sentenceType": "LR",
       "recallType": "STANDARD_RECALL",
-      "lineSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 1
     },
     {
       "offence": {
@@ -32,8 +31,7 @@
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentencedAt": "2024-07-01",
       "sentenceType": "ADIMP_ORA",
-      "lineSequence": 2,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 2
     }
   ]
 }

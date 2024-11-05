@@ -21,10 +21,7 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -50,8 +47,7 @@
       },
       "consecutiveSentenceUUIDs": [
         "54a56297-f7a0-3087-8786-8244e48ede8e"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     }
   ],
   "adjustments": {

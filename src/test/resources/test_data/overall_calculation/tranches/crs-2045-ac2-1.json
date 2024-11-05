@@ -20,11 +20,9 @@
       "hasAnSDSEarlyReleaseExclusion": "NATIONAL_SECURITY",
       "sentenceSequence": 1,
       "lineSequence": 1,
-      "caseSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "caseSequence": 1
     }
   ],
-  "adjustments": {
-  },
+  "adjustments": {},
   "calculateErsed": true
 }

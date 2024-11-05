@@ -1,60 +1,57 @@
 {
   "calculateErsed": false,
-  "offender": {
+  "offender":{
     "reference": "ABC123D",
     "dateOfBirth": "2005-04-01"
   },
-  "sentences": [
+  "sentences":[
     {
-      "type": "StandardDeterminateSentence",
-      "offence": {
-        "committedAt": "2024-06-07"
+      "type":"StandardDeterminateSentence",
+      "offence":{
+        "committedAt":"2024-06-07"
       },
-      "duration": {
-        "durationElements": {
+      "duration":{
+        "durationElements":{
           "MONTHS": 30
         }
       },
       "sentencedAt": "2024-06-07",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
     },
     {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2025-07-11"
+      "type":"AFineSentence",
+      "offence":{
+        "committedAt":"2025-07-11"
       },
-      "duration": {
-        "durationElements": {
+      "duration":{
+        "durationElements":{
           "DAYS": 20
         }
       },
       "sentencedAt": "2025-07-11",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
     },
     {
-      "offence": {
-        "committedAt": "2022-01-10"
+      "offence":{
+        "committedAt":"2022-01-10"
       },
-      "duration": {
-        "durationElements": {
+      "duration":{
+        "durationElements":{
           "YEARS": 3,
           "MONTHS": 6
         }
       },
-      "sentencedAt": "2022-01-10",
-      "recallType": "STANDARD_RECALL",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2022-01-10",
+      "recallType":"STANDARD_RECALL"
     }
   ],
   "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+    "UNLAWFULLY_AT_LARGE":[
       {
         "numberOfDays": 5,
         "appliesToSentencesFrom": "2022-01-10",
-        "fromDate": "2023-11-25",
-        "toDate": "2023-11-29"
+        "fromDate":"2023-11-25",
+        "toDate":"2023-11-29"
       }
     ],
     "REMAND": [

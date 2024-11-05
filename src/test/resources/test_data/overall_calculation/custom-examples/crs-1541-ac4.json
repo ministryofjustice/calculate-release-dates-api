@@ -14,10 +14,8 @@
         }
       },
       "sentencedAt": "2023-11-14",
-      "sentenceType": "ADIMP_ORA",
-      "sentenceCalculationType": "ADIMP"
-    },
-    {
+      "sentenceType": "ADIMP_ORA"
+    },{
       "offence": {
         "committedAt": "2023-09-24"
       },
@@ -27,10 +25,8 @@
         }
       },
       "sentencedAt": "2023-12-05",
-      "sentenceType": "ADIMP_ORA",
-      "sentenceCalculationType": "ADIMP"
+      "sentenceType": "ADIMP_ORA"
     }
   ],
-  "adjustments": {
-  }
+  "adjustments": {}
 }

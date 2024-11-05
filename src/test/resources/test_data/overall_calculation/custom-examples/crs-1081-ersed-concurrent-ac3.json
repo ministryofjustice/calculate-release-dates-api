@@ -1,47 +1,44 @@
 {
   "calculateErsed": true,
-  "offender": {
+  "offender":{
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences": [
+  "sentences":[
     {
-      "offence": {
-        "committedAt": "2020-02-27"
+      "offence":{
+        "committedAt":"2020-02-27"
       },
-      "duration": {
-        "durationElements": {
+      "duration":{
+        "durationElements":{
           "YEARS": 3
         }
       },
-      "sentencedAt": "2020-07-26",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2020-07-26"
     },
     {
-      "offence": {
-        "committedAt": "2020-02-27"
+      "offence":{
+        "committedAt":"2020-02-27"
       },
-      "duration": {
-        "durationElements": {
+      "duration":{
+        "durationElements":{
           "MONTHS": 18
         }
       },
-      "sentencedAt": "2020-07-26",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2020-07-26"
     },
     {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2021-02-27"
+      "type":"AFineSentence",
+      "offence":{
+        "committedAt":"2021-02-27"
       },
-      "duration": {
-        "durationElements": {
+      "duration":{
+        "durationElements":{
           "DAYS": 28
         }
       },
-      "sentencedAt": "2021-04-19",
-      "fineAmount": 900,
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2021-04-19",
+      "fineAmount": 900
     }
   ]
 }

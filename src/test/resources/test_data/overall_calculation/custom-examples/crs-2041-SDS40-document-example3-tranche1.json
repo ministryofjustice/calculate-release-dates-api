@@ -1,37 +1,35 @@
 {
   "calculateErsed": false,
-  "offender": {
+  "offender":{
     "reference": "ABC123D",
     "dateOfBirth": "2005-04-01"
   },
-  "sentences": [
+  "sentences":[
     {
-      "type": "StandardDeterminateSentence",
-      "offence": {
-        "committedAt": "2023-10-30"
+      "type":"StandardDeterminateSentence",
+      "offence":{
+        "committedAt":"2023-10-30"
       },
-      "duration": {
-        "durationElements": {
+      "duration":{
+        "durationElements":{
           "YEARS": 3
         }
       },
       "sentencedAt": "2023-10-30",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
     },
     {
-      "type": "StandardDeterminateSentence",
-      "offence": {
-        "committedAt": "2024-08-15"
+      "type":"StandardDeterminateSentence",
+      "offence":{
+        "committedAt":"2024-08-15"
       },
-      "duration": {
-        "durationElements": {
+      "duration":{
+        "durationElements":{
           "MONTHS": 32
         }
       },
       "sentencedAt": "2024-08-15",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
     }
   ],
   "adjustments": {

@@ -18,8 +18,7 @@
       },
       "identifier": "aa0b1a85-2d4f-3c3f-82c6-e2d24c71086b",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2024-05-08",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2024-05-08"
     },
     {
       "type": "StandardSentence",
@@ -34,8 +33,7 @@
       },
       "identifier": "e12b8f4f-81e8-31c2-ab24-7b626cdff444",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2024-01-15",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2024-01-15"
     },
     {
       "type": "StandardSentence",
@@ -53,8 +51,7 @@
       "sentencedAt": "2024-01-15",
       "consecutiveSentenceUUIDs": [
         "e12b8f4f-81e8-31c2-ab24-7b626cdff444"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     }
   ],
   "adjustments": {

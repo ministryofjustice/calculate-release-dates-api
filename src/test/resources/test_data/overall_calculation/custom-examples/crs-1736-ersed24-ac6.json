@@ -17,8 +17,7 @@
       "sentencedAt": "2023-01-13",
       "isDto": false,
       "sentenceType": "ADIMP",
-      "isSDSPlus": true,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": true
     }
   ],
   "adjustments": {

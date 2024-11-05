@@ -22,13 +22,9 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "DEF321",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     }
   ],
-  "adjustments": {
-  },
+  "adjustments": {},
   "calculateErsed": true
 }

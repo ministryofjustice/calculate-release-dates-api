@@ -15,8 +15,7 @@
       },
       "sentencedAt": "2024-08-10",
       "sentenceType": "14FTR_ORA",
-      "recallType": "FIXED_TERM_RECALL_14",
-      "sentenceCalculationType": "ADIMP"
+      "recallType": "FIXED_TERM_RECALL_14"
     },
     {
       "offence": {
@@ -29,8 +28,7 @@
       },
       "sentencedAt": "2024-08-10",
       "sentenceType": "14FTR_ORA",
-      "recallType": "FIXED_TERM_RECALL_14",
-      "sentenceCalculationType": "ADIMP"
+      "recallType": "FIXED_TERM_RECALL_14"
     },
     {
       "offence": {
@@ -43,8 +41,7 @@
       },
       "sentencedAt": "2024-09-24",
       "sentenceType": "14FTR_ORA",
-      "recallType": "FIXED_TERM_RECALL_14",
-      "sentenceCalculationType": "ADIMP"
+      "recallType": "FIXED_TERM_RECALL_14"
     }
   ],
   "returnToCustodyDate": "2024-12-14"

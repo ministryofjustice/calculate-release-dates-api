@@ -21,8 +21,7 @@
       },
       "automaticRelease": false,
       "sentencedAt": "2022-02-10",
-      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
     },
     {
       "offence": {
@@ -43,8 +42,7 @@
       "sentencedAt": "2022-02-10",
       "consecutiveSentenceUUIDs": [
         "e40f48b6-92df-49d0-af99-507194c380fa"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     }
   ],
   "adjustments": {

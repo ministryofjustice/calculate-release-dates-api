@@ -15,8 +15,7 @@
         }
       },
       "sentencedAt": "2020-06-12",
-      "isSDSPlus": true,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": true
     },
     {
       "type": "StandardSentence",
@@ -29,8 +28,7 @@
         }
       },
       "sentencedAt": "2020-06-12",
-      "isSDSPlus": false,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": false
     }
   ],
   "adjustments": {

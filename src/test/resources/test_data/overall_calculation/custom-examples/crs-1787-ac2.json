@@ -13,8 +13,7 @@
           "YEARS": 4
         }
       },
-      "sentencedAt": "2022-07-01",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2022-07-01"
     },
     {
       "offence": {
@@ -25,8 +24,7 @@
           "WEEKS": 10
         }
       },
-      "sentencedAt": "2024-01-02",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2024-01-02"
     }
   ]
 }

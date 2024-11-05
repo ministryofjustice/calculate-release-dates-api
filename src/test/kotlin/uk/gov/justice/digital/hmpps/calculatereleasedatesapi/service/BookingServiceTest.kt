@@ -138,7 +138,7 @@ class BookingServiceTest {
         sentences = mutableListOf(
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
-            sentenceCalculationType = SentenceCalculationType.FTRSCH18.name,
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,
@@ -195,7 +195,7 @@ class BookingServiceTest {
         sentences = mutableListOf(
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
-            sentenceCalculationType = SentenceCalculationType.FTRSCH18.name,
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,
@@ -254,7 +254,7 @@ class BookingServiceTest {
         sentences = mutableListOf(
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
-            sentenceCalculationType = SentenceCalculationType.FTRSCH18.name,
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,
@@ -311,7 +311,7 @@ class BookingServiceTest {
         sentences = mutableListOf(
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
-            sentenceCalculationType = SentenceCalculationType.FTRSCH18.name,
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,
@@ -368,7 +368,7 @@ class BookingServiceTest {
         sentences = mutableListOf(
           StandardDeterminateSentence(
             sentencedAt = FIRST_JAN_2015,
-            sentenceCalculationType = SentenceCalculationType.FTRSCH18.name,
+            sentenceCalculationType = SentenceCalculationType.ADIMP.name,
             duration = FIVE_YEAR_DURATION,
             offence = Offence(
               committedAt = FIRST_JAN_2015,

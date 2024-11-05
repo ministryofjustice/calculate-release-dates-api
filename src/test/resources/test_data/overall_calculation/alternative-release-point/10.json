@@ -21,10 +21,7 @@
       "caseSequence": 2,
       "lineSequence": 1,
       "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "StandardSentence",
@@ -42,10 +39,7 @@
       "caseSequence": 2,
       "lineSequence": 1,
       "caseReference": "B1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "StandardSentence",
@@ -63,10 +57,7 @@
       "caseSequence": 2,
       "lineSequence": 1,
       "caseReference": "C1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "StandardSentence",
@@ -84,10 +75,7 @@
       "caseSequence": 2,
       "lineSequence": 2,
       "caseReference": "D1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "StandardSentence",
@@ -105,10 +93,7 @@
       "caseSequence": 2,
       "lineSequence": 2,
       "caseReference": "E1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "StandardSentence",
@@ -126,10 +111,7 @@
       "caseSequence": 2,
       "lineSequence": 2,
       "caseReference": "F1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "StandardSentence",
@@ -149,8 +131,7 @@
       "caseReference": "G1234567",
       "consecutiveSentenceUUIDs": [
         "b5a4ffee-ca4b-37ac-99b0-55bf08e15a60"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "type": "StandardSentence",
@@ -168,10 +149,7 @@
       "caseSequence": 1,
       "lineSequence": 4,
       "caseReference": "H1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "StandardSentence",
@@ -188,13 +166,9 @@
       "caseSequence": 1,
       "lineSequence": 4,
       "caseReference": "I1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     }
   ],
-  "adjustments": {
-  },
+  "adjustments": {},
   "calculateErsed": true
 }

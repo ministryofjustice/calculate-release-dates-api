@@ -16,8 +16,7 @@
         }
       },
       "sentencedAt": "2020-04-22",
-      "isSDSPlus": true,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": true
     }
   ],
   "adjustments": {

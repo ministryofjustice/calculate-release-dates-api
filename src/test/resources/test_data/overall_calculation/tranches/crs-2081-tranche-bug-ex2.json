@@ -24,11 +24,8 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "1111111111112",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "VIOLENT",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
     },
     {
       "type": "StandardSentence",
@@ -48,11 +45,8 @@
       "caseSequence": 1,
       "lineSequence": 2,
       "caseReference": "1111111111112",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -75,11 +69,8 @@
       "caseSequence": 1,
       "lineSequence": 3,
       "caseReference": "1111111111112",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -102,11 +93,8 @@
       "caseSequence": 1,
       "lineSequence": 4,
       "caseReference": "1111111111112",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -132,8 +120,7 @@
       "consecutiveSentenceUUIDs": [
         "cc9ffee6-a613-3f56-9447-f6b0bee35361"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -156,11 +143,8 @@
       "caseSequence": 1,
       "lineSequence": 6,
       "caseReference": "1111111111112",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -183,11 +167,8 @@
       "caseSequence": 1,
       "lineSequence": 6,
       "caseReference": "1111111111112",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -210,11 +191,8 @@
       "caseSequence": 1,
       "lineSequence": 7,
       "caseReference": "1111111111112",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -237,11 +215,8 @@
       "caseSequence": 1,
       "lineSequence": 7,
       "caseReference": "1111111111112",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -267,8 +242,7 @@
       "consecutiveSentenceUUIDs": [
         "77b0585d-f1bc-3477-8a4b-8aa9ef40f4d6"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "AFineSentence",
@@ -292,10 +266,7 @@
       "caseSequence": 2,
       "lineSequence": 9,
       "caseReference": null,
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     }
   ],
   "adjustments": {

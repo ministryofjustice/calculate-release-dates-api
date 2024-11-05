@@ -27,11 +27,8 @@
       "caseSequence": 2,
       "lineSequence": 1,
       "caseReference": "T20220152",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -57,8 +54,7 @@
       "consecutiveSentenceUUIDs": [
         "b26081b5-2d29-3d5e-b49e-d9a773f4a04e"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     }
   ],
   "adjustments": {

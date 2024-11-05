@@ -2,7 +2,6 @@
   "offence": {
     "committedAt": "2013-09-19"
   },
-  "sentenceCalculationType": "ADIMP",
   "duration": {
     "durationElements": {
       "YEARS": 2

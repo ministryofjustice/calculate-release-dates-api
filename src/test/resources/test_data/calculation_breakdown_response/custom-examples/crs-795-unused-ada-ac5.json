@@ -20,8 +20,7 @@
       },
       "lineSequence": 2,
       "caseSequence": 1,
-      "caseReference": null,
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": null
     }
   ],
   "consecutiveSentence": {
@@ -50,8 +49,7 @@
         "sentenceLength": "4 months",
         "sentenceLengthDays": 120,
         "consecutiveToLineSequence": null,
-        "consecutiveToCaseSequence": null,
-        "sentenceCalculationType": "ADIMP"
+        "consecutiveToCaseSequence": null
       },
       {
         "lineSequence": 3,
@@ -60,18 +58,14 @@
         "sentenceLength": "3 months",
         "sentenceLengthDays": 89,
         "consecutiveToLineSequence": 1,
-        "consecutiveToCaseSequence": 1,
-        "sentenceCalculationType": "ADIMP"
+        "consecutiveToCaseSequence": 1
       }
     ]
   },
   "breakdownByReleaseDateType": {
     "SED": {
-      "rules": [
-
-      ],
-      "rulesWithExtraAdjustments": {
-      },
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2015-09-11",
       "unadjustedDate": "2015-09-11"
@@ -91,9 +85,7 @@
       "unadjustedDate": "2015-09-11"
     },
     "CRD": {
-      "rules": [
-
-      ],
+      "rules": [],
       "rulesWithExtraAdjustments": {
         "UNUSED_ADA": {
           "adjustmentValue": 6,

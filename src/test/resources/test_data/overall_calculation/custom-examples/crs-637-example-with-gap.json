@@ -1,77 +1,72 @@
 {
-  "offender": {
-    "reference": "A1234AA",
-    "dateOfBirth": "1990-02-01"
+  "offender":{
+    "reference":"A1234AA",
+    "dateOfBirth":"1990-02-01"
   },
-  "sentences": [
+  "sentences":[
     {
-      "offence": {
-        "committedAt": "2020-06-02"
+      "offence":{
+        "committedAt":"2020-06-02"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3
+      "duration":{
+        "durationElements":{
+          "MONTHS":3
         }
       },
-      "sentencedAt": "2021-05-01",
-      "identifier": "6c3ab422-0fb7-39ff-8ece-4f5c4be759f3",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2021-05-01",
+      "identifier":"6c3ab422-0fb7-39ff-8ece-4f5c4be759f3"
     },
     {
-      "offence": {
-        "committedAt": "2020-08-02"
+      "offence":{
+        "committedAt":"2020-08-02"
       },
-      "duration": {
-        "durationElements": {
-          "DAYS": 2,
-          "WEEKS": 2,
-          "MONTHS": 2
+      "duration":{
+        "durationElements":{
+          "DAYS":2,
+          "WEEKS":2,
+          "MONTHS":2
         }
       },
-      "sentencedAt": "2021-05-01",
-      "consecutiveSentenceUUIDs": [
+      "sentencedAt":"2021-05-01",
+      "consecutiveSentenceUUIDs":[
         "6c3ab422-0fb7-39ff-8ece-4f5c4be759f3"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
-      "offence": {
-        "committedAt": "2020-12-02"
+      "offence":{
+        "committedAt":"2020-12-02"
       },
-      "duration": {
-        "durationElements": {
-          "DAYS": 1,
-          "WEEKS": 1,
-          "MONTHS": 1
+      "duration":{
+        "durationElements":{
+          "DAYS":1,
+          "WEEKS":1,
+          "MONTHS":1
         }
       },
-      "sentencedAt": "2021-06-01",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2021-06-01"
     },
     {
-      "offence": {
-        "committedAt": "2019-01-01"
+      "offence":{
+        "committedAt":"2019-01-01"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
+      "duration":{
+        "durationElements":{
+          "MONTHS":1
         }
       },
-      "sentencedAt": "2021-06-01",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2021-06-01"
     },
     {
-      "offence": {
-        "committedAt": "2021-01-01"
+      "offence":{
+        "committedAt":"2021-01-01"
       },
-      "duration": {
+      "duration":{
         "durationElements": {
           "DAYS": 2,
           "MONTHS": 5
         }
       },
-      "sentencedAt": "2021-08-01",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2021-08-01"
     }
   ]
 }

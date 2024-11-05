@@ -21,10 +21,7 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "StandardSentence",
@@ -43,10 +40,7 @@
       "caseSequence": 1,
       "lineSequence": 1,
       "caseReference": "B1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "StandardSentence",
@@ -65,10 +59,7 @@
       "caseSequence": 1,
       "lineSequence": 2,
       "caseReference": "C1234567",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "type": "StandardSentence",
@@ -89,8 +80,7 @@
       "caseReference": "D1234567",
       "consecutiveSentenceUUIDs": [
         "a4a46a1d-d96c-37c9-817d-ca14e3ccbf7e"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "type": "StandardSentence",
@@ -111,8 +101,7 @@
       "caseReference": "E1234567",
       "consecutiveSentenceUUIDs": [
         "4e9f77aa-82cc-307d-bd1c-eed8b55e055f"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "type": "StandardSentence",
@@ -133,8 +122,7 @@
       "caseReference": "F1234567",
       "consecutiveSentenceUUIDs": [
         "86b07e59-def1-3999-b7e2-4e710118fe7c"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "type": "StandardSentence",
@@ -155,8 +143,7 @@
       "caseReference": "G1234567",
       "consecutiveSentenceUUIDs": [
         "da1a9efc-f02a-37bf-849b-5fa949c0c22f"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "type": "StandardSentence",
@@ -177,8 +164,7 @@
       "caseReference": "H1234567",
       "consecutiveSentenceUUIDs": [
         "da1a9efc-f02a-37bf-849b-5fa949c0c22f"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "type": "StandardSentence",
@@ -199,8 +185,7 @@
       "caseReference": "I1234567",
       "consecutiveSentenceUUIDs": [
         "da1a9efc-f02a-37bf-849b-5fa949c0c22f"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "type": "StandardSentence",
@@ -221,11 +206,9 @@
       "caseReference": "J1234567",
       "consecutiveSentenceUUIDs": [
         "da1a9efc-f02a-37bf-849b-5fa949c0c22f"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     }
   ],
-  "adjustments": {
-  },
+  "adjustments": {},
   "calculateErsed": true
 }

@@ -20,8 +20,7 @@
       },
       "lineSequence": 4,
       "caseSequence": 1,
-      "caseReference": "012100588062",
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": "012100588062"
     },
     {
       "sentencedAt": "2021-04-09",
@@ -43,8 +42,7 @@
       },
       "lineSequence": 4,
       "caseSequence": 1,
-      "caseReference": "012100588062",
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": "012100588062"
     },
     {
       "sentencedAt": "2019-05-03",
@@ -66,15 +64,13 @@
       },
       "lineSequence": 3,
       "caseSequence": 2,
-      "caseReference": null,
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": null
     }
   ],
   "consecutiveSentence": null,
   "breakdownByReleaseDateType": {
     "SLED": {
       "rules": [
-
       ],
       "rulesWithExtraAdjustments": {
       },
@@ -86,8 +82,7 @@
       "rules": [
         "HDCED_ADJUSTED_TO_CONCURRENT_PRRD"
       ],
-      "rulesWithExtraAdjustments": {
-      },
+      "rulesWithExtraAdjustments": {},
       "adjustedDays": -636,
       "releaseDate": "2023-02-02",
       "unadjustedDate": "2021-05-07"

@@ -29,18 +29,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
@@ -226,39 +220,8 @@ class HintTextTest {
         null,
       )
 
-    val offences = listOf(
-      OffenderOffence(
-        offenderChargeId = 1L,
-        offenceStartDate = LocalDate.of(2015, 1, 1),
-        offenceCode = "ABC",
-        offenceDescription = "Littering",
-      ),
-    )
-
-    private val sentenceAndOffences = SentenceAndOffenceWithReleaseArrangements(
-      PrisonApiSentenceAndOffences(
-        bookingId = 123456L,
-        sentenceSequence = 1,
-        lineSequence = 2,
-        caseSequence = 3,
-        consecutiveToSequence = 10,
-        sentenceDate = LocalDate.of(2015, 1, 1),
-        terms = listOf(
-          SentenceTerms(years = 5),
-        ),
-        sentenceStatus = "IMP",
-        sentenceCategory = "CAT",
-        sentenceCalculationType = SentenceCalculationType.FTRSCH18.name,
-        sentenceTypeDescription = "28 day fixed term recall",
-        offences = offences,
-      ),
-      offences[0],
-      false,
-      SDSEarlyReleaseExclusionType.NO,
-    )
-
     private val SOURCE_DATA = PrisonApiSourceData(
-      listOf(sentenceAndOffences),
+      emptyList(),
       PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
       BookingAndSentenceAdjustments(
         emptyList(),

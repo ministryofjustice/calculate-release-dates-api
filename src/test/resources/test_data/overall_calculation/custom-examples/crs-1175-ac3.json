@@ -16,8 +16,7 @@
       },
       "sentencedAt": "2022-07-19",
       "sentenceType": "DTO",
-      "type": "DetentionAndTrainingOrderSentence",
-      "sentenceCalculationType": "ADIMP"
+      "type": "DetentionAndTrainingOrderSentence"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -35,8 +34,7 @@
           "YEARS": 4
         }
       },
-      "sentencedAt": "2021-12-10",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2021-12-10"
     }
   ],
   "adjustments": {

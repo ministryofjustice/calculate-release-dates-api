@@ -1,3 +1,5 @@
+
+
 {
   "offender": {
     "reference": "A1234BC",
@@ -15,8 +17,7 @@
           "MONTHS": 18
         }
       },
-      "sentencedAt": "2022-03-14",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2022-03-14"
     },
     {
       "type": "StandardSentence",
@@ -28,8 +29,7 @@
           "MONTHS": 50
         }
       },
-      "sentencedAt": "2022-11-29",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2022-11-29"
     }
   ],
   "adjustments": {

@@ -21,8 +21,7 @@
         }
       },
       "automaticRelease": true,
-      "sentencedAt": "2015-01-21",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2015-01-21"
     },
     {
       "offence": {
@@ -40,8 +39,7 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2016-04-15",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2016-04-15"
     }
   ]
 }

@@ -26,12 +26,9 @@
       "sentencedAt": "2016-04-12",
       "caseSequence": 3,
       "lineSequence": 6,
-      "caseReference": "A12345678",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+     "caseReference": "A12345678",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -53,12 +50,9 @@
       "sentencedAt": "2016-04-12",
       "caseSequence": 3,
       "lineSequence": 6,
-      "caseReference": "A12345678",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+     "caseReference": "A12345678",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -80,12 +74,9 @@
       "sentencedAt": "2016-04-12",
       "caseSequence": 3,
       "lineSequence": 7,
-      "caseReference": "A12345678",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+     "caseReference": "A12345678",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -107,12 +98,9 @@
       "sentencedAt": "2016-04-12",
       "caseSequence": 3,
       "lineSequence": 7,
-      "caseReference": "A12345678",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+     "caseReference": "A12345678",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -138,8 +126,7 @@
       "consecutiveSentenceUUIDs": [
         "8d36aa01-5b4f-3c21-9a94-1653b2f0f6fb"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -162,11 +149,8 @@
       "caseSequence": 6,
       "lineSequence": 9,
       "caseReference": "T20237022",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -189,11 +173,8 @@
       "caseSequence": 7,
       "lineSequence": 10,
       "caseReference": "S20220700",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -216,11 +197,8 @@
       "caseSequence": 7,
       "lineSequence": 11,
       "caseReference": "S20220700",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -243,11 +221,8 @@
       "caseSequence": 8,
       "lineSequence": 12,
       "caseReference": "T20237021",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -270,15 +245,11 @@
       "caseSequence": 8,
       "lineSequence": 12,
       "caseReference": "T20237021",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     }
   ],
-  "adjustments": {
-  },
+  "adjustments": {},
   "historicalTusedData": null,
   "returnToCustodyDate": null,
   "fixedTermRecallDetails": null

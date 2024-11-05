@@ -27,11 +27,8 @@
       "caseSequence": 1,
       "lineSequence": 13,
       "caseReference": "S20230142",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -57,8 +54,7 @@
       "consecutiveSentenceUUIDs": [
         "d211f333-aa1a-3e25-ac8d-0459c1f98868"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -84,8 +80,7 @@
       "consecutiveSentenceUUIDs": [
         "023e388e-1673-3bbc-9f13-1b1d915f3b73"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -108,11 +103,8 @@
       "caseSequence": 9,
       "lineSequence": 16,
       "caseReference": "93JD1236523",
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -138,8 +130,7 @@
       "consecutiveSentenceUUIDs": [
         "a49e5006-f6f1-3495-8011-de954efbec5b"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -165,8 +156,7 @@
       "consecutiveSentenceUUIDs": [
         "1d240192-ad21-3821-a70b-fffd1eb609a5"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -192,8 +182,7 @@
       "consecutiveSentenceUUIDs": [
         "39354ee8-092c-330a-bcc0-a50c3abba7dc"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -219,8 +208,7 @@
       "consecutiveSentenceUUIDs": [
         "e415422e-15b1-3abc-8d97-ac09f1c545b5"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -246,8 +234,7 @@
       "consecutiveSentenceUUIDs": [
         "3d2c8474-bf43-38f8-a3fb-ffeefdf5e499"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -273,8 +260,7 @@
       "consecutiveSentenceUUIDs": [
         "aea5266a-8b9c-39bf-8e8c-1af268f90720"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -300,8 +286,7 @@
       "consecutiveSentenceUUIDs": [
         "a36ddf10-babb-356c-adb5-20514a4290aa"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     }
   ],
   "adjustments": {

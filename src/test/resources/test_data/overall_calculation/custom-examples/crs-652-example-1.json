@@ -18,10 +18,7 @@
       "sentencedAt": "2016-04-21",
       "caseSequence": 1,
       "lineSequence": 1,
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     },
     {
       "offence": {
@@ -36,10 +33,7 @@
       "sentencedAt": "2021-06-21",
       "caseSequence": 2,
       "lineSequence": 2,
-      "consecutiveSentenceUUIDs": [
-
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": []
     }
   ],
   "adjustments": {

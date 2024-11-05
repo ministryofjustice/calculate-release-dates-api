@@ -15,8 +15,7 @@
         }
       },
       "recallType": "FIXED_TERM_RECALL_28",
-      "sentencedAt": "2015-11-08",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2015-11-08"
     },
     {
       "offence": {
@@ -35,8 +34,7 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2019-03-20",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2019-03-20"
     }
   ]
 }

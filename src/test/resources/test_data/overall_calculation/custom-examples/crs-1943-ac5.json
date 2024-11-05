@@ -13,8 +13,7 @@
           "YEARS": 5
         }
       },
-      "sentencedAt": "2014-07-13",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2014-07-13"
     },
     {
       "offence": {
@@ -32,8 +31,7 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2014-07-13",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2014-07-13"
     },
     {
       "offence": {
@@ -51,10 +49,8 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2014-07-13",
-      "sentenceCalculationType": "ADIMP"
-    },
-    {
+      "sentencedAt": "2014-07-13"
+    },{
       "type": "BotusSentence",
       "offence": {
         "committedAt": "2014-02-02"
@@ -64,8 +60,7 @@
           "DAYS": 12
         }
       },
-      "sentencedAt": "2016-12-20",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2016-12-20"
     }
   ],
   "adjustments": {

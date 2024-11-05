@@ -1,69 +1,66 @@
 {
-  "offender": {
+  "offender":{
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences": [
+  "sentences":[
     {
-      "offence": {
-        "committedAt": "2021-08-13"
+      "offence":{
+        "committedAt":"2021-08-13"
       },
-      "duration": {
-        "durationElements": {
-          "DAYS": 7
+      "duration":{
+        "durationElements":{
+          "DAYS":7
         }
       },
-      "sentencedAt": "2021-12-22",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2021-12-22"
     },
     {
-      "offence": {
-        "committedAt": "2019-09-21"
+      "offence":{
+        "committedAt":"2019-09-21"
       },
-      "duration": {
-        "durationElements": {
-          "DAYS": 1,
-          "YEARS": 3
+      "duration":{
+        "durationElements":{
+          "DAYS":1,
+          "YEARS":3
         }
       },
-      "sentencedAt": "2020-01-09",
-      "recallType": "STANDARD_RECALL",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2020-01-09",
+      "recallType":"STANDARD_RECALL"
     },
     {
-      "offence": {
-        "committedAt": "2021-11-20"
+      "offence":{
+        "committedAt":"2021-11-20"
       },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 18
+      "duration":{
+        "durationElements":{
+          "WEEKS":18
         }
       },
-      "sentencedAt": "2022-02-25",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2022-02-25"
     }
   ],
-  "adjustments": {
-    "UNLAWFULLY_AT_LARGE": [
+  "adjustments":{
+    "UNLAWFULLY_AT_LARGE":[
       {
-        "appliesToSentencesFrom": "2021-02-05",
-        "numberOfDays": 2,
-        "fromDate": "2021-02-05",
-        "toDate": "2021-02-06"
+        "appliesToSentencesFrom":"2021-02-05",
+        "numberOfDays":2,
+        "fromDate":"2021-02-05",
+        "toDate":"2021-02-06"
       }
     ],
-    "TAGGED_BAIL": [
+    "TAGGED_BAIL":[
       {
-        "appliesToSentencesFrom": "2021-12-22",
-        "numberOfDays": 2
+        "appliesToSentencesFrom":"2021-12-22",
+        "numberOfDays":2
       }
     ],
-    "RECALL_REMAND": [
+    "RECALL_REMAND":[
       {
-        "appliesToSentencesFrom": "2020-01-09",
-        "numberOfDays": 31,
-        "fromDate": "2019-12-09",
-        "toDate": "2020-01-08"
+        "appliesToSentencesFrom":"2020-01-09",
+        "numberOfDays":31,
+        "fromDate":"2019-12-09",
+        "toDate":"2020-01-08"
       }
     ]
   }

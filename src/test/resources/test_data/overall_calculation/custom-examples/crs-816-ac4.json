@@ -1,46 +1,44 @@
 {
-  "offender": {
-    "reference": "BUG",
-    "dateOfBirth": "1995-03-08",
-    "isActiveSexOffender": false
+  "offender":{
+    "reference":"BUG",
+    "dateOfBirth":"1995-03-08",
+    "isActiveSexOffender":false
   },
-  "sentences": [
+  "sentences":[
     {
-      "offence": {
-        "committedAt": "2019-06-30"
+      "offence":{
+        "committedAt":"2019-06-30"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 30
+      "duration":{
+        "durationElements":{
+          "MONTHS":30
         }
       },
-      "sentencedAt": "2021-04-15",
-      "recallType": "FIXED_TERM_RECALL_28",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2021-04-15",
+      "recallType":"FIXED_TERM_RECALL_28"
     },
     {
-      "offence": {
-        "committedAt": "2019-07-04"
+      "offence":{
+        "committedAt":"2019-07-04"
       },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 30
+      "duration":{
+        "durationElements":{
+          "MONTHS":30
         }
       },
-      "sentencedAt": "2021-04-15",
-      "recallType": "FIXED_TERM_RECALL_28",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2021-04-15",
+      "recallType":"FIXED_TERM_RECALL_28"
     }
   ],
-  "adjustments": {
-    "RECALL_TAGGED_BAIL": [
+  "adjustments":{
+    "RECALL_TAGGED_BAIL":[
       {
-        "appliesToSentencesFrom": "2021-04-15",
-        "numberOfDays": 520,
-        "fromDate": null,
-        "toDate": null
+        "appliesToSentencesFrom":"2021-04-15",
+        "numberOfDays":520,
+        "fromDate":null,
+        "toDate":null
       }
     ]
   },
-  "returnToCustodyDate": "2021-08-10"
+  "returnToCustodyDate":"2021-08-10"
 }

@@ -16,11 +16,9 @@
         }
       },
       "sentencedAt": "2024-03-22",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
     }
   ],
-  "adjustments": {
-  },
+  "adjustments": {},
   "calculateErsed": true
 }

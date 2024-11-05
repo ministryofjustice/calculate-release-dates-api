@@ -13,8 +13,7 @@
           "YEARS": 4
         }
       },
-      "sentencedAt": "2010-10-16",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2010-10-16"
     },
     {
       "offence": {
@@ -25,8 +24,7 @@
           "YEARS": 3
         }
       },
-      "sentencedAt": "2011-03-15",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2011-03-15"
     }
   ]
 }

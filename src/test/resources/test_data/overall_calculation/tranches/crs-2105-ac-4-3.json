@@ -19,32 +19,30 @@
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentencedAt": "2018-08-09",
       "sentenceType": "ADIMP_ORA",
-      "lineSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 1
     },
     {
-      "type": "ExtendedDeterminateSentence",
+      "type":"ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2018-01-07"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 5
+      "custodialDuration":{
+        "durationElements":{
+          "YEARS":5
         }
       },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
+      "extensionDuration":{
+        "durationElements":{
+          "YEARS":2
         }
       },
       "consecutiveSentenceUUIDs": [
         "b71e09b6-3728-3b80-8e86-b1c40d52c812"
       ],
-      "automaticRelease": false,
+      "automaticRelease":false,
       "sentencedAt": "2018-08-09",
       "sentenceType": "LASPO_DR",
-      "lineSequence": 2,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 2
     }
   ]
 }

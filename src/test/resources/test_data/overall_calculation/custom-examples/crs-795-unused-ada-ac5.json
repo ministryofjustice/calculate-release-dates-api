@@ -16,8 +16,7 @@
       "sentencedAt": "2015-02-12",
       "lineSequence": 1,
       "caseSequence": 1,
-      "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e1",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "0b10fc4b-1920-4b74-96e0-d95369adb5e1"
     },
     {
       "offence": {
@@ -30,8 +29,7 @@
       },
       "sentencedAt": "2015-02-12",
       "lineSequence": 2,
-      "caseSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "caseSequence": 1
     },
     {
       "offence": {
@@ -45,10 +43,7 @@
       "sentencedAt": "2015-02-12",
       "lineSequence": 3,
       "caseSequence": 1,
-      "consecutiveSentenceUUIDs": [
-        "0b10fc4b-1920-4b74-96e0-d95369adb5e1"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": ["0b10fc4b-1920-4b74-96e0-d95369adb5e1"]
     }
   ],
   "adjustments": {

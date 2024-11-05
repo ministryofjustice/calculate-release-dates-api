@@ -17,8 +17,7 @@
       "sentenceType": "ADIMP",
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "isSDSPlus": true,
-      "lineSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence" : 1
     },
     {
       "offence": {
@@ -33,10 +32,10 @@
       "sentenceType": "ADIMP",
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "isSDSPlus": false,
-      "lineSequence": 2,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence" : 2
     }
   ],
   "adjustments": {
   }
 }
+

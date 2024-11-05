@@ -13,8 +13,7 @@
           "YEARS": 5
         }
       },
-      "sentencedAt": "2023-12-08",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-12-08"
     },
     {
       "offence": {
@@ -25,8 +24,7 @@
           "YEARS": 2
         }
       },
-      "sentencedAt": "2025-09-28",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2025-09-28"
     }
   ]
 }

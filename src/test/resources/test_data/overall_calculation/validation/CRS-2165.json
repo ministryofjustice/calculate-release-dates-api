@@ -21,8 +21,7 @@
       "caseSequence": 3,
       "lineSequence": 5,
       "caseReference": "T0000001",
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -40,8 +39,7 @@
       "caseSequence": 3,
       "lineSequence": 5,
       "caseReference": "T0000001",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
     },
     {
       "type": "StandardSentence",
@@ -59,8 +57,7 @@
       "caseSequence": 3,
       "lineSequence": 5,
       "caseReference": "T0000001",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
     },
     {
       "type": "StandardSentence",
@@ -78,8 +75,7 @@
       "caseSequence": 3,
       "lineSequence": 6,
       "caseReference": "T0000001",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
     },
     {
       "type": "StandardSentence",
@@ -97,8 +93,7 @@
       "caseSequence": 3,
       "lineSequence": 6,
       "caseReference": "T0000001",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
     },
     {
       "type": "StandardSentence",
@@ -119,8 +114,7 @@
       "consecutiveSentenceUUIDs": [
         "927b2c34-4731-3f3f-9d16-20f9ea0d3b96"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -141,8 +135,7 @@
       "consecutiveSentenceUUIDs": [
         "927b2c34-4731-3f3f-9d16-20f9ea0d3b96"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -162,8 +155,7 @@
       "consecutiveSentenceUUIDs": [
         "960ba273-798a-37eb-ac07-44a5f02560d5"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -181,8 +173,7 @@
       "caseSequence": 6,
       "lineSequence": 9,
       "caseReference": "T0000003",
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -200,8 +191,7 @@
       "caseSequence": 6,
       "lineSequence": 10,
       "caseReference": "T0000003",
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",
@@ -219,8 +209,7 @@
       "caseSequence": 6,
       "lineSequence": 10,
       "caseReference": "T0000003",
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     }
   ],
   "adjustments": {

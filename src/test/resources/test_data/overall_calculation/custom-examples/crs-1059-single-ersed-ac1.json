@@ -1,21 +1,20 @@
 {
   "calculateErsed": true,
-  "offender": {
+  "offender":{
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences": [
+  "sentences":[
     {
-      "offence": {
-        "committedAt": "2010-08-30"
+      "offence":{
+        "committedAt":"2010-08-30"
       },
-      "duration": {
-        "durationElements": {
+      "duration":{
+        "durationElements":{
           "YEARS": 1
         }
       },
-      "sentencedAt": "2010-08-31",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2010-08-31"
     }
   ]
 }

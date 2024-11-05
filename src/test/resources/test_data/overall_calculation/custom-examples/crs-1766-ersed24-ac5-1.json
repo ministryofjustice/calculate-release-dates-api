@@ -6,24 +6,23 @@
   },
   "sentences": [
     {
-      "type": "ExtendedDeterminateSentence",
+      "type":"ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2020-01-03"
       },
-      "custodialDuration": {
-        "durationElements": {
+      "custodialDuration":{
+        "durationElements":{
           "YEARS": 3
         }
       },
-      "extensionDuration": {
+      "extensionDuration":{
         "durationElements": {
           "YEARS": 2
         }
       },
       "sentenceType": "LAPSO_DR",
       "sentencedAt": "2020-12-23",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
     },
     {
       "offence": {
@@ -39,8 +38,7 @@
       "identifier": "8995cb19-1b7f-491e-bbdd-0a9c90e18c2a",
       "consecutiveSentenceUUIDs": [
         "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     }
   ],
   "adjustments": {

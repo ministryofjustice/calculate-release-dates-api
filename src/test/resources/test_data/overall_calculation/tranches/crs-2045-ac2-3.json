@@ -21,8 +21,7 @@
       "sentenceSequence": 1,
       "lineSequence": 1,
       "caseSequence": 1,
-      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
     },
     {
       "type": "SEC250",
@@ -39,14 +38,10 @@
       "hasAnSDSEarlyReleaseExclusion": "NATIONAL_SECURITY",
       "sentenceSequence": 2,
       "lineSequence": 1,
-      "consecutiveSentenceUUIDs": [
-        "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
-      ],
-      "caseSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": ["a31d5d02-611f-43b0-8b1a-4b1edc955e7e"],
+      "caseSequence": 1
     }
   ],
-  "adjustments": {
-  },
+  "adjustments": {},
   "calculateErsed": false
 }

@@ -5,26 +5,25 @@
   },
   "sentences": [
     {
-      "type": "ExtendedDeterminateSentence",
+      "type":"ExtendedDeterminateSentence",
       "identifier": "b71e09b6-3728-3b80-8e86-b1c40d52c812",
       "offence": {
         "committedAt": "2020-01-07"
       },
-      "custodialDuration": {
-        "durationElements": {
-          "YEARS": 4
+      "custodialDuration":{
+        "durationElements":{
+          "YEARS":4
         }
       },
-      "extensionDuration": {
-        "durationElements": {
-          "YEARS": 2
+      "extensionDuration":{
+        "durationElements":{
+          "YEARS":2
         }
       },
-      "automaticRelease": false,
+      "automaticRelease":false,
       "sentencedAt": "2020-07-05",
       "sentenceType": "EDS18",
-      "lineSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 1
     },
     {
       "offence": {
@@ -39,8 +38,7 @@
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentencedAt": "2023-02-15",
       "sentenceType": "ADIMP",
-      "lineSequence": 2,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 2
     }
   ]
 }

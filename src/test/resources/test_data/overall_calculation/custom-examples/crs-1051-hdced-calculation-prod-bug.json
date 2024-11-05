@@ -1,92 +1,91 @@
 {
-  "offender": {
+  "offender":{
     "reference": "ABC123D",
     "dateOfBirth": "1970-03-03"
   },
-  "sentences": [
+  "sentences":[
     {
-      "offence": {
-        "committedAt": "2022-07-20"
+      
+      "offence":{
+        "committedAt":"2022-07-20"
       },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 14
+      "duration":{
+        "durationElements":{
+          "WEEKS":14
         }
       },
-      "sentencedAt": "2022-07-27",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2022-07-27"
     },
     {
-      "offence": {
-        "committedAt": "2022-04-23"
+      
+      "offence":{
+        "committedAt":"2022-04-23"
       },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 16
+      "duration":{
+        "durationElements":{
+          "WEEKS":16
         }
       },
-      "sentencedAt": "2022-07-27",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2022-07-27"
     },
     {
-      "offence": {
-        "committedAt": "2022-07-07"
+      
+      "offence":{
+        "committedAt":"2022-07-07"
       },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 26
+      "duration":{
+        "durationElements":{
+          "WEEKS":26
         }
       },
-      "sentencedAt": "2022-07-27",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2022-07-27"
     },
     {
-      "offence": {
-        "committedAt": "2022-07-09"
+      
+      "offence":{
+        "committedAt":"2022-07-09"
       },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 20
+      "duration":{
+        "durationElements":{
+          "WEEKS":20
         }
       },
-      "sentencedAt": "2022-07-27",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2022-07-27"
     },
     {
-      "offence": {
-        "committedAt": "2022-07-12"
+      "offence":{
+        "committedAt":"2022-07-12"
       },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 10
+      "duration":{
+        "durationElements":{
+          "WEEKS":10
         }
       },
-      "sentencedAt": "2022-09-22",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2022-09-22"
     },
     {
-      "offence": {
-        "committedAt": "2022-07-12"
+      
+      "offence":{
+        "committedAt":"2022-07-12"
       },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 10
+      "duration":{
+        "durationElements":{
+          "WEEKS":10
         }
       },
-      "sentencedAt": "2022-09-22",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2022-09-22"
     }
   ],
-  "adjustments": {
-    "REMAND": [
+  "adjustments":{
+    "REMAND":[
       {
-        "appliesToSentencesFrom": "2022-07-27",
-        "numberOfDays": 5,
-        "fromDate": "2022-07-22",
-        "toDate": "2022-07-26"
+        "appliesToSentencesFrom":"2022-07-27",
+        "numberOfDays":5,
+        "fromDate":"2022-07-22",
+        "toDate":"2022-07-26"
       }
     ]
   },
-  "returnToCustodyDate": null,
-  "bookingId": 66132
+  "returnToCustodyDate":null,
+  "bookingId":66132
 }

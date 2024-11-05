@@ -14,8 +14,7 @@
         }
       },
       "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2022-01-24",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2022-01-24"
     },
     {
       "offence": {
@@ -26,8 +25,7 @@
           "MONTHS": 16
         }
       },
-      "sentencedAt": "2022-01-24",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2022-01-24"
     }
   ],
   "adjustments": {

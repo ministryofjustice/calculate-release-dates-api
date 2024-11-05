@@ -16,8 +16,7 @@
       "sentencedAt": "2022-03-08",
       "sentenceType": "LR_ORA",
       "lineSequence": 1,
-      "caseSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "caseSequence": 1
     },
     {
       "offence": {
@@ -31,8 +30,7 @@
       "sentencedAt": "2022-03-08",
       "sentenceType": "LR_ORA",
       "lineSequence": 2,
-      "caseSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "caseSequence": 1
     },
     {
       "offence": {
@@ -46,8 +44,7 @@
       "sentencedAt": "2022-03-08",
       "sentenceType": "LR_ORA",
       "lineSequence": 3,
-      "caseSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "caseSequence": 1
     },
     {
       "offence": {
@@ -61,8 +58,7 @@
       "sentencedAt": "2022-03-08",
       "sentenceType": "LR_ORA",
       "lineSequence": 4,
-      "caseSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "caseSequence": 1
     },
     {
       "offence": {
@@ -76,8 +72,7 @@
       "sentencedAt": "2022-03-08",
       "sentenceType": "LR_ORA",
       "lineSequence": 5,
-      "caseSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "caseSequence": 1
     },
     {
       "offence": {
@@ -91,8 +86,7 @@
       "sentencedAt": "2022-03-08",
       "sentenceType": "LR_ORA",
       "lineSequence": 6,
-      "caseSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "caseSequence": 1
     },
     {
       "offence": {
@@ -106,8 +100,7 @@
       "sentencedAt": "2022-03-08",
       "sentenceType": "LR_ORA",
       "lineSequence": 7,
-      "caseSequence": 2,
-      "sentenceCalculationType": "ADIMP"
+      "caseSequence": 2
     },
     {
       "offence": {
@@ -121,8 +114,7 @@
       "sentencedAt": "2023-06-05",
       "sentenceType": "ADIMP_ORA",
       "lineSequence": 8,
-      "caseSequence": 5,
-      "sentenceCalculationType": "ADIMP"
+      "caseSequence": 5
     },
     {
       "offence": {
@@ -136,8 +128,7 @@
       "sentencedAt": "2023-06-28",
       "sentenceType": "ADIMP_ORA",
       "lineSequence": 9,
-      "caseSequence": 6,
-      "sentenceCalculationType": "ADIMP"
+      "caseSequence": 6
     }
   ],
   "adjustments": {
@@ -159,3 +150,4 @@
     ]
   }
 }
+

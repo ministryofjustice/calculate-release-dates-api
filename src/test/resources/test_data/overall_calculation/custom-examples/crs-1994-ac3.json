@@ -17,8 +17,7 @@
       },
       "sentencedAt": "2024-03-19",
       "hasAnSDSEarlyReleaseExclusion": "NO",
-      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
     },
     {
       "type": "StandardSentence",
@@ -32,19 +31,16 @@
       },
       "sentencedAt": "2024-03-19",
       "hasAnSDSEarlyReleaseExclusion": "NO",
-      "consecutiveSentenceUUIDs": [
-        "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": ["a31d5d02-611f-43b0-8b1a-4b1edc955e7e"]
     }
   ],
   "adjustments": {
-    "REMAND": [
+    "REMAND":[
       {
-        "appliesToSentencesFrom": "2024-03-19",
+        "appliesToSentencesFrom":"2024-03-19",
         "numberOfDays": 20,
-        "fromDate": "2024-02-28",
-        "toDate": "2024-03-18"
+        "fromDate":"2024-02-28",
+        "toDate":"2024-03-18"
       }
     ]
   },

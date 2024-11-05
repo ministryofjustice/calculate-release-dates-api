@@ -16,8 +16,7 @@
         }
       },
       "sentencedAt": "2015-02-22",
-      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
     },
     {
       "caseSequence": 1,
@@ -31,10 +30,7 @@
         }
       },
       "sentencedAt": "2015-02-22",
-      "consecutiveSentenceUUIDs": [
-        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": ["5dfde034-b7d7-4c54-a86c-67d42a1fd669"]
     }
   ]
 }

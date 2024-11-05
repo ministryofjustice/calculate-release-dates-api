@@ -5,18 +5,17 @@
   },
   "sentences": [
     {
-      "type": "AFineSentence",
+      "type":"AFineSentence",
       "offence": {
         "committedAt": "2020-12-07"
       },
       "duration": {
         "durationElements": {
-          "YEARS": 6
+          "YEARS":6
         }
       },
       "sentencedAt": "2024-01-20",
-      "lineSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 1
     },
     {
       "offence": {
@@ -31,8 +30,7 @@
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentencedAt": "2023-11-19",
       "sentenceType": "ADIMP",
-      "lineSequence": 2,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 2
     }
   ]
 }

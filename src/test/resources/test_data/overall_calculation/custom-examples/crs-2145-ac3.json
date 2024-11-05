@@ -16,8 +16,7 @@
       },
       "sentencedAt": "2024-09-11",
       "sentenceType": "LR_YOI_ORA",
-      "recallType": "STANDARD_RECALL",
-      "sentenceCalculationType": "ADIMP"
+      "recallType": "STANDARD_RECALL"
     },
     {
       "offence": {
@@ -31,10 +30,7 @@
       "sentencedAt": "2024-09-11",
       "sentenceType": "LR_YOI_ORA",
       "recallType": "STANDARD_RECALL",
-      "consecutiveSentenceUUIDs": [
-        "d309682d-6733-3bfc-b7ad-7024162a341c"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      "consecutiveSentenceUUIDs": ["d309682d-6733-3bfc-b7ad-7024162a341c"]
     }
   ],
   "adjustments": {

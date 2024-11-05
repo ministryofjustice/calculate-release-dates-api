@@ -17,9 +17,8 @@
       "sentenceType": "ADIMP",
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "isSDSPlus": true,
-      "identifier": "83fd11aa-a579-3b93-aaba-937e138aec88",
-      "lineSequence": 1,
-      "sentenceCalculationType": "ADIMP"
+      "identifier":"83fd11aa-a579-3b93-aaba-937e138aec88",
+      "lineSequence" : 1
     },
     {
       "offence": {
@@ -34,13 +33,13 @@
       "sentenceType": "ADIMP",
       "hasAnSDSEarlyReleaseExclusion": "NO",
       "isSDSPlus": false,
-      "consecutiveSentenceUUIDs": [
+      "consecutiveSentenceUUIDs":[
         "83fd11aa-a579-3b93-aaba-937e138aec88"
       ],
-      "lineSequence": 2,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence" : 2
     }
   ],
   "adjustments": {
   }
 }
+

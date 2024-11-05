@@ -21,8 +21,7 @@
         }
       },
       "sentencedAt": "2013-09-09",
-      "identifier": "7981d7d1-aeea-33db-877a-59ea36eb6a48",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "7981d7d1-aeea-33db-877a-59ea36eb6a48"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -43,8 +42,7 @@
       "identifier": "7d5e417b-ae8c-3765-923d-658b1d220eca",
       "consecutiveSentenceUUIDs": [
         "7981d7d1-aeea-33db-877a-59ea36eb6a48"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -65,8 +63,7 @@
       "identifier": "cb6d5b67-8b74-3688-848e-d26c8418adcb",
       "consecutiveSentenceUUIDs": [
         "7d5e417b-ae8c-3765-923d-658b1d220eca"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "type": "StandardSentence",
@@ -80,8 +77,7 @@
       },
       "sentencedAt": "2013-09-09",
       "identifier": "c0ad0e88-c314-3755-b44e-c14af0f8a193",
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
     },
     {
       "type": "StandardSentence",
@@ -95,8 +91,7 @@
       },
       "sentencedAt": "2013-09-09",
       "identifier": "7f10eb78-063d-3702-b68e-828af887fb75",
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     }
   ],
   "adjustments": {

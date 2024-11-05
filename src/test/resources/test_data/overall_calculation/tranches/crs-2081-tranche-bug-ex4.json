@@ -20,7 +20,6 @@
           "MONTHS": 0
         }
       },
-      "sentenceCalculationType": "ADIMP",
       "isSDSPlus": false,
       "identifier": "84d56e7e-0a2f-3e62-b3fb-0e0901a217fc",
       "recallType": "STANDARD_RECALL",
@@ -45,7 +44,6 @@
           "MONTHS": 48
         }
       },
-      "sentenceCalculationType": "ADIMP",
       "isSDSPlus": false,
       "identifier": "87276dcb-cceb-35da-9254-61686a43d663",
       "recallType": null,
@@ -70,7 +68,6 @@
           "MONTHS": 12
         }
       },
-      "sentenceCalculationType": "ADIMP",
       "isSDSPlus": false,
       "identifier": "e1a707b7-9a6c-37ad-b9dc-7385e9e63750",
       "recallType": null,

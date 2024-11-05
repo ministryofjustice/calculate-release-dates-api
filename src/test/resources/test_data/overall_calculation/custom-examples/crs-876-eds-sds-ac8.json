@@ -13,8 +13,7 @@
           "YEARS": 5
         }
       },
-      "sentencedAt": "2014-07-13",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2014-07-13"
     },
     {
       "offence": {
@@ -32,8 +31,7 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2014-07-13",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2014-07-13"
     },
     {
       "offence": {
@@ -51,8 +49,7 @@
         }
       },
       "automaticRelease": false,
-      "sentencedAt": "2014-07-13",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2014-07-13"
     }
   ],
   "adjustments": {

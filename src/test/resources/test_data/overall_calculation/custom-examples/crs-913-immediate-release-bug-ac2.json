@@ -1,20 +1,19 @@
 {
-  "offender": {
+  "offender":{
     "reference": "ABC123D",
     "dateOfBirth": "2001-01-25"
   },
-  "sentences": [
+  "sentences":[
     {
-      "offence": {
-        "committedAt": "2018-09-02"
+      "offence":{
+        "committedAt":"2018-09-02"
       },
-      "duration": {
-        "durationElements": {
+      "duration":{
+        "durationElements":{
           "MONTHS": 3
         }
       },
-      "sentencedAt": "2020-02-29",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt":"2020-02-29"
     }
   ],
   "adjustments": {

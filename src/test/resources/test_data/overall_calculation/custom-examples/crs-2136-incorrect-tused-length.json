@@ -17,8 +17,7 @@
       "sentencedAt": "2024-03-12",
       "identifier": "e3335303-905d-3800-99ec-55ff7a0ebedd",
       "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceCalculationType": "ADIMP"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     }
   ],
   "adjustments": {

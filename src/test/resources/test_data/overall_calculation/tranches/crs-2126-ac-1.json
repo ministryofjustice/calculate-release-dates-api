@@ -14,8 +14,7 @@
           "YEARS": 2
         }
       },
-      "sentencedAt": "2024-09-10",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2024-09-10"
     },
     {
       "offence": {
@@ -27,8 +26,7 @@
           "YEARS": 3
         }
       },
-      "sentencedAt": "2024-09-11",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2024-09-11"
     }
   ]
 }

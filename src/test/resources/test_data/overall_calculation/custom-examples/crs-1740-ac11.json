@@ -10,13 +10,12 @@
       },
       "duration": {
         "durationElements": {
-          "YEARS": 12
+          "YEARS":12
         }
       },
       "sentencedAt": "2017-05-05",
       "sentenceType": "LR",
-      "recallType": "STANDARD_RECALL",
-      "sentenceCalculationType": "ADIMP"
+      "recallType": "STANDARD_RECALL"
     },
     {
       "offence": {
@@ -24,12 +23,11 @@
       },
       "duration": {
         "durationElements": {
-          "YEARS": 7
+          "YEARS":7
         }
       },
       "sentencedAt": "2023-07-06",
-      "sentenceType": "ADIMP",
-      "sentenceCalculationType": "ADIMP"
+      "sentenceType": "ADIMP"
     }
   ],
   "adjustments": {

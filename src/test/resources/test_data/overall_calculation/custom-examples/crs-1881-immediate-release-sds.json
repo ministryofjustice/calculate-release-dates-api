@@ -17,13 +17,10 @@
       },
       "sentencedAt": "2020-12-16",
       "identifier": "ad450f62-21b1-3e11-b2b2-c2fef030fb30",
-      "consecutiveSentenceUUIDs": [
-
-      ],
+      "consecutiveSentenceUUIDs": [],
       "caseSequence": 1,
       "lineSequence": 2,
-      "caseReference": "T20207468",
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": "T20207468"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -50,8 +47,7 @@
       ],
       "caseSequence": 1,
       "lineSequence": 3,
-      "caseReference": "T20207468",
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": "T20207468"
     },
     {
       "offence": {
@@ -65,13 +61,10 @@
       },
       "sentencedAt": "2020-12-16",
       "identifier": "3ad2ef22-c3fa-32fe-831a-7fc9f31efa25",
-      "consecutiveSentenceUUIDs": [
-
-      ],
+      "consecutiveSentenceUUIDs": [],
       "caseSequence": 3,
       "lineSequence": 4,
-      "caseReference": "S20191308",
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": "S20191308"
     },
     {
       "offence": {
@@ -86,13 +79,10 @@
       },
       "sentencedAt": "2020-12-16",
       "identifier": "eecd8432-1d82-362c-bd8f-d3dca5c228b6",
-      "consecutiveSentenceUUIDs": [
-
-      ],
+      "consecutiveSentenceUUIDs": [],
       "caseSequence": 3,
       "lineSequence": 5,
-      "caseReference": "S20191308",
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": "S20191308"
     },
     {
       "offence": {
@@ -106,13 +96,10 @@
       },
       "sentencedAt": "2020-12-16",
       "identifier": "43b5e1ce-9675-3cd1-9f4c-1cd45910ce32",
-      "consecutiveSentenceUUIDs": [
-
-      ],
+      "consecutiveSentenceUUIDs": [],
       "caseSequence": 3,
       "lineSequence": 6,
-      "caseReference": "S20191308",
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": "S20191308"
     },
     {
       "offence": {
@@ -131,8 +118,7 @@
       ],
       "caseSequence": 4,
       "lineSequence": 7,
-      "caseReference": "31CF0629322",
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": "31CF0629322"
     },
     {
       "offence": {
@@ -146,13 +132,10 @@
       },
       "sentencedAt": "2023-02-21",
       "identifier": "3450d19c-6509-3e11-be22-2c0b881828b6",
-      "consecutiveSentenceUUIDs": [
-
-      ],
+      "consecutiveSentenceUUIDs": [],
       "caseSequence": 4,
       "lineSequence": 8,
-      "caseReference": "31CF0629322",
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": "31CF0629322"
     },
     {
       "offence": {
@@ -166,13 +149,10 @@
       },
       "sentencedAt": "2023-08-16",
       "identifier": "e8dc9152-1d31-32eb-876a-ba1d7fdf6d88",
-      "consecutiveSentenceUUIDs": [
-
-      ],
+      "consecutiveSentenceUUIDs": [],
       "caseSequence": 5,
       "lineSequence": 9,
-      "fineAmount": 250.0,
-      "sentenceCalculationType": "ADIMP"
+      "fineAmount": 250.0
     },
     {
       "offence": {
@@ -187,12 +167,9 @@
       },
       "sentencedAt": "2023-11-10",
       "identifier": "d262d0a4-7109-37f5-a271-fcb5952f5b2e",
-      "consecutiveSentenceUUIDs": [
-
-      ],
+      "consecutiveSentenceUUIDs": [],
       "caseSequence": 6,
-      "lineSequence": 10,
-      "sentenceCalculationType": "ADIMP"
+      "lineSequence": 10
     }
   ],
   "adjustments": {

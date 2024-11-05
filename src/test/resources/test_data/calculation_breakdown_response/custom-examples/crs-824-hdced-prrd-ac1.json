@@ -20,8 +20,7 @@
       },
       "lineSequence": 3,
       "caseSequence": 1,
-      "caseReference": "T20207226",
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": "T20207226"
     },
     {
       "sentencedAt": "2020-11-20",
@@ -43,8 +42,7 @@
       },
       "lineSequence": 4,
       "caseSequence": 1,
-      "caseReference": "T20207226",
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": "T20207226"
     },
     {
       "sentencedAt": "2020-11-20",
@@ -66,8 +64,7 @@
       },
       "lineSequence": 5,
       "caseSequence": 1,
-      "caseReference": "T20207226",
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": "T20207226"
     },
     {
       "sentencedAt": "2017-11-03",
@@ -89,8 +86,7 @@
       },
       "lineSequence": 1,
       "caseSequence": 2,
-      "caseReference": "STD LR",
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": "STD LR"
     },
     {
       "sentencedAt": "2017-11-03",
@@ -112,28 +108,21 @@
       },
       "lineSequence": 2,
       "caseSequence": 2,
-      "caseReference": "STD LR",
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": "STD LR"
     }
   ],
   "consecutiveSentence": null,
   "breakdownByReleaseDateType": {
     "SLED": {
-      "rules": [
-
-      ],
-      "rulesWithExtraAdjustments": {
-      },
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
       "adjustedDays": -7,
       "releaseDate": "2024-01-12",
       "unadjustedDate": "2024-01-19"
     },
     "CRD": {
-      "rules": [
-
-      ],
-      "rulesWithExtraAdjustments": {
-      },
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
       "adjustedDays": -7,
       "releaseDate": "2022-06-13",
       "unadjustedDate": "2022-06-20"
@@ -142,8 +131,7 @@
       "rules": [
         "HDCED_ADJUSTED_TO_CONCURRENT_PRRD"
       ],
-      "rulesWithExtraAdjustments": {
-      },
+      "rulesWithExtraAdjustments": {},
       "adjustedDays": -102,
       "releaseDate": "2022-03-28",
       "unadjustedDate": "2021-12-16"

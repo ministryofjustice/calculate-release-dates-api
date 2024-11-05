@@ -18,8 +18,7 @@
       },
       "identifier": "99be35b8-f891-3e43-9958-dca2b9a92cb6",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2023-09-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-09-12"
     },
     {
       "type": "StandardSentence",
@@ -37,8 +36,7 @@
       "sentencedAt": "2023-09-12",
       "consecutiveSentenceUUIDs": [
         "99be35b8-f891-3e43-9958-dca2b9a92cb6"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "type": "StandardSentence",
@@ -56,8 +54,7 @@
       "sentencedAt": "2023-09-12",
       "consecutiveSentenceUUIDs": [
         "08794c40-1447-39a0-91ae-6a90e0437073"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "type": "StandardSentence",
@@ -75,8 +72,7 @@
       "sentencedAt": "2023-09-12",
       "consecutiveSentenceUUIDs": [
         "7ae68ebf-4d46-3752-bfec-0d6472b8eac6"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "type": "StandardSentence",
@@ -94,8 +90,7 @@
       "sentencedAt": "2023-09-12",
       "consecutiveSentenceUUIDs": [
         "fc82300b-040f-3b45-a075-0e18ef83fb15"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "type": "StandardSentence",
@@ -113,8 +108,7 @@
       "sentencedAt": "2023-09-12",
       "consecutiveSentenceUUIDs": [
         "e18a6919-5313-33ba-814a-48620c96850e"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "type": "StandardSentence",
@@ -129,8 +123,7 @@
       },
       "identifier": "38efe379-1693-34cd-8b81-2863071396b6",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2023-09-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-09-12"
     },
     {
       "type": "StandardSentence",
@@ -145,8 +138,7 @@
       },
       "identifier": "38efe379-1693-34cd-8b81-2863071396b6",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2023-09-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-09-12"
     },
     {
       "type": "StandardSentence",
@@ -161,8 +153,7 @@
       },
       "identifier": "727f8e8f-7fa8-3eb2-84d0-a9bc574e4d0e",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2023-09-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-09-12"
     },
     {
       "type": "StandardSentence",
@@ -177,8 +168,7 @@
       },
       "identifier": "36954c67-c144-34f2-8e1a-d44d075b7de6",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2023-09-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-09-12"
     },
     {
       "type": "StandardSentence",
@@ -193,8 +183,7 @@
       },
       "identifier": "36954c67-c144-34f2-8e1a-d44d075b7de6",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2023-09-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-09-12"
     },
     {
       "type": "StandardSentence",
@@ -209,8 +198,7 @@
       },
       "identifier": "36954c67-c144-34f2-8e1a-d44d075b7de6",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2023-09-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-09-12"
     },
     {
       "type": "StandardSentence",
@@ -225,8 +213,7 @@
       },
       "identifier": "36954c67-c144-34f2-8e1a-d44d075b7de6",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2023-09-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-09-12"
     },
     {
       "type": "StandardSentence",
@@ -241,8 +228,7 @@
       },
       "identifier": "36954c67-c144-34f2-8e1a-d44d075b7de6",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2023-09-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-09-12"
     },
     {
       "type": "StandardSentence",
@@ -257,8 +243,7 @@
       },
       "identifier": "36954c67-c144-34f2-8e1a-d44d075b7de6",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2023-09-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-09-12"
     },
     {
       "type": "StandardSentence",
@@ -273,8 +258,7 @@
       },
       "identifier": "36954c67-c144-34f2-8e1a-d44d075b7de6",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2023-09-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-09-12"
     },
     {
       "type": "StandardSentence",
@@ -289,8 +273,7 @@
       },
       "identifier": "720035b3-f530-3888-b6c2-dd8f2f2685a9",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2023-09-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-09-12"
     },
     {
       "type": "StandardSentence",
@@ -305,8 +288,7 @@
       },
       "identifier": "720035b3-f530-3888-b6c2-dd8f2f2685a9",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2023-09-12",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2023-09-12"
     },
     {
       "type": "StandardSentence",
@@ -321,8 +303,7 @@
       },
       "identifier": "2c50b2fe-7945-3eee-8ba9-1b4eb5420f78",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2024-05-27",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2024-05-27"
     }
   ],
   "adjustments": {

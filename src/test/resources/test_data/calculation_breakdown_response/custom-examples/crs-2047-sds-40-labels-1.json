@@ -20,7 +20,6 @@
     },
     "sentenceParts": [
       {
-        "sentenceCalculationType": "ADIMP",
         "lineSequence": 1,
         "caseSequence": 1,
         "caseReference": null,
@@ -30,7 +29,6 @@
         "consecutiveToCaseSequence": null
       },
       {
-        "sentenceCalculationType": "ADIMP",
         "lineSequence": 2,
         "caseSequence": 1,
         "caseReference": null,
@@ -46,18 +44,14 @@
       "rules": [
         "SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT"
       ],
-      "rulesWithExtraAdjustments": {
-      },
+      "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2024-10-22",
       "unadjustedDate": "2024-09-10"
     },
     "SLED": {
-      "rules": [
-
-      ],
-      "rulesWithExtraAdjustments": {
-      },
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
       "adjustedDays": -190,
       "releaseDate": "2033-03-12",
       "unadjustedDate": "2033-09-18"
@@ -81,14 +75,12 @@
       "rules": [
         "SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT"
       ],
-      "rulesWithExtraAdjustments": {
-      },
+      "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2024-10-22",
       "unadjustedDate": "2024-03-15"
     }
   },
-  "otherDates": {
-  },
+  "otherDates": {},
   "ersedNotApplicableDueToDtoLaterThanCrd": false
 }

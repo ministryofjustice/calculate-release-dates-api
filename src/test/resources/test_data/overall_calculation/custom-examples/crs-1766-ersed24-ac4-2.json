@@ -17,8 +17,7 @@
       "sentenceType": "ADIMP",
       "sentencedAt": "2023-03-10",
       "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
-      "isSDSPlus": true,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": true
     },
     {
       "offence": {
@@ -35,8 +34,7 @@
       "consecutiveSentenceUUIDs": [
         "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
       ],
-      "isSDSPlus": true,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": true
     }
   ],
   "adjustments": {

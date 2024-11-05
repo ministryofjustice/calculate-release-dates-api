@@ -8,7 +8,7 @@
     {
       "type": "SopcSentence",
       "offence": {
-        "committedAt": "2018-07-19"
+        "committedAt":"2018-07-19"
       },
       "custodialDuration": {
         "durationElements": {
@@ -21,8 +21,7 @@
         }
       },
       "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669",
-      "sentencedAt": "2020-04-17",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2020-04-17"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -43,8 +42,7 @@
       "sentencedAt": "2020-04-17",
       "consecutiveSentenceUUIDs": [
         "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     }
   ]
 }

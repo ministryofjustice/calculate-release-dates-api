@@ -13,8 +13,7 @@
           "MONTHS": 56
         }
       },
-      "sentencedAt": "2017-02-17",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2017-02-17"
     },
     {
       "offence": {
@@ -25,8 +24,7 @@
           "MONTHS": 52
         }
       },
-      "sentencedAt": "2019-05-23",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2019-05-23"
     }
   ],
   "adjustments": {

@@ -20,16 +20,13 @@
       },
       "lineSequence": 1,
       "caseSequence": 1,
-      "caseReference": null,
-      "sentenceCalculationType": "ADIMP"
+      "caseReference": null
     }
   ],
   "consecutiveSentence": null,
   "breakdownByReleaseDateType": {
     "ARD": {
-      "rules": [
-
-      ],
+      "rules": [],
       "rulesWithExtraAdjustments": {
         "UNUSED_ADA": {
           "adjustmentValue": 29,
@@ -41,11 +38,8 @@
       "unadjustedDate": "2021-02-01"
     },
     "SED": {
-      "rules": [
-
-      ],
-      "rulesWithExtraAdjustments": {
-      },
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2021-05-18",
       "unadjustedDate": "2021-05-18"
@@ -65,7 +59,6 @@
       "unadjustedDate": "2020-10-19"
     }
   },
-  "otherDates": {
-  },
+  "otherDates": {},
   "ersedNotApplicableDueToDtoLaterThanCrd": false
 }

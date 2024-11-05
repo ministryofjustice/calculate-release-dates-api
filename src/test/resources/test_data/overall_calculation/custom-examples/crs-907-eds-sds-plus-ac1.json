@@ -21,8 +21,7 @@
       },
       "automaticRelease": false,
       "sentencedAt": "2014-05-02",
-      "identifier": "597df4c3-96af-4932-8fd0-d8460c030fcb",
-      "sentenceCalculationType": "ADIMP"
+      "identifier": "597df4c3-96af-4932-8fd0-d8460c030fcb"
     },
     {
       "offence": {
@@ -44,8 +43,7 @@
       "identifier": "0194ce7a-288b-447f-a6ad-191226a769eb",
       "consecutiveSentenceUUIDs": [
         "597df4c3-96af-4932-8fd0-d8460c030fcb"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     },
     {
       "offence": {
@@ -61,8 +59,7 @@
       "consecutiveSentenceUUIDs": [
         "0194ce7a-288b-447f-a6ad-191226a769eb"
       ],
-      "isSDSPlus": true,
-      "sentenceCalculationType": "ADIMP"
+      "isSDSPlus": true
     },
     {
       "offence": {
@@ -76,8 +73,7 @@
       "sentencedAt": "2020-09-16",
       "consecutiveSentenceUUIDs": [
         "18f096c7-7e61-484b-a4df-d9846dd88609"
-      ],
-      "sentenceCalculationType": "ADIMP"
+      ]
     }
   ]
 }

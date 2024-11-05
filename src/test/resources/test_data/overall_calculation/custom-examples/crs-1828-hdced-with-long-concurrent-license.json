@@ -13,8 +13,7 @@
           "YEARS": 8
         }
       },
-      "sentencedAt": "2016-01-01",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2016-01-01"
     },
     {
       "offence": {
@@ -25,8 +24,7 @@
           "MONTHS": 6
         }
       },
-      "sentencedAt": "2024-02-01",
-      "sentenceCalculationType": "ADIMP"
+      "sentencedAt": "2024-02-01"
     }
   ]
 }

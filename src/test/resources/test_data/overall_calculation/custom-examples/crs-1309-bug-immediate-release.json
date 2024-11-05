@@ -15,8 +15,7 @@
       },
       "sentencedAt": "2022-10-21",
       "sentenceType": "LR_ORA",
-      "recallType": "STANDARD_RECALL",
-      "sentenceCalculationType": "ADIMP"
+      "recallType":"STANDARD_RECALL"
     },
     {
       "offence": {
@@ -29,8 +28,7 @@
       },
       "sentencedAt": "2023-02-16",
       "sentenceType": "LR_ORA",
-      "recallType": "STANDARD_RECALL",
-      "sentenceCalculationType": "ADIMP"
+      "recallType":"STANDARD_RECALL"
     }
   ],
   "adjustments": {
