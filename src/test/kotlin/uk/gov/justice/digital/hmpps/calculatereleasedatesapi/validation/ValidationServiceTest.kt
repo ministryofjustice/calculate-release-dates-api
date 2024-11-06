@@ -1901,7 +1901,7 @@ class ValidationServiceTest {
     }
 
     @Test
-    fun `Test sentences provided does not returns NO_SENTENCES validation message`() {
+    fun `Test single sentence does not return NO_SENTENCES validation message`() {
       val sourceData =
         PrisonApiSourceData(
           sentenceAndOffences = listOf(
