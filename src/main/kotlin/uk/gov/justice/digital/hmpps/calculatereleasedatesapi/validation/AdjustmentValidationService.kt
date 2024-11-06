@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import java.time.LocalDate
+import kotlin.math.max
 
 @Service
 class AdjustmentValidationService(
@@ -98,7 +99,7 @@ class AdjustmentValidationService(
     val longestRelevantSentences = getLongestRelevantSentence(sentences, longestSentences)
     return longestRelevantSentences
       .filter { it !is Term }
-      .maxOfOrNull { it.sentenceCalculation.releaseDateWithoutAdditions }
+      .maxOfOrNull { listOf(it.sentenceCalculation.releaseDateWithoutAdditions, it.sentencedAt).max() }
   }
 
   private fun getSortedAdjustments(booking: Booking): List<Pair<AdjustmentType, Adjustment>> {
