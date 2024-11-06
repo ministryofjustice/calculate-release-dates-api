@@ -4,7 +4,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties("hdced")
 data class HdcedConfiguration(
-  val maximumSentenceLengthYears: Long,
   val minimumDaysOnHdc: Long,
   val minimumCustodialPeriodDays: Long,
   val custodialPeriodMidPointDays: Long,
