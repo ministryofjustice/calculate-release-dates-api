@@ -25,11 +25,17 @@ class ValidationService(
     log.info("Pre-calculation validation of source data")
     val sentencesAndOffences = sourceData.sentenceAndOffences
     val adjustments = sourceData.bookingAndSentenceAdjustments
+
     val sortedSentences = sentencesAndOffences.sortedWith(validationUtilities::sortByCaseNumberAndLineSequence)
 
     val validateOffender = preCalculationValidationService.validateOffenderSupported(sourceData.prisonerDetails)
     if (validateOffender.isNotEmpty()) {
       return validateOffender
+    }
+
+    val hasSentencesValidationMessage = preCalculationValidationService.hasSentences(sortedSentences)
+    if (hasSentencesValidationMessage.isNotEmpty()) {
+      return hasSentencesValidationMessage
     }
 
     val unsupportedValidationMessages = preCalculationValidationService.validateSupportedSentences(sortedSentences)
