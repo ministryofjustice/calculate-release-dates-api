@@ -245,7 +245,7 @@ class SentenceAdjustedCalculationService(
    * since they are no longer valid.
    */
   private fun getBotusTusedDate(sentence: BotusSentence, sentenceCalculation: SentenceCalculation) {
-    if (sentence.latestTusedDate?.isBefore(sentenceCalculation.releaseDate) == true) {
+    if (sentence.latestTusedDate?.isAfter(sentenceCalculation.releaseDate) == true) {
       sentenceCalculation.topUpSupervisionDate = sentence.latestTusedDate
     }
   }

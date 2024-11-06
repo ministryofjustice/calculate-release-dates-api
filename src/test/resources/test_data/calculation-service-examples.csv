@@ -1,5 +1,6 @@
 exampleType,exampleNumber,error,params
-botus-examples,TUSED-in-past,,
+botus-examples,TUSED-after-release-date,,
+botus-examples,TUSED-before-release-date,,
 
 psi-examples,9,,sds-50
 psi-examples,10,,sds-50

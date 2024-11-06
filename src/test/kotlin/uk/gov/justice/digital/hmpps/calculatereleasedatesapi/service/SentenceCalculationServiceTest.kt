@@ -160,14 +160,14 @@ class SentenceCalculationServiceTest {
     assertEquals(LocalDate.of(2015, 10, 15), calculation.expiryDate)
     assertEquals(LocalDate.of(2015, 10, 15), calculation.releaseDate)
     assertEquals(calculation.homeDetentionCurfewEligibilityDate, null)
-    assertEquals(LocalDate.of(2015, 1, 16), calculation.topUpSupervisionDate) // use historic TUSED
+    assertEquals(LocalDate.of(2016, 1, 16), calculation.topUpSupervisionDate) // use historic TUSED
     assertEquals("[ARD, SED, TUSED]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   @Test
   fun `Example 14`() {
     val sentence = jsonTransformation.loadBotusSentence("8_month_feb_2015_botus")
-    sentence.latestTusedDate = LocalDate.now().minusDays(1) // past TUSED should be ignored
+    sentence.latestTusedDate = LocalDate.of(2015, 1, 15) // TUSED prior to RELEASE should be ignored
     sentenceIdentificationService.identify(
       sentence,
       offender,
