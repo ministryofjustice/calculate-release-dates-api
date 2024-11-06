@@ -98,7 +98,7 @@ class AdjustmentValidationService(
     val longestRelevantSentences = getLongestRelevantSentence(sentences, longestSentences)
     return longestRelevantSentences
       .filter { it !is Term }
-      .maxOfOrNull { it.sentenceCalculation.releaseDateWithoutAdditions }
+      .maxOfOrNull { maxOf(it.sentenceCalculation.releaseDateWithoutAdditions, it.sentencedAt) }
   }
 
   private fun getSortedAdjustments(booking: Booking): List<Pair<AdjustmentType, Adjustment>> {
