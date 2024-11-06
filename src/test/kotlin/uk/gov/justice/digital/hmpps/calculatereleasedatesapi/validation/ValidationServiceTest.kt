@@ -1883,6 +1883,47 @@ class ValidationServiceTest {
       }
     }
 
+    @Test
+    fun `Test no sentences provided returns NO_SENTENCES validation message`() {
+      val sourceData = PrisonApiSourceData(
+        sentenceAndOffences = emptyList(),
+        prisonerDetails = VALID_PRISONER,
+        bookingAndSentenceAdjustments = VALID_ADJUSTMENTS,
+        returnToCustodyDate = null,
+      )
+
+      val result = validationService.validateBeforeCalculation(
+        sourceData,
+        USER_INPUTS,
+      )
+
+      assertThat(result).containsExactly(ValidationMessage(ValidationCode.NO_SENTENCES))
+    }
+
+    @Test
+    fun `Test sentences provided does not returns NO_SENTENCES validation message`() {
+      val sourceData =
+        PrisonApiSourceData(
+          sentenceAndOffences = listOf(
+            SentenceAndOffenceWithReleaseArrangements(
+              validSdsSentence,
+              false,
+              SDSEarlyReleaseExclusionType.NO,
+            ),
+          ),
+          prisonerDetails = VALID_PRISONER,
+          bookingAndSentenceAdjustments = VALID_ADJUSTMENTS,
+          returnToCustodyDate = null,
+        )
+
+      val result = validationService.validateBeforeCalculation(
+        sourceData,
+        USER_INPUTS,
+      )
+
+      assertThat(result).isEmpty()
+    }
+
     @Nested
     @DisplayName("Validation of booking after the calc")
     inner class FTRAfterCalcBookingTest {
