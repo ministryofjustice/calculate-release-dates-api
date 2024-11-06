@@ -27,7 +27,7 @@
       "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-09-29",
-        "offenceCode": "SX03244"
+        "offenceCode": "OS23001"
       },
       "duration": {
         "durationElements": {
@@ -45,7 +45,7 @@
       "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-09-29",
-        "offenceCode": "SX03244"
+        "offenceCode": "OS23001"
       },
       "duration": {
         "durationElements": {
@@ -63,7 +63,7 @@
       "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-06-15",
-        "offenceCode": "SX03204"
+        "offenceCode": "OS23001"
       },
       "duration": {
         "durationElements": {
@@ -81,7 +81,7 @@
       "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-09-30",
-        "offenceCode": "SX03204"
+        "offenceCode": "OS23001"
       },
       "duration": {
         "durationElements": {
