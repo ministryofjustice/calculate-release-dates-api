@@ -95,4 +95,11 @@ class PreCalculationValidationService(
 
     return messages
   }
+
+  fun hasSentences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
+    if (sentencesAndOffence.isEmpty()) {
+      return listOf(ValidationMessage(ValidationCode.NO_SENTENCES))
+    }
+    return emptyList()
+  }
 }

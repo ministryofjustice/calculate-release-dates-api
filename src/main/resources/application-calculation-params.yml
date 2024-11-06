@@ -1,6 +1,5 @@
 
 hdced:
-  maximum-sentence-length-years: 4
   minimum-custodial-period-days: 42
   custodial-period-mid-point-days: 360
   custodial-period-below-midpoint-minimum-deduction-days: 28
