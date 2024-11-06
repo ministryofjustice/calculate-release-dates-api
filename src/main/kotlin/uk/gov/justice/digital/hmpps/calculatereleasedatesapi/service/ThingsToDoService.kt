@@ -1,10 +1,12 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ToDoType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentAnalysisResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedBookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ThingsToDo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 
 @Service
@@ -30,6 +32,7 @@ class ThingsToDoService(
 
   private fun isCalculationRequired(offenderDetails: PrisonerDetails): Boolean {
     val sentencesAndOffences = sentenceAndOffenceService.getSentencesAndOffences(offenderDetails.bookingId)
+    // TODO fix bug that affects getAnalyzedAdjustments method - see CRS-2199
     val adjustments = adjustmentsService.getAnalyzedAdjustments(offenderDetails.bookingId)
 
     return hasNewOrUpdatedSentences(sentencesAndOffences) ||
@@ -55,12 +58,3 @@ class ThingsToDoService(
     }
   }
 }
-
-enum class ToDoType {
-  CALCULATION_REQUIRED,
-}
-
-data class ThingsToDo(
-  val prisonerId: String,
-  val thingsToDo: List<ToDoType> = emptyList(),
-)
