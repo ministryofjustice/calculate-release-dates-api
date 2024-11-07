@@ -93,4 +93,8 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   UNSUPPORTED_SUSPENDED_OFFENCE("Replace this offence in NOMIS with the original offence they were sentenced for, then reload this page.", SUSPENDED_OFFENCE),
   FTR_NO_RETURN_TO_CUSTODY_DATE("The Fixed term recall must have a 'return to custody' date"),
   NO_SENTENCES("Prisoner has no sentences"),
+  UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS(
+    "Unable to determine release provisions for SHPO SX03 offence in scope of SDS40",
+    MANUAL_ENTRY_JOURNEY_REQUIRED,
+  ),
 }

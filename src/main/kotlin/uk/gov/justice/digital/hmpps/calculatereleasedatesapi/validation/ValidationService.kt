@@ -78,6 +78,7 @@ class ValidationService(
     messages += recallValidationService.validateFixedTermRecallAfterCalc(booking)
     messages += recallValidationService.validateUnsupportedRecallTypes(booking)
     messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationResult)
+    messages += postCalculationValidationService.validateSHPOContainingSX03Offences(booking, calculationResult)
 
     return messages
   }
