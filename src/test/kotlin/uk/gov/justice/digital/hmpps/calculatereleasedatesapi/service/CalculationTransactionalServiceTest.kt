@@ -57,6 +57,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
@@ -199,16 +200,23 @@ class CalculationTransactionalServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
 
     val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val calculatedReleaseDates: CalculatedReleaseDates
+    val calculatedReleaseDates: Pair<Booking, CalculationResult>
     val returnedValidationMessages: List<ValidationMessage>
     try {
-      calculatedReleaseDates = calculationTransactionalService(defaultParams(params), passedInServices = listOf(ValidationService::class.java.simpleName))
-        .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
+      calculatedReleaseDates = calculationService(
+        defaultParams(params),
+        passedInServices = listOf(ValidationService::class.java.simpleName),
+      )
+        .calculateReleaseDates(booking, calculationUserInputs)
       val sentencesExtractionService = SentencesExtractionService()
-      val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(defaultParams(params)), sdsEarlyReleaseTrancheTwoDate(defaultParams(params)))
+      val trancheConfiguration = SDS40TrancheConfiguration(
+        sdsEarlyReleaseTrancheOneDate(defaultParams(params)),
+        sdsEarlyReleaseTrancheTwoDate(defaultParams(params)),
+      )
       val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration)
+
       returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
-        calculatedReleaseDates.calculatedBooking!!,
+        calculatedReleaseDates.first!!, calculationResult = calculatedReleaseDates.second,
       )
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
@@ -229,8 +237,8 @@ class CalculationTransactionalServiceTest {
     } else {
       val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
       assertThat(returnedValidationMessages).isEmpty()
-      assertEquals(bookingData.dates, calculatedReleaseDates.dates)
-      assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
+      assertEquals(bookingData.dates, calculatedReleaseDates.second.dates)
+      assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.second.effectiveSentenceLength)
     }
   }
 
@@ -346,7 +354,8 @@ class CalculationTransactionalServiceTest {
       TestUtil.objectMapper().writeValueAsString(calculationBreakdown),
     )
     val actualJson: String? = TestUtil.objectMapper().writeValueAsString(calculationBreakdown)
-    val expectedJson: String? = jsonTransformation.getJsonTest("$exampleType/$exampleNumber.json", "calculation_breakdown_response")
+    val expectedJson: String? =
+      jsonTransformation.getJsonTest("$exampleType/$exampleNumber.json", "calculation_breakdown_response")
 
     JSONAssert.assertEquals(
       expectedJson,
@@ -716,6 +725,20 @@ class CalculationTransactionalServiceTest {
     params: String = "calculation-params",
     passedInServices: List<String> = emptyList(),
   ): CalculationTransactionalService {
+    return setupServices(params, passedInServices).first
+  }
+
+  private fun calculationService(
+    params: String = "calculation-params",
+    passedInServices: List<String> = emptyList(),
+  ): CalculationService {
+    return setupServices(params, passedInServices).second
+  }
+
+  private fun setupServices(
+    params: String = "calculation-params",
+    passedInServices: List<String> = emptyList(),
+  ): Pair<CalculationTransactionalService, CalculationService> {
     val hdcedConfiguration =
       hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
 
@@ -736,11 +759,13 @@ class CalculationTransactionalServiceTest {
     val sentencesExtractionService = SentencesExtractionService()
     val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
 
-    val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
+    val trancheConfiguration =
+      SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
     val tranche = Tranche(trancheConfiguration)
 
     val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
-    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService, trancheConfiguration)
+    val sdsEarlyReleaseDefaultingRulesService =
+      SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService, trancheConfiguration)
     val bookingCalculationService = BookingCalculationService(
       sentenceCalculationService,
       sentenceIdentificationService,
@@ -795,10 +820,13 @@ class CalculationTransactionalServiceTest {
       nomisCommentService,
       TEST_BUILD_PROPERTIES,
       trancheOutcomeRepository,
-    )
+    ) to calculationService
   }
 
-  private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheConfiguration: SDS40TrancheConfiguration): ValidationService {
+  private fun getActiveValidationService(
+    sentencesExtractionService: SentencesExtractionService,
+    trancheConfiguration: SDS40TrancheConfiguration,
+  ): ValidationService {
     val featureToggles = FeatureToggles(true, true, false, sds40ConsecutiveManualJourney = true)
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
