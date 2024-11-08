@@ -110,7 +110,6 @@ class BookingExtractionService(
       dates[LTD] = sentenceCalculation.latestTransferDate!!
     }
 
-    // exclude ESED for IIRC Botus sentence
     if (!sentenceIsOrExclusivelyBotus) {
       dates[ESED] = sentenceCalculation.unadjustedExpiryDate
     }
