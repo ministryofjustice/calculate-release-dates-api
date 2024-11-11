@@ -16,6 +16,7 @@ class ValidationService(
   private val sentenceValidationService: SentenceValidationService,
   private val validationUtilities: ValidationUtilities,
   private val postCalculationValidationService: PostCalculationValidationService,
+  private val shpoValidationService: SHPOValidationService,
 ) {
 
   fun validateBeforeCalculation(
@@ -79,6 +80,7 @@ class ValidationService(
     messages += recallValidationService.validateUnsupportedRecallTypes(booking)
     messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationResult)
     messages += postCalculationValidationService.validateSHPOContainingSX03Offences(booking, calculationResult)
+    messages += shpoValidationService.validate(booking)
 
     return messages
   }
@@ -95,13 +97,9 @@ class ValidationService(
     return validationMessages.toList()
   }
 
-  fun validateBeforeCalculation(booking: Booking): List<ValidationMessage> {
-    return recallValidationService.validateFixedTermRecall(booking)
-  }
+  fun validateBeforeCalculation(booking: Booking): List<ValidationMessage> = recallValidationService.validateFixedTermRecall(booking)
 
-  fun validateSentenceForManualEntry(sentences: List<SentenceAndOffence>): MutableList<ValidationMessage> {
-    return sentences.map { sentenceValidationService.validateSentenceForManualEntry(it) }.flatten().toMutableList()
-  }
+  fun validateSentenceForManualEntry(sentences: List<SentenceAndOffence>): MutableList<ValidationMessage> = sentences.map { sentenceValidationService.validateSentenceForManualEntry(it) }.flatten().toMutableList()
 
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
