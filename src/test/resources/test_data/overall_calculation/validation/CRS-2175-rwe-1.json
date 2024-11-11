@@ -1,0 +1,95 @@
+{
+  "offender": {
+    "reference": "A123456",
+    "dateOfBirth": "1971-01-01",
+    "isActiveSexOffender": true
+  },
+  "bookingId": 12345678,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2023-08-29",
+        "offenceCode": "SX03019A"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 32
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "48ef2f08-2956-376c-b492-ae89c236e847",
+      "recallType": null,
+      "sentencedAt": "2023-09-26",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": "A123456789",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2023-08-30",
+        "offenceCode": "SX03224A"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 12
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "01b6c2e2-198a-36da-a892-cefda35356d8",
+      "recallType": null,
+      "sentencedAt": "2023-09-26",
+      "caseSequence": 1,
+      "lineSequence": 2,
+      "caseReference": "A123456789",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2023-09-03",
+        "offenceCode": "SX03244"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 24
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "e1a020c1-7309-30a0-83f9-912f9a1a1918",
+      "recallType": null,
+      "sentencedAt": "2023-09-26",
+      "caseSequence": 1,
+      "lineSequence": 3,
+      "caseReference": "A123456789",
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "toDate": "2023-09-25",
+        "fromDate": "2023-09-05",
+        "numberOfDays": 21,
+        "appliesToSentencesFrom": "2023-09-26"
+      }
+    ]
+  },
+  "historicalTusedData": null,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}
