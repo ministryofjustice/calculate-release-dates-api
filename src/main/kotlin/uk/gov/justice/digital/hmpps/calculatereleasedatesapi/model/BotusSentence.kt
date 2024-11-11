@@ -34,7 +34,7 @@ data class BotusSentence(
     return false
   }
 
-  override fun isBotus(): Boolean {
+  override fun isOrExclusivelyBotus(): Boolean {
     return true
   }
 }

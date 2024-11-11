@@ -62,6 +62,7 @@ class BookingExtractionService(
     val sentence = booking.getAllExtractableSentences()[0]
     val sentenceCalculation = sentence.sentenceCalculation
     var historicalTusedSource: HistoricalTusedSource? = null
+    val sentenceIsOrExclusivelyBotus = sentence.isOrExclusivelyBotus()
 
     if (sentence.releaseDateTypes.contains(SLED)) {
       dates[SLED] = sentenceCalculation.expiryDate
@@ -109,16 +110,17 @@ class BookingExtractionService(
       dates[LTD] = sentenceCalculation.latestTransferDate!!
     }
 
-    if (sentence.isBotus()) {
-      if (sentence is BotusSentence && sentence.latestTusedDate != null && sentenceCalculation.expiryDate.isBefore(
-          sentence.latestTusedDate,
-        )
-      ) {
-        dates[TUSED] = sentence.latestTusedDate!!
-        historicalTusedSource = sentence.latestTusedSource!!
-      }
-    } else {
+    if (!sentenceIsOrExclusivelyBotus) {
       dates[ESED] = sentenceCalculation.unadjustedExpiryDate
+    }
+
+    if (
+      sentenceIsOrExclusivelyBotus &&
+      sentence is BotusSentence &&
+      sentence.latestTusedDate != null && sentenceCalculation.expiryDate.isBefore(sentence.latestTusedDate)
+    ) {
+      dates[TUSED] = sentence.latestTusedDate!!
+      historicalTusedSource = sentence.latestTusedSource!!
     }
 
     return CalculationResult(

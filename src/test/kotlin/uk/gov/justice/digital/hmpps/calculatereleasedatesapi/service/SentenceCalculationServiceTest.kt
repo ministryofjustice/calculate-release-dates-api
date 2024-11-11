@@ -137,6 +137,60 @@ class SentenceCalculationServiceTest {
     assertEquals("[SLED, CRD, TUSED, HDCED]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
+  @Test
+  fun `Example 13`() {
+    val sentence = jsonTransformation.loadBotusSentence("8_month_feb_2015_botus")
+    sentenceIdentificationService.identify(
+      sentence,
+      offender,
+      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
+    )
+    val adjustments = mutableMapOf<AdjustmentType, MutableList<Adjustment>>()
+    adjustments[AdjustmentType.REMAND] =
+      mutableListOf(Adjustment(appliesToSentencesFrom = sentence.sentencedAt, numberOfDays = 21))
+
+    val offender = Offender("A1234BC", LocalDate.of(1980, 1, 1))
+    val booking = Booking(offender, mutableListOf(sentence), Adjustments(adjustments))
+
+    val calculation = sentenceCalculationService.calculate(
+      sentence,
+      booking,
+      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
+    )
+    assertEquals(LocalDate.of(2015, 10, 15), calculation.expiryDate)
+    assertEquals(LocalDate.of(2015, 10, 15), calculation.releaseDate)
+    assertEquals(calculation.homeDetentionCurfewEligibilityDate, null)
+    assertEquals(LocalDate.of(2016, 1, 16), calculation.topUpSupervisionDate) // use historic TUSED
+    assertEquals("[ARD, SED, TUSED]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
+  }
+
+  @Test
+  fun `Example 14`() {
+    val sentence = jsonTransformation.loadBotusSentence("8_month_feb_2015_botus")
+    sentence.latestTusedDate = LocalDate.of(2015, 1, 15) // TUSED prior to RELEASE should be ignored
+    sentenceIdentificationService.identify(
+      sentence,
+      offender,
+      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
+    )
+    val adjustments = mutableMapOf<AdjustmentType, MutableList<Adjustment>>()
+    adjustments[AdjustmentType.REMAND] =
+      mutableListOf(Adjustment(appliesToSentencesFrom = sentence.sentencedAt, numberOfDays = 21))
+    val offender = Offender("A1234BC", LocalDate.of(1980, 1, 1))
+    val booking = Booking(offender, mutableListOf(sentence), Adjustments(adjustments))
+
+    val calculation = sentenceCalculationService.calculate(
+      sentence,
+      booking,
+      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
+    )
+    assertEquals(LocalDate.of(2015, 10, 15), calculation.expiryDate)
+    assertEquals(LocalDate.of(2015, 10, 15), calculation.releaseDate)
+    assertEquals(calculation.homeDetentionCurfewEligibilityDate, null)
+    assertEquals(null, calculation.topUpSupervisionDate) // should not use historic TUSED
+    assertEquals("[ARD, SED, TUSED]", calculation.sentence.releaseDateTypes.getReleaseDateTypes().toString())
+  }
+
   @BeforeEach
   fun beforeAll() {
     Mockito.`when`(bankHolidayService.getBankHolidays())
