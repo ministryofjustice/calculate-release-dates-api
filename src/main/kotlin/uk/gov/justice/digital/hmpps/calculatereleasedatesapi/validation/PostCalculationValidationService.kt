@@ -49,6 +49,9 @@ class PostCalculationValidationService(
   ): List<ValidationMessage> {
     if (calculationResult != null) {
       val matchingSentences = booking.getAllExtractableSentences()
+        .filter {
+          it.sentenceCalculation.adjustedDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
+        }
         .flatMap { if (it is ConsecutiveSentence) it.orderedSentences else listOf(it) }
         .filter {
           it is StandardDeterminateSentence &&
