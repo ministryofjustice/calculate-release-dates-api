@@ -60,7 +60,7 @@ class Tranche(
   }
 
   private fun filterOnType(sentence: CalculableSentence): Boolean {
-    return !sentence.isDto() && !sentence.isBotus() && sentence !is AFineSentence
+    return !sentence.isDto() && !sentence.isOrExclusivelyBotus() && sentence !is AFineSentence
   }
 
   private fun filterOnSentenceDate(sentence: CalculableSentence): Boolean {

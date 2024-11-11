@@ -157,7 +157,7 @@ class ConsecutiveSentence(val orderedSentences: List<CalculableSentence>) : Calc
     return this::identificationTrack.isInitialized
   }
 
-  override fun isBotus(): Boolean {
-    return orderedSentences.all { it.isBotus() }
+  override fun isOrExclusivelyBotus(): Boolean {
+    return orderedSentences.all { it.isOrExclusivelyBotus() }
   }
 }

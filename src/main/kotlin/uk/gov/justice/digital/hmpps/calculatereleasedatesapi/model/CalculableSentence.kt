@@ -106,7 +106,7 @@ interface CalculableSentence {
   }
 
   @JsonIgnore
-  fun isBotus(): Boolean {
+  fun isOrExclusivelyBotus(): Boolean {
     return false
   }
 
