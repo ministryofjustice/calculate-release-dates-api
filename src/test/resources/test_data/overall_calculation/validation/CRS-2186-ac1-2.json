@@ -53,7 +53,7 @@
       "caseSequence": 2,
       "lineSequence": 1,
       "caseReference": "A12345678",
-      "consecutiveSentenceUUIDs": [],
+      "consecutiveSentenceUUIDs": ["5c64a902-3831-396c-80ae-7b7c1f2dd244"],
       "hasAnSDSEarlyReleaseExclusion": "NO"
     }
   ]
