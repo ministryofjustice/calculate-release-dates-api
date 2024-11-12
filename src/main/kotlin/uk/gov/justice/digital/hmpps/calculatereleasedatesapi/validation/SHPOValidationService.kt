@@ -52,7 +52,7 @@ class SHPOValidationService {
     }
 
   private fun isShpoViolation(sentence: StandardDeterminateSentence): Boolean = isRelevantOffence(sentence) &&
-    (isSdsSentenceInValid(sentence) || isSdsHistoricSentenceInValid(sentence))
+    (isSdsSentenceInvalid(sentence) || isSdsHistoricSentenceInvalid(sentence))
 
   private fun isRelevantOffence(sentence: StandardDeterminateSentence): Boolean =
     !sentence.isSDSPlus && shpoOffenceCodes.contains(sentence.offence.offenceCode)
@@ -61,11 +61,11 @@ class SHPOValidationService {
     consecutiveSentence.sentencedAt.isBefore(SDS_40_COMMENCEMENT_DATE) &&
       consecutiveSentence.sentenceCalculation.releaseDate.isAfter(SDS_40_COMMENCEMENT_DATE)
 
-  private fun isSdsSentenceInValid(sentence: CalculableSentence): Boolean =
+  private fun isSdsSentenceInvalid(sentence: CalculableSentence): Boolean =
     sentence.sentencedAt >= SDS_40_COMMENCEMENT_DATE &&
       sentence.offence.committedAt < SHPO_OFFENCE_COMMENCEMENT_DATE
 
-  private fun isSdsHistoricSentenceInValid(sentence: StandardDeterminateSentence): Boolean =
+  private fun isSdsHistoricSentenceInvalid(sentence: StandardDeterminateSentence): Boolean =
     sentence.sentencedAt.isBefore(SDS_40_COMMENCEMENT_DATE) &&
       sentence.sentenceCalculation.releaseDate.isAfter(SDS_40_COMMENCEMENT_DATE) &&
       sentence.offence.committedAt < SHPO_OFFENCE_COMMENCEMENT_DATE
