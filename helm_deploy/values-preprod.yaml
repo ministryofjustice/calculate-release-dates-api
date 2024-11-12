@@ -26,6 +26,13 @@ generic-service:
     TORERA_OFFENCE_TO_MANUAL_JOURNEY: "true"
     SDS40_CONSEC_MANUAL_JOURNEY: "true"
 
+  allowlist:
+    penetration-test-ip-1: 54.37.241.156/30
+    penetration-test-ip-2: 167.71.136.237/32
+    groups:
+      - internal
+      - circleci
+
   serviceAccountName: calculate-release-dates-api-preprod
 
   resources:
