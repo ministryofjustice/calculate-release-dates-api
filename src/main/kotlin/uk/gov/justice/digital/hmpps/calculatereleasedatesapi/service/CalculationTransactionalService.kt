@@ -332,7 +332,7 @@ class CalculationTransactionalService(
     calculationUserInputs: CalculationUserInputs,
   ): CalculationBreakdown {
     if (previousCalculationResults.calculationType == CalculationType.CALCULATED) {
-      val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs) // Validation stage 3 of 4
+      val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs)
       val calculationResult = calculationOutput.calculationResult
       if (calculationResult.dates == previousCalculationResults.dates) {
         return transform(
