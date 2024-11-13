@@ -96,6 +96,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.FineVali
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.PostCalculationValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.PreCalculationValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.RecallValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SHPOValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SOPCValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Section91ValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SentenceValidationService
@@ -216,7 +217,8 @@ class CalculationTransactionalServiceTest {
       val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration)
 
       returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
-        calculatedReleaseDates.first!!, calculationResult = calculatedReleaseDates.second,
+        calculatedReleaseDates.first,
+        calculationResult = calculatedReleaseDates.second,
       )
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
@@ -724,16 +726,12 @@ class CalculationTransactionalServiceTest {
   private fun calculationTransactionalService(
     params: String = "calculation-params",
     passedInServices: List<String> = emptyList(),
-  ): CalculationTransactionalService {
-    return setupServices(params, passedInServices).first
-  }
+  ): CalculationTransactionalService = setupServices(params, passedInServices).first
 
   private fun calculationService(
     params: String = "calculation-params",
     passedInServices: List<String> = emptyList(),
-  ): CalculationService {
-    return setupServices(params, passedInServices).second
-  }
+  ): CalculationService = setupServices(params, passedInServices).second
 
   private fun setupServices(
     params: String = "calculation-params",
@@ -865,6 +863,7 @@ class CalculationTransactionalServiceTest {
       sentenceValidationService = sentenceValidationService,
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
+      shpoValidationService = SHPOValidationService(),
     )
   }
 

@@ -3052,6 +3052,7 @@ class ValidationServiceTest {
       sentenceValidationService = sentenceValidationService,
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
+      shpoValidationService = SHPOValidationService(),
     )
   }
 }

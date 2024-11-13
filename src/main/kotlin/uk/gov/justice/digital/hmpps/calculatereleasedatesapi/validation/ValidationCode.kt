@@ -97,4 +97,5 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
     "Unable to determine release provisions for SHPO SX03 offence in scope of SDS40",
     MANUAL_ENTRY_JOURNEY_REQUIRED,
   ),
+  SHPO_INVALID_DATE("Court case %s count %s falls under the Sentencing Act 2020. The offence date must be on or after 01 December 2020."),
 }

@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -11,9 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_DYO_TORERA_START_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SOPC_TORERA_END_DATE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ToreraValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesService
 import java.time.LocalDate
 
 class ToreraValidationServiceTest {

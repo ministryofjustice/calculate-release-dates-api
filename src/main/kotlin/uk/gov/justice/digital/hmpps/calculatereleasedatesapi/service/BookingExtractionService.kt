@@ -47,13 +47,11 @@ class BookingExtractionService(
 
   fun extract(
     booking: Booking,
-  ): CalculationResult {
-    return when (booking.getAllExtractableSentences().size) {
-      0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
-      1 -> extractSingle(booking)
-      else -> {
-        extractMultiple(booking)
-      }
+  ): CalculationResult = when (booking.getAllExtractableSentences().size) {
+    0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
+    1 -> extractSingle(booking)
+    else -> {
+      extractMultiple(booking)
     }
   }
 

@@ -30,7 +30,9 @@ class PreCalculationValidationService(
     sourceData.bookingAndSentenceAdjustments.sentenceAdjustments.forEach { adjustment ->
       if (adjustment.type == SentenceAdjustmentType.REMAND || adjustment.type == SentenceAdjustmentType.TAGGED_BAIL) {
         val sentence = sourceData.sentenceAndOffences.firstOrNull { it.sentenceSequence == adjustment.sentenceSequence }
-        if (sentence != null && SentenceCalculationType.from(sentence.sentenceCalculationType).sentenceClazz == DetentionAndTrainingOrderSentence::class.java && sentence.sentenceDate.isBefore(
+        if (sentence != null &&
+          SentenceCalculationType.from(sentence.sentenceCalculationType).sentenceClazz == DetentionAndTrainingOrderSentence::class.java &&
+          sentence.sentenceDate.isBefore(
             PCSC_COMMENCEMENT_DATE,
           )
         ) {

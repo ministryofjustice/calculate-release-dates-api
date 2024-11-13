@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHi
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS40_HINT_TEXT_CUTOFF_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_40_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isSdsCalcType
 import java.time.Clock
 import java.time.LocalDate
@@ -73,27 +73,23 @@ class CalculationResultEnrichmentService(
 
     return sentenceAndOffences.none {
       !it.isSDSPlus &&
-        (it.sentenceCalculationType.isSdsCalcType() && it.sentenceDate.isAfter(SDS40_HINT_TEXT_CUTOFF_DATE))
+        (it.sentenceCalculationType.isSdsCalcType() && it.sentenceDate.isAfter(SDS_40_COMMENCEMENT_DATE))
     }
   }
 
-  private fun tusedHints(type: ReleaseDateType): List<ReleaseDateHint> {
-    return if (type == ReleaseDateType.TUSED) {
-      listOf(ReleaseDateHint("TUSED recorded in NOMIS at time of release"))
-    } else {
-      emptyList()
-    }
+  private fun tusedHints(type: ReleaseDateType): List<ReleaseDateHint> = if (type == ReleaseDateType.TUSED) {
+    listOf(ReleaseDateHint("TUSED recorded in NOMIS at time of release"))
+  } else {
+    emptyList()
   }
 
-  private fun nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type: ReleaseDateType, date: LocalDate): ReleaseDateHint? {
-    return if (nonFridayReleaseService.getDate(ReleaseDate(date, type)).usePolicy) {
-      ReleaseDateHint(
-        "The Discretionary Friday/Pre-Bank Holiday Release Scheme Policy applies to this release date.",
-        "https://www.gov.uk/government/publications/discretionary-fridaypre-bank-holiday-release-scheme-policy-framework",
-      )
-    } else {
-      weekendAdjustmentHintOrNull(type, date)
-    }
+  private fun nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type: ReleaseDateType, date: LocalDate): ReleaseDateHint? = if (nonFridayReleaseService.getDate(ReleaseDate(date, type)).usePolicy) {
+    ReleaseDateHint(
+      "The Discretionary Friday/Pre-Bank Holiday Release Scheme Policy applies to this release date.",
+      "https://www.gov.uk/government/publications/discretionary-fridaypre-bank-holiday-release-scheme-policy-framework",
+    )
+  } else {
+    weekendAdjustmentHintOrNull(type, date)
   }
 
   private val longFormat = DateTimeFormatter.ofPattern("cccc, dd LLLL yyyy")
@@ -113,73 +109,65 @@ class CalculationResultEnrichmentService(
     }
   }
 
-  private fun ardHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
-    return if (type == ReleaseDateType.ARD && displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
-      ReleaseDateHint("The Detention and training order (DTO) release date is later than the Automatic Release Date (ARD)")
-    } else {
-      null
-    }
+  private fun ardHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? = if (type == ReleaseDateType.ARD && displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
+    ReleaseDateHint("The Detention and training order (DTO) release date is later than the Automatic Release Date (ARD)")
+  } else {
+    null
   }
 
-  private fun crdHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
-    return if (type == ReleaseDateType.CRD && displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
-      ReleaseDateHint("The Detention and training order (DTO) release date is later than the Conditional Release Date (CRD)")
-    } else {
-      null
-    }
+  private fun crdHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? = if (type == ReleaseDateType.CRD && displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
+    ReleaseDateHint("The Detention and training order (DTO) release date is later than the Conditional Release Date (CRD)")
+  } else {
+    null
   }
 
-  private fun pedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> {
-    return if (type == ReleaseDateType.PED) {
-      val hints = mutableListOf<ReleaseDateHint>()
-      if (calculationBreakdown?.breakdownByReleaseDateType?.containsKey(ReleaseDateType.PED) == true) {
-        if (CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE in calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.PED]!!.rules) {
-          hints += ReleaseDateHint("PED adjusted for the CRD of a concurrent sentence or default term")
-        } else if (CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_ACTUAL_RELEASE in calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.PED]!!.rules) {
-          hints += ReleaseDateHint("PED adjusted for the ARD of a concurrent sentence or default term")
-        }
+  private fun pedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> = if (type == ReleaseDateType.PED) {
+    val hints = mutableListOf<ReleaseDateHint>()
+    if (calculationBreakdown?.breakdownByReleaseDateType?.containsKey(ReleaseDateType.PED) == true) {
+      if (CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_CONDITIONAL_RELEASE in calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.PED]!!.rules) {
+        hints += ReleaseDateHint("PED adjusted for the CRD of a concurrent sentence or default term")
+      } else if (CalculationRule.PED_EQUAL_TO_LATEST_NON_PED_ACTUAL_RELEASE in calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.PED]!!.rules) {
+        hints += ReleaseDateHint("PED adjusted for the ARD of a concurrent sentence or default term")
       }
-      if (calculationBreakdown?.otherDates?.containsKey(ReleaseDateType.PRRD) == true && calculationBreakdown.otherDates[ReleaseDateType.PRRD]!!.isAfter(date)) {
-        hints += ReleaseDateHint("The post recall release date (PRRD) of ${calculationBreakdown.otherDates[ReleaseDateType.PRRD]!!.format(longFormat)} is later than the PED")
-      }
-      if (displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
-        hints += ReleaseDateHint("The Detention and training order (DTO) release date is later than the Parole Eligibility Date (PED)")
-      }
-      hints
-    } else {
-      emptyList()
     }
+    if (calculationBreakdown?.otherDates?.containsKey(ReleaseDateType.PRRD) == true && calculationBreakdown.otherDates[ReleaseDateType.PRRD]!!.isAfter(date)) {
+      hints += ReleaseDateHint("The post recall release date (PRRD) of ${calculationBreakdown.otherDates[ReleaseDateType.PRRD]!!.format(longFormat)} is later than the PED")
+    }
+    if (displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
+      hints += ReleaseDateHint("The Detention and training order (DTO) release date is later than the Parole Eligibility Date (PED)")
+    }
+    hints
+  } else {
+    emptyList()
   }
 
-  private fun hdcedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> {
-    return if (type == ReleaseDateType.HDCED) {
-      val hints = mutableListOf<ReleaseDateHint>()
-      if (calculationBreakdown?.breakdownByReleaseDateType?.containsKey(ReleaseDateType.HDCED) == true) {
-        val hdcRules = calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.HDCED]!!.rules
+  private fun hdcedHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> = if (type == ReleaseDateType.HDCED) {
+    val hints = mutableListOf<ReleaseDateHint>()
+    if (calculationBreakdown?.breakdownByReleaseDateType?.containsKey(ReleaseDateType.HDCED) == true) {
+      val hdcRules = calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.HDCED]!!.rules
 
-        if (CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD in hdcRules) {
-          hints.add(ReleaseDateHint(HDC_POLICY_ADJUSTED_SENTENCE_DATE_HINT, HDC_POLICY_URL))
+      if (CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD in hdcRules) {
+        hints.add(ReleaseDateHint(HDC_POLICY_ADJUSTED_SENTENCE_DATE_HINT, HDC_POLICY_URL))
+      }
+
+      when {
+        CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE in hdcRules -> {
+          hints += ReleaseDateHint("HDCED adjusted for the CRD of a concurrent sentence or default term")
         }
-
-        when {
-          CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_CONDITIONAL_RELEASE in hdcRules -> {
-            hints += ReleaseDateHint("HDCED adjusted for the CRD of a concurrent sentence or default term")
-          }
-          CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE in hdcRules -> {
-            hints += ReleaseDateHint("HDCED adjusted for the ARD of a concurrent sentence or default term")
-          }
-          CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_PRRD in hdcRules -> {
-            hints += ReleaseDateHint("HDCED adjusted for the PRRD of a recall")
-          }
+        CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_ACTUAL_RELEASE in hdcRules -> {
+          hints += ReleaseDateHint("HDCED adjusted for the ARD of a concurrent sentence or default term")
+        }
+        CalculationRule.HDCED_ADJUSTED_TO_CONCURRENT_PRRD in hdcRules -> {
+          hints += ReleaseDateHint("HDCED adjusted for the PRRD of a recall")
         }
       }
-      if (displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
-        hints += ReleaseDateHint("The Detention and training order (DTO) release date is later than the Home detention curfew eligibility date (HDCED)")
-      }
-      hints
-    } else {
-      emptyList()
     }
+    if (displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
+      hints += ReleaseDateHint("The Detention and training order (DTO) release date is later than the Home detention curfew eligibility date (HDCED)")
+    }
+    hints
+  } else {
+    emptyList()
   }
 
   private fun mtdHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
@@ -211,26 +199,22 @@ class CalculationResultEnrichmentService(
     return null
   }
 
-  private fun ersedHints(type: ReleaseDateType, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> {
-    return if (type == ReleaseDateType.ERSED) {
-      val hints = mutableListOf<ReleaseDateHint>()
-      if (calculationBreakdown?.breakdownByReleaseDateType?.containsKey(ReleaseDateType.ERSED) == true && CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM in calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.ERSED]!!.rules) {
-        hints += ReleaseDateHint("ERSED adjusted for the ARD of a concurrent default term")
-      }
-      if (dateBeforeAnother(releaseDates[ReleaseDateType.MTD]?.date, releaseDates[ReleaseDateType.CRD]?.date) && dateBeforeAnother(releaseDates[ReleaseDateType.ERSED]?.date, releaseDates[ReleaseDateType.MTD]?.date)) {
-        hints += ReleaseDateHint("Adjusted to Mid term date (MTD) of the Detention and training order (DTO)")
-      }
-      hints
-    } else {
-      emptyList()
+  private fun ersedHints(type: ReleaseDateType, releaseDates: Map<ReleaseDateType, ReleaseDate>, calculationBreakdown: CalculationBreakdown?): List<ReleaseDateHint> = if (type == ReleaseDateType.ERSED) {
+    val hints = mutableListOf<ReleaseDateHint>()
+    if (calculationBreakdown?.breakdownByReleaseDateType?.containsKey(ReleaseDateType.ERSED) == true && CalculationRule.ERSED_ADJUSTED_TO_CONCURRENT_TERM in calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.ERSED]!!.rules) {
+      hints += ReleaseDateHint("ERSED adjusted for the ARD of a concurrent default term")
     }
+    if (dateBeforeAnother(releaseDates[ReleaseDateType.MTD]?.date, releaseDates[ReleaseDateType.CRD]?.date) && dateBeforeAnother(releaseDates[ReleaseDateType.ERSED]?.date, releaseDates[ReleaseDateType.MTD]?.date)) {
+      hints += ReleaseDateHint("Adjusted to Mid term date (MTD) of the Detention and training order (DTO)")
+    }
+    hints
+  } else {
+    emptyList()
   }
 
-  private fun displayDateBeforeMtd(date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): Boolean {
-    return hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences) &&
-      releaseDates.containsKey(ReleaseDateType.MTD) &&
-      date < releaseDates[ReleaseDateType.MTD]!!.date
-  }
+  private fun displayDateBeforeMtd(date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): Boolean = hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences) &&
+    releaseDates.containsKey(ReleaseDateType.MTD) &&
+    date < releaseDates[ReleaseDateType.MTD]!!.date
 
   private fun dateBeforeAnother(dateA: LocalDate?, dateB: LocalDate?): Boolean {
     if (dateA == null || dateB == null) {
@@ -239,11 +223,9 @@ class CalculationResultEnrichmentService(
     return dateA < dateB
   }
 
-  private fun hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences: List<SentenceAndOffence>?): Boolean {
-    return sentencesAndOffences != null &&
-      sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType in dtoSentenceTypes } &&
-      sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType !in dtoSentenceTypes }
-  }
+  private fun hasConcurrentDtoAndCrdArdSentence(sentencesAndOffences: List<SentenceAndOffence>?): Boolean = sentencesAndOffences != null &&
+    sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType in dtoSentenceTypes } &&
+    sentencesAndOffences.any { sentence -> sentence.sentenceCalculationType !in dtoSentenceTypes }
 
   private fun sds40Hint(type: ReleaseDateType, calculationBreakdown: CalculationBreakdown): ReleaseDateHint? {
     if (calculationBreakdown.breakdownByReleaseDateType.containsKey(type)) {
@@ -252,10 +234,12 @@ class CalculationResultEnrichmentService(
         return ReleaseDateHint("40% date has been applied")
       }
       if ((
-          rules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT) || rules.contains(
-            CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT,
-          )
-          ) && earlyReleaseHintTypes.contains(type)
+          rules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT) ||
+            rules.contains(
+              CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT,
+            )
+          ) &&
+        earlyReleaseHintTypes.contains(type)
       ) {
         val trancheText = if (rules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT)) "1" else "2"
         return ReleaseDateHint("Defaulted to tranche $trancheText commencement")
