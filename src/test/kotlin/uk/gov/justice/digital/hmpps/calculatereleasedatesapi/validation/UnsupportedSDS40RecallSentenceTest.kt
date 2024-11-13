@@ -371,6 +371,7 @@ class UnsupportedSDS40RecallSentenceTest {
         sentenceValidationService = sentenceValidationService,
         validationUtilities = validationUtilities,
         postCalculationValidationService = postCalculationValidationService,
+        shpoValidationService = SHPOValidationService(),
       )
     }
   }
