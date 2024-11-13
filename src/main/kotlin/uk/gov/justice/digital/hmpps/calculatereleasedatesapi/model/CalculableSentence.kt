@@ -3,12 +3,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.threeten.extra.LocalDateRange
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.UUID
 import kotlin.math.roundToLong
 
 /**
@@ -26,38 +24,6 @@ interface CalculableSentence {
   val offence: Offence
   var identificationTrack: SentenceIdentificationTrack
   val isSDSPlus: Boolean
-  val identifier: UUID
-
-  @JsonIgnore
-  fun getRangeOfSentenceBeforeAwardedDays(earlyReleaseCommencementDate: LocalDate): LocalDateRange {
-    /*
-    When we're walking the timeline of the sentence, we want to use the NPD date rather than PED, otherwise we
-    could falsely state that there is a gap in the booking timeline if the prisoner wasn't released at the PED.
-     */
-    val releaseDate = if (getReleaseDateType() === ReleaseDateType.PED && this is StandardDeterminateSentence) {
-      sentenceCalculation.nonParoleDate!!
-    } else {
-      if (sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(earlyReleaseCommencementDate)) {
-        sentenceCalculation.adjustedHistoricDeterminateReleaseDate
-      } else {
-        sentenceCalculation.adjustedDeterminateReleaseDate
-      }
-    }
-    val releaseDateBeforeAda = releaseDate.minusDays(sentenceCalculation.calculatedTotalAwardedDays.toLong())
-
-    return if (sentencedAt.isAfter(releaseDateBeforeAda)) {
-      // The deducted days make this an immediate release sentence.
-      LocalDateRange.of(
-        sentencedAt,
-        sentencedAt,
-      )
-    } else {
-      LocalDateRange.of(
-        sentencedAt,
-        releaseDateBeforeAda,
-      )
-    }
-  }
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
@@ -226,4 +192,7 @@ interface CalculableSentence {
       (this is ConsecutiveSentence && this.orderedSentences.all { it is DetentionAndTrainingOrderSentence }) ||
       this is DtoSingleTermSentence
   }
+
+  @JsonIgnore
+  fun sentenceParts(): List<AbstractSentence>
 }

@@ -31,8 +31,7 @@
       },
       "custodialDuration":{
         "durationElements":{
-          "YEARS": 3,
-          "MONTHS": 4
+          "YEARS": 1
         }
       },
       "extensionDuration":{
@@ -41,7 +40,7 @@
         }
       },
       "automaticRelease":false,
-      "sentencedAt":"2021-03-04"
+      "sentencedAt":"2023-07-04"
     }
   ],
   "adjustments": {

@@ -32,7 +32,7 @@
   "adjustments": {
     "REMAND": [
       {
-        "appliesToSentencesFrom": "2022-04-10",
+        "appliesToSentencesFrom": "2022-04-20",
         "numberOfDays": 10,
         "fromDate": "2022-04-10",
         "toDate": "2022-04-19"
@@ -41,7 +41,7 @@
     "TAGGED_BAIL": [
       {
         "numberOfDays": 1,
-        "appliesToSentencesFrom": "2022-04-10"
+        "appliesToSentencesFrom": "2022-04-20"
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [

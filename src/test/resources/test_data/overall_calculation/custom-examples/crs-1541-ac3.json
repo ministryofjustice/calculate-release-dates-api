@@ -45,7 +45,7 @@
   "adjustments": {
     "REMAND": [
       {
-        "appliesToSentencesFrom": "2022-09-02",
+        "appliesToSentencesFrom": "2021-09-03",
         "numberOfDays": 42,
         "fromDate": "2021-07-23",
         "toDate": "2021-09-02"

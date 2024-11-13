@@ -168,9 +168,8 @@ class ManualCalculationService(
       return Period.ZERO
     } else {
       val options = CalculationOptions(false, featureToggles.sdsEarlyRelease)
-      val identifiedBooking = bookingCalculationService.identify(booking, options)
-      val consecutiveSentencesBooking = bookingCalculationService.createConsecutiveSentences(identifiedBooking, options, isManualCalc = true)
-      val sentences = consecutiveSentencesBooking.getAllExtractableSentences()
+      bookingCalculationService.identify(booking, options)
+      val sentences = bookingCalculationService.getSentencesToCalculate(booking, options)
       val earliestSentenceDate = sentences.minOfOrNull { it.sentencedAt }
       val sed = getSED(manualEntryRequest)
       return if (sed != null && earliestSentenceDate != null) {

@@ -82,62 +82,36 @@ class CalculationTransactionalService(
     activeDataOnly: Boolean = true,
   ): List<ValidationMessage> {
     log.info("Full Validation for $prisonerId")
-    log.info("Gathering source data from PrisonAPI")
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
     return fullValidationFromSourceData(sourceData, calculationUserInputs)
   }
 
   fun fullValidationFromSourceData(sourceData: PrisonApiSourceData, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
-    val sourceDataJson = objectMapper.writeValueAsString(sourceData)
-    log.trace("Source data:\n$sourceDataJson")
-
-    log.info("Stage 1: Running initial calculation validations")
     val initialValidationMessages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs)
 
     if (initialValidationMessages.isNotEmpty()) {
-      log.warn("Initial validation returned messages")
       log.info(initialValidationMessages.joinToString("\n"))
       return initialValidationMessages
     }
-    log.info("Initial validation passed")
 
-    log.info("Retrieving booking information")
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
 
     return fullValidationFromBookingData(booking, calculationUserInputs)
   }
 
   fun fullValidationFromBookingData(booking: Booking, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
-    val bookingJson = objectMapper.writeValueAsString(booking)
-    log.trace("Booking information: $bookingJson")
-
-    log.info("Stage 2: Running booking-related calculation validations")
     val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
 
     if (bookingValidationMessages.isNotEmpty()) {
-      log.warn("Booking validation returned messages")
-      log.info(bookingValidationMessages.joinToString("\n"))
       return bookingValidationMessages
     }
-    log.info("Booking validation passed")
 
-    log.info("Stage 3: Calculating release dates")
-    val (bookingAfterCalculation, calculationResult) = calculationService.calculateReleaseDates(booking, calculationUserInputs, false)
-    log.info("Release dates calculated")
+    val calculationOutput = calculationService.calculateReleaseDates(
+      booking,
+      calculationUserInputs,
+    )
 
-    log.info("Calculating release dates for longest possible sentences")
-    val (longestPossibleSdsBookingAfterCalculation, _) = calculationService.calculateReleaseDates(booking, calculationUserInputs, true)
-    log.info("Longest possible release dates calculated")
-
-    log.info("Stage 4: Running final booking validation after calculation")
-    val finalValidationMessages = validationService.validateBookingAfterCalculation(bookingAfterCalculation, longestPossibleSdsBookingAfterCalculation, calculationResult)
-
-    if (finalValidationMessages.isNotEmpty()) {
-      log.warn("Final validation returned messages")
-    }
-    log.info(finalValidationMessages.joinToString("\n"))
-
-    return finalValidationMessages
+    return validationService.validateBookingAfterCalculation(calculationOutput, booking)
   }
 
   @Transactional
@@ -156,8 +130,9 @@ class CalculationTransactionalService(
     val booking = bookingService.getBooking(providedSourceData, calculationUserInputs)
     messages = validationService.validateBeforeCalculation(booking) // Validation stage 2 of 4
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
-    val (bookingAfterCalculation, calculationResult) = calculationService.calculateReleaseDates(booking, calculationUserInputs) // Validation stage 3 of 4
-    messages = validationService.validateBookingAfterCalculation(bookingAfterCalculation, calculationResult = calculationResult) // Validation stage 4 of 4
+    val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs) // Validation stage 3 of 4
+    val calculationResult = calculationOutput.calculationResult
+    messages = validationService.validateBookingAfterCalculation(calculationOutput, booking) // Validation stage 4 of 4
 
     val calculatedReleaseDates = calculate(
       booking,
@@ -167,7 +142,7 @@ class CalculationTransactionalService(
       calculationUserInputs,
       historicalTusedSource = providedSourceData.historicalTusedData?.historicalTusedSource,
     )
-    return ValidationResult(messages, bookingAfterCalculation, calculatedReleaseDates, calculationResult)
+    return ValidationResult(messages, booking, calculatedReleaseDates, calculationResult)
   }
 
   fun supportedValidation(prisonerId: String): List<ValidationMessage> {
@@ -316,7 +291,8 @@ class CalculationTransactionalService(
           buildProperties.version,
         ),
       )
-    val (calculatedBooking, calculationResult) = calculationService.calculateReleaseDates(booking, calculationUserInputs)
+    val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs)
+    val calculationResult = calculationOutput.calculationResult
     calculationResult.dates.forEach {
       calculationOutcomeRepository.save(transform(calculationRequest, it.key, it.value))
     }
@@ -345,7 +321,7 @@ class CalculationTransactionalService(
       historicalTusedSource = calculationResult.historicalTusedSource,
       sdsEarlyReleaseAllocatedTranche = calculationResult.sdsEarlyReleaseAllocatedTranche,
       sdsEarlyReleaseTranche = calculationResult.sdsEarlyReleaseTranche,
-      calculatedBooking = calculatedBooking,
+      calculationOutput = calculationOutput,
     )
   }
 
@@ -356,13 +332,14 @@ class CalculationTransactionalService(
     calculationUserInputs: CalculationUserInputs,
   ): CalculationBreakdown {
     if (previousCalculationResults.calculationType == CalculationType.CALCULATED) {
-      val (workingBooking, bookingCalculation) = calculationService.calculateReleaseDates(booking, calculationUserInputs)
-      if (bookingCalculation.dates == previousCalculationResults.dates) {
+      val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs) // Validation stage 3 of 4
+      val calculationResult = calculationOutput.calculationResult
+      if (calculationResult.dates == previousCalculationResults.dates) {
         return transform(
-          workingBooking,
-          bookingCalculation.breakdownByReleaseDateType,
-          bookingCalculation.otherDates,
-          bookingCalculation.ersedNotApplicableDueToDtoLaterThanCrd,
+          calculationOutput,
+          calculationResult.breakdownByReleaseDateType,
+          calculationResult.otherDates,
+          calculationResult.ersedNotApplicableDueToDtoLaterThanCrd,
         )
       } else {
         throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")

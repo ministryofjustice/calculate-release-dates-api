@@ -35,7 +35,7 @@
   "adjustments": {
     "TAGGED_BAIL": [
       {
-        "appliesToSentencesFrom": "2020-01-01",
+        "appliesToSentencesFrom": "2024-03-09",
         "numberOfDays": 93
       }
     ]

@@ -48,8 +48,8 @@
       ],
       "rulesWithExtraAdjustments": {},
       "adjustedDays": -101,
-      "releaseDate": "2024-06-26",
-      "unadjustedDate": "2024-10-05"
+      "releaseDate": "2024-05-29",
+      "unadjustedDate": "2024-09-07"
     },
     "TUSED": {
       "rules": [
@@ -67,17 +67,18 @@
     },
     "HDCED": {
       "rules": [
+        "HDCED_MINIMUM_CUSTODIAL_PERIOD",
         "HDCED_GE_MIN_PERIOD_LT_MIDPOINT",
         "SDS_STANDARD_RELEASE_APPLIES"
       ],
       "rulesWithExtraAdjustments": {
-        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
-          "adjustmentValue": 138,
+        "HDCED_MINIMUM_CUSTODIAL_PERIOD": {
+          "adjustmentValue": 14,
           "type": "DAYS"
         }
       },
-      "adjustedDays": -101,
-      "releaseDate": "2024-06-26",
+      "adjustedDays": 0,
+      "releaseDate": "2024-06-03",
       "unadjustedDate": "2024-05-20"
     }
   },

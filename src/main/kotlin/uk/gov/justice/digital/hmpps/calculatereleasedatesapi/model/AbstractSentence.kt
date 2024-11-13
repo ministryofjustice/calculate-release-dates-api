@@ -28,7 +28,7 @@ import java.util.*
 abstract class AbstractSentence(
   override val offence: Offence,
   override val sentencedAt: LocalDate,
-  override val identifier: UUID = UUID.randomUUID(),
+  open val identifier: UUID = UUID.randomUUID(),
   // Sentence UUIDS that this sentence is consecutive to.
   open val consecutiveSentenceUUIDs: List<UUID> = listOf(),
   open val caseSequence: Int? = null,
@@ -52,5 +52,10 @@ abstract class AbstractSentence(
   }
   override fun isIdentificationTrackInitialized(): Boolean {
     return this::identificationTrack.isInitialized
+  }
+
+  @JsonIgnore
+  override fun sentenceParts(): List<AbstractSentence> {
+    return listOf(this)
   }
 }

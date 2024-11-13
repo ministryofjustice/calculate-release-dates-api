@@ -65,6 +65,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
@@ -73,6 +74,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOve
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConcurrentSentenceBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentenceBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentencePart
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DateBreakdown
@@ -487,17 +489,13 @@ fun transform(firstOrNull: ApprovedDatesSubmission?): Map<ReleaseDateType, Local
 }
 
 fun transform(
-  booking: Booking,
+  booking: CalculationOutput,
   breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown>,
   otherDates: Map<ReleaseDateType, LocalDate>,
   ersedNotApplicableDueToDtoLaterThanCrd: Boolean,
 ): CalculationBreakdown {
-  val concurrentSentences = booking.sentences.filter {
-    booking.consecutiveSentences.none { consecutiveSentence ->
-      consecutiveSentence.orderedSentences.contains(it)
-    } &&
-      it is StandardDeterminateSentence
-  }.map { it as StandardDeterminateSentence }
+  val consecutiveSentences = booking.sentences.filterIsInstance<ConsecutiveSentence>()
+  val concurrentSentences = booking.sentences.filterIsInstance<StandardDeterminateSentence>()
   return CalculationBreakdown(
     ersedNotApplicableDueToDtoLaterThanCrd = ersedNotApplicableDueToDtoLaterThanCrd,
     concurrentSentences = concurrentSentences.map { sentence ->
@@ -511,9 +509,9 @@ fun transform(
         sentence.caseReference,
       )
     }.sortedWith(compareBy({ it.caseSequence }, { it.lineSequence })),
-    consecutiveSentence = if (booking.consecutiveSentences.isNotEmpty()) {
-      if (booking.consecutiveSentences.size == 1) {
-        val consecutiveSentence = booking.consecutiveSentences[0]
+    consecutiveSentence = if (consecutiveSentences.isNotEmpty()) {
+      if (consecutiveSentences.size == 1) {
+        val consecutiveSentence = consecutiveSentences[0]
         ConsecutiveSentenceBreakdown(
           consecutiveSentence.sentencedAt,
           consecutiveSentence.getCombinedDuration().toString(),
@@ -521,7 +519,7 @@ fun transform(
           extractDates(consecutiveSentence),
           consecutiveSentence.orderedSentences.map { sentencePart ->
             sentencePart as AbstractSentence
-            val originalSentence = booking.sentences.find { it.identifier == sentencePart.identifier }!!
+            val originalSentence = consecutiveSentence.orderedSentences.find { (it as AbstractSentence).identifier == sentencePart.identifier }!! as AbstractSentence
             val consecutiveToUUID =
               if (originalSentence.consecutiveSentenceUUIDs.isNotEmpty()) {
                 originalSentence.consecutiveSentenceUUIDs[0]
@@ -530,7 +528,7 @@ fun transform(
               }
             val consecutiveToSentence =
               if (consecutiveToUUID != null) {
-                booking.sentences.find { it.identifier == consecutiveToUUID }!!
+                consecutiveSentence.orderedSentences.find { (it as AbstractSentence).identifier == consecutiveToUUID }!! as AbstractSentence
               } else {
                 null
               }
@@ -539,7 +537,7 @@ fun transform(
               sentencePart.caseSequence ?: 0,
               sentencePart.caseReference,
               if (sentencePart is StandardDeterminateSentence) sentencePart.duration.toString() else "",
-              sentencePart.sentenceCalculation.numberOfDaysToSentenceExpiryDate,
+              sentencePart.getLengthInDays(),
               consecutiveToSentence?.lineSequence,
               consecutiveToSentence?.caseSequence,
             )
@@ -599,13 +597,13 @@ private fun extractDates(sentence: CalculableSentence): Map<ReleaseDateType, Dat
 
   if (sentence.releaseDateTypes.contains(SLED)) {
     dates[SLED] = DateBreakdown(
-      sentenceCalculation.unadjustedExpiryDate,
+      sentenceCalculation.unadjustedReleaseDate.unadjustedExpiryDate,
       sentenceCalculation.adjustedExpiryDate,
       sentenceCalculation.numberOfDaysToSentenceExpiryDate.toLong(),
     )
   } else {
     dates[SED] = DateBreakdown(
-      sentenceCalculation.unadjustedExpiryDate,
+      sentenceCalculation.unadjustedReleaseDate.unadjustedExpiryDate,
       sentenceCalculation.adjustedExpiryDate,
       sentenceCalculation.numberOfDaysToSentenceExpiryDate.toLong(),
     )

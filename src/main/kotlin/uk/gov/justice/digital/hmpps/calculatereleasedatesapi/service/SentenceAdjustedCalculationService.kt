@@ -17,10 +17,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -39,7 +39,7 @@ class SentenceAdjustedCalculationService(
     This function calculates dates after adjustments have been decided.
     It can be run many times to recalculate dates. It needs to be run if there is a change to adjustments.
    */
-  fun calculateDatesFromAdjustments(sentence: CalculableSentence, booking: Booking): SentenceCalculation {
+  fun calculateDatesFromAdjustments(sentence: CalculableSentence, offender: Offender): SentenceCalculation {
     val sentenceCalculation: SentenceCalculation = sentence.sentenceCalculation
     // Other adjustments need to be included in the sentence calculation here
     setCrdOrArdDetails(sentence, sentenceCalculation)
@@ -52,7 +52,7 @@ class SentenceAdjustedCalculationService(
     if (sentence is BotusSentence) {
       getBotusTusedDate(sentence, sentenceCalculation)
     } else {
-      determineTUSED(sentenceCalculation, sentence, booking)
+      determineTUSED(sentenceCalculation, sentence, offender)
     }
 
     if (sentence.releaseDateTypes.contains(ReleaseDateType.ETD) && !sentenceCalculation.isImmediateRelease()) {
@@ -142,10 +142,10 @@ class SentenceAdjustedCalculationService(
       unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
       rules = if (sentenceCalculation.isImmediateRelease()) setOf(IMMEDIATE_RELEASE) else emptySet(),
       adjustedDays = daysBetween,
-      rulesWithExtraAdjustments = if (sentenceCalculation.unusedAdaDays != 0L) {
+      rulesWithExtraAdjustments = if (sentenceCalculation.adjustments.unusedAdaDays != 0L) {
         mapOf(
           CalculationRule.UNUSED_ADA to AdjustmentDuration(
-            sentenceCalculation.unusedAdaDays,
+            sentenceCalculation.adjustments.unusedAdaDays,
             DAYS,
           ),
         )
@@ -173,12 +173,12 @@ class SentenceAdjustedCalculationService(
       sentenceCalculation.licenceExpiryDate =
         sentenceCalculation.adjustedDeterminateReleaseDate
           .plusDays(adjustment)
-          .minusDays(sentenceCalculation.calculatedUnusedLicenseAda.toLong())
+          .minusDays(sentenceCalculation.adjustments.unusedLicenceAdaDays)
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
         DAYS.between(sentence.sentencedAt, sentenceCalculation.licenceExpiryDate)
       // The LED is calculated from the adjusted release date, therefore unused ADA from the release date has also been applied.
       val unusedAda =
-        sentenceCalculation.unusedAdaDays + sentenceCalculation.calculatedUnusedLicenseAda
+        sentenceCalculation.adjustments.unusedAdaDays + sentenceCalculation.adjustments.unusedLicenceAdaDays
       sentenceCalculation.breakdownByReleaseDateType[LED] =
         ReleaseDateCalculationBreakdown(
           rules = setOf(LED_CONSEC_ORA_AND_NON_ORA),
@@ -200,8 +200,7 @@ class SentenceAdjustedCalculationService(
       sentenceCalculation.numberOfDaysToLicenceExpiryDate =
         ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(THREE).div(FOUR)).toLong()
           .plus(sentenceCalculation.numberOfDaysToAddToLicenceExpiryDate)
-          .plus(sentenceCalculation.calculatedTotalAddedDays)
-          .minus(sentenceCalculation.calculatedTotalDeductedDays)
+          .plus(sentenceCalculation.adjustments.adjustmentsForInitialReleaseWithoutAwarded())
       sentenceCalculation.licenceExpiryDate = sentence.sentencedAt.plusDays(
         sentenceCalculation.numberOfDaysToLicenceExpiryDate,
       ).minusDays(ONE)
@@ -214,8 +213,7 @@ class SentenceAdjustedCalculationService(
   ) {
     sentenceCalculation.numberOfDaysToNonParoleDate =
       ceil(sentenceCalculation.numberOfDaysToSentenceExpiryDate.toDouble().times(TWO).div(THREE)).toLong()
-        .plus(sentenceCalculation.calculatedTotalAddedDays)
-        .minus(sentenceCalculation.calculatedTotalDeductedDays)
+        .plus(sentenceCalculation.adjustments.adjustmentsForInitialReleaseWithoutAwarded())
     sentenceCalculation.nonParoleDate = sentence.sentencedAt.plusDays(
       sentenceCalculation.numberOfDaysToNonParoleDate,
     ).minusDays(ONE)
@@ -229,14 +227,17 @@ class SentenceAdjustedCalculationService(
    *
    * (PSI 03/2015: P53: therefore there is no requirement for a TUSED)
    */
-  private fun determineTUSED(sentenceCalculation: SentenceCalculation, sentence: CalculableSentence, booking: Booking) {
+  private fun determineTUSED(sentenceCalculation: SentenceCalculation, sentence: CalculableSentence, offender: Offender) {
     if (
       sentenceCalculation.numberOfDaysToSentenceExpiryDate - sentenceCalculation.numberOfDaysToDeterminateReleaseDate < YEAR_IN_DAYS &&
       sentence.releaseDateTypes.contains(TUSED) &&
-      booking.offender.getAgeOnDate(sentence.sentenceCalculation.releaseDateWithoutAwarded) >= 18
+      offender.getAgeOnDate(sentence.sentenceCalculation.releaseDateWithoutAwarded) >= 18
     ) {
       sentenceCalculation.topUpSupervisionDate = tusedCalculator.calculateTused(sentenceCalculation)
       sentenceCalculation.breakdownByReleaseDateType[TUSED] = tusedCalculator.getCalculationBreakdown(sentenceCalculation)
+    } else {
+      sentenceCalculation.topUpSupervisionDate = null
+      sentenceCalculation.breakdownByReleaseDateType.remove(TUSED)
     }
   }
 
@@ -275,12 +276,8 @@ class SentenceAdjustedCalculationService(
         .plusDays(sentenceCalculation.numberOfDaysToNotionalConditionalReleaseDate)
         .minusDays(ONE)
 
-      sentenceCalculation.notionalConditionalReleaseDate = unAdjustedNotionalConditionalReleaseDate.minusDays(
-        sentenceCalculation.calculatedTotalDeductedDays.toLong(),
-      ).plusDays(
-        sentenceCalculation.calculatedTotalAddedDays.toLong(),
-      ).plusDays(
-        sentenceCalculation.calculatedTotalAwardedDays.toLong(),
+      sentenceCalculation.notionalConditionalReleaseDate = unAdjustedNotionalConditionalReleaseDate.plusDays(
+        sentenceCalculation.adjustments.adjustmentsForInitalRelease(),
       )
 
       val dayAfterNotionalConditionalReleaseDate =
