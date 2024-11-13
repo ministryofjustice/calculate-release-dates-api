@@ -76,7 +76,6 @@ class ManualCalculationServiceTest {
     nomisCommentService,
     TEST_BUILD_PROPERTIES,
     bookingCalculationService,
-    featureToggles,
   )
   private val calculationRequestArgumentCaptor = argumentCaptor<CalculationRequest>()
 
@@ -159,7 +158,7 @@ class ManualCalculationServiceTest {
           sentenceOne,
         ),
       )
-      whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenReturn(emptyList())
+      whenever(bookingCalculationService.createConsecutiveSentences(any())).thenReturn(emptyList())
 
       // Act
       val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
@@ -229,7 +228,7 @@ class ManualCalculationServiceTest {
         ),
       )
 
-      whenever(bookingCalculationService.getSentencesToCalculate(any(), any())).thenReturn(
+      whenever(bookingCalculationService.getSentencesToCalculate(any())).thenReturn(
         listOf(
           sentenceOne,
           sentenceTwo,
@@ -256,7 +255,7 @@ class ManualCalculationServiceTest {
         ),
       )
 
-      whenever(bookingCalculationService.getSentencesToCalculate(any(), any())).thenReturn(
+      whenever(bookingCalculationService.getSentencesToCalculate(any())).thenReturn(
         listOf(
           sentenceOne,
         ),
@@ -287,7 +286,7 @@ class ManualCalculationServiceTest {
         ),
       )
 
-      whenever(bookingCalculationService.getSentencesToCalculate(any(), any())).thenReturn(
+      whenever(bookingCalculationService.getSentencesToCalculate(any())).thenReturn(
         listOf(
           ConsecutiveSentence(
             listOf(
@@ -534,7 +533,7 @@ class ManualCalculationServiceTest {
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
     // Throw exception during consecutive sentence creation
-    whenever(bookingCalculationService.createConsecutiveSentences(any(), any())).thenThrow(NullPointerException("An error was thrown"))
+    whenever(bookingCalculationService.createConsecutiveSentences(any())).thenThrow(NullPointerException("An error was thrown"))
     val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 

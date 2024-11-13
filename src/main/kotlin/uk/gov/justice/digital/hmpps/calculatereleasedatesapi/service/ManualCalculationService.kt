@@ -7,14 +7,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CouldNotSaveManualEntryException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
@@ -40,7 +38,6 @@ class ManualCalculationService(
   private val nomisCommentService: NomisCommentService,
   private val buildProperties: BuildProperties,
   private val bookingCalculationService: BookingCalculationService,
-  private val featureToggles: FeatureToggles,
 ) {
 
   fun hasIndeterminateSentences(bookingId: Long): Boolean {
@@ -167,9 +164,8 @@ class ManualCalculationService(
     ) {
       return Period.ZERO
     } else {
-      val options = CalculationOptions(false, featureToggles.sdsEarlyRelease)
-      bookingCalculationService.identify(booking, options)
-      val sentences = bookingCalculationService.getSentencesToCalculate(booking, options)
+      bookingCalculationService.identify(booking)
+      val sentences = bookingCalculationService.getSentencesToCalculate(booking)
       val earliestSentenceDate = sentences.minOfOrNull { it.sentencedAt }
       val sed = getSED(manualEntryRequest)
       return if (sed != null && earliestSentenceDate != null) {

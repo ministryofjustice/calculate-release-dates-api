@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
@@ -46,7 +45,6 @@ class SentenceIdentificationServiceTest {
     sentenceIdentificationService.identify(
       sentence,
       offender,
-      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
     )
     assertEquals("[ARD, SED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
@@ -61,7 +59,6 @@ class SentenceIdentificationServiceTest {
     sentenceIdentificationService.identify(
       sentence,
       offender,
-      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
     )
     assertEquals("[LED, CRD, SED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
@@ -77,7 +74,6 @@ class SentenceIdentificationServiceTest {
     sentenceIdentificationService.identify(
       sentence,
       sexOffender,
-      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
     )
     assertEquals("[LED, CRD, SED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
@@ -93,7 +89,6 @@ class SentenceIdentificationServiceTest {
     sentenceIdentificationService.identify(
       sentence,
       offender,
-      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
     )
     assertEquals("[CRD, SLED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
@@ -108,7 +103,6 @@ class SentenceIdentificationServiceTest {
     sentenceIdentificationService.identify(
       sentence,
       offender,
-      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
     )
     assertEquals("[ARD, SED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
@@ -123,7 +117,6 @@ class SentenceIdentificationServiceTest {
     sentenceIdentificationService.identify(
       sentence,
       offender,
-      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
     )
     assertEquals("[SLED, CRD, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
@@ -138,7 +131,6 @@ class SentenceIdentificationServiceTest {
     sentenceIdentificationService.identify(
       sentence,
       offender,
-      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
     )
     assertEquals("[SLED, CRD, TUSED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
@@ -153,7 +145,6 @@ class SentenceIdentificationServiceTest {
     sentenceIdentificationService.identify(
       sentence,
       offender,
-      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
     )
     assertEquals("[SLED, CRD, TUSED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
@@ -168,7 +159,6 @@ class SentenceIdentificationServiceTest {
     sentenceIdentificationService.identify(
       sentence,
       offender,
-      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
     )
     assertEquals("[SLED, CRD, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
@@ -183,7 +173,6 @@ class SentenceIdentificationServiceTest {
     sentenceIdentificationService.identify(
       sentence,
       offender,
-      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
     )
     assertEquals("[SLED, CRD, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
@@ -199,7 +188,6 @@ class SentenceIdentificationServiceTest {
     sentenceIdentificationService.identify(
       sentence,
       offenderU18,
-      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
     )
     assertEquals("[SLED, CRD, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
@@ -214,7 +202,6 @@ class SentenceIdentificationServiceTest {
     sentenceIdentificationService.identify(
       sentence,
       offender,
-      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = false),
     )
     assertEquals("[SLED, CRD, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
@@ -225,24 +212,17 @@ class SentenceIdentificationServiceTest {
 
   @ParameterizedTest
   @CsvSource(
-    "false,true,false,NO,SDS_STANDARD_RELEASE",
-    "false,false,false,NO,SDS_STANDARD_RELEASE",
-    "false,true,false,SEXUAL,SDS_STANDARD_RELEASE",
-    "false,false,false,SEXUAL,SDS_STANDARD_RELEASE",
-    "false,true,false,VIOLENT,SDS_STANDARD_RELEASE",
-    "false,false,false,VIOLENT,SDS_STANDARD_RELEASE",
-    "true,true,false,NO,SDS_EARLY_RELEASE",
-    "true,false,false,NO,SDS_EARLY_RELEASE",
-    "true,true,false,SEXUAL,SDS_STANDARD_RELEASE",
-    "true,false,false,SEXUAL,SDS_STANDARD_RELEASE",
-    "true,true,false,VIOLENT,SDS_STANDARD_RELEASE",
-    "true,false,false,VIOLENT,SDS_STANDARD_RELEASE",
-    "true,false,true,NO,SDS_PLUS_RELEASE",
-    "true,false,true,SEXUAL,SDS_PLUS_RELEASE",
-    "true,false,true,VIOLENT,SDS_PLUS_RELEASE",
+    "true,false,NO,SDS_EARLY_RELEASE",
+    "false,false,NO,SDS_EARLY_RELEASE",
+    "true,false,SEXUAL,SDS_STANDARD_RELEASE",
+    "false,false,SEXUAL,SDS_STANDARD_RELEASE",
+    "true,false,VIOLENT,SDS_STANDARD_RELEASE",
+    "false,false,VIOLENT,SDS_STANDARD_RELEASE",
+    "false,true,NO,SDS_PLUS_RELEASE",
+    "false,true,SEXUAL,SDS_PLUS_RELEASE",
+    "false,true,VIOLENT,SDS_PLUS_RELEASE",
   )
   fun `Identify SDS early release correctly`(
-    featureToggle: Boolean,
     beforeCjaLaspo: Boolean,
     sdsPlus: Boolean,
     exclusion: SDSEarlyReleaseExclusionType,
@@ -263,7 +243,6 @@ class SentenceIdentificationServiceTest {
     sentenceIdentificationService.identify(
       sentence,
       offender,
-      CalculationOptions(calculateErsed = false, allowSDSEarlyRelease = featureToggle),
     )
     assertThat(sentence.identificationTrack).isEqualTo(expected)
   }

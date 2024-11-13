@@ -17,12 +17,12 @@ class CalculationService(
     booking: Booking,
     calculationUserInputs: CalculationUserInputs,
   ): CalculationOutput {
-    val options = CalculationOptions(calculationUserInputs.calculateErsed, allowSDSEarlyRelease = true)
+    val options = CalculationOptions(calculationUserInputs.calculateErsed)
     // identify the types of the sentences
     bookingCalculationService
-      .identify(booking, options)
+      .identify(booking)
 
-    val sentencesToCalculate = bookingCalculationService.getSentencesToCalculate(booking, options)
+    val sentencesToCalculate = bookingCalculationService.getSentencesToCalculate(booking)
 
     return bookingTimelineService.calculate(sentencesToCalculate, booking.adjustments, booking.offender, booking.returnToCustodyDate, options)
   }
