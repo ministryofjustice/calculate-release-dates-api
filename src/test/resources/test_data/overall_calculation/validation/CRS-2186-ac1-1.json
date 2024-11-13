@@ -29,7 +29,7 @@
       "lineSequence": 1,
       "caseReference": "A12345678",
       "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+      "hasAnSDSEarlyReleaseExclusion": "NO"
     },
     {
       "type": "StandardSentence",

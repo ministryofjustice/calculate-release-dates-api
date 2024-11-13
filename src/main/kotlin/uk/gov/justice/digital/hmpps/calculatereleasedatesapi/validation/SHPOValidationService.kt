@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_40_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SHPO_OFFENCE_COMMENCEMENT_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 
 @Service
 class SHPOValidationService {
@@ -59,14 +60,14 @@ class SHPOValidationService {
 
   private fun isConsecutiveSdsHistoricSentenceInValid(consecutiveSentence: ConsecutiveSentence): Boolean =
     consecutiveSentence.sentencedAt.isBefore(SDS_40_COMMENCEMENT_DATE) &&
-      consecutiveSentence.sentenceCalculation.releaseDate.isAfter(SDS_40_COMMENCEMENT_DATE)
+      consecutiveSentence.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(SDS_40_COMMENCEMENT_DATE)
 
   private fun isSdsSentenceInvalid(sentence: CalculableSentence): Boolean =
-    sentence.sentencedAt >= SDS_40_COMMENCEMENT_DATE &&
+    sentence.sentencedAt.isAfterOrEqualTo(SDS_40_COMMENCEMENT_DATE) &&
       sentence.offence.committedAt < SHPO_OFFENCE_COMMENCEMENT_DATE
 
   private fun isSdsHistoricSentenceInvalid(sentence: StandardDeterminateSentence): Boolean =
     sentence.sentencedAt.isBefore(SDS_40_COMMENCEMENT_DATE) &&
-      sentence.sentenceCalculation.releaseDate.isAfter(SDS_40_COMMENCEMENT_DATE) &&
+      sentence.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(SDS_40_COMMENCEMENT_DATE) &&
       sentence.offence.committedAt < SHPO_OFFENCE_COMMENCEMENT_DATE
 }

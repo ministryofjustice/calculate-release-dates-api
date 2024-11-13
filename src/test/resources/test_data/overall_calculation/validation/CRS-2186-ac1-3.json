@@ -1,0 +1,38 @@
+{
+  "offender": {
+    "reference": "A1234AA",
+    "dateOfBirth": "1992-11-13",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 1,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2020-11-30",
+        "offenceCode": "SE20012"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 72,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "5c64a902-3831-396c-80ae-7b7c1f2dd244",
+      "recallType": null,
+      "sentencedAt": "2024-08-13",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": null,
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    }
+  ],
+  "adjustments": {},
+  "historicalTusedData": null,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}
