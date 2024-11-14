@@ -47,7 +47,7 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
   implementation("io.arrow-kt:arrow-core:1.2.4")
-  implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.8.3")
+  implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.9.0")
 
   // OpenAPI
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
@@ -58,7 +58,7 @@ dependencies {
   implementation("com.google.code.gson:gson:2.11.0")
 
   // SQS
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.1.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.1.1")
 
   // Test dependencies
   testImplementation("org.wiremock:wiremock-standalone:3.9.2")
