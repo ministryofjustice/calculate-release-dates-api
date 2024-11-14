@@ -32,8 +32,8 @@
       {
         "appliesToSentencesFrom": "2022-03-14",
         "numberOfDays": 10,
-        "fromDate": "2022-03-13",
-        "toDate": "2022-03-04"
+        "fromDate": "2022-03-04",
+        "toDate": "2022-03-13"
       }
     ]
   },
