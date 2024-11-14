@@ -1,12 +1,10 @@
 {
   "offender": {
-    "reference": "A1234CD",
-    "dateOfBirth": "1987-08-05",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2022-08-10",
         "offenceCode": "RT88076"
@@ -16,51 +14,10 @@
           "MONTHS": 21
         }
       },
-      "identifier": "b5a4ffee-ca4b-37ac-99b0-55bf08e15a60",
       "sentencedAt": "2024-02-21",
-      "caseSequence": 2,
-      "lineSequence": 1,
-      "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": []
+      "identifier": "b5a4ffee-ca4b-37ac-99b0-55bf08e15a60"
     },
     {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2022-08-10",
-        "offenceCode": "RT88010"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 21
-        }
-      },
-      "identifier": "b5a4ffee-ca4b-37ac-99b0-55bf08e15a60",
-      "sentencedAt": "2024-02-21",
-      "caseSequence": 2,
-      "lineSequence": 1,
-      "caseReference": "B1234567",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2022-08-10",
-        "offenceCode": "RT88026"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 21
-        }
-      },
-      "identifier": "b5a4ffee-ca4b-37ac-99b0-55bf08e15a60",
-      "sentencedAt": "2024-02-21",
-      "caseSequence": 2,
-      "lineSequence": 1,
-      "caseReference": "C1234567",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2022-08-10",
         "offenceCode": "TH68010"
@@ -70,51 +27,9 @@
           "MONTHS": 1
         }
       },
-      "identifier": "b429664c-699a-329f-9043-36476a4089db",
-      "sentencedAt": "2024-02-21",
-      "caseSequence": 2,
-      "lineSequence": 2,
-      "caseReference": "D1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-02-21"
     },
     {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2022-08-10",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "identifier": "b429664c-699a-329f-9043-36476a4089db",
-      "sentencedAt": "2024-02-21",
-      "caseSequence": 2,
-      "lineSequence": 2,
-      "caseReference": "E1234567",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2022-08-10",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "identifier": "b429664c-699a-329f-9043-36476a4089db",
-      "sentencedAt": "2024-02-21",
-      "caseSequence": 2,
-      "lineSequence": 2,
-      "caseReference": "F1234567",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-12-17",
         "offenceCode": "TH68010"
@@ -124,17 +39,12 @@
           "MONTHS": 1
         }
       },
-      "identifier": "b76bba20-de06-3106-a368-05ea853c22df",
       "sentencedAt": "2024-03-21",
-      "caseSequence": 1,
-      "lineSequence": 3,
-      "caseReference": "G1234567",
       "consecutiveSentenceUUIDs": [
         "b5a4ffee-ca4b-37ac-99b0-55bf08e15a60"
       ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-01-23",
         "offenceCode": "TH68010"
@@ -144,31 +54,8 @@
           "MONTHS": 1
         }
       },
-      "identifier": "6fe9286b-8f08-3c17-a44d-9c7b3b771859",
-      "sentencedAt": "2024-03-21",
-      "caseSequence": 1,
-      "lineSequence": 4,
-      "caseReference": "H1234567",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2023-10-31",
-        "offenceCode": "TH68010"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 1
-        }
-      },
-      "sentencedAt": "2024-03-21",
-      "caseSequence": 1,
-      "lineSequence": 4,
-      "caseReference": "I1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-03-21"
     }
   ],
-  "adjustments": {},
   "calculateErsed": true
 }

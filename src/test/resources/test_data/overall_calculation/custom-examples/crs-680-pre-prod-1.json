@@ -1,11 +1,10 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-01-01"
       },
@@ -15,11 +14,9 @@
         }
       },
       "sentencedAt": "2020-11-20",
-      "identifier": "6eb5959e-e130-4b37-b18c-c5040dadecf8",
-      "isSDSPlus": false
+      "identifier": "6eb5959e-e130-4b37-b18c-c5040dadecf8"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-01-01"
       },
@@ -32,11 +29,9 @@
       "identifier": "d64d8f8c-5d18-40ec-b34e-ed4a409983c1",
       "consecutiveSentenceUUIDs": [
         "6eb5959e-e130-4b37-b18c-c5040dadecf8"
-      ],
-      "isSDSPlus": false
+      ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-01-01"
       },
@@ -48,11 +43,9 @@
       "sentencedAt": "2020-11-20",
       "consecutiveSentenceUUIDs": [
         "d64d8f8c-5d18-40ec-b34e-ed4a409983c1"
-      ],
-      "isSDSPlus": false
+      ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-01-01"
       },
@@ -65,7 +58,6 @@
       "isSDSPlus": true
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-01-01"
       },
@@ -74,11 +66,9 @@
           "YEARS": 3
         }
       },
-      "sentencedAt": "2021-05-24",
-      "isSDSPlus": false
+      "sentencedAt": "2021-05-24"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-01-01"
       },
@@ -87,27 +77,26 @@
           "MONTHS": 3
         }
       },
-      "sentencedAt": "2021-05-24",
-      "isSDSPlus": false
+      "sentencedAt": "2021-05-24"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 150,
         "appliesToSentencesFrom": "2021-05-24",
+        "numberOfDays": 150,
         "fromDate": "2020-05-04",
         "toDate": "2020-09-30"
       },
       {
-        "numberOfDays": 50,
         "appliesToSentencesFrom": "2020-11-20",
+        "numberOfDays": 50,
         "fromDate": "2020-10-01",
         "toDate": "2020-11-19"
       },
       {
-        "numberOfDays": 179,
         "appliesToSentencesFrom": "2021-05-24",
+        "numberOfDays": 179,
         "fromDate": "2020-11-26",
         "toDate": "2021-05-23"
       }

@@ -5,7 +5,6 @@
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-06-28"
       },
@@ -14,9 +13,7 @@
           "MONTHS": 4
         }
       },
-      "sentencedAt": "2024-11-04",
-      "identifier": "0549ff5e-93b1-3f22-8095-a97ab6c60f4b",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2024-11-04"
     }
   ],
   "adjustments": {
@@ -46,6 +43,5 @@
         "fromDate": "2024-10-31"
       }
     ]
-  },
-  "calculateErsed": false
+  }
 }

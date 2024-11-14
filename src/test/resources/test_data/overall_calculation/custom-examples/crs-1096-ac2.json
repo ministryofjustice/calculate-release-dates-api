@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2004-09-30"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -14,9 +14,7 @@
           "MONTHS": 23
         }
       },
-      "sentencedAt": "2022-08-14",
-      "sentenceType": "DTO_ORA",
-      "isDto": true
+      "sentencedAt": "2022-08-14"
     }
   ],
   "adjustments": {

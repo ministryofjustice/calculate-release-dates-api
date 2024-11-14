@@ -1,6 +1,6 @@
 {
   "offender": {
-    "reference": "A2630EZ",
+    "reference": "ABC123",
     "dateOfBirth": "1990-01-01"
   },
   "sentences": [
@@ -14,8 +14,7 @@
           "MONTHS": 9
         }
       },
-      "sentencedAt": "2024-09-12",
-      "sentenceType": "ADIMP_ORA"
+      "sentencedAt": "2024-09-12"
     }
   ]
 }

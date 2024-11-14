@@ -1,10 +1,8 @@
 {
   "offender": {
-    "reference": "A0000BR",
-    "dateOfBirth": "1987-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 999999,
   "sentences": [
     {
       "offence": {
@@ -12,14 +10,10 @@
       },
       "duration": {
         "durationElements": {
-          "WEEKS": 18,
-          "MONTHS": 0
+          "WEEKS": 18
         }
       },
-      "identifier": "c3aae214-294a-3b24-bd3c-6c8ad548d752",
       "sentencedAt": "2022-01-27",
-      "caseSequence": 1,
-      "lineSequence": 1,
       "consecutiveSentenceUUIDs": [
         "bc3cc930-f31d-382b-81df-3865df1e01b6"
       ]
@@ -30,15 +24,11 @@
       },
       "duration": {
         "durationElements": {
-          "WEEKS": 2,
-          "MONTHS": 0
+          "WEEKS": 2
         }
       },
-      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7",
       "sentencedAt": "2022-01-27",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "consecutiveSentenceUUIDs": []
+      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7"
     },
     {
       "offence": {
@@ -46,14 +36,11 @@
       },
       "duration": {
         "durationElements": {
-          "WEEKS": 2,
-          "MONTHS": 0
+          "WEEKS": 2
         }
       },
-      "identifier": "b79a6795-d543-31cb-9d4f-7c8ef71781f5",
       "sentencedAt": "2022-01-27",
-      "caseSequence": 1,
-      "lineSequence": 3,
+      "identifier": "b79a6795-d543-31cb-9d4f-7c8ef71781f5",
       "consecutiveSentenceUUIDs": [
         "ee91a161-dde2-3a7b-8611-624d255542a7"
       ]
@@ -64,14 +51,11 @@
       },
       "duration": {
         "durationElements": {
-          "WEEKS": 2,
-          "MONTHS": 0
+          "WEEKS": 2
         }
       },
-      "identifier": "f25cab81-e6d9-367f-89d4-589ed75a2896",
       "sentencedAt": "2022-01-27",
-      "caseSequence": 1,
-      "lineSequence": 4,
+      "identifier": "f25cab81-e6d9-367f-89d4-589ed75a2896",
       "consecutiveSentenceUUIDs": [
         "b79a6795-d543-31cb-9d4f-7c8ef71781f5"
       ]
@@ -82,14 +66,11 @@
       },
       "duration": {
         "durationElements": {
-          "WEEKS": 2,
-          "MONTHS": 0
+          "WEEKS": 2
         }
       },
-      "identifier": "ab6340ce-69a7-3901-a1e2-aa8013bd9824",
       "sentencedAt": "2022-01-27",
-      "caseSequence": 1,
-      "lineSequence": 5,
+      "identifier": "ab6340ce-69a7-3901-a1e2-aa8013bd9824",
       "consecutiveSentenceUUIDs": [
         "f25cab81-e6d9-367f-89d4-589ed75a2896"
       ]
@@ -100,14 +81,11 @@
       },
       "duration": {
         "durationElements": {
-          "WEEKS": 2,
-          "MONTHS": 0
+          "WEEKS": 2
         }
       },
-      "identifier": "377e4f7b-d49c-331d-a21c-4db6f9761959",
       "sentencedAt": "2022-01-27",
-      "caseSequence": 1,
-      "lineSequence": 6,
+      "identifier": "377e4f7b-d49c-331d-a21c-4db6f9761959",
       "consecutiveSentenceUUIDs": [
         "ab6340ce-69a7-3901-a1e2-aa8013bd9824"
       ]
@@ -118,18 +96,14 @@
       },
       "duration": {
         "durationElements": {
-          "WEEKS": 2,
-          "MONTHS": 0
+          "WEEKS": 2
         }
       },
-      "identifier": "bc3cc930-f31d-382b-81df-3865df1e01b6",
       "sentencedAt": "2022-01-27",
-      "caseSequence": 1,
-      "lineSequence": 7,
+      "identifier": "bc3cc930-f31d-382b-81df-3865df1e01b6",
       "consecutiveSentenceUUIDs": [
         "377e4f7b-d49c-331d-a21c-4db6f9761959"
       ]
     }
-  ],
-  "adjustments": {}
+  ]
 }

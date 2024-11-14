@@ -1,10 +1,11 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2002-12-22"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
+      "type": "DetentionAndTrainingOrderSentence",
       "offence": {
         "committedAt": "2020-01-20"
       },
@@ -13,10 +14,7 @@
           "MONTHS": 12
         }
       },
-      "sentencedAt": "2021-05-07",
-      "isDto": true,
-      "sentenceType": "DTO",
-      "type": "DetentionAndTrainingOrderSentence"
+      "sentencedAt": "2021-05-07"
     },
     {
       "offence": {
@@ -28,8 +26,6 @@
         }
       },
       "sentencedAt": "2021-10-14",
-      "isDto": false,
-      "sentenceType": "YOI",
       "isSDSPlus": true
     }
   ],

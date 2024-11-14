@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2000-07-23"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -14,9 +14,8 @@
           "MONTHS": 4
         }
       },
-      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7",
       "sentencedAt": "2023-01-25",
-      "sentenceType": "ADIMP",
+      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7",
       "isSDSPlus": true
     },
     {
@@ -30,12 +29,9 @@
         }
       },
       "sentencedAt": "2023-01-25",
-      "sentenceType": "ADIMP",
       "consecutiveSentenceUUIDs": [
         "ee91a161-dde2-3a7b-8611-624d255542a7"
       ]
     }
-  ],
-  "adjustments": {
-  }
+  ]
 }

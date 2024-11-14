@@ -1,12 +1,10 @@
 {
   "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "2001-06-22",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2022-03-13",
         "offenceCode": "OF61102"
@@ -16,16 +14,10 @@
           "MONTHS": 12
         }
       },
-      "identifier": "7e79c7eb-d015-3153-8870-419419c09385",
       "sentencedAt": "2022-08-26",
-      "caseSequence": 3,
-      "lineSequence": 1,
-      "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": [],
-      "isSDSPlus": false
+      "identifier": "7e79c7eb-d015-3153-8870-419419c09385"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-06-24",
         "offenceCode": "OF61102"
@@ -35,16 +27,9 @@
           "MONTHS": 12
         }
       },
-      "identifier": "f603893b-3cac-3d14-b71d-20918c0688c0",
-      "sentencedAt": "2022-08-26",
-      "caseSequence": 2,
-      "lineSequence": 2,
-      "caseReference": "B1234567",
-      "consecutiveSentenceUUIDs": [],
-      "isSDSPlus": false
+      "sentencedAt": "2022-08-26"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2022-04-02",
         "offenceCode": "OF61016"
@@ -54,18 +39,13 @@
           "YEARS": 4
         }
       },
-      "identifier": "ad00044e-cd1e-3a36-95a3-e09d6660fdbd",
       "sentencedAt": "2022-08-26",
-      "caseSequence": 1,
-      "lineSequence": 3,
-      "caseReference": "C1234567",
       "consecutiveSentenceUUIDs": [
         "7e79c7eb-d015-3153-8870-419419c09385"
       ],
       "isSDSPlus": true
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2022-04-02",
         "offenceCode": "CJ88149"
@@ -75,22 +55,16 @@
           "WEEKS": 6
         }
       },
-      "identifier": "f2b9e5bd-1b81-3411-b6dc-cd9011c7bcc4",
-      "sentencedAt": "2022-08-26",
-      "caseSequence": 1,
-      "lineSequence": 4,
-      "caseReference": "D1234567",
-      "consecutiveSentenceUUIDs": [],
-      "isSDSPlus": false
+      "sentencedAt": "2022-08-26"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2022-08-25",
-        "fromDate": "2022-04-04",
+        "appliesToSentencesFrom": "2022-08-26",
         "numberOfDays": 144,
-        "appliesToSentencesFrom": "2022-08-26"
+        "fromDate": "2022-04-04",
+        "toDate": "2022-08-25"
       }
     ]
   },

@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -26,14 +26,16 @@
         }
       },
       "sentencedAt": "2021-02-22",
-      "consecutiveSentenceUUIDs": ["0e9733dc-a8f0-44ec-85f7-77c55f6c3f98"]
+      "consecutiveSentenceUUIDs": [
+        "0e9733dc-a8f0-44ec-85f7-77c55f6c3f98"
+      ]
     }
   ],
   "adjustments": {
     "ADDITIONAL_DAYS_AWARDED": [
       {
-        "numberOfDays": 161,
         "appliesToSentencesFrom": "2021-02-23",
+        "numberOfDays": 161,
         "fromDate": "2021-02-23",
         "toDate": "2021-08-02"
       }

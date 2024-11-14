@@ -1,36 +1,36 @@
 {
-  "calculateErsed": true,
-  "offender":{
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "sentences":[
+  "sentences": [
     {
-      "type":"SopcSentence",
-      "offence":{
-        "committedAt":"2022-10-12"
+      "type": "SopcSentence",
+      "offence": {
+        "committedAt": "2022-10-12"
       },
-      "custodialDuration":{
-        "durationElements":{
+      "custodialDuration": {
+        "durationElements": {
           "YEARS": 7
         }
       },
-      "extensionDuration":{
-        "durationElements":{
+      "extensionDuration": {
+        "durationElements": {
           "YEARS": 1
         }
       },
-      "sentencedAt":"2022-10-13"
+      "sentencedAt": "2022-10-13"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 95,
         "appliesToSentencesFrom": "2022-10-13",
-        "toDate": "2022-10-12",
-        "fromDate": "2022-07-10"
+        "numberOfDays": 95,
+        "fromDate": "2022-07-10",
+        "toDate": "2022-10-12"
       }
     ]
-  }
+  },
+  "calculateErsed": true
 }

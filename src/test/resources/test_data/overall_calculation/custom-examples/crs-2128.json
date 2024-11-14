@@ -1,85 +1,56 @@
 {
   "offender": {
-    "reference": "A2234BC",
-    "dateOfBirth": "1980-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2005-05-27",
         "offenceCode": "FI68068"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 18
         }
       },
-      "isSDSPlus": false,
-      "identifier": "7c83c662-4ee4-3ea4-a62f-d748d611b189",
-      "recallType": "STANDARD_RECALL",
       "sentencedAt": "2005-12-21",
-      "caseSequence": 1,
-      "lineSequence": 16,
-      "caseReference": "LIVE",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2005-02-01",
         "offenceCode": "CE79028"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 17,
-          "MONTHS": 0
+          "YEARS": 17
         }
       },
-      "isSDSPlus": false,
-      "identifier": "2e167468-1fc8-3981-b890-1ec1722e6e9d",
-      "recallType": "STANDARD_RECALL",
       "sentencedAt": "2005-12-21",
-      "caseSequence": 1,
-      "lineSequence": 17,
-      "caseReference": "LIVE",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     }
   ],
   "adjustments": {
     "RECALL_REMAND": [
       {
-        "toDate": null,
-        "fromDate": null,
-        "numberOfDays": 208,
-        "appliesToSentencesFrom": "2005-12-21"
+        "appliesToSentencesFrom": "2005-12-21",
+        "numberOfDays": 208
       }
     ],
     "UNLAWFULLY_AT_LARGE": [
       {
-        "toDate": "2016-06-29",
-        "fromDate": "2013-06-26",
+        "appliesToSentencesFrom": "2013-06-26",
         "numberOfDays": 1100,
-        "appliesToSentencesFrom": "2013-06-26"
+        "fromDate": "2013-06-26",
+        "toDate": "2016-06-29"
       },
       {
-        "toDate": "2024-08-09",
-        "fromDate": "2024-08-08",
+        "appliesToSentencesFrom": "2024-08-08",
         "numberOfDays": 2,
-        "appliesToSentencesFrom": "2024-08-08"
+        "fromDate": "2024-08-08",
+        "toDate": "2024-08-09"
       }
     ]
-  },
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  }
 }

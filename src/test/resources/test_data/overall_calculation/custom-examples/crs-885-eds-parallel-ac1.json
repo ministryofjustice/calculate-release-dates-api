@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -13,14 +13,14 @@
           "MONTHS": 40
         }
       },
-      "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2017-08-28"
+      "sentencedAt": "2017-08-28",
+      "recallType": "STANDARD_RECALL"
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2021-10-02"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 1,
@@ -32,17 +32,16 @@
           "YEARS": 2
         }
       },
-      "automaticRelease": false,
       "sentencedAt": "2019-03-20"
     }
   ],
   "adjustments": {
     "RECALL_REMAND": [
       {
-        "numberOfDays": 61,
         "appliesToSentencesFrom": "2017-08-28",
-        "toDate": "2017-10-30",
-        "fromDate": "2017-08-27"
+        "numberOfDays": 61,
+        "fromDate": "2017-08-27",
+        "toDate": "2017-10-30"
       }
     ]
   }

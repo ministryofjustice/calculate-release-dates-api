@@ -1,60 +1,60 @@
 {
-  "offender":{
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "sentences":[
+  "sentences": [
     {
-      "type":"SopcSentence",
-      "offence":{
-        "committedAt":"2022-02-24"
+      "type": "SopcSentence",
+      "offence": {
+        "committedAt": "2022-02-24"
       },
-      "custodialDuration":{
-        "durationElements":{
+      "custodialDuration": {
+        "durationElements": {
           "YEARS": 1
         }
       },
-      "extensionDuration":{
-        "durationElements":{
+      "extensionDuration": {
+        "durationElements": {
           "YEARS": 1
         }
       },
-      "sentencedAt":"2022-04-24",
-      "identifier":"83fd11aa-a579-3b93-aaba-937e138aec88"
+      "sentencedAt": "2022-04-24",
+      "identifier": "83fd11aa-a579-3b93-aaba-937e138aec88"
     },
     {
-      "offence":{
-        "committedAt":"2022-11-25"
+      "offence": {
+        "committedAt": "2022-11-25"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "MONTHS": 2
         }
       },
-      "sentencedAt":"2022-11-26",
-      "consecutiveSentenceUUIDs":[
+      "sentencedAt": "2022-11-26",
+      "consecutiveSentenceUUIDs": [
         "83fd11aa-a579-3b93-aaba-937e138aec88"
       ]
     },
     {
-      "offence":{
-        "committedAt":"2022-11-25"
+      "offence": {
+        "committedAt": "2022-11-25"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "YEARS": 1
         }
       },
-      "sentencedAt":"2022-11-26"
+      "sentencedAt": "2022-11-26"
     }
   ],
-  "adjustments":{
-    "REMAND":[
+  "adjustments": {
+    "REMAND": [
       {
-        "appliesToSentencesFrom":"2022-04-24",
-        "numberOfDays":45,
-        "fromDate":"2022-03-10",
-        "toDate":"2022-04-23"
+        "appliesToSentencesFrom": "2022-04-24",
+        "numberOfDays": 45,
+        "fromDate": "2022-03-10",
+        "toDate": "2022-04-23"
       }
     ]
   }

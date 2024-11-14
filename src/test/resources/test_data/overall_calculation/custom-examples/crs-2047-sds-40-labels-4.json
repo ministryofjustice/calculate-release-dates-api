@@ -5,7 +5,6 @@
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-10-13"
       },
@@ -15,11 +14,9 @@
         }
       },
       "sentencedAt": "2022-04-08",
-      "identifier": "7e630c54-5071-3914-be62-c177e622cdfc",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "identifier": "7e630c54-5071-3914-be62-c177e622cdfc"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-08-31"
       },
@@ -32,11 +29,9 @@
       "identifier": "f2321d7a-07ca-3dbe-b1fe-09cdbd9728ec",
       "consecutiveSentenceUUIDs": [
         "7e630c54-5071-3914-be62-c177e622cdfc"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2018-06-29"
       },
@@ -46,14 +41,11 @@
         }
       },
       "sentencedAt": "2022-04-08",
-      "identifier": "ad49364c-6dda-3cae-90a4-a1bf275afc46",
       "consecutiveSentenceUUIDs": [
         "f2321d7a-07ca-3dbe-b1fe-09cdbd9728ec"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-10-13"
       },
@@ -62,9 +54,7 @@
           "MONTHS": 3
         }
       },
-      "sentencedAt": "2022-04-08",
-      "identifier": "d027a178-3681-3b1a-8cc4-2405c2e3a6e2",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2022-04-08"
     }
   ],
   "adjustments": {

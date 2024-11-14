@@ -1,10 +1,11 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2005-05-16"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
+      "type": "DetentionAndTrainingOrderSentence",
       "offence": {
         "committedAt": "2023-01-12"
       },
@@ -13,11 +14,10 @@
           "MONTHS": 10
         }
       },
-      "sentencedAt": "2023-01-12",
-      "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "sentencedAt": "2023-01-12"
     },
     {
+      "type": "DetentionAndTrainingOrderSentence",
       "offence": {
         "committedAt": "2023-01-12"
       },
@@ -26,11 +26,10 @@
           "MONTHS": 10
         }
       },
-      "sentencedAt": "2023-01-12",
-      "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "sentencedAt": "2023-01-12"
     },
     {
+      "type": "DetentionAndTrainingOrderSentence",
       "offence": {
         "committedAt": "2023-01-12"
       },
@@ -39,11 +38,10 @@
           "MONTHS": 10
         }
       },
-      "sentencedAt": "2023-01-12",
-      "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "sentencedAt": "2023-01-12"
     },
     {
+      "type": "DetentionAndTrainingOrderSentence",
       "offence": {
         "committedAt": "2023-01-12"
       },
@@ -52,11 +50,10 @@
           "YEARS": 2
         }
       },
-      "sentencedAt": "2022-10-07",
-      "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "sentencedAt": "2022-10-07"
     },
     {
+      "type": "DetentionAndTrainingOrderSentence",
       "offence": {
         "committedAt": "2023-01-12"
       },
@@ -65,11 +62,10 @@
           "MONTHS": 18
         }
       },
-      "sentencedAt": "2022-10-07",
-      "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "sentencedAt": "2022-10-07"
     },
     {
+      "type": "DetentionAndTrainingOrderSentence",
       "offence": {
         "committedAt": "2023-01-12"
       },
@@ -78,12 +74,9 @@
           "MONTHS": 10
         }
       },
-      "sentencedAt": "2022-10-07",
-      "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "sentencedAt": "2022-10-07"
     }
   ],
-
   "adjustments": {
     "REMAND": [
       {

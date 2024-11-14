@@ -1,12 +1,10 @@
 {
   "offender": {
-    "reference": "A1234DE",
-    "dateOfBirth": "1986-08-23",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-12-17",
         "offenceCode": "TH68023"
@@ -16,21 +14,16 @@
           "MONTHS": 27
         }
       },
-      "identifier": "efdc418d-4383-30e8-86d3-970827698aa1",
-      "sentencedAt": "2024-03-12",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-03-12"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2024-03-11",
-        "fromDate": "2023-12-19",
+        "appliesToSentencesFrom": "2024-03-12",
         "numberOfDays": 84,
-        "appliesToSentencesFrom": "2024-03-12"
+        "fromDate": "2023-12-19",
+        "toDate": "2024-03-11"
       }
     ]
   },

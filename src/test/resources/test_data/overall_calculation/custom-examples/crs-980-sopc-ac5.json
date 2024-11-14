@@ -1,24 +1,24 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "offence":{
-        "committedAt":"2024-01-19"
+      "offence": {
+        "committedAt": "2024-01-19"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "YEARS": 15
         }
       },
-      "sentencedAt":"2024-02-19"
+      "sentencedAt": "2024-02-19"
     },
     {
       "type": "SopcSentence",
       "offence": {
-        "committedAt":"2024-01-19"
+        "committedAt": "2024-01-19"
       },
       "custodialDuration": {
         "durationElements": {
@@ -30,7 +30,7 @@
           "YEARS": 1
         }
       },
-      "sentencedAt":"2024-02-19"
+      "sentencedAt": "2024-02-19"
     }
   ]
 }

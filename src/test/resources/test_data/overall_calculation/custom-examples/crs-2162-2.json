@@ -5,7 +5,6 @@
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2022-03-19"
       },
@@ -14,12 +13,9 @@
           "MONTHS": 56
         }
       },
-      "sentencedAt": "2022-10-17",
-      "identifier": "d14a87a9-cb88-343a-a71f-6c9bcb7ecf46",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2022-10-17"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-11-16"
       },
@@ -29,9 +25,7 @@
           "MONTHS": 6
         }
       },
-      "sentencedAt": "2024-09-20",
-      "identifier": "0e7b8ac2-5c4c-31f2-ab02-26e49d317519",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2024-09-20"
     }
   ],
   "adjustments": {
@@ -43,6 +37,5 @@
         "toDate": "2024-09-19"
       }
     ]
-  },
-  "calculateErsed": false
+  }
 }

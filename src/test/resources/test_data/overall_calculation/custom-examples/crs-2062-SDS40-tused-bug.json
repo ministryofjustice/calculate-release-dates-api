@@ -1,48 +1,31 @@
 {
-  "calculateErsed": false,
   "offender": {
-    "reference": "A1234AA",
-    "dateOfBirth": "1989-01-01",
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01",
     "isActiveSexOffender": true
   },
-  "bookingId": 1,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-12-01",
         "offenceCode": "OF61102"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 9
         }
       },
-      "isSDSPlus": false,
-      "identifier": "cad9ec87-1dab-3248-b906-6cefd732fdff",
-      "recallType": null,
-      "sentencedAt": "2024-01-09",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "07WZ1956523",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2024-01-09"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2024-01-08",
-        "fromDate": "2023-12-04",
+        "appliesToSentencesFrom": "2024-01-09",
         "numberOfDays": 36,
-        "appliesToSentencesFrom": "2024-01-09"
+        "fromDate": "2023-12-04",
+        "toDate": "2024-01-08"
       }
     ]
-  },
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  }
 }

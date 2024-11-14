@@ -1,19 +1,19 @@
 {
   "calculateErsed": true,
-  "offender":{
+  "offender": {
     "reference": "ABC123D",
     "dateOfBirth": "2005-04-01"
   },
-  "sentences":[
+  "sentences": [
     {
-      "type":"StandardDeterminateSentence",
+      "type": "StandardDeterminateSentence",
       "lineSequence": 1,
       "caseSequence": 1,
-      "offence":{
-        "committedAt":"2022-08-25"
+      "offence": {
+        "committedAt": "2022-08-25"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "MONTHS": 8
         }
       },
@@ -24,11 +24,11 @@
       "type": "DetentionAndTrainingOrderSentence",
       "lineSequence": 2,
       "caseSequence": 1,
-      "offence":{
-        "committedAt":"2022-08-25"
+      "offence": {
+        "committedAt": "2022-08-25"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "MONTHS": 12
         }
       },

@@ -1,6 +1,6 @@
 {
   "offender": {
-    "reference": "ABC123D",
+    "reference": "ABC123",
     "dateOfBirth": "2004-08-30"
   },
   "sentences": [
@@ -14,11 +14,7 @@
           "MONTHS": 18
         }
       },
-      "sentencedAt": "2021-05-23",
-      "sentenceType": "DTO_ORA",
-      "isDto": true
+      "sentencedAt": "2021-05-23"
     }
-  ],
-  "adjustments": {
-  }
+  ]
 }

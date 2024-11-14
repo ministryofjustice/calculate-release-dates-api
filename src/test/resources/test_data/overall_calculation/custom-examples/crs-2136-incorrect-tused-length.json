@@ -5,7 +5,6 @@
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-07-31"
       },
@@ -15,9 +14,7 @@
         }
       },
       "sentencedAt": "2024-03-12",
-      "identifier": "e3335303-905d-3800-99ec-55ff7a0ebedd",
-      "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     }
   ],
   "adjustments": {

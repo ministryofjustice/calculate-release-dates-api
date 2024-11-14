@@ -1,12 +1,10 @@
 {
   "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "2002-09-18",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-09-21",
         "offenceCode": "MD71230"
@@ -16,16 +14,10 @@
           "MONTHS": 30
         }
       },
-      "identifier": "dc70a149-4da3-3dab-8379-5ab910615a6c",
       "sentencedAt": "2023-07-28",
-      "caseSequence": 2,
-      "lineSequence": 1,
-      "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": [],
-      "isSDSPlus": false
+      "identifier": "dc70a149-4da3-3dab-8379-5ab910615a6c"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-09-21",
         "offenceCode": "OF61016"
@@ -35,18 +27,14 @@
           "MONTHS": 48
         }
       },
-      "identifier": "46efb6f4-c072-3ed1-b01a-48dd65c07790",
       "sentencedAt": "2023-07-28",
-      "caseSequence": 2,
-      "lineSequence": 2,
-      "caseReference": "B1234567",
+      "identifier": "46efb6f4-c072-3ed1-b01a-48dd65c07790",
       "consecutiveSentenceUUIDs": [
         "dc70a149-4da3-3dab-8379-5ab910615a6c"
       ],
       "isSDSPlus": true
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-08-29",
         "offenceCode": "CJ88154"
@@ -56,16 +44,9 @@
           "MONTHS": 10
         }
       },
-      "identifier": "37197446-a2fd-303c-8a8b-c6d74c4a8070",
-      "sentencedAt": "2023-07-28",
-      "caseSequence": 2,
-      "lineSequence": 3,
-      "caseReference": "C1234567",
-      "consecutiveSentenceUUIDs": [],
-      "isSDSPlus": false
+      "sentencedAt": "2023-07-28"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-10-20",
         "offenceCode": "OF61102"
@@ -75,18 +56,13 @@
           "MONTHS": 6
         }
       },
-      "identifier": "314677c7-faa7-32c0-953b-cf32f7d9c6a2",
       "sentencedAt": "2023-07-28",
-      "caseSequence": 3,
-      "lineSequence": 4,
-      "caseReference": "D1234567",
+      "identifier": "314677c7-faa7-32c0-953b-cf32f7d9c6a2",
       "consecutiveSentenceUUIDs": [
         "46efb6f4-c072-3ed1-b01a-48dd65c07790"
-      ],
-      "isSDSPlus": false
+      ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-10-09",
         "offenceCode": "COML030"
@@ -96,24 +72,19 @@
           "MONTHS": 6
         }
       },
-      "identifier": "73451d83-99d2-37e0-b4de-c2de9f38fa1f",
       "sentencedAt": "2023-07-28",
-      "caseSequence": 4,
-      "lineSequence": 5,
-      "caseReference": "E1234567",
       "consecutiveSentenceUUIDs": [
         "314677c7-faa7-32c0-953b-cf32f7d9c6a2"
-      ],
-      "isSDSPlus": false
+      ]
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2023-07-27",
-        "fromDate": "2020-09-22",
+        "appliesToSentencesFrom": "2023-07-28",
         "numberOfDays": 1039,
-        "appliesToSentencesFrom": "2023-07-28"
+        "fromDate": "2020-09-22",
+        "toDate": "2023-07-27"
       }
     ]
   },

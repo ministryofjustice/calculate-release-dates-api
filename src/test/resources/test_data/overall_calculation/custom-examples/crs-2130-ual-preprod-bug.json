@@ -5,7 +5,6 @@
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-06-14"
       },
@@ -15,12 +14,9 @@
         }
       },
       "sentencedAt": "2024-06-15",
-      "identifier": "5ef4f460-9124-3b10-ac3a-7632d879c74a",
-      "recallType": "FIXED_TERM_RECALL_14",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "FIXED_TERM_RECALL_14"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-06-14"
       },
@@ -30,9 +26,7 @@
         }
       },
       "sentencedAt": "2024-06-15",
-      "identifier": "705a9fb8-a12f-37c6-8c2a-444ca51290ba",
-      "recallType": "FIXED_TERM_RECALL_14",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "FIXED_TERM_RECALL_14"
     }
   ],
   "adjustments": {

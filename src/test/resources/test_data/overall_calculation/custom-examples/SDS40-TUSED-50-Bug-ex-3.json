@@ -1,145 +1,72 @@
 {
   "offender": {
-    "reference": "A1234AA",
-    "dateOfBirth": "1988-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-11-07",
         "offenceCode": "OF61131"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 15
         }
       },
-      "isSDSPlus": false,
-      "identifier": "ac46978d-8147-346a-b628-f832561d203e",
-      "recallType": "STANDARD_RECALL",
       "sentencedAt": "2024-02-14",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "13LD1166523",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-01-10",
         "offenceCode": "DA05001"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 2,
-          "YEARS": 0,
-          "MONTHS": 0
+          "WEEKS": 2
         }
       },
-      "isSDSPlus": false,
-      "identifier": "95e47b57-fcdd-318d-8305-157e677c26bc",
-      "recallType": "STANDARD_RECALL",
       "sentencedAt": "2024-02-14",
-      "caseSequence": 2,
-      "lineSequence": 2,
-      "caseReference": "13LD0050023",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2021-03-03",
-        "offenceCode": "PU86116"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 2,
-          "YEARS": 0,
-          "MONTHS": 0
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "cd434ecb-ecb0-3c1f-8e5e-ad0d3f0aeb56",
-      "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2024-02-14",
-      "caseSequence": 2,
-      "lineSequence": 3,
-      "caseReference": "13LD0050023",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
-    },
-    {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-07-01",
         "offenceCode": "CJ88160"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 16,
-          "YEARS": 0,
-          "MONTHS": 0
+          "WEEKS": 16
         }
       },
-      "isSDSPlus": false,
-      "identifier": "e7acfe9e-4c3b-3153-a90d-ec022fb81b8e",
-      "recallType": null,
       "sentencedAt": "2024-07-03",
-      "caseSequence": 3,
-      "lineSequence": 4,
-      "caseReference": "13LD0672024",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "identifier": "e7acfe9e-4c3b-3153-a90d-ec022fb81b8e"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-07-01",
         "offenceCode": "PH97003"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 12,
-          "YEARS": 0,
-          "MONTHS": 0
+          "WEEKS": 12
         }
       },
-      "isSDSPlus": false,
-      "identifier": "70c770c3-acac-319d-88d9-c23a75aa0864",
-      "recallType": null,
       "sentencedAt": "2024-07-03",
-      "caseSequence": 3,
-      "lineSequence": 5,
-      "caseReference": "13LD0672024",
       "consecutiveSentenceUUIDs": [
         "e7acfe9e-4c3b-3153-a90d-ec022fb81b8e"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      ]
     }
   ],
   "adjustments": {
     "RECALL_REMAND": [
       {
-        "toDate": "2024-02-13",
-        "fromDate": "2023-11-08",
+        "appliesToSentencesFrom": "2024-02-14",
         "numberOfDays": 98,
-        "appliesToSentencesFrom": "2024-02-14"
+        "fromDate": "2023-11-08",
+        "toDate": "2024-02-13"
       }
     ]
-  },
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  }
 }
