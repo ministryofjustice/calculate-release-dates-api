@@ -125,8 +125,8 @@ class BookingExtractionService(
     }
 
     return CalculationResult(
-      dates,
-      sentenceCalculation.breakdownByReleaseDateType,
+      dates.toMap(),
+      sentenceCalculation.breakdownByReleaseDateType.toMap(),
       emptyMap(),
       getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedExpiryDate),
       false,

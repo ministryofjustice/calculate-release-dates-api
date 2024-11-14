@@ -57,11 +57,11 @@ class BookingTimelineService(
       options,
     )
 
-    calculationsByDate.forEach { (date, calculations) ->
-      checkForReleasesAndLicenseExpiry(date, timelineTrackingData)
+    calculationsByDate.forEach { (timelineCalculationDate, calculations) ->
+      checkForReleasesAndLicenseExpiry(timelineCalculationDate, timelineTrackingData)
 
       calculations.sortedBy { it.type.ordinal }.forEachIndexed { _, it ->
-        val result = handlerFor(it.type).handle(date, timelineTrackingData)
+        val result = handlerFor(it.type).handle(timelineCalculationDate, timelineTrackingData)
         if (result.skipCalculation) {
           return@forEach
         }
@@ -185,7 +185,7 @@ class BookingTimelineService(
       TimelineCalculationDate(trancheConfiguration.trancheOneCommencementDate, TimelineCalculationType.TRANCHE_1) +
       TimelineCalculationDate(trancheConfiguration.trancheTwoCommencementDate, TimelineCalculationType.TRANCHE_2)
 
-    allCalculations = allCalculations.sortedBy { it.date }
+    allCalculations = allCalculations.sortedBy { it.date }.distinct()
 
     return allCalculations.groupBy { it.date }
   }

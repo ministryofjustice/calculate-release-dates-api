@@ -19,6 +19,7 @@ class TimelineTrancheCalculationHandler(
   val trancheAllocationService: TrancheAllocationService,
   val sentenceExtractionService: SentencesExtractionService,
 ) : TimelineCalculationHandler(trancheConfiguration, multiplierLookup, timelineCalculator) {
+
   override fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
     with(timelineTrackingData) {
       val allSentences = releasedSentences.map { it.sentences } + listOf(custodialSentences)
