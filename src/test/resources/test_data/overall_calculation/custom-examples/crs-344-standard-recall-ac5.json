@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -13,9 +13,9 @@
           "MONTHS": 14
         }
       },
-      "recallType": "STANDARD_RECALL",
       "sentencedAt": "2021-01-25",
-      "identifier": "1ad25047-585a-4750-ac44-9cd2cc7640a6"
+      "identifier": "1ad25047-585a-4750-ac44-9cd2cc7640a6",
+      "recallType": "STANDARD_RECALL"
     },
     {
       "offence": {
@@ -26,10 +26,12 @@
           "MONTHS": 10
         }
       },
-      "recallType": "STANDARD_RECALL",
       "sentencedAt": "2021-01-25",
-      "consecutiveSentenceUUIDs": ["1ad25047-585a-4750-ac44-9cd2cc7640a6"],
-      "identifier": "c090d292-ddc3-4f8f-af56-ea61b6d725f7"
+      "identifier": "c090d292-ddc3-4f8f-af56-ea61b6d725f7",
+      "consecutiveSentenceUUIDs": [
+        "1ad25047-585a-4750-ac44-9cd2cc7640a6"
+      ],
+      "recallType": "STANDARD_RECALL"
     },
     {
       "offence": {
@@ -40,18 +42,20 @@
           "MONTHS": 7
         }
       },
-      "recallType": "STANDARD_RECALL",
       "sentencedAt": "2021-01-25",
-      "consecutiveSentenceUUIDs": ["c090d292-ddc3-4f8f-af56-ea61b6d725f7"]
+      "consecutiveSentenceUUIDs": [
+        "c090d292-ddc3-4f8f-af56-ea61b6d725f7"
+      ],
+      "recallType": "STANDARD_RECALL"
     }
   ],
   "adjustments": {
     "RECALL_REMAND": [
       {
-        "numberOfDays": 10,
         "appliesToSentencesFrom": "2021-01-25",
-        "toDate": "2021-01-15",
-        "fromDate": "2021-01-24"
+        "numberOfDays": 10,
+        "fromDate": "2021-01-24",
+        "toDate": "2021-01-15"
       }
     ]
   }

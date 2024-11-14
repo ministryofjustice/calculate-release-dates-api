@@ -1,9 +1,8 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "returnToCustodyDate": "2022-01-07",
   "sentences": [
     {
       "offence": {
@@ -14,8 +13,8 @@
           "MONTHS": 7
         }
       },
-      "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2021-10-18"
+      "sentencedAt": "2021-10-18",
+      "recallType": "STANDARD_RECALL"
     },
     {
       "offence": {
@@ -26,8 +25,8 @@
           "MONTHS": 3
         }
       },
-      "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2021-10-18"
+      "sentencedAt": "2021-10-18",
+      "recallType": "STANDARD_RECALL"
     },
     {
       "offence": {
@@ -55,27 +54,28 @@
   "adjustments": {
     "RECALL_REMAND": [
       {
-        "numberOfDays": 76,
-        "appliesToSentencesFrom": "2021-10-18"
+        "appliesToSentencesFrom": "2021-10-18",
+        "numberOfDays": 76
       },
       {
-        "numberOfDays": 32,
-        "appliesToSentencesFrom": "2021-10-18"
+        "appliesToSentencesFrom": "2021-10-18",
+        "numberOfDays": 32
       }
     ],
     "RECALL_TAGGED_BAIL": [
       {
-        "numberOfDays": 30,
-        "appliesToSentencesFrom": "2021-10-18"
+        "appliesToSentencesFrom": "2021-10-18",
+        "numberOfDays": 30
       }
     ],
     "UNLAWFULLY_AT_LARGE": [
       {
-        "numberOfDays": 36,
         "appliesToSentencesFrom": "2021-11-03",
-        "toDate": "2021-12-08",
-        "fromDate": "2021-11-03"
+        "numberOfDays": 36,
+        "fromDate": "2021-11-03",
+        "toDate": "2021-12-08"
       }
     ]
-  }
+  },
+  "returnToCustodyDate": "2022-01-07"
 }

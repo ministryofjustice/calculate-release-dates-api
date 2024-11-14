@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2000-07-23"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -13,14 +13,13 @@
           "YEARS": 7
         }
       },
-      "sentencedAt": "2023-11-13",
-      "sentenceType": "ADIMP"
+      "sentencedAt": "2023-11-13"
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2019-12-07"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 6
@@ -31,11 +30,7 @@
           "YEARS": 4
         }
       },
-      "sentencedAt": "2021-03-13",
-      "sentenceType": "EDS21"
+      "sentencedAt": "2021-03-13"
     }
-  ],
-  "adjustments": {
-  }
+  ]
 }
-

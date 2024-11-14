@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2004-11-05"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -14,9 +14,8 @@
         }
       },
       "sentencedAt": "2024-09-10",
-      "sentenceType": "LR_YOI_ORA",
-      "recallType": "STANDARD_RECALL",
-      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
+      "recallType": "STANDARD_RECALL"
     },
     {
       "offence": {
@@ -28,11 +27,10 @@
         }
       },
       "sentencedAt": "2024-09-10",
-      "sentenceType": "LR_YOI_ORA",
-      "recallType": "STANDARD_RECALL",
       "consecutiveSentenceUUIDs": [
         "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
-      ]
+      ],
+      "recallType": "STANDARD_RECALL"
     },
     {
       "offence": {
@@ -44,7 +42,6 @@
         }
       },
       "sentencedAt": "2024-09-09",
-      "sentenceType": "LR_YOI_ORA",
       "recallType": "STANDARD_RECALL"
     }
   ]

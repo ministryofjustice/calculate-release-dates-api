@@ -1,14 +1,10 @@
-
-
 {
   "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "1977-05-02",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-07-01"
       },
@@ -20,7 +16,6 @@
       "sentencedAt": "2022-03-14"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-12-23"
       },
@@ -35,10 +30,10 @@
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2022-03-13",
-        "fromDate": "2022-03-04",
+        "appliesToSentencesFrom": "2022-03-14",
         "numberOfDays": 10,
-        "appliesToSentencesFrom": "2022-03-14"
+        "fromDate": "2022-03-04",
+        "toDate": "2022-03-13"
       }
     ]
   },

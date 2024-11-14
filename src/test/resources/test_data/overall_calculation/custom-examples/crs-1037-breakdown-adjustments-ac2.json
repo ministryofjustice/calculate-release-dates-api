@@ -1,14 +1,14 @@
 {
-  "offender":{
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "sentences":[
+  "sentences": [
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2020-09-10"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 2
@@ -19,33 +19,32 @@
           "YEARS": 1
         }
       },
-      "automaticRelease": false,
       "sentencedAt": "2020-09-11"
     },
     {
-      "offence":{
-        "committedAt":"2021-05-14"
+      "offence": {
+        "committedAt": "2021-05-14"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "YEARS": 3,
           "MONTHS": 3
         }
       },
-      "sentencedAt":"2021-05-15"
+      "sentencedAt": "2021-05-15"
     },
     {
-      "type":"AFineSentence",
-      "offence":{
-        "committedAt":"2022-09-01"
+      "type": "AFineSentence",
+      "offence": {
+        "committedAt": "2022-09-01"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "DAYS": 14
         }
       },
-      "sentencedAt":"2022-09-02",
-      "fineAmount": 400
+      "sentencedAt": "2022-09-02",
+      "fineAmount": 4E+2
     }
   ]
 }

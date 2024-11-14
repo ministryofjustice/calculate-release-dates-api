@@ -1,11 +1,10 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-12-17"
       },
@@ -22,10 +21,10 @@
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 125,
         "appliesToSentencesFrom": "2020-04-22",
-        "toDate": "2020-04-21",
-        "fromDate": "2019-12-18"
+        "numberOfDays": 125,
+        "fromDate": "2019-12-18",
+        "toDate": "2020-04-21"
       }
     ]
   }

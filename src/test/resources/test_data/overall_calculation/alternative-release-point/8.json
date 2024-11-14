@@ -1,12 +1,10 @@
 {
   "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "1981-08-23",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-08-18",
         "offenceCode": "COML002"
@@ -16,39 +14,28 @@
           "YEARS": 2
         }
       },
-      "sentencedAt": "2024-02-01",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-02-01"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-08-19",
         "offenceCode": "PH97004"
       },
       "duration": {
         "durationElements": {
-          "WEEKS": 8,
-          "MONTHS": 0
+          "WEEKS": 8
         }
       },
-      "identifier": "dfa11d46-bda8-34ef-943c-5f30a961e9bf",
-      "sentencedAt": "2024-03-05",
-      "caseSequence": 2,
-      "lineSequence": 2,
-      "caseReference": "B1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-03-05"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2024-01-31",
-        "fromDate": "2023-08-19",
+        "appliesToSentencesFrom": "2024-02-01",
         "numberOfDays": 166,
-        "appliesToSentencesFrom": "2024-02-01"
+        "fromDate": "2023-08-19",
+        "toDate": "2024-01-31"
       }
     ]
   },

@@ -1,15 +1,12 @@
 {
   "offender": {
-    "reference": "PH97006",
-    "dateOfBirth": "1994-11-24",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "SEC250",
       "offence": {
-        "committedAt": "2024-03-22",
-        "description": "Stalking without fear / alarm / distress"
+        "committedAt": "2024-03-22"
       },
       "duration": {
         "durationElements": {
@@ -17,27 +14,18 @@
         }
       },
       "sentencedAt": "2024-03-22",
-      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE",
-      "sentenceSequence": 1,
-      "lineSequence": 1,
-      "caseSequence": 1
+      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
     },
     {
-      "type": "SEC250",
       "offence": {
-        "committedAt": "2024-03-22",
-        "description": "Offer to supply a class A drug - other"
+        "committedAt": "2024-03-22"
       },
       "duration": {
         "durationElements": {
           "YEARS": 5
         }
       },
-      "sentencedAt": "2024-03-22",
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceSequence": 2,
-      "lineSequence": 1,
-      "caseSequence": 1
+      "sentencedAt": "2024-03-22"
     }
   ],
   "adjustments": {
@@ -49,6 +37,5 @@
         "toDate": "2024-03-21"
       }
     ]
-  },
-  "calculateErsed": false
+  }
 }

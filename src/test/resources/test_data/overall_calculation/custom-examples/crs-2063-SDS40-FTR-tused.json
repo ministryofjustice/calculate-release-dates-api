@@ -1,93 +1,60 @@
 {
-  "calculateErsed": false,
   "offender": {
-    "reference": "A1234AA",
-    "dateOfBirth": "1984-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-03-17",
         "offenceCode": "SE20002"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 4
         }
       },
-      "isSDSPlus": false,
+      "sentencedAt": "2024-03-22",
       "identifier": "38a0376c-44c9-3f5d-9f67-e83d1cd345a3",
       "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2024-03-22",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": null,
-      "consecutiveSentenceUUIDs": [],
       "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-03-18",
         "offenceCode": "SE20002"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 4
         }
       },
-      "isSDSPlus": false,
-      "identifier": "223410ef-7df7-3c44-acf9-e4865272db98",
-      "recallType": "FIXED_TERM_RECALL_14",
       "sentencedAt": "2024-03-22",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "caseReference": null,
       "consecutiveSentenceUUIDs": [
         "38a0376c-44c9-3f5d-9f67-e83d1cd345a3"
       ],
+      "recallType": "FIXED_TERM_RECALL_14",
       "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-03-18",
         "offenceCode": "SE20002"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 4
         }
       },
-      "isSDSPlus": false,
-      "identifier": "4d469d02-eeb2-3677-b8c1-e6f1c0a26ed4",
-      "recallType": "FIXED_TERM_RECALL_14",
       "sentencedAt": "2024-03-22",
-      "caseSequence": 1,
-      "lineSequence": 3,
-      "caseReference": null,
-      "consecutiveSentenceUUIDs": [],
+      "recallType": "FIXED_TERM_RECALL_14",
       "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
     }
   ],
-  "adjustments": {},
-  "historicalTusedData": null,
   "returnToCustodyDate": "2024-06-14",
   "fixedTermRecallDetails": {
     "bookingId": 1,
-    "recallLength": 14,
-    "returnToCustodyDate": "2024-06-14"
+    "returnToCustodyDate": "2024-06-14",
+    "recallLength": 14
   }
 }

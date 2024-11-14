@@ -1,75 +1,51 @@
 {
   "offender": {
-    "reference": "A1234567",
-    "dateOfBirth": "1971-01-01",
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01",
     "isActiveSexOffender": true
   },
-  "bookingId": 12345678,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-06-13",
         "offenceCode": "SX03204"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 26,
-          "YEARS": 0,
-          "MONTHS": 0
+          "WEEKS": 26
         }
       },
-      "isSDSPlus": false,
-      "identifier": "4f1e55ec-150c-3374-a7b4-6f1ef705f34e",
-      "recallType": "FIXED_TERM_RECALL_14",
       "sentencedAt": "2024-06-17",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A1234567489",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "FIXED_TERM_RECALL_14"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-09-16",
         "offenceCode": "SX03204"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 7,
-          "WEEKS": 0,
-          "YEARS": 0,
-          "MONTHS": 0
+          "DAYS": 7
         }
       },
-      "isSDSPlus": false,
-      "identifier": "f245e50a-27b7-36db-9f61-231a55b4518b",
-      "recallType": null,
       "sentencedAt": "2024-09-17",
-      "caseSequence": 2,
-      "lineSequence": 2,
-      "caseReference": "A1234567489",
-      "consecutiveSentenceUUIDs": [],
       "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
     }
   ],
   "adjustments": {
     "UNLAWFULLY_AT_LARGE": [
       {
-        "toDate": "2024-09-15",
-        "fromDate": "2024-09-14",
+        "appliesToSentencesFrom": "2024-09-14",
         "numberOfDays": 2,
-        "appliesToSentencesFrom": "2024-09-14"
+        "fromDate": "2024-09-14",
+        "toDate": "2024-09-15"
       }
     ]
   },
-  "historicalTusedData": null,
   "returnToCustodyDate": "2024-09-16",
   "fixedTermRecallDetails": {
     "bookingId": 12345678,
-    "recallLength": 14,
-    "returnToCustodyDate": "2024-09-16"
+    "returnToCustodyDate": "2024-09-16",
+    "recallLength": 14
   }
 }

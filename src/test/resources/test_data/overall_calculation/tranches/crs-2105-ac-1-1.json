@@ -1,6 +1,6 @@
 {
   "offender": {
-    "reference": "A2630EZ",
+    "reference": "ABC123",
     "dateOfBirth": "1990-01-01"
   },
   "sentences": [
@@ -10,13 +10,11 @@
       },
       "duration": {
         "durationElements": {
-          "YEARS":4
+          "YEARS": 4
         }
       },
       "sentencedAt": "2020-08-03",
-      "sentenceType": "LR",
-      "recallType": "STANDARD_RECALL",
-      "lineSequence": 1
+      "recallType": "STANDARD_RECALL"
     },
     {
       "offence": {
@@ -28,10 +26,7 @@
           "MONTHS": 18
         }
       },
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentencedAt": "2024-07-01",
-      "sentenceType": "ADIMP_ORA",
-      "lineSequence": 2
+      "sentencedAt": "2024-07-01"
     }
   ]
 }

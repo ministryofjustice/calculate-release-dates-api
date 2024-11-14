@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2004-09-30"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -15,7 +15,6 @@
         }
       },
       "sentencedAt": "2022-07-13",
-      "sentenceType": "DTO_ORA",
       "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
     },
     {
@@ -29,7 +28,6 @@
         }
       },
       "sentencedAt": "2022-09-02",
-      "sentenceType": "DTO_ORA",
       "consecutiveSentenceUUIDs": [
         "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
       ]
@@ -38,8 +36,8 @@
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 5,
         "appliesToSentencesFrom": "2022-09-02",
+        "numberOfDays": 5,
         "fromDate": "2022-07-08",
         "toDate": "2022-07-12"
       }

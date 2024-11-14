@@ -1,15 +1,15 @@
 {
-  "offender":{
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "sentences":[
+  "sentences": [
     {
-      "offence":{
+      "offence": {
         "committedAt": "2012-12-10"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "YEARS": 3
         }
       },
@@ -17,10 +17,10 @@
       "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2012-12-10"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 4
@@ -41,8 +41,8 @@
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 45,
         "appliesToSentencesFrom": "2012-12-17",
+        "numberOfDays": 45,
         "fromDate": "2012-11-02",
         "toDate": "2012-12-16"
       }

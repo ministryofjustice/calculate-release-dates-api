@@ -1,9 +1,8 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "returnToCustodyDate": "2022-02-27",
   "sentences": [
     {
       "offence": {
@@ -14,8 +13,8 @@
           "MONTHS": 42
         }
       },
-      "recallType": "FIXED_TERM_RECALL_28",
-      "sentencedAt": "2019-11-08"
+      "sentencedAt": "2019-11-08",
+      "recallType": "FIXED_TERM_RECALL_28"
     },
     {
       "offence": {
@@ -32,11 +31,12 @@
   "adjustments": {
     "UNLAWFULLY_AT_LARGE": [
       {
-        "numberOfDays": 5,
         "appliesToSentencesFrom": "2022-03-18",
-        "toDate": "2022-03-22",
-        "fromDate": "2022-03-18"
+        "numberOfDays": 5,
+        "fromDate": "2022-03-18",
+        "toDate": "2022-03-22"
       }
     ]
-  }
+  },
+  "returnToCustodyDate": "2022-02-27"
 }

@@ -1,14 +1,14 @@
 {
-  "offender":{
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "sentences":[
+  "sentences": [
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2015-04-02"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 5
@@ -22,16 +22,17 @@
       "sentencedAt": "2015-05-20"
     },
     {
-      "offence":{
+      "offence": {
         "committedAt": "2015-04-02"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "MONTHS": 11
         }
       },
       "sentencedAt": "2020-03-23"
-    },{
+    },
+    {
       "type": "BotusSentence",
       "offence": {
         "committedAt": "2015-01-03"

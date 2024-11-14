@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2000-04-01"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -13,9 +13,9 @@
           "WEEKS": 12
         }
       },
-      "sentencedAt": "2023-11-14",
-      "sentenceType": "ADIMP_ORA"
-    },{
+      "sentencedAt": "2023-11-14"
+    },
+    {
       "offence": {
         "committedAt": "2023-09-24"
       },
@@ -24,9 +24,7 @@
           "WEEKS": 4
         }
       },
-      "sentencedAt": "2023-12-05",
-      "sentenceType": "ADIMP_ORA"
+      "sentencedAt": "2023-12-05"
     }
-  ],
-  "adjustments": {}
+  ]
 }

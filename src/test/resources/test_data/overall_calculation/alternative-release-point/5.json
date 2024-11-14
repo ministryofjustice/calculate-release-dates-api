@@ -1,12 +1,10 @@
 {
   "offender": {
-    "reference": "A1234DE",
-    "dateOfBirth": "1995-10-02",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-08-24",
         "offenceCode": "CY33054"
@@ -16,15 +14,9 @@
           "MONTHS": 28
         }
       },
-      "identifier": "09701261-f282-3ea8-8ec7-21ffae5beebd",
-      "sentencedAt": "2024-03-04",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-03-04"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-08-24",
         "offenceCode": "RT88026"
@@ -34,59 +26,28 @@
           "MONTHS": 14
         }
       },
-      "identifier": "01bf2f14-9418-3ec1-91e9-552e7101ac73",
-      "sentencedAt": "2024-03-04",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "caseReference": "B1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-03-04"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-08-24",
         "offenceCode": "RT88333"
       },
       "duration": {
         "durationElements": {
-          "WEEKS": 10,
-          "MONTHS": 0
+          "WEEKS": 10
         }
       },
-      "identifier": "fb66c63b-6f1a-3ea9-a2c5-aa334166d14c",
-      "sentencedAt": "2024-03-04",
-      "caseSequence": 1,
-      "lineSequence": 3,
-      "caseReference": "C1234567",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2023-08-24",
-        "offenceCode": "RT88010"
-      },
-      "duration": {
-        "durationElements": {
-          "WEEKS": 10,
-          "MONTHS": 0
-        }
-      },
-      "identifier": "f2303b43-2669-302a-832e-96dda25f61f9",
-      "sentencedAt": "2024-03-04",
-      "caseSequence": 1,
-      "lineSequence": 4,
-      "caseReference": "D1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-03-04"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2024-03-03",
-        "fromDate": "2023-08-25",
+        "appliesToSentencesFrom": "2024-03-04",
         "numberOfDays": 192,
-        "appliesToSentencesFrom": "2024-03-04"
+        "fromDate": "2023-08-25",
+        "toDate": "2024-03-03"
       }
     ]
   },

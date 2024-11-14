@@ -1,43 +1,31 @@
 {
   "offender": {
-    "reference": "A6151EA",
-    "dateOfBirth": "1995-03-30",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1219286,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-01-25",
         "offenceCode": "OF61102"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 18
         }
       },
-      "isSDSPlus": false,
-      "identifier": "d309682d-6733-3bfc-b7ad-7024162a341c",
-      "recallType": null,
-      "sentencedAt": "2024-05-20",
       "caseSequence": 1,
       "lineSequence": 1,
-      "caseReference": null,
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2024-05-20"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2024-05-19",
-        "fromDate": "2024-02-09",
+        "appliesToSentencesFrom": "2024-05-20",
         "numberOfDays": 101,
-        "appliesToSentencesFrom": "2024-05-20"
+        "fromDate": "2024-02-09",
+        "toDate": "2024-05-19"
       }
     ]
   },

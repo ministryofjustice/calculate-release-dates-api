@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -26,8 +26,11 @@
         }
       },
       "sentencedAt": "2020-10-01",
-      "consecutiveSentenceUUIDs": ["a31d5d02-611f-43b0-8b1a-4b1edc955e7e"]
-    }, {
+      "consecutiveSentenceUUIDs": [
+        "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+      ]
+    },
+    {
       "offence": {
         "committedAt": "2019-01-01"
       },
@@ -42,8 +45,8 @@
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 20,
         "appliesToSentencesFrom": "2020-10-01",
+        "numberOfDays": 20,
         "fromDate": "2020-09-10",
         "toDate": "2020-09-30"
       }

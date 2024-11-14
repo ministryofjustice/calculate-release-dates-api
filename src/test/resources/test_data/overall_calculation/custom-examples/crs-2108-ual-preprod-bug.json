@@ -1,8 +1,7 @@
 {
   "offender": {
     "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "underEighteenAt": {}
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -17,14 +16,12 @@
         }
       },
       "sentencedAt": "2024-02-05",
-      "identifier": "fbe1d5a0-8832-3279-b3d4-f6924041e49e",
       "caseSequence": 2,
       "lineSequence": 6,
       "caseReference": "072400004310",
       "fineAmount": 154
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-04-23"
       },
@@ -34,12 +31,9 @@
         }
       },
       "sentencedAt": "2024-04-18",
-      "recallType": "STANDARD_RECALL",
-      "identifier": "4cd8cb18-10c7-316e-8911-a08c534a0216",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-11-15"
       },
@@ -50,11 +44,9 @@
       },
       "sentencedAt": "2023-11-23",
       "identifier": "be51b5b7-c018-36c9-b8c9-271467646418",
-      "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-11-15"
       },
@@ -68,11 +60,9 @@
       "consecutiveSentenceUUIDs": [
         "be51b5b7-c018-36c9-b8c9-271467646418"
       ],
-      "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-11-15"
       },
@@ -82,15 +72,12 @@
         }
       },
       "sentencedAt": "2023-11-23",
-      "identifier": "f61b0d30-85ab-3e78-9076-6c72b1476b68",
       "consecutiveSentenceUUIDs": [
         "47b27ae5-3aae-3d7b-a598-9bafcdd3c9b1"
       ],
-      "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-11-15"
       },
@@ -100,12 +87,9 @@
         }
       },
       "sentencedAt": "2023-11-23",
-      "identifier": "cde41934-a1d7-3f54-b8d9-06f8e886562c",
-      "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-11-15"
       },
@@ -115,12 +99,9 @@
         }
       },
       "sentencedAt": "2023-11-23",
-      "identifier": "a76a66d6-0368-37aa-9f51-0c88d9bc38b8",
-      "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-06-15"
       },
@@ -130,11 +111,9 @@
         }
       },
       "sentencedAt": "2024-07-15",
-      "identifier": "4ed7a789-b195-31f0-a119-47e670a3c906",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "identifier": "4ed7a789-b195-31f0-a119-47e670a3c906"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-06-15"
       },
@@ -147,11 +126,9 @@
       "identifier": "5d83c5cf-2531-37ba-8b6b-bcc55c733936",
       "consecutiveSentenceUUIDs": [
         "4ed7a789-b195-31f0-a119-47e670a3c906"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-06-15"
       },
@@ -161,11 +138,9 @@
         }
       },
       "sentencedAt": "2024-07-15",
-      "identifier": "6acc1be9-a2ef-3e00-9fca-50a023a0516b",
       "consecutiveSentenceUUIDs": [
         "5d83c5cf-2531-37ba-8b6b-bcc55c733936"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      ]
     }
   ],
   "adjustments": {
@@ -185,6 +160,5 @@
         "toDate": "2024-06-16"
       }
     ]
-  },
-  "calculateErsed": false
+  }
 }

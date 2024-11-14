@@ -1,8 +1,7 @@
 {
-  "calculateErsed": true,
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -14,8 +13,8 @@
           "WEEKS": 16
         }
       },
-      "recallType": "STANDARD_RECALL",
-      "sentencedAt": "2021-12-24"
+      "sentencedAt": "2021-12-24",
+      "recallType": "STANDARD_RECALL"
     },
     {
       "offence": {
@@ -32,9 +31,10 @@
   "adjustments": {
     "RECALL_REMAND": [
       {
-        "numberOfDays": 49,
-        "appliesToSentencesFrom": "2021-12-24"
+        "appliesToSentencesFrom": "2021-12-24",
+        "numberOfDays": 49
       }
     ]
-  }
+  },
+  "calculateErsed": true
 }

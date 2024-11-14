@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2004-11-05"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -14,9 +14,8 @@
         }
       },
       "sentencedAt": "2024-05-03",
-      "sentenceType": "FTR_ORA",
-      "recallType": "FIXED_TERM_RECALL_28",
-      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
+      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
+      "recallType": "FIXED_TERM_RECALL_28"
     },
     {
       "offence": {
@@ -28,11 +27,10 @@
         }
       },
       "sentencedAt": "2024-09-10",
-      "sentenceType": "FTR_ORA",
-      "recallType": "FIXED_TERM_RECALL_28",
       "consecutiveSentenceUUIDs": [
         "a31d5d02-611f-43b0-8b1a-4b1edc955e7e"
-      ]
+      ],
+      "recallType": "FIXED_TERM_RECALL_28"
     },
     {
       "offence": {
@@ -44,9 +42,8 @@
         }
       },
       "sentencedAt": "2024-09-02",
-      "sentenceType": "FTR_ORA",
-      "recallType": "FIXED_TERM_RECALL_28",
-      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e8a"
+      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e8a",
+      "recallType": "FIXED_TERM_RECALL_28"
     },
     {
       "offence": {
@@ -58,30 +55,29 @@
         }
       },
       "sentencedAt": "2024-09-02",
-      "sentenceType": "FTR_ORA",
-      "recallType": "FIXED_TERM_RECALL_28",
       "consecutiveSentenceUUIDs": [
         "a31d5d02-611f-43b0-8b1a-4b1edc955e8a"
-      ]
+      ],
+      "recallType": "FIXED_TERM_RECALL_28"
     }
   ],
-  "returnToCustodyDate": "2024-12-07",
   "adjustments": {
     "RECALL_REMAND": [
       {
-        "numberOfDays": 15,
         "appliesToSentencesFrom": "2024-04-18",
+        "numberOfDays": 15,
         "fromDate": "2024-04-18",
         "toDate": "2024-05-02"
       }
     ],
     "UNLAWFULLY_AT_LARGE": [
       {
-        "numberOfDays": 5,
         "appliesToSentencesFrom": "2024-12-02",
+        "numberOfDays": 5,
         "fromDate": "2024-12-02",
         "toDate": "2024-12-06"
       }
     ]
-  }
+  },
+  "returnToCustodyDate": "2024-12-07"
 }

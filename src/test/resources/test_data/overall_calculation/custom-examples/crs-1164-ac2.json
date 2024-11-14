@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2004-09-30"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -14,8 +14,7 @@
           "MONTHS": 18
         }
       },
-      "sentencedAt": "2021-06-14",
-      "sentenceType": "DTO_ORA"
+      "sentencedAt": "2021-06-14"
     },
     {
       "type": "DetentionAndTrainingOrderSentence",
@@ -27,10 +26,7 @@
           "MONTHS": 18
         }
       },
-      "sentencedAt": "2022-01-06",
-      "sentenceType": "DTO_ORA"
+      "sentencedAt": "2022-01-06"
     }
-  ],
-  "adjustments": {
-  }
+  ]
 }

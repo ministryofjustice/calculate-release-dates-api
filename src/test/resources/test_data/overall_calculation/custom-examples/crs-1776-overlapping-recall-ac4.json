@@ -1,12 +1,10 @@
 {
   "offender": {
     "reference": "ABC123",
-    "dateOfBirth": "2000-01-01"
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-05-02",
         "offenceCode": "TH68010"
@@ -16,12 +14,10 @@
           "WEEKS": 8
         }
       },
-      "identifier": "aa0b1a85-2d4f-3c3f-82c6-e2d24c71086b",
-      "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2024-05-08"
+      "sentencedAt": "2024-05-08",
+      "recallType": "FIXED_TERM_RECALL_14"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-11-14",
         "offenceCode": "TH68010"
@@ -31,12 +27,11 @@
           "MONTHS": 6
         }
       },
+      "sentencedAt": "2024-01-15",
       "identifier": "e12b8f4f-81e8-31c2-ab24-7b626cdff444",
-      "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2024-01-15"
+      "recallType": "FIXED_TERM_RECALL_14"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-11-14",
         "offenceCode": "CJ88144"
@@ -46,36 +41,35 @@
           "MONTHS": 4
         }
       },
-      "identifier": "e0b64f21-5376-3172-8700-8a16a7bd30f5",
-      "recallType": "FIXED_TERM_RECALL_14",
       "sentencedAt": "2024-01-15",
       "consecutiveSentenceUUIDs": [
         "e12b8f4f-81e8-31c2-ab24-7b626cdff444"
-      ]
+      ],
+      "recallType": "FIXED_TERM_RECALL_14"
     }
   ],
   "adjustments": {
     "RECALL_REMAND": [
       {
-        "toDate": "2024-01-14",
-        "fromDate": "2023-11-30",
+        "appliesToSentencesFrom": "2024-01-15",
         "numberOfDays": 46,
-        "appliesToSentencesFrom": "2024-01-15"
+        "fromDate": "2023-11-30",
+        "toDate": "2024-01-14"
       }
     ],
     "UNLAWFULLY_AT_LARGE": [
       {
-        "toDate": "2024-06-13",
-        "fromDate": "2024-06-07",
+        "appliesToSentencesFrom": "2024-06-07",
         "numberOfDays": 7,
-        "appliesToSentencesFrom": "2024-06-07"
+        "fromDate": "2024-06-07",
+        "toDate": "2024-06-13"
       }
     ]
   },
   "returnToCustodyDate": "2024-06-14",
   "fixedTermRecallDetails": {
     "bookingId": 1,
-    "recallLength": 14,
-    "returnToCustodyDate": "2024-06-14"
+    "returnToCustodyDate": "2024-06-14",
+    "recallLength": 14
   }
 }

@@ -1,10 +1,11 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2004-11-05"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2018-05-16"
       },
@@ -19,10 +20,8 @@
           "YEARS": 3
         }
       },
-      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7",
       "sentencedAt": "2018-05-16",
-      "sentenceType": "LASPO_DR",
-      "type": "ExtendedDeterminateSentence"
+      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7"
     },
     {
       "offence": {
@@ -33,10 +32,10 @@
           "YEARS": 3
         }
       },
-      "sentencedAt": "2018-05-16",
-      "sentenceType": "SEC91_03_ORA"
+      "sentencedAt": "2018-05-16"
     },
     {
+      "type": "DetentionAndTrainingOrderSentence",
       "offence": {
         "committedAt": "2018-05-16"
       },
@@ -45,9 +44,7 @@
           "MONTHS": 4
         }
       },
-      "sentencedAt": "2018-05-21",
-      "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "sentencedAt": "2018-05-21"
     },
     {
       "offence": {
@@ -58,12 +55,11 @@
           "MONTHS": 4
         }
       },
+      "sentencedAt": "2022-07-07",
+      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a9",
       "consecutiveSentenceUUIDs": [
         "ee91a161-dde2-3a7b-8611-624d255542a7"
-      ],
-      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a9",
-      "sentencedAt": "2022-07-07",
-      "sentenceType": "ADIMP_ORA"
+      ]
     },
     {
       "offence": {
@@ -74,13 +70,13 @@
           "MONTHS": 4
         }
       },
+      "sentencedAt": "2022-09-09",
       "consecutiveSentenceUUIDs": [
         "ee91a161-dde2-3a7b-8611-624d255542a9"
-      ],
-      "sentencedAt": "2022-09-09",
-      "sentenceType": "ADIMP_ORA"
+      ]
     },
     {
+      "type": "DetentionAndTrainingOrderSentence",
       "offence": {
         "committedAt": "2018-05-16"
       },
@@ -89,12 +85,9 @@
           "MONTHS": 12
         }
       },
-      "sentencedAt": "2018-08-20",
-      "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "sentencedAt": "2018-08-20"
     }
   ],
-
   "adjustments": {
     "REMAND": [
       {
@@ -106,44 +99,44 @@
     ],
     "ADDITIONAL_DAYS_AWARDED": [
       {
-        "numberOfDays": 14,
         "appliesToSentencesFrom": "2018-05-16",
+        "numberOfDays": 14,
         "fromDate": "2018-11-09",
         "toDate": "2018-11-22"
       },
       {
+        "appliesToSentencesFrom": "2018-05-16",
         "numberOfDays": 16,
-        "appliesToSentencesFrom": "2018-05-16",
         "fromDate": "2019-08-01",
         "toDate": "2019-08-06"
       },
       {
+        "appliesToSentencesFrom": "2018-05-16",
         "numberOfDays": 6,
-        "appliesToSentencesFrom": "2018-05-16",
         "fromDate": "2019-08-01",
         "toDate": "2019-08-06"
       },
       {
-        "numberOfDays": 8,
         "appliesToSentencesFrom": "2018-05-16",
+        "numberOfDays": 8,
         "fromDate": "2019-08-01",
         "toDate": "2019-08-08"
       },
       {
-        "numberOfDays": 18,
         "appliesToSentencesFrom": "2018-05-16",
+        "numberOfDays": 18,
         "fromDate": "2018-06-22",
         "toDate": "2018-07-09"
       },
       {
-        "numberOfDays": 14,
         "appliesToSentencesFrom": "2018-05-16",
+        "numberOfDays": 14,
         "fromDate": "2018-06-22",
         "toDate": "2018-07-05"
       },
       {
-        "numberOfDays": 22,
         "appliesToSentencesFrom": "2018-05-16",
+        "numberOfDays": 22,
         "fromDate": "2018-07-12",
         "toDate": "2018-08-02"
       }

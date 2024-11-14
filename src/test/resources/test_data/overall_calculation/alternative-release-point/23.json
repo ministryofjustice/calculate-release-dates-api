@@ -1,12 +1,10 @@
 {
   "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "1988-01-20",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-05-21",
         "offenceCode": "PC02021"
@@ -16,15 +14,9 @@
           "MONTHS": 10
         }
       },
-      "identifier": "e81a4972-88b6-37e4-a8d8-44c86a160010",
-      "sentencedAt": "2023-07-19",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2023-07-19"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-05-23",
         "offenceCode": "MD71442"
@@ -34,15 +26,9 @@
           "MONTHS": 8
         }
       },
-      "identifier": "8ca4a2ad-f015-35fd-bca1-998da0f04c12",
-      "sentencedAt": "2023-07-19",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "caseReference": "B1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2023-07-19"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-05-22",
         "offenceCode": "MD71170"
@@ -52,12 +38,7 @@
           "MONTHS": 36
         }
       },
-      "identifier": "0cd25f53-3cd3-3989-8f95-7048b3b12abf",
-      "sentencedAt": "2023-07-19",
-      "caseSequence": 1,
-      "lineSequence": 3,
-      "caseReference": "C1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2023-07-19"
     },
     {
       "type": "AFineSentence",
@@ -70,166 +51,12 @@
           "MONTHS": 6
         }
       },
-      "fineAmount": 5428.53,
-      "identifier": "f70ac500-e3bc-39b4-b698-3a547c168006",
       "sentencedAt": "2024-03-14",
       "caseSequence": 2,
       "lineSequence": 4,
       "caseReference": "D1234567",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2021-11-02",
-        "offenceCode": "RA88001"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "fineAmount": 5428.53,
-      "identifier": "f70ac500-e3bc-39b4-b698-3a547c168006",
-      "sentencedAt": "2024-03-14",
-      "caseSequence": 2,
-      "lineSequence": 4,
-      "caseReference": "E1234567",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2021-11-24",
-        "offenceCode": "RR84061"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "fineAmount": 5428.53,
-      "identifier": "f70ac500-e3bc-39b4-b698-3a547c168006",
-      "sentencedAt": "2024-03-14",
-      "caseSequence": 2,
-      "lineSequence": 4,
-      "caseReference": "F1234567",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-02-11",
-        "offenceCode": "RT88509"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "fineAmount": 5428.53,
-      "identifier": "f70ac500-e3bc-39b4-b698-3a547c168006",
-      "sentencedAt": "2024-03-14",
-      "caseSequence": 2,
-      "lineSequence": 4,
-      "caseReference": "G1234567",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-03-08",
-        "offenceCode": "RT88333"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "fineAmount": 5428.53,
-      "identifier": "f70ac500-e3bc-39b4-b698-3a547c168006",
-      "sentencedAt": "2024-03-14",
-      "caseSequence": 2,
-      "lineSequence": 4,
-      "caseReference": "H1234567",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-03-17",
-        "offenceCode": "RT88567"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "fineAmount": 5428.53,
-      "identifier": "f70ac500-e3bc-39b4-b698-3a547c168006",
-      "sentencedAt": "2024-03-14",
-      "caseSequence": 2,
-      "lineSequence": 4,
-      "caseReference": "H1234567",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-07-04",
-        "offenceCode": "RT88567"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "fineAmount": 5428.53,
-      "identifier": "f70ac500-e3bc-39b4-b698-3a547c168006",
-      "sentencedAt": "2024-03-14",
-      "caseSequence": 2,
-      "lineSequence": 4,
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2022-07-19",
-        "offenceCode": "RR84705"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "fineAmount": 5428.53,
-      "identifier": "f70ac500-e3bc-39b4-b698-3a547c168006",
-      "sentencedAt": "2024-03-14",
-      "caseSequence": 2,
-      "lineSequence": 4,
-      "caseReference": "I1234567",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "AFineSentence",
-      "offence": {
-        "committedAt": "2023-11-30",
-        "offenceCode": "RT88567"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 6
-        }
-      },
-      "fineAmount": 5428.53,
-      "identifier": "f70ac500-e3bc-39b4-b698-3a547c168006",
-      "sentencedAt": "2024-03-14",
-      "caseSequence": 2,
-      "lineSequence": 4,
-      "caseReference": "J1234567",
-      "consecutiveSentenceUUIDs": []
+      "fineAmount": 5428.53
     }
   ],
-  "adjustments": {},
   "calculateErsed": true
 }

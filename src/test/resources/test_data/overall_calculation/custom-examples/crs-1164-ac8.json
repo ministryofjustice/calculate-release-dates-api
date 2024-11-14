@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2004-09-30"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -14,8 +14,7 @@
           "MONTHS": 6
         }
       },
-      "sentencedAt": "2021-05-01",
-      "sentenceType": "DTO_ORA"
+      "sentencedAt": "2021-05-01"
     },
     {
       "type": "DetentionAndTrainingOrderSentence",
@@ -28,7 +27,6 @@
         }
       },
       "sentencedAt": "2021-05-01",
-      "sentenceType": "DTO_ORA",
       "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
     },
     {
@@ -42,12 +40,9 @@
         }
       },
       "sentencedAt": "2021-07-11",
-      "sentenceType": "DTO_ORA",
       "consecutiveSentenceUUIDs": [
         "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
       ]
     }
-  ],
-  "adjustments": {
-  }
+  ]
 }

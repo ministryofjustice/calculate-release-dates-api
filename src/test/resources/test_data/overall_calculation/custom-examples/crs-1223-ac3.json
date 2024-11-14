@@ -1,6 +1,6 @@
 {
   "offender": {
-    "reference": "ABC123D",
+    "reference": "ABC123",
     "dateOfBirth": "2004-02-15"
   },
   "sentences": [
@@ -13,10 +13,10 @@
           "MONTHS": 10
         }
       },
-      "sentencedAt": "2021-08-20",
-      "sentenceType": "SEC250"
+      "sentencedAt": "2021-08-20"
     },
     {
+      "type": "DetentionAndTrainingOrderSentence",
       "offence": {
         "committedAt": "2021-08-20"
       },
@@ -25,11 +25,7 @@
           "MONTHS": 4
         }
       },
-      "sentencedAt": "2021-08-20",
-      "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "sentencedAt": "2021-08-20"
     }
-  ],
-  "adjustments": {
-  }
+  ]
 }

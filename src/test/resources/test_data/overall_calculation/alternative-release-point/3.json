@@ -1,12 +1,10 @@
 {
   "offender": {
-    "reference": "A2374FC",
-    "dateOfBirth": "1968-06-02",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-02-20",
         "offenceCode": "MD71531"
@@ -16,21 +14,16 @@
           "MONTHS": 20
         }
       },
-      "identifier": "1b16aac6-1c04-3124-9082-b96ebbb45c78",
-      "sentencedAt": "2024-04-04",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-04-04"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2024-04-03",
-        "fromDate": "2024-02-21",
+        "appliesToSentencesFrom": "2024-04-04",
         "numberOfDays": 43,
-        "appliesToSentencesFrom": "2024-04-04"
+        "fromDate": "2024-02-21",
+        "toDate": "2024-04-03"
       }
     ]
   },

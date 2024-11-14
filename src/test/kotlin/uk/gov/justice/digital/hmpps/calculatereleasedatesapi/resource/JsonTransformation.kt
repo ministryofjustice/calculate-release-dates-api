@@ -96,13 +96,15 @@ class JsonTransformation {
   fun getJsonTest(fileName: String, calculationType: String): String {
     return getResourceAsText("/test_data/$calculationType/$fileName")
   }
+
   fun getAllJsonFromDir(fileName: String): Map<String, String> {
     val dir = File(object {}.javaClass.getResource("/test_data/$fileName").file)
     if (dir.isDirectory) {
       val json = mutableMapOf<String, String>()
+      val originalPath = dir.path + "/"
       dir.walk().forEach {
         if (it.extension == "json") {
-          json[it.nameWithoutExtension] = it.readText()
+          json[it.path.replace(originalPath, "").replace(".json", "")] = it.readText()
         }
       }
       return json

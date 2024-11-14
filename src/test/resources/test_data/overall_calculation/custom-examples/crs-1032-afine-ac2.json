@@ -1,41 +1,41 @@
 {
-  "offender":{
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "sentences":[
+  "sentences": [
     {
-      "offence":{
-        "committedAt":"2019-04-29"
+      "offence": {
+        "committedAt": "2019-04-29"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "YEARS": 12
         }
       },
-      "sentencedAt":"2019-04-30"
+      "sentencedAt": "2019-04-30"
     },
     {
-      "type":"AFineSentence",
-      "offence":{
-        "committedAt":"2020-03-19"
+      "type": "AFineSentence",
+      "offence": {
+        "committedAt": "2020-03-19"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "DAYS": 7
         }
       },
-      "sentencedAt":"2020-03-20",
-      "fineAmount": 190
+      "sentencedAt": "2020-03-20",
+      "fineAmount": 1.9E+2
     }
   ],
-  "adjustments":{
-    "REMAND":[
+  "adjustments": {
+    "REMAND": [
       {
-        "appliesToSentencesFrom":"2019-04-30",
-        "numberOfDays":116,
-        "fromDate":"2019-01-04",
-        "toDate":"2019-04-29"
+        "appliesToSentencesFrom": "2019-04-30",
+        "numberOfDays": 116,
+        "fromDate": "2019-01-04",
+        "toDate": "2019-04-29"
       }
     ]
   }

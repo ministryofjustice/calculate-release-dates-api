@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -45,8 +45,8 @@
   "adjustments": {
     "UNLAWFULLY_AT_LARGE": [
       {
-        "numberOfDays": 30,
         "appliesToSentencesFrom": "2015-02-15",
+        "numberOfDays": 30,
         "fromDate": "2015-02-15",
         "toDate": "2015-03-16"
       }

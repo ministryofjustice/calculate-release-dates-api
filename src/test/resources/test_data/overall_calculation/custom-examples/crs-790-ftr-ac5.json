@@ -1,9 +1,8 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "returnToCustodyDate": "2022-01-09",
   "sentences": [
     {
       "offence": {
@@ -15,8 +14,8 @@
         }
       },
       "sentencedAt": "2021-01-25",
-      "recallType": "FIXED_TERM_RECALL_28",
-      "identifier": "56a92750-dc7c-4301-9ebd-ca9dbd3de015"
+      "identifier": "56a92750-dc7c-4301-9ebd-ca9dbd3de015",
+      "recallType": "FIXED_TERM_RECALL_28"
     },
     {
       "offence": {
@@ -28,18 +27,21 @@
         }
       },
       "sentencedAt": "2021-01-25",
-      "recallType": "FIXED_TERM_RECALL_28",
-      "consecutiveSentenceUUIDs": ["56a92750-dc7c-4301-9ebd-ca9dbd3de015"]
+      "consecutiveSentenceUUIDs": [
+        "56a92750-dc7c-4301-9ebd-ca9dbd3de015"
+      ],
+      "recallType": "FIXED_TERM_RECALL_28"
     }
   ],
   "adjustments": {
     "UNLAWFULLY_AT_LARGE": [
       {
-        "numberOfDays": 3,
         "appliesToSentencesFrom": "2022-01-06",
-        "toDate": "2022-01-08",
-        "fromDate": "2022-01-06"
+        "numberOfDays": 3,
+        "fromDate": "2022-01-06",
+        "toDate": "2022-01-08"
       }
     ]
-  }
+  },
+  "returnToCustodyDate": "2022-01-09"
 }

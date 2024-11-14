@@ -1,14 +1,10 @@
-
-
 {
   "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "1977-05-02",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-07-01",
         "offenceCode": "AB123C"
@@ -18,13 +14,9 @@
           "YEARS": 3
         }
       },
-      "sentencedAt": "2021-08-02",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2021-08-02"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-12-23",
         "offenceCode": "AB123D"
@@ -34,11 +26,8 @@
           "YEARS": 3
         }
       },
-      "sentencedAt": "2023-01-03",
-      "caseSequence": 2,
-      "lineSequence": 1
+      "sentencedAt": "2023-01-03"
     }
   ],
-  "adjustments": {},
   "calculateErsed": true
 }

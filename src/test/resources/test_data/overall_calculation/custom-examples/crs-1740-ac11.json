@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2000-07-23"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -10,11 +10,10 @@
       },
       "duration": {
         "durationElements": {
-          "YEARS":12
+          "YEARS": 12
         }
       },
       "sentencedAt": "2017-05-05",
-      "sentenceType": "LR",
       "recallType": "STANDARD_RECALL"
     },
     {
@@ -23,13 +22,10 @@
       },
       "duration": {
         "durationElements": {
-          "YEARS":7
+          "YEARS": 7
         }
       },
-      "sentencedAt": "2023-07-06",
-      "sentenceType": "ADIMP"
+      "sentencedAt": "2023-07-06"
     }
-  ],
-  "adjustments": {
-  }
+  ]
 }

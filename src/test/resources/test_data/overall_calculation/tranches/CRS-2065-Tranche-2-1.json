@@ -1,10 +1,8 @@
 {
   "offender": {
-    "reference": "A1234AA",
-    "dateOfBirth": "2000-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1,
   "sentences": [
     {
       "type": "DetentionAndTrainingOrderSentence",
@@ -14,119 +12,50 @@
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 16
         }
       },
-      "isSDSPlus": false,
-      "identifier": "c6a801a5-2736-3cd7-adb4-f3d6248e63a7",
-      "recallType": null,
       "sentencedAt": "2017-12-29",
       "caseSequence": 1,
       "lineSequence": 4,
-      "caseReference": "367858",
-      "consecutiveSentenceUUIDs": []
+      "caseReference": "367858"
     },
     {
-      "type": "DetentionAndTrainingOrderSentence",
-      "offence": {
-        "committedAt": "2016-08-28",
-        "offenceCode": "TH68001"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
-          "MONTHS": 16
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "c6a801a5-2736-3cd7-adb4-f3d6248e63a7",
-      "recallType": null,
-      "sentencedAt": "2017-12-29",
-      "caseSequence": 1,
-      "lineSequence": 4,
-      "caseReference": "367858",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-02-24",
         "offenceCode": "OF61016"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 8,
-          "MONTHS": 0
+          "YEARS": 8
         }
       },
-      "isSDSPlus": true,
-      "identifier": "b6a679f3-d3b1-3f7b-a906-b47439625b7d",
-      "recallType": null,
       "sentencedAt": "2020-12-04",
-      "caseSequence": 6,
-      "lineSequence": 9,
-      "caseReference": "T20207124",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "isSDSPlus": true
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-02-24",
         "offenceCode": "TH68023"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 3,
-          "MONTHS": 0
+          "YEARS": 3
         }
       },
-      "isSDSPlus": false,
-      "identifier": "807a76b0-e266-3969-b9f1-2bebd645db0e",
-      "recallType": null,
-      "sentencedAt": "2020-12-04",
-      "caseSequence": 6,
-      "lineSequence": 10,
-      "caseReference": "T20207124",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2020-12-04"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2022-11-01",
         "offenceCode": "PR52043"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 4
         }
       },
-      "isSDSPlus": false,
-      "identifier": "9e46c5cf-af5e-3317-8e6e-202bcc2a2d01",
-      "recallType": null,
-      "sentencedAt": "2023-09-19",
-      "caseSequence": 7,
-      "lineSequence": 11,
-      "caseReference": "06A10741922",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2023-09-19"
     }
-  ],
-  "adjustments": {},
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  ]
 }
