@@ -131,7 +131,7 @@ class BookingTimelineService(
           } else {
             latestReleaseSentence.sentenceCalculation.adjustedDeterminateReleaseDate
           }
-        latestRelease = workingDayService.previousWorkingDay(releaseDate).date to latestReleaseSentence
+        latestRelease = maxOf(latestReleaseSentence.sentencedAt, workingDayService.previousWorkingDay(releaseDate).date) to latestReleaseSentence
       }
     }
   }

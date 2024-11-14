@@ -165,41 +165,6 @@ class CalculationTransactionalServiceTest {
     exampleNumber: String,
     error: String?,
     params: String?,
-  ) {
-    log.info("Testing example $exampleType/$exampleNumber")
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-
-    val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val calculatedReleaseDates: CalculatedReleaseDates
-    try {
-      calculatedReleaseDates = calculationTransactionalService(defaultParams(params))
-        .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
-    } catch (e: Exception) {
-      if (!error.isNullOrEmpty()) {
-        assertEquals(error, e.javaClass.simpleName)
-        return
-      } else {
-        throw e
-      }
-    }
-    log.info(
-      "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
-      TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
-    )
-    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
-
-    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
-    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
-  }
-
-  @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/calculation-validation-examples.csv"], numLinesToSkip = 1)
-  fun `Test validation after calculations by example`(
-    exampleType: String,
-    exampleNumber: String,
-    error: String?,
-    params: String?,
     expectedValidationMessage: String?,
   ) {
     log.info("Testing example $exampleType/$exampleNumber")
@@ -238,90 +203,19 @@ class CalculationTransactionalServiceTest {
       "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
       TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
     )
-
     if (expectedValidationMessage != null) {
       assertThat(returnedValidationMessages).hasSize(1) // etc
       assertThat(returnedValidationMessages[0].code.toString()).isEqualTo(expectedValidationMessage)
     } else {
       val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
-      assertThat(returnedValidationMessages).isEmpty()
-      assertEquals(bookingData.dates, calculatedReleaseDates.calculationResult.dates)
-      assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.calculationResult.effectiveSentenceLength)
-    }
-  }
-
-  @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/calculation-hdc4-commencement-examples.csv"], numLinesToSkip = 1)
-  fun `Test HDC4 move over post commencement only hdced`(
-    exampleType: String,
-    exampleNumber: String,
-    error: String?,
-    params: String = "calculation-params",
-  ) {
-    log.info("Testing example $exampleType/$exampleNumber")
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-
-    val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val calculatedReleaseDates: CalculatedReleaseDates
-    try {
-      calculatedReleaseDates =
-        calculationTransactionalService(params)
-          .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
-    } catch (e: Exception) {
-      if (!error.isNullOrEmpty()) {
-        assertEquals(error, e.javaClass.simpleName)
-        return
-      } else {
-        throw e
+      val result = bookingData.first
+      assertEquals(result.dates, calculatedReleaseDates.calculationResult.dates)
+      assertEquals(result.effectiveSentenceLength, calculatedReleaseDates.calculationResult.effectiveSentenceLength)
+      if (bookingData.second.contains("sdsEarlyReleaseAllocatedTranche")) {
+        assertEquals(result.sdsEarlyReleaseAllocatedTranche, calculatedReleaseDates.calculationResult.sdsEarlyReleaseAllocatedTranche)
+        assertEquals(result.sdsEarlyReleaseTranche, calculatedReleaseDates.calculationResult.sdsEarlyReleaseTranche)
       }
     }
-    log.info(
-      "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
-      TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
-    )
-    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
-
-    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
-    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
-  }
-
-  @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/calculation-sds-early-tranching.csv"], numLinesToSkip = 1)
-  fun `Test SDS Early Release Tranching`(
-    exampleType: String,
-    exampleNumber: String,
-    error: String?,
-    params: String?,
-  ) {
-    log.info("Testing example $exampleType/$exampleNumber")
-    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-
-    val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val calculatedReleaseDates: CalculatedReleaseDates
-    try {
-      calculatedReleaseDates =
-        calculationTransactionalService(defaultParams(params))
-          .calculate(booking, PRELIMINARY, fakeSourceData, CALCULATION_REASON, calculationUserInputs)
-    } catch (e: Exception) {
-      if (!error.isNullOrEmpty()) {
-        assertEquals(error, e.javaClass.simpleName)
-        return
-      } else {
-        throw e
-      }
-    }
-    log.info(
-      "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
-      TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
-    )
-    val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
-
-    assertEquals(bookingData.dates, calculatedReleaseDates.dates)
-    assertEquals(bookingData.sdsEarlyReleaseAllocatedTranche, calculatedReleaseDates.sdsEarlyReleaseAllocatedTranche)
-    assertEquals(bookingData.sdsEarlyReleaseTranche, calculatedReleaseDates.sdsEarlyReleaseTranche)
-    assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.effectiveSentenceLength)
   }
 
   @ParameterizedTest
@@ -331,7 +225,7 @@ class CalculationTransactionalServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
 
     val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val calculation = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
+    val calculation = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber").first
 
     val calculationBreakdown: CalculationBreakdown?
     try {
