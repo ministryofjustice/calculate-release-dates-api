@@ -33,11 +33,11 @@
     "TAGGED_BAIL": [
       {
         "numberOfDays": 20,
-        "appliesToSentencesFrom": "2021-09-09"
+        "appliesToSentencesFrom": "2022-01-10"
       },
       {
         "numberOfDays": 35,
-        "appliesToSentencesFrom": "2021-09-23"
+        "appliesToSentencesFrom": "2022-01-10"
       }
     ]
   }

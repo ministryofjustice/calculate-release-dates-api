@@ -12,9 +12,9 @@ class SentenceAggregator {
   fun getDaysInGroup(startDate: LocalDate, sentences: List<CalculableSentence>, durationSupplier: (sentence: CalculableSentence) -> Duration): Int {
     return if (sentences.all { it.isDto() }) {
       val days = DurationAggregator(sentences.map(durationSupplier)).calculateDays(startDate)
-      val between = ChronoUnit.DAYS.between(startDate, startDate.plusMonths(24))
+      val between = ChronoUnit.DAYS.between(startDate, startDate.plusMonths(24)).toInt()
       if (days >= between) {
-        between.toInt()
+        between
       } else {
         days
       }

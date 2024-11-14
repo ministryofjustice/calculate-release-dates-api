@@ -37,7 +37,7 @@
     "RECALL_REMAND": [
       {
         "numberOfDays": 20,
-        "appliesToSentencesFrom": "2020-12-15",
+        "appliesToSentencesFrom": "2024-09-11",
         "fromDate": "2024-08-22",
         "toDate": "2024-09-10"
       }

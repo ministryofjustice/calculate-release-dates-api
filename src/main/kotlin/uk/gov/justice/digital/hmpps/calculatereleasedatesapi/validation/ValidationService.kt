@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
@@ -66,21 +66,20 @@ class ValidationService(
     Run the validation that can only happen after calculations. e.g. validate that adjustments happen before release date
    */
   fun validateBookingAfterCalculation(
+    calculationOutput: CalculationOutput,
     booking: Booking,
-    standardSDSBooking: Booking? = null,
-    calculationResult: CalculationResult? = null,
   ): List<ValidationMessage> {
     log.info("Validating booking after calculation")
     val messages = mutableListOf<ValidationMessage>()
-    booking.sentenceGroups.forEach { messages += sentenceValidationService.validateSentenceHasNotBeenExtinguished(it) }
+    calculationOutput.custodialPeriod.forEach { messages += sentenceValidationService.validateSentenceHasNotBeenExtinguished(it) }
     messages += adjustmentValidationService.validateRemandOverlappingRemand(booking)
-    messages += adjustmentValidationService.validateRemandOverlappingSentences(standardSDSBooking ?: booking, booking)
-    messages += adjustmentValidationService.validateAdditionAdjustmentsInsideLatestReleaseDate(standardSDSBooking ?: booking, booking)
-    messages += recallValidationService.validateFixedTermRecallAfterCalc(booking)
-    messages += recallValidationService.validateUnsupportedRecallTypes(booking)
-    messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationResult)
-    messages += postCalculationValidationService.validateSHPOContainingSX03Offences(booking, calculationResult)
-    messages += shpoValidationService.validate(booking)
+    messages += adjustmentValidationService.validateRemandOverlappingSentences(calculationOutput, booking)
+    messages += adjustmentValidationService.validateAdditionAdjustmentsInsideLatestReleaseDate(calculationOutput, booking)
+    messages += recallValidationService.validateFixedTermRecallAfterCalc(calculationOutput, booking)
+    messages += recallValidationService.validateUnsupportedRecallTypes(calculationOutput, booking)
+    messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationOutput)
+    messages += postCalculationValidationService.validateSHPOContainingSX03Offences(booking, calculationOutput)
+    messages += shpoValidationService.validate(calculationOutput.sentences)
 
     return messages
   }

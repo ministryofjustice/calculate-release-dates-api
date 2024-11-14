@@ -135,7 +135,7 @@
     "UNLAWFULLY_AT_LARGE": [
       {
         "numberOfDays": 39,
-        "appliesToSentencesFrom": "2015-01-10",
+        "appliesToSentencesFrom": "2022-12-03",
         "fromDate": "2022-12-03",
         "toDate": "2023-01-10"
       }

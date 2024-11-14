@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
@@ -30,7 +31,8 @@ data class CalculatedReleaseDates(
   val historicalTusedSource: HistoricalTusedSource? = null,
   val sdsEarlyReleaseAllocatedTranche: SDSEarlyReleaseTranche? = null,
   val sdsEarlyReleaseTranche: SDSEarlyReleaseTranche? = null,
-  val calculatedBooking: Booking? = null,
+  @JsonIgnore
+  val calculationOutput: CalculationOutput? = null,
 ) {
   fun toSentenceCalcDates(): SentenceCalcDates {
     return SentenceCalcDates(

@@ -53,16 +53,15 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
     return if (sentenceCalculation.isImmediateRelease()) {
       // There may still be adjustments to consider here. If the immediate release occurred and then there was a recall,
       // Any UAL after the recall will need to be added.
-      val adjustedDaysAfterRelease = sentenceCalculation.getTotalAddedDaysAfter(sentenceCalculation.sentence.sentencedAt)
+      val adjustedDaysAfterRelease = sentenceCalculation.adjustments.ualAfterDeterminateRelease
       sentenceCalculation.sentence.sentencedAt
         .plusMonths(TWELVE)
-        .plusDays(adjustedDaysAfterRelease.toLong())
+        .plusDays(adjustedDaysAfterRelease)
     } else {
-      sentenceCalculation.unadjustedDeterminateReleaseDate
-        .plusDays(sentenceCalculation.calculatedDeterminateTotalAddedDays.toLong())
-        .minusDays(sentenceCalculation.calculatedDeterminateTotalDeductedDays.toLong())
+      sentenceCalculation.unadjustedReleaseDate.unadjustedDeterminateReleaseDate
+        .plusDays(sentenceCalculation.adjustments.adjustmentsForInitialReleaseWithoutAwarded())
         .plusMonths(TWELVE)
-        .plusDays(sentenceCalculation.calculatedTotalAddedDaysForTused.minus(sentenceCalculation.calculatedDeterminateTotalAddedDays).toLong())
+        .plusDays(sentenceCalculation.adjustments.ualAfterDeterminateRelease)
     }
   }
 
@@ -82,7 +81,7 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
   }
 
   private fun getAdjustedDays(sentenceCalculation: SentenceCalculation): Long {
-    return sentenceCalculation.calculatedTotalAddedDays.minus(sentenceCalculation.calculatedTotalDeductedDays).toLong()
+    return sentenceCalculation.adjustments.adjustmentsForInitialReleaseWithoutAwarded()
   }
 
   companion object {

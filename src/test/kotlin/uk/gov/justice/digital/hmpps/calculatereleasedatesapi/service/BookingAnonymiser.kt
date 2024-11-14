@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.springframework.core.io.ClassPathResource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
@@ -16,47 +17,49 @@ import java.time.LocalDate
 class BookingAnonymiser {
   private val jsonTransformation = JsonTransformation()
 
-//  @Test
+  @Test
   fun anonymiseTestCase() {
-    val exampleType = "validation"
-    val exampleNumber = "crs-2194-immediate-release-future-dated"
+    val exampleType = "custom-examples"
+    val exampleNumber = "crs-2162-2"
     var (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
+
+    var sentences = booking.sentences.map {
+      if (it is StandardDeterminateSentence) {
+        return@map it.copy(
+          lineSequence = null,
+          caseReference = null,
+          caseSequence = null,
+        )
+      } else if (it is ExtendedDeterminateSentence) {
+        return@map it.copy(
+          lineSequence = null,
+          caseReference = null,
+          caseSequence = null,
+        )
+      } else {
+        return@map it
+      }
+    }
+
+    sentences = sentences.distinctBy {
+      if (booking.sentences.any { consec ->
+          consec.consecutiveSentenceUUIDs.contains(it.identifier)
+        }
+      ) {
+        return@distinctBy "${it.identifier}"
+      } else if (it is StandardDeterminateSentence) {
+        return@distinctBy "${it.duration}${it.sentencedAt}${it.recallType}${it.isSDSPlus}${it.hasAnSDSEarlyReleaseExclusion}${it.consecutiveSentenceUUIDs.firstOrNull()}"
+      } else if (it is ExtendedDeterminateSentence) {
+        return@distinctBy "${it.custodialDuration}${it.extensionDuration}${it.sentencedAt}${it.recallType}${it.consecutiveSentenceUUIDs.firstOrNull()}"
+      } else {
+        return@distinctBy "${it.identifier}"
+      }
+    }
 
     booking = booking.copy(
       bookingId = 0,
       offender = booking.offender.copy(reference = "ABC123", dateOfBirth = LocalDate.of(1990, 1, 1)),
-      sentences = booking.sentences.map {
-        if (it is StandardDeterminateSentence) {
-          it.copy(
-            offence = it.offence.copy(offenceCode = null),
-            lineSequence = null,
-            caseReference = null,
-            caseSequence = null,
-          )
-        } else if (it is ExtendedDeterminateSentence) {
-          it.copy(
-            offence = it.offence.copy(offenceCode = null),
-            lineSequence = null,
-            caseReference = null,
-            caseSequence = null,
-          )
-        } else {
-          it
-        }
-      }.distinctBy {
-        if (booking.sentences.any { consec ->
-            consec.consecutiveSentenceUUIDs.contains(it.identifier)
-          }
-        ) {
-          it.identifier
-        } else if (it is StandardDeterminateSentence) {
-          "${it.duration}${it.sentencedAt}${it.recallType}${it.isSDSPlus}${it.hasAnSDSEarlyReleaseExclusion}"
-        } else if (it is ExtendedDeterminateSentence) {
-          "${it.custodialDuration}${it.extensionDuration}${it.sentencedAt}${it.recallType}"
-        } else {
-          it.identifier
-        }
-      },
+      sentences = sentences,
     )
 
     val mapper = TestUtil.minimalTestCaseMapper()

@@ -57,7 +57,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationFragments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
@@ -88,6 +88,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.BookingTimelineService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineAwardedAdjustmentCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineSentenceCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrancheCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineUalAdjustmentCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.AdjustmentValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.BotusValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DtoValidationService
@@ -201,7 +207,7 @@ class CalculationTransactionalServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
 
     val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val calculatedReleaseDates: Pair<Booking, CalculationResult>
+    val calculatedReleaseDates: CalculationOutput
     val returnedValidationMessages: List<ValidationMessage>
     try {
       calculatedReleaseDates = calculationService(
@@ -217,8 +223,8 @@ class CalculationTransactionalServiceTest {
       val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration)
 
       returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
-        calculatedReleaseDates.first,
-        calculationResult = calculatedReleaseDates.second,
+        calculatedReleaseDates,
+        booking,
       )
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
@@ -239,8 +245,8 @@ class CalculationTransactionalServiceTest {
     } else {
       val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
       assertThat(returnedValidationMessages).isEmpty()
-      assertEquals(bookingData.dates, calculatedReleaseDates.second.dates)
-      assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.second.effectiveSentenceLength)
+      assertEquals(bookingData.dates, calculatedReleaseDates.calculationResult.dates)
+      assertEquals(bookingData.effectiveSentenceLength, calculatedReleaseDates.calculationResult.effectiveSentenceLength)
     }
   }
 
@@ -752,20 +758,15 @@ class CalculationTransactionalServiceTest {
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val sentenceAdjustedCalculationService =
       SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
-    val sentenceCalculationService =
-      SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup, sentenceAggregator)
     val sentencesExtractionService = SentencesExtractionService()
     val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
 
-    val trancheConfiguration =
-      SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
+    val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
     val tranche = Tranche(trancheConfiguration)
 
     val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
-    val sdsEarlyReleaseDefaultingRulesService =
-      SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService, trancheConfiguration)
+    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)
     val bookingCalculationService = BookingCalculationService(
-      sentenceCalculationService,
       sentenceIdentificationService,
     )
 
@@ -776,24 +777,49 @@ class CalculationTransactionalServiceTest {
       hdcedExtractionService,
       sentencesExtractionService,
     )
-    val bookingTimelineService = BookingTimelineService(
+    val timelineCalculator = TimelineCalculator(
       sentenceAdjustedCalculationService,
+      bookingExtractionService,
+    )
+    val timelineAwardedAdjustmentCalculationHandler = TimelineAwardedAdjustmentCalculationHandler(
+      trancheConfiguration,
+      releasePointMultiplierLookup,
+      timelineCalculator,
+    )
+    val timelineSentenceCalculationHandler = TimelineSentenceCalculationHandler(
+      trancheConfiguration,
+      releasePointMultiplierLookup,
+      timelineCalculator,
+    )
+    val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
+      trancheConfiguration,
+      releasePointMultiplierLookup,
+      timelineCalculator,
+      trancheAllocationService,
       sentencesExtractionService,
+    )
+    val timelineUalAdjustmentCalculationHandler = TimelineUalAdjustmentCalculationHandler(
+      trancheConfiguration,
+      releasePointMultiplierLookup,
+      timelineCalculator,
+    )
+    val bookingTimelineService = BookingTimelineService(
       workingDayService,
-      sdsEarlyReleaseTrancheOneDate(),
+      trancheConfiguration,
+      sdsEarlyReleaseDefaultingRulesService,
+      timelineCalculator,
+      timelineAwardedAdjustmentCalculationHandler,
+      timelineTrancheCalculationHandler,
+      timelineSentenceCalculationHandler,
+      timelineUalAdjustmentCalculationHandler,
+
     )
 
     val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
 
     val calculationService = CalculationService(
       bookingCalculationService,
-      bookingExtractionService,
       bookingTimelineService,
-      sdsEarlyReleaseDefaultingRulesService,
-      trancheAllocationService,
-      sentencesExtractionService,
-      trancheConfiguration,
-      TestUtil.objectMapper(),
     )
 
     val validationServiceToUse = if (passedInServices.contains(ValidationService::class.java.simpleName)) {
@@ -828,7 +854,7 @@ class CalculationTransactionalServiceTest {
     val featureToggles = FeatureToggles(true, true, false, sds40ConsecutiveManualJourney = true)
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
-    val adjustmentValidationService = AdjustmentValidationService(trancheConfiguration)
+    val adjustmentValidationService = AdjustmentValidationService()
     val dtoValidationService = DtoValidationService()
     val botusValidationService = BotusValidationService()
     val recallValidationService = RecallValidationService(trancheConfiguration)

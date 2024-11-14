@@ -4,13 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import java.util.UUID
 
 class SingleTermSentence(
   override val sentencedAt: LocalDate,
   override val offence: Offence,
   override val standardSentences: List<AbstractSentence>,
-  override val identifier: UUID = UUID.randomUUID(),
 ) : SingleTermed {
   override val isSDSPlus: Boolean = false
   constructor(standardSentences: List<AbstractSentence>) :
@@ -77,14 +75,22 @@ class SingleTermSentence(
   }
 
   private fun latestExpiryDate(firstStandardSentence: AbstractSentence, secondStandardSentence: AbstractSentence): LocalDate? {
+    val firstExpiry = firstStandardSentence.totalDuration().getEndDate(firstStandardSentence.sentencedAt)
+    val secondExpiry = secondStandardSentence.totalDuration().getEndDate(secondStandardSentence.sentencedAt)
+
     return if (
-      firstStandardSentence.sentenceCalculation.expiryDate.isAfter(secondStandardSentence.sentenceCalculation.expiryDate)
+      firstExpiry.isAfter(secondExpiry)
     ) {
-      firstStandardSentence.sentenceCalculation.expiryDate
+      firstExpiry
     } else {
-      secondStandardSentence.sentenceCalculation.expiryDate
+      secondExpiry
     }
   }
 
   override fun calculateErsed(): Boolean = identificationTrack.calculateErsed()
+
+  @JsonIgnore
+  override fun sentenceParts(): List<AbstractSentence> {
+    return standardSentences
+  }
 }

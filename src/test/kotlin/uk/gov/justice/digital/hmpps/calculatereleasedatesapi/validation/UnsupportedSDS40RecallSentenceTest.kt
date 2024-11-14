@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.whenever
 import org.springframework.context.annotation.Profile
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
@@ -12,6 +13,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CustodialPeriod
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -19,12 +22,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FI
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.STANDARD_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.BookingHelperTest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
@@ -37,112 +38,30 @@ import java.util.UUID
 class UnsupportedSDS40RecallSentenceTest {
 
   @Test
-  fun `Test LR_ORA with CRD after tranche commencement returns a validation error`() {
-    val validationService = getActiveValidationService(
-      SentencesExtractionService(),
-      TRANCHE_CONFIGURATION,
-    )
-
-    val lrOraSentence = LR_ORA.copy()
-
-    lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
-      unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
-    )
-    var workingBooking = booking.copy(
-      sentences = listOf(
-        lrOraSentence,
-      ),
-      adjustments = Adjustments(),
-    )
-    lrOraSentence.releaseDateTypes =
-      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
-
-    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
-
-    val result = validationService.validateBookingAfterCalculation(
-      workingBooking,
-    )
-
-    assertThat(result).isEqualTo(
-      listOf(
-        ValidationMessage(UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE),
-      ),
-    )
-  }
-
-  @Test
-  fun `Test consecutive sentence with LR_ORA with CRD after tranche commencement returns a validation error`() {
-    val validationService = getActiveValidationService(
-      SentencesExtractionService(),
-      TRANCHE_CONFIGURATION,
-    )
-
-    val testIdentifierUUID = UUID.randomUUID()
-
-    val lrOraSentence = LR_ORA.copy(
-      identifier = testIdentifierUUID,
-    )
-    val standardSentence = STANDARD_SENTENCE.copy(
-      consecutiveSentenceUUIDs = listOf(testIdentifierUUID),
-    )
-
-    lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
-      unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
-    )
-    var workingBooking = booking.copy(
-      sentences = listOf(
-        lrOraSentence,
-        standardSentence,
-      ),
-      adjustments = Adjustments(),
-    )
-    lrOraSentence.releaseDateTypes =
-      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
-
-    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
-    workingBooking.consecutiveSentences[0].sentenceCalculation = SENTENCE_CALCULATION.copy(
-      unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
-    )
-    workingBooking.consecutiveSentences[0].releaseDateTypes =
-      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
-
-    val result = validationService.validateBookingAfterCalculation(
-      workingBooking,
-    )
-
-    assertThat(result).isEqualTo(
-      listOf(
-        ValidationMessage(UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE),
-      ),
-    )
-  }
-
-  @Test
   fun `Test recall sentence issued after trancheOneCommencementDate does not trigger validation`() {
-    val validationService = getActiveValidationService(
-      SentencesExtractionService(),
-      TRANCHE_CONFIGURATION,
-    )
-
-    val dateAfterTrancheOne = TRANCHE_CONFIGURATION.trancheOneCommencementDate.minusDays(1)
+    val dateAfterTrancheOne = TRANCHE_CONFIGURATION.trancheOneCommencementDate.plusDays(1)
     val lrOraSentence = LR_ORA.copy(sentencedAt = dateAfterTrancheOne)
 
-    // Set the release date to AFTER the trancheOneCommencementDate
-    lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
-      unadjustedHistoricDeterminateReleaseDate = dateAfterTrancheOne,
-    )
-    var workingBooking = booking.copy(
+    val workingBooking = booking.copy(
       sentences = listOf(
         lrOraSentence,
       ),
       adjustments = Adjustments(),
     )
+    val offender = mock<Offender>()
+    whenever(offender.underEighteenAt).thenReturn { false }
     lrOraSentence.releaseDateTypes =
-      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
+      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, offender)
+    lrOraSentence.sentenceCalculation = mock()
 
-    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+    val calculationOutput = CalculationOutput(
+      listOf(lrOraSentence),
+      listOf(CustodialPeriod(from = lrOraSentence.sentencedAt, to = dateAfterTrancheOne.plusYears(1), listOf(lrOraSentence))),
+      mock(),
+    )
 
-    val result = validationService.validateBookingAfterCalculation(
+    val result = RecallValidationService(TRANCHE_CONFIGURATION).validateUnsupportedRecallTypes(
+      calculationOutput,
       workingBooking,
     )
 
@@ -151,32 +70,30 @@ class UnsupportedSDS40RecallSentenceTest {
 
   @Test
   fun `Test recall sentence issued before trancheOneCommencementDate does trigger validation`() {
-    val validationService = getActiveValidationService(
-      SentencesExtractionService(),
-      TRANCHE_CONFIGURATION,
-    )
-
     val dateBeforeTrancheOne = TRANCHE_CONFIGURATION.trancheOneCommencementDate.minusDays(1)
     val dateAfterTrancheOne = TRANCHE_CONFIGURATION.trancheOneCommencementDate.plusDays(1)
     val lrOraSentence = LR_ORA.copy(sentencedAt = dateBeforeTrancheOne)
 
-    // Set the release date to AFTER the trancheOneCommencementDate
-    lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
-      unadjustedHistoricDeterminateReleaseDate = dateAfterTrancheOne,
-    )
-
-    var workingBooking = booking.copy(
+    val workingBooking = booking.copy(
       sentences = listOf(
         lrOraSentence,
       ),
       adjustments = Adjustments(),
     )
+    val offender = mock<Offender>()
+    whenever(offender.underEighteenAt).thenReturn { false }
     lrOraSentence.releaseDateTypes =
-      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
+      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, offender)
+    lrOraSentence.sentenceCalculation = mock()
 
-    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+    val calculationOutput = CalculationOutput(
+      listOf(lrOraSentence),
+      listOf(CustodialPeriod(from = lrOraSentence.sentencedAt, to = dateAfterTrancheOne, listOf(lrOraSentence))),
+      mock(),
+    )
 
-    val result = validationService.validateBookingAfterCalculation(
+    val result = RecallValidationService(TRANCHE_CONFIGURATION).validateUnsupportedRecallTypes(
+      calculationOutput,
       workingBooking,
     )
 
@@ -189,27 +106,28 @@ class UnsupportedSDS40RecallSentenceTest {
 
   @Test
   fun `Test LR with no TUSED after tranche commencement returns no error`() {
-    val validationService = getActiveValidationService(
-      SentencesExtractionService(),
-      ValidationServiceTest.TRANCHE_CONFIGURATION,
-    )
+    val dateBeforeTrancheOne = TRANCHE_CONFIGURATION.trancheOneCommencementDate.minusDays(1)
     val lrOraSentence = LR_ORA.copy()
-
-    lrOraSentence.sentenceCalculation = ValidationServiceTest.SENTENCE_CALCULATION.copy(
-      unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 11),
-    )
-    var workingBooking = booking.copy(
+    val workingBooking = booking.copy(
       sentences = listOf(
         lrOraSentence,
       ),
       adjustments = Adjustments(),
     )
+    val offender = mock<Offender>()
+    whenever(offender.underEighteenAt).thenReturn { false }
     lrOraSentence.releaseDateTypes =
-      ReleaseDateTypes(listOf(ReleaseDateType.CRD), lrOraSentence, workingBooking.offender)
+      ReleaseDateTypes(listOf(ReleaseDateType.CRD), lrOraSentence, offender)
+    lrOraSentence.sentenceCalculation = mock()
 
-    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+    val calculationOutput = CalculationOutput(
+      listOf(lrOraSentence),
+      listOf(CustodialPeriod(from = lrOraSentence.sentencedAt, to = dateBeforeTrancheOne, listOf(lrOraSentence))),
+      mock(),
+    )
 
-    val result = validationService.validateBookingAfterCalculation(
+    val result = RecallValidationService(TRANCHE_CONFIGURATION).validateUnsupportedRecallTypes(
+      calculationOutput,
       workingBooking,
     )
 
@@ -306,36 +224,12 @@ class UnsupportedSDS40RecallSentenceTest {
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
-    val SENTENCE_CALCULATION = SentenceCalculation(
-      STANDARD_SENTENCE,
-      3,
-      4.0,
-      4,
-      4,
-      FIRST_MAY_2018,
-      FIRST_MAY_2018,
-      FIRST_MAY_2018,
-      1,
-      FIRST_MAY_2018,
-      false,
-      Adjustments(
-        mutableMapOf(
-          REMAND to mutableListOf(
-            Adjustment(
-              numberOfDays = 1,
-              appliesToSentencesFrom = FIRST_MAY_2018,
-            ),
-          ),
-        ),
-      ),
-      FIRST_MAY_2018,
-    )
 
     private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheConfiguration: SDS40TrancheConfiguration, botus: Boolean = true): ValidationService {
       val featureToggles = FeatureToggles(botus, true, false, sds40ConsecutiveManualJourney = true)
       val validationUtilities = ValidationUtilities()
       val fineValidationService = FineValidationService(validationUtilities)
-      val adjustmentValidationService = AdjustmentValidationService(trancheConfiguration)
+      val adjustmentValidationService = AdjustmentValidationService()
       val dtoValidationService = DtoValidationService()
       val botusValidationService = BotusValidationService()
       val recallValidationService = RecallValidationService(trancheConfiguration)

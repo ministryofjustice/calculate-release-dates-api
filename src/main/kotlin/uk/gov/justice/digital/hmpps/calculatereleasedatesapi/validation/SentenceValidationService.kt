@@ -1,10 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CustodialPeriod
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -230,9 +229,9 @@ class SentenceValidationService(
 
     return validationMessages
   }
-  internal fun validateSentenceHasNotBeenExtinguished(sentences: List<CalculableSentence>): List<ValidationMessage> {
+  internal fun validateSentenceHasNotBeenExtinguished(custodialPeriod: CustodialPeriod): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
-    val determinateSentences = sentences.filter { !it.isRecall() }
+    val determinateSentences = custodialPeriod.sentences.filter { !it.isRecall() }
     if (determinateSentences.isNotEmpty()) {
       val earliestSentenceDate = determinateSentences.minOf { it.sentencedAt }
       val latestReleaseDateSentence = extractionService.mostRecentSentence(
@@ -242,10 +241,9 @@ class SentenceValidationService(
       if (earliestSentenceDate.minusDays(1)
           .isAfter(latestReleaseDateSentence.sentenceCalculation.adjustedUncappedDeterminateReleaseDate)
       ) {
-        val hasRemand =
-          latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.REMAND) != 0
+        val hasRemand = latestReleaseDateSentence.sentenceCalculation.adjustments.remand != 0L
         val hasTaggedBail =
-          latestReleaseDateSentence.sentenceCalculation.getAdjustmentBeforeSentence(AdjustmentType.TAGGED_BAIL) != 0
+          latestReleaseDateSentence.sentenceCalculation.adjustments.taggedBail != 0L
         if (hasRemand) messages += ValidationMessage(ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_REMAND)
 
         if (hasTaggedBail) messages += ValidationMessage(ValidationCode.CUSTODIAL_PERIOD_EXTINGUISHED_TAGGED_BAIL)

@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggl
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
@@ -23,11 +23,11 @@ class PostCalculationValidationService(
 
   internal fun validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(
     booking: Booking,
-    calculationResult: CalculationResult?,
+    calculationOutput: CalculationOutput,
   ): List<ValidationMessage> {
-    if (featureToggles.sds40ConsecutiveManualJourney && calculationResult != null) {
-      if (calculationResult.sdsEarlyReleaseTranche == SDSEarlyReleaseTranche.TRANCHE_2 &&
-        booking.consecutiveSentences.any { consecutiveSentence ->
+    if (featureToggles.sds40ConsecutiveManualJourney) {
+      if (calculationOutput.calculationResult.sdsEarlyReleaseTranche == SDSEarlyReleaseTranche.TRANCHE_2 &&
+        calculationOutput.sentences.filterIsInstance<ConsecutiveSentence>().any { consecutiveSentence ->
           consecutiveSentence.orderedSentences.any {
             it is StandardDeterminateSentence &&
               !it.isSDSPlus &&
@@ -45,32 +45,31 @@ class PostCalculationValidationService(
 
   internal fun validateSHPOContainingSX03Offences(
     booking: Booking,
-    calculationResult: CalculationResult?,
+    calculationOutput: CalculationOutput,
   ): List<ValidationMessage> {
-    if (calculationResult != null) {
-      val matchingSentences = booking.getAllExtractableSentences()
-        .filter {
-          it.sentenceCalculation.adjustedDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
-        }
-        .flatMap { if (it is ConsecutiveSentence) it.orderedSentences else listOf(it) }
-        .filter {
-          it is StandardDeterminateSentence &&
-            !it.isSDSPlus &&
-            shpoSX03OffenceCodes.contains(it.offence.offenceCode) &&
-            it.offence.committedAt.isAfterOrEqualTo(shpoBreachOffenceFromDate)
-        }
-
-      // The result having a tranche other than 0 would mean it falls under the SDS40 criteria for assessment,
-      // However the tranche may be 0 for sentences after tranche 1.
-      if (matchingSentences.any() && (
-          calculationResult.sdsEarlyReleaseTranche != SDSEarlyReleaseTranche.TRANCHE_0 ||
-            matchingSentences.any { it.sentencedAt.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate) }
-          )
-      ) {
-        log.info("Unable to determine release provision for SHPO SX03 offence for ${booking.bookingId}")
-        return listOf(ValidationMessage(ValidationCode.UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS))
+    val matchingSentences = calculationOutput.sentences
+      .filter {
+        it.sentenceCalculation.adjustedDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
       }
+      .flatMap { if (it is ConsecutiveSentence) it.orderedSentences else listOf(it) }
+      .filter {
+        it is StandardDeterminateSentence &&
+          !it.isSDSPlus &&
+          shpoSX03OffenceCodes.contains(it.offence.offenceCode) &&
+          it.offence.committedAt.isAfterOrEqualTo(shpoBreachOffenceFromDate)
+      }
+
+    // The result having a tranche other than 0 would mean it falls under the SDS40 criteria for assessment,
+    // However the tranche may be 0 for sentences after tranche 1.
+    if (matchingSentences.isNotEmpty() && (
+        calculationOutput.calculationResult.sdsEarlyReleaseTranche != SDSEarlyReleaseTranche.TRANCHE_0 ||
+          matchingSentences.any { it.sentencedAt.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate) }
+        )
+    ) {
+      log.info("Unable to determine release provision for SHPO SX03 offence for ${booking.bookingId}")
+      return listOf(ValidationMessage(ValidationCode.UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS))
     }
+
     return emptyList()
   }
 

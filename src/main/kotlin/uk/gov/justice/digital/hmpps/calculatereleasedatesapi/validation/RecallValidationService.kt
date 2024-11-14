@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
@@ -48,33 +50,32 @@ class RecallValidationService(
     return Triple(recallLength, has14DayFTRSentence, has28DayFTRSentence)
   }
 
-  internal fun validateUnsupportedRecallTypes(booking: Booking): List<ValidationMessage> {
-    return if (hasUnsupportedRecallType(booking)) {
+  internal fun validateUnsupportedRecallTypes(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
+    return if (hasUnsupportedRecallType(calculationOutput, booking)) {
       listOf(ValidationMessage(ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE))
     } else {
       emptyList()
     }
   }
-  private fun hasUnsupportedRecallType(booking: Booking): Boolean {
-    return booking.getAllExtractableSentences().any { sentence ->
-      val hasTusedReleaseDateType = sentence.releaseDateTypes.contains(ReleaseDateType.TUSED)
-      val isDeterminateOrConsecutiveSentence = sentence is StandardDeterminateSentence ||
-        (sentence is ConsecutiveSentence && sentence.orderedSentences.any { it is StandardDeterminateSentence })
-      val sentencedBeforeCommencement = sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)
-      val adjustedReleaseDateAfterOrEqualCommencement = sentence.sentenceCalculation.adjustedHistoricDeterminateReleaseDate
-        .isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
 
-      val result = hasTusedReleaseDateType &&
-        isDeterminateOrConsecutiveSentence &&
-        sentence.isRecall() &&
-        sentencedBeforeCommencement &&
-        adjustedReleaseDateAfterOrEqualCommencement
+  private fun hasUnsupportedRecallType(calculationOutput: CalculationOutput, booking: Booking): Boolean {
+    val custodialPeriodsAfterOrEqualCommencement = calculationOutput.custodialPeriod.filter { it.to.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate) }
+    return custodialPeriodsAfterOrEqualCommencement.any { period ->
+      return@any period.sentences.any { sentence ->
+        val hasTusedReleaseDateType = sentence.releaseDateTypes.contains(ReleaseDateType.TUSED)
+        val isDeterminateOrConsecutiveSentence = sentence.sentenceParts().any { it is StandardDeterminateSentence }
+        val sentencedBeforeCommencement = sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)
 
-      if (result) {
-        log.info("Unsupported recall type found for sentence ${sentence.identifier} in booking for ${booking.offender.reference}.")
+        val result = hasTusedReleaseDateType &&
+          isDeterminateOrConsecutiveSentence &&
+          sentence.isRecall() &&
+          sentencedBeforeCommencement
+
+        if (result) {
+          log.info("Unsupported recall type found for sentence ${sentence.sentenceParts().map { (it as AbstractSentence).identifier }} in booking for ${booking.offender.reference}.")
+        }
+        return@any result
       }
-
-      result
     }
   }
 
@@ -115,12 +116,13 @@ class RecallValidationService(
     return validationMessages
   }
 
-  internal fun validateFixedTermRecallAfterCalc(booking: Booking): List<ValidationMessage> {
+  internal fun validateFixedTermRecallAfterCalc(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
     val ftrDetails = booking.fixedTermRecallDetails ?: return messages
     val recallLength = ftrDetails.recallLength
+    val consecutiveSentences = calculationOutput.sentences.filterIsInstance<ConsecutiveSentence>()
 
-    booking.consecutiveSentences.forEach {
+    consecutiveSentences.forEach {
       if (it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28) {
         if (recallLength == 14 && it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS)) {
           messages += ValidationMessage(ValidationCode.FTR_14_DAYS_AGGREGATE_GE_12_MONTHS)
@@ -128,7 +130,7 @@ class RecallValidationService(
       }
     }
 
-    booking.consecutiveSentences.forEach {
+    consecutiveSentences.forEach {
       if (it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28) {
         if (recallLength == 28 && it.durationIsLessThan(TWELVE, MONTHS)) {
           messages += ValidationMessage(
@@ -138,13 +140,13 @@ class RecallValidationService(
       }
     }
 
-    booking.consecutiveSentences.forEach {
+    consecutiveSentences.forEach {
       if (it.recallType == FIXED_TERM_RECALL_28 && it.durationIsLessThan(TWELVE, MONTHS)) {
         messages += ValidationMessage(ValidationCode.FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS)
       }
     }
 
-    booking.consecutiveSentences.forEach {
+    consecutiveSentences.forEach {
       if (it.recallType == FIXED_TERM_RECALL_14 && it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS)) {
         messages += ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS)
       }

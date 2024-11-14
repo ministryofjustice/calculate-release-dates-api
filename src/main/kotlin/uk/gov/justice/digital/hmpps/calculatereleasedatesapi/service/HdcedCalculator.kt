@@ -168,12 +168,13 @@ class HdcedCalculator(
     }
   }
 
-  private fun getAddedDays(sentenceCalculation: SentenceCalculation) = sentenceCalculation.calculatedTotalAddedDays
-    .plus(sentenceCalculation.calculatedTotalAwardedDays)
-    .minus(sentenceCalculation.unusedAdaDays)
+  private fun getAddedDays(sentenceCalculation: SentenceCalculation) = sentenceCalculation.adjustments.ualDuringCustody +
+    sentenceCalculation.adjustments.awardedDuringCustody -
+    sentenceCalculation.adjustments.unusedAdaDays -
+    sentenceCalculation.adjustments.servedAdaDays
 
   private fun getDeductedDays(sentenceCalculation: SentenceCalculation) =
-    sentenceCalculation.calculatedTotalDeductedDays.toLong()
+    sentenceCalculation.adjustments.deductions
 
   private fun calculateHdcedMinimumCustodialPeriod(
     sentence: CalculableSentence,

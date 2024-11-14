@@ -1,25 +1,17 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import nl.altindag.log.LogCaptor
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.ersedConfigurationForTests
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -31,24 +23,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalServiceTest.Companion.BOOKING
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalServiceTest.Companion.cachedBankHolidays
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.AdjustmentValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.BotusValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DtoValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.EDSValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.FineValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.PostCalculationValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.PreCalculationValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.RecallValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SHPOValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SOPCValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Section91ValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SentenceValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ToreraValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.UnsupportedValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationUtilities
 import java.time.LocalDate
 
 @ExtendWith(MockitoExtension::class)
@@ -56,7 +32,6 @@ class CalculationTransactionalServiceValidationTest {
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
-  private val manageOffencesService = mock<ManageOffencesService>()
   private val prisonService = mock<PrisonService>()
   private val eventService = mock<EventService>()
   private val bookingService = mock<BookingService>()
@@ -65,144 +40,35 @@ class CalculationTransactionalServiceValidationTest {
   private val serviceUserService = mock<ServiceUserService>()
   private val approvedDatesSubmissionRepository = mock<ApprovedDatesSubmissionRepository>()
   private val nomisCommentService = mock<NomisCommentService>()
-  private val bankHolidayService = mock<BankHolidayService>()
   private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
-  private val objectMapper = TestUtil.objectMapper()
-
-  @BeforeEach
-  fun beforeAll() {
-    Mockito.`when`(bankHolidayService.getBankHolidays()).thenReturn(cachedBankHolidays)
-  }
 
   @Test
-  fun `fullValidation logs expected messages`() {
-    val logCaptor = LogCaptor.forClass(CalculationTransactionalService::class.java)
-    logCaptor.setLogLevelToTrace()
-
+  fun `fullValidation calls functions as expected`() {
     val prisonerId = "A1234BC"
     val calculationUserInputs = CalculationUserInputs()
     val fakeMessages = listOf<ValidationMessage>()
+    val calculationOutput = CalculationOutput(listOf(), listOf(), mock<CalculationResult>())
 
     // Mocking the behaviour of services
     whenever(prisonService.getPrisonApiSourceData(prisonerId, true)).thenReturn(fakeSourceData)
     whenever(validationService.validateBeforeCalculation(any(), eq(calculationUserInputs))).thenReturn(fakeMessages)
     whenever(bookingService.getBooking(any(), eq(calculationUserInputs))).thenReturn(BOOKING)
-    whenever(calculationService.calculateReleaseDates(any(), eq(calculationUserInputs), eq(true))).thenReturn(
-      Pair(
-        BOOKING,
-        mock<CalculationResult>(),
-      ),
-    )
-    whenever(calculationService.calculateReleaseDates(any(), eq(calculationUserInputs), eq(false))).thenReturn(
-      Pair(
-        BOOKING,
-        mock<CalculationResult>(),
-      ),
-    )
-    whenever(validationService.validateBookingAfterCalculation(any(), any(), any())).thenReturn(fakeMessages)
+    whenever(calculationService.calculateReleaseDates(any(), eq(calculationUserInputs))).thenReturn(calculationOutput)
+    whenever(validationService.validateBookingAfterCalculation(any(), any())).thenReturn(fakeMessages)
 
     // Call the method under test
     calculationTransactionalService().fullValidation(prisonerId, calculationUserInputs)
-    // Get the captured log messages
-    val infoLogMessages = logCaptor.infoLogs
-    val traceLogMessages = logCaptor.traceLogs
 
-    val sourceDataJson = objectMapper.writeValueAsString(fakeSourceData)
-    val bookingJson = objectMapper.writeValueAsString(BOOKING)
+    val inOrder = inOrder(validationService)
+    inOrder.verify(validationService).validateBeforeCalculation(any(), eq(calculationUserInputs))
+    inOrder.verify(validationService).validateBeforeCalculation(any())
+    inOrder.verify(validationService).validateBookingAfterCalculation(any(), any())
 
-    // Verify the expected log messages
-    assertEquals(
-      listOf(
-        "Full Validation for $prisonerId",
-        "Gathering source data from PrisonAPI",
-        "Stage 1: Running initial calculation validations",
-        "Initial validation passed",
-        "Retrieving booking information",
-        "Stage 2: Running booking-related calculation validations",
-        "Booking validation passed",
-        "Stage 3: Calculating release dates",
-        "Release dates calculated",
-        "Calculating release dates for longest possible sentences",
-        "Longest possible release dates calculated",
-        "Stage 4: Running final booking validation after calculation",
-        fakeMessages.joinToString("\n"),
-      ),
-      infoLogMessages,
-    )
-    // Verify the expected log messages
-    assertEquals(
-      listOf(
-        "Source data:\n$sourceDataJson",
-        "Booking information: $bookingJson",
-      ),
-      traceLogMessages,
-    )
+    inOrder.verifyNoMoreInteractions()
   }
 
-  private fun calculationTransactionalService(
-    params: String = "calculation-params",
-    passedInServices: List<String> = emptyList(),
-  ): CalculationTransactionalService {
-    val hdcedConfiguration =
-      hdcedConfigurationForTests() // HDCED and ERSED params not currently overridden in alt-calculation-params
-
-    val ersedConfiguration = ersedConfigurationForTests()
-    val releasePointMultipliersConfiguration = releasePointMultiplierConfigurationForTests(params)
-
-    val workingDayService = WorkingDayService(bankHolidayService)
-    val tusedCalculator = TusedCalculator(workingDayService)
-    val sentenceAggregator = SentenceAggregator()
-    val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultipliersConfiguration)
-
-    val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
-    val ersedCalculator = ErsedCalculator(ersedConfiguration)
-    val sentenceAdjustedCalculationService =
-      SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
-    val sentenceCalculationService =
-      SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup, sentenceAggregator)
-    val sentencesExtractionService = SentencesExtractionService()
-    val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
-    val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
-    val tranche = Tranche(trancheConfiguration)
-    val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
-    val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService, trancheConfiguration)
-    val hdcedExtractionService = HdcedExtractionService(
-      sentencesExtractionService,
-    )
-
-    val bookingCalculationService = BookingCalculationService(
-      sentenceCalculationService,
-      sentenceIdentificationService,
-    )
-    val bookingExtractionService = BookingExtractionService(
-      hdcedExtractionService,
-      sentencesExtractionService,
-    )
-    val bookingTimelineService = BookingTimelineService(
-      sentenceAdjustedCalculationService,
-      sentencesExtractionService,
-      workingDayService,
-      sdsEarlyReleaseTrancheOneDate(),
-    )
-
+  private fun calculationTransactionalService(): CalculationTransactionalService {
     val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
-
-    val calculationService = CalculationService(
-      bookingCalculationService,
-      bookingExtractionService,
-      bookingTimelineService,
-      sdsEarlyReleaseDefaultingRulesService,
-      trancheAllocationService,
-      sentencesExtractionService,
-      trancheConfiguration,
-      TestUtil.objectMapper(),
-    )
-
-    val validationServiceToUse = if (passedInServices.contains(ValidationService::class.java.simpleName)) {
-      getActiveValidationService(sentencesExtractionService, trancheConfiguration)
-    } else {
-      validationService
-    }
 
     return CalculationTransactionalService(
       calculationRequestRepository,
@@ -213,7 +79,7 @@ class CalculationTransactionalServiceValidationTest {
       prisonApiDataMapper,
       calculationService,
       bookingService,
-      validationServiceToUse,
+      validationService,
       eventService,
       serviceUserService,
       approvedDatesSubmissionRepository,
@@ -233,52 +99,4 @@ class CalculationTransactionalServiceValidationTest {
     listOf(),
     null,
   )
-
-  private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheConfiguration: SDS40TrancheConfiguration): ValidationService {
-    val featureToggles = FeatureToggles(
-      botus = true,
-      sdsEarlyRelease = true,
-      sdsEarlyReleaseHints = false,
-      sds40ConsecutiveManualJourney = true,
-    )
-    val validationUtilities = ValidationUtilities()
-    val fineValidationService = FineValidationService(validationUtilities)
-    val adjustmentValidationService = AdjustmentValidationService(trancheConfiguration)
-    val dtoValidationService = DtoValidationService()
-    val botusValidationService = BotusValidationService()
-    val recallValidationService = RecallValidationService(trancheConfiguration)
-    val unsupportedValidationService = UnsupportedValidationService()
-    val postCalculationValidationService = PostCalculationValidationService(trancheConfiguration, featureToggles)
-    val section91ValidationService = Section91ValidationService(validationUtilities)
-    val sopcValidationService = SOPCValidationService(validationUtilities)
-    val edsValidationService = EDSValidationService(validationUtilities)
-    val toreraValidationService = ToreraValidationService(manageOffencesService)
-    val sentenceValidationService = SentenceValidationService(
-      validationUtilities,
-      sentencesExtractionService,
-      section91ValidationService = section91ValidationService,
-      sopcValidationService = sopcValidationService,
-      fineValidationService,
-      edsValidationService = edsValidationService,
-    )
-    val preCalculationValidationService = PreCalculationValidationService(
-      featureToggles = featureToggles,
-      fineValidationService = fineValidationService,
-      adjustmentValidationService = adjustmentValidationService,
-      dtoValidationService = dtoValidationService,
-      botusValidationService = botusValidationService,
-      unsupportedValidationService = unsupportedValidationService,
-      toreraValidationService = toreraValidationService,
-    )
-
-    return ValidationService(
-      preCalculationValidationService = preCalculationValidationService,
-      adjustmentValidationService = adjustmentValidationService,
-      recallValidationService = recallValidationService,
-      sentenceValidationService = sentenceValidationService,
-      validationUtilities = validationUtilities,
-      postCalculationValidationService = postCalculationValidationService,
-      shpoValidationService = SHPOValidationService(),
-    )
-  }
 }

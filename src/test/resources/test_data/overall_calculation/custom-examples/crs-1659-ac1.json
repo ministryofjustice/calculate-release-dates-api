@@ -47,7 +47,7 @@
   "adjustments": {
     "RECALL_REMAND": [
       {
-        "appliesToSentencesFrom": "2021-06-18",
+        "appliesToSentencesFrom": "2021-09-30",
         "numberOfDays": 104,
         "fromDate": "2021-06-18",
         "toDate": "2021-09-29"

@@ -3,11 +3,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
@@ -17,9 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import java.time.LocalDate
 
 @Service
-class AdjustmentValidationService(
-  private val trancheConfiguration: SDS40TrancheConfiguration,
-) {
+class AdjustmentValidationService() {
 
   internal fun validateIfAdjustmentsAreSupported(adjustments: List<BookingAdjustment>): List<ValidationMessage> {
     return mutableListOf<ValidationMessage>().apply {
@@ -75,30 +72,24 @@ class AdjustmentValidationService(
     return validationMessages
   }
 
-  internal fun validateAdditionAdjustmentsInsideLatestReleaseDate(longestBooking: Booking, booking: Booking): List<ValidationMessage> {
-    val sentences = booking.getAllExtractableSentences()
-    val longestSentences = longestBooking.getAllExtractableSentences()
-
-    validateSentenceCounts(sentences, longestSentences)
-
-    val latestReleaseDate = getLatestReleaseDateWithoutAdditions(sentences, longestSentences) ?: return emptyList()
-
+  internal fun validateAdditionAdjustmentsInsideLatestReleaseDate(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
     val adjustments = getSortedAdjustments(booking)
-    return throwErrorIfAdditionAdjustmentsAfterLatestReleaseDate(adjustments, latestReleaseDate)
-  }
+    val latestReleaseDate = calculationOutput.custodialPeriod.mapNotNull { period ->
+      period.sentences.filterNot { it is Term }
+        .maxOfOrNull { it.sentenceCalculation.releaseDateDefaultedByCommencement }
+    }.maxOrNull()
+    val messages = mutableSetOf<ValidationMessage>()
 
-  private fun validateSentenceCounts(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>) {
-    if (sentences.size != longestSentences.size) {
-      log.error("$sentences is not the same length as $longestSentences")
-      throw IllegalArgumentException("The number of sentences in longestBooking and booking must be the same.")
+    adjustments.forEach { (type, adjustment) ->
+      if (adjustment.appliesToSentencesFrom.isAfter(latestReleaseDate)) {
+        if (type == AdjustmentType.ADDITIONAL_DAYS_AWARDED) {
+          messages.add(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA))
+        } else {
+          messages.add(ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA))
+        }
+      }
     }
-  }
-
-  private fun getLatestReleaseDateWithoutAdditions(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): LocalDate? {
-    val longestRelevantSentences = getLongestRelevantSentence(sentences, longestSentences)
-    return longestRelevantSentences
-      .filter { it !is Term }
-      .maxOfOrNull { maxOf(it.sentenceCalculation.releaseDateWithoutAdditions, it.sentencedAt) }
+    return messages.toList()
   }
 
   private fun getSortedAdjustments(booking: Booking): List<Pair<AdjustmentType, Adjustment>> {
@@ -109,39 +100,6 @@ class AdjustmentValidationService(
       .map { AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED to it }
 
     return (adas + radas).sortedBy { it.second.appliesToSentencesFrom }
-  }
-
-  private fun throwErrorIfAdditionAdjustmentsAfterLatestReleaseDate(adjustments: List<Pair<AdjustmentType, Adjustment>>, initialReleaseDate: LocalDate): List<ValidationMessage> {
-    var latestReleaseDate = initialReleaseDate
-    val messages = mutableSetOf<ValidationMessage>()
-
-    adjustments.forEach { (type, adjustment) ->
-      messages.addAll(adaOrRadaAfterSentenceLength(type, adjustment, latestReleaseDate))
-      latestReleaseDate = applyAdjustment(type, adjustment, latestReleaseDate)
-    }
-
-    return messages.toList() // Convert set back to list
-  }
-
-  private fun adaOrRadaAfterSentenceLength(type: AdjustmentType, adjustment: Adjustment, latestReleaseDate: LocalDate): List<ValidationMessage> {
-    if (adjustment.appliesToSentencesFrom.isAfter(latestReleaseDate)) {
-      return listOf(
-        if (type == AdjustmentType.ADDITIONAL_DAYS_AWARDED) {
-          ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_ADA)
-        } else {
-          ValidationMessage(ValidationCode.ADJUSTMENT_AFTER_RELEASE_RADA)
-        },
-      )
-    }
-    return emptyList()
-  }
-
-  private fun applyAdjustment(type: AdjustmentType, adjustment: Adjustment, releaseDate: LocalDate): LocalDate {
-    return if (type == AdjustmentType.ADDITIONAL_DAYS_AWARDED) {
-      releaseDate.plusDays(adjustment.numberOfDays.toLong())
-    } else {
-      releaseDate.minusDays(adjustment.numberOfDays.toLong())
-    }
   }
 
   private fun lawfullyAtLargeIsNotSupported(adjustments: List<BookingAdjustment>): List<ValidationMessage> {
@@ -185,14 +143,14 @@ class AdjustmentValidationService(
     )
   }
 
-  internal fun validateRemandOverlappingSentences(longestBooking: Booking, booking: Booking): List<ValidationMessage> {
+  internal fun validateRemandOverlappingSentences(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
     val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
 
     val validationMessages = mutableSetOf<ValidationMessage>()
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
 
-      val sentenceRanges = this.getRelevantSentenceRanges(longestBooking, booking)
+      val sentenceRanges = calculationOutput.custodialPeriod.filter { period -> period.sentences.none { it.isRecall() } }.map { LocalDateRange.of(it.from, it.to) }
 
       remandRanges.forEach { remandRange ->
         sentenceRanges.forEach { sentenceRange ->
@@ -210,39 +168,6 @@ class AdjustmentValidationService(
     }
 
     return validationMessages.toList()
-  }
-
-  private fun getLongestRelevantSentence(sentences: List<CalculableSentence>, longestSentences: List<CalculableSentence>): List<CalculableSentence> {
-    return sentences.zip(longestSentences).map { (sentence, longestSentence) ->
-      if (sentence.sentencedAt.isBefore(trancheConfiguration.trancheTwoCommencementDate)) {
-        longestSentence
-      } else {
-        sentence
-      }
-    }
-  }
-
-  private fun getRelevantSentenceRanges(longestBooking: Booking, booking: Booking): List<LocalDateRange> {
-    val longestRanges = longestBooking.sentenceGroups.mapNotNull { getRangeOfSentenceGroup(it) }
-    val shortestRanges = booking.sentenceGroups.mapNotNull { getRangeOfSentenceGroup(it) }
-
-    return shortestRanges.zip(longestRanges).map { (shortRange, longRange) ->
-      if (longRange.end.isBefore(trancheConfiguration.trancheOneCommencementDate)) {
-        longRange
-      } else {
-        shortRange
-      }
-    }
-  }
-
-  private fun getRangeOfSentenceGroup(sentenceGroup: List<CalculableSentence>): LocalDateRange? {
-    val sentences = sentenceGroup.filter { !it.isRecall() }
-    if (sentences.isEmpty()) {
-      return null
-    }
-    val start = sentences.minOf { sentence -> sentence.sentencedAt }
-    val end = sentences.maxOf { sentence -> sentence.sentenceCalculation.adjustedDeterminateReleaseDate }
-    return LocalDateRange.of(start, end)
   }
 
   private fun validateRemandOverlappingRemand(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {

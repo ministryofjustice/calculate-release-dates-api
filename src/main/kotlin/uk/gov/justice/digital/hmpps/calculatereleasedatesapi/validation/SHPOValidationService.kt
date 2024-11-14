@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -13,7 +12,7 @@ class SHPOValidationService {
 
   private val shpoOffenceCodes = listOf("SE20005", "SE20006", "SE20012", "SE20012A")
 
-  internal fun validate(booking: Booking): List<ValidationMessage> = booking.getAllExtractableSentences().flatMap {
+  internal fun validate(sentences: List<CalculableSentence>): List<ValidationMessage> = sentences.flatMap {
     when (it) {
       is ConsecutiveSentence -> validateConsecutiveSentence(it)
       is StandardDeterminateSentence -> validateStandardDeterminateSentence(it)

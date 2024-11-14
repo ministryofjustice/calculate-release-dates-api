@@ -77,14 +77,16 @@
       "unadjustedDate": "2025-11-08"
     },
     "CRD": {
-      "rules": ["SDS_STANDARD_RELEASE_APPLIES"],
+      "rules": [],
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2025-01-23",
       "unadjustedDate": "2025-01-23"
     },
     "TUSED": {
-      "rules": ["TUSED_LICENCE_PERIOD_LT_1Y"],
+      "rules": [
+        "TUSED_LICENCE_PERIOD_LT_1Y"
+      ],
       "rulesWithExtraAdjustments": {
         "TUSED_LICENCE_PERIOD_LT_1Y": {
           "adjustmentValue": 12,
@@ -96,14 +98,18 @@
       "unadjustedDate": "2025-01-23"
     },
     "HDCED": {
-      "rules": ["HDCED_ADJUSTED_TO_CONCURRENT_PRRD", "SDS_STANDARD_RELEASE_APPLIES"],
+      "rules": [
+        "HDCED_ADJUSTED_TO_CONCURRENT_PRRD"
+      ],
       "rulesWithExtraAdjustments": {},
       "adjustedDays": -62,
       "releaseDate": "2024-11-02",
       "unadjustedDate": "2024-09-01"
     },
     "ERSED": {
-      "rules": ["ERSED_MIN_EFFECTIVE_DATE", "SDS_STANDARD_RELEASE_APPLIES"],
+      "rules": [
+        "ERSED_MIN_EFFECTIVE_DATE"
+      ],
       "rulesWithExtraAdjustments": {},
       "adjustedDays": 0,
       "releaseDate": "2024-09-01",

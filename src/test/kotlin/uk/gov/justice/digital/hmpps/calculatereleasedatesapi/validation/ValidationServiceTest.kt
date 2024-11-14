@@ -7,18 +7,20 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.whenever
 import org.springframework.context.annotation.Profile
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CustodialPeriod
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
@@ -26,7 +28,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.STANDARD_RECALL
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -1949,8 +1950,9 @@ class ValidationServiceTest {
             consecutiveSentenceTwo,
           ),
         )
-        workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+        val sentences = BookingHelperTest().createConsecutiveSentences(workingBooking)
         val result = validationService.validateBookingAfterCalculation(
+          CalculationOutput(sentences, emptyList(), mock()),
           workingBooking,
         )
 
@@ -1984,8 +1986,9 @@ class ValidationServiceTest {
             consecutiveSentenceTwo,
           ),
         )
-        workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+        val sentences = BookingHelperTest().createConsecutiveSentences(workingBooking)
         val result = validationService.validateBookingAfterCalculation(
+          CalculationOutput(sentences, emptyList(), mock()),
           workingBooking,
         )
 
@@ -2014,8 +2017,9 @@ class ValidationServiceTest {
             consecutiveSentenceTwo,
           ),
         )
-        workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+        val sentences = BookingHelperTest().createConsecutiveSentences(workingBooking)
         val result = validationService.validateBookingAfterCalculation(
+          CalculationOutput(sentences, emptyList(), mock()),
           workingBooking,
         )
 
@@ -2050,8 +2054,9 @@ class ValidationServiceTest {
             consecutiveSentenceTwo,
           ),
         )
-        workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
+        val sentences = BookingHelperTest().createConsecutiveSentences(workingBooking)
         val result = validationService.validateBookingAfterCalculation(
+          CalculationOutput(sentences, emptyList(), mock()),
           workingBooking,
         )
 
@@ -2608,23 +2613,23 @@ class ValidationServiceTest {
     )
 
     val lrOraSentence = LR_ORA.copy()
+    lrOraSentence.sentenceCalculation = mock()
+    whenever(lrOraSentence.sentenceCalculation.adjustedDeterminateReleaseDate).thenReturn(LocalDate.of(2024, 1, 1))
 
-    lrOraSentence.sentenceCalculation = SENTENCE_CALCULATION.copy(
-      unadjustedHistoricDeterminateReleaseDate = LocalDate.of(2024, 9, 9),
-    )
-    var workingBooking = BOOKING.copy(
+    var booking = BOOKING.copy(
       sentences = listOf(
         lrOraSentence,
       ),
       adjustments = Adjustments(),
     )
-    lrOraSentence.releaseDateTypes =
-      ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, workingBooking.offender)
-
-    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
-
+    val calculationOutput = CalculationOutput(
+      listOf(lrOraSentence),
+      listOf(CustodialPeriod(lrOraSentence.sentencedAt, TRANCHE_CONFIGURATION.trancheOneCommencementDate.minusDays(1), listOf(lrOraSentence))),
+      mock(),
+    )
     val result = validationService.validateBookingAfterCalculation(
-      workingBooking,
+      calculationOutput,
+      booking,
     )
 
     assertThat(result).isEmpty()
@@ -2650,18 +2655,20 @@ class ValidationServiceTest {
       adjustments = Adjustments(),
     )
 
-    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
-
+    val sentences = BookingHelperTest().createConsecutiveSentences(workingBooking)
     val result = validationService.validateBookingAfterCalculation(
-      workingBooking,
-      null,
-      CalculationResult(
-        emptyMap(),
-        emptyMap(),
-        emptyMap(),
-        Period.of(6, 0, 0),
-        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+      CalculationOutput(
+        sentences,
+        emptyList(),
+        CalculationResult(
+          emptyMap(),
+          emptyMap(),
+          emptyMap(),
+          Period.of(6, 0, 0),
+          sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+        ),
       ),
+      workingBooking,
     )
 
     assertThat(result).isEqualTo(
@@ -2691,18 +2698,20 @@ class ValidationServiceTest {
       adjustments = Adjustments(),
     )
 
-    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
-
+    val sentences = BookingHelperTest().createConsecutiveSentences(workingBooking)
     val result = validationService.validateBookingAfterCalculation(
-      workingBooking,
-      null,
-      CalculationResult(
-        emptyMap(),
-        emptyMap(),
-        emptyMap(),
-        Period.of(6, 0, 0),
-        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+      CalculationOutput(
+        sentences,
+        emptyList(),
+        CalculationResult(
+          emptyMap(),
+          emptyMap(),
+          emptyMap(),
+          Period.of(6, 0, 0),
+          sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+        ),
       ),
+      workingBooking,
     )
 
     assertThat(result).isEqualTo(
@@ -2733,18 +2742,21 @@ class ValidationServiceTest {
       adjustments = Adjustments(),
     )
 
-    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
-
+    val sentences = BookingHelperTest().createConsecutiveSentences(workingBooking)
     val result = validationService.validateBookingAfterCalculation(
-      workingBooking,
-      null,
-      CalculationResult(
-        emptyMap(),
-        emptyMap(),
-        emptyMap(),
-        Period.of(6, 0, 0),
-        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+      CalculationOutput(
+        sentences,
+        emptyList(),
+        CalculationResult(
+          emptyMap(),
+          emptyMap(),
+          emptyMap(),
+          Period.of(6, 0, 0),
+          sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+        ),
       ),
+      workingBooking,
+
     )
     assertThat(result).isEmpty()
   }
@@ -2768,19 +2780,21 @@ class ValidationServiceTest {
       ),
       adjustments = Adjustments(),
     )
-
-    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
-
+    val sentences = BookingHelperTest().createConsecutiveSentences(workingBooking)
     val result = validationService.validateBookingAfterCalculation(
-      workingBooking,
-      null,
-      CalculationResult(
-        emptyMap(),
-        emptyMap(),
-        emptyMap(),
-        Period.of(6, 0, 0),
-        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+      CalculationOutput(
+        sentences,
+        emptyList(),
+        CalculationResult(
+          emptyMap(),
+          emptyMap(),
+          emptyMap(),
+          Period.of(6, 0, 0),
+          sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_2,
+        ),
       ),
+      workingBooking,
+
     )
     assertThat(result).isEmpty()
   }
@@ -2804,19 +2818,20 @@ class ValidationServiceTest {
       ),
       adjustments = Adjustments(),
     )
-
-    workingBooking = BookingHelperTest().createConsecutiveSentences(workingBooking)
-
+    val sentences = BookingHelperTest().createConsecutiveSentences(workingBooking)
     val result = validationService.validateBookingAfterCalculation(
-      workingBooking,
-      null,
-      CalculationResult(
-        emptyMap(),
-        emptyMap(),
-        emptyMap(),
-        Period.of(6, 0, 0),
-        sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
+      CalculationOutput(
+        sentences,
+        emptyList(),
+        CalculationResult(
+          emptyMap(),
+          emptyMap(),
+          emptyMap(),
+          Period.of(6, 0, 0),
+          sdsEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_1,
+        ),
       ),
+      workingBooking,
     )
     assertThat(result).isEmpty()
   }
@@ -2954,30 +2969,7 @@ class ValidationServiceTest {
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
-    val SENTENCE_CALCULATION = SentenceCalculation(
-      STANDARD_SENTENCE,
-      3,
-      4.0,
-      4,
-      4,
-      FIRST_MAY_2018,
-      FIRST_MAY_2018,
-      FIRST_MAY_2018,
-      1,
-      FIRST_MAY_2018,
-      false,
-      Adjustments(
-        mutableMapOf(
-          REMAND to mutableListOf(
-            Adjustment(
-              numberOfDays = 1,
-              appliesToSentencesFrom = FIRST_MAY_2018,
-            ),
-          ),
-        ),
-      ),
-      FIRST_MAY_2018,
-    )
+    val SENTENCE_CALCULATION = mock<SentenceCalculation>()
 
     val BOOKING = Booking(
       bookingId = 123456,
@@ -3016,7 +3008,7 @@ class ValidationServiceTest {
     val featureToggles = FeatureToggles(botus, true, false, sds40ConsecutiveManualJourney = true)
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
-    val adjustmentValidationService = AdjustmentValidationService(trancheConfiguration)
+    val adjustmentValidationService = AdjustmentValidationService()
     val dtoValidationService = DtoValidationService()
     val botusValidationService = BotusValidationService()
     val recallValidationService = RecallValidationService(trancheConfiguration)

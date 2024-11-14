@@ -24,8 +24,8 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
     val ersed = calculateErsed(sentence, sentenceCalculation)
 
     if (ersed != null) {
-      val addedDays = sentenceCalculation.calculatedTotalAddedDays + sentenceCalculation.calculatedTotalAwardedDays
-      if (ersed.releaseDate.minusDays(addedDays.toLong()).isBefore(sentence.sentencedAt)) {
+      val addedDays = sentenceCalculation.adjustments.ualDuringCustody + sentenceCalculation.adjustments.awardedDuringCustody
+      if (ersed.releaseDate.minusDays(addedDays).isBefore(sentence.sentencedAt)) {
         sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.ERSED] =
           ReleaseDateCalculationBreakdown(
             releaseDate = sentence.sentencedAt.plusDays(addedDays.toLong()),
@@ -64,9 +64,9 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
       rules = setOf(CalculationRule.ERSED_MAX_PERIOD),
       releaseDate = maxEffectiveErsed,
       unadjustedDate = sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate
-        ?: sentenceCalculation.unadjustedDeterminateReleaseDate,
+        ?: sentenceCalculation.unadjustedReleaseDate.unadjustedDeterminateReleaseDate,
       adjustedDays = ChronoUnit.DAYS.between(
-        sentenceCalculation.unadjustedDeterminateReleaseDate,
+        sentenceCalculation.unadjustedReleaseDate.unadjustedDeterminateReleaseDate,
         sentenceCalculation.adjustedDeterminateReleaseDate,
       ),
       rulesWithExtraAdjustments = mapOf(
@@ -74,7 +74,7 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
       ),
     )
     val release = sentenceCalculation.unadjustedExtendedDeterminateParoleEligibilityDate
-      ?: sentenceCalculation.unadjustedDeterminateReleaseDate
+      ?: sentenceCalculation.unadjustedReleaseDate.unadjustedDeterminateReleaseDate
 
     val daysUntilRelease = ChronoUnit.DAYS.between(sentence.sentencedAt, release).plus(1).toInt()
     // ERS requires that half of custodial period be served before a prisoner is eligible
@@ -82,9 +82,7 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
       sentence.sentencedAt
         .plusDays(ceil(daysUntilRelease.toDouble() / 2).toLong())
     val minimumEffectiveErsed = unadjustedErsed
-      .plusDays(sentenceCalculation.calculatedTotalAddedDays.toLong())
-      .minusDays(sentenceCalculation.calculatedTotalDeductedDays.toLong())
-      .plusDays(sentenceCalculation.calculatedTotalAwardedDays.toLong())
+      .plusDays(sentenceCalculation.adjustments.adjustmentsForInitalRelease())
     val minimumEffectiveErsedReleaseCalcBreakdown = ReleaseDateCalculationBreakdown(
       rules = setOf(CalculationRule.ERSED_MIN_EFFECTIVE_DATE),
       releaseDate = minimumEffectiveErsed,
