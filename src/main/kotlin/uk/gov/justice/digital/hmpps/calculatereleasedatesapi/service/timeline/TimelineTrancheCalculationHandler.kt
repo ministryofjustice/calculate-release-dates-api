@@ -36,7 +36,7 @@ class TimelineTrancheCalculationHandler(
         if (requiresTranchingNow(timelineCalculationDate, timelineTrackingData)) {
           beforeTrancheCalculation = timelineCalculator.getLatestCalculation(allSentences, offender)
           custodialSentences.forEach {
-            it.sentenceCalculation.unadjustedReleaseDate.multiplerFn =
+            it.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
               multiplerFnForDate(timelineCalculationDate, commencement)
             it.sentenceCalculation.adjustments = it.sentenceCalculation.adjustments.copy(
               unusedAdaDays = 0,

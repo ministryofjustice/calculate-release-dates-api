@@ -48,7 +48,6 @@ class BookingTimelineService(
     val calculationsByDate = getCalculationsByDate(sentences, futureData)
 
     val earliestSentence = futureData.sentences.minBy { it.sentencedAt }
-    earliestSentence.sentencedAt to earliestSentence
     val timelineTrackingData = TimelineTrackingData(
       futureData,
       calculationsByDate,

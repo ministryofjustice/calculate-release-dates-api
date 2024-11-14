@@ -111,15 +111,7 @@ class BookingExtractionService(
       dates[LTD] = sentenceCalculation.latestTransferDate!!
     }
 
-    if (sentence.isOrExclusivelyBotus()) {
-      if (sentence is BotusSentence && sentence.latestTusedDate != null && sentenceCalculation.expiryDate.isBefore(
-          sentence.latestTusedDate,
-        )
-      ) {
-        dates[TUSED] = sentence.latestTusedDate!!
-        historicalTusedSource = sentence.latestTusedSource!!
-      }
-    } else {
+    if (!sentenceIsOrExclusivelyBotus) {
       dates[ESED] = sentenceCalculation.unadjustedExpiryDate
     }
 
@@ -136,7 +128,7 @@ class BookingExtractionService(
       dates,
       sentenceCalculation.breakdownByReleaseDateType,
       emptyMap(),
-      getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedReleaseDate.unadjustedExpiryDate),
+      getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedExpiryDate),
       false,
       historicalTusedSource,
     )
@@ -509,7 +501,7 @@ class BookingExtractionService(
     if (latestDtoSentence.sentenceCalculation.isImmediateRelease() && latestDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_AFTER_PCSC) {
       latestDtoSentence.sentencedAt
     } else if (type == CRD && latestDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC) {
-      latestDtoSentence.sentenceCalculation.unadjustedReleaseDate.unadjustedDeterminateReleaseDate
+      latestDtoSentence.sentenceCalculation.unadjustedDeterminateReleaseDate
     } else if (type == CRD || underEighteenAtEndOfCustodialPeriod) {
       latestDtoSentence.sentenceCalculation.adjustedDeterminateReleaseDate
     } else {

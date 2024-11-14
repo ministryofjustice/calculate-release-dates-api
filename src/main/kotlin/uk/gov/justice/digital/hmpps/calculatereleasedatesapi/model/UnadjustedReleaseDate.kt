@@ -10,16 +10,19 @@ import kotlin.properties.Delegates
 
 class UnadjustedReleaseDate(
   val sentence: CalculableSentence,
-  multiplerFn: (identification: SentenceIdentificationTrack) -> Double,
+  findMultiplierByIdentificationTrack: (identification: SentenceIdentificationTrack) -> Double,
   val returnToCustodyDate: LocalDate? = null,
 ) {
 
-  var multiplerFn: (identification: SentenceIdentificationTrack) -> Double by Delegates.observable(multiplerFn) { _, _, _ ->
-    calculateReleaseDate()
+  /*
+    When the multipler is changed (At tranching for SDS40). The delagate here will re-calculate the unadjusted release dates.
+   */
+  var findMultiplierByIdentificationTrack: (identification: SentenceIdentificationTrack) -> Double by Delegates.observable(findMultiplierByIdentificationTrack) { _, _, _ ->
+    calculateUnadjustedReleaseDate()
   }
 
   init {
-    this.multiplerFn = multiplerFn
+    this.findMultiplierByIdentificationTrack = findMultiplierByIdentificationTrack
   }
 
   lateinit var releaseDateCalculation: ReleaseDateCalculation
@@ -50,7 +53,7 @@ class UnadjustedReleaseDate(
       .minusDays(1)
   }
 
-  private fun calculateReleaseDate() {
+  private fun calculateUnadjustedReleaseDate() {
     this.releaseDateCalculation = if (sentence is ConsecutiveSentence) {
       getConsecutiveRelease()
     } else {
@@ -75,7 +78,7 @@ class UnadjustedReleaseDate(
     var numberOfDaysToParoleEligibilityDate: Long? = null
     val custodialDuration = sentence.custodialDuration()
     val numberOfDaysToReleaseDateDouble =
-      custodialDuration.getLengthInDays(sentence.sentencedAt).times(multiplerFn(sentence.identificationTrack))
+      custodialDuration.getLengthInDays(sentence.sentencedAt).times(findMultiplierByIdentificationTrack(sentence.identificationTrack))
     val numberOfDaysToReleaseDate: Int = ceil(numberOfDaysToReleaseDateDouble).toInt()
     if (sentence.releaseDateTypes.getReleaseDateTypes().contains(PED) && (sentence is ExtendedDeterminateSentence || sentence is SopcSentence)) {
       val pedMultiplier = determinePedMultiplier(sentence.identificationTrack)
@@ -95,7 +98,7 @@ class UnadjustedReleaseDate(
     sentence as ConsecutiveSentence
     val daysToExpiry = SentenceAggregator().getDaysInGroup(sentence.sentencedAt, sentence.orderedSentences) { it.totalDuration() }
     val (sentencesWithPed, sentencesWithoutPed) = sentence.orderedSentences
-      .map { IndexedSentenceWithReleasePointMultiplier(sentence.orderedSentences.indexOf(it), it, multiplerFn(it.identificationTrack)) }
+      .map { IndexedSentenceWithReleasePointMultiplier(sentence.orderedSentences.indexOf(it), it, findMultiplierByIdentificationTrack(it.identificationTrack)) }
       .partition { (it.sentence is ExtendedDeterminateSentence && !it.sentence.automaticRelease) || it.sentence is SopcSentence }
     val sentencesWithoutPedGroupedByMultiplierAndGroupsSortedByFirstAppearance = sentencesWithoutPed
       .groupBy { it.multiplier }.entries
