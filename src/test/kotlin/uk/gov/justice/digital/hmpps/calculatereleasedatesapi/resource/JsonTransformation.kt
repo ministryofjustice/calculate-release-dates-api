@@ -42,9 +42,9 @@ class JsonTransformation {
     return mapper.readValue(json, Booking::class.java) to CalculationUserInputs(calculateErsed = calculateErsed)
   }
 
-  fun loadCalculationResult(testData: String): CalculationResult {
+  fun loadCalculationResult(testData: String): Pair<CalculationResult, String> {
     val json = getJsonTest("$testData.json", "overall_calculation_response")
-    return mapper.readValue(json, CalculationResult::class.java)
+    return mapper.readValue(json, CalculationResult::class.java) to json
   }
 
   fun loadCalculationBreakdown(testData: String): CalculationBreakdown {

@@ -38,8 +38,8 @@
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2018-09-07",
-        "fromDate": "2018-09-08",
+        "toDate": "2018-09-08",
+        "fromDate": "2018-09-07",
         "numberOfDays": 2,
         "appliesToSentencesFrom": "2018-09-09"
       }
