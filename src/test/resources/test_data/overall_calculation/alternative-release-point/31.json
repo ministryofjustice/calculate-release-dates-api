@@ -1,12 +1,10 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1986-11-24"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 2911105,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-04-11",
         "offenceCode": "AB123CD"
@@ -16,12 +14,7 @@
           "DAYS": 90
         }
       },
-      "identifier": "24ae48ce-2f00-31a0-baf9-40b571408a12",
-      "sentencedAt": "2024-04-15",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "DEF321",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-04-15"
     }
   ],
   "calculateErsed": true

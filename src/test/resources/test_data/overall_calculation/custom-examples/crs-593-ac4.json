@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -30,36 +30,36 @@
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 44,
         "appliesToSentencesFrom": "2021-03-17",
-        "toDate": "2021-03-16",
-        "fromDate": "2021-02-01"
+        "numberOfDays": 44,
+        "fromDate": "2021-02-01",
+        "toDate": "2021-03-16"
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [
       {
-        "numberOfDays": 8,
         "appliesToSentencesFrom": "2021-02-05",
+        "numberOfDays": 8,
         "fromDate": "2021-02-05",
         "toDate": "2021-02-12"
       },
       {
-        "numberOfDays": 8,
         "appliesToSentencesFrom": "2021-03-16",
+        "numberOfDays": 8,
         "fromDate": "2021-03-16",
         "toDate": "2021-03-23"
       }
     ],
     "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
       {
-        "numberOfDays": 3,
         "appliesToSentencesFrom": "2021-02-26",
+        "numberOfDays": 3,
         "fromDate": "2021-02-26",
         "toDate": "2021-02-28"
       },
       {
-        "numberOfDays": 10,
         "appliesToSentencesFrom": "2021-05-17",
+        "numberOfDays": 10,
         "fromDate": "2021-05-17",
         "toDate": "2021-05-26"
       }

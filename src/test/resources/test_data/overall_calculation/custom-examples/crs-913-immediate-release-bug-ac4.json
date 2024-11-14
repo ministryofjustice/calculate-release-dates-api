@@ -1,28 +1,28 @@
 {
-  "offender":{
-    "reference": "ABC123D",
-    "dateOfBirth": "2001-01-25"
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "sentences":[
+  "sentences": [
     {
-      "offence":{
-        "committedAt":"2018-09-02"
+      "offence": {
+        "committedAt": "2018-09-02"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "MONTHS": 3
         }
       },
-      "sentencedAt":"2019-02-28"
+      "sentencedAt": "2019-02-28"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 45,
         "appliesToSentencesFrom": "2019-02-28",
-        "toDate": "2019-02-27",
-        "fromDate": "2019-01-14"
+        "numberOfDays": 45,
+        "fromDate": "2019-01-14",
+        "toDate": "2019-02-27"
       }
     ]
   }

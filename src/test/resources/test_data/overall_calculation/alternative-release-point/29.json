@@ -1,13 +1,10 @@
 {
   "offender": {
-    "reference": "A1674EA",
-    "dateOfBirth": "1980-05-25",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1214884,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-11-07",
         "offenceCode": "CD71015A"
@@ -17,20 +14,16 @@
           "MONTHS": 90
         }
       },
-      "identifier": "e8d957eb-96da-3139-b1b4-0d8a1e5d4e57",
-      "sentencedAt": "2024-04-01",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-04-01"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2023-03-31",
-        "fromDate": "2019-11-08",
+        "appliesToSentencesFrom": "2024-04-01",
         "numberOfDays": 1240,
-        "appliesToSentencesFrom": "2024-04-01"
+        "fromDate": "2019-11-08",
+        "toDate": "2023-03-31"
       }
     ]
   },

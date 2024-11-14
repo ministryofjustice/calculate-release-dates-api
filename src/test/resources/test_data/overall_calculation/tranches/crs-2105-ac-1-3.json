@@ -1,11 +1,10 @@
 {
   "offender": {
-    "reference": "A2630EZ",
+    "reference": "ABC123",
     "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "identifier": "b71e09b6-3728-3b80-8e86-b1c40d52c812",
       "offence": {
         "committedAt": "2024-02-10",
         "offenceCode": "PU86003"
@@ -16,10 +15,8 @@
           "MONTHS": 11
         }
       },
-      "hasAnSDSEarlyReleaseExclusion": "NO",
       "sentencedAt": "2022-11-30",
-      "sentenceType": "ADIMP",
-      "lineSequence": 1
+      "identifier": "b71e09b6-3728-3b80-8e86-b1c40d52c812"
     },
     {
       "offence": {
@@ -31,13 +28,10 @@
           "MONTHS": 10
         }
       },
+      "sentencedAt": "2024-09-10",
       "consecutiveSentenceUUIDs": [
         "b71e09b6-3728-3b80-8e86-b1c40d52c812"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentencedAt": "2024-09-10",
-      "sentenceType": "ADIMP_ORA",
-      "lineSequence": 2
+      ]
     }
   ]
 }

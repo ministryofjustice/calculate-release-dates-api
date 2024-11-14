@@ -1,6 +1,6 @@
 {
   "offender": {
-    "reference": "A2630EZ",
+    "reference": "ABC123",
     "dateOfBirth": "1990-01-01"
   },
   "sentences": [
@@ -14,29 +14,24 @@
           "MONTHS": 44
         }
       },
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentencedAt": "2024-08-27",
-      "sentenceType": "ADIMP",
-      "lineSequence": 1
+      "sentencedAt": "2024-08-27"
     },
     {
-      "type":"ExtendedDeterminateSentence",
-      "offence":{
-        "committedAt":"2024-02-15"
+      "type": "ExtendedDeterminateSentence",
+      "offence": {
+        "committedAt": "2024-02-15"
       },
-      "custodialDuration":{
-        "durationElements":{
-          "YEARS":1
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 1
         }
       },
-      "extensionDuration":{
-        "durationElements":{
-          "YEARS":4
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 4
         }
       },
-      "automaticRelease":false,
-      "lineSequence": 2,
-      "sentencedAt":"2024-09-10"
+      "sentencedAt": "2024-09-10"
     }
   ]
 }

@@ -1,8 +1,7 @@
 {
-  "calculateErsed": true,
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2002-12-22"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -14,19 +13,18 @@
           "YEARS": 18
         }
       },
-      "sentencedAt": "2015-08-06",
-      "isDto": false,
-      "sentenceType": "YOI"
+      "sentencedAt": "2015-08-06"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "appliesToSentencesFrom": "2015-08-06 ",
+        "appliesToSentencesFrom": "2015-08-06",
         "numberOfDays": 201,
         "fromDate": "2015-01-17",
         "toDate": "2015-08-05"
       }
     ]
-  }
+  },
+  "calculateErsed": true
 }

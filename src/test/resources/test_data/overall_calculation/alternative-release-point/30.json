@@ -1,12 +1,10 @@
 {
   "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "1977-05-02",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-07-01",
         "offenceCode": "A123BC"
@@ -16,27 +14,24 @@
           "YEARS": 6
         }
       },
-      "sentencedAt": "2021-08-02",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2021-08-02"
     }
   ],
   "adjustments": {
     "UNLAWFULLY_AT_LARGE": [
       {
-        "toDate": "2024-04-20",
-        "fromDate": "2024-04-19",
+        "appliesToSentencesFrom": "2021-08-02",
         "numberOfDays": 2,
-        "appliesToSentencesFrom": "2021-08-02"
+        "fromDate": "2024-04-19",
+        "toDate": "2024-04-20"
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [
       {
-        "toDate": "2024-04-24",
-        "fromDate": "2024-04-23",
+        "appliesToSentencesFrom": "2021-08-02",
         "numberOfDays": 2,
-        "appliesToSentencesFrom": "2021-08-02"
+        "fromDate": "2024-04-23",
+        "toDate": "2024-04-24"
       }
     ]
   },

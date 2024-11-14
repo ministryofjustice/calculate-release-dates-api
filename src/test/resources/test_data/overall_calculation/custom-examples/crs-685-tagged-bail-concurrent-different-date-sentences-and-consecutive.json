@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -26,7 +26,9 @@
         }
       },
       "sentencedAt": "2021-07-21",
-      "consecutiveSentenceUUIDs": ["d5b45331-fa60-4325-876f-fd54e34154dc"]
+      "consecutiveSentenceUUIDs": [
+        "d5b45331-fa60-4325-876f-fd54e34154dc"
+      ]
     },
     {
       "offence": {
@@ -43,12 +45,12 @@
   "adjustments": {
     "TAGGED_BAIL": [
       {
-        "numberOfDays": 9,
-        "appliesToSentencesFrom": "2021-07-21"
+        "appliesToSentencesFrom": "2021-07-21",
+        "numberOfDays": 9
       },
       {
-        "numberOfDays": 23,
-        "appliesToSentencesFrom": "2021-07-21"
+        "appliesToSentencesFrom": "2021-07-21",
+        "numberOfDays": 23
       }
     ]
   }

@@ -5,7 +5,6 @@
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-01-18"
       },
@@ -17,11 +16,9 @@
       },
       "sentencedAt": "2022-05-05",
       "identifier": "da83cc08-7e6b-309f-9fb2-148ddec2e02e",
-      "isSDSPlus": true,
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "isSDSPlus": true
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-01-19"
       },
@@ -32,12 +29,9 @@
         }
       },
       "sentencedAt": "2022-05-05",
-      "identifier": "ca3b6784-d766-3d4a-9a62-a0216af14716",
-      "isSDSPlus": true,
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "isSDSPlus": true
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-01-23"
       },
@@ -47,14 +41,11 @@
         }
       },
       "sentencedAt": "2022-05-05",
-      "identifier": "1c9b056c-343d-3c35-aed9-341b944e04d2",
       "consecutiveSentenceUUIDs": [
         "da83cc08-7e6b-309f-9fb2-148ddec2e02e"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-01-23"
       },
@@ -63,9 +54,7 @@
           "MONTHS": 9
         }
       },
-      "sentencedAt": "2022-05-05",
-      "identifier": "28fe2cb3-4101-3831-8c09-1603fb88592a",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2022-05-05"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -83,8 +72,7 @@
           "YEARS": 3
         }
       },
-      "sentencedAt": "2023-04-25",
-      "identifier": "8bb516a1-f48c-3120-bfcb-8c71f09a72bf"
+      "sentencedAt": "2023-04-25"
     }
   ],
   "adjustments": {

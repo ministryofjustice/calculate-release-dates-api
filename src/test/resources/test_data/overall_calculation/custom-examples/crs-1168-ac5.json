@@ -1,6 +1,6 @@
 {
   "offender": {
-    "reference": "ABC123D",
+    "reference": "ABC123",
     "dateOfBirth": "2005-02-01"
   },
   "sentences": [
@@ -13,8 +13,7 @@
           "MONTHS": 13
         }
       },
-      "sentencedAt": "2021-08-27",
-      "sentenceType": "SEC250_ORA"
+      "sentencedAt": "2021-08-27"
     },
     {
       "offence": {
@@ -25,10 +24,7 @@
           "MONTHS": 6
         }
       },
-      "sentencedAt": "2021-12-20",
-      "sentenceType": "SEC250"
+      "sentencedAt": "2021-12-20"
     }
-  ],
-  "adjustments": {
-  }
+  ]
 }

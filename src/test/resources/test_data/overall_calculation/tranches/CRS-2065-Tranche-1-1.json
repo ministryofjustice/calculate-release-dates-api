@@ -1,90 +1,52 @@
 {
   "offender": {
-    "reference": "A1234AR",
-    "dateOfBirth": "1998-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2022-12-11",
         "offenceCode": "OF61131"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 30
         }
       },
-      "isSDSPlus": false,
-      "identifier": "f5b4cffe-d534-3ecd-b1d8-1aa368e09387",
-      "recallType": null,
       "sentencedAt": "2024-05-31",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "123456789AB",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "identifier": "f5b4cffe-d534-3ecd-b1d8-1aa368e09387"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2022-12-11",
         "offenceCode": "OF61102"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 10
         }
       },
-      "isSDSPlus": false,
-      "identifier": "154ea780-0c7a-3d77-a2d0-679eb8aafc8c",
-      "recallType": null,
       "sentencedAt": "2024-05-31",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "caseReference": "123456789AB",
+      "identifier": "154ea780-0c7a-3d77-a2d0-679eb8aafc8c",
       "consecutiveSentenceUUIDs": [
         "f5b4cffe-d534-3ecd-b1d8-1aa368e09387"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2022-12-11",
         "offenceCode": "OF61102"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 2
         }
       },
-      "isSDSPlus": false,
-      "identifier": "e592d99b-a520-3bb3-ad81-d0f367283fb9",
-      "recallType": null,
       "sentencedAt": "2024-05-31",
-      "caseSequence": 1,
-      "lineSequence": 3,
-      "caseReference": "123456789AB",
       "consecutiveSentenceUUIDs": [
         "154ea780-0c7a-3d77-a2d0-679eb8aafc8c"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      ]
     }
-  ],
-  "adjustments": {},
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  ]
 }

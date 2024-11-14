@@ -1,35 +1,20 @@
 {
   "offender": {
-    "reference": "A1234AA",
-    "dateOfBirth": "1986-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1,
   "sentences": [
     {
-      "type": "StandardSentence",
-      "sentenceCalculationType": "SEC250",
       "offence": {
         "committedAt": "2020-12-24",
         "offenceCode": "SE20012A"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 3,
-          "MONTHS": 0
+          "YEARS": 3
         }
       },
-      "isSDSPlus": false,
-      "identifier": "5c64a902-3831-396c-80ae-7b7c1f2dd244",
-      "recallType": null,
-      "sentencedAt": "2024-02-02",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A12345678",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2024-02-02"
     }
   ]
 }

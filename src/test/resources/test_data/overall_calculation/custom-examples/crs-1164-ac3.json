@@ -1,6 +1,6 @@
 {
   "offender": {
-    "reference": "ABC123D",
+    "reference": "ABC123",
     "dateOfBirth": "2004-09-30"
   },
   "sentences": [
@@ -14,8 +14,7 @@
           "MONTHS": 6
         }
       },
-      "sentencedAt": "2022-07-02",
-      "sentenceType": "DTO_ORA"
+      "sentencedAt": "2022-07-02"
     },
     {
       "type": "DetentionAndTrainingOrderSentence",
@@ -27,15 +26,14 @@
           "MONTHS": 6
         }
       },
-      "sentencedAt": "2022-07-02",
-      "sentenceType": "DTO_ORA"
+      "sentencedAt": "2022-07-02"
     }
   ],
   "adjustments": {
     "TAGGED_BAIL": [
       {
-        "numberOfDays": 15,
         "appliesToSentencesFrom": "2022-07-02",
+        "numberOfDays": 15,
         "fromDate": "2022-06-17",
         "toDate": "2022-07-01"
       }

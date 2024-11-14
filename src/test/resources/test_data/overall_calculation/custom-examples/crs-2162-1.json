@@ -5,7 +5,6 @@
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-12-23"
       },
@@ -15,11 +14,9 @@
         }
       },
       "sentencedAt": "2023-05-22",
-      "identifier": "e8f1b5fe-75f3-3114-b2f5-627bf323a80a",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "identifier": "e8f1b5fe-75f3-3114-b2f5-627bf323a80a"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-12-23"
       },
@@ -28,12 +25,9 @@
           "MONTHS": 28
         }
       },
-      "sentencedAt": "2023-05-22",
-      "identifier": "7f350f83-fb95-3428-9d95-58762a46017f",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2023-05-22"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2022-10-18"
       },
@@ -43,14 +37,11 @@
         }
       },
       "sentencedAt": "2023-05-22",
-      "identifier": "054f019d-6691-3f62-be50-4e68a64398f3",
       "consecutiveSentenceUUIDs": [
         "e8f1b5fe-75f3-3114-b2f5-627bf323a80a"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-09-16"
       },
@@ -59,12 +50,9 @@
           "MONTHS": 4
         }
       },
-      "sentencedAt": "2024-09-12",
-      "identifier": "a3bd0a7c-c300-3002-a31d-f624e21fdbaf",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2024-09-12"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-04-22"
       },
@@ -74,11 +62,9 @@
         }
       },
       "sentencedAt": "2024-09-12",
-      "identifier": "66b06a86-89f9-3f2d-849e-9a36b55a5e6e",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "identifier": "66b06a86-89f9-3f2d-849e-9a36b55a5e6e"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-09-16"
       },
@@ -88,11 +74,9 @@
         }
       },
       "sentencedAt": "2024-09-12",
-      "identifier": "31fc563b-0996-39f0-ad66-a2435de184d6",
       "consecutiveSentenceUUIDs": [
         "66b06a86-89f9-3f2d-849e-9a36b55a5e6e"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      ]
     }
   ],
   "adjustments": {
@@ -110,6 +94,5 @@
         "toDate": "2024-09-11"
       }
     ]
-  },
-  "calculateErsed": false
+  }
 }

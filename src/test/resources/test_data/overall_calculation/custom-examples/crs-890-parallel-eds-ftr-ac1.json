@@ -1,9 +1,8 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "returnToCustodyDate": "2019-03-10",
   "sentences": [
     {
       "offence": {
@@ -14,14 +13,14 @@
           "YEARS": 5
         }
       },
-      "recallType": "FIXED_TERM_RECALL_28",
-      "sentencedAt": "2015-11-08"
+      "sentencedAt": "2015-11-08",
+      "recallType": "FIXED_TERM_RECALL_28"
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2021-10-02"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 1,
@@ -33,8 +32,8 @@
           "YEARS": 2
         }
       },
-      "automaticRelease": false,
       "sentencedAt": "2019-03-20"
     }
-  ]
+  ],
+  "returnToCustodyDate": "2019-03-10"
 }

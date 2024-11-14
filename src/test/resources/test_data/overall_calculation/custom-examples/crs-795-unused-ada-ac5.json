@@ -43,7 +43,9 @@
       "sentencedAt": "2015-02-12",
       "lineSequence": 3,
       "caseSequence": 1,
-      "consecutiveSentenceUUIDs": ["0b10fc4b-1920-4b74-96e0-d95369adb5e1"]
+      "consecutiveSentenceUUIDs": [
+        "0b10fc4b-1920-4b74-96e0-d95369adb5e1"
+      ]
     }
   ],
   "adjustments": {

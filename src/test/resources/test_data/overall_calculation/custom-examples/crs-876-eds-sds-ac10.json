@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -16,10 +16,10 @@
       "sentencedAt": "2015-06-17"
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2015-01-29"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 4,
@@ -36,10 +36,10 @@
       "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2015-01-29"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 3,
@@ -51,7 +51,6 @@
           "YEARS": 1
         }
       },
-      "automaticRelease": false,
       "sentencedAt": "2015-06-17",
       "consecutiveSentenceUUIDs": [
         "e40f48b6-92df-49d0-af99-507194c380fa"
@@ -61,16 +60,16 @@
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 62,
         "appliesToSentencesFrom": "2015-03-03",
+        "numberOfDays": 62,
         "fromDate": "2014-12-31",
         "toDate": "2015-03-02"
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [
       {
-        "numberOfDays": 6,
         "appliesToSentencesFrom": "2016-09-18",
+        "numberOfDays": 6,
         "fromDate": "2016-09-18"
       }
     ]

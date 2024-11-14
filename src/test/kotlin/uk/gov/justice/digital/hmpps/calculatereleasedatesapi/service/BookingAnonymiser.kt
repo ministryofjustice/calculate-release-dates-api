@@ -5,7 +5,11 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.springframework.core.io.ClassPathResource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import java.time.LocalDate
@@ -18,11 +22,23 @@ class BookingAnonymiser {
   private val jsonTransformation = JsonTransformation()
 
   @Test
-  fun anonymiseTestCase() {
+  fun anonymiseSingleTestCases() {
     val exampleType = "custom-examples"
     val exampleNumber = "crs-2162-2"
-    var (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
 
+    anonymiseTestCase("$exampleType/$exampleNumber")
+  }
+
+  //  @Test
+  fun anonymiseAllTestCases() {
+    val allFiles = jsonTransformation.getAllJsonFromDir("overall_calculation/")
+    allFiles.forEach { (exampleNumber, _) ->
+      anonymiseTestCase(exampleNumber)
+    }
+  }
+
+  private fun anonymiseTestCase(example: String) {
+    var (booking, calculationUserInputs) = jsonTransformation.loadBooking(example)
     var sentences = booking.sentences.map {
       if (it is StandardDeterminateSentence) {
         return@map it.copy(
@@ -31,6 +47,29 @@ class BookingAnonymiser {
           caseSequence = null,
         )
       } else if (it is ExtendedDeterminateSentence) {
+        return@map it.copy(
+          lineSequence = null,
+          caseReference = null,
+          caseSequence = null,
+        )
+      } else if (it is BotusSentence) {
+        return@map it.copy(
+          lineSequence = null,
+          caseSequence = null,
+        )
+      } else if (it is SopcSentence) {
+        return@map it.copy(
+          lineSequence = null,
+          caseReference = null,
+          caseSequence = null,
+        )
+      } else if (it is DetentionAndTrainingOrderSentence) {
+        return@map it.copy(
+          lineSequence = null,
+          caseReference = null,
+          caseSequence = null,
+        )
+      } else if (it is AFineSentence) {
         return@map it.copy(
           lineSequence = null,
           caseReference = null,
@@ -65,10 +104,35 @@ class BookingAnonymiser {
     val mapper = TestUtil.minimalTestCaseMapper()
 
     val jsonTree: ObjectNode = mapper.valueToTree(booking)
-    jsonTree.put("calculateErsed", calculationUserInputs.calculateErsed)
+    if (calculationUserInputs.calculateErsed) {
+      jsonTree.put("calculateErsed", true)
+    }
 
-    TestUtil.minimalTestCaseMapper().writeValue(ClassPathResource("test_data/overall_calculation/$exampleType/$exampleNumber.json").file, jsonTree)
+    val sentencesArray = jsonTree.get("sentences")
+    val sentencesString = sentencesArray.toString()
+    sentencesArray.forEach {
+      val obj = it as ObjectNode
+      val type = it.get("type").asText()
+      if (type == "StandardSentence") {
+        obj.remove("type")
+      }
 
+      if (obj.has("hasAnSDSEarlyReleaseExclusion") && obj.get("hasAnSDSEarlyReleaseExclusion").asText() == "NO") {
+        obj.remove("hasAnSDSEarlyReleaseExclusion")
+      }
+
+      val identifier = obj.get("identifier").asText()
+      if (sentencesString.split(identifier).size == 2) { // Identifier only appears once. Not needed for a consecutive sentence.
+        obj.remove("identifier")
+      }
+    }
+
+    val adjustmentsObject = jsonTree.get("adjustments")
+    if (adjustmentsObject.isEmpty) {
+      jsonTree.remove("adjustments")
+    }
+
+    TestUtil.minimalTestCaseMapper().writeValue(ClassPathResource("test_data/overall_calculation/$example.json").file, jsonTree)
     // Then copy file manually from build dir.
   }
 }

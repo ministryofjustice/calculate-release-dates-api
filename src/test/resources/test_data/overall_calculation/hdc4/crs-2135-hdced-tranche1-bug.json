@@ -5,7 +5,6 @@
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-07-31"
       },
@@ -15,12 +14,9 @@
         }
       },
       "sentencedAt": "2023-10-27",
-      "identifier": "2053534c-f153-3be5-90e6-efdee507e96d",
-      "recallType": "STANDARD_RECALL",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-12-15"
       },
@@ -30,11 +26,9 @@
         }
       },
       "sentencedAt": "2024-04-09",
-      "identifier": "a19c0711-24d0-3ad5-bf87-8b42eafe306d",
       "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-12-15"
       },
@@ -43,9 +37,7 @@
           "MONTHS": 14
         }
       },
-      "sentencedAt": "2024-04-09",
-      "identifier": "7efe51f4-65bc-3ebb-bcfe-afd624bee3a0",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2024-04-09"
     }
   ],
   "adjustments": {

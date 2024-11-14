@@ -1,11 +1,10 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2004-11-05"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "identifier": "d309682d-6733-3bfc-b7ad-7024162a341c",
       "offence": {
         "committedAt": "2022-12-31"
       },
@@ -15,7 +14,7 @@
         }
       },
       "sentencedAt": "2024-09-18",
-      "sentenceType": "FTR_ORA",
+      "identifier": "d309682d-6733-3bfc-b7ad-7024162a341c",
       "recallType": "FIXED_TERM_RECALL_28"
     },
     {
@@ -28,16 +27,17 @@
         }
       },
       "sentencedAt": "2024-09-18",
-      "sentenceType": "FTR_ORA",
-      "recallType": "FIXED_TERM_RECALL_28",
-      "consecutiveSentenceUUIDs": ["d309682d-6733-3bfc-b7ad-7024162a341c"]
+      "consecutiveSentenceUUIDs": [
+        "d309682d-6733-3bfc-b7ad-7024162a341c"
+      ],
+      "recallType": "FIXED_TERM_RECALL_28"
     }
   ],
   "adjustments": {
     "RECALL_TAGGED_BAIL": [
       {
-        "numberOfDays": 40,
         "appliesToSentencesFrom": "2024-09-18",
+        "numberOfDays": 40,
         "fromDate": "2024-09-18"
       }
     ]

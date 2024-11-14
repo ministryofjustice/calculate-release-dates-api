@@ -1,101 +1,50 @@
 {
   "offender": {
-    "reference": "A123456",
-    "dateOfBirth": "1993-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 12345678,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2019-01-12",
         "offenceCode": "TH68026"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
           "WEEKS": 20,
-          "YEARS": 5,
-          "MONTHS": 0
+          "YEARS": 5
         }
       },
-      "isSDSPlus": false,
-      "identifier": "841cb538-5b91-3b1f-b293-7c01f76701e9",
-      "recallType": "STANDARD_RECALL",
       "sentencedAt": "2019-03-28",
-      "caseSequence": 7,
-      "lineSequence": 16,
-      "caseReference": "T12345678",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2022-04-03",
         "offenceCode": "TH68036"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 56
         }
       },
-      "isSDSPlus": false,
-      "identifier": "ac2847b5-9809-3316-b3aa-c1a0ceca0c05",
-      "recallType": null,
-      "sentencedAt": "2023-06-27",
-      "caseSequence": 11,
-      "lineSequence": 17,
-      "caseReference": "A12345678985",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
-    },
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "2022-04-06",
-        "offenceCode": "TH68036"
-      },
-      "duration": {
-        "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
-          "MONTHS": 56
-        }
-      },
-      "isSDSPlus": false,
-      "identifier": "ac2847b5-9809-3316-b3aa-c1a0ceca0c05",
-      "recallType": null,
-      "sentencedAt": "2023-06-27",
-      "caseSequence": 11,
-      "lineSequence": 17,
-      "caseReference": "A12345678985",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2023-06-27"
     }
   ],
   "adjustments": {
     "UNLAWFULLY_AT_LARGE": [
       {
-        "toDate": "2020-11-03",
-        "fromDate": "2020-11-02",
+        "appliesToSentencesFrom": "2020-11-02",
         "numberOfDays": 2,
-        "appliesToSentencesFrom": "2020-11-02"
+        "fromDate": "2020-11-02",
+        "toDate": "2020-11-03"
       },
       {
-        "toDate": "2022-04-06",
-        "fromDate": "2022-04-02",
+        "appliesToSentencesFrom": "2022-04-02",
         "numberOfDays": 5,
-        "appliesToSentencesFrom": "2022-04-02"
+        "fromDate": "2022-04-02",
+        "toDate": "2022-04-06"
       }
     ]
-  },
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  }
 }

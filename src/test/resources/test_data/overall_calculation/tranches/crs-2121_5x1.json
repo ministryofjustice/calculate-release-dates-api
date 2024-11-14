@@ -1,13 +1,10 @@
 {
   "offender": {
-    "reference": "A1234EV",
-    "dateOfBirth": "2001-05-26",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-03-03",
         "offenceCode": "CJ88160"
@@ -17,18 +14,12 @@
           "YEARS": 1
         }
       },
-      "isSDSPlus": false,
-      "identifier": "9a2f3c87-5f63-4f97-9833-d9f056b4a6a4",
-      "recallType": null,
       "sentencedAt": "2023-04-03",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "T20230101",
-      "consecutiveSentenceUUIDs": ["21f1c16a-9a4c-4cb5-a8a3-fc8db63507d8"],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+        "21f1c16a-9a4c-4cb5-a8a3-fc8db63507d8"
+      ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-03-03",
         "offenceCode": "CJ88160"
@@ -38,18 +29,13 @@
           "YEARS": 1
         }
       },
-      "isSDSPlus": false,
+      "sentencedAt": "2023-04-03",
       "identifier": "21f1c16a-9a4c-4cb5-a8a3-fc8db63507d8",
-      "recallType": null,
-      "sentencedAt": "2023-04-03",
-      "caseSequence": 2,
-      "lineSequence": 2,
-      "caseReference": "T20230102",
-      "consecutiveSentenceUUIDs": ["7a4e7182-3370-4db8-8b4b-d8f86c2ae2e8"],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+        "7a4e7182-3370-4db8-8b4b-d8f86c2ae2e8"
+      ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-03-03",
         "offenceCode": "CJ88160"
@@ -59,18 +45,13 @@
           "YEARS": 1
         }
       },
-      "isSDSPlus": false,
+      "sentencedAt": "2023-04-03",
       "identifier": "7a4e7182-3370-4db8-8b4b-d8f86c2ae2e8",
-      "recallType": null,
-      "sentencedAt": "2023-04-03",
-      "caseSequence": 3,
-      "lineSequence": 3,
-      "caseReference": "T20230103",
-      "consecutiveSentenceUUIDs": ["1d7a23a8-f99e-44b0-8b15-4e45b799501d"],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+        "1d7a23a8-f99e-44b0-8b15-4e45b799501d"
+      ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-03-03",
         "offenceCode": "CJ88160"
@@ -80,18 +61,13 @@
           "YEARS": 1
         }
       },
-      "isSDSPlus": false,
+      "sentencedAt": "2023-04-03",
       "identifier": "1d7a23a8-f99e-44b0-8b15-4e45b799501d",
-      "recallType": null,
-      "sentencedAt": "2023-04-03",
-      "caseSequence": 4,
-      "lineSequence": 4,
-      "caseReference": "T20230104",
-      "consecutiveSentenceUUIDs": ["35b1de4b-9882-4967-a624-f16d89fbd224"],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+        "35b1de4b-9882-4967-a624-f16d89fbd224"
+      ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-03-03",
         "offenceCode": "CJ88160"
@@ -101,28 +77,18 @@
           "YEARS": 1
         }
       },
-      "isSDSPlus": false,
-      "identifier": "35b1de4b-9882-4967-a624-f16d89fbd224",
-      "recallType": null,
       "sentencedAt": "2023-04-03",
-      "caseSequence": 5,
-      "lineSequence": 5,
-      "caseReference": "T20230105",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "identifier": "35b1de4b-9882-4967-a624-f16d89fbd224"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2023-04-02",
-        "fromDate": "2023-03-11",
+        "appliesToSentencesFrom": "2023-04-03",
         "numberOfDays": 23,
-        "appliesToSentencesFrom": "2023-04-03"
+        "fromDate": "2023-03-11",
+        "toDate": "2023-04-02"
       }
     ]
-  },
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  }
 }

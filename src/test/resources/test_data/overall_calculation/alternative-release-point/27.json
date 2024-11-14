@@ -1,12 +1,10 @@
 {
   "offender": {
-    "reference": "A1672EA",
-    "dateOfBirth": "1975-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-12-23",
         "offenceCode": "OF61014"
@@ -16,14 +14,9 @@
           "MONTHS": 18
         }
       },
-      "identifier": "7ef14a6e-52b6-3f12-ac41-a8f77c41126e",
-      "sentencedAt": "2022-03-14",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2022-03-14"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-12-23",
         "offenceCode": "IC01003B"
@@ -33,28 +26,24 @@
           "MONTHS": 50
         }
       },
-      "identifier": "23d93cd4-c021-3718-8728-452c45f212d4",
-      "sentencedAt": "2022-09-20",
-      "caseSequence": 2,
-      "lineSequence": 2,
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2022-09-20"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2022-03-13",
-        "fromDate": "2021-12-24",
+        "appliesToSentencesFrom": "2022-09-20",
         "numberOfDays": 80,
-        "appliesToSentencesFrom": "2022-09-20"
+        "fromDate": "2021-12-24",
+        "toDate": "2022-03-13"
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [
       {
-        "toDate": "2022-09-27",
-        "fromDate": "2022-09-26",
+        "appliesToSentencesFrom": "2022-09-26",
         "numberOfDays": 2,
-        "appliesToSentencesFrom": "2022-09-26"
+        "fromDate": "2022-09-26",
+        "toDate": "2022-09-27"
       }
     ]
   },

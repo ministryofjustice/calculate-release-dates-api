@@ -1,13 +1,10 @@
 {
   "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "1980-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2018-11-03",
         "offenceCode": "FI68059C"
@@ -18,18 +15,10 @@
           "MONTHS": 6
         }
       },
-      "isSDSPlus": false,
-      "identifier": "385bbbd1-862d-3fac-b45b-f1e9973ec2b0",
-      "recallType": "STANDARD_RECALL",
       "sentencedAt": "2021-12-02",
-      "caseSequence": 2,
-      "lineSequence": 1,
-      "caseReference": "STD RECALL",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-04-29",
         "offenceCode": "MD71230"
@@ -39,17 +28,10 @@
           "MONTHS": 36
         }
       },
-      "isSDSPlus": false,
-      "identifier": "de073f94-c485-3801-b877-742a92707ef0",
       "sentencedAt": "2023-06-06",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "caseReference": "31CF0678023",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "identifier": "de073f94-c485-3801-b877-742a92707ef0"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-04-29",
         "offenceCode": "RT88333"
@@ -59,20 +41,12 @@
           "MONTHS": 3
         }
       },
-      "isSDSPlus": false,
-      "identifier": "f0626981-8364-3fc0-acc4-7416632ecf16",
-      "recallType": null,
       "sentencedAt": "2023-06-06",
-      "caseSequence": 1,
-      "lineSequence": 3,
-      "caseReference": "31CF0678023",
       "consecutiveSentenceUUIDs": [
         "de073f94-c485-3801-b877-742a92707ef0"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-04-29",
         "offenceCode": "PC02021"
@@ -82,50 +56,33 @@
           "MONTHS": 4
         }
       },
-      "isSDSPlus": false,
-      "identifier": "be907d69-72bb-342e-8a6f-4bdc50b0c7b0",
-      "recallType": null,
-      "sentencedAt": "2023-06-06",
-      "caseSequence": 1,
-      "lineSequence": 4,
-      "caseReference": "31CF0678023",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2023-06-06"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2023-05-01",
-        "fromDate": "2023-05-01",
+        "appliesToSentencesFrom": "2023-06-06",
         "numberOfDays": 1,
-        "appliesToSentencesFrom": "2023-06-06"
+        "fromDate": "2023-05-01",
+        "toDate": "2023-05-01"
       }
     ],
     "RECALL_REMAND": [
       {
-        "toDate": null,
-        "fromDate": null,
-        "numberOfDays": 916,
-        "appliesToSentencesFrom": "2021-12-02"
+        "appliesToSentencesFrom": "2021-12-02",
+        "numberOfDays": 916
       },
       {
-        "toDate": null,
-        "fromDate": null,
-        "numberOfDays": 13,
-        "appliesToSentencesFrom": "2021-12-02"
+        "appliesToSentencesFrom": "2021-12-02",
+        "numberOfDays": 13
       }
     ],
     "RECALL_TAGGED_BAIL": [
       {
-        "toDate": null,
-        "fromDate": null,
-        "numberOfDays": 88,
-        "appliesToSentencesFrom": "2021-12-02"
+        "appliesToSentencesFrom": "2021-12-02",
+        "numberOfDays": 88
       }
     ]
-  },
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  }
 }

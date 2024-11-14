@@ -1,14 +1,14 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2013-01-03"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 10
@@ -19,15 +19,14 @@
           "YEARS": 5
         }
       },
-      "automaticRelease": false,
       "sentencedAt": "2013-01-04",
       "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2013-05-06"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 3
@@ -46,10 +45,10 @@
       ]
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2013-07-09"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 2
@@ -60,7 +59,6 @@
           "YEARS": 1
         }
       },
-      "automaticRelease": false,
       "sentencedAt": "2013-07-09",
       "consecutiveSentenceUUIDs": [
         "649b105a-52b8-417e-96b6-22904df56690"
@@ -70,16 +68,16 @@
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 50,
         "appliesToSentencesFrom": "2013-01-04",
+        "numberOfDays": 50,
         "fromDate": "2012-12-10",
         "toDate": "2013-01-03"
       }
     ],
     "TAGGED_BAIL": [
       {
-        "numberOfDays": 20,
-        "appliesToSentencesFrom": "2013-01-04"
+        "appliesToSentencesFrom": "2013-01-04",
+        "numberOfDays": 20
       }
     ]
   }

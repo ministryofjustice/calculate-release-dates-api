@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "1992-08-05"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -14,11 +14,7 @@
           "MONTHS": 6
         }
       },
-      "identifier": "9843d055-f297-367b-8259-d6609025a85a",
-      "sentencedAt": "2016-04-21",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2016-04-21"
     },
     {
       "offence": {
@@ -29,44 +25,38 @@
           "WEEKS": 6
         }
       },
-      "identifier": "1fd488ce-d054-36d7-bc0b-814997622b44",
-      "sentencedAt": "2021-06-21",
-      "caseSequence": 2,
-      "lineSequence": 2,
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2021-06-21"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 236,
         "appliesToSentencesFrom": "2016-04-21",
-        "toDate": "2016-04-20",
-        "fromDate": "2015-08-28"
+        "numberOfDays": 236,
+        "fromDate": "2015-08-28",
+        "toDate": "2016-04-20"
       }
     ],
     "TAGGED_BAIL": [
       {
-        "numberOfDays": 0,
         "appliesToSentencesFrom": "2016-04-21"
       }
     ],
     "UNLAWFULLY_AT_LARGE": [
       {
-        "numberOfDays": 0,
         "appliesToSentencesFrom": "2016-04-21"
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [
       {
-        "numberOfDays": 42,
-        "appliesToSentencesFrom": "2016-04-21"
+        "appliesToSentencesFrom": "2016-04-21",
+        "numberOfDays": 42
       }
     ],
     "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
       {
-        "numberOfDays": 7,
-        "appliesToSentencesFrom": "2016-04-21"
+        "appliesToSentencesFrom": "2016-04-21",
+        "numberOfDays": 7
       }
     ]
   }

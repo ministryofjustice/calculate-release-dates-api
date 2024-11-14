@@ -1,14 +1,14 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2014-05-02"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 9
@@ -23,10 +23,10 @@
       "sentencedAt": "2014-05-03"
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2015-04-11"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 3
@@ -42,10 +42,10 @@
       "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2015-04-11"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 3
@@ -64,10 +64,10 @@
       ]
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2015-04-11"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 3
@@ -88,16 +88,16 @@
   "adjustments": {
     "ADDITIONAL_DAYS_AWARDED": [
       {
-        "numberOfDays": 8,
         "appliesToSentencesFrom": "2019-11-11",
+        "numberOfDays": 8,
         "fromDate": "2019-11-11",
         "toDate": "2019-11-18"
       }
     ],
     "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
       {
-        "numberOfDays": 2,
         "appliesToSentencesFrom": "2019-11-17",
+        "numberOfDays": 2,
         "fromDate": "2019-11-17",
         "toDate": "2019-11-18"
       }

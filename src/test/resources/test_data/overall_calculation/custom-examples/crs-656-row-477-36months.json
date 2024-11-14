@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "A123BCD",
-    "dateOfBirth": "1991-01-01"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -13,43 +13,35 @@
           "MONTHS": 36
         }
       },
-      "identifier": "1a009aca-e295-310f-8508-8e918792064c",
-      "sentencedAt": "2021-03-01",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2021-03-01"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 174,
         "appliesToSentencesFrom": "2021-03-01",
-        "toDate": "2021-02-28",
-        "fromDate": "2020-09-07"
+        "numberOfDays": 174,
+        "fromDate": "2020-09-07",
+        "toDate": "2021-02-28"
       }
     ],
     "TAGGED_BAIL": [
       {
-        "numberOfDays": 0,
         "appliesToSentencesFrom": "2021-03-01"
       }
     ],
     "UNLAWFULLY_AT_LARGE": [
       {
-        "numberOfDays": 0,
         "appliesToSentencesFrom": "2021-03-01"
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [
       {
-        "numberOfDays": 0,
         "appliesToSentencesFrom": "2021-03-01"
       }
     ],
     "RESTORATION_OF_ADDITIONAL_DAYS_AWARDED": [
       {
-        "numberOfDays": 0,
         "appliesToSentencesFrom": "2021-03-01"
       }
     ]

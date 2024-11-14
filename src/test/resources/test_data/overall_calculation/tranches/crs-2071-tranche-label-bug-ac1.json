@@ -20,8 +20,7 @@
           "YEARS": 4
         }
       },
-      "sentencedAt": "2021-06-04",
-      "identifier": "de1b2e0d-379b-34bd-9b56-ea796ab327d8"
+      "sentencedAt": "2021-06-04"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -39,7 +38,6 @@
         }
       },
       "sentencedAt": "2021-06-04",
-      "identifier": "5b5bb570-cbfb-3e24-b88d-8e32ed0b84c3",
       "consecutiveSentenceUUIDs": [
         "650a05f6-ea3b-3948-a1f5-d6ce9fec8ef7"
       ]
@@ -59,8 +57,7 @@
           "YEARS": 4
         }
       },
-      "sentencedAt": "2021-06-04",
-      "identifier": "c2d250fc-7d30-3c85-917a-be4f935eb64f"
+      "sentencedAt": "2021-06-04"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -95,11 +92,9 @@
           "YEARS": 4
         }
       },
-      "sentencedAt": "2021-06-04",
-      "identifier": "27486d6d-2763-37b0-a2fc-a39677e4b47e"
+      "sentencedAt": "2021-06-04"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-06-15"
       },
@@ -108,9 +103,7 @@
           "MONTHS": 6
         }
       },
-      "sentencedAt": "2021-06-04",
-      "identifier": "f55f5e26-3274-3d73-9b29-064a0ba99dea",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2021-06-04"
     }
   ],
   "adjustments": {

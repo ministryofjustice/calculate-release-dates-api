@@ -1,6 +1,6 @@
 {
   "offender": {
-    "reference": "ABC123D",
+    "reference": "ABC123",
     "dateOfBirth": "2004-09-30"
   },
   "sentences": [
@@ -15,7 +15,6 @@
         }
       },
       "sentencedAt": "2022-02-13",
-      "sentenceType": "DTO_ORA",
       "identifier": "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
     },
     {
@@ -29,10 +28,9 @@
         }
       },
       "sentencedAt": "2022-04-02",
-      "sentenceType": "DTO_ORA",
-      "consecutiveSentenceUUIDs": ["5dfde034-b7d7-4c54-a86c-67d42a1fd669"]
+      "consecutiveSentenceUUIDs": [
+        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      ]
     }
-  ],
-  "adjustments": {
-  }
+  ]
 }

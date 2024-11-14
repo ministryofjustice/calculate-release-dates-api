@@ -1,27 +1,25 @@
 {
-  "calculateErsed": false,
-  "offender":{
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "sentences":[
+  "sentences": [
     {
-      "type":"ExtendedDeterminateSentence",
-      "offence":{
-        "committedAt":"2015-01-09"
+      "type": "ExtendedDeterminateSentence",
+      "offence": {
+        "committedAt": "2015-01-09"
       },
-      "custodialDuration":{
-        "durationElements":{
+      "custodialDuration": {
+        "durationElements": {
           "MONTHS": 40
         }
       },
-      "extensionDuration":{
-        "durationElements":{
+      "extensionDuration": {
+        "durationElements": {
           "MONTHS": 32
         }
       },
-      "automaticRelease":false,
-      "sentencedAt":"2018-06-15",
+      "sentencedAt": "2018-06-15",
       "recallType": "STANDARD_RECALL"
     }
   ],

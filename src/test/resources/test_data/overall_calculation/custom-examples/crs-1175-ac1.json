@@ -1,11 +1,11 @@
 {
-  "calculateErsed": true,
   "offender": {
-    "reference": "ABC123D",
+    "reference": "ABC123",
     "dateOfBirth": "2005-04-01"
   },
   "sentences": [
     {
+      "type": "DetentionAndTrainingOrderSentence",
       "offence": {
         "committedAt": "2022-06-27"
       },
@@ -14,10 +14,7 @@
           "MONTHS": 12
         }
       },
-      "sentencedAt": "2022-10-27",
-      "isDto": true,
-      "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "sentencedAt": "2022-10-27"
     },
     {
       "offence": {
@@ -28,9 +25,7 @@
           "MONTHS": 8
         }
       },
-      "sentencedAt": "2022-10-27",
-      "isDto": false,
-      "sentenceType": "ADIMP_ORA"
+      "sentencedAt": "2022-10-27"
     }
   ],
   "adjustments": {
@@ -42,5 +37,6 @@
         "toDate": "2022-10-26"
       }
     ]
-  }
+  },
+  "calculateErsed": true
 }

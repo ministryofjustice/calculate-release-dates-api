@@ -1,6 +1,6 @@
 {
   "offender": {
-    "reference": "A2630EZ",
+    "reference": "ABC123",
     "dateOfBirth": "1990-01-01"
   },
   "sentences": [
@@ -14,10 +14,7 @@
           "YEARS": 6
         }
       },
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentencedAt": "2018-09-09",
-      "sentenceType": "ADIMP",
-      "lineSequence": 1
+      "sentencedAt": "2018-09-09"
     },
     {
       "offence": {
@@ -29,19 +26,16 @@
           "MONTHS": 12
         }
       },
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentencedAt": "2024-07-30",
-      "sentenceType": "ADIMP_ORA",
-      "lineSequence": 2
+      "sentencedAt": "2024-07-30"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2018-09-08",
-        "fromDate": "2018-09-07",
+        "appliesToSentencesFrom": "2018-09-09",
         "numberOfDays": 2,
-        "appliesToSentencesFrom": "2018-09-09"
+        "fromDate": "2018-09-07",
+        "toDate": "2018-09-08"
       }
     ]
   }

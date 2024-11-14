@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2006-10-25"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -14,34 +14,19 @@
           "YEARS": 2
         }
       },
-      "sentencedAt": "2022-10-26",
-      "sentenceType": "SEC250"
+      "sentencedAt": "2022-10-26"
     },
     {
-      "offence": {
-        "committedAt": "2022-02-21"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 3,
-          "YEARS": 2
-        }
-      },
-      "sentencedAt": "2022-10-26",
-      "sentenceType": "SEC250"
-    },
-    {
+      "type": "DetentionAndTrainingOrderSentence",
       "offence": {
         "committedAt": "2022-02-08"
       },
       "duration": {
         "durationElements": {
           "MONTHS": 4
-       }
+        }
       },
-      "sentencedAt": "2022-11-22",
-      "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "sentencedAt": "2022-11-22"
     }
   ],
   "adjustments": {

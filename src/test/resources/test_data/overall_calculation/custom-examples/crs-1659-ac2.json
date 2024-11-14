@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2000-07-23"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -13,8 +13,7 @@
           "MONTHS": 12
         }
       },
-      "sentencedAt": "2022-04-20",
-      "sentenceType": "SDS_ORA"
+      "sentencedAt": "2022-04-20"
     },
     {
       "offence": {
@@ -25,8 +24,7 @@
           "MONTHS": 9
         }
       },
-      "sentencedAt": "2022-07-11",
-      "sentenceType": "SDS_ORA"
+      "sentencedAt": "2022-07-11"
     }
   ],
   "adjustments": {
@@ -40,23 +38,22 @@
     ],
     "TAGGED_BAIL": [
       {
-        "numberOfDays": 1,
-        "appliesToSentencesFrom": "2022-04-20"
+        "appliesToSentencesFrom": "2022-04-20",
+        "numberOfDays": 1
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [
       {
-        "numberOfDays": 1,
         "appliesToSentencesFrom": "2022-08-02",
+        "numberOfDays": 1,
         "fromDate": "2022-08-02",
         "toDate": "2022-08-03"
-      }],
+      }
+    ],
     "UNLAWFULLY_AT_LARGE": [
       {
         "appliesToSentencesFrom": "2022-11-01",
-        "numberOfDays": 5,
-        "fromDate": null,
-        "toDate": null
+        "numberOfDays": 5
       }
     ]
   }

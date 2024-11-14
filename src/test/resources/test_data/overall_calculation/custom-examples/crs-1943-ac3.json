@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -27,10 +27,10 @@
       "sentencedAt": "2016-12-08"
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2015-01-06"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 3
@@ -46,10 +46,10 @@
       "identifier": "d5b45331-fa60-4325-876f-fd54e34154dc"
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2015-01-06"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 3
@@ -60,12 +60,12 @@
           "YEARS": 2
         }
       },
-      "automaticRelease": false,
       "sentencedAt": "2015-02-13",
       "consecutiveSentenceUUIDs": [
         "d5b45331-fa60-4325-876f-fd54e34154dc"
       ]
-    },{
+    },
+    {
       "type": "BotusSentence",
       "offence": {
         "committedAt": "2015-01-02"

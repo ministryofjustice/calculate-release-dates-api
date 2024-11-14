@@ -1,12 +1,10 @@
 {
   "offender": {
     "reference": "ABC123",
-    "dateOfBirth": "2000-01-01"
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-05-04",
         "offenceCode": "CD71015"
@@ -16,12 +14,10 @@
           "MONTHS": 9
         }
       },
-      "identifier": "5d396fa6-a4bd-34ce-bcf9-582cf8710b80",
-      "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2024-02-20"
+      "sentencedAt": "2024-02-20",
+      "recallType": "FIXED_TERM_RECALL_14"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-10-08",
         "offenceCode": "PU86116"
@@ -31,44 +27,43 @@
           "WEEKS": 4
         }
       },
-      "identifier": "8adf5a19-4ce0-3a47-9a74-56e78c9c080e",
-      "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2024-03-28"
+      "sentencedAt": "2024-03-28",
+      "recallType": "FIXED_TERM_RECALL_14"
     }
   ],
   "adjustments": {
     "RECALL_REMAND": [
       {
-        "toDate": "2024-02-19",
-        "fromDate": "2024-02-03",
+        "appliesToSentencesFrom": "2024-02-20",
         "numberOfDays": 17,
-        "appliesToSentencesFrom": "2024-02-20"
+        "fromDate": "2024-02-03",
+        "toDate": "2024-02-19"
       },
       {
-        "toDate": "2023-08-29",
-        "fromDate": "2023-05-06",
+        "appliesToSentencesFrom": "2024-02-20",
         "numberOfDays": 116,
-        "appliesToSentencesFrom": "2024-02-20"
+        "fromDate": "2023-05-06",
+        "toDate": "2023-08-29"
       }
     ],
     "UNLAWFULLY_AT_LARGE": [
       {
-        "toDate": "2024-05-03",
-        "fromDate": "2024-05-01",
+        "appliesToSentencesFrom": "2024-05-01",
         "numberOfDays": 3,
-        "appliesToSentencesFrom": "2024-05-01"
+        "fromDate": "2024-05-01",
+        "toDate": "2024-05-03"
       },
       {
-        "toDate": "2024-04-16",
-        "fromDate": "2024-04-13",
+        "appliesToSentencesFrom": "2024-04-13",
         "numberOfDays": 4,
-        "appliesToSentencesFrom": "2024-04-13"
+        "fromDate": "2024-04-13",
+        "toDate": "2024-04-16"
       },
       {
-        "toDate": "2024-05-19",
-        "fromDate": "2024-05-18",
+        "appliesToSentencesFrom": "2024-05-18",
         "numberOfDays": 2,
-        "appliesToSentencesFrom": "2024-05-18"
+        "fromDate": "2024-05-18",
+        "toDate": "2024-05-19"
       }
     ]
   },

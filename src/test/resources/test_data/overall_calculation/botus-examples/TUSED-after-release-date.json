@@ -1,38 +1,24 @@
 {
   "offender": {
     "reference": "ABC123",
-    "dateOfBirth": "1990-01-01",
-    "isActiveSexOffender": false
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 111222,
   "sentences": [
     {
       "type": "BotusSentence",
       "offence": {
-        "committedAt": "2024-04-04",
-        "offenceCode": null
+        "committedAt": "2024-04-04"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 14,
-          "WEEKS": 0,
-          "YEARS": 0,
-          "MONTHS": 0
+          "DAYS": 14
         }
       },
-      "isSDSPlus": false,
-      "identifier": "416905d6-3188-3fcf-9c77-179db9e496cc",
-      "recallType": null,
       "sentencedAt": "2024-10-12",
       "caseSequence": 1,
       "lineSequence": 1,
-      "caseReference": null,
       "latestTusedDate": "2025-05-14",
-      "latestTusedSource": "NOMIS_OVERRIDDEN",
-      "consecutiveSentenceUUIDs": []
+      "latestTusedSource": "NOMIS_OVERRIDDEN"
     }
-  ],
-  "adjustments": {},
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  ]
 }

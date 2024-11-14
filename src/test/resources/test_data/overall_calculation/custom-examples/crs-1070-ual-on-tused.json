@@ -1,298 +1,79 @@
 {
-  "offender":{
-    "reference":"A1234AB",
-    "dateOfBirth":"1980-12-08",
-    "isActiveSexOffender":false
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId":99999991,
-  "sentences":[
+  "sentences": [
     {
-      "type":"StandardSentence",
-      "offence":{
-        "committedAt":"2021-05-31",
-        "offenceCode":"COML002"
+      "offence": {
+        "committedAt": "2021-05-31",
+        "offenceCode": "COML002"
       },
-      "duration":{
-        "durationElements":{
-          "DAYS":0,
-          "WEEKS":0,
-          "YEARS":1,
-          "MONTHS":0
+      "duration": {
+        "durationElements": {
+          "YEARS": 1
         }
       },
-      "identifier":"f36bc182-5c02-3cc3-a4bf-df55a1a41fb4",
-      "recallType":"STANDARD_RECALL",
-      "sentencedAt":"2022-02-24",
-      "caseSequence":1,
-      "lineSequence":1,
-      "caseReference":"ABC123",
-      "consecutiveSentenceUUIDs":[
-      ]
+      "sentencedAt": "2022-02-24",
+      "identifier": "f36bc182-5c02-3cc3-a4bf-df55a1a41fb4",
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type":"StandardSentence",
-      "offence":{
-        "committedAt":"2021-05-31",
-        "offenceCode":"PC53001"
+      "offence": {
+        "committedAt": "2021-05-31",
+        "offenceCode": "PC53001"
       },
-      "duration":{
-        "durationElements":{
-          "DAYS":145,
-          "WEEKS":0,
-          "YEARS":0,
-          "MONTHS":0
+      "duration": {
+        "durationElements": {
+          "DAYS": 145
         }
       },
-      "identifier":"75833df9-a090-3648-b54f-9ab3b6133f95",
-      "recallType":"STANDARD_RECALL",
-      "sentencedAt":"2022-02-24",
-      "caseSequence":1,
-      "lineSequence":2,
-      "caseReference":"ABC123",
-      "consecutiveSentenceUUIDs":[
+      "sentencedAt": "2022-02-24",
+      "consecutiveSentenceUUIDs": [
         "f36bc182-5c02-3cc3-a4bf-df55a1a41fb4"
-      ]
+      ],
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type":"AFineSentence",
-      "offence":{
-        "committedAt":"2022-04-25",
-        "offenceCode":"TH68010"
+      "type": "AFineSentence",
+      "offence": {
+        "committedAt": "2022-04-25",
+        "offenceCode": "TH68010"
       },
-      "duration":{
-        "durationElements":{
-          "DAYS":25,
-          "WEEKS":0,
-          "YEARS":0,
-          "MONTHS":0
+      "duration": {
+        "durationElements": {
+          "DAYS": 25
         }
       },
-      "fineAmount":919.72,
-      "identifier":"f9c7ff8a-25ba-39ba-9967-77f94bcdfc16",
-      "recallType":null,
-      "sentencedAt":"2022-04-25",
-      "caseSequence":4,
-      "lineSequence":3,
-      "caseReference":"ABC123L",
-      "consecutiveSentenceUUIDs":[
-      ]
-    },
-    {
-      "type":"AFineSentence",
-      "offence":{
-        "committedAt":"2022-04-25",
-        "offenceCode":"TH68010A"
-      },
-      "duration":{
-        "durationElements":{
-          "DAYS":25,
-          "WEEKS":0,
-          "YEARS":0,
-          "MONTHS":0
-        }
-      },
-      "fineAmount":919.72,
-      "identifier":"f9c7ff8a-25ba-39ba-9967-77f94bcdfc16",
-      "recallType":null,
-      "sentencedAt":"2022-04-25",
-      "caseSequence":4,
-      "lineSequence":3,
-      "caseReference":"ABC123L",
-      "consecutiveSentenceUUIDs":[
-      ]
-    },
-    {
-      "type":"AFineSentence",
-      "offence":{
-        "committedAt":"2022-04-25",
-        "offenceCode":"TH68026"
-      },
-      "duration":{
-        "durationElements":{
-          "DAYS":25,
-          "WEEKS":0,
-          "YEARS":0,
-          "MONTHS":0
-        }
-      },
-      "fineAmount":919.72,
-      "identifier":"f9c7ff8a-25ba-39ba-9967-77f94bcdfc16",
-      "recallType":null,
-      "sentencedAt":"2022-04-25",
-      "caseSequence":4,
-      "lineSequence":3,
-      "caseReference":"ABC123L",
-      "consecutiveSentenceUUIDs":[
-      ]
-    },
-    {
-      "type":"AFineSentence",
-      "offence":{
-        "committedAt":"2022-04-25",
-        "offenceCode":"TH68010"
-      },
-      "duration":{
-        "durationElements":{
-          "DAYS":25,
-          "WEEKS":0,
-          "YEARS":0,
-          "MONTHS":0
-        }
-      },
-      "fineAmount":919.72,
-      "identifier":"f9c7ff8a-25ba-39ba-9967-77f94bcdfc16",
-      "recallType":null,
-      "sentencedAt":"2022-04-25",
-      "caseSequence":4,
-      "lineSequence":3,
-      "caseReference":"ABC123L",
-      "consecutiveSentenceUUIDs":[
-      ]
-    },
-    {
-      "type":"AFineSentence",
-      "offence":{
-        "committedAt":"2022-04-25",
-        "offenceCode":"MD71211"
-      },
-      "duration":{
-        "durationElements":{
-          "DAYS":25,
-          "WEEKS":0,
-          "YEARS":0,
-          "MONTHS":0
-        }
-      },
-      "fineAmount":919.72,
-      "identifier":"f9c7ff8a-25ba-39ba-9967-77f94bcdfc16",
-      "recallType":null,
-      "sentencedAt":"2022-04-25",
-      "caseSequence":4,
-      "lineSequence":3,
-      "caseReference":"ABC123L",
-      "consecutiveSentenceUUIDs":[
-      ]
-    },
-    {
-      "type":"AFineSentence",
-      "offence":{
-        "committedAt":"2022-04-25",
-        "offenceCode":"PU86004"
-      },
-      "duration":{
-        "durationElements":{
-          "DAYS":25,
-          "WEEKS":0,
-          "YEARS":0,
-          "MONTHS":0
-        }
-      },
-      "fineAmount":919.72,
-      "identifier":"f9c7ff8a-25ba-39ba-9967-77f94bcdfc16",
-      "recallType":null,
-      "sentencedAt":"2022-04-25",
-      "caseSequence":4,
-      "lineSequence":3,
-      "caseReference":"ABC123L",
-      "consecutiveSentenceUUIDs":[
-      ]
-    },
-    {
-      "type":"AFineSentence",
-      "offence":{
-        "committedAt":"2022-04-25",
-        "offenceCode":"CJ88116"
-      },
-      "duration":{
-        "durationElements":{
-          "DAYS":25,
-          "WEEKS":0,
-          "YEARS":0,
-          "MONTHS":0
-        }
-      },
-      "fineAmount":919.72,
-      "identifier":"f9c7ff8a-25ba-39ba-9967-77f94bcdfc16",
-      "recallType":null,
-      "sentencedAt":"2022-04-25",
-      "caseSequence":4,
-      "lineSequence":3,
-      "caseReference":"ABC123L",
-      "consecutiveSentenceUUIDs":[
-      ]
-    },
-    {
-      "type":"AFineSentence",
-      "offence":{
-        "committedAt":"2022-04-25",
-        "offenceCode":"CD71040"
-      },
-      "duration":{
-        "durationElements":{
-          "DAYS":25,
-          "WEEKS":0,
-          "YEARS":0,
-          "MONTHS":0
-        }
-      },
-      "fineAmount":919.72,
-      "identifier":"f9c7ff8a-25ba-39ba-9967-77f94bcdfc16",
-      "recallType":null,
-      "sentencedAt":"2022-04-25",
-      "caseSequence":4,
-      "lineSequence":3,
-      "caseReference":"ABC123L",
-      "consecutiveSentenceUUIDs":[
-      ]
-    },
-    {
-      "type":"AFineSentence",
-      "offence":{
-        "committedAt":"2022-04-25",
-        "offenceCode":"CA81001"
-      },
-      "duration":{
-        "durationElements":{
-          "DAYS":25,
-          "WEEKS":0,
-          "YEARS":0,
-          "MONTHS":0
-        }
-      },
-      "fineAmount":919.72,
-      "identifier":"f9c7ff8a-25ba-39ba-9967-77f94bcdfc16",
-      "recallType":null,
-      "sentencedAt":"2022-04-25",
-      "caseSequence":4,
-      "lineSequence":3,
-      "caseReference":"ABC123L",
-      "consecutiveSentenceUUIDs":[
-      ]
+      "sentencedAt": "2022-04-25",
+      "caseSequence": 4,
+      "lineSequence": 3,
+      "caseReference": "ABC123L",
+      "fineAmount": 919.72
     }
   ],
-  "adjustments":{
-    "RECALL_REMAND":[
+  "adjustments": {
+    "RECALL_REMAND": [
       {
-        "toDate":"2022-02-11",
-        "fromDate":"2021-06-02",
-        "numberOfDays":255,
-        "appliesToSentencesFrom":"2022-02-24"
+        "appliesToSentencesFrom": "2022-02-24",
+        "numberOfDays": 255,
+        "fromDate": "2021-06-02",
+        "toDate": "2022-02-11"
       },
       {
-        "toDate":"2022-02-23",
-        "fromDate":"2022-02-12",
-        "numberOfDays":12,
-        "appliesToSentencesFrom":"2022-02-24"
+        "appliesToSentencesFrom": "2022-02-24",
+        "numberOfDays": 12,
+        "fromDate": "2022-02-12",
+        "toDate": "2022-02-23"
       }
     ],
-    "UNLAWFULLY_AT_LARGE":[
+    "UNLAWFULLY_AT_LARGE": [
       {
-        "toDate":"2022-02-27",
-        "fromDate":"2022-02-25",
-        "numberOfDays":3,
-        "appliesToSentencesFrom":"2022-02-25"
+        "appliesToSentencesFrom": "2022-02-25",
+        "numberOfDays": 3,
+        "fromDate": "2022-02-25",
+        "toDate": "2022-02-27"
       }
     ]
-  },
-  "returnToCustodyDate":null
+  }
 }

@@ -1,11 +1,11 @@
 {
-  "calculateErsed": true,
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2005-09-23"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
+      "type": "DetentionAndTrainingOrderSentence",
       "offence": {
         "committedAt": "2020-01-20"
       },
@@ -14,13 +14,10 @@
           "MONTHS": 12
         }
       },
-      "sentencedAt": "2022-07-19",
-      "sentenceType": "DTO",
-      "type": "DetentionAndTrainingOrderSentence"
+      "sentencedAt": "2022-07-19"
     },
     {
       "type": "ExtendedDeterminateSentence",
-      "sentenceType": "EDSU18",
       "offence": {
         "committedAt": "2021-04-28"
       },
@@ -46,5 +43,6 @@
         "toDate": "2021-12-09"
       }
     ]
-  }
+  },
+  "calculateErsed": true
 }

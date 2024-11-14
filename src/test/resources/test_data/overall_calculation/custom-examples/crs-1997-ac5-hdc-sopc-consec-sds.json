@@ -1,53 +1,51 @@
 {
-  "offender":{
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "sentences":[
+  "sentences": [
     {
-      "type":"SopcSentence",
-      "offence":{
-        "committedAt":"2022-02-24"
+      "type": "SopcSentence",
+      "offence": {
+        "committedAt": "2022-02-24"
       },
-      "custodialDuration":{
-        "durationElements":{
+      "custodialDuration": {
+        "durationElements": {
           "YEARS": 4
         }
       },
-      "extensionDuration":{
-        "durationElements":{
+      "extensionDuration": {
+        "durationElements": {
           "YEARS": 1
         }
       },
-      "sentencedAt":"2023-01-25",
-      "identifier":"83fd11aa-a579-3b93-aaba-937e138aec88"
+      "sentencedAt": "2023-01-25",
+      "identifier": "83fd11aa-a579-3b93-aaba-937e138aec88"
     },
     {
-      "type": "StandardSentence",
-      "offence":{
-        "committedAt":"2022-11-25"
+      "offence": {
+        "committedAt": "2022-11-25"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "YEARS": 2
         }
       },
-      "sentencedAt":"2023-01-25",
-      "consecutiveSentenceUUIDs":[
+      "sentencedAt": "2023-01-25",
+      "consecutiveSentenceUUIDs": [
         "83fd11aa-a579-3b93-aaba-937e138aec88"
       ]
     },
     {
-      "type": "StandardSentence",
-      "offence":{
-        "committedAt":"2022-11-25"
+      "offence": {
+        "committedAt": "2022-11-25"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "YEARS": 10
         }
       },
-      "sentencedAt":"2023-08-02"
+      "sentencedAt": "2023-08-02"
     }
   ]
 }

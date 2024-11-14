@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "1941-01-22",
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01",
     "isActiveSexOffender": true
   },
   "sentences": [
@@ -11,12 +11,6 @@
         "committedAt": "2012-08-22",
         "offenceCode": "SX03015"
       },
-      "sdopcu18": false,
-      "identifier": "64e2877b-b4a7-35fa-8f3f-da630ec53e8c",
-      "sentencedAt": "2020-11-13",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A1234567",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 6
@@ -27,10 +21,12 @@
           "YEARS": 1
         }
       },
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2020-11-13",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": "A1234567"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2012-08-22",
         "offenceCode": "SX03017"
@@ -40,15 +36,9 @@
           "YEARS": 2
         }
       },
-      "identifier": "237f9da0-84c2-3db3-8ad9-39c73813c0d6",
-      "sentencedAt": "2020-11-13",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "caseReference": "B1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2020-11-13"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2012-08-22",
         "offenceCode": "SX03019"
@@ -58,15 +48,9 @@
           "YEARS": 3
         }
       },
-      "identifier": "6e8a3b0b-d300-3247-a1e8-a681ae394793",
-      "sentencedAt": "2020-11-13",
-      "caseSequence": 1,
-      "lineSequence": 3,
-      "caseReference": "C1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2020-11-13"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "1993-07-30",
         "offenceCode": "SX56087-088N"
@@ -76,15 +60,9 @@
           "MONTHS": 18
         }
       },
-      "identifier": "9f99e197-25e6-3e93-8693-23e7be34593e",
-      "sentencedAt": "2024-03-22",
-      "caseSequence": 2,
-      "lineSequence": 4,
-      "caseReference": "D1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-03-22"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "1993-07-30",
         "offenceCode": "SX56025-029N"
@@ -94,30 +72,7 @@
           "MONTHS": 42
         }
       },
-      "identifier": "b159ec36-568c-36c7-aa86-bd651e56dc17",
-      "sentencedAt": "2024-03-22",
-      "caseSequence": 2,
-      "lineSequence": 5,
-      "caseReference": "E1234567",
-      "consecutiveSentenceUUIDs": []
-    },
-    {
-      "type": "StandardSentence",
-      "offence": {
-        "committedAt": "1993-07-30",
-        "offenceCode": "SX56025-029N"
-      },
-      "duration": {
-        "durationElements": {
-          "MONTHS": 42
-        }
-      },
-      "identifier": "b159ec36-568c-36c7-aa86-bd651e56dc17",
-      "sentencedAt": "2024-03-22",
-      "caseSequence": 2,
-      "lineSequence": 5,
-      "caseReference": "F1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-03-22"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -125,12 +80,6 @@
         "committedAt": "1990-12-31",
         "offenceCode": "SX56013-122N"
       },
-      "identifier": "241be04a-1ad1-3753-bc70-23dad8c01f36",
-      "sentencedAt": "2024-03-22",
-      "caseSequence": 2,
-      "lineSequence": 6,
-      "caseReference": "G1234567",
-      "automaticRelease": false,
       "custodialDuration": {
         "durationElements": {
           "YEARS": 14
@@ -141,10 +90,9 @@
           "YEARS": 1
         }
       },
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-03-22"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "1990-12-31",
         "offenceCode": "SX56013-122N"
@@ -154,14 +102,8 @@
           "YEARS": 13
         }
       },
-      "identifier": "bb9b9a7a-3900-3237-a14a-89fdc18723b9",
-      "sentencedAt": "2024-03-22",
-      "caseSequence": 2,
-      "lineSequence": 7,
-      "caseReference": "H1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2024-03-22"
     }
   ],
-  "adjustments": {},
   "calculateErsed": true
 }

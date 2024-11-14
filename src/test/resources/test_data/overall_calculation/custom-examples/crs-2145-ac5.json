@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2004-11-05"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -14,7 +14,6 @@
         }
       },
       "sentencedAt": "2024-07-13",
-      "sentenceType": "LR_ORA",
       "recallType": "STANDARD_RECALL"
     },
     {
@@ -27,23 +26,22 @@
         }
       },
       "sentencedAt": "2024-09-11",
-      "sentenceType": "LR_ORA",
       "recallType": "STANDARD_RECALL"
     }
   ],
   "adjustments": {
     "RECALL_REMAND": [
       {
-        "numberOfDays": 20,
         "appliesToSentencesFrom": "2024-06-23",
+        "numberOfDays": 20,
         "fromDate": "2024-06-23",
         "toDate": "2024-07-12"
       }
     ],
     "ADDITIONAL_DAYS_AWARDED": [
       {
-        "numberOfDays": 5,
         "appliesToSentencesFrom": "2024-09-20",
+        "numberOfDays": 5,
         "fromDate": "2024-09-20",
         "toDate": "2024-09-24"
       }

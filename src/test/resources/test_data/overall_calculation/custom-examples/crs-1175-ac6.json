@@ -1,29 +1,28 @@
 {
-  "calculateErsed": true,
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2004-04-14"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type":"ExtendedDeterminateSentence",
-      "sentenceType": "EDSU18",
-      "offence":{
-        "committedAt":"2021-04-28"
+      "type": "ExtendedDeterminateSentence",
+      "offence": {
+        "committedAt": "2021-04-28"
       },
-      "custodialDuration":{
-        "durationElements":{
+      "custodialDuration": {
+        "durationElements": {
           "YEARS": 2
         }
       },
-      "extensionDuration":{
-        "durationElements":{
+      "extensionDuration": {
+        "durationElements": {
           "YEARS": 2
         }
       },
-      "sentencedAt":"2021-10-08"
+      "sentencedAt": "2021-10-08"
     },
     {
+      "type": "DetentionAndTrainingOrderSentence",
       "offence": {
         "committedAt": "2020-01-20"
       },
@@ -32,9 +31,7 @@
           "MONTHS": 24
         }
       },
-      "sentencedAt": "2022-02-17",
-      "sentenceType": "DTO_ORA",
-      "type": "DetentionAndTrainingOrderSentence"
+      "sentencedAt": "2022-02-17"
     }
   ],
   "adjustments": {
@@ -46,5 +43,6 @@
         "toDate": "2021-10-07"
       }
     ]
-  }
+  },
+  "calculateErsed": true
 }

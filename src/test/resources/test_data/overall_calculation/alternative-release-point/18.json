@@ -1,12 +1,11 @@
 {
   "offender": {
-    "reference": "A1234BC",
-    "dateOfBirth": "1993-05-11",
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01",
     "isActiveSexOffender": true
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-01-25",
         "offenceCode": "SX03244"
@@ -16,12 +15,8 @@
           "MONTHS": 16
         }
       },
-      "identifier": "54a56297-f7a0-3087-8786-8244e48ede8e",
       "sentencedAt": "2024-03-08",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": []
+      "identifier": "54a56297-f7a0-3087-8786-8244e48ede8e"
     },
     {
       "type": "ExtendedDeterminateSentence",
@@ -29,12 +24,6 @@
         "committedAt": "2024-01-25",
         "offenceCode": "PK78008"
       },
-      "identifier": "1515ab24-c165-36d4-9870-59326b733764",
-      "sentencedAt": "2024-03-08",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "caseReference": "B1234567",
-      "automaticRelease": false,
       "custodialDuration": {
         "durationElements": {
           "MONTHS": 22
@@ -45,6 +34,7 @@
           "MONTHS": 48
         }
       },
+      "sentencedAt": "2024-03-08",
       "consecutiveSentenceUUIDs": [
         "54a56297-f7a0-3087-8786-8244e48ede8e"
       ]
@@ -53,10 +43,10 @@
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2024-03-07",
-        "fromDate": "2024-01-26",
+        "appliesToSentencesFrom": "2024-03-08",
         "numberOfDays": 42,
-        "appliesToSentencesFrom": "2024-03-08"
+        "fromDate": "2024-01-26",
+        "toDate": "2024-03-07"
       }
     ]
   },

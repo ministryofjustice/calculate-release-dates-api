@@ -1,44 +1,30 @@
 {
   "offender": {
-    "reference": "A1234AA",
-    "dateOfBirth": "1986-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1,
   "sentences": [
     {
-      "type": "StandardSentence",
-      "sentenceCalculationType": "ADMIP_ORA",
       "offence": {
         "committedAt": "2020-12-01",
         "offenceCode": "SX03220"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 13
         }
       },
-      "isSDSPlus": false,
-      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
-      "recallType": null,
       "sentencedAt": "2024-03-03",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A12345678",
-      "consecutiveSentenceUUIDs": [],
       "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
+        "appliesToSentencesFrom": "2024-03-03",
         "numberOfDays": 10,
-        "toDate" : "2024-03-02",
         "fromDate": "2024-02-22",
-        "appliesToSentencesFrom": "2024-03-03"
+        "toDate": "2024-03-02"
       }
     ]
   }

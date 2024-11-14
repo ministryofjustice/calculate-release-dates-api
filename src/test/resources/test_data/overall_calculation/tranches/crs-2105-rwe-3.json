@@ -1,106 +1,65 @@
 {
   "offender": {
-    "reference": "A1234567",
-    "dateOfBirth": "1971-01-01",
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01",
     "isActiveSexOffender": true
   },
-  "bookingId": 12345678,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "1994-06-12",
         "offenceCode": "SX56025-029N"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 8
         }
       },
-      "isSDSPlus": false,
-      "identifier": "f3837ea1-7b3b-3d7a-8392-a5dc18354abf",
-      "recallType": null,
       "sentencedAt": "2024-06-28",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A1234567489",
-      "consecutiveSentenceUUIDs": [],
+      "identifier": "f3837ea1-7b3b-3d7a-8392-a5dc18354abf",
       "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "1992-12-31",
         "offenceCode": "SX56087-088N"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 4
         }
       },
-      "isSDSPlus": false,
-      "identifier": "e333d34f-5565-301a-83dd-80e599ae1cc8",
-      "recallType": null,
       "sentencedAt": "2024-06-28",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "caseReference": "A1234567489",
-      "consecutiveSentenceUUIDs": [],
       "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "1992-12-31",
         "offenceCode": "SX56025-029N"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 4
         }
       },
-      "isSDSPlus": false,
-      "identifier": "6a35e7fd-13d3-324f-ab3b-37fa226d091b",
-      "recallType": null,
       "sentencedAt": "2024-06-28",
-      "caseSequence": 1,
-      "lineSequence": 3,
-      "caseReference": "A1234567489",
+      "identifier": "6a35e7fd-13d3-324f-ab3b-37fa226d091b",
       "consecutiveSentenceUUIDs": [
         "f3837ea1-7b3b-3d7a-8392-a5dc18354abf"
       ],
       "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "1992-12-31",
         "offenceCode": "SX56025-029N"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 4
         }
       },
-      "isSDSPlus": false,
-      "identifier": "4fa61f24-9c6e-3deb-8748-73dedd6f9f5f",
-      "recallType": null,
       "sentencedAt": "2024-06-28",
-      "caseSequence": 1,
-      "lineSequence": 4,
-      "caseReference": "A1234567489",
       "consecutiveSentenceUUIDs": [
         "6a35e7fd-13d3-324f-ab3b-37fa226d091b"
       ],
@@ -110,14 +69,11 @@
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2024-06-27",
-        "fromDate": "2024-05-17",
+        "appliesToSentencesFrom": "2024-06-28",
         "numberOfDays": 42,
-        "appliesToSentencesFrom": "2024-06-28"
+        "fromDate": "2024-05-17",
+        "toDate": "2024-06-27"
       }
     ]
-  },
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  }
 }

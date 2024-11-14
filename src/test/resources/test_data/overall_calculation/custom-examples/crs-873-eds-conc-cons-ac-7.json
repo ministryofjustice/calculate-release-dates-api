@@ -1,14 +1,14 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2015-04-11"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 9
@@ -23,10 +23,10 @@
       "sentencedAt": "2015-04-12"
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2014-05-02"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 3
@@ -42,10 +42,10 @@
       "identifier": "e40f48b6-92df-49d0-af99-507194c380fa"
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2014-05-02"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 3
@@ -64,10 +64,10 @@
       ]
     },
     {
+      "type": "ExtendedDeterminateSentence",
       "offence": {
         "committedAt": "2014-05-02"
       },
-      "type": "ExtendedDeterminateSentence",
       "custodialDuration": {
         "durationElements": {
           "YEARS": 3
@@ -88,8 +88,8 @@
   "adjustments": {
     "UNLAWFULLY_AT_LARGE": [
       {
-        "numberOfDays": 30,
         "appliesToSentencesFrom": "2014-05-04",
+        "numberOfDays": 30,
         "fromDate": "2014-05-04",
         "toDate": "2014-06-02"
       }

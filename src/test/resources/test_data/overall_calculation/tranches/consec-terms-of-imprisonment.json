@@ -1,16 +1,12 @@
 {
   "offender": {
-    "reference": "CD98078",
-    "dateOfBirth": "1994-11-24",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
-      "type": "StandardSentence",
       "offence": {
-        "committedAt": "2024-03-22",
-        "description": "Some naughty things"
+        "committedAt": "2024-03-22"
       },
       "duration": {
         "durationElements": {
@@ -18,28 +14,26 @@
         }
       },
       "sentencedAt": "2023-09-05",
-      "hasAnSDSEarlyReleaseExclusion": "NO",
-      "sentenceSequence": 1,
-      "lineSequence": 1,
-      "caseSequence": 1
+      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5"
     },
     {
-      "type":"AFineSentence",
-      "offence":{
-        "committedAt":"2022-01-18"
+      "type": "AFineSentence",
+      "offence": {
+        "committedAt": "2022-01-18"
       },
-      "duration":{
-        "durationElements":{
+      "duration": {
+        "durationElements": {
           "DAYS": 15
         }
       },
       "sentencedAt": "2023-09-05",
-      "fineAmount": 4000,
+      "consecutiveSentenceUUIDs": [
+        "cb304745-d781-47d3-b931-4baa31551fc5"
+      ],
       "caseSequence": 2,
-      "lineSequence" : 2,
-      "consecutiveSentenceUUIDs": ["cb304745-d781-47d3-b931-4baa31551fc5"]
+      "lineSequence": 2,
+      "fineAmount": 4E+3
     }
   ],
-  "adjustments": {},
   "calculateErsed": true
 }

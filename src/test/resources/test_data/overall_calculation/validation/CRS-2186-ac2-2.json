@@ -1,60 +1,36 @@
 {
   "offender": {
-    "reference": "A1234AA",
-    "dateOfBirth": "1986-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1,
   "sentences": [
     {
-      "type": "StandardSentence",
-      "sentenceCalculationType": "YOI",
       "offence": {
         "committedAt": "2021-07-09",
         "offenceCode": "SE20005"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 1,
-          "MONTHS": 0
+          "YEARS": 1
         }
       },
-      "isSDSPlus": false,
-      "identifier": "5c64a902-3831-396c-80ae-7b7c1f2dd244",
-      "recallType": null,
       "sentencedAt": "2024-09-11",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A12345678",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "identifier": "5c64a902-3831-396c-80ae-7b7c1f2dd244"
     },
     {
-      "type": "StandardSentence",
-      "sentenceCalculationType": "YOI",
       "offence": {
         "committedAt": "2019-11-03",
         "offenceCode": "SE20006"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 18
         }
       },
-      "isSDSPlus": false,
-      "identifier": "5c64a902-3831-396c-80ae-7b7c1f2dd245",
-      "recallType": null,
       "sentencedAt": "2024-09-11",
-      "caseSequence": 2,
-      "lineSequence": 1,
-      "caseReference": "A12345678",
-      "consecutiveSentenceUUIDs": ["5c64a902-3831-396c-80ae-7b7c1f2dd244"],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "consecutiveSentenceUUIDs": [
+        "5c64a902-3831-396c-80ae-7b7c1f2dd244"
+      ]
     }
   ]
 }

@@ -1,155 +1,96 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1977-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1234567,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2017-06-20",
         "offenceCode": "TH68036"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 3,
-          "MONTHS": 0
+          "YEARS": 3
         }
       },
-      "isSDSPlus": false,
-      "identifier": "cce245c0-a952-390c-9f37-e0f887eca15e",
-      "recallType": "STANDARD_RECALL",
       "sentencedAt": "2017-10-27",
-      "caseSequence": 1,
-      "lineSequence": 4,
-      "caseReference": "STD LR",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "identifier": "cce245c0-a952-390c-9f37-e0f887eca15e",
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2017-07-25",
         "offenceCode": "TH68036"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
           "YEARS": 3,
           "MONTHS": 6
         }
       },
-      "isSDSPlus": false,
-      "identifier": "4cf64448-e0bd-3d64-8863-305b91c56f9a",
-      "recallType": "STANDARD_RECALL",
       "sentencedAt": "2017-10-27",
-      "caseSequence": 1,
-      "lineSequence": 5,
-      "caseReference": "STD LR",
+      "identifier": "4cf64448-e0bd-3d64-8863-305b91c56f9a",
       "consecutiveSentenceUUIDs": [
         "cce245c0-a952-390c-9f37-e0f887eca15e"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2017-06-14",
         "offenceCode": "PR52028"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 6
         }
       },
-      "isSDSPlus": false,
-      "identifier": "42b7af89-42f3-3602-b017-56c3ebc0f799",
-      "recallType": "STANDARD_RECALL",
       "sentencedAt": "2018-01-22",
-      "caseSequence": 3,
-      "lineSequence": 6,
-      "caseReference": "STD LR",
       "consecutiveSentenceUUIDs": [
         "4cf64448-e0bd-3d64-8863-305b91c56f9a"
       ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "recallType": "STANDARD_RECALL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-03-13",
         "offenceCode": "TH68036"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 4,
-          "MONTHS": 0
+          "YEARS": 4
         }
       },
-      "isSDSPlus": false,
-      "identifier": "0b9957e6-d170-3968-87c8-501d95e3c40f",
-      "recallType": null,
       "sentencedAt": "2022-10-12",
-      "caseSequence": 4,
-      "lineSequence": 7,
-      "caseReference": "A12345678",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "identifier": "0b9957e6-d170-3968-87c8-501d95e3c40f"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2021-03-27",
         "offenceCode": "CJ88117"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 5
         }
       },
-      "isSDSPlus": false,
-      "identifier": "8dbf1a16-6135-3cef-846d-ccd9b742ef88",
-      "recallType": null,
       "sentencedAt": "2022-10-12",
-      "caseSequence": 4,
-      "lineSequence": 8,
-      "caseReference": "A12345678",
       "consecutiveSentenceUUIDs": [
         "0b9957e6-d170-3968-87c8-501d95e3c40f"
-      ],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      ]
     }
   ],
   "adjustments": {
     "RECALL_REMAND": [
       {
-        "toDate": null,
-        "fromDate": null,
-        "numberOfDays": 72,
-        "appliesToSentencesFrom": "2017-10-27"
+        "appliesToSentencesFrom": "2017-10-27",
+        "numberOfDays": 72
       },
       {
-        "toDate": null,
-        "fromDate": null,
-        "numberOfDays": 119,
-        "appliesToSentencesFrom": "2017-10-27"
+        "appliesToSentencesFrom": "2017-10-27",
+        "numberOfDays": 119
       }
     ]
-  },
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  }
 }

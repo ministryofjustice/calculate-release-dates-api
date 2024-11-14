@@ -30,7 +30,9 @@
         }
       },
       "sentencedAt": "2015-02-22",
-      "consecutiveSentenceUUIDs": ["5dfde034-b7d7-4c54-a86c-67d42a1fd669"]
+      "consecutiveSentenceUUIDs": [
+        "5dfde034-b7d7-4c54-a86c-67d42a1fd669"
+      ]
     }
   ]
 }

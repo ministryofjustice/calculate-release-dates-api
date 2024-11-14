@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2000-07-23"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -14,7 +14,6 @@
         }
       },
       "sentencedAt": "2021-09-30",
-      "sentenceType": "LR",
       "recallType": "STANDARD_RECALL"
     },
     {
@@ -27,7 +26,6 @@
         }
       },
       "sentencedAt": "2021-09-30",
-      "sentenceType": "LR",
       "recallType": "STANDARD_RECALL"
     },
     {
@@ -39,11 +37,9 @@
           "WEEKS": 26
         }
       },
-      "sentencedAt": "2023-03-16",
-      "sentenceType": "ADIMP_ORA"
+      "sentencedAt": "2023-03-16"
     }
   ],
-
   "adjustments": {
     "RECALL_REMAND": [
       {
@@ -56,15 +52,11 @@
     "UNLAWFULLY_AT_LARGE": [
       {
         "appliesToSentencesFrom": "2022-08-03",
-        "numberOfDays": 15,
-        "fromDate": null,
-        "toDate": null
+        "numberOfDays": 15
       },
       {
         "appliesToSentencesFrom": "2023-09-30",
-        "numberOfDays": 2,
-        "fromDate": null,
-        "toDate": null
+        "numberOfDays": 2
       }
     ]
   }

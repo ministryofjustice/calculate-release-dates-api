@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "2004-11-05"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -13,10 +13,9 @@
           "WEEKS": 4
         }
       },
-      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7",
       "sentencedAt": "2023-01-06",
-      "sentenceType": "LR_ORA",
-      "recallType":"STANDARD_RECALL"
+      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a7",
+      "recallType": "STANDARD_RECALL"
     },
     {
       "offence": {
@@ -27,13 +26,12 @@
           "WEEKS": 4
         }
       },
-      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a8",
       "sentencedAt": "2023-01-06",
-      "sentenceType": "LR_ORA",
-      "recallType":"STANDARD_RECALL",
+      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a8",
       "consecutiveSentenceUUIDs": [
         "ee91a161-dde2-3a7b-8611-624d255542a7"
-      ]
+      ],
+      "recallType": "STANDARD_RECALL"
     },
     {
       "offence": {
@@ -44,13 +42,11 @@
           "WEEKS": 4
         }
       },
-      "identifier": "ee91a161-dde2-3a7b-8611-624d255542a9",
       "sentencedAt": "2023-01-06",
-      "sentenceType": "LR_ORA",
-      "recallType":"STANDARD_RECALL",
       "consecutiveSentenceUUIDs": [
         "ee91a161-dde2-3a7b-8611-624d255542a8"
-      ]
+      ],
+      "recallType": "STANDARD_RECALL"
     }
   ],
   "adjustments": {

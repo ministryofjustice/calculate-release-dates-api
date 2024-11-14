@@ -60,13 +60,11 @@
         }
       },
       "sentencedAt": "2013-09-09",
-      "identifier": "cb6d5b67-8b74-3688-848e-d26c8418adcb",
       "consecutiveSentenceUUIDs": [
         "7d5e417b-ae8c-3765-923d-658b1d220eca"
       ]
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2012-10-13"
       },
@@ -76,11 +74,9 @@
         }
       },
       "sentencedAt": "2013-09-09",
-      "identifier": "c0ad0e88-c314-3755-b44e-c14af0f8a193",
       "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2012-10-13"
       },
@@ -89,9 +85,7 @@
           "MONTHS": 12
         }
       },
-      "sentencedAt": "2013-09-09",
-      "identifier": "7f10eb78-063d-3702-b68e-828af887fb75",
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "sentencedAt": "2013-09-09"
     }
   ],
   "adjustments": {

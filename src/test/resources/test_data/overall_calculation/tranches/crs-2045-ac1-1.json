@@ -1,15 +1,12 @@
 {
   "offender": {
-    "reference": "CD98078",
-    "dateOfBirth": "1994-11-24",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "ADIMP",
       "offence": {
-        "committedAt": "2024-03-22",
-        "description": "Racially / religiously aggravated stalking involving fear of violence"
+        "committedAt": "2024-03-22"
       },
       "duration": {
         "durationElements": {
@@ -17,12 +14,8 @@
         }
       },
       "sentencedAt": "2024-03-22",
-      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE",
-      "sentenceSequence": 1,
-      "lineSequence": 1,
-      "caseSequence": 1
+      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
     }
   ],
-  "adjustments": {},
   "calculateErsed": true
 }

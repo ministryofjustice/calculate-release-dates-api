@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
@@ -41,20 +41,20 @@
   "adjustments": {
     "REMAND": [
       {
-        "numberOfDays": 20,
         "appliesToSentencesFrom": "2021-04-03",
+        "numberOfDays": 20,
         "fromDate": "2021-02-03",
         "toDate": "2021-02-22"
       },
       {
-        "numberOfDays": 17,
         "appliesToSentencesFrom": "2021-04-03",
+        "numberOfDays": 17,
         "fromDate": "2021-02-23",
         "toDate": "2021-03-12"
       },
       {
-        "numberOfDays": 21,
         "appliesToSentencesFrom": "2021-04-03",
+        "numberOfDays": 21,
         "fromDate": "2021-03-13",
         "toDate": "2021-04-02"
       }

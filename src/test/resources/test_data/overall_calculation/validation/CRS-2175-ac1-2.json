@@ -1,69 +1,44 @@
 {
   "offender": {
-    "reference": "A1234AA",
-    "dateOfBirth": "1986-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 1,
   "sentences": [
     {
-      "type": "StandardSentence",
-      "sentenceCalculationType": "ADIMP",
       "offence": {
         "committedAt": "2021-05-10",
         "offenceCode": "SX03247A"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 2,
-          "MONTHS": 0
+          "YEARS": 2
         }
       },
-      "isSDSPlus": false,
-      "identifier": "5c64a902-3831-396c-80ae-7b7c1f2dd244",
-      "recallType": null,
       "sentencedAt": "2024-06-06",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A12345678",
-      "consecutiveSentenceUUIDs": [],
+      "identifier": "5c64a902-3831-396c-80ae-7b7c1f2dd244",
       "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
     },
     {
-      "type": "StandardSentence",
-      "sentenceCalculationType": "ADIMP_ORA",
       "offence": {
         "committedAt": "2024-03-03",
         "offenceCode": "TH68013I"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 10
         }
       },
-      "isSDSPlus": false,
-      "identifier": "5c64a902-3831-396c-80ae-7b7c1f2dd244",
-      "recallType": null,
       "sentencedAt": "2024-06-06",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A12345678",
-      "consecutiveSentenceUUIDs": [],
-      "hasAnSDSEarlyReleaseExclusion": "NO"
+      "identifier": "5c64a902-3831-396c-80ae-7b7c1f2dd244"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2024-06-05",
-        "fromDate": "2024-05-12",
+        "appliesToSentencesFrom": "2024-06-06",
         "numberOfDays": 25,
-        "appliesToSentencesFrom": "2024-06-06"
+        "fromDate": "2024-05-12",
+        "toDate": "2024-06-05"
       }
     ]
   }

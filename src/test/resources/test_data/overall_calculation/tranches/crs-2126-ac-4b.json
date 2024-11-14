@@ -1,15 +1,15 @@
 {
   "offender": {
-    "reference": "A2630EZ",
+    "reference": "ABC123",
     "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "offence": {
-        "offenceCode": "SX03002",
-        "committedAt": "2019-09-10"
-      },
       "type": "ExtendedDeterminateSentence",
+      "offence": {
+        "committedAt": "2019-09-10",
+        "offenceCode": "SX03002"
+      },
       "custodialDuration": {
         "durationElements": {
           "YEARS": 6
@@ -20,7 +20,6 @@
           "YEARS": 2
         }
       },
-      "automaticRelease": false,
       "sentencedAt": "2020-09-28"
     },
     {
@@ -33,8 +32,7 @@
           "MONTHS": 2
         }
       },
-      "sentencedAt": "2024-09-12",
-      "sentenceType": "ADIMP_ORA"
+      "sentencedAt": "2024-09-12"
     }
   ]
 }

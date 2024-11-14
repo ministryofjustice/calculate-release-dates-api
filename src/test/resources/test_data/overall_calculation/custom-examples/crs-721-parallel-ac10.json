@@ -1,9 +1,8 @@
 {
   "offender": {
-    "reference": "ABC123D",
-    "dateOfBirth": "1970-03-03"
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "returnToCustodyDate": "2021-05-20",
   "sentences": [
     {
       "offence": {
@@ -14,9 +13,9 @@
           "MONTHS": 9
         }
       },
-      "recallType": "FIXED_TERM_RECALL_14",
       "sentencedAt": "2020-11-16",
-      "identifier": "665db14d-162d-47ed-8a49-5e8994aa8895"
+      "identifier": "665db14d-162d-47ed-8a49-5e8994aa8895",
+      "recallType": "FIXED_TERM_RECALL_14"
     },
     {
       "offence": {
@@ -27,8 +26,8 @@
           "MONTHS": 7
         }
       },
-      "recallType": "FIXED_TERM_RECALL_14",
-      "sentencedAt": "2020-11-16"
+      "sentencedAt": "2020-11-16",
+      "recallType": "FIXED_TERM_RECALL_14"
     },
     {
       "offence": {
@@ -40,9 +39,11 @@
           "WEEKS": 2
         }
       },
-      "recallType": "FIXED_TERM_RECALL_14",
       "sentencedAt": "2020-11-16",
-      "consecutiveSentenceUUIDs": ["665db14d-162d-47ed-8a49-5e8994aa8895"]
+      "consecutiveSentenceUUIDs": [
+        "665db14d-162d-47ed-8a49-5e8994aa8895"
+      ],
+      "recallType": "FIXED_TERM_RECALL_14"
     },
     {
       "offence": {
@@ -79,7 +80,10 @@
         }
       },
       "sentencedAt": "2021-05-12",
-      "consecutiveSentenceUUIDs": ["9af881dd-c083-44fc-ac44-bc224b14beeb"]
+      "consecutiveSentenceUUIDs": [
+        "9af881dd-c083-44fc-ac44-bc224b14beeb"
+      ]
     }
-  ]
+  ],
+  "returnToCustodyDate": "2021-05-20"
 }

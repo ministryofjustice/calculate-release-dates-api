@@ -1,47 +1,31 @@
 {
   "offender": {
-    "reference": "A123456",
-    "dateOfBirth": "1951-01-01",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
-  "bookingId": 2935033,
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-06-16",
         "offenceCode": "SE20002"
       },
       "duration": {
         "durationElements": {
-          "DAYS": 0,
-          "WEEKS": 0,
-          "YEARS": 0,
           "MONTHS": 12
         }
       },
-      "isSDSPlus": false,
-      "identifier": "cd4cee2e-c6d7-3282-9930-e12a23ef0233",
-      "recallType": null,
       "sentencedAt": "2024-08-15",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A1234567489",
-      "consecutiveSentenceUUIDs": [],
       "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2024-08-14",
-        "fromDate": "2024-06-17",
+        "appliesToSentencesFrom": "2024-08-15",
         "numberOfDays": 59,
-        "appliesToSentencesFrom": "2024-08-15"
+        "fromDate": "2024-06-17",
+        "toDate": "2024-08-14"
       }
     ]
-  },
-  "historicalTusedData": null,
-  "returnToCustodyDate": null,
-  "fixedTermRecallDetails": null
+  }
 }

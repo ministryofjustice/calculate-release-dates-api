@@ -1,12 +1,10 @@
 {
   "offender": {
-    "reference": "A1234AB",
-    "dateOfBirth": "1978-08-31",
-    "isActiveSexOffender": false
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
   },
   "sentences": [
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-12-18",
         "offenceCode": "MD71531"
@@ -16,15 +14,9 @@
           "YEARS": 10
         }
       },
-      "identifier": "15917e6d-e0ef-3d0c-9c36-f0bce996d0b5",
-      "sentencedAt": "2022-11-16",
-      "caseSequence": 1,
-      "lineSequence": 1,
-      "caseReference": "A1234567",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2022-11-16"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-12-18",
         "offenceCode": "MD71230"
@@ -34,15 +26,9 @@
           "YEARS": 7
         }
       },
-      "identifier": "8c08cd1c-8581-3446-8bac-76319ee9c490",
-      "sentencedAt": "2022-11-16",
-      "caseSequence": 1,
-      "lineSequence": 2,
-      "caseReference": "A1234123",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2022-11-16"
     },
     {
-      "type": "StandardSentence",
       "offence": {
         "committedAt": "2020-12-18",
         "offenceCode": "MD71533"
@@ -52,21 +38,16 @@
           "YEARS": 5
         }
       },
-      "identifier": "1f2a4313-0140-39cc-9e34-ca3d477619c7",
-      "sentencedAt": "2022-11-16",
-      "caseSequence": 1,
-      "lineSequence": 3,
-      "caseReference": "A765234",
-      "consecutiveSentenceUUIDs": []
+      "sentencedAt": "2022-11-16"
     }
   ],
   "adjustments": {
     "REMAND": [
       {
-        "toDate": "2022-11-15",
-        "fromDate": "2020-12-21",
+        "appliesToSentencesFrom": "2022-11-16",
         "numberOfDays": 695,
-        "appliesToSentencesFrom": "2022-11-16"
+        "fromDate": "2020-12-21",
+        "toDate": "2022-11-15"
       }
     ]
   },
