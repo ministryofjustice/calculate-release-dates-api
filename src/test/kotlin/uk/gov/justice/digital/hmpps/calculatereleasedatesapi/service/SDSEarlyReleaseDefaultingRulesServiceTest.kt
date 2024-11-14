@@ -7,13 +7,12 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.mock
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
@@ -24,8 +23,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
@@ -43,19 +44,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
   @Mock
   private val trancheConfiguration = SDS40TrancheConfiguration(testCommencementDate, testTrancheTwoCommencementDate)
 
-  private val service = SDSEarlyReleaseDefaultingRulesService(SentencesExtractionService(), trancheConfiguration)
-
-  @Test
-  fun `should not require recalculation if no SDS early release`() {
-    val booking = createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_STANDARD_RELEASE)
-    assertThat(service.hasAnySDSEarlyRelease(booking)).isFalse()
-  }
-
-  @Test
-  fun `should require recalculation if any single type requires recalc`() {
-    val booking = createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE)
-    assertThat(service.hasAnySDSEarlyRelease(booking)).isTrue()
-  }
+  private val service = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)
 
   @ParameterizedTest
   @CsvSource(
@@ -93,7 +82,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         standard,
         testCommencementDate,
         SDSEarlyReleaseTranche.TRANCHE_0,
-        createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE),
+        createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE).sentences,
       ),
     ).isEqualTo(
       CalculationResult(
@@ -116,7 +105,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     val testBreakdown = ReleaseDateCalculationBreakdown()
 
     val standard = CalculationResult(
-      mapOf(ReleaseDateType.TUSED to LocalDate.of(2024, 8, 1)),
+      mapOf(ReleaseDateType.TUSED to LocalDate.of(2024, 8, 1), ReleaseDateType.CRD to testCommencementDate.minusDays(1)),
       mapOf(
         ReleaseDateType.TUSED to testBreakdown,
       ),
@@ -139,29 +128,18 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       recallType = RecallType.STANDARD_RECALL,
     )
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
-
-    val date = LocalDate.of(2024, 1, 1)
+    sentence.identificationTrack = SentenceIdentificationTrack.RECALL
+    val earlyTused = LocalDate.of(2024, 12, 2)
     val sentenceCalculation = SentenceCalculation(
-      sentence,
-      3,
-      4.0,
-      4,
-      4,
-      date,
-      date,
-      unadjustedDeterminateReleaseDate = testCommencementDate.minusDays(1),
-      1,
-      date,
-      false,
-      Adjustments(
-        mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(numberOfDays = 1, appliesToSentencesFrom = date))),
+      UnadjustedReleaseDate(
+        sentence,
+        { 0.5 },
       ),
-      date,
-      date,
+      SentenceAdjustments(),
+      false,
     )
 
     sentence.sentenceCalculation = sentenceCalculation
-    sentence.identificationTrack = SentenceIdentificationTrack.RECALL
     val recallBooking = Booking(
       testOffender,
       listOf(
@@ -173,11 +151,9 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       123,
     )
 
-    recallBooking.consecutiveSentences = emptyList()
-
-    val resultDates = mutableMapOf<ReleaseDateType, LocalDate>(ReleaseDateType.TUSED to LocalDate.now())
+    val resultDates = mutableMapOf<ReleaseDateType, LocalDate>(ReleaseDateType.TUSED to earlyTused)
     val resultBreakdown = mutableMapOf<ReleaseDateType, ReleaseDateCalculationBreakdown>()
-    service.adjustTusedForPreTrancheOneRecalls(resultDates, recallBooking, standard, resultBreakdown)
+    service.adjustTusedForPreTrancheOneRecalls(resultDates, standard, resultBreakdown, listOf(sentence))
 
     assertThat(resultDates[ReleaseDateType.TUSED]).isEqualTo(LocalDate.of(2024, 8, 1))
     assertThat(resultBreakdown[ReleaseDateType.TUSED]).isEqualTo(testBreakdown)
@@ -188,7 +164,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     val testBreakdown = ReleaseDateCalculationBreakdown()
 
     val standard = CalculationResult(
-      mapOf(ReleaseDateType.TUSED to LocalDate.of(2024, 11, 1)),
+      mapOf(ReleaseDateType.TUSED to LocalDate.of(2024, 11, 1), ReleaseDateType.CRD to testCommencementDate.plusDays(1)),
       mapOf(
         ReleaseDateType.TUSED to testBreakdown,
       ),
@@ -211,29 +187,18 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       recallType = RecallType.STANDARD_RECALL,
     )
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
-
-    val date = LocalDate.of(2024, 1, 1)
+    sentence.identificationTrack = SentenceIdentificationTrack.RECALL
+    val earlyTused = LocalDate.of(2024, 1, 1)
     val sentenceCalculation = SentenceCalculation(
-      sentence,
-      3,
-      4.0,
-      4,
-      4,
-      date,
-      date,
-      unadjustedDeterminateReleaseDate = testCommencementDate.plusDays(1),
-      1,
-      date,
-      false,
-      Adjustments(
-        mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(numberOfDays = 1, appliesToSentencesFrom = date))),
+      UnadjustedReleaseDate(
+        sentence,
+        { 0.5 },
       ),
-      date,
-      date,
+      SentenceAdjustments(),
+      false,
     )
 
     sentence.sentenceCalculation = sentenceCalculation
-    sentence.identificationTrack = SentenceIdentificationTrack.RECALL
     val recallBooking = Booking(
       testOffender,
       listOf(
@@ -245,13 +210,11 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       123,
     )
 
-    recallBooking.consecutiveSentences = emptyList()
-
-    val resultDates = mutableMapOf<ReleaseDateType, LocalDate>(ReleaseDateType.TUSED to date)
+    val resultDates = mutableMapOf<ReleaseDateType, LocalDate>(ReleaseDateType.TUSED to earlyTused)
     val resultBreakdown = mutableMapOf<ReleaseDateType, ReleaseDateCalculationBreakdown>()
-    service.adjustTusedForPreTrancheOneRecalls(resultDates, recallBooking, standard, resultBreakdown)
+    service.adjustTusedForPreTrancheOneRecalls(resultDates, standard, resultBreakdown, listOf(sentence))
 
-    assertThat(resultDates[ReleaseDateType.TUSED]).isEqualTo(date)
+    assertThat(resultDates[ReleaseDateType.TUSED]).isEqualTo(earlyTused)
     assertThat(resultBreakdown).doesNotContainKeys(ReleaseDateType.TUSED)
   }
 
@@ -287,7 +250,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         standard,
         testCommencementDate,
         SDSEarlyReleaseTranche.TRANCHE_1,
-        createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE),
+        createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE).sentences,
       ),
     ).isEqualTo(
       CalculationResult(
@@ -345,7 +308,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
         standard,
         testCommencementDate,
         SDSEarlyReleaseTranche.TRANCHE_1,
-        createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE),
+        createBookingWithSDSSentenceOfType(SentenceIdentificationTrack.SDS_EARLY_RELEASE).sentences,
       ),
     ).isEqualTo(
       CalculationResult(
@@ -383,24 +346,15 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     sentence.identificationTrack = identificationTrack
+    sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.CRD, ReleaseDateType.SLED), sentence, offender = mock<Offender>())
     val date = LocalDate.of(2024, 1, 1)
     val sentenceCalculation = SentenceCalculation(
-      sentence,
-      3,
-      4.0,
-      4,
-      4,
-      date,
-      date,
-      unadjustedDeterminateReleaseDate = testCommencementDate.plusDays(1),
-      1,
-      date,
-      false,
-      Adjustments(
-        mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(numberOfDays = 1, appliesToSentencesFrom = date))),
+      UnadjustedReleaseDate(
+        sentence,
+        { 0.5 },
       ),
-      date,
-      date,
+      SentenceAdjustments(remand = 1),
+      false,
     )
     sentence.sentenceCalculation = sentenceCalculation
 
@@ -414,7 +368,6 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       null,
       123,
     )
-    booking.consecutiveSentences = emptyList()
     return booking
   }
 }

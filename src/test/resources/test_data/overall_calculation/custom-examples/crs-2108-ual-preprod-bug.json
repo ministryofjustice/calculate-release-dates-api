@@ -1,7 +1,8 @@
 {
   "offender": {
     "reference": "ABC123",
-    "dateOfBirth": "1990-01-01"
+    "dateOfBirth": "1990-01-01",
+    "underEighteenAt": {}
   },
   "sentences": [
     {
@@ -20,7 +21,7 @@
       "caseSequence": 2,
       "lineSequence": 6,
       "caseReference": "072400004310",
-      "fineAmount": 154.0
+      "fineAmount": 154
     },
     {
       "type": "StandardSentence",
@@ -33,6 +34,7 @@
         }
       },
       "sentencedAt": "2024-04-18",
+      "recallType": "STANDARD_RECALL",
       "identifier": "4cd8cb18-10c7-316e-8911-a08c534a0216",
       "hasAnSDSEarlyReleaseExclusion": "NO"
     },
@@ -183,5 +185,6 @@
         "toDate": "2024-06-16"
       }
     ]
-  }
+  },
+  "calculateErsed": false
 }

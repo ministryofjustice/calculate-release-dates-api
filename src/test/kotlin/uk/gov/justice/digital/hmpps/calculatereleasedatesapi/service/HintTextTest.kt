@@ -41,6 +41,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.BookingTimelineService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineAwardedAdjustmentCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineSentenceCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrancheCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineUalAdjustmentCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.Clock
 import java.time.LocalDate
@@ -74,12 +80,11 @@ class HintTextTest {
     log.info("Running test-case $testCase")
 
     val (booking, calculationUserInputs) = jsonTransformation.loadHintTextBooking(testCase)
-    val calculation = calculationService.calculateReleaseDates(booking, calculationUserInputs).second
-    val calculatedReleaseDates = createCalculatedReleaseDates(calculation)
-
+    val calculation = calculationService.calculateReleaseDates(booking, calculationUserInputs)
+    val calculatedReleaseDates = createCalculatedReleaseDates(calculation.calculationResult)
     val calculationBreakdown = performCalculationBreakdown(booking, calculatedReleaseDates, calculationUserInputs)
 
-    val breakdownWithHints = enrichBreakdownWithHints(calculation.dates, calculationBreakdown)
+    val breakdownWithHints = enrichBreakdownWithHints(calculation.calculationResult.dates, calculationBreakdown)
 
     val actualDatesAndHints = mapToDatesAndHints(breakdownWithHints)
     val expectedDatesAndHints = jsonTransformation.loadHintTextResults(testCase)
@@ -140,32 +145,57 @@ class HintTextTest {
   private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
   private val ersedCalculator = ErsedCalculator(ersedConfiguration)
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
-  private val sentenceCalculationService = SentenceCalculationService(sentenceAdjustedCalculationService, releasePointMultiplierLookup, sentenceAggregator)
   private val sentencesExtractionService = SentencesExtractionService()
   private val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
   private val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(), sdsEarlyReleaseTrancheTwoDate())
   private val tranche = Tranche(trancheConfiguration)
   private val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
-  private val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(sentencesExtractionService, trancheConfiguration)
-  private val bookingCalculationService = BookingCalculationService(sentenceCalculationService, sentenceIdentificationService)
+  private val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)
+  private val bookingCalculationService = BookingCalculationService(sentenceIdentificationService)
   private val hdcedExtractionService = HdcedExtractionService(sentencesExtractionService)
   private val bookingExtractionService = BookingExtractionService(hdcedExtractionService, sentencesExtractionService)
-  private val bookingTimelineService = BookingTimelineService(
+
+  private val timelineCalculator = TimelineCalculator(
     sentenceAdjustedCalculationService,
+    bookingExtractionService,
+  )
+  private val timelineAwardedAdjustmentCalculationHandler = TimelineAwardedAdjustmentCalculationHandler(
+    trancheConfiguration,
+    releasePointMultiplierLookup,
+    timelineCalculator,
+  )
+  private val timelineSentenceCalculationHandler = TimelineSentenceCalculationHandler(
+    trancheConfiguration,
+    releasePointMultiplierLookup,
+    timelineCalculator,
+  )
+  private val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
+    trancheConfiguration,
+    releasePointMultiplierLookup,
+    timelineCalculator,
+    trancheAllocationService,
     sentencesExtractionService,
+  )
+  private val timelineUalAdjustmentCalculationHandler = TimelineUalAdjustmentCalculationHandler(
+    trancheConfiguration,
+    releasePointMultiplierLookup,
+    timelineCalculator,
+  )
+  private val bookingTimelineService = BookingTimelineService(
     workingDayService,
-    sdsEarlyReleaseTrancheOneDate(),
+    trancheConfiguration,
+    sdsEarlyReleaseDefaultingRulesService,
+    timelineCalculator,
+    timelineAwardedAdjustmentCalculationHandler,
+    timelineTrancheCalculationHandler,
+    timelineSentenceCalculationHandler,
+    timelineUalAdjustmentCalculationHandler,
+
   )
   private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
   private val calculationService = CalculationService(
     bookingCalculationService,
-    bookingExtractionService,
     bookingTimelineService,
-    sdsEarlyReleaseDefaultingRulesService,
-    trancheAllocationService,
-    sentencesExtractionService,
-    trancheConfiguration,
-    TestUtil.objectMapper(),
   )
 
   private val calculationTransactionalService = CalculationTransactionalService(

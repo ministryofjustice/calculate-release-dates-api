@@ -1,18 +1,14 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util
 
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -41,9 +37,9 @@ class BookingHelperTest {
     }
   }
 
-  fun createConsecutiveSentences(booking: Booking): Booking {
-    val (baseSentences, consecutiveSentences) = booking.sentences.partition { it.consecutiveSentenceUUIDs.isEmpty() }
-    val sentencesByPrevious = consecutiveSentences.groupBy {
+  fun createConsecutiveSentences(booking: Booking): List<ConsecutiveSentence> {
+    val (baseSentences, consecutiveSentenceParts) = booking.sentences.partition { it.consecutiveSentenceUUIDs.isEmpty() }
+    val sentencesByPrevious = consecutiveSentenceParts.groupBy {
       it.consecutiveSentenceUUIDs.first()
     }
 
@@ -56,17 +52,19 @@ class BookingHelperTest {
       createSentenceChain(it, chain, sentencesByPrevious, chains)
     }
 
-    booking.consecutiveSentences = chains.filter { it.size > 1 }
+    val consecutiveSentences = chains.filter { it.size > 1 }
       .map {
         val cs = ConsecutiveSentence(it)
-        cs.sentenceCalculation = BookingHelperTest.SENTENCE_CALCULATION
+        cs.sentenceCalculation = mock()
         cs.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), it[0], booking.offender)
         cs
       }
-    booking.consecutiveSentences.forEach { it.sentenceCalculation }
+    consecutiveSentences.forEach {
+      whenever(it.sentenceCalculation.adjustedDeterminateReleaseDate).thenReturn(LocalDate.of(2024, 1, 1))
+      whenever(it.sentenceCalculation.releaseDate).thenReturn(LocalDate.of(2024, 1, 1))
+    }
 
-    booking.sentenceGroups = emptyList()
-    return booking
+    return consecutiveSentences
   }
 
   companion object {
@@ -74,36 +72,5 @@ class BookingHelperTest {
     private val OFFENCE = Offence(LocalDate.of(2020, 1, 1))
     private val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     private val ONE_DAY_DURATION = Duration(mapOf(ChronoUnit.DAYS to 1L))
-    private val STANDARD_SENTENCE = StandardDeterminateSentence(
-      offence = OFFENCE,
-      duration = BookingHelperTest.ONE_DAY_DURATION,
-      sentencedAt = LocalDate.of(2020, 1, 1),
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-    )
-    val SENTENCE_CALCULATION = SentenceCalculation(
-      STANDARD_SENTENCE,
-      3,
-      4.0,
-      4,
-      4,
-      FIRST_MAY_2018,
-      FIRST_MAY_2018,
-      FIRST_MAY_2018,
-      1,
-      FIRST_MAY_2018,
-      false,
-      Adjustments(
-        mutableMapOf(
-          AdjustmentType.REMAND to mutableListOf(
-            Adjustment(
-              numberOfDays = 1,
-              appliesToSentencesFrom = FIRST_MAY_2018,
-            ),
-          ),
-        ),
-      ),
-      FIRST_MAY_2018,
-    )
   }
 }

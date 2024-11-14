@@ -26,11 +26,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoSentencesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -46,18 +46,21 @@ class BookingExtractionService(
 ) {
 
   fun extract(
-    booking: Booking,
-  ): CalculationResult = when (booking.getAllExtractableSentences().size) {
-    0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
-    1 -> extractSingle(booking)
-    else -> {
-      extractMultiple(booking)
+    sentences: List<CalculableSentence>,
+    sentenceGroups: List<List<CalculableSentence>>,
+    offender: Offender,
+  ): CalculationResult {
+    return when (sentences.size) {
+      0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
+      1 -> extractSingle(sentences[0])
+      else -> {
+        extractMultiple(sentences, sentenceGroups, offender)
+      }
     }
   }
 
-  private fun extractSingle(booking: Booking): CalculationResult {
+  private fun extractSingle(sentence: CalculableSentence): CalculationResult {
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
-    val sentence = booking.getAllExtractableSentences()[0]
     val sentenceCalculation = sentence.sentenceCalculation
     var historicalTusedSource: HistoricalTusedSource? = null
     val sentenceIsOrExclusivelyBotus = sentence.isOrExclusivelyBotus()
@@ -122,8 +125,8 @@ class BookingExtractionService(
     }
 
     return CalculationResult(
-      dates,
-      sentenceCalculation.breakdownByReleaseDateType,
+      dates.toMap(),
+      sentenceCalculation.breakdownByReleaseDateType.toMap(),
       emptyMap(),
       getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedExpiryDate),
       false,
@@ -134,15 +137,14 @@ class BookingExtractionService(
   /**
    *  Method applies business logic for when there are multiple sentences in a booking and the impact each may have on one another
    */
-  private fun extractMultiple(booking: Booking): CalculationResult {
+  private fun extractMultiple(sentences: List<CalculableSentence>, sentenceGroups: List<List<CalculableSentence>>, offender: Offender): CalculationResult {
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val otherDates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
-    val sentences = booking.getAllExtractableSentences()
     val earliestSentenceDate = sentences.minOf { it.sentencedAt }
 
     val mostRecentSentencesByReleaseDate =
-      extractionService.mostRecentSentences(sentences, SentenceCalculation::releaseDate)
+      extractionService.mostRecentSentences(sentences, SentenceCalculation::releaseDateDefaultedByCommencement)
     val mostRecentSentenceByAdjustedDeterminateReleaseDate =
       extractionService.mostRecentSentence(sentences, SentenceCalculation::adjustedDeterminateReleaseDate)
     val mostRecentSentenceByExpiryDate =
@@ -174,7 +176,7 @@ class BookingExtractionService(
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
       extractManyTopUpSuperVisionDate(sentences, latestLicenseExpiryDate)
-    } else if (isTusedableDtos(booking, effectiveSentenceLength)) {
+    } else if (isTusedableDtos(sentences, effectiveSentenceLength, offender)) {
       val latestTUSEDSentence = sentences
         .filter { it.sentenceCalculation.topUpSupervisionDate != null }
         .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
@@ -194,7 +196,7 @@ class BookingExtractionService(
       latestReleaseDate,
       sentences,
       effectiveSentenceLength,
-      booking,
+      offender,
     )
 
     val latestNotionalConditionalReleaseDate: LocalDate? = extractionService.mostRecentOrNull(
@@ -239,8 +241,8 @@ class BookingExtractionService(
       }
     }
 
-    if (booking.sentences.any { it is DetentionAndTrainingOrderSentence }) {
-      if (booking.sentences.all { it.isDto() }) {
+    if (sentences.any { it is DetentionAndTrainingOrderSentence }) {
+      if (sentences.all { it.isDto() }) {
         dates[MTD] = latestReleaseDate
         calculateWhenAllDtos(mostRecentSentenceByExpiryDate, dates)
       } else {
@@ -252,7 +254,7 @@ class BookingExtractionService(
           latestDtoSentence,
           type,
           latestReleaseDate,
-          booking.underEighteenAtEndOfCustodialPeriod(),
+          sentences.all { offender.underEighteenAt(it.sentenceCalculation.releaseDate) },
         )
         dates[MTD] = midTermDate
         if (!sentences.any { it.sentenceCalculation.isImmediateRelease() && it.isDto() }) {
@@ -263,21 +265,14 @@ class BookingExtractionService(
           dates[LED] = latestNonDtoSentence.sentenceCalculation.licenceExpiryDate!!
         }
       }
-    } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() || booking.sentences.any { it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE } }) {
-      val mostRecentNonRecallSentence = extractionService.mostRecentSentenceOrNull(
-        sentences.filter { !it.isRecall() },
-        SentenceCalculation::releaseDate,
+    } else if (mostRecentSentencesByReleaseDate.any { !it.isRecall() }) {
+      extractCrdOrArd(
+        mostRecentSentencesByReleaseDate,
+        concurrentOraAndNonOraDetails,
+        dates,
+        latestReleaseDate,
+        breakdownByReleaseDateType,
       )
-
-      if (mostRecentNonRecallSentence != null) {
-        extractCrdOrArd(
-          listOf(mostRecentNonRecallSentence),
-          concurrentOraAndNonOraDetails,
-          dates,
-          latestReleaseDate,
-          breakdownByReleaseDateType,
-        )
-      }
     }
 
     val latestPostRecallReleaseDate =
@@ -318,7 +313,7 @@ class BookingExtractionService(
       sentences,
       breakdownByReleaseDateType,
       dates,
-      booking.sentenceGroups,
+      sentenceGroups,
     )
 
     if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
@@ -326,11 +321,10 @@ class BookingExtractionService(
       val filteredReleaseDates = dates.filter { (key, _) -> key == CRD || key == ARD || key == NPD }
       val latestDateEntry = filteredReleaseDates.maxByOrNull { (_, value) -> value }
 
-      if ((
-          dates[CRD] == dates[PRRD] ||
-            (dates[PRRD] != null && (latestDateEntry == null || dates[PRRD]?.isAfter(latestDateEntry.value) == true))
-          ) &&
-        booking.sentences.none { it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE }
+      if (
+        dates[CRD] == dates[PRRD] ||
+        (dates[PRRD] != null && (latestDateEntry == null || dates[PRRD]?.isAfter(latestDateEntry.value) == true))
+
       ) {
         dates.remove(HDCED)
       }
@@ -467,8 +461,8 @@ class BookingExtractionService(
     return false
   }
 
-  private fun isTusedableDtos(booking: Booking, effectiveSentenceLength: Period): Boolean {
-    return booking.sentences.all { it.isDto() } && effectiveSentenceLength.toTotalMonths() < 24 && !booking.underEighteenAtEndOfCustodialPeriod()
+  private fun isTusedableDtos(sentences: List<CalculableSentence>, effectiveSentenceLength: Period, offender: Offender): Boolean {
+    return sentences.all { it.isDto() } && effectiveSentenceLength.toTotalMonths() < 24 && !sentences.all { offender.underEighteenAt(it.sentenceCalculation.releaseDate) }
   }
 
   private fun calculateErsedWhereDtoIsPresent(
@@ -584,7 +578,7 @@ class BookingExtractionService(
     latestReleaseDate: LocalDate,
     sentences: List<CalculableSentence>,
     effectiveSentenceLength: Period,
-    booking: Booking,
+    offender: Offender,
   ): ConcurrentOraAndNonOraDetails {
     val latestReleaseIsConditional = latestReleaseTypes.contains(CRD)
     val latestSentenceExpiryIsSED = latestExpiryTypes.contains(SED)
@@ -631,10 +625,11 @@ class BookingExtractionService(
     }
 
     if ((sentences.any { it.isDto() })) {
-      if (booking.underEighteenAtEndOfCustodialPeriod() && effectiveSentenceLength.toTotalMonths() < 12) {
+      if (sentences.all { offender.underEighteenAt(it.sentenceCalculation.releaseDate) } && effectiveSentenceLength.toTotalMonths() < 12) {
         return ConcurrentOraAndNonOraDetails(isReleaseDateConditional = false, canHaveLicenseExpiry = true)
       }
-      if (sentences.any { !it.isDto() } && !booking.underEighteenAtEndOfCustodialPeriod()) {
+      if (sentences.any { !it.isDto() } && !(sentences.all { offender.underEighteenAt(it.sentenceCalculation.releaseDate) })
+      ) {
         return ConcurrentOraAndNonOraDetails(isReleaseDateConditional = true, canHaveLicenseExpiry = true)
       }
     }

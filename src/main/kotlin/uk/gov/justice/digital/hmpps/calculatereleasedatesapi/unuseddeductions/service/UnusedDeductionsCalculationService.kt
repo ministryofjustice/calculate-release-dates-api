@@ -44,20 +44,20 @@ class UnusedDeductionsCalculationService(
 
     val result = calculationService.calculateReleaseDates(booking, calculationUserInputs)
     val releaseDateTypes = listOf(ReleaseDateType.CRD, ReleaseDateType.ARD, ReleaseDateType.MTD)
-    val calculationResult = result.second
+    val calculationResult = result.calculationResult
     val releaseDate = calculationResult.dates.filter { releaseDateTypes.contains(it.key) }.minOfOrNull { it.value }
     val unusedDeductions = if (releaseDate != null) {
-      val maxNonDeductionAdjustedReleaseDateSentence = result.first.getAllExtractableSentences().maxBy {
+      val maxNonDeductionAdjustedReleaseDateSentence = result.sentences.maxBy {
         it.sentenceCalculation.releaseDateWithoutDeductions
       }
       val maxNonDeductionAdjustedReleaseDate = maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.releaseDateWithoutDeductions
 
-      val maxSentenceDate = result.first.getAllExtractableSentences().maxOf { it.sentencedAt }
+      val maxSentenceDate = result.sentences.maxOf { it.sentencedAt }
       val maxDeductions = if (maxSentenceDate != maxNonDeductionAdjustedReleaseDateSentence.sentencedAt) {
-        ChronoUnit.DAYS.between(maxSentenceDate, maxNonDeductionAdjustedReleaseDate).toInt()
+        ChronoUnit.DAYS.between(maxSentenceDate, maxNonDeductionAdjustedReleaseDate)
       } else {
         val allAdjustmentDaysExceptDeductions =
-          maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.calculatedTotalAwardedDays + maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.calculatedTotalAddedDays
+          maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.adjustments.ualDuringCustody + maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.adjustments.awardedDuringCustody
         maxNonDeductionAdjustedReleaseDateSentence.sentenceCalculation.numberOfDaysToDeterminateReleaseDate + allAdjustmentDaysExceptDeductions
       }
 
@@ -73,7 +73,7 @@ class UnusedDeductionsCalculationService(
       0
     }
 
-    validationMessages = validationService.validateBookingAfterCalculation(result.first)
+    validationMessages = validationService.validateBookingAfterCalculation(result, booking)
     return UnusedDeductionCalculationResponse(unusedDeductions, validationMessages)
   }
 

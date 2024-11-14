@@ -1,5 +1,5 @@
 exampleType,exampleNumber,error,params,expectedValidationMessage
-validation,CRS-2078,,,ADJUSTMENT_AFTER_RELEASE_ADA
+validation,CRS-2078,,,,
 validation,CRS-2082,,,REMAND_OVERLAPS_WITH_SENTENCE
 validation,CRS-2082_inttest,,,REMAND_OVERLAPS_WITH_SENTENCE
 custom-examples,crs-2136-incorrect-tused-length,,,
@@ -11,7 +11,7 @@ custom-examples,crs-2145-ac5,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
 custom-examples,crs-2145-ac6,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
 custom-examples,crs-2145-ac7,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
 custom-examples,crs-2145-ac8,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
-validation,CRS-2115,NoValidReturnToCustodyDateException,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
+validation,CRS-2115,NoValidReturnToCustodyDateException,,
 validation,crs-2194-immediate-release-future-dated,,,
 validation,CRS-2175-ac1-1,,,UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS
 validation,CRS-2175-ac1-2,,,UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS
@@ -26,3 +26,5 @@ validation,CRS-2186-ac2-1,,,SHPO_INVALID_DATE
 validation,CRS-2186-ac2-2,,,SHPO_INVALID_DATE
 validation,CRS-2186-reg-1,,,
 validation,CRS-2186-reg-2,,,
+custom-examples,crs-2162-1,,,
+custom-examples,crs-2162-2,,,

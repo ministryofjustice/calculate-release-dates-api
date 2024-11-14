@@ -1,31 +1,70 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.mockito.Mockito.lenient
+import org.mockito.Mockito.mock
+import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTypes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 
+@ExtendWith(MockitoExtension::class)
 class HdcedCalculatorTest {
 
   private val config: HdcedConfiguration = hdcedConfigurationForTests()
+  private val releaseDateMultiplierLookup = mock<ReleasePointMultiplierLookup>()
   private val calculator = HdcedCalculator(config)
+
+  @BeforeEach
+  fun setUp() {
+    whenever(releaseDateMultiplierLookup.multiplierFor(SentenceIdentificationTrack.SDS_PLUS_RELEASE)).thenReturn(0.66666)
+    whenever(releaseDateMultiplierLookup.multiplierFor(SentenceIdentificationTrack.SDS_STANDARD_RELEASE)).thenReturn(0.5)
+  }
+
+  @Test
+  fun `shouldn't calculate a date for a sex offender`() {
+    val sentencedAt = LocalDate.of(2020, 1, 1)
+    val duration = Duration(mapOf(ChronoUnit.DAYS to 150L))
+    val offence = Offence(LocalDate.of(2020, 1, 1))
+    val sentence = StandardDeterminateSentence(
+      offence,
+      duration,
+      sentencedAt,
+      isSDSPlus = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+    val sentenceCalculation = sentenceCalculation(sentence, 150, 75)
+
+    calc(sentenceCalculation, sentence, isActiveSexOffender = true)
+
+    assertHasNoHDCED(sentenceCalculation)
+  }
 
   @Test
   fun `shouldn't calculate a date when the custodial period is less than the minimum`() {
@@ -39,7 +78,7 @@ class HdcedCalculatorTest {
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
-    val sentenceCalculation = sentenceCalculation(sentence, 77, 39, Adjustments())
+    val sentenceCalculation = sentenceCalculation(sentence, 77, 39)
 
     calc(sentenceCalculation, sentence)
 
@@ -62,7 +101,6 @@ class HdcedCalculatorTest {
       sentence,
       config.minimumCustodialPeriodDays.toInt() * 2,
       config.minimumCustodialPeriodDays.toInt(),
-      Adjustments(),
     )
 
     calc(sentenceCalculation, sentence)
@@ -96,7 +134,7 @@ class HdcedCalculatorTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     val sentenceCalculation =
-      sentenceCalculation(sentence, sentenceLength, numberOfDaysToDeterminateRelease, Adjustments())
+      sentenceCalculation(sentence, sentenceLength, numberOfDaysToDeterminateRelease)
 
     calc(sentenceCalculation, sentence)
 
@@ -119,7 +157,7 @@ class HdcedCalculatorTest {
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
-    val sentenceCalculation = sentenceCalculation(sentence, 1825, 913, Adjustments())
+    val sentenceCalculation = sentenceCalculation(sentence, 1825, 913)
 
     calc(sentenceCalculation, sentence)
 
@@ -139,7 +177,7 @@ class HdcedCalculatorTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
-    val withLargeRemand = Adjustments(mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(sentencedAt, 65))))
+    val withLargeRemand = SentenceAdjustments(remand = 70)
     val sentenceCalculation = sentenceCalculation(sentence, 140, 70, withLargeRemand)
 
     calc(sentenceCalculation, sentence)
@@ -160,7 +198,7 @@ class HdcedCalculatorTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
-    val sentenceCalculation = sentenceCalculation(sentence, 140, 70, Adjustments())
+    val sentenceCalculation = sentenceCalculation(sentence, 140, 70)
 
     calc(sentenceCalculation, sentence)
 
@@ -205,7 +243,7 @@ class HdcedCalculatorTest {
     )
 
     val sentenceCalculation =
-      sentenceCalculation(sentence, sentenceLength, numberOfDaysToDeterminateRelease, Adjustments())
+      sentenceCalculation(sentence, sentenceLength, numberOfDaysToDeterminateRelease)
 
     calc(sentenceCalculation, sentence)
 
@@ -231,7 +269,7 @@ class HdcedCalculatorTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
-    val sentenceCalculation = sentenceCalculation(sentence, 106, 53, Adjustments())
+    val sentenceCalculation = sentenceCalculation(sentence, 106, 53)
 
     calc(sentenceCalculation, sentence)
 
@@ -263,8 +301,7 @@ class HdcedCalculatorTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
-    val minus25DayAdjustments =
-      Adjustments(mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(sentencedAt, 25))))
+    val minus25DayAdjustments = SentenceAdjustments(remand = 25)
     val sentenceCalculation = sentenceCalculation(sentence, 140, 70, minus25DayAdjustments)
 
     calc(sentenceCalculation, sentence)
@@ -285,7 +322,7 @@ class HdcedCalculatorTest {
   }
 
   @Test
-  fun `should calculate a date CRD minus configured deduction period if the sentence length is greater than the midpoint and less than maximum`() {
+  fun `should calculate a date CRD minus configured deduction period if the sentence length is greater than the midpoint`() {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.DAYS to 722L))
     val offence = Offence(LocalDate.of(2020, 1, 1))
@@ -297,7 +334,7 @@ class HdcedCalculatorTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
-    val sentenceCalculation = sentenceCalculation(sentence, 722, 361, Adjustments())
+    val sentenceCalculation = sentenceCalculation(sentence, 722, 361)
 
     calc(sentenceCalculation, sentence)
 
@@ -330,7 +367,7 @@ class HdcedCalculatorTest {
     )
 
     val sentenceCalculation =
-      sentenceCalculation(sentence, 1000, config.custodialPeriodMidPointDays.toInt(), Adjustments())
+      sentenceCalculation(sentence, 1000, config.custodialPeriodMidPointDays.toInt())
 
     calc(sentenceCalculation, sentence)
 
@@ -342,7 +379,7 @@ class HdcedCalculatorTest {
   }
 
   @Test
-  fun `should calculate a date with minimum custodial period if the sentence length is greater than the midpoint and less than maximum`() {
+  fun `should calculate a date with minimum custodial period if the sentence length is greater than the midpoint`() {
     val sentencedAt = LocalDate.of(2020, 1, 1)
     val duration = Duration(mapOf(ChronoUnit.DAYS to 722L))
     val offence = Offence(LocalDate.of(2020, 1, 1))
@@ -354,8 +391,7 @@ class HdcedCalculatorTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
-    val adjustedLessThanMinCustodialPeriod =
-      Adjustments(mutableMapOf(AdjustmentType.REMAND to mutableListOf(Adjustment(sentencedAt, 180))))
+    val adjustedLessThanMinCustodialPeriod = SentenceAdjustments(remand = 180)
     val sentenceCalculation = sentenceCalculation(sentence, 722, 361, adjustedLessThanMinCustodialPeriod)
 
     calc(sentenceCalculation, sentence)
@@ -375,6 +411,150 @@ class HdcedCalculatorTest {
     )
   }
 
+  @Test
+  fun `Non SDS+ consecutive chain should not produce an HDC if total is less than minimum custodial period`() {
+    val sentencedAt = LocalDate.of(2024, 3, 15)
+    val duration = Duration(mapOf(ChronoUnit.MONTHS to 1L))
+    val offence = Offence(LocalDate.of(2020, 1, 1))
+    val firstSentence = StandardDeterminateSentence(
+      offence,
+      duration,
+      sentencedAt,
+      isSDSPlus = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+    val secondSentence = StandardDeterminateSentence(
+      offence,
+      duration,
+      sentencedAt,
+      isSDSPlus = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+    val consecSentence = ConsecutiveSentence(listOf(firstSentence, secondSentence))
+
+    firstSentence.sentenceCalculation = sentenceCalculation(firstSentence, 31, 16)
+    secondSentence.sentenceCalculation = sentenceCalculation(secondSentence, 31, 16)
+    consecSentence.sentenceCalculation = sentenceCalculation(consecSentence, 62, 31)
+
+    calc(consecSentence.sentenceCalculation, consecSentence)
+
+    assertHasNoHDCED(consecSentence.sentenceCalculation)
+  }
+
+  @Test
+  fun `Non SDS+ consecutive chain should produce an HDC if individual is less than minimum custodial period but aggregated is more`() {
+    val sentencedAt = LocalDate.of(2024, 3, 19)
+    val duration = Duration(mapOf(ChronoUnit.MONTHS to 2L))
+    val offence = Offence(LocalDate.of(2020, 1, 1))
+    val firstSentence = StandardDeterminateSentence(
+      offence,
+      duration,
+      sentencedAt,
+      isSDSPlus = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+    val secondSentence = StandardDeterminateSentence(
+      offence,
+      duration,
+      sentencedAt,
+      isSDSPlus = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+    val consecSentence = ConsecutiveSentence(listOf(firstSentence, secondSentence))
+
+    val minus20DayAdjustments = SentenceAdjustments(
+      remand = 20,
+    )
+    firstSentence.sentenceCalculation = sentenceCalculation(
+      firstSentence,
+      firstSentence.getLengthInDays(),
+      firstSentence.getLengthInDays() / 2,
+      minus20DayAdjustments,
+    )
+    secondSentence.sentenceCalculation = sentenceCalculation(
+      secondSentence,
+      secondSentence.getLengthInDays(),
+      secondSentence.getLengthInDays() / 2,
+    )
+    consecSentence.sentenceCalculation = sentenceCalculation(
+      consecSentence,
+      consecSentence.getLengthInDays(),
+      consecSentence.getLengthInDays() / 2,
+      minus20DayAdjustments,
+    )
+
+    calc(consecSentence.sentenceCalculation, consecSentence)
+
+    assertHasHDCED(consecSentence.sentenceCalculation)
+    assertThat(consecSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate).isEqualTo(
+      LocalDate.of(
+        2024,
+        4,
+        2,
+      ),
+    )
+  }
+
+  @Test
+  fun `Any booking with an SDS+ sentence should not have a HDCED4 date`() {
+    val sentencedAt = LocalDate.of(2024, 2, 16)
+    val offence = Offence(LocalDate.of(2020, 1, 1))
+    val firstSentence = StandardDeterminateSentence(
+      offence,
+      Duration(mapOf(ChronoUnit.MONTHS to 1L)),
+      sentencedAt,
+      isSDSPlus = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+    val secondSentence = StandardDeterminateSentence(
+      offence,
+      Duration(mapOf(ChronoUnit.MONTHS to 1L)),
+      sentencedAt,
+      isSDSPlus = false,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+    val thirdSentence = StandardDeterminateSentence(
+      offence,
+      Duration(mapOf(ChronoUnit.YEARS to 6L)),
+      sentencedAt,
+      isSDSPlus = true,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+    val consecSentence = ConsecutiveSentence(listOf(firstSentence, secondSentence, thirdSentence))
+
+    val numberOfDaysToDeterminateReleaseDateFirst = firstSentence.getLengthInDays() / 2
+    val numberOfDaysToDeterminateReleaseDateSecond = secondSentence.getLengthInDays() / 2
+    val numberOfDaysToDeterminateReleaseDateThird = (thirdSentence.getLengthInDays() * 0.66).toInt()
+    firstSentence.sentenceCalculation = sentenceCalculation(
+      firstSentence,
+      firstSentence.getLengthInDays(),
+      numberOfDaysToDeterminateReleaseDateFirst,
+    )
+    secondSentence.sentenceCalculation = sentenceCalculation(
+      secondSentence,
+      secondSentence.getLengthInDays(),
+      numberOfDaysToDeterminateReleaseDateSecond,
+    )
+    thirdSentence.sentenceCalculation = sentenceCalculation(
+      thirdSentence,
+      thirdSentence.getLengthInDays(),
+      numberOfDaysToDeterminateReleaseDateThird,
+    )
+    firstSentence.identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE
+    secondSentence.identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE
+    thirdSentence.identificationTrack = SentenceIdentificationTrack.SDS_PLUS_RELEASE
+    consecSentence.sentenceCalculation =
+      sentenceCalculation(
+        consecSentence,
+        consecSentence.getLengthInDays(),
+        numberOfDaysToDeterminateReleaseDateFirst + numberOfDaysToDeterminateReleaseDateSecond + numberOfDaysToDeterminateReleaseDateThird,
+      )
+
+    calc(consecSentence.sentenceCalculation, consecSentence)
+
+    assertHasNoHDCED(consecSentence.sentenceCalculation)
+  }
+
   private fun assertHasNoHDCED(sentenceCalculation: SentenceCalculation) {
     assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isNull()
     assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isZero()
@@ -388,32 +568,40 @@ class HdcedCalculatorTest {
   }
 
   private fun sentenceCalculation(
-    sentence: StandardDeterminateSentence,
+    sentence: CalculableSentence,
     numberOfDaysToSED: Int,
     numberOfDaysToDeterminateReleaseDate: Int,
-    adjustments: Adjustments,
-  ) =
-    SentenceCalculation(
-      sentence,
+    adjustments: SentenceAdjustments = SentenceAdjustments(),
+  ): SentenceCalculation {
+    sentence.identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE
+    sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.CRD, ReleaseDateType.SLED), sentence, mock())
+    val releaseDateCalculation = ReleaseDateCalculation(
       numberOfDaysToSED,
       numberOfDaysToDeterminateReleaseDate.toDouble(),
       numberOfDaysToDeterminateReleaseDate,
-      numberOfDaysToDeterminateReleaseDate,
-      sentence.sentencedAt.plusDays(numberOfDaysToDeterminateReleaseDate.toLong() - 1),
-      sentence.sentencedAt.plusDays(numberOfDaysToSED.toLong() - 1),
-      sentence.sentencedAt.plusDays(numberOfDaysToDeterminateReleaseDate.toLong() - 1),
       null,
-      null,
-      false,
-      adjustments,
-      returnToCustodyDate = null,
-      numberOfDaysToParoleEligibilityDate = null,
     )
+    var unadjustedReleaseDate = UnadjustedReleaseDate(
+      sentence,
+      { 0.0 },
+    )
+    unadjustedReleaseDate = spy(unadjustedReleaseDate)
+    lenient().whenever(unadjustedReleaseDate.releaseDateCalculation).thenReturn(releaseDateCalculation)
+    return SentenceCalculation(
+      unadjustedReleaseDate,
+      adjustments,
+      false,
+    )
+  }
 
   private fun calc(
     sentenceCalculation: SentenceCalculation,
-    sentence: StandardDeterminateSentence,
+    sentence: CalculableSentence,
+    isActiveSexOffender: Boolean = false,
   ) {
-    calculator.calculateHdced(sentence, sentenceCalculation)
+    val offender = Offender("ABC123", LocalDate.of(1980, 1, 1), isActiveSexOffender = isActiveSexOffender)
+    if (calculator.doesHdcedDateApply(sentence, offender)) {
+      calculator.calculateHdced(sentence, sentenceCalculation)
+    }
   }
 }
