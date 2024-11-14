@@ -21,7 +21,7 @@
     "REMAND": [
       {
         "appliesToSentencesFrom": "2014-06-27",
-        "numberOfDays": 16
+        "numberOfDays": 16,
         "fromDate": "2014-06-11",
         "toDate": "2014-06-26"
       }
