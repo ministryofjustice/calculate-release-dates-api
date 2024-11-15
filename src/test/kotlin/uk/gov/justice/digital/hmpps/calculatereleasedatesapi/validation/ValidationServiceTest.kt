@@ -3136,7 +3136,7 @@ class ValidationServiceTest {
           caseSequence = 1,
           offence = validSdsSentence.offence.copy(
             offenceCode = "SE20529",
-            offenceStartDate = LocalDate.of(2020,10,23),
+            offenceStartDate = LocalDate.of(2020, 10, 23),
           ),
         ),
         false,
