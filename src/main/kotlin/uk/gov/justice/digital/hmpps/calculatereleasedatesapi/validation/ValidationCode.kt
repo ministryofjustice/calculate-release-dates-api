@@ -98,8 +98,8 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
     MANUAL_ENTRY_JOURNEY_REQUIRED,
   ),
   SE2020_INVALID_OFFENCE_DETAIL(
-    "Offence %s falls under the Sentencing Act 2020. The offence date entered is before this offence became law." +
-      " Any offences under this act must be on or after 01 December 2020. Change the offence date or choose a relevant offence.",
+    "Offence %s falls under the Sentencing Act 2020. The offence date entered is before this offence became law. \n" +
+      " Any offences under this act must be on or after 01 December 2020.\n Change the offence date or choose a relevant offence.",
   ),
   SE2020_INVALID_OFFENCE_COURT_DETAIL("Court case %s count %s offence date is before the offence became law. Change the offence date or choose a relevant offence."),
 }

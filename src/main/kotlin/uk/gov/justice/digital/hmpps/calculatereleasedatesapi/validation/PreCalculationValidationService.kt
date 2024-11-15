@@ -12,7 +12,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SHPO_OFFENCE_COMMENCEMENT_DATE
 
 @Service
 class PreCalculationValidationService(
@@ -106,28 +105,7 @@ class PreCalculationValidationService(
     return messages
   }
 
-  fun validateSe20Offences(data: PrisonApiSourceData): List<ValidationMessage> {
-    val invalidOffences = data.sentenceAndOffences.filter {
-      it.offence.offenceCode.startsWith("SE20") &&
-        it.offence.offenceStartDate?.isBefore(SHPO_OFFENCE_COMMENCEMENT_DATE) ?: false
-    }
-
-    return if (invalidOffences.count() == 1) {
-      listOf(
-        ValidationMessage(
-          ValidationCode.SE2020_INVALID_OFFENCE_DETAIL,
-          listOf(invalidOffences.first().offence.offenceCode),
-        ),
-      )
-    } else {
-      invalidOffences.map {
-        ValidationMessage(
-          ValidationCode.SE2020_INVALID_OFFENCE_COURT_DETAIL,
-          listOf(it.caseSequence.toString(), it.lineSequence.toString()),
-        )
-      }
-    }
-  }
+  fun validateSe20Offences(data: PrisonApiSourceData): List<ValidationMessage> = unsupportedValidationService.validateSe20Offences(data)
 
   fun hasSentences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
     if (sentencesAndOffence.isEmpty()) {
