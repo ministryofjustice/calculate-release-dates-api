@@ -2,9 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SENTENCING_ACT_2020_COMMENCEMENT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 
@@ -33,29 +31,6 @@ class UnsupportedValidationService {
       return listOf(ValidationMessage(ValidationCode.UNSUPPORTED_BREACH_97))
     }
     return emptyList()
-  }
-
-  internal fun validateSe20Offences(data: PrisonApiSourceData): List<ValidationMessage> {
-    val invalidOffences = data.sentenceAndOffences.filter {
-      it.offence.offenceCode.startsWith("SE20") &&
-        it.offence.offenceStartDate?.isBefore(SENTENCING_ACT_2020_COMMENCEMENT) ?: false
-    }
-
-    return if (invalidOffences.size == 1) {
-      listOf(
-        ValidationMessage(
-          ValidationCode.SE2020_INVALID_OFFENCE_DETAIL,
-          listOf(invalidOffences.first().offence.offenceCode),
-        ),
-      )
-    } else {
-      invalidOffences.map {
-        ValidationMessage(
-          ValidationCode.SE2020_INVALID_OFFENCE_COURT_DETAIL,
-          listOf(it.caseSequence.toString(), it.lineSequence.toString()),
-        )
-      }
-    }
   }
 
   private fun findUnsupportedEncouragingOffenceCodes(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>): List<SentenceAndOffence> {
