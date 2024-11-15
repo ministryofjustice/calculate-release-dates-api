@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SENTENCING_ACT_2020_COMMENCEMENT
 
 @Service
 class PreCalculationValidationService(
@@ -42,7 +43,12 @@ class PreCalculationValidationService(
     }
     if (adjustments.size > 0) {
       val adjustmentString = adjustments.joinToString(separator = " and ") { it.toString().lowercase() }
-      messages.add(ValidationMessage(ValidationCode.PRE_PCSC_DTO_WITH_ADJUSTMENT, listOf(adjustmentString.replace("_", " "))))
+      messages.add(
+        ValidationMessage(
+          ValidationCode.PRE_PCSC_DTO_WITH_ADJUSTMENT,
+          listOf(adjustmentString.replace("_", " ")),
+        ),
+      )
     }
     return messages
   }
@@ -57,6 +63,7 @@ class PreCalculationValidationService(
     }
     return emptyList()
   }
+
   fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffence>): List<ValidationMessage> {
     val supportedCategories = listOf("2003", "2020")
     val validationMessages = sentencesAndOffences.filter {
@@ -91,11 +98,35 @@ class PreCalculationValidationService(
   }
 
   internal fun validateUnsupportedOffences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
-    val messages = unsupportedValidationService.validateUnsupportedEncouragingOffences(sentencesAndOffence).toMutableList()
+    val messages =
+      unsupportedValidationService.validateUnsupportedEncouragingOffences(sentencesAndOffence).toMutableList()
     messages += unsupportedValidationService.validateUnsupported97BreachOffencesAfter1Dec2020(sentencesAndOffence)
     messages += unsupportedValidationService.validateUnsupportedSuspendedOffences(sentencesAndOffence)
 
     return messages
+  }
+
+  fun validateSe20Offences(data: PrisonApiSourceData): List<ValidationMessage> {
+    val invalidOffences = data.sentenceAndOffences.filter {
+      it.offence.offenceCode.startsWith("SE20") &&
+        it.offence.offenceStartDate?.isBefore(SENTENCING_ACT_2020_COMMENCEMENT) ?: false
+    }
+
+    return if (invalidOffences.size == 1) {
+      listOf(
+        ValidationMessage(
+          ValidationCode.SE2020_INVALID_OFFENCE_DETAIL,
+          listOf(invalidOffences.first().offence.offenceCode),
+        ),
+      )
+    } else {
+      invalidOffences.map {
+        ValidationMessage(
+          ValidationCode.SE2020_INVALID_OFFENCE_COURT_DETAIL,
+          listOf(it.caseSequence.toString(), it.lineSequence.toString()),
+        )
+      }
+    }
   }
 
   fun hasSentences(sentencesAndOffence: List<SentenceAndOffenceWithReleaseArrangements>): List<ValidationMessage> {
