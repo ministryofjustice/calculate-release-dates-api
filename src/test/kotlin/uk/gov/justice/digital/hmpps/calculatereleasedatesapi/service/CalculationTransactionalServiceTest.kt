@@ -102,7 +102,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.FineVali
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.PostCalculationValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.PreCalculationValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.RecallValidationService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SHPOValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SOPCValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Section91ValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.SentenceValidationService
@@ -783,7 +782,6 @@ class CalculationTransactionalServiceTest {
       sentenceValidationService = sentenceValidationService,
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
-      shpoValidationService = SHPOValidationService(),
     )
   }
 

@@ -16,7 +16,6 @@ class ValidationService(
   private val sentenceValidationService: SentenceValidationService,
   private val validationUtilities: ValidationUtilities,
   private val postCalculationValidationService: PostCalculationValidationService,
-  private val shpoValidationService: SHPOValidationService,
 ) {
 
   fun validateBeforeCalculation(
@@ -54,6 +53,11 @@ class ValidationService(
       return unsupportedOffenceMessages
     }
 
+    val se20offenceViolations = preCalculationValidationService.validateSe20Offences(sourceData)
+    if (se20offenceViolations.isNotEmpty()) {
+      return se20offenceViolations
+    }
+
     val validationMessages = sentenceValidationService.validateSentences(sortedSentences)
     validationMessages += adjustmentValidationService.throwErrorIfAdditionAdjustmentsAfterLatestReleaseDate(adjustments)
     validationMessages += recallValidationService.validateFixedTermRecall(sourceData)
@@ -79,7 +83,6 @@ class ValidationService(
     messages += recallValidationService.validateUnsupportedRecallTypes(calculationOutput, booking)
     messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationOutput)
     messages += postCalculationValidationService.validateSHPOContainingSX03Offences(booking, calculationOutput)
-    messages += shpoValidationService.validate(calculationOutput.sentences)
 
     return messages
   }

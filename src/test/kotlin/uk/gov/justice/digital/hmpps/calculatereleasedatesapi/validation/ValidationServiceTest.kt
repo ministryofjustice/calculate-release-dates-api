@@ -104,7 +104,10 @@ import java.util.UUID
 @Profile("tests")
 class ValidationServiceTest {
   val validationService =
-    getActiveValidationService(trancheConfiguration = TRANCHE_CONFIGURATION, sentencesExtractionService = SentencesExtractionService())
+    getActiveValidationService(
+      trancheConfiguration = TRANCHE_CONFIGURATION,
+      sentencesExtractionService = SentencesExtractionService(),
+    )
 
   private val validSdsSentence = NormalisedSentenceAndOffence(
     bookingId = 1L,
@@ -1167,7 +1170,11 @@ class ValidationServiceTest {
   @Test
   fun `Test BOTUS feature toggle results in unsupported sentence type if disabled`() {
     val validationService =
-      getActiveValidationService(trancheConfiguration = TRANCHE_CONFIGURATION, sentencesExtractionService = SentencesExtractionService(), botus = false)
+      getActiveValidationService(
+        trancheConfiguration = TRANCHE_CONFIGURATION,
+        sentencesExtractionService = SentencesExtractionService(),
+        botus = false,
+      )
     val sentenceAndOffences = validSdsSentence.copy(
       sentenceCalculationType = SentenceCalculationType.BOTUS.name,
       terms = listOf(
@@ -2624,7 +2631,13 @@ class ValidationServiceTest {
     )
     val calculationOutput = CalculationOutput(
       listOf(lrOraSentence),
-      listOf(CustodialPeriod(lrOraSentence.sentencedAt, TRANCHE_CONFIGURATION.trancheOneCommencementDate.minusDays(1), listOf(lrOraSentence))),
+      listOf(
+        CustodialPeriod(
+          lrOraSentence.sentencedAt,
+          TRANCHE_CONFIGURATION.trancheOneCommencementDate.minusDays(1),
+          listOf(lrOraSentence),
+        ),
+      ),
       mock(),
     )
     val result = validationService.validateBookingAfterCalculation(
@@ -2836,6 +2849,422 @@ class ValidationServiceTest {
     assertThat(result).isEmpty()
   }
 
+  @Test
+  fun `Sentence contains SE20 offence with start date 2020-11-30`() {
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
+
+    val sentence1 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2023, 8, 8),
+          lineSequence = 1,
+          caseSequence = 1,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "SE20005",
+            offenceStartDate = LocalDate.of(2020, 11, 30),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val sentence2 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2024, 11, 3),
+          lineSequence = 1,
+          caseSequence = 2,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "TH68001",
+            offenceStartDate = LocalDate.of(2024, 11, 2),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(
+        listOf(sentence1, sentence2),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+    )
+    assertThat(result).containsExactly(ValidationMessage(ValidationCode.SE2020_INVALID_OFFENCE_DETAIL, listOf("SE20005")))
+  }
+
+  @Test
+  fun `Sentence contains SE20 offence with start date 2024-11-02`() {
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
+
+    val sentence1 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2023, 6, 7),
+          lineSequence = 1,
+          caseSequence = 1,
+          sentenceSequence = 1,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "CD71005A",
+            offenceStartDate = LocalDate.of(2023, 5, 24),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val sentence2 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2023, 6, 7),
+          lineSequence = 1,
+          caseSequence = 2,
+          consecutiveToSequence = 1,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "SE20503",
+            offenceStartDate = LocalDate.of(2020, 11, 29),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(
+        listOf(sentence1, sentence2),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+    )
+    assertThat(result).containsExactly(ValidationMessage(ValidationCode.SE2020_INVALID_OFFENCE_DETAIL, listOf("SE20503")))
+  }
+
+  @Test
+  fun `Sentence contains SE20 offence with start date 2020-11-28`() {
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
+
+    val sentence1 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2024, 9, 10),
+          lineSequence = 1,
+          caseSequence = 1,
+          sentenceSequence = 1,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "SE20012A",
+            offenceStartDate = LocalDate.of(2020, 11, 28),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(
+        listOf(sentence1),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+    )
+    assertThat(result).containsExactly(ValidationMessage(ValidationCode.SE2020_INVALID_OFFENCE_DETAIL, listOf("SE20012A")))
+  }
+
+  @Test
+  fun `Sentence contains SE20 offence with start date 2018-07-09`() {
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
+
+    val sentence1 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2021, 7, 10),
+          lineSequence = 1,
+          caseSequence = 1,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "SE20574",
+            offenceStartDate = LocalDate.of(2018, 7, 9),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val sentence2 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2022, 6, 6),
+          lineSequence = 1,
+          caseSequence = 2,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "CW13010",
+            offenceStartDate = LocalDate.of(2022, 6, 5),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(
+        listOf(sentence1, sentence2),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+    )
+    assertThat(result).containsExactly(ValidationMessage(ValidationCode.SE2020_INVALID_OFFENCE_DETAIL, listOf("SE20574")))
+  }
+
+  @Test
+  fun `Sentence contains two SE20 offence violations dated 2020-11-03 and one valid`() {
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
+
+    val sentence1 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2022, 7, 10),
+          lineSequence = 1,
+          caseSequence = 1,
+          sentenceSequence = 1,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "SE20015",
+            offenceStartDate = LocalDate.of(2020, 11, 3),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val sentence2 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2022, 7, 10),
+          lineSequence = 1,
+          caseSequence = 2,
+          sentenceSequence = 2,
+          consecutiveToSequence = 1,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "SE20016",
+            offenceStartDate = LocalDate.of(2020, 11, 3),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val sentence3 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2022, 7, 10),
+          lineSequence = 1,
+          caseSequence = 3,
+          sentenceSequence = 3,
+          consecutiveToSequence = 2,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "SE20502",
+            offenceStartDate = LocalDate.of(2020, 12, 4),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(
+        listOf(sentence1, sentence2, sentence3),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+    )
+
+    assertThat(result).containsExactly(
+      ValidationMessage(ValidationCode.SE2020_INVALID_OFFENCE_COURT_DETAIL, listOf("1", "1")),
+      ValidationMessage(ValidationCode.SE2020_INVALID_OFFENCE_COURT_DETAIL, listOf("2", "1")),
+    )
+  }
+
+  @Test
+  fun `Sentence contains two SE20 offence violations dated 2020-10-23, 2020-11-15 and one valid`() {
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
+
+    val sentence1 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2023, 4, 14),
+          lineSequence = 1,
+          caseSequence = 1,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "SE20529",
+            offenceStartDate = LocalDate.of(2020, 10, 23),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val sentence2 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2023, 7, 16),
+          lineSequence = 1,
+          caseSequence = 2,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "SE20535",
+            offenceStartDate = LocalDate.of(2020, 11, 15),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val sentence3 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2023, 8, 18),
+          lineSequence = 1,
+          caseSequence = 3,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "CJ88149",
+            offenceStartDate = LocalDate.of(2021, 12, 2),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(
+        listOf(sentence1, sentence2, sentence3),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+    )
+
+    assertThat(result).containsExactly(
+      ValidationMessage(ValidationCode.SE2020_INVALID_OFFENCE_COURT_DETAIL, listOf("1", "1")),
+      ValidationMessage(ValidationCode.SE2020_INVALID_OFFENCE_COURT_DETAIL, listOf("2", "1")),
+    )
+  }
+
+  @Test
+  fun `Sentence contains no SE20 offence violations with offence dated 2024-03-08`() {
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
+
+    val sentence1 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2024, 3, 9),
+          lineSequence = 1,
+          caseSequence = 1,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "SE20005",
+            offenceStartDate = LocalDate.of(2024, 3, 8),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(
+        listOf(sentence1),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+    )
+    assertThat(result).isEmpty()
+  }
+
+  @Test
+  fun `Sentence contains no SE20 offence violations with offence dated 2020-12-24`() {
+    val validationService = getActiveValidationService(
+      SentencesExtractionService(),
+      TRANCHE_CONFIGURATION,
+    )
+
+    val sentence1 = (
+      SentenceAndOffenceWithReleaseArrangements(
+        validSdsSentence.copy(
+          sentenceDate = LocalDate.of(2024, 2, 2),
+          lineSequence = 1,
+          caseSequence = 1,
+          offence = validSdsSentence.offence.copy(
+            offenceCode = "SEC250",
+            offenceStartDate = LocalDate.of(2020, 12, 24),
+          ),
+        ),
+        false,
+        SDSEarlyReleaseExclusionType.NO,
+      )
+      )
+
+    val result = validationService.validateBeforeCalculation(
+      PrisonApiSourceData(
+        listOf(sentence1),
+        VALID_PRISONER,
+        VALID_ADJUSTMENTS,
+        listOf(),
+        null,
+      ),
+      USER_INPUTS,
+    )
+    assertThat(result).isEmpty()
+  }
+
   companion object {
     val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     val FIRST_MAY_2021: LocalDate = LocalDate.of(2021, 5, 1)
@@ -3004,7 +3433,11 @@ class ValidationServiceTest {
     )
   }
 
-  private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheConfiguration: SDS40TrancheConfiguration, botus: Boolean = true): ValidationService {
+  private fun getActiveValidationService(
+    sentencesExtractionService: SentencesExtractionService,
+    trancheConfiguration: SDS40TrancheConfiguration,
+    botus: Boolean = true,
+  ): ValidationService {
     val featureToggles = FeatureToggles(botus, true, false, sds40ConsecutiveManualJourney = true)
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
@@ -3044,7 +3477,6 @@ class ValidationServiceTest {
       sentenceValidationService = sentenceValidationService,
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
-      shpoValidationService = SHPOValidationService(),
     )
   }
 }
