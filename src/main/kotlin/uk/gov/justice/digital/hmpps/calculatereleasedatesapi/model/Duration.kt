@@ -95,6 +95,14 @@ data class Duration(
     return Duration(allElements.toMap())
   }
 
+  fun removeAll(durationElements: Map<ChronoUnit, Long>): Duration {
+    val allElements = mutableMapOf<ChronoUnit, Long>()
+    this.durationElements.forEach {
+      allElements[it.key] = it.value - durationElements[it.key]!!
+    }
+    return Duration(allElements.toMap())
+  }
+
   @JsonIgnore
   fun isEmpty(): Boolean {
     return this.durationElements.entries.none { it.value != 0L }
