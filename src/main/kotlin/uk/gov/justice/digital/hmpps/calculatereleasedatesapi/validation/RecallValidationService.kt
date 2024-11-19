@@ -59,23 +59,23 @@ class RecallValidationService(
   }
 
   private fun hasUnsupportedRecallType(calculationOutput: CalculationOutput, booking: Booking): Boolean {
-    val custodialPeriodsAfterOrEqualCommencement = calculationOutput.custodialPeriod.filter { it.to.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate) }
-    return custodialPeriodsAfterOrEqualCommencement.any { period ->
-      return@any period.sentences.any { sentence ->
-        val hasTusedReleaseDateType = sentence.releaseDateTypes.contains(ReleaseDateType.TUSED)
-        val isDeterminateOrConsecutiveSentence = sentence.sentenceParts().any { it is StandardDeterminateSentence }
-        val sentencedBeforeCommencement = sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)
+    return calculationOutput.sentences.any { sentence ->
+      val hasTusedReleaseDateType = sentence.releaseDateTypes.contains(ReleaseDateType.TUSED)
+      val isDeterminateOrConsecutiveSentence = sentence.sentenceParts().any { it is StandardDeterminateSentence }
+      val sentencedBeforeCommencement = sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)
+      val adjustedReleaseDateAfterOrEqualCommencement = sentence.sentenceCalculation.adjustedHistoricDeterminateReleaseDate
+        .isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
 
-        val result = hasTusedReleaseDateType &&
-          isDeterminateOrConsecutiveSentence &&
-          sentence.isRecall() &&
-          sentencedBeforeCommencement
+      val result = hasTusedReleaseDateType &&
+        isDeterminateOrConsecutiveSentence &&
+        sentence.isRecall() &&
+        sentencedBeforeCommencement &&
+        adjustedReleaseDateAfterOrEqualCommencement
 
-        if (result) {
-          log.info("Unsupported recall type found for sentence ${sentence.sentenceParts().map { (it as AbstractSentence).identifier }} in booking for ${booking.offender.reference}.")
-        }
-        return@any result
+      if (result) {
+        log.info("Unsupported recall type found for sentence ${sentence.sentenceParts().map { (it as AbstractSentence).identifier }} in booking for ${booking.offender.reference}.")
       }
+      return@any result
     }
   }
 
