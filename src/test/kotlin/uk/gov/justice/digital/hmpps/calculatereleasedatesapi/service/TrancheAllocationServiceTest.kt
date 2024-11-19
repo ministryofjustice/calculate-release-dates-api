@@ -95,6 +95,7 @@ class TrancheAllocationServiceTest {
       UnadjustedReleaseDate(
         recallSentence,
         { 0.5 },
+        { 0.5 },
       ),
       SentenceAdjustments(),
       false,
@@ -307,6 +308,7 @@ class TrancheAllocationServiceTest {
       UnadjustedReleaseDate(
         sentence,
         { 0.5 },
+        { 0.5 },
       ),
       SentenceAdjustments(),
       false,
@@ -350,6 +352,7 @@ class TrancheAllocationServiceTest {
     consecutiveSentence.sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         consecutiveSentence,
+        { 0.5 },
         { 0.5 },
       ),
       SentenceAdjustments(),

@@ -11,8 +11,11 @@ import kotlin.properties.Delegates
 class UnadjustedReleaseDate(
   val sentence: CalculableSentence,
   findMultiplierByIdentificationTrack: (identification: SentenceIdentificationTrack) -> Double,
+  historicFindMultiplierByIdentificationTrack: (identification: SentenceIdentificationTrack) -> Double,
   val returnToCustodyDate: LocalDate? = null,
 ) {
+
+  val historicReleaseDateCalculation: ReleaseDateCalculation
 
   /*
     When the multipler is changed (At tranching for SDS40). The delagate here will re-calculate the unadjusted release dates.
@@ -23,6 +26,11 @@ class UnadjustedReleaseDate(
 
   init {
     this.findMultiplierByIdentificationTrack = findMultiplierByIdentificationTrack
+    this.historicReleaseDateCalculation = if (sentence is ConsecutiveSentence) {
+      getConsecutiveRelease(historicFindMultiplierByIdentificationTrack)
+    } else {
+      getSingleSentenceRelease(historicFindMultiplierByIdentificationTrack)
+    }
   }
 
   lateinit var releaseDateCalculation: ReleaseDateCalculation
@@ -38,6 +46,13 @@ class UnadjustedReleaseDate(
       .plusDays(releaseDateCalculation.numberOfDaysToDeterminateReleaseDate.toLong())
       .minusDays(1)
 
+  val unadjustedHistoricDeterminateReleaseDate: LocalDate
+    get() {
+      return sentence.sentencedAt
+        .plusDays(historicReleaseDateCalculation.numberOfDaysToDeterminateReleaseDate.toLong())
+        .minusDays(1)
+    }
+
   var numberOfDaysToPostRecallReleaseDate: Int? = null
     private set
 
@@ -48,16 +63,16 @@ class UnadjustedReleaseDate(
     if (returnToCustodyDate == null) {
       throw NoValidReturnToCustodyDateException("No return to custody date available")
     }
-    return returnToCustodyDate!!
+    return returnToCustodyDate
       .plusDays(days.toLong())
       .minusDays(1)
   }
 
   private fun calculateUnadjustedReleaseDate() {
     this.releaseDateCalculation = if (sentence is ConsecutiveSentence) {
-      getConsecutiveRelease()
+      getConsecutiveRelease(findMultiplierByIdentificationTrack)
     } else {
-      getSingleSentenceRelease()
+      getSingleSentenceRelease(findMultiplierByIdentificationTrack)
     }
 
     if (sentence.isRecall()) {
@@ -74,7 +89,7 @@ class UnadjustedReleaseDate(
     }
   }
 
-  private fun getSingleSentenceRelease(): ReleaseDateCalculation {
+  private fun getSingleSentenceRelease(findMultiplierByIdentificationTrack: (identification: SentenceIdentificationTrack) -> Double): ReleaseDateCalculation {
     var numberOfDaysToParoleEligibilityDate: Long? = null
     val custodialDuration = sentence.custodialDuration()
     val numberOfDaysToReleaseDateDouble =
@@ -94,7 +109,7 @@ class UnadjustedReleaseDate(
     )
   }
 
-  private fun getConsecutiveRelease(): ReleaseDateCalculation {
+  private fun getConsecutiveRelease(findMultiplierByIdentificationTrack: (identification: SentenceIdentificationTrack) -> Double): ReleaseDateCalculation {
     sentence as ConsecutiveSentence
     val daysToExpiry = SentenceAggregator().getDaysInGroup(sentence.sentencedAt, sentence.orderedSentences) { it.totalDuration() }
     val (sentencesWithPed, sentencesWithoutPed) = sentence.orderedSentences

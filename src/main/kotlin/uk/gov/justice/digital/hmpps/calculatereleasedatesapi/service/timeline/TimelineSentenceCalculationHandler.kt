@@ -72,6 +72,7 @@ class TimelineSentenceCalculationHandler(
           UnadjustedReleaseDate(
             sentence,
             multiplerFnForDate(timelineCalculationDate, trancheAndCommencement.second),
+            historicMultiplerFnForDate(),
             returnToCustodyDate,
           ),
           SentenceAdjustments(),

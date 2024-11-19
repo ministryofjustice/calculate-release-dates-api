@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CustodialPeriod
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -53,10 +52,11 @@ class UnsupportedSDS40RecallSentenceTest {
     lrOraSentence.releaseDateTypes =
       ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, offender)
     lrOraSentence.sentenceCalculation = mock()
+    whenever(lrOraSentence.sentenceCalculation.adjustedHistoricDeterminateReleaseDate).thenReturn(dateAfterTrancheOne.plusYears(1))
 
     val calculationOutput = CalculationOutput(
       listOf(lrOraSentence),
-      listOf(CustodialPeriod(from = lrOraSentence.sentencedAt, to = dateAfterTrancheOne.plusYears(1), listOf(lrOraSentence))),
+      listOf(),
       mock(),
     )
 
@@ -85,10 +85,11 @@ class UnsupportedSDS40RecallSentenceTest {
     lrOraSentence.releaseDateTypes =
       ReleaseDateTypes(listOf(ReleaseDateType.TUSED), lrOraSentence, offender)
     lrOraSentence.sentenceCalculation = mock()
+    whenever(lrOraSentence.sentenceCalculation.adjustedHistoricDeterminateReleaseDate).thenReturn(dateAfterTrancheOne)
 
     val calculationOutput = CalculationOutput(
       listOf(lrOraSentence),
-      listOf(CustodialPeriod(from = lrOraSentence.sentencedAt, to = dateAfterTrancheOne, listOf(lrOraSentence))),
+      listOf(),
       mock(),
     )
 
@@ -119,10 +120,10 @@ class UnsupportedSDS40RecallSentenceTest {
     lrOraSentence.releaseDateTypes =
       ReleaseDateTypes(listOf(ReleaseDateType.CRD), lrOraSentence, offender)
     lrOraSentence.sentenceCalculation = mock()
-
+    whenever(lrOraSentence.sentenceCalculation.adjustedHistoricDeterminateReleaseDate).thenReturn(dateBeforeTrancheOne)
     val calculationOutput = CalculationOutput(
       listOf(lrOraSentence),
-      listOf(CustodialPeriod(from = lrOraSentence.sentencedAt, to = dateBeforeTrancheOne, listOf(lrOraSentence))),
+      listOf(),
       mock(),
     )
 

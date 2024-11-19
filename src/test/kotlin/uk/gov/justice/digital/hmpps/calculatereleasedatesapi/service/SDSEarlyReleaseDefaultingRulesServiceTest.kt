@@ -134,6 +134,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       UnadjustedReleaseDate(
         sentence,
         { 0.5 },
+        { 0.5 },
       ),
       SentenceAdjustments(),
       false,
@@ -192,6 +193,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         sentence,
+        { 0.5 },
         { 0.5 },
       ),
       SentenceAdjustments(),
@@ -351,6 +353,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
         sentence,
+        { 0.5 },
         { 0.5 },
       ),
       SentenceAdjustments(remand = 1),
