@@ -22,6 +22,17 @@ data class SentenceCalculation(
   val numberOfDaysToPostRecallReleaseDate: Int? get() = unadjustedReleaseDate.numberOfDaysToPostRecallReleaseDate
   val unadjustedPostRecallReleaseDate: LocalDate? get() = unadjustedReleaseDate.unadjustedPostRecallReleaseDate
 
+  val adjustedHistoricDeterminateReleaseDate: LocalDate
+    get() {
+      val date = unadjustedReleaseDate.unadjustedHistoricDeterminateReleaseDate
+        .plusDays(adjustments.adjustmentsForInitalRelease())
+      return if (date.isAfter(sentence.sentencedAt)) {
+        date
+      } else {
+        sentence.sentencedAt
+      }
+    }
+
   val adjustedDeterminateReleaseDate: LocalDate
     get() {
       val date = adjustedUncappedDeterminateReleaseDate.minusDays(adjustments.unusedAdaDays)

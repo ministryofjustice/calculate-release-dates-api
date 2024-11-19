@@ -584,6 +584,7 @@ class HdcedCalculatorTest {
     var unadjustedReleaseDate = UnadjustedReleaseDate(
       sentence,
       { 0.0 },
+      { 0.0 },
     )
     unadjustedReleaseDate = spy(unadjustedReleaseDate)
     lenient().whenever(unadjustedReleaseDate.releaseDateCalculation).thenReturn(releaseDateCalculation)

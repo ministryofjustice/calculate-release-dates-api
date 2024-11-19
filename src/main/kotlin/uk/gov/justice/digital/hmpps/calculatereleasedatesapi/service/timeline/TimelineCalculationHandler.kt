@@ -22,4 +22,8 @@ abstract class TimelineCalculationHandler(
     }
     return { identification: SentenceIdentificationTrack -> multiplierLookup.historicMultiplierFor(identification) }
   }
+
+  fun historicMultiplerFnForDate(): (identification: SentenceIdentificationTrack) -> Double {
+    return { identification: SentenceIdentificationTrack -> multiplierLookup.historicMultiplierFor(identification) }
+  }
 }
