@@ -53,10 +53,17 @@ class TimelineUalAdjustmentCalculationHandler(
 
   private fun setAdjustmentsDuringCustodialPeriod(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData, ualDays: Long) {
     with(timelineTrackingData) {
+      val (sentencesBeforeReleaseDate, sentencesAfterReleaseDate) = custodialSentences.partition { timelineCalculationDate.isBeforeOrEqualTo(it.sentenceCalculation.adjustedDeterminateReleaseDate) }
       timelineCalculator.setAdjustments(
-        custodialSentences.filter { timelineCalculationDate.isBeforeOrEqualTo(it.sentenceCalculation.adjustedDeterminateReleaseDate) },
+        sentencesBeforeReleaseDate,
         SentenceAdjustments(
           ualDuringCustody = ualDays,
+        ),
+      )
+      timelineCalculator.setAdjustments(
+        sentencesAfterReleaseDate.filter { it.isRecall() },
+        SentenceAdjustments(
+          ualAfterDeterminateRelease = ualDays,
         ),
       )
     }

@@ -7,9 +7,9 @@
       "dates": {
         "SLED": {
           "unadjusted": "2024-11-26",
-          "adjusted": "2024-04-01",
+          "adjusted": "2024-04-15",
           "daysFromSentenceStart": 92,
-          "adjustedByDays": 239
+          "adjustedByDays": 225
         },
         "PRRD": {
           "unadjusted": "2024-10-11",
@@ -29,9 +29,9 @@
       "dates": {
         "SLED": {
           "unadjusted": "2024-11-26",
-          "adjusted": "2024-04-01",
+          "adjusted": "2024-04-15",
           "daysFromSentenceStart": 92,
-          "adjustedByDays": 239
+          "adjustedByDays": 225
         },
         "PRRD": {
           "unadjusted": "2024-10-11",
