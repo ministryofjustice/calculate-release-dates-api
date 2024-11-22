@@ -111,7 +111,7 @@ enum class SentenceCalculationType(
   HDR_ORA(isSupported = false, isIndeterminate = false),
   HDR(isSupported = false, isIndeterminate = false),
   LR_ES(isSupported = false, isIndeterminate = false),
-  FTR_HDC(isSupported = false, isIndeterminate = false),
+  FTR_HDC(isSupported = false, isIndeterminate = false, isFixedTermRecall = true),
   YRO(isSupported = false, isIndeterminate = false),
   SEC91(isSupported = false, isIndeterminate = false),
   VOO(isSupported = false, isIndeterminate = false),
