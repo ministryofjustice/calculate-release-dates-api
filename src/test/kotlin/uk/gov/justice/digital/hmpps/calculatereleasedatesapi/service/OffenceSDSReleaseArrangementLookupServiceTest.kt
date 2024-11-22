@@ -809,6 +809,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
         inListD = false,
       ),
     )
+
     @JvmStatic
     fun provideEligibleSentenceTypes(): List<SentenceCalculationType> {
       return SentenceCalculationType.entries.filter { it.isSDS40Eligible }
