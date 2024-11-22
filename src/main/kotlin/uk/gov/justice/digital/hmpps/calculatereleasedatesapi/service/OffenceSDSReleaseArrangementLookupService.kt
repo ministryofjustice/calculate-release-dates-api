@@ -185,6 +185,25 @@ class OffenceSDSReleaseArrangementLookupService(
       SentenceCalculationType.SEC250,
       SentenceCalculationType.SEC250_ORA,
     )
+    private val RECALL_SENTENCE_TYPES = EnumSet.of(
+      SentenceCalculationType.LR,
+      SentenceCalculationType.LR_ORA,
+      SentenceCalculationType.LR_YOI_ORA,
+      SentenceCalculationType.LR_SEC91_ORA,
+      SentenceCalculationType.LRSEC250_ORA,
+      SentenceCalculationType.FTR_14_ORA,
+      SentenceCalculationType.FTR_14_HDC_ORA,
+      SentenceCalculationType.FTR,
+      SentenceCalculationType.FTR_ORA,
+      SentenceCalculationType.FTR_HDC_ORA,
+      SentenceCalculationType.FTR_SCH15,
+      SentenceCalculationType.FTRSCH15_ORA,
+      SentenceCalculationType.FTRSCH18,
+      SentenceCalculationType.FTRSCH18_ORA,
+      SentenceCalculationType.FTR_HDC,
+      SentenceCalculationType.HDR,
+      SentenceCalculationType.HDR_ORA,
+    )
 
     private val LEGACY_OFFENCE_CODES_FOR_OFFENCES_ON_LIST_D = listOf(
       "DV04001",
@@ -211,6 +230,6 @@ class OffenceSDSReleaseArrangementLookupService(
       )
     }
     private val SDS_EXCLUSION_CALC_TYPES = SDS_AND_DYOI_POST_PCSC_CALC_TYPES + S250_POST_PCSC_CALC_TYPES +
-      listOf(SentenceCalculationType.SEC91_03, SentenceCalculationType.SEC91_03_ORA)
+      listOf(SentenceCalculationType.SEC91_03, SentenceCalculationType.SEC91_03_ORA) + RECALL_SENTENCE_TYPES
   }
 }
