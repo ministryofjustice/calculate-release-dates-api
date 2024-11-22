@@ -163,17 +163,16 @@ enum class SentenceCalculationType(
         false
       }
     }
+  }
+  enum class SDSPlusEligibilityType {
+    NONE,
+    SECTION250,
+    SDS,
+  }
 
-    enum class SDSPlusEligibilityType {
-      NONE,
-      SECTION250,
-      SDS,
-    }
-
-    enum class ToreraEligibilityType {
-      NONE,
-      SOPC,
-      SDS,
-    }
+  enum class ToreraEligibilityType {
+    NONE,
+    SOPC,
+    SDS,
   }
 }

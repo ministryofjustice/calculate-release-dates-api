@@ -54,7 +54,7 @@ class OffenceSDSReleaseArrangementLookupService(
 
   private fun isForOffenceThatIsNowOnListDButUsedOldOffenceCode(sentenceAndOffence: SentenceAndOffence): Boolean =
     SentenceCalculationType.isSupported(sentenceAndOffence.sentenceCalculationType) &&
-      SentenceCalculationType.isSDSPlusEligible(sentenceAndOffence.sentenceCalculationType, SentenceCalculationType.Companion.SDSPlusEligibilityType.SDS) &&
+      SentenceCalculationType.isSDSPlusEligible(sentenceAndOffence.sentenceCalculationType, SentenceCalculationType.SDSPlusEligibilityType.SDS) &&
       sentenceAndOffence.offence.offenceCode in LEGACY_OFFENCE_CODES_FOR_OFFENCES_ON_LIST_D &&
       sevenYearsOrMore(sentenceAndOffence) &&
       sentencedAfterPcsc(sentenceAndOffence)
@@ -67,7 +67,7 @@ class OffenceSDSReleaseArrangementLookupService(
     val sentenceIsAfterPcsc = sentencedAfterPcsc(sentenceAndOffence)
     val sevenYearsOrMore = sevenYearsOrMore(sentenceAndOffence)
     var sdsPlusIdentified = false
-    if (SentenceCalculationType.isSDSPlusEligible(sentenceAndOffence.sentenceCalculationType, SentenceCalculationType.Companion.SDSPlusEligibilityType.SDS)) {
+    if (SentenceCalculationType.isSDSPlusEligible(sentenceAndOffence.sentenceCalculationType, SentenceCalculationType.SDSPlusEligibilityType.SDS)) {
       if (sentencedWithinOriginalSdsPlusWindow(sentenceAndOffence) && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListA == true) {
         sdsPlusIdentified = true
       } else if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListD == true) {
@@ -75,7 +75,7 @@ class OffenceSDSReleaseArrangementLookupService(
       } else if (sentenceIsAfterPcsc && fourToUnderSeven(sentenceAndOffence) && moResponseForOffence?.pcscMarkers?.inListB == true) {
         sdsPlusIdentified = true
       }
-    } else if (SentenceCalculationType.isSDSPlusEligible(sentenceAndOffence.sentenceCalculationType, SentenceCalculationType.Companion.SDSPlusEligibilityType.SECTION250)) {
+    } else if (SentenceCalculationType.isSDSPlusEligible(sentenceAndOffence.sentenceCalculationType, SentenceCalculationType.SDSPlusEligibilityType.SECTION250)) {
       if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListC == true) {
         sdsPlusIdentified = true
       }
@@ -92,13 +92,13 @@ class OffenceSDSReleaseArrangementLookupService(
         val sentencedWithinOriginalSdsWindow = sentencedWithinOriginalSdsPlusWindow(sentenceAndOffences)
 
         var matchFilter = false
-        if (SentenceCalculationType.isSDSPlusEligible(sentenceAndOffences.sentenceCalculationType, SentenceCalculationType.Companion.SDSPlusEligibilityType.SDS)) {
+        if (SentenceCalculationType.isSDSPlusEligible(sentenceAndOffences.sentenceCalculationType, SentenceCalculationType.SDSPlusEligibilityType.SDS)) {
           if (sentencedWithinOriginalSdsWindow && sevenYearsOrMore) {
             matchFilter = true
           } else if (sentenceIsAfterPcsc && fourYearsOrMore(sentenceAndOffences)) {
             matchFilter = true
           }
-        } else if (SentenceCalculationType.isSDSPlusEligible(sentenceAndOffences.sentenceCalculationType, SentenceCalculationType.Companion.SDSPlusEligibilityType.SECTION250) && sentenceIsAfterPcsc && sevenYearsOrMore) {
+        } else if (SentenceCalculationType.isSDSPlusEligible(sentenceAndOffences.sentenceCalculationType, SentenceCalculationType.SDSPlusEligibilityType.SECTION250) && sentenceIsAfterPcsc && sevenYearsOrMore) {
           matchFilter = true
         }
         matchFilter
