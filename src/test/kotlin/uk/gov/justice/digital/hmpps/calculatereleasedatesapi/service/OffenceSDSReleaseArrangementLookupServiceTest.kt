@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.times
@@ -309,14 +310,17 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
   }
 
   @Test
-  fun `should not set an SDS exclusion if sentence is unsupported`() {
+  fun `should not set an SDS exclusion if sentence is not SDS eligible`() {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
         SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
       ),
     )
-
-    val unsupportedSentence = nonSDSPlusSentenceAndOffenceFourYears.copy(sentenceCalculationType = SentenceCalculationType.entries.find { !it.isSupported }!!.name)
+    val unsupportedSentence = nonSDSPlusSentenceAndOffenceFourYears.copy(
+      sentenceCalculationType = SentenceCalculationType.entries.find {
+        !it.isSDS40Eligible
+      }!!.name,
+    )
     val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(unsupportedSentence))
     assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
     assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.NO)
@@ -353,10 +357,30 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     "YOI",
     "YOI_ORA",
   )
-  fun `should set an SDS exclusion for all supported SDS sentence types`(type: SentenceCalculationType) {
+  fun `should set an SDS exclusion for all specifically listed SDS sentence types`(type: SentenceCalculationType) {
     whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
       listOf(
         SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+      ),
+    )
+
+    val unsupportedSentence = nonSDSPlusSentenceAndOffenceFourYears.copy(sentenceCalculationType = type.name)
+    val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(unsupportedSentence))
+    assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
+    assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.VIOLENT)
+
+    verify(mockManageOffencesService, times(1)).getSdsExclusionsForOffenceCodes(any())
+  }
+
+  @ParameterizedTest(name = "Test for sentence type: {0}")
+  @MethodSource("provideEligibleSentenceTypes")
+  fun `Should set an SDS exclusion for all enumerated SDS sentence types`(type: SentenceCalculationType) {
+    whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))).thenReturn(
+      listOf(
+        SDSEarlyReleaseExclusionForOffenceCode(
+          OFFENCE_CODE_NON_SDS_PLUS,
+          SDSEarlyReleaseExclusionSchedulePart.VIOLENT,
+        ),
       ),
     )
 
@@ -785,5 +809,9 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
         inListD = false,
       ),
     )
+    @JvmStatic
+    fun provideEligibleSentenceTypes(): List<SentenceCalculationType> {
+      return SentenceCalculationType.entries.filter { it.isSDS40Eligible }
+    }
   }
 }

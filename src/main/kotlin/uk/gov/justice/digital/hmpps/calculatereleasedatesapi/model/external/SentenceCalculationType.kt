@@ -20,44 +20,49 @@ enum class SentenceCalculationType(
   val isFixedTermRecall: Boolean = false,
   val isSupported: Boolean = true,
   val isIndeterminate: Boolean = false,
+  val isSDS40Eligible: Boolean = false,
+  val isToreraEligible: ToreraEligibilityType = ToreraEligibilityType.NONE,
+  val sdsPlusEligibilityType: SDSPlusEligibilityType = SDSPlusEligibilityType.NONE,
 ) {
-  ADIMP,
-  ADIMP_ORA,
-  YOI,
-  YOI_ORA,
-  SEC91_03,
-  SEC91_03_ORA,
-  SEC250,
-  SEC250_ORA,
-  LR(STANDARD_RECALL),
-  LR_ORA(STANDARD_RECALL),
-  LR_YOI_ORA(STANDARD_RECALL),
-  LR_SEC91_ORA(STANDARD_RECALL),
-  LRSEC250_ORA(STANDARD_RECALL),
-  FTR_14_ORA(recallType = FIXED_TERM_RECALL_14, primaryName = "14FTR_ORA", isFixedTermRecall = true),
+  ADIMP(isSDS40Eligible = true, isToreraEligible = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
+  ADIMP_ORA(isSDS40Eligible = true, isToreraEligible = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
+  YOI(isSDS40Eligible = true, isToreraEligible = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
+  YOI_ORA(isSDS40Eligible = true, isToreraEligible = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
+  SEC91_03(isSDS40Eligible = true),
+  SEC91_03_ORA(isSDS40Eligible = true),
+  SEC250(isSDS40Eligible = true, isToreraEligible = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
+  SEC250_ORA(isSDS40Eligible = true, isToreraEligible = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
+  LR(STANDARD_RECALL, isSDS40Eligible = true),
+  LR_ORA(STANDARD_RECALL, isSDS40Eligible = true),
+  LR_YOI_ORA(STANDARD_RECALL, isSDS40Eligible = true),
+  LR_SEC91_ORA(STANDARD_RECALL, isSDS40Eligible = true),
+  LRSEC250_ORA(STANDARD_RECALL, isSDS40Eligible = true),
+  FTR_14_ORA(FIXED_TERM_RECALL_14, primaryName = "14FTR_ORA", isFixedTermRecall = true, isSDS40Eligible = true),
   FTR_14_HDC_ORA(
     recallType = FIXED_TERM_RECALL_14,
-    primaryName = "14FTRHDC_ORA",
     isFixedTermRecall = true,
     isSupported = false,
-    isIndeterminate = false,
+    isSDS40Eligible = true,
   ),
-  FTR(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
-  FTR_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
-  FTR_HDC_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true, isSupported = false),
-  FTR_SCH15(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
-  FTRSCH15_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
-  FTRSCH18(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
-  FTRSCH18_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true),
+  FTR(FIXED_TERM_RECALL_28, isFixedTermRecall = true, isSDS40Eligible = true),
+  FTR_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true, isSDS40Eligible = true),
+  FTR_HDC_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true, isSupported = false, isSDS40Eligible = true),
+  FTR_SCH15(FIXED_TERM_RECALL_28, isFixedTermRecall = true, isSDS40Eligible = true),
+  FTRSCH15_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true, isSDS40Eligible = true),
+  FTRSCH18(FIXED_TERM_RECALL_28, isFixedTermRecall = true, isSDS40Eligible = true),
+  FTRSCH18_ORA(FIXED_TERM_RECALL_28, isFixedTermRecall = true, isSDS40Eligible = true),
+  FTR_HDC(isSupported = false, isIndeterminate = false, isFixedTermRecall = true, isSDS40Eligible = true),
+  HDR(isSupported = false, isIndeterminate = false, isSDS40Eligible = true),
+  HDR_ORA(isSupported = false, isIndeterminate = false, isSDS40Eligible = true),
   LASPO_AR(sentenceClazz = ExtendedDeterminateSentence::class.java),
   LASPO_DR(sentenceClazz = ExtendedDeterminateSentence::class.java),
   EDS18(sentenceClazz = ExtendedDeterminateSentence::class.java),
   EDS21(sentenceClazz = ExtendedDeterminateSentence::class.java),
   EDSU18(sentenceClazz = ExtendedDeterminateSentence::class.java),
   SDOPCU18(sentenceClazz = SopcSentence::class.java),
-  SOPC18(sentenceClazz = SopcSentence::class.java),
-  SOPC21(sentenceClazz = SopcSentence::class.java),
-  SEC236A(sentenceClazz = SopcSentence::class.java),
+  SOPC18(sentenceClazz = SopcSentence::class.java, isToreraEligible = ToreraEligibilityType.SOPC),
+  SOPC21(sentenceClazz = SopcSentence::class.java, isToreraEligible = ToreraEligibilityType.SOPC),
+  SEC236A(sentenceClazz = SopcSentence::class.java, isToreraEligible = ToreraEligibilityType.SOPC),
   AFINE(sentenceClazz = AFineSentence::class.java, primaryName = "A/FINE"),
   LR_EDS18(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
   LR_EDS21(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
@@ -108,10 +113,7 @@ enum class SentenceCalculationType(
   CUR(isSupported = false, isIndeterminate = false),
   CIVIL(isSupported = false, isIndeterminate = false),
   EXT(isSupported = false, isIndeterminate = false),
-  HDR_ORA(isSupported = false, isIndeterminate = false),
-  HDR(isSupported = false, isIndeterminate = false),
   LR_ES(isSupported = false, isIndeterminate = false),
-  FTR_HDC(isSupported = false, isIndeterminate = false, isFixedTermRecall = true),
   YRO(isSupported = false, isIndeterminate = false),
   SEC91(isSupported = false, isIndeterminate = false),
   VOO(isSupported = false, isIndeterminate = false),
@@ -138,19 +140,39 @@ enum class SentenceCalculationType(
         false
       }
 
-    fun isToreraSds(sentenceCalculationType: String): Boolean = listOf(
-      ADIMP.name,
-      ADIMP_ORA.name,
-      SEC250.name,
-      SEC250_ORA.name,
-      YOI.name,
-      YOI_ORA.name,
-    ).contains(sentenceCalculationType)
+    fun isSDSPlusEligible(sentenceCalculationType: String, eligibilityType: SDSPlusEligibilityType = SDSPlusEligibilityType.NONE): Boolean {
+      return when (eligibilityType) {
+        SDSPlusEligibilityType.NONE -> from(sentenceCalculationType).sdsPlusEligibilityType != SDSPlusEligibilityType.NONE
+        SDSPlusEligibilityType.SECTION250 -> from(sentenceCalculationType).sdsPlusEligibilityType == SDSPlusEligibilityType.SECTION250
+        SDSPlusEligibilityType.SDS -> from(sentenceCalculationType).sdsPlusEligibilityType == SDSPlusEligibilityType.SDS
+      }
+    }
 
-    fun isToreraSopc(sentenceCalculationType: String): Boolean = listOf(
-      SEC236A.name,
-      SOPC18.name,
-      SOPC21.name,
-    ).contains(sentenceCalculationType)
+    fun isSDS40Eligible(sentenceCalculationType: String): Boolean =
+      try {
+        from(sentenceCalculationType).isSDS40Eligible
+      } catch (error: IllegalArgumentException) {
+        false
+      }
+
+    fun isToreraEligible(sentenceCalculationType: String, eligibilityType: ToreraEligibilityType): Boolean {
+      return try {
+        from(sentenceCalculationType).isToreraEligible == eligibilityType
+      } catch (error: IllegalArgumentException) {
+        false
+      }
+    }
+
+    enum class SDSPlusEligibilityType {
+      NONE,
+      SECTION250,
+      SDS,
+    }
+
+    enum class ToreraEligibilityType {
+      NONE,
+      SOPC,
+      SDS,
+    }
   }
 }
