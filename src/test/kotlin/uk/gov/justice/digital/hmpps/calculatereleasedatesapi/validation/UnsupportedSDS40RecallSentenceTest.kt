@@ -172,7 +172,11 @@ class UnsupportedSDS40RecallSentenceTest {
     val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
     val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     val DOB: LocalDate = LocalDate.of(1980, 1, 1)
-    val TRANCHE_CONFIGURATION = SDS40TrancheConfiguration(LocalDate.of(2024, 9, 10), LocalDate.of(2024, 10, 22))
+    val TRANCHE_CONFIGURATION = SDS40TrancheConfiguration(
+      LocalDate.of(2024, 9, 10),
+      LocalDate.of(2024, 10, 22),
+      LocalDate.of(2024, 12, 16)
+    )
 
     const val PRISONER_ID = "A123456A"
     const val SEQUENCE = 153

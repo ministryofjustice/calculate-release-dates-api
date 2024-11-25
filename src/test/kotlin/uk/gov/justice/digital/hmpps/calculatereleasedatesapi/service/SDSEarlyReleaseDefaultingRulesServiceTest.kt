@@ -40,9 +40,14 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
 
   private val testCommencementDate = LocalDate.of(2024, 7, 29)
   private val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
+  private val testTrancheThreeCommencementDate = LocalDate.of(2024, 12, 16)
 
   @Mock
-  private val trancheConfiguration = SDS40TrancheConfiguration(testCommencementDate, testTrancheTwoCommencementDate)
+  private val trancheConfiguration = SDS40TrancheConfiguration(
+    testCommencementDate,
+    testTrancheTwoCommencementDate,
+    testTrancheThreeCommencementDate
+  )
 
   private val service = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)
 

@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
@@ -52,6 +53,7 @@ import java.time.temporal.ChronoUnit
 class SentenceIdentificationService(
   val tusedCalculator: TusedCalculator,
   val hdcedCalculator: HdcedCalculator,
+  val trancheConfiguration: SDS40TrancheConfiguration
 ) {
 
   fun identify(sentence: CalculableSentence, offender: Offender) {
@@ -373,11 +375,21 @@ class SentenceIdentificationService(
     }
   }
 
+  /**
+   * If sentence related offence has no exclusion from the early release scheme, return SDS_EARLY_RELEASE release type.
+   *
+   * If sentence related offence has a time based tranche 3 exclusion, and the sentence date is before tranche3 commencement date,
+   * return SDS_EARLY_RELEASE release type. These offences are only excluded from the T3 commencement date.
+   * Note that the release date must also be before the T3 date. Such a check is made later within the sentence calculation
+   *
+   * Default to SDS_STANDARD_RELEASE
+   */
   private fun sdsStandardOrEarlyRelease(
     sentence: CalculableSentence,
   ): SentenceIdentificationTrack {
     return when {
       sentence is StandardDeterminateSentence && sentence.hasAnSDSEarlyReleaseExclusion == SDSEarlyReleaseExclusionType.NO -> SDS_EARLY_RELEASE
+      sentence is StandardDeterminateSentence && offenceIsTrancheThreeAffected(sentence, trancheConfiguration) -> SDS_EARLY_RELEASE
       else -> SDS_STANDARD_RELEASE
     }
   }

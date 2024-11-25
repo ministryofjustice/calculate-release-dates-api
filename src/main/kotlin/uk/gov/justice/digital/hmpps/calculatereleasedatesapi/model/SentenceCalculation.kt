@@ -16,10 +16,8 @@ data class SentenceCalculation(
   val numberOfDaysToSentenceExpiryDate: Int get() = releaseDateCalculation.numberOfDaysToSentenceExpiryDate
   val numberOfDaysToDeterminateReleaseDateDouble: Double get() = releaseDateCalculation.numberOfDaysToDeterminateReleaseDateDouble
   val numberOfDaysToDeterminateReleaseDate: Int get() = releaseDateCalculation.numberOfDaysToDeterminateReleaseDate
-  val numberOfDaysToParoleEligibilityDate: Long? get() = releaseDateCalculation.numberOfDaysToParoleEligibilityDate
   val unadjustedExpiryDate get() = unadjustedReleaseDate.unadjustedExpiryDate
   val unadjustedDeterminateReleaseDate get() = unadjustedReleaseDate.unadjustedDeterminateReleaseDate
-  val numberOfDaysToPostRecallReleaseDate: Int? get() = unadjustedReleaseDate.numberOfDaysToPostRecallReleaseDate
   val unadjustedPostRecallReleaseDate: LocalDate? get() = unadjustedReleaseDate.unadjustedPostRecallReleaseDate
 
   val adjustedHistoricDeterminateReleaseDate: LocalDate

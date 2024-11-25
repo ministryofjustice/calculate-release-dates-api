@@ -1,0 +1,34 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2023-04-01",
+        "offenceCode": "SE20005"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 18
+        }
+      },
+      "sentencedAt": "2024-10-03",
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "identifier": "4cf64448-e0bd-3d64-8863-305b91c56f9a",
+      "consecutiveSentenceUUIDs": []
+    }
+  ],
+  "adjustments": {
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "appliesToSentencesFrom": "2023-01-01",
+        "numberOfDays": 123,
+        "fromDate": "2025-02-18",
+        "toDate": "2025-06-20"
+      }
+    ]
+  },
+  "calculateErsed": true
+}

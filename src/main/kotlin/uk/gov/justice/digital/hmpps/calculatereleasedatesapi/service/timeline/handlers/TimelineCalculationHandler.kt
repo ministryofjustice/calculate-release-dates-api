@@ -1,8 +1,11 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleasePointMultiplierLookup
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 
@@ -13,7 +16,7 @@ abstract class TimelineCalculationHandler(
 ) {
   abstract fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult
 
-  fun multiplerFnForDate(
+  fun multiplierFnForDate(
     timelineCalculationDate: LocalDate,
     earlyReleaseCommencementDate: LocalDate?,
   ): (identification: SentenceIdentificationTrack) -> Double {
@@ -23,7 +26,7 @@ abstract class TimelineCalculationHandler(
     return { identification: SentenceIdentificationTrack -> multiplierLookup.historicMultiplierFor(identification) }
   }
 
-  fun historicMultiplerFnForDate(): (identification: SentenceIdentificationTrack) -> Double {
+  fun historicMultiplierFnForDate(): (identification: SentenceIdentificationTrack) -> Double {
     return { identification: SentenceIdentificationTrack -> multiplierLookup.historicMultiplierFor(identification) }
   }
 }

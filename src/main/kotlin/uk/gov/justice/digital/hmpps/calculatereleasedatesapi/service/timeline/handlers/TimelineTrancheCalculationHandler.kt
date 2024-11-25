@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
@@ -9,6 +9,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleasePointMultiplierLookup
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheAllocationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import java.time.LocalDate
 
 @Service
@@ -20,9 +23,12 @@ class TimelineTrancheCalculationHandler(
   val sentenceExtractionService: SentencesExtractionService,
 ) : TimelineCalculationHandler(trancheConfiguration, multiplierLookup, timelineCalculator) {
 
-  override fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
+  override fun handle(
+    timelineCalculationDate: LocalDate,
+    timelineTrackingData: TimelineTrackingData,
+  ): TimelineHandleResult {
     with(timelineTrackingData) {
-      val allSentences = releasedSentences.map { it.sentences } + listOf(custodialSentences)
+      val allSentences = releasedSentences.map { it.sentences }.plus(listOf(custodialSentences))
 
       if (isLatestPotentialEarlyReleaseBeforeTrancheOneCommencement(allSentences)) {
         return TimelineHandleResult(true)
@@ -30,20 +36,26 @@ class TimelineTrancheCalculationHandler(
 
       if (custodialSentences.isNotEmpty()) {
         val tranche = trancheAllocationService.calculateTranche(allSentences.flatten())
-        val commencement =
-          if (tranche == SDSEarlyReleaseTranche.TRANCHE_1) trancheConfiguration.trancheOneCommencementDate else if (tranche == SDSEarlyReleaseTranche.TRANCHE_2) trancheConfiguration.trancheTwoCommencementDate else null
-        trancheAndCommencement = tranche to commencement
+
+        val trancheCommencementDate = when (tranche) {
+          SDSEarlyReleaseTranche.TRANCHE_1 -> trancheConfiguration.trancheOneCommencementDate
+          SDSEarlyReleaseTranche.TRANCHE_2 -> trancheConfiguration.trancheTwoCommencementDate
+          SDSEarlyReleaseTranche.TRANCHE_3 -> trancheConfiguration.trancheThreeCommencementDate
+          else -> null
+        }
+
+        trancheAndCommencement = tranche to trancheCommencementDate
 
         if (requiresTranchingNow(timelineCalculationDate, timelineTrackingData)) {
           beforeTrancheCalculation = timelineCalculator.getLatestCalculation(allSentences, offender)
           custodialSentences.forEach {
             it.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
-              multiplerFnForDate(timelineCalculationDate, commencement)
+              multiplierFnForDate(timelineCalculationDate, trancheCommencementDate)
             it.sentenceCalculation.adjustments = it.sentenceCalculation.adjustments.copy(
               unusedAdaDays = 0,
               unusedLicenceAdaDays = 0,
             )
-            it.sentenceCalculation.trancheCommencement = commencement
+            it.sentenceCalculation.trancheCommencement = trancheCommencementDate
           }
         } else {
           // No sentences at tranche date.

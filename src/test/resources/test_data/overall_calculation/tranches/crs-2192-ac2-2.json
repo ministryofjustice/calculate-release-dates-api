@@ -1,0 +1,41 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2023-04-01",
+        "offenceCode": "MD71003"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "sentencedAt": "2024-09-24",
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "identifier": "4cf64448-e0bd-3d64-8863-305b91c56f9a",
+      "consecutiveSentenceUUIDs": []
+    },
+    {
+      "offence": {
+        "committedAt": "2023-04-01",
+        "offenceCode": "PH97003A"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 4
+        }
+      },
+      "sentencedAt": "2025-01-02",
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "identifier": "4cf64448-e0bd-3d64-8863-305b91c56f9b",
+      "consecutiveSentenceUUIDs": [
+        "4cf64448-e0bd-3d64-8863-305b91c56f9a"
+      ]
+    }
+  ],
+  "calculateErsed": false
+}

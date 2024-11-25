@@ -4,4 +4,5 @@ enum class SDSEarlyReleaseTranche {
   TRANCHE_0,
   TRANCHE_1,
   TRANCHE_2,
+  TRANCHE_3
 }
