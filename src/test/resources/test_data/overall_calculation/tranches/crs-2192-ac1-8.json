@@ -7,15 +7,15 @@
     {
       "offence": {
         "committedAt": "2023-04-01",
-        "offenceCode": "COML025"
+        "offenceCode": "ST19001"
       },
       "duration": {
         "durationElements": {
-          "YEARS": 3
+          "MONTHS": 28
         }
       },
-      "sentencedAt": "2024-12-16",
-      "hasAnSDSEarlyReleaseExclusion": "MURDER_T3",
+      "sentencedAt": "2023-07-05",
+      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE_T3",
       "identifier": "4cf64448-e0bd-3d64-8863-305b91c56f9a",
       "consecutiveSentenceUUIDs": []
     }

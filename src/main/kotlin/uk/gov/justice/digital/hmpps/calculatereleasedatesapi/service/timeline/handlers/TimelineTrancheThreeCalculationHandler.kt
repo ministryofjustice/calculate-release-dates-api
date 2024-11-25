@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.h
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleasePointMultiplierLookup
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.t3offenceCodes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
@@ -22,18 +24,36 @@ class TimelineTrancheThreeCalculationHandler(
     timelineCalculationDate: LocalDate,
     timelineTrackingData: TimelineTrackingData,
   ): TimelineHandleResult {
+
+    fun updateOffenceTrack(sentences: List<AbstractSentence>) {
+      sentences
+        .filter { it.offence.offenceCode in t3offenceCodes && it.identificationTrack === SentenceIdentificationTrack.SDS_EARLY_RELEASE }
+        .forEach { sentencePart ->
+          sentencePart.identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION
+        }
+    }
+
+    fun updateToStandardReleaseIfViolation(calculableSentence: CalculableSentence) {
+      updateOffenceTrack(calculableSentence.sentenceParts())
+      calculableSentence.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
+        multiplierFnForDate(timelineCalculationDate, timelineTrackingData.trancheAndCommencement.second)
+    }
+
     with(timelineTrackingData) {
       custodialSentences
         .filter { it.offence.offenceCode in t3offenceCodes }
-        .filter { it.identificationTrack === SentenceIdentificationTrack.SDS_EARLY_RELEASE }
-        .filter { it.sentenceCalculation.adjustedHistoricDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheThreeCommencementDate) }
-        .forEach { calculableSentence ->
-          calculableSentence.identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION
+        .forEach { calculableSentence -> updateToStandardReleaseIfViolation(calculableSentence) }
 
-          calculableSentence.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
-            multiplierFnForDate(timelineCalculationDate, trancheAndCommencement.second)
+      licenseSentences
+        .filter { it.offence.offenceCode in t3offenceCodes }
+        .filter {
+          it.sentenceCalculation
+            .adjustedDeterminateReleaseDate
+            .isAfterOrEqualTo(trancheConfiguration.trancheThreeCommencementDate)
         }
+        .forEach { calculableSentence -> updateToStandardReleaseIfViolation(calculableSentence) }
     }
+
     return TimelineHandleResult()
   }
 }
