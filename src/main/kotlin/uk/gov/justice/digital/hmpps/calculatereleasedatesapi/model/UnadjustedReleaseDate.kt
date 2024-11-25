@@ -117,7 +117,7 @@ class UnadjustedReleaseDate(
         IndexedSentenceWithReleasePointMultiplier(
           sentence.orderedSentences.indexOf(it),
           it,
-          findMultiplierByIdentificationTrack(it.identificationTrack)
+          findMultiplierByIdentificationTrack(it.identificationTrack),
         )
       }
       .partition { (it.sentence is ExtendedDeterminateSentence && !it.sentence.automaticRelease) || it.sentence is SopcSentence }
@@ -138,7 +138,7 @@ class UnadjustedReleaseDate(
         val daysInThisCustodialDuration = SentenceAggregator()
           .getDaysInGroup(
             releaseStartDate,
-            sentencesWithMultipliers.map { it.sentence }
+            sentencesWithMultipliers.map { it.sentence },
           ) { it.custodialDuration() }
 
         if (sentencesWithMultipliers == sentencesWithPed && !sentence.isRecall()) {

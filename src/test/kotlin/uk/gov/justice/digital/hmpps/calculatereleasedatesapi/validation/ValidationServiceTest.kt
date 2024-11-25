@@ -3276,7 +3276,7 @@ class ValidationServiceTest {
     val TRANCHE_CONFIGURATION = SDS40TrancheConfiguration(
       LocalDate.of(2024, 9, 10),
       LocalDate.of(2024, 10, 22),
-      LocalDate.of(2024, 12, 16)
+      LocalDate.of(2024, 12, 16),
     )
 
     const val PRISONER_ID = "A123456A"

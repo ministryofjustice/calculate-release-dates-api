@@ -13,9 +13,9 @@ import java.time.LocalDate
 
 @Service
 class TimelineUalAdjustmentCalculationHandler(
-    trancheConfiguration: SDS40TrancheConfiguration,
-    multiplierLookup: ReleasePointMultiplierLookup,
-    timelineCalculator: TimelineCalculator,
+  trancheConfiguration: SDS40TrancheConfiguration,
+  multiplierLookup: ReleasePointMultiplierLookup,
+  timelineCalculator: TimelineCalculator,
 ) : TimelineCalculationHandler(trancheConfiguration, multiplierLookup, timelineCalculator) {
   override fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
     with(timelineTrackingData) {

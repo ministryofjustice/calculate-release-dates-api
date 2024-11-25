@@ -53,7 +53,7 @@ import java.time.temporal.ChronoUnit
 class SentenceIdentificationService(
   val tusedCalculator: TusedCalculator,
   val hdcedCalculator: HdcedCalculator,
-  val trancheConfiguration: SDS40TrancheConfiguration
+  val trancheConfiguration: SDS40TrancheConfiguration,
 ) {
 
   fun identify(sentence: CalculableSentence, offender: Offender) {

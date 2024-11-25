@@ -19,7 +19,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CustodialPeri
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SDSEarlyReleaseDefaultingRulesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.WorkingDayService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.*
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineSentenceCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheThreeCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineUalAdjustmentCalculationHandler
 import java.time.LocalDate
 
 @Service
@@ -42,7 +47,6 @@ class BookingTimelineService(
     returnToCustodyDate: LocalDate?,
     options: CalculationOptions,
   ): CalculationOutput {
-
     val futureData = TimelineFutureData(
       taggedBail = adjustments.getOrEmptyList(TAGGED_BAIL),
       remand = adjustments.getOrEmptyList(REMAND),
@@ -126,7 +130,8 @@ class BookingTimelineService(
       TimelineCalculationType.ADDITIONAL_DAYS, TimelineCalculationType.RESTORATION_DAYS -> timelineAwardedAdjustmentCalculationHandler
       TimelineCalculationType.UAL -> timelineUalAdjustmentCalculationHandler
       TimelineCalculationType.TRANCHE_1,
-      TimelineCalculationType.TRANCHE_2 -> timelineTrancheCalculationHandler
+      TimelineCalculationType.TRANCHE_2,
+      -> timelineTrancheCalculationHandler
       TimelineCalculationType.TRANCHE_3 -> trancheThreeCalculationHandler
     }
   }

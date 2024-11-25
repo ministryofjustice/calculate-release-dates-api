@@ -46,7 +46,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
   private val trancheConfiguration = SDS40TrancheConfiguration(
     testCommencementDate,
     testTrancheTwoCommencementDate,
-    testTrancheThreeCommencementDate
+    testTrancheThreeCommencementDate,
   )
 
   private val service = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)

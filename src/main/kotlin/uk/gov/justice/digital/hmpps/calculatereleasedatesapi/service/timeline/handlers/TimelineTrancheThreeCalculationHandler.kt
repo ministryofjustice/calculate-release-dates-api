@@ -18,7 +18,6 @@ class TimelineTrancheThreeCalculationHandler(
   timelineCalculator: TimelineCalculator,
 ) : TimelineCalculationHandler(trancheConfiguration, multiplierLookup, timelineCalculator) {
 
-
   override fun handle(
     timelineCalculationDate: LocalDate,
     timelineTrackingData: TimelineTrackingData,
