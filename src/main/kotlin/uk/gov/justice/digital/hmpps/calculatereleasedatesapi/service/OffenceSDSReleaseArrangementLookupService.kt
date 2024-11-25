@@ -166,6 +166,8 @@ class OffenceSDSReleaseArrangementLookupService(
       SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY_T3 -> SDSEarlyReleaseExclusionType.NATIONAL_SECURITY
       SDSEarlyReleaseExclusionSchedulePart.TERRORISM,
       SDSEarlyReleaseExclusionSchedulePart.TERRORISM_T3 -> SDSEarlyReleaseExclusionType.TERRORISM
+      SDSEarlyReleaseExclusionSchedulePart.MURDER,
+      SDSEarlyReleaseExclusionSchedulePart.MURDER_T3 -> SDSEarlyReleaseExclusionType.MURDER
       SDSEarlyReleaseExclusionSchedulePart.VIOLENT_T3,
       SDSEarlyReleaseExclusionSchedulePart.VIOLENT -> if (fourYearsOrMore(sentenceAndOffence)) {
         SDSEarlyReleaseExclusionType.VIOLENT
