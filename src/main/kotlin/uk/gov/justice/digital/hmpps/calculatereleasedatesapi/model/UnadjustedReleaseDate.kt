@@ -146,7 +146,6 @@ class UnadjustedReleaseDate(
         }
 
         val multiplier = sentencesWithMultipliers[0].multiplier
-        // TODO - Check if T3 offence is greater than T3 start date somehow
         sentencesWithMultipliers.first().sentence.offence.offenceCode
         val daysToReleaseInThisGroup = ceil(daysInThisCustodialDuration.toDouble().times(multiplier)).toLong()
 
