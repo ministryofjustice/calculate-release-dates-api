@@ -24,8 +24,7 @@ class TimelineTrancheThreeCalculationHandler(
     timelineCalculationDate: LocalDate,
     timelineTrackingData: TimelineTrackingData,
   ): TimelineHandleResult {
-
-    fun updateOffenceTrack(sentences: List<AbstractSentence>) {
+    val updateOffenceTrack: (List<AbstractSentence>) -> Unit = { sentences ->
       sentences
         .filter { it.offence.offenceCode in t3offenceCodes && it.identificationTrack === SentenceIdentificationTrack.SDS_EARLY_RELEASE }
         .forEach { sentencePart ->
@@ -33,7 +32,7 @@ class TimelineTrancheThreeCalculationHandler(
         }
     }
 
-    fun updateToStandardReleaseIfViolation(calculableSentence: CalculableSentence) {
+    val updateToStandardReleaseIfViolation: (calculableSentence: CalculableSentence) -> Unit = { calculableSentence ->
       updateOffenceTrack(calculableSentence.sentenceParts())
       calculableSentence.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
         multiplierFnForDate(timelineCalculationDate, timelineTrackingData.trancheAndCommencement.second)

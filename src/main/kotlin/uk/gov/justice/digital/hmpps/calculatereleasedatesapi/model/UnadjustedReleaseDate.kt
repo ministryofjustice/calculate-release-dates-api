@@ -146,7 +146,6 @@ class UnadjustedReleaseDate(
         }
 
         val multiplier = sentencesWithMultipliers[0].multiplier
-        sentencesWithMultipliers.first().sentence.offence.offenceCode
         val daysToReleaseInThisGroup = ceil(daysInThisCustodialDuration.toDouble().times(multiplier)).toLong()
 
         notionalCrd = releaseStartDate
