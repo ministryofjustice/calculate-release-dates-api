@@ -40,16 +40,12 @@ class TimelineTrancheThreeCalculationHandler(
 
     with(timelineTrackingData) {
       custodialSentences
-        .filter { it.offence.offenceCode in t3offenceCodes }
+        .filter { calculableSentence -> calculableSentence.sentenceParts().any { it.offence.offenceCode in t3offenceCodes } }
         .forEach { calculableSentence -> updateToStandardReleaseIfViolation(calculableSentence) }
 
       licenseSentences
-        .filter { it.offence.offenceCode in t3offenceCodes }
-        .filter {
-          it.sentenceCalculation
-            .adjustedDeterminateReleaseDate
-            .isAfterOrEqualTo(trancheConfiguration.trancheThreeCommencementDate)
-        }
+        .filter { calculableSentence -> calculableSentence.sentenceParts().any { it.offence.offenceCode in t3offenceCodes } }
+        .filter { it.sentenceCalculation.adjustedDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheThreeCommencementDate) }
         .forEach { calculableSentence -> updateToStandardReleaseIfViolation(calculableSentence) }
     }
 
