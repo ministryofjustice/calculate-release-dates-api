@@ -20,6 +20,15 @@ abstract class TimelineCalculationHandler(
     timelineCalculationDate: LocalDate,
     earlyReleaseCommencementDate: LocalDate?,
   ): (identification: SentenceIdentificationTrack) -> Double {
+    if (timelineCalculationDate.isAfterOrEqualTo(trancheConfiguration.trancheThreeCommencementDate)) {
+      return { identification: SentenceIdentificationTrack ->
+        if (identification == SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION) {
+          0.5
+        } else {
+          multiplierLookup.multiplierFor(identification)
+        }
+      }
+    }
     if (timelineCalculationDate.isAfterOrEqualTo(earlyReleaseCommencementDate ?: trancheConfiguration.trancheOneCommencementDate)) {
       return { identification: SentenceIdentificationTrack -> multiplierLookup.multiplierFor(identification) }
     }

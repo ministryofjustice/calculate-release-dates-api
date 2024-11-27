@@ -37,7 +37,7 @@ class TrancheAllocationService(
 
   private fun isEligibleForTrancheRules(sentence: CalculableSentence): Boolean =
     (
-      sentence.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE ||
+      sentence.identificationTrack.isEarlyReleaseTrancheOneTwo() ||
         sentence.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE
       ) &&
       !sentence.isRecall()

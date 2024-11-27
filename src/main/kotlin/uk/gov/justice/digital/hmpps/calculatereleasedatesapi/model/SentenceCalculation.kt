@@ -183,7 +183,7 @@ data class SentenceCalculation(
   var isReleaseDateConditional: Boolean = false
 
   private fun isDateDefaultedToCommencement(releaseDate: LocalDate): Boolean {
-    return !sentence.isRecall() && trancheCommencement != null && sentence.sentenceParts().any { it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE } && releaseDate.isBefore(trancheCommencement)
+    return !sentence.isRecall() && trancheCommencement != null && sentence.sentenceParts().any { it.identificationTrack.isEarlyReleaseTrancheOneTwo() } && releaseDate.isBefore(trancheCommencement)
   }
 
   fun buildString(releaseDateTypes: List<ReleaseDateType>): String {

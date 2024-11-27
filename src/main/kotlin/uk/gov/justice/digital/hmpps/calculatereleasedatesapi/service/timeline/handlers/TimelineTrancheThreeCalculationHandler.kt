@@ -24,31 +24,14 @@ class TimelineTrancheThreeCalculationHandler(
     timelineCalculationDate: LocalDate,
     timelineTrackingData: TimelineTrackingData,
   ): TimelineHandleResult {
-    val updateOffenceTrack: (List<AbstractSentence>) -> Unit = { sentences ->
-      sentences
-        .filter { it.offence.offenceCode in t3offenceCodes && it.identificationTrack === SentenceIdentificationTrack.SDS_EARLY_RELEASE }
-        .forEach { sentencePart ->
-          sentencePart.identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION
-        }
-    }
-
-    val updateToStandardReleaseIfViolation: (calculableSentence: CalculableSentence) -> Unit = { calculableSentence ->
-      updateOffenceTrack(calculableSentence.sentenceParts())
-      calculableSentence.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
-        multiplierFnForDate(timelineCalculationDate, timelineTrackingData.trancheAndCommencement.second)
-    }
-
     with(timelineTrackingData) {
       custodialSentences
-        .filter { calculableSentence -> calculableSentence.sentenceParts().any { it.offence.offenceCode in t3offenceCodes } }
-        .forEach { calculableSentence -> updateToStandardReleaseIfViolation(calculableSentence) }
-
-      licenseSentences
-        .filter { calculableSentence -> calculableSentence.sentenceParts().any { it.offence.offenceCode in t3offenceCodes } }
-        .filter { it.sentenceCalculation.adjustedDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheThreeCommencementDate) }
-        .forEach { calculableSentence -> updateToStandardReleaseIfViolation(calculableSentence) }
+        .filter { sentence -> sentence.sentenceParts().any { it.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION }}
+        .forEach {
+        it.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
+          multiplierFnForDate(timelineCalculationDate, timelineTrackingData.trancheAndCommencement.second)
+      }
     }
-
     return TimelineHandleResult()
   }
 }

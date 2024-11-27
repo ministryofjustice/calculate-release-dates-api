@@ -40,7 +40,6 @@ class TimelineTrancheCalculationHandler(
         val trancheCommencementDate = when (tranche) {
           SDSEarlyReleaseTranche.TRANCHE_1 -> trancheConfiguration.trancheOneCommencementDate
           SDSEarlyReleaseTranche.TRANCHE_2 -> trancheConfiguration.trancheTwoCommencementDate
-          SDSEarlyReleaseTranche.TRANCHE_3 -> trancheConfiguration.trancheThreeCommencementDate
           else -> null
         }
 
@@ -68,7 +67,7 @@ class TimelineTrancheCalculationHandler(
 
   private fun isLatestPotentialEarlyReleaseBeforeTrancheOneCommencement(allSentences: List<List<CalculableSentence>>): Boolean {
     val earlyReleaseSentences = allSentences.flatten().filter {
-      it.sentenceParts().any { part -> part.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE }
+      it.sentenceParts().any { part -> part.identificationTrack.isEarlyReleaseTrancheOneTwo() }
     }
     if (earlyReleaseSentences.isNotEmpty()) {
       val latestPotentialEarlyRelease =
@@ -84,7 +83,7 @@ class TimelineTrancheCalculationHandler(
   private fun requiresTranchingNow(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): Boolean {
     with(timelineTrackingData) {
       val anyEarlyRelease = custodialSentences.any { sentence ->
-        sentence.sentenceParts().any { it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE }
+        sentence.sentenceParts().any { it.identificationTrack.isEarlyReleaseTrancheOneTwo() }
       }
 
       return anyEarlyRelease && trancheAndCommencement.second == timelineCalculationDate

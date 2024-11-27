@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_EARLY_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_PLUS_RELEASE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_STANDARD_RELEASE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
@@ -389,7 +390,7 @@ class SentenceIdentificationService(
   ): SentenceIdentificationTrack {
     return when {
       sentence is StandardDeterminateSentence && sentence.hasAnSDSEarlyReleaseExclusion == SDSEarlyReleaseExclusionType.NO -> SDS_EARLY_RELEASE
-      sentence is StandardDeterminateSentence && offenceIsTrancheThreeAffected(sentence, trancheConfiguration) -> SDS_EARLY_RELEASE
+      sentence is StandardDeterminateSentence && offenceIsTrancheThreeAffected(sentence, trancheConfiguration) -> SDS_STANDARD_RELEASE_T3_EXCLUSION
       else -> SDS_STANDARD_RELEASE
     }
   }
