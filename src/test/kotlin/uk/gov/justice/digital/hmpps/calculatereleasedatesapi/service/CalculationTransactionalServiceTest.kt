@@ -750,7 +750,7 @@ class CalculationTransactionalServiceTest {
     val adjustmentValidationService = AdjustmentValidationService()
     val dtoValidationService = DtoValidationService()
     val botusValidationService = BotusValidationService()
-    val recallValidationService = RecallValidationService(trancheConfiguration)
+    val recallValidationService = RecallValidationService(trancheConfiguration, validationUtilities)
     val unsupportedValidationService = UnsupportedValidationService()
     val postCalculationValidationService = PostCalculationValidationService(trancheConfiguration, featureToggles)
     val section91ValidationService = Section91ValidationService(validationUtilities)
