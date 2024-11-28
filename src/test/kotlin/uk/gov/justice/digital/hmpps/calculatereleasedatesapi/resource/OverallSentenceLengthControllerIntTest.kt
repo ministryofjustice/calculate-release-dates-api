@@ -4,12 +4,11 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OverallSentenceLength
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OverallSentenceLengthComparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OverallSentenceLengthRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OverallSentenceLengthSentence
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit.YEARS
 
 class OverallSentenceLengthControllerIntTest : IntegrationTestBase() {
 
@@ -18,15 +17,15 @@ class OverallSentenceLengthControllerIntTest : IntegrationTestBase() {
     val request = OverallSentenceLengthRequest(
       consecutiveSentences = listOf(
         OverallSentenceLengthSentence(
-          custodialDuration = Duration(mapOf(YEARS to 2)),
+          custodialDuration = OverallSentenceLength(years = 2),
         ),
         OverallSentenceLengthSentence(
-          custodialDuration = Duration(mapOf(YEARS to 3)),
+          custodialDuration = OverallSentenceLength(years = 3),
         ),
       ),
       concurrentSentences = emptyList(),
       overallSentenceLength = OverallSentenceLengthSentence(
-        Duration(mapOf(YEARS to 5)),
+        OverallSentenceLength(years = 5),
       ),
       warrantDate = LocalDate.of(2023, 1, 1),
     )
@@ -44,7 +43,7 @@ class OverallSentenceLengthControllerIntTest : IntegrationTestBase() {
 
     Assertions.assertThat(comparison).isEqualTo(
       OverallSentenceLengthComparison(
-        Duration(mapOf(YEARS to 5)),
+        OverallSentenceLength(years = 5),
         null,
         true,
         null,
