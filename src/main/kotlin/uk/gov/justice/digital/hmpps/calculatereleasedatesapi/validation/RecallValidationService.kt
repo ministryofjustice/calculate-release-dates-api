@@ -43,29 +43,36 @@ class RecallValidationService(
 
   internal fun validateRemandPeriodsAgainstSentenceDates(sourceData: PrisonApiSourceData): List<ValidationMessage> {
     val remandPeriods = sourceData.bookingAndSentenceAdjustments.sentenceAdjustments
-      .filter { it.type == SentenceAdjustmentType.REMAND }
+      .filter {
+        it.type in setOf(
+          SentenceAdjustmentType.REMAND,
+          SentenceAdjustmentType.RECALL_SENTENCE_REMAND,
+        )
+      }
 
     val validationMessages = mutableListOf<ValidationMessage>()
 
-    sourceData.sentenceAndOffences.forEach { sentence ->
-      remandPeriods
-        .filter { it.sentenceSequence == sentence.sentenceSequence }
-        .forEach { remandPeriod ->
-          val sentenceDate = sentence.sentenceDate
+    val sentenceMap = sourceData.sentenceAndOffences.associateBy { it.sentenceSequence }
 
-          val areRemandDatesBeforeSentenceDate = (remandPeriod.fromDate?.isAfterOrEqualTo(sentenceDate) ?: false) ||
-            (remandPeriod.toDate?.isAfterOrEqualTo(sentenceDate) ?: false)
+    remandPeriods.forEach { remandPeriod ->
+      val sentence = sentenceMap[remandPeriod.sentenceSequence]
+      if (sentence != null) {
+        val sentenceDate = sentence.sentenceDate
 
-          if (areRemandDatesBeforeSentenceDate) {
-            validationMessages.add(
-              ValidationMessage(
-                ValidationCode.REMAND_ON_OR_AFTER_SENTENCE_DATE,
-                validationUtilities.getCaseSeqAndLineSeq(sentence),
-              ),
-            )
-          }
+        val areRemandDatesAfterSentenceDate = (remandPeriod.fromDate?.isAfterOrEqualTo(sentenceDate) ?: false) ||
+          (remandPeriod.toDate?.isAfterOrEqualTo(sentenceDate) ?: false)
+
+        if (areRemandDatesAfterSentenceDate) {
+          validationMessages.add(
+            ValidationMessage(
+              ValidationCode.REMAND_ON_OR_AFTER_SENTENCE_DATE,
+              validationUtilities.getCaseSeqAndLineSeq(sentence),
+            ),
+          )
         }
+      }
     }
+
     return validationMessages
   }
 
