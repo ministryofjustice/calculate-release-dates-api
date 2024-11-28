@@ -3,12 +3,11 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OverallSentenceLength
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OverallSentenceLengthComparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OverallSentenceLengthRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OverallSentenceLengthSentence
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit.YEARS
 
 class OverallSentenceLengthServiceTest {
   private val overallSentenceLengthService = OverallSentenceLengthService()
@@ -20,15 +19,15 @@ class OverallSentenceLengthServiceTest {
       val request = OverallSentenceLengthRequest(
         consecutiveSentences = listOf(
           OverallSentenceLengthSentence(
-            custodialDuration = Duration(mapOf(YEARS to 2)),
+            custodialDuration = OverallSentenceLength(years = 2),
           ),
           OverallSentenceLengthSentence(
-            custodialDuration = Duration(mapOf(YEARS to 3)),
+            custodialDuration = OverallSentenceLength(years = 3),
           ),
         ),
         concurrentSentences = emptyList(),
         overallSentenceLength = OverallSentenceLengthSentence(
-          Duration(mapOf(YEARS to 5)),
+          OverallSentenceLength(years = 5),
         ),
         warrantDate = SENTENCE_DATE,
       )
@@ -37,7 +36,7 @@ class OverallSentenceLengthServiceTest {
 
       assertThat(result).isEqualTo(
         OverallSentenceLengthComparison(
-          Duration(mapOf(YEARS to 5)),
+          OverallSentenceLength(years = 5),
           null,
           true,
           null,
@@ -51,14 +50,14 @@ class OverallSentenceLengthServiceTest {
         consecutiveSentences = emptyList(),
         concurrentSentences = listOf(
           OverallSentenceLengthSentence(
-            custodialDuration = Duration(mapOf(YEARS to 2)),
+            custodialDuration = OverallSentenceLength(years = 2),
           ),
           OverallSentenceLengthSentence(
-            custodialDuration = Duration(mapOf(YEARS to 3)),
+            custodialDuration = OverallSentenceLength(years = 3),
           ),
         ),
         overallSentenceLength = OverallSentenceLengthSentence(
-          Duration(mapOf(YEARS to 3)),
+          OverallSentenceLength(years = 3),
         ),
         warrantDate = SENTENCE_DATE,
       )
@@ -66,7 +65,7 @@ class OverallSentenceLengthServiceTest {
 
       assertThat(result).isEqualTo(
         OverallSentenceLengthComparison(
-          Duration(mapOf(YEARS to 3)),
+          OverallSentenceLength(years = 3),
           null,
           true,
           null,
@@ -79,19 +78,19 @@ class OverallSentenceLengthServiceTest {
       val request = OverallSentenceLengthRequest(
         consecutiveSentences = listOf(
           OverallSentenceLengthSentence(
-            custodialDuration = Duration(mapOf(YEARS to 2)),
+            custodialDuration = OverallSentenceLength(years = 2),
           ),
           OverallSentenceLengthSentence(
-            custodialDuration = Duration(mapOf(YEARS to 3)),
+            custodialDuration = OverallSentenceLength(years = 3),
           ),
         ),
         concurrentSentences = listOf(
           OverallSentenceLengthSentence(
-            custodialDuration = Duration(mapOf(YEARS to 7)),
+            custodialDuration = OverallSentenceLength(years = 7),
           ),
         ),
         overallSentenceLength = OverallSentenceLengthSentence(
-          Duration(mapOf(YEARS to 3)),
+          OverallSentenceLength(years = 3),
         ),
         warrantDate = SENTENCE_DATE,
       )
@@ -100,7 +99,7 @@ class OverallSentenceLengthServiceTest {
 
       assertThat(result).isEqualTo(
         OverallSentenceLengthComparison(
-          Duration(mapOf(YEARS to 7)),
+          OverallSentenceLength(years = 7),
           null,
           false,
           null,
@@ -116,18 +115,18 @@ class OverallSentenceLengthServiceTest {
       val request = OverallSentenceLengthRequest(
         consecutiveSentences = listOf(
           OverallSentenceLengthSentence(
-            custodialDuration = Duration(mapOf(YEARS to 2)),
-            extensionDuration = Duration(mapOf(YEARS to 1)),
+            custodialDuration = OverallSentenceLength(years = 2),
+            extensionDuration = OverallSentenceLength(years = 1),
           ),
           OverallSentenceLengthSentence(
-            custodialDuration = Duration(mapOf(YEARS to 3)),
-            extensionDuration = Duration(mapOf(YEARS to 1)),
+            custodialDuration = OverallSentenceLength(years = 3),
+            extensionDuration = OverallSentenceLength(years = 1),
           ),
         ),
         concurrentSentences = emptyList(),
         overallSentenceLength = OverallSentenceLengthSentence(
-          custodialDuration = Duration(mapOf(YEARS to 5)),
-          extensionDuration = Duration(mapOf(YEARS to 2)),
+          custodialDuration = OverallSentenceLength(years = 5),
+          extensionDuration = OverallSentenceLength(years = 2),
         ),
         warrantDate = SENTENCE_DATE,
       )
@@ -136,8 +135,8 @@ class OverallSentenceLengthServiceTest {
 
       assertThat(result).isEqualTo(
         OverallSentenceLengthComparison(
-          Duration(mapOf(YEARS to 5)),
-          Duration(mapOf(YEARS to 2)),
+          OverallSentenceLength(years = 5),
+          OverallSentenceLength(years = 2),
           true,
           true,
         ),
@@ -150,17 +149,17 @@ class OverallSentenceLengthServiceTest {
         consecutiveSentences = emptyList(),
         concurrentSentences = listOf(
           OverallSentenceLengthSentence(
-            custodialDuration = Duration(mapOf(YEARS to 2)),
-            extensionDuration = Duration(mapOf(YEARS to 1)),
+            custodialDuration = OverallSentenceLength(years = 2),
+            extensionDuration = OverallSentenceLength(years = 1),
           ),
           OverallSentenceLengthSentence(
-            custodialDuration = Duration(mapOf(YEARS to 3)),
-            extensionDuration = Duration(mapOf(YEARS to 2)),
+            custodialDuration = OverallSentenceLength(years = 3),
+            extensionDuration = OverallSentenceLength(years = 2),
           ),
         ),
         overallSentenceLength = OverallSentenceLengthSentence(
-          custodialDuration = Duration(mapOf(YEARS to 3)),
-          extensionDuration = Duration(mapOf(YEARS to 2)),
+          custodialDuration = OverallSentenceLength(years = 3),
+          extensionDuration = OverallSentenceLength(years = 2),
         ),
         warrantDate = SENTENCE_DATE,
       )
@@ -168,8 +167,8 @@ class OverallSentenceLengthServiceTest {
 
       assertThat(result).isEqualTo(
         OverallSentenceLengthComparison(
-          Duration(mapOf(YEARS to 3)),
-          Duration(mapOf(YEARS to 2)),
+          OverallSentenceLength(years = 3),
+          OverallSentenceLength(years = 2),
           true,
           true,
         ),
@@ -182,17 +181,17 @@ class OverallSentenceLengthServiceTest {
         consecutiveSentences = emptyList(),
         concurrentSentences = listOf(
           OverallSentenceLengthSentence(
-            custodialDuration = Duration(mapOf(YEARS to 8)),
-            extensionDuration = Duration(mapOf(YEARS to 2)),
+            custodialDuration = OverallSentenceLength(years = 8),
+            extensionDuration = OverallSentenceLength(years = 2),
           ),
           OverallSentenceLengthSentence(
-            custodialDuration = Duration(mapOf(YEARS to 7)),
-            extensionDuration = Duration(mapOf(YEARS to 4)),
+            custodialDuration = OverallSentenceLength(years = 7),
+            extensionDuration = OverallSentenceLength(years = 4),
           ),
         ),
         overallSentenceLength = OverallSentenceLengthSentence(
-          custodialDuration = Duration(mapOf(YEARS to 8)),
-          extensionDuration = Duration(mapOf(YEARS to 3)),
+          custodialDuration = OverallSentenceLength(years = 8),
+          extensionDuration = OverallSentenceLength(years = 3),
         ),
         warrantDate = SENTENCE_DATE,
       )
@@ -200,8 +199,8 @@ class OverallSentenceLengthServiceTest {
 
       assertThat(result).isEqualTo(
         OverallSentenceLengthComparison(
-          Duration(mapOf(YEARS to 8)),
-          Duration(mapOf(YEARS to 3)),
+          OverallSentenceLength(years = 8),
+          OverallSentenceLength(years = 3),
           true,
           true,
         ),

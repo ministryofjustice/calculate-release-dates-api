@@ -1,14 +1,14 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 data class OverallSentenceLengthSentence(
-  val custodialDuration: Duration,
-  val extensionDuration: Duration? = null,
+  val custodialDuration: OverallSentenceLength,
+  val extensionDuration: OverallSentenceLength? = null,
 ) {
 
   fun combinedDuration(): Duration {
     if (extensionDuration == null) {
-      return custodialDuration
+      return custodialDuration.toDuration()
     }
-    return custodialDuration.appendAll(extensionDuration.durationElements)
+    return custodialDuration.toDuration().appendAll(extensionDuration.toDuration().durationElements)
   }
 }
