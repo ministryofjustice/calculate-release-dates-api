@@ -15,7 +15,7 @@ class OverallSentenceLengthService {
     val compareCombined = compareSentenceLength(overallSentenceLengthRequest) { it.combinedDuration() }
 
     if (overallSentenceLengthRequest.overallSentenceLength.extensionDuration != null) {
-      val compareCustodial = compareSentenceLength(overallSentenceLengthRequest) { it.custodialDuration }
+      val compareCustodial = compareSentenceLength(overallSentenceLengthRequest) { it.custodialDuration.toDuration() }
       return OverallSentenceLengthComparison(
         compareCustodial.second,
         getLicenseLength(compareCustodial.second, compareCombined.second, overallSentenceLengthRequest.warrantDate),
@@ -58,7 +58,7 @@ class OverallSentenceLengthService {
   }
 
   private fun hasSameUnits(custodial: Duration, combined: Duration): Boolean {
-    return custodial.durationElements.filter { (unit, days) -> days != 0L }.map { it.key } == combined.durationElements.filter { (unit, days) -> days != 0L }.map { it.key }
+    return custodial.durationElements.filter { (_, days) -> days != 0L }.map { it.key } == combined.durationElements.filter { (_, days) -> days != 0L }.map { it.key }
   }
 
   private fun getLicenseLength(custodial: Duration, combined: Duration, sentenceAt: LocalDate): Duration {
