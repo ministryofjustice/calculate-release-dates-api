@@ -61,6 +61,7 @@ class ValidationService(
     val validationMessages = sentenceValidationService.validateSentences(sortedSentences)
     validationMessages += adjustmentValidationService.throwErrorIfAdditionAdjustmentsAfterLatestReleaseDate(adjustments)
     validationMessages += recallValidationService.validateFixedTermRecall(sourceData)
+    validationMessages += recallValidationService.validateRemandPeriodsAgainstSentenceDates(sourceData)
     validationMessages += preCalculationValidationService.validatePrePcscDtoDoesNotHaveRemandOrTaggedBail(sourceData)
 
     return validationMessages

@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FI
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
@@ -24,6 +25,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 @Service
 class RecallValidationService(
   private val trancheConfiguration: SDS40TrancheConfiguration,
+  private val validationUtilities: ValidationUtilities,
 ) {
 
   internal fun validateFixedTermRecall(sourceData: PrisonApiSourceData): List<ValidationMessage> {
@@ -37,6 +39,34 @@ class RecallValidationService(
       has28DayFTRSentence && recallLength == 14 -> listOf(ValidationMessage(ValidationCode.FTR_TYPE_28_DAYS_BUT_LENGTH_IS_14))
       else -> emptyList()
     }
+  }
+
+  internal fun validateRemandPeriodsAgainstSentenceDates(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+    val remandPeriods = sourceData.bookingAndSentenceAdjustments.sentenceAdjustments
+      .filter { it.type == SentenceAdjustmentType.REMAND }
+
+    val validationMessages = mutableListOf<ValidationMessage>()
+
+    sourceData.sentenceAndOffences.forEach { sentence ->
+      remandPeriods
+        .filter { it.sentenceSequence == sentence.sentenceSequence }
+        .forEach { remandPeriod ->
+          val sentenceDate = sentence.sentenceDate
+
+          val areRemandDatesBeforeSentenceDate = (remandPeriod.fromDate?.isAfterOrEqualTo(sentenceDate) ?: false) ||
+            (remandPeriod.toDate?.isAfterOrEqualTo(sentenceDate) ?: false)
+
+          if (areRemandDatesBeforeSentenceDate) {
+            validationMessages.add(
+              ValidationMessage(
+                ValidationCode.REMAND_ON_OR_AFTER_SENTENCE_DATE,
+                validationUtilities.getCaseSeqAndLineSeq(sentence),
+              ),
+            )
+          }
+        }
+    }
+    return validationMessages
   }
 
   internal fun getFtrValidationDetails(
