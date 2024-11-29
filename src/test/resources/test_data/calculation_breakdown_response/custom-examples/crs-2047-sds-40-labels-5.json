@@ -34,10 +34,10 @@
           "adjustedByDays": 34
         },
         "CRD": {
-          "unadjusted": "2024-05-17",
+          "unadjusted": "2024-05-23",
           "adjusted": "2024-04-23",
-          "daysFromSentenceStart": 25,
-          "adjustedByDays": 24
+          "daysFromSentenceStart": 31,
+          "adjustedByDays": 30
         }
       },
       "lineSequence": 2,
