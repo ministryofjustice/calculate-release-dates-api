@@ -3,14 +3,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.h
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleasePointMultiplierLookup
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.t3offenceCodes
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 
 @Service
@@ -26,11 +22,11 @@ class TimelineTrancheThreeCalculationHandler(
   ): TimelineHandleResult {
     with(timelineTrackingData) {
       custodialSentences
-        .filter { sentence -> sentence.sentenceParts().any { it.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION }}
+        .filter { sentence -> sentence.sentenceParts().any { it.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION } }
         .forEach {
-        it.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
-          multiplierFnForDate(timelineCalculationDate, timelineTrackingData.trancheAndCommencement.second)
-      }
+          it.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
+            multiplierFnForDate(timelineCalculationDate, timelineTrackingData.trancheAndCommencement.second)
+        }
     }
     return TimelineHandleResult()
   }
