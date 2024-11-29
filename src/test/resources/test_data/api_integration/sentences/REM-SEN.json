@@ -20,5 +20,27 @@
         "offenceDescription": "Grievous bodily harm"
       }
     ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 2,
+    "lineSequence":2,
+    "caseSequence":1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "Standard Determinate",
+    "sentenceDate": "2000-05-29",
+    "terms": [{
+      "months": 5
+    }],
+    "offences": [
+      {
+        "offenderChargeId": 9992,
+        "offenceStartDate": "2000-03-17",
+        "offenceCode": "GBH",
+        "offenceDescription": "Grievous bodily harm"
+      }
+    ]
   }
 ]
