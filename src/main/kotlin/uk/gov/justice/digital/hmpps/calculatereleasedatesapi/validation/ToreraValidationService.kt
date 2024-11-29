@@ -43,7 +43,7 @@ class ToreraValidationService(
    */
   private fun getToreraSdsOffenceCodes(sentenceAndOffences: List<SentenceAndOffence>) =
     sentenceAndOffences
-      .filter { SentenceCalculationType.isToreraSds(it.sentenceCalculationType) && it.sentenceDate > SDS_DYO_TORERA_START_DATE }
+      .filter { SentenceCalculationType.isToreraEligible(it.sentenceCalculationType, eligibilityType = SentenceCalculationType.ToreraEligibilityType.SDS) && it.sentenceDate > SDS_DYO_TORERA_START_DATE }
       .map { it.offence.offenceCode }
       .toSet()
 
@@ -52,7 +52,7 @@ class ToreraValidationService(
    */
   private fun getToreraSopcOffenceCodes(sentencesAndOffence: List<SentenceAndOffence>) =
     sentencesAndOffence
-      .filter { SentenceCalculationType.isToreraSopc(it.sentenceCalculationType) && it.sentenceDate < SOPC_TORERA_END_DATE }
+      .filter { SentenceCalculationType.isToreraEligible(it.sentenceCalculationType, eligibilityType = SentenceCalculationType.ToreraEligibilityType.SOPC) && it.sentenceDate < SOPC_TORERA_END_DATE }
       .map { it.offence.offenceCode }
       .toSet()
 }
