@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.PRISONER_SUBJECT_TO_PTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_FROM_TO_DATES_REQUIRED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_OVERLAPS_WITH_REMAND
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_OVERLAPS_WITH_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SEC_91_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL
@@ -36,8 +37,8 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
       REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID,
       listOf(
         ValidationMessage(
-          ValidationCode.REMAND_ON_OR_AFTER_SENTENCE_DATE,
-          arguments = listOf("1", "1"),
+          REMAND_OVERLAPS_WITH_SENTENCE,
+          arguments = listOf("2000-04-29", "2001-02-23", "2000-04-28", "2000-04-30"),
         ),
       ),
     )
