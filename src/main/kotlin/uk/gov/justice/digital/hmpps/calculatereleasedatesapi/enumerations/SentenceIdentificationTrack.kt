@@ -8,6 +8,7 @@ enum class SentenceIdentificationTrack {
   SDS_STANDARD_RELEASE,
   SDS_EARLY_RELEASE,
   SDS_PLUS_RELEASE,
+  SDS_STANDARD_RELEASE_T3_EXCLUSION,
   RECALL,
   EDS_AUTOMATIC_RELEASE,
   EDS_DISCRETIONARY_RELEASE,
@@ -32,6 +33,11 @@ enum class SentenceIdentificationTrack {
       SDS_STANDARD_RELEASE,
       SDS_EARLY_RELEASE,
       SDS_PLUS_RELEASE,
+      SDS_STANDARD_RELEASE_T3_EXCLUSION,
     ).contains(this)
+  }
+
+  fun isEarlyReleaseTrancheOneTwo(): Boolean {
+    return listOf(SDS_STANDARD_RELEASE_T3_EXCLUSION, SDS_EARLY_RELEASE).contains(this)
   }
 }

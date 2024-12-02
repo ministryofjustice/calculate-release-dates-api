@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -16,10 +15,8 @@ data class SentenceCalculation(
   val numberOfDaysToSentenceExpiryDate: Int get() = releaseDateCalculation.numberOfDaysToSentenceExpiryDate
   val numberOfDaysToDeterminateReleaseDateDouble: Double get() = releaseDateCalculation.numberOfDaysToDeterminateReleaseDateDouble
   val numberOfDaysToDeterminateReleaseDate: Int get() = releaseDateCalculation.numberOfDaysToDeterminateReleaseDate
-  val numberOfDaysToParoleEligibilityDate: Long? get() = releaseDateCalculation.numberOfDaysToParoleEligibilityDate
   val unadjustedExpiryDate get() = unadjustedReleaseDate.unadjustedExpiryDate
   val unadjustedDeterminateReleaseDate get() = unadjustedReleaseDate.unadjustedDeterminateReleaseDate
-  val numberOfDaysToPostRecallReleaseDate: Int? get() = unadjustedReleaseDate.numberOfDaysToPostRecallReleaseDate
   val unadjustedPostRecallReleaseDate: LocalDate? get() = unadjustedReleaseDate.unadjustedPostRecallReleaseDate
 
   val adjustedHistoricDeterminateReleaseDate: LocalDate
@@ -185,7 +182,7 @@ data class SentenceCalculation(
   var isReleaseDateConditional: Boolean = false
 
   private fun isDateDefaultedToCommencement(releaseDate: LocalDate): Boolean {
-    return !sentence.isRecall() && trancheCommencement != null && sentence.sentenceParts().any { it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE } && releaseDate.isBefore(trancheCommencement)
+    return !sentence.isRecall() && trancheCommencement != null && sentence.sentenceParts().any { it.identificationTrack.isEarlyReleaseTrancheOneTwo() } && releaseDate.isBefore(trancheCommencement)
   }
 
   fun buildString(releaseDateTypes: List<ReleaseDateType>): String {

@@ -31,7 +31,8 @@
       "sentencedAt": "2024-09-09",
       "consecutiveSentenceUUIDs": [
         "0549ff5e-93b1-3f22-8095-a97ab6c60f4b"
-      ]
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "VIOLENT_T3"
     }
   ]
 }
