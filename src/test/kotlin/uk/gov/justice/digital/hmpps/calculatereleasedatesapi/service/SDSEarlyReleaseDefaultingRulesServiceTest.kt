@@ -133,7 +133,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       recallType = RecallType.STANDARD_RECALL,
     )
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
-    sentence.identificationTrack = SentenceIdentificationTrack.RECALL
+    sentence.identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE
     val earlyTused = LocalDate.of(2024, 12, 2)
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
@@ -193,7 +193,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       recallType = RecallType.STANDARD_RECALL,
     )
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
-    sentence.identificationTrack = SentenceIdentificationTrack.RECALL
+    sentence.identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE
     val earlyTused = LocalDate.of(2024, 1, 1)
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(

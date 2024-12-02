@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
@@ -38,14 +37,7 @@ import kotlin.math.ceil
 class HdcedCalculatorTest {
 
   private val config: HdcedConfiguration = hdcedConfigurationForTests()
-  private val releaseDateMultiplierLookup = mock<ReleasePointMultiplierLookup>()
   private val calculator = HdcedCalculator(config)
-
-  @BeforeEach
-  fun setUp() {
-    whenever(releaseDateMultiplierLookup.multiplierFor(SentenceIdentificationTrack.SDS_PLUS_RELEASE)).thenReturn(0.66666)
-    whenever(releaseDateMultiplierLookup.multiplierFor(SentenceIdentificationTrack.SDS_STANDARD_RELEASE)).thenReturn(0.5)
-  }
 
   @Test
   fun `shouldn't calculate a date for a sex offender`() {
