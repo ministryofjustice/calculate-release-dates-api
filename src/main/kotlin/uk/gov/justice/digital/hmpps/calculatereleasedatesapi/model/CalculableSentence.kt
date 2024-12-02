@@ -24,6 +24,7 @@ interface CalculableSentence {
   val offence: Offence
   var identificationTrack: SentenceIdentificationTrack
   val isSDSPlus: Boolean
+  val isSDSPlusEligibleSentenceAndOffence: Boolean
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

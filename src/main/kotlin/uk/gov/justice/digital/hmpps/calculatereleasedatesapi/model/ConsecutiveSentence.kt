@@ -9,6 +9,7 @@ class ConsecutiveSentence(val orderedSentences: List<AbstractSentence>) : Calcul
   override val sentencedAt: LocalDate = orderedSentences.minOf(CalculableSentence::sentencedAt)
   override val offence: Offence = orderedSentences.map(CalculableSentence::offence).minByOrNull(Offence::committedAt)!!
   override val isSDSPlus: Boolean = orderedSentences.all { it.isSDSPlus }
+  override val isSDSPlusEligibleSentenceAndOffence: Boolean = orderedSentences.all { it.isSDSPlusEligibleSentenceAndOffence }
 
   override val recallType: RecallType?
     get() {

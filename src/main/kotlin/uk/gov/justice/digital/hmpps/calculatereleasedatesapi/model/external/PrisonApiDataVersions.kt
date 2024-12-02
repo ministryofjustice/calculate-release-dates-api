@@ -41,8 +41,9 @@ class PrisonApiDataVersions {
           null,
           null,
           0.toBigDecimal(),
-          false,
-          SDSEarlyReleaseExclusionType.NO,
+          isSDSPlus = false,
+          isSDSPlusEligibleSentenceAndOffence = false,
+          hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
         )
       }
     }

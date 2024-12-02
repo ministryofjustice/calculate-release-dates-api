@@ -474,7 +474,7 @@ class LatestCalculationServiceTest {
     courtDescription = null,
     consecutiveToSequence = null,
     isSDSPlus = false,
-    hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    isSDSPlusEligibleSentenceAndOffence = false, hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
   )
 
   private fun toDetailedDates(dates: List<ReleaseDate>): List<DetailedDate> = dates.map { DetailedDate(it.type, it.type.description, it.date, emptyList()) }

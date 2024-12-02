@@ -21,7 +21,7 @@ class HdcedExtractionService(
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
     val latestAdjustedReleaseDate = getLatestAdjustedReleaseDate(mostRecentSentencesByReleaseDate)
 
-    if (sentences.none { it.isSDSPlus }) {
+    if (sentences.none { it.isSDSPlusEligibleSentenceAndOffence }) {
       val latestEligibleSentence = getLatestHdcedEligibleSentence(sentences)
 
       if (hasLatestEligibleSentenceGotHdcedDate(latestEligibleSentence)) {

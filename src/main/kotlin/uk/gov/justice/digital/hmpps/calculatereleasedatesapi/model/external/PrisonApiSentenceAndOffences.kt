@@ -22,5 +22,13 @@ data class PrisonApiSentenceAndOffences(
   val courtDescription: String? = null,
   val fineAmount: BigDecimal? = null,
 ) {
-  fun toLatest(): List<SentenceAndOffenceWithReleaseArrangements> = offences.map { offence -> SentenceAndOffenceWithReleaseArrangements(this, offence, false, SDSEarlyReleaseExclusionType.NO) }
+  fun toLatest(): List<SentenceAndOffenceWithReleaseArrangements> = offences.map { offence ->
+    SentenceAndOffenceWithReleaseArrangements(
+      this,
+      offence,
+      isSdsPlus = false,
+      isSDSPlusEligibleSentenceAndOffence = false,
+      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+  }
 }

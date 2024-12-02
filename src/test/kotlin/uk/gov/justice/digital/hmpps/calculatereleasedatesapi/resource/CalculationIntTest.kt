@@ -517,6 +517,10 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     mockManageOffencesClient.withPCSCMarkersResponse(
       OffencePcscMarkers(
+        offenceCode = "TH68007A",
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
+      ),
+      OffencePcscMarkers(
         offenceCode = "TR68132",
         pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
       ),
@@ -524,7 +528,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
         offenceCode = "SX03001",
         pcscMarkers = PcscMarkers(inListA = true, inListB = false, inListC = false, inListD = false),
       ),
-      offences = "SX03001,TR68132",
+      offences = "SX03001,TH68007A,TR68132",
     )
 
     val calculation: CalculatedReleaseDates = webTestClient.post()
@@ -649,6 +653,18 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
   @Test
   fun `Run calculation on a test of historic inactive released prisoner`() {
+    mockManageOffencesClient.withPCSCMarkersResponse(
+      OffencePcscMarkers(
+        offenceCode = "TH68010A",
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
+      ),
+      OffencePcscMarkers(
+        offenceCode = "TH68164",
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
+      ),
+      offences = "TH68010A,TH68164",
+    )
+
     val calculation: CalculationResults = webTestClient.post()
       .uri("/calculation/OUT_CALC/test")
       .accept(MediaType.APPLICATION_JSON)
@@ -745,6 +761,22 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
   @Test
   fun `User doesnt select any sdsplus sentences`() {
+    mockManageOffencesClient.withPCSCMarkersResponse(
+      OffencePcscMarkers(
+        offenceCode = "SX03001",
+        pcscMarkers = PcscMarkers(inListA = true, inListB = true, inListC = true, inListD = true),
+      ),
+      OffencePcscMarkers(
+        offenceCode = "SX03005",
+        pcscMarkers = PcscMarkers(inListA = true, inListB = true, inListC = true, inListD = true),
+      ),
+      OffencePcscMarkers(
+        offenceCode = "SX03005",
+        pcscMarkers = PcscMarkers(inListA = true, inListB = true, inListC = true, inListD = true),
+      ),
+      offences = "SX03001,SX03005,SX03007",
+    )
+
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/SDSPERR")
       .accept(MediaType.APPLICATION_JSON)
@@ -778,6 +810,18 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
   @Test
   fun `Run relevant remand calculation`() {
+    mockManageOffencesClient.withPCSCMarkersResponse(
+      OffencePcscMarkers(
+        offenceCode = "CS00011",
+        pcscMarkers = PcscMarkers(inListA = true, inListB = true, inListC = true, inListD = true),
+      ),
+      OffencePcscMarkers(
+        offenceCode = "WR91001",
+        pcscMarkers = PcscMarkers(inListA = true, inListB = true, inListC = true, inListD = true),
+      ),
+      offences = "CS00011,WR91001",
+    )
+
     val request = RelevantRemandCalculationRequest(
       listOf(
         RelevantRemand(
@@ -813,6 +857,18 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
   @Test
   fun `Run relevant remand calculation with more remand than required`() {
+    mockManageOffencesClient.withPCSCMarkersResponse(
+      OffencePcscMarkers(
+        offenceCode = "CS00011",
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
+      ),
+      OffencePcscMarkers(
+        offenceCode = "WR91001",
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
+      ),
+      offences = "CS00011,WR91001",
+    )
+
     val request = RelevantRemandCalculationRequest(
       listOf(
         RelevantRemand(
@@ -848,6 +904,18 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
   @Test
   fun `Run relevant remand calculation with more tagged bail than required`() {
+    mockManageOffencesClient.withPCSCMarkersResponse(
+      OffencePcscMarkers(
+        offenceCode = "CS00011",
+        pcscMarkers = PcscMarkers(inListA = true, inListB = true, inListC = true, inListD = true),
+      ),
+      OffencePcscMarkers(
+        offenceCode = "WR91001",
+        pcscMarkers = PcscMarkers(inListA = true, inListB = true, inListC = true, inListD = true),
+      ),
+      offences = "CS00011,WR91001",
+    )
+
     val request = RelevantRemandCalculationRequest(
       listOf(),
       RelevantRemandSentence(

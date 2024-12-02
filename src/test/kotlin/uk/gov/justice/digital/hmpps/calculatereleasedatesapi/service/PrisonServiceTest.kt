@@ -168,7 +168,14 @@ class PrisonServiceTest {
 
     )
 
-    val withReleaseArrangements = normalisedOffences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }
+    val withReleaseArrangements = normalisedOffences.map {
+      SentenceAndOffenceWithReleaseArrangements(
+        it,
+        isSdsPlus = false,
+        isSDSPlusEligibleSentenceAndOffence = false,
+        hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+      )
+    }
     whenever(prisonApiClient.getSentencesAndOffences(1)).thenReturn(prisonApiSentencesAndOffences)
     whenever(offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(normalisedOffences)).thenReturn(withReleaseArrangements)
     assertThat(prisonService.getSentencesAndOffences(1, true)).isEqualTo(withReleaseArrangements)
@@ -208,8 +215,26 @@ class PrisonServiceTest {
     val activeOffence = NormalisedSentenceAndOffence(prisonApiSentenceAndOffences1, offence1)
 
     whenever(prisonApiClient.getSentencesAndOffences(1)).thenReturn(listOf(prisonApiSentenceAndOffences1, prisonApiSentenceAndOffences2))
-    whenever(offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(listOf(activeOffence))).thenReturn(listOf(SentenceAndOffenceWithReleaseArrangements(activeOffence, false, SDSEarlyReleaseExclusionType.NO)))
-    assertThat(prisonService.getSentencesAndOffences(1, true)).isEqualTo(listOf(SentenceAndOffenceWithReleaseArrangements(activeOffence, false, SDSEarlyReleaseExclusionType.NO)))
+    whenever(offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(listOf(activeOffence))).thenReturn(
+      listOf(
+        SentenceAndOffenceWithReleaseArrangements(
+          source = activeOffence,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceAndOffence = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        ),
+      ),
+    )
+    assertThat(prisonService.getSentencesAndOffences(1, true)).isEqualTo(
+      listOf(
+        SentenceAndOffenceWithReleaseArrangements(
+          source = activeOffence,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceAndOffence = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        ),
+      ),
+    )
   }
 
   @Test
@@ -247,8 +272,38 @@ class PrisonServiceTest {
     val inactiveOffence = NormalisedSentenceAndOffence(prisonApiSentenceAndOffences2, offence2)
 
     whenever(prisonApiClient.getSentencesAndOffences(1)).thenReturn(listOf(prisonApiSentenceAndOffences1, prisonApiSentenceAndOffences2))
-    whenever(offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(listOf(activeOffence, inactiveOffence))).thenReturn(listOf(SentenceAndOffenceWithReleaseArrangements(activeOffence, false, SDSEarlyReleaseExclusionType.NO), SentenceAndOffenceWithReleaseArrangements(inactiveOffence, false, SDSEarlyReleaseExclusionType.NO)))
-    assertThat(prisonService.getSentencesAndOffences(1, false)).isEqualTo(listOf(SentenceAndOffenceWithReleaseArrangements(activeOffence, false, SDSEarlyReleaseExclusionType.NO), SentenceAndOffenceWithReleaseArrangements(inactiveOffence, false, SDSEarlyReleaseExclusionType.NO)))
+    whenever(offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(listOf(activeOffence, inactiveOffence))).thenReturn(
+      listOf(
+        SentenceAndOffenceWithReleaseArrangements(
+          source = activeOffence,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceAndOffence = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        ),
+        SentenceAndOffenceWithReleaseArrangements(
+          source = inactiveOffence,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceAndOffence = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        ),
+      ),
+    )
+    assertThat(prisonService.getSentencesAndOffences(1, false)).isEqualTo(
+      listOf(
+        SentenceAndOffenceWithReleaseArrangements(
+          source = activeOffence,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceAndOffence = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        ),
+        SentenceAndOffenceWithReleaseArrangements(
+          source = inactiveOffence,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceAndOffence = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        ),
+      ),
+    )
   }
 
   companion object {

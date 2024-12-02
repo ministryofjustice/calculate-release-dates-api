@@ -55,16 +55,19 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on future dated adjustments`() {
+    mockManageOffencesClient.noneInPCSC(listOf("CD98075", "CJ88144", "CJ88148", "OF61016", "TH68037"))
     runValidationAndCheckMessages("CRS-1044", listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_RADA)))
   }
 
   @Test
   fun `Run validation for overlapping remand and custodial period`() {
+    mockManageOffencesClient.noneInPCSC(listOf("MD71526", "MD71530"))
     runValidationAndCheckMessages("CRS-1394", listOf())
   }
 
   @Test
   fun `Run validation on invalid data`() {
+    mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
     runValidationAndCheckMessages(
       VALIDATION_PRISONER_ID,
       listOf(
@@ -130,6 +133,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on extinguished crd booking`() {
+    mockManageOffencesClient.noneInPCSC(listOf("CT94012", "TH68003A", "TH68045"))
     runValidationAndCheckMessages(
       "EXTINGUISH",
       listOf(
@@ -150,6 +154,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on adjustment after release date 1`() {
+    mockManageOffencesClient.noneInPCSC(listOf("MD71134", "MD71191"))
     runValidationAndCheckMessages(
       "CRS-796-1",
       listOf(
@@ -161,6 +166,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on adjustment after release date 1 with more RADA and ADA`() {
+    mockManageOffencesClient.noneInPCSC(listOf("MD71134", "MD71191"))
     runValidationAndCheckMessages(
       "CRS-796-1-more-adas-radas",
       listOf(
@@ -172,6 +178,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on adjustment after release date 2`() {
+    mockManageOffencesClient.noneInPCSC(listOf("CD71040", "FI68247", "FI68410"))
     runValidationAndCheckMessages("CRS-796-2", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
   }
 

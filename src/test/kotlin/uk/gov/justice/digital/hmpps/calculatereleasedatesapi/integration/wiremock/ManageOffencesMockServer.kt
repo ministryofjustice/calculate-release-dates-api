@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ParameterContext
 import org.junit.jupiter.api.extension.ParameterResolver
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.PcscMarkers
 
 class ManageOffencesApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback, ParameterResolver {
   companion object {
@@ -255,5 +256,18 @@ class MockManageOffencesClient(
   }
   fun withStub(mappingBuilder: MappingBuilder): StubMapping {
     return manageOffencesApi.stubFor(mappingBuilder)
+  }
+  fun noneInPCSC(offences: List<String>): MockManageOffencesClient {
+    val defaultMarkers = offences.map { offenceCode ->
+      OffencePcscMarkers(
+        offenceCode = offenceCode,
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
+      )
+    }
+    manageOffencesApi.stubSpecificResponse(
+      offences.joinToString(","),
+      objectMapper.writeValueAsString(defaultMarkers),
+    )
+    return this
   }
 }

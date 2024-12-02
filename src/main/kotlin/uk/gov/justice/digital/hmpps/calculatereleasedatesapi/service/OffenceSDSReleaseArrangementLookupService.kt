@@ -26,35 +26,71 @@ class OffenceSDSReleaseArrangementLookupService(
     val checkedForSDSPlus = checkForSDSPlus(sentencesAndOffences)
 
     val offencesToCheckForSDSExclusions = getOffencesToCheckForSDSExclusions(checkedForSDSPlus)
-    val exclusionsForOffences = if (offencesToCheckForSDSExclusions.isNotEmpty() && featureToggles.sdsEarlyRelease) manageOffencesService.getSdsExclusionsForOffenceCodes(offencesToCheckForSDSExclusions).associateBy { it.offenceCode } else emptyMap()
+    val exclusionsForOffences =
+      if (offencesToCheckForSDSExclusions.isNotEmpty() && featureToggles.sdsEarlyRelease) {
+        manageOffencesService.getSdsExclusionsForOffenceCodes(
+          offencesToCheckForSDSExclusions,
+        ).associateBy { it.offenceCode }
+      } else {
+        emptyMap()
+      }
 
     return checkedForSDSPlus
       .map { sdsPlusCheckResult ->
         if (sdsPlusCheckResult.shouldCheckSDSEarlyReleaseExclusions() && sdsPlusCheckResult.sentenceAndOffence.offence.offenceCode in exclusionsForOffences) {
-          SentenceAndOffenceWithReleaseArrangements(sdsPlusCheckResult.sentenceAndOffence, sdsPlusCheckResult.isSDSPlus, exclusionForOffence(exclusionsForOffences, sdsPlusCheckResult.sentenceAndOffence))
+          SentenceAndOffenceWithReleaseArrangements(
+            sdsPlusCheckResult.sentenceAndOffence,
+            sdsPlusCheckResult.isSDSPlus,
+            sdsPlusCheckResult.eligibleSentence && sdsPlusCheckResult.eligibleOffence,
+            exclusionForOffence(exclusionsForOffences, sdsPlusCheckResult.sentenceAndOffence),
+          )
         } else {
-          SentenceAndOffenceWithReleaseArrangements(sdsPlusCheckResult.sentenceAndOffence, sdsPlusCheckResult.isSDSPlus, SDSEarlyReleaseExclusionType.NO)
+          SentenceAndOffenceWithReleaseArrangements(
+            sdsPlusCheckResult.sentenceAndOffence,
+            sdsPlusCheckResult.isSDSPlus,
+            sdsPlusCheckResult.eligibleSentence && sdsPlusCheckResult.eligibleOffence,
+            SDSEarlyReleaseExclusionType.NO,
+          )
         }
       }
   }
 
   private fun checkForSDSPlus(sentencesAndOffences: List<SentenceAndOffence>): List<SDSPlusCheckResult> {
-    val offencesToCheckForSDSPlus = getOffencesToCheckForSDSPlus(sentencesAndOffences)
-    val sdsPlusMarkersByOffences = if (offencesToCheckForSDSPlus.isNotEmpty()) manageOffencesService.getPcscMarkersForOffenceCodes(*offencesToCheckForSDSPlus.toTypedArray()).associateBy { it.offenceCode } else emptyMap()
-    return sentencesAndOffences.map { sentencesAndOffence ->
-      if (sentencesAndOffence.offence.offenceCode in sdsPlusMarkersByOffences && checkIsSDSPlus(sentencesAndOffence, sdsPlusMarkersByOffences)) {
-        SDSPlusCheckResult(sentencesAndOffence, true)
-      } else if (isForOffenceThatIsNowOnListDButUsedOldOffenceCode(sentencesAndOffence)) {
-        SDSPlusCheckResult(sentencesAndOffence, true)
+    // this now returns all SDS offences from SDS eligible sentences. There is now no limitation as to legislative commencement
+    val offencesToCheckForSDSPlus = getOffencesFromSDSPlusEligibleSentenceTypes(sentencesAndOffences)
+
+    // so now this check will get the relevant offences for all eligible sentences regardless of the date
+    val sdsPlusMarkersByOffences =
+      if (offencesToCheckForSDSPlus.isNotEmpty()) {
+        manageOffencesService.getPcscMarkersForOffenceCodes(offencesToCheckForSDSPlus)
+          .associateBy { it.offenceCode }
       } else {
-        SDSPlusCheckResult(sentencesAndOffence, false)
+        emptyMap()
+      }
+
+    return sentencesAndOffences.map { sentencesAndOffence ->
+      if (sentencesAndOffence.offence.offenceCode in sdsPlusMarkersByOffences && checkIsSDSPlus(
+          sentencesAndOffence,
+          sdsPlusMarkersByOffences,
+        )
+      ) {
+        SDSPlusCheckResult(sentencesAndOffence, true, eligibleSentence = true, eligibleOffence = true)
+      } else if (isForOffenceThatIsNowOnListDButUsedOldOffenceCode(sentencesAndOffence)) {
+        SDSPlusCheckResult(sentencesAndOffence, true, eligibleSentence = true, eligibleOffence = true)
+      } else if (isPrePCSCSDSPlusEligibleOffence(sentencesAndOffence, sdsPlusMarkersByOffences)) {
+        SDSPlusCheckResult(sentencesAndOffence, false, eligibleSentence = true, eligibleOffence = true)
+      } else {
+        SDSPlusCheckResult(sentencesAndOffence, false, eligibleSentence = false, eligibleOffence = false)
       }
     }
   }
 
   private fun isForOffenceThatIsNowOnListDButUsedOldOffenceCode(sentenceAndOffence: SentenceAndOffence): Boolean =
     SentenceCalculationType.isSupported(sentenceAndOffence.sentenceCalculationType) &&
-      SentenceCalculationType.isSDSPlusEligible(sentenceAndOffence.sentenceCalculationType, SentenceCalculationType.SDSPlusEligibilityType.SDS) &&
+      SentenceCalculationType.isSDSPlusEligible(
+        sentenceAndOffence.sentenceCalculationType,
+        SentenceCalculationType.SDSPlusEligibilityType.SDS,
+      ) &&
       sentenceAndOffence.offence.offenceCode in LEGACY_OFFENCE_CODES_FOR_OFFENCES_ON_LIST_D &&
       sevenYearsOrMore(sentenceAndOffence) &&
       sentencedAfterPcsc(sentenceAndOffence)
@@ -67,7 +103,11 @@ class OffenceSDSReleaseArrangementLookupService(
     val sentenceIsAfterPcsc = sentencedAfterPcsc(sentenceAndOffence)
     val sevenYearsOrMore = sevenYearsOrMore(sentenceAndOffence)
     var sdsPlusIdentified = false
-    if (SentenceCalculationType.isSDSPlusEligible(sentenceAndOffence.sentenceCalculationType, SentenceCalculationType.SDSPlusEligibilityType.SDS)) {
+    if (SentenceCalculationType.isSDSPlusEligible(
+        sentenceAndOffence.sentenceCalculationType,
+        SentenceCalculationType.SDSPlusEligibilityType.SDS,
+      )
+    ) {
       if (sentencedWithinOriginalSdsPlusWindow(sentenceAndOffence) && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListA == true) {
         sdsPlusIdentified = true
       } else if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListD == true) {
@@ -75,7 +115,11 @@ class OffenceSDSReleaseArrangementLookupService(
       } else if (sentenceIsAfterPcsc && fourToUnderSeven(sentenceAndOffence) && moResponseForOffence?.pcscMarkers?.inListB == true) {
         sdsPlusIdentified = true
       }
-    } else if (SentenceCalculationType.isSDSPlusEligible(sentenceAndOffence.sentenceCalculationType, SentenceCalculationType.SDSPlusEligibilityType.SECTION250)) {
+    } else if (SentenceCalculationType.isSDSPlusEligible(
+        sentenceAndOffence.sentenceCalculationType,
+        SentenceCalculationType.SDSPlusEligibilityType.SECTION250,
+      )
+    ) {
       if (sentenceIsAfterPcsc && sevenYearsOrMore && moResponseForOffence?.pcscMarkers?.inListC == true) {
         sdsPlusIdentified = true
       }
@@ -83,26 +127,23 @@ class OffenceSDSReleaseArrangementLookupService(
     return sdsPlusIdentified
   }
 
-  private fun getOffencesToCheckForSDSPlus(sentencesAndOffences: List<SentenceAndOffence>): List<String> {
-    return sentencesAndOffences
-      .filter { SentenceCalculationType.isSupported(it.sentenceCalculationType) }
-      .filter { sentenceAndOffences ->
-        val sentenceIsAfterPcsc = sentencedAfterPcsc(sentenceAndOffences)
-        val sevenYearsOrMore = sevenYearsOrMore(sentenceAndOffences)
-        val sentencedWithinOriginalSdsWindow = sentencedWithinOriginalSdsPlusWindow(sentenceAndOffences)
+  private fun isPrePCSCSDSPlusEligibleOffence(
+    sentenceAndOffence: SentenceAndOffence,
+    sdsPlusMarkersByOffences: Map<String, OffencePcscMarkers>,
+  ): Boolean {
+    if (sentencedBeforeSdsPlusWindow(sentenceAndOffence)) {
+      val moResponseForOffence = sdsPlusMarkersByOffences[sentenceAndOffence.offence.offenceCode]
+      if (moResponseForOffence?.pcscMarkers?.inListA == true || moResponseForOffence?.pcscMarkers?.inListB == true || moResponseForOffence?.pcscMarkers?.inListC == true || moResponseForOffence?.pcscMarkers?.inListD == true) {
+        return true
+      }
+    }
+    return false
+  }
 
-        var matchFilter = false
-        if (SentenceCalculationType.isSDSPlusEligible(sentenceAndOffences.sentenceCalculationType, SentenceCalculationType.SDSPlusEligibilityType.SDS)) {
-          if (sentencedWithinOriginalSdsWindow && sevenYearsOrMore) {
-            matchFilter = true
-          } else if (sentenceIsAfterPcsc && fourYearsOrMore(sentenceAndOffences)) {
-            matchFilter = true
-          }
-        } else if (SentenceCalculationType.isSDSPlusEligible(sentenceAndOffences.sentenceCalculationType, SentenceCalculationType.SDSPlusEligibilityType.SECTION250) && sentenceIsAfterPcsc && sevenYearsOrMore) {
-          matchFilter = true
-        }
-        matchFilter
-      }.map { it.offence.offenceCode }
+  private fun getOffencesFromSDSPlusEligibleSentenceTypes(sentencesAndOffences: List<SentenceAndOffence>): List<String> {
+    return sentencesAndOffences.filter {
+      SentenceCalculationType.isSupported(it.sentenceCalculationType) && SentenceCalculationType.isSDSPlusEligible(it.sentenceCalculationType)
+    }.map { it.offence.offenceCode }.sorted()
   }
 
   private fun sentencedAfterPcsc(sentence: SentenceAndOffence): Boolean {
@@ -111,8 +152,14 @@ class OffenceSDSReleaseArrangementLookupService(
     )
   }
 
+  private fun sentencedBeforeSdsPlusWindow(sentence: SentenceAndOffence): Boolean {
+    return sentence.sentenceDate.isBefore(ImportantDates.SDS_PLUS_COMMENCEMENT_DATE)
+  }
+
   private fun sentencedWithinOriginalSdsPlusWindow(sentence: SentenceAndOffence): Boolean {
-    return sentence.sentenceDate.isAfterOrEqualTo(ImportantDates.SDS_PLUS_COMMENCEMENT_DATE) && !sentencedAfterPcsc(sentence)
+    return sentence.sentenceDate.isAfterOrEqualTo(ImportantDates.SDS_PLUS_COMMENCEMENT_DATE) && !sentencedAfterPcsc(
+      sentence,
+    )
   }
 
   private fun endOfSentence(sentence: SentenceAndOffence): LocalDate {
@@ -140,15 +187,19 @@ class OffenceSDSReleaseArrangementLookupService(
     return endOfSentence.isAfterOrEqualTo(endOfFourYears)
   }
 
-  private fun getOffencesToCheckForSDSExclusions(checkedForSDSPlus: List<SDSPlusCheckResult>): List<String> = checkedForSDSPlus
-    .filter { it.shouldCheckSDSEarlyReleaseExclusions() }
-    .map { it.sentenceAndOffence.offence.offenceCode }
+  private fun getOffencesToCheckForSDSExclusions(checkedForSDSPlus: List<SDSPlusCheckResult>): List<String> =
+    checkedForSDSPlus
+      .filter { it.shouldCheckSDSEarlyReleaseExclusions() }
+      .map { it.sentenceAndOffence.offence.offenceCode }.sorted()
 
   private fun SDSPlusCheckResult.shouldCheckSDSEarlyReleaseExclusions(): Boolean =
     SentenceCalculationType.isSDS40Eligible(sentenceAndOffence.sentenceCalculationType) &&
       !isSDSPlus
 
-  private fun exclusionForOffence(exclusionsForOffences: Map<String, SDSEarlyReleaseExclusionForOffenceCode>, sentenceAndOffence: SentenceAndOffence): SDSEarlyReleaseExclusionType {
+  private fun exclusionForOffence(
+    exclusionsForOffences: Map<String, SDSEarlyReleaseExclusionForOffenceCode>,
+    sentenceAndOffence: SentenceAndOffence,
+  ): SDSEarlyReleaseExclusionType {
     val offenceCode = sentenceAndOffence.offence.offenceCode
     val exclusionForOffence = exclusionsForOffences[offenceCode]
 
@@ -162,12 +213,19 @@ class OffenceSDSReleaseArrangementLookupService(
       } else {
         SDSEarlyReleaseExclusionType.NO
       }
+
       SDSEarlyReleaseExclusionSchedulePart.NONE -> SDSEarlyReleaseExclusionType.NO
       null -> SDSEarlyReleaseExclusionType.NO
     }
   }
 
-  private data class SDSPlusCheckResult(val sentenceAndOffence: SentenceAndOffence, val isSDSPlus: Boolean)
+  private data class SDSPlusCheckResult(
+    val sentenceAndOffence: SentenceAndOffence,
+    val isSDSPlus: Boolean,
+    val eligibleSentence: Boolean,
+    val eligibleOffence: Boolean,
+  )
+
   companion object {
     private val log: Logger = LoggerFactory.getLogger(this::class.java)
 

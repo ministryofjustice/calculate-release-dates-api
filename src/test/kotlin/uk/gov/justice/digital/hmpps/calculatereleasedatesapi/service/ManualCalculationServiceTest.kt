@@ -63,7 +63,6 @@ class ManualCalculationServiceTest {
   private val serviceUserService = mock<ServiceUserService>()
   private val nomisCommentService = mock<NomisCommentService>()
   private val bookingCalculationService = mock<BookingCalculationService>()
-  private val featureToggles = FeatureToggles()
   private val manualCalculationService = ManualCalculationService(
     prisonService,
     bookingService,
@@ -83,24 +82,21 @@ class ManualCalculationServiceTest {
   inner class CalculateESLTests {
     @Test
     fun `Check ESL is calculated correctly for determinate sentences without SED`() {
-      // Arrange
-      val sentenceOne = StandardSENTENCE.copy(
-        consecutiveSentenceUUIDs = emptyList(),
-        sentencedAt = LocalDate.of(2022, 1, 1),
-      )
-      var workingBooking = BOOKING.copy(
-        sentences = listOf(
-          sentenceOne,
-        ),
-      )
+
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
           SentenceAndOffenceWithReleaseArrangements(
             BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.NP.name),
-            false,
-            SDSEarlyReleaseExclusionType.NO,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
-          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false, SDSEarlyReleaseExclusionType.NO),
+          SentenceAndOffenceWithReleaseArrangements(
+            BASE_DETERMINATE_SENTENCE,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
         ),
       )
 
@@ -132,7 +128,7 @@ class ManualCalculationServiceTest {
         sentencedAt = LocalDate.of(2022, 1, 1),
         recallType = RecallType.FIXED_TERM_RECALL_14,
       )
-      var workingBooking = BOOKING.copy(
+      val workingBooking = BOOKING.copy(
         returnToCustodyDate = null,
         sentences = listOf(
           sentenceOne,
@@ -149,15 +145,6 @@ class ManualCalculationServiceTest {
     @Test
     fun `Check if ESL is set to zero for when calculated ESL is negative`() {
       // Arrange
-      val sentenceOne = StandardSENTENCE.copy(
-        consecutiveSentenceUUIDs = emptyList(),
-        sentencedAt = LocalDate.of(2035, 1, 1),
-      )
-      var workingBooking = BOOKING.copy(
-        sentences = listOf(
-          sentenceOne,
-        ),
-      )
       whenever(bookingCalculationService.createConsecutiveSentences(any())).thenReturn(emptyList())
 
       // Act
@@ -175,7 +162,7 @@ class ManualCalculationServiceTest {
         sentencedAt = LocalDate.of(2022, 1, 1),
         recallType = RecallType.FIXED_TERM_RECALL_28,
       )
-      var workingBooking = BOOKING.copy(
+      val workingBooking = BOOKING.copy(
         returnToCustodyDate = null,
         sentences = listOf(
           sentenceOne,
@@ -196,10 +183,16 @@ class ManualCalculationServiceTest {
         listOf(
           SentenceAndOffenceWithReleaseArrangements(
             BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name),
-            false,
-            SDSEarlyReleaseExclusionType.NO,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
-          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false, SDSEarlyReleaseExclusionType.NO),
+          SentenceAndOffenceWithReleaseArrangements(
+            BASE_DETERMINATE_SENTENCE,
+            false,
+            isSDSPlusEligibleSentenceAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
         ),
       )
 
@@ -220,12 +213,6 @@ class ManualCalculationServiceTest {
       val sentenceTwo = StandardSENTENCE.copy(
         consecutiveSentenceUUIDs = emptyList(),
         sentencedAt = LocalDate.of(2021, 1, 1),
-      )
-      var workingBooking = BOOKING.copy(
-        sentences = listOf(
-          sentenceOne,
-          sentenceTwo,
-        ),
       )
 
       whenever(bookingCalculationService.getSentencesToCalculate(any())).thenReturn(
@@ -248,11 +235,6 @@ class ManualCalculationServiceTest {
       val sentenceOne = StandardSENTENCE.copy(
         consecutiveSentenceUUIDs = emptyList(),
         sentencedAt = LocalDate.of(2022, 1, 1),
-      )
-      var workingBooking = BOOKING.copy(
-        sentences = listOf(
-          sentenceOne,
-        ),
       )
 
       whenever(bookingCalculationService.getSentencesToCalculate(any())).thenReturn(
@@ -278,12 +260,6 @@ class ManualCalculationServiceTest {
         identifier = UUID.randomUUID(),
         sentencedAt = LocalDate.of(2023, 1, 1),
         consecutiveSentenceUUIDs = listOf(StandardSENTENCE.identifier),
-      )
-      var workingBooking = BOOKING.copy(
-        sentences = listOf(
-          consecutiveSentenceOne,
-          consecutiveSentenceTwo,
-        ),
       )
 
       whenever(bookingCalculationService.getSentencesToCalculate(any())).thenReturn(
@@ -313,10 +289,16 @@ class ManualCalculationServiceTest {
         listOf(
           SentenceAndOffenceWithReleaseArrangements(
             BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.LR_ORA.name),
-            false,
-            SDSEarlyReleaseExclusionType.NO,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
-          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false, SDSEarlyReleaseExclusionType.NO),
+          SentenceAndOffenceWithReleaseArrangements(
+            BASE_DETERMINATE_SENTENCE,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
         ),
       )
 
@@ -330,11 +312,17 @@ class ManualCalculationServiceTest {
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
           SentenceAndOffenceWithReleaseArrangements(
-            BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name),
-            false,
-            SDSEarlyReleaseExclusionType.NO,
+            source = BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.ADIMP_ORA.name),
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
-          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false, SDSEarlyReleaseExclusionType.NO),
+          SentenceAndOffenceWithReleaseArrangements(
+            source = BASE_DETERMINATE_SENTENCE,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
         ),
       )
 
@@ -350,8 +338,18 @@ class ManualCalculationServiceTest {
     fun `Check the presence of indeterminate sentences returns true`() {
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name), false, SDSEarlyReleaseExclusionType.NO),
-          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false, SDSEarlyReleaseExclusionType.NO),
+          SentenceAndOffenceWithReleaseArrangements(
+            source = BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.TWENTY.name),
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
+          SentenceAndOffenceWithReleaseArrangements(
+            source = BASE_DETERMINATE_SENTENCE,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
         ),
       )
 
@@ -364,8 +362,18 @@ class ManualCalculationServiceTest {
     fun `Check the absence of indeterminate sentences returns false`() {
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
-          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR.name), false, SDSEarlyReleaseExclusionType.NO),
-          SentenceAndOffenceWithReleaseArrangements(BASE_DETERMINATE_SENTENCE, false, SDSEarlyReleaseExclusionType.NO),
+          SentenceAndOffenceWithReleaseArrangements(
+            BASE_DETERMINATE_SENTENCE.copy(sentenceCalculationType = SentenceCalculationType.FTR.name),
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
+          SentenceAndOffenceWithReleaseArrangements(
+            BASE_DETERMINATE_SENTENCE,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceAndOffence = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
         ),
       )
 
@@ -410,15 +418,6 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check noDates is set correctly for determinate manual entry`() {
-    val sentenceOne = StandardSENTENCE.copy(
-      consecutiveSentenceUUIDs = emptyList(),
-      sentencedAt = LocalDate.of(2022, 1, 1),
-    )
-    var booking = BOOKING.copy(
-      sentences = listOf(
-        sentenceOne,
-      ),
-    )
     whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
@@ -484,22 +483,23 @@ class ManualCalculationServiceTest {
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(
       listOf(
         SentenceAndOffenceWithReleaseArrangements(
-          PrisonApiSentenceAndOffences(
-            1,
-            1,
-            1,
-            1,
-            null,
-            "A",
-            "A",
-            "LIFE",
-            "",
-            LocalDate.now(),
+          source = PrisonApiSentenceAndOffences(
+            bookingId = 1,
+            sentenceSequence = 1,
+            lineSequence = 1,
+            caseSequence = 1,
+            consecutiveToSequence = null,
+            sentenceStatus = "A",
+            sentenceCategory = "A",
+            sentenceCalculationType = "LIFE",
+            sentenceTypeDescription = "",
+            sentenceDate = LocalDate.now(),
             offences = listOf(offence),
           ),
-          offence,
-          false,
-          SDSEarlyReleaseExclusionType.NO,
+          offence = offence,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceAndOffence = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         ),
       ),
     )
@@ -515,15 +515,6 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check ESL is set to zero when exception is thrown calculating ESL`() {
-    val sentenceOne = StandardSENTENCE.copy(
-      consecutiveSentenceUUIDs = emptyList(),
-      sentencedAt = LocalDate.of(2022, 1, 1),
-    )
-    var booking = BOOKING.copy(
-      sentences = listOf(
-        sentenceOne,
-      ),
-    )
     whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
@@ -550,24 +541,6 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check type dates for bookings with fines can be manually set`() {
-    val aFineSentence = AFineSentence(
-      sentencedAt = THIRD_FEB_2021,
-      duration = Duration(mutableMapOf(ChronoUnit.DAYS to 90L, ChronoUnit.WEEKS to 0L, ChronoUnit.MONTHS to 0L, ChronoUnit.YEARS to 0L)),
-      offence = Offence(committedAt = THIRD_FEB_2021),
-      identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa"),
-      caseSequence = 1,
-      lineSequence = 2,
-      fineAmount = BigDecimal(10000000),
-      consecutiveSentenceUUIDs = emptyList(),
-      recallType = null,
-      caseReference = "A Fine Case",
-    )
-    var booking = BOOKING.copy(
-      sentences = listOf(
-        aFineSentence,
-        aFineSentence.copy(identifier = UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8efffe24f5fa"), consecutiveSentenceUUIDs = listOf(UUID.fromString("5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa"))),
-      ),
-    )
     whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))

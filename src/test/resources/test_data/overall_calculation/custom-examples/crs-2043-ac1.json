@@ -1,0 +1,23 @@
+{
+  "offender": {
+    "reference": "A1234BC",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2019-12-01"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 10
+        }
+      },
+      "sentencedAt": "2020-03-09",
+      "isSDSPlusEligibleSentenceAndOffence": "true",
+      "hasAnSDSEarlyReleaseExclusion": "VIOLENT"
+    }
+  ],
+  "adjustments": {}
+}

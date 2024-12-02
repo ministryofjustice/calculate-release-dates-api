@@ -467,7 +467,14 @@ class BulkComparisonServiceTest {
             it,
           )
         }
-      }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+      }.map {
+        SentenceAndOffenceWithReleaseArrangements(
+          it,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceAndOffence = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        )
+      },
     )
 
     assertTrue(mismatch.isValid)
@@ -506,7 +513,14 @@ class BulkComparisonServiceTest {
             it,
           )
         }
-      }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+      }.map {
+        SentenceAndOffenceWithReleaseArrangements(
+          it,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceAndOffence = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        )
+      },
     )
 
     assertFalse(mismatch.isValid)
@@ -549,7 +563,14 @@ class BulkComparisonServiceTest {
             it,
           )
         }
-      }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+      }.map {
+        SentenceAndOffenceWithReleaseArrangements(
+          it,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceAndOffence = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        )
+      },
     )
 
     assertTrue(mismatch.isValid)

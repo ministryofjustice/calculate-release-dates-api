@@ -15,6 +15,7 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -74,7 +75,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
   fun `SDS+ is NOT set for ADIMP as sentenced before SDS and not over 7 years in duration`() {
     val returnedResult = underTest.populateReleaseArrangements(sentenceMatchesNoMatchingOffencesDueToSentenceDate)
     // no call to MO should take place as offences don't match filter.
-    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getPcscMarkersForOffenceCodes(any())
     assertFalse(returnedResult[0].isSDSPlus)
   }
 
@@ -182,7 +183,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
     assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(expectedExclusion)
 
-    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getPcscMarkersForOffenceCodes(any())
     verify(mockManageOffencesService, times(expectedCallCount)).getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))
   }
 
@@ -196,7 +197,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(nonSDSPlusSentenceAndOffenceFourYears))
     assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
     assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.NO)
-    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getPcscMarkersForOffenceCodes(any())
     verify(mockManageOffencesService).getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))
   }
 
@@ -212,7 +213,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
     assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.SEXUAL)
 
-    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getPcscMarkersForOffenceCodes(any())
     verify(mockManageOffencesService).getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))
   }
 
@@ -228,7 +229,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
     assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE)
 
-    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getPcscMarkersForOffenceCodes(any())
     verify(mockManageOffencesService).getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))
   }
 
@@ -244,7 +245,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
     assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.NATIONAL_SECURITY)
 
-    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getPcscMarkersForOffenceCodes(any())
     verify(mockManageOffencesService).getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))
   }
 
@@ -260,7 +261,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
     assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.TERRORISM)
 
-    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getPcscMarkersForOffenceCodes(any())
     verify(mockManageOffencesService).getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))
   }
 
@@ -276,7 +277,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
     assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.VIOLENT)
 
-    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getPcscMarkersForOffenceCodes(any())
     verify(mockManageOffencesService).getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))
   }
 
@@ -293,7 +294,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
     assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.NO)
 
-    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getPcscMarkersForOffenceCodes(any())
     verify(mockManageOffencesService).getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))
   }
 
@@ -305,7 +306,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
     assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.NO)
 
-    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getPcscMarkersForOffenceCodes(any())
     verify(mockManageOffencesService).getSdsExclusionsForOffenceCodes(listOf(OFFENCE_CODE_NON_SDS_PLUS))
   }
 
@@ -316,6 +317,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
         SDSEarlyReleaseExclusionForOffenceCode(OFFENCE_CODE_NON_SDS_PLUS, SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
       ),
     )
+
     val unsupportedSentence = nonSDSPlusSentenceAndOffenceFourYears.copy(
       sentenceCalculationType = SentenceCalculationType.entries.find {
         !it.isSDS40Eligible
@@ -412,37 +414,63 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     assertThat(withReleaseArrangements[1].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.VIOLENT)
     assertThat(withReleaseArrangements[1].sentenceSequence).isEqualTo(200)
 
-    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getPcscMarkersForOffenceCodes(any())
     verify(mockManageOffencesService).getSdsExclusionsForOffenceCodes(listOf("SX01", "V01"))
   }
 
   @Test
   fun `should not check for sexual or violent if it's SDS plus`() {
-    whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(listOf("SX01", "V01"))).thenReturn(
-      listOf(
-        SDSEarlyReleaseExclusionForOffenceCode("SX01", SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
-        SDSEarlyReleaseExclusionForOffenceCode("V01", SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
-      ),
-    )
-    whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListAMarkers))
+    val offenceCodeSdsPlus = "A123456"
+    val offenceCodeSexualSds40 = "SX01"
+    val offenceCodeViolentSds40 = "VX01"
 
-    val sexualOffenceSentence = nonSDSPlusSentenceAndOffenceFourYears.copy(offence = nonSDSPlusSentenceAndOffenceFourYears.offence.copy(offenceCode = "SX01"), sentenceSequence = 100)
-    val violentOffenceSentence = nonSDSPlusSentenceAndOffenceFourYears.copy(offence = nonSDSPlusSentenceAndOffenceFourYears.offence.copy(offenceCode = "V01"), sentenceSequence = 200)
+    val allOffences = listOf(offenceCodeSdsPlus, offenceCodeSexualSds40, offenceCodeViolentSds40).sorted()
+    val sds40Offences = listOf(offenceCodeSexualSds40, offenceCodeViolentSds40).sorted()
+
+    whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(allOffences))
+      .thenReturn(
+        listOf(
+          pcscListAMarkers,
+          pcscListNoMarkers(offenceCodeSexualSds40),
+          pcscListNoMarkers(offenceCodeViolentSds40),
+        ),
+      )
+
+    whenever(mockManageOffencesService.getSdsExclusionsForOffenceCodes(sds40Offences))
+      .thenReturn(
+        listOf(
+          SDSEarlyReleaseExclusionForOffenceCode(offenceCodeSexualSds40, SDSEarlyReleaseExclusionSchedulePart.SEXUAL),
+          SDSEarlyReleaseExclusionForOffenceCode(offenceCodeViolentSds40, SDSEarlyReleaseExclusionSchedulePart.VIOLENT),
+        ),
+      )
+
+    val sexualOffenceSentence = createSentence(offenceCodeSexualSds40, sequence = 100)
+    val violentOffenceSentence = createSentence(offenceCodeViolentSds40, sequence = 200)
     val sdsPlusOffence = sentencedAfterSDSPlusBeforePCSCLongerThan7Years[0].copy(sentenceSequence = 300)
-    val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(sexualOffenceSentence, violentOffenceSentence, sdsPlusOffence))
 
-    assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
-    assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.SEXUAL)
-    assertThat(withReleaseArrangements[0].sentenceSequence).isEqualTo(100)
-    assertThat(withReleaseArrangements[1].isSDSPlus).isFalse()
-    assertThat(withReleaseArrangements[1].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.VIOLENT)
-    assertThat(withReleaseArrangements[1].sentenceSequence).isEqualTo(200)
-    assertThat(withReleaseArrangements[2].isSDSPlus).isTrue()
-    assertThat(withReleaseArrangements[2].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.NO)
-    assertThat(withReleaseArrangements[2].sentenceSequence).isEqualTo(300)
+    val sentences = listOf(sexualOffenceSentence, violentOffenceSentence, sdsPlusOffence)
 
-    verify(mockManageOffencesService).getPcscMarkersForOffenceCodes(OFFENCE_CODE_SOME_PCSC_MARKERS)
-    verify(mockManageOffencesService).getSdsExclusionsForOffenceCodes(listOf("SX01", "V01"))
+    val withReleaseArrangements = underTest.populateReleaseArrangements(sentences)
+
+    assertSentence(withReleaseArrangements[0], isSDSPlus = false, exclusionType = SDSEarlyReleaseExclusionType.SEXUAL, sequence = 100)
+    assertSentence(withReleaseArrangements[1], isSDSPlus = false, exclusionType = SDSEarlyReleaseExclusionType.VIOLENT, sequence = 200)
+    assertSentence(withReleaseArrangements[2], isSDSPlus = true, exclusionType = SDSEarlyReleaseExclusionType.NO, sequence = 300)
+
+    verify(mockManageOffencesService).getPcscMarkersForOffenceCodes(allOffences)
+    verify(mockManageOffencesService).getSdsExclusionsForOffenceCodes(sds40Offences)
+  }
+
+  private fun createSentence(offenceCode: String, sequence: Int): NormalisedSentenceAndOffence {
+    return nonSDSPlusSentenceAndOffenceFourYears.copy(
+      offence = nonSDSPlusSentenceAndOffenceFourYears.offence.copy(offenceCode = offenceCode),
+      sentenceSequence = sequence,
+    )
+  }
+
+  private fun assertSentence(sentence: SentenceAndOffenceWithReleaseArrangements, isSDSPlus: Boolean, exclusionType: SDSEarlyReleaseExclusionType, sequence: Int) {
+    assertThat(sentence.isSDSPlus).isEqualTo(isSDSPlus)
+    assertThat(sentence.hasAnSDSEarlyReleaseExclusion).isEqualTo(exclusionType)
+    assertThat(sentence.sentenceSequence).isEqualTo(sequence)
   }
 
   @ParameterizedTest
@@ -769,6 +797,18 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     )
 
     private const val OFFENCE_CODE_SOME_PCSC_MARKERS = "A123456"
+
+    fun pcscListNoMarkers(offenceCode: String): OffencePcscMarkers {
+      return OffencePcscMarkers(
+        offenceCode = offenceCode,
+        pcscMarkers = PcscMarkers(
+          inListA = false,
+          inListB = false,
+          inListC = false,
+          inListD = false,
+        ),
+      )
+    }
 
     private val pcscListAMarkers = OffencePcscMarkers(
       offenceCode = OFFENCE_CODE_SOME_PCSC_MARKERS,

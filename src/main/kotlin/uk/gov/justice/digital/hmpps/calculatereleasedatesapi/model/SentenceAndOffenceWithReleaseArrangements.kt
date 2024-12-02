@@ -24,10 +24,11 @@ data class SentenceAndOffenceWithReleaseArrangements(
   override val courtDescription: String?,
   override val fineAmount: BigDecimal?,
   val isSDSPlus: Boolean,
+  val isSDSPlusEligibleSentenceAndOffence: Boolean,
   val hasAnSDSEarlyReleaseExclusion: SDSEarlyReleaseExclusionType,
 ) : SentenceAndOffence {
 
-  constructor(source: SentenceAndOffence, isSdsPlus: Boolean, hasAnSDSExclusion: SDSEarlyReleaseExclusionType) : this(
+  constructor(source: SentenceAndOffence, isSdsPlus: Boolean, isSDSPlusEligibleSentenceAndOffence: Boolean, hasAnSDSExclusion: SDSEarlyReleaseExclusionType) : this(
     source.bookingId,
     source.sentenceSequence,
     source.lineSequence,
@@ -44,9 +45,10 @@ data class SentenceAndOffenceWithReleaseArrangements(
     source.courtDescription,
     source.fineAmount,
     isSdsPlus,
+    isSDSPlusEligibleSentenceAndOffence,
     hasAnSDSExclusion,
   )
-  constructor(source: PrisonApiSentenceAndOffences, offence: OffenderOffence, isSdsPlus: Boolean, hasAnSDSExclusion: SDSEarlyReleaseExclusionType) : this(
+  constructor(source: PrisonApiSentenceAndOffences, offence: OffenderOffence, isSdsPlus: Boolean, isSDSPlusEligibleSentenceAndOffence: Boolean, hasAnSDSExclusion: SDSEarlyReleaseExclusionType) : this(
     source.bookingId,
     source.sentenceSequence,
     source.lineSequence,
@@ -63,6 +65,7 @@ data class SentenceAndOffenceWithReleaseArrangements(
     source.courtDescription,
     source.fineAmount,
     isSdsPlus,
+    isSDSPlusEligibleSentenceAndOffence,
     hasAnSDSExclusion,
   )
 }

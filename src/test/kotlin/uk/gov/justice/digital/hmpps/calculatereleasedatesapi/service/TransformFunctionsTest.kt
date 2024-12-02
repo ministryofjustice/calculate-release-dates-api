@@ -96,6 +96,7 @@ class TransformFunctionsTest {
       ),
       offence,
       isSdsPlus = true,
+      isSDSPlusEligibleSentenceAndOffence = true,
       hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
@@ -109,6 +110,7 @@ class TransformFunctionsTest {
         lineSequence = lineSequence,
         caseSequence = caseSequence,
         isSDSPlus = true,
+        isSDSPlusEligibleSentenceAndOffence = true,
         hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       ),
     )
@@ -358,7 +360,7 @@ class TransformFunctionsTest {
 
   @Test
   fun `Transform ComparisonPerson with correct validation messages`() {
-    val comparison: Comparison = Comparison(
+    val comparison = Comparison(
       1, UUID.randomUUID(), "ref", objectMapper.createObjectNode(),
       "ABC", ComparisonType.MANUAL, LocalDateTime.now(), "User",
       ComparisonStatus(ComparisonStatusValue.COMPLETED),
@@ -437,6 +439,7 @@ class TransformFunctionsTest {
       ),
       offence,
       isSdsPlus = true,
+      isSDSPlusEligibleSentenceAndOffence = true,
       hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
@@ -445,8 +448,6 @@ class TransformFunctionsTest {
 
   private companion object {
     val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
-    val FIVE_YEAR_FOUR_MONTHS_THREE_WEEKS_TWO_DAYS_DURATION =
-      Duration(mutableMapOf(DAYS to 2L, WEEKS to 3L, MONTHS to 4L, YEARS to 5L))
     val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     val SECOND_JAN_2015: LocalDate = LocalDate.of(2015, 1, 2)
     val DOB: LocalDate = LocalDate.of(1955, 11, 5)

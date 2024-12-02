@@ -222,6 +222,7 @@ class DetailedCalculationResultsServiceTest {
     courtDescription = null,
     consecutiveToSequence = null,
     isSDSPlus = false,
+    isSDSPlusEligibleSentenceAndOffence = false,
     hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
   )
 
