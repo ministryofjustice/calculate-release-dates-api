@@ -79,7 +79,6 @@ class ManualCalculationServiceTest {
   inner class CalculateESLTests {
     @Test
     fun `Check ESL is calculated correctly for determinate sentences without SED`() {
-
       whenever(prisonService.getSentencesAndOffences(BOOKING_ID)).thenReturn(
         listOf(
           SentenceAndOffenceWithReleaseArrangements(
@@ -382,10 +381,6 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check noDates is set correctly when indeterminate`() {
-    val sentenceOne = StandardSENTENCE.copy(
-      consecutiveSentenceUUIDs = emptyList(),
-      sentencedAt = LocalDate.of(2022, 1, 1),
-    )
     whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
