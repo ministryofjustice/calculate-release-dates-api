@@ -18,7 +18,7 @@ class UnadjustedReleaseDate(
   val historicReleaseDateCalculation: ReleaseDateCalculation
 
   /*
-    When the multipler is changed (At tranching for SDS40). The delagate here will re-calculate the unadjusted release dates.
+    When the multiplier is changed (At tranching for SDS40). The delegate here will re-calculate the unadjusted release dates.
    */
   var findMultiplierByIdentificationTrack: (identification: SentenceIdentificationTrack) -> Double by Delegates.observable(findMultiplierByIdentificationTrack) { _, _, _ ->
     calculateUnadjustedReleaseDate()
@@ -113,7 +113,13 @@ class UnadjustedReleaseDate(
     sentence as ConsecutiveSentence
     val daysToExpiry = SentenceAggregator().getDaysInGroup(sentence.sentencedAt, sentence.orderedSentences) { it.totalDuration() }
     val (sentencesWithPed, sentencesWithoutPed) = sentence.orderedSentences
-      .map { IndexedSentenceWithReleasePointMultiplier(sentence.orderedSentences.indexOf(it), it, findMultiplierByIdentificationTrack(it.identificationTrack)) }
+      .map {
+        IndexedSentenceWithReleasePointMultiplier(
+          sentence.orderedSentences.indexOf(it),
+          it,
+          findMultiplierByIdentificationTrack(it.identificationTrack),
+        )
+      }
       .partition { (it.sentence is ExtendedDeterminateSentence && !it.sentence.automaticRelease) || it.sentence is SopcSentence }
     val sentencesWithoutPedGroupedByMultiplierAndGroupsSortedByFirstAppearance = sentencesWithoutPed
       .groupBy { it.multiplier }.entries
@@ -128,15 +134,24 @@ class UnadjustedReleaseDate(
     sentencesInCalculationOrder.forEach { sentencesWithMultipliers ->
       if (sentencesWithMultipliers.isNotEmpty()) {
         val releaseStartDate = if (notionalCrd != null) notionalCrd!!.plusDays(1) else sentence.sentencedAt
-        val daysInThisCustodialDuration = SentenceAggregator().getDaysInGroup(releaseStartDate, sentencesWithMultipliers.map { it.sentence }) { it.custodialDuration() }
+
+        val daysInThisCustodialDuration = SentenceAggregator()
+          .getDaysInGroup(
+            releaseStartDate,
+            sentencesWithMultipliers.map { it.sentence },
+          ) { it.custodialDuration() }
+
         if (sentencesWithMultipliers == sentencesWithPed && !sentence.isRecall()) {
           numberOfDaysToParoleEligibilityDate = calculateConsecutivePed(sentencesWithMultipliers.map { it.sentence }, daysToRelease, releaseStartDate)
         }
+
         val multiplier = sentencesWithMultipliers[0].multiplier
         val daysToReleaseInThisGroup = ceil(daysInThisCustodialDuration.toDouble().times(multiplier)).toLong()
+
         notionalCrd = releaseStartDate
           .plusDays(daysToReleaseInThisGroup)
           .minusDays(1)
+
         daysToRelease += daysToReleaseInThisGroup.toInt()
       }
     }

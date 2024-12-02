@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationP
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheThreeDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
@@ -42,11 +43,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.BookingTimelineService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineAwardedAdjustmentCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineSentenceCalculationHandler
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrancheCalculationHandler
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineUalAdjustmentCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineSentenceCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheThreeCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineUalAdjustmentCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.Clock
 import java.time.LocalDate
@@ -140,20 +142,19 @@ class HintTextTest {
   private val ersedConfiguration = ersedConfigurationForTests()
   private val workingDayService = WorkingDayService(bankHolidayService)
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val sentenceAggregator = SentenceAggregator()
-  private val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultiplierConfigurationForTests())
   private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
   private val ersedCalculator = ErsedCalculator(ersedConfiguration)
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
   private val sentencesExtractionService = SentencesExtractionService()
-  private val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
-  private val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(), sdsEarlyReleaseTrancheTwoDate())
+  private val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(), sdsEarlyReleaseTrancheTwoDate(), sdsEarlyReleaseTrancheThreeDate())
+  private val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator, trancheConfiguration)
   private val tranche = Tranche(trancheConfiguration)
   private val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
   private val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)
   private val bookingCalculationService = BookingCalculationService(sentenceIdentificationService)
   private val hdcedExtractionService = HdcedExtractionService(sentencesExtractionService)
   private val bookingExtractionService = BookingExtractionService(hdcedExtractionService, sentencesExtractionService)
+  private val releasePointMultiplierConfigurationForTests = releasePointMultiplierConfigurationForTests()
 
   private val timelineCalculator = TimelineCalculator(
     sentenceAdjustedCalculationService,
@@ -161,24 +162,29 @@ class HintTextTest {
   )
   private val timelineAwardedAdjustmentCalculationHandler = TimelineAwardedAdjustmentCalculationHandler(
     trancheConfiguration,
-    releasePointMultiplierLookup,
+    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
   )
   private val timelineSentenceCalculationHandler = TimelineSentenceCalculationHandler(
     trancheConfiguration,
-    releasePointMultiplierLookup,
+    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
   )
   private val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
     trancheConfiguration,
-    releasePointMultiplierLookup,
+    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
     trancheAllocationService,
     sentencesExtractionService,
   )
+  private val timelineTrancheThreeCalculationHandler = TimelineTrancheThreeCalculationHandler(
+    trancheConfiguration,
+    releasePointMultiplierConfigurationForTests,
+    timelineCalculator,
+  )
   private val timelineUalAdjustmentCalculationHandler = TimelineUalAdjustmentCalculationHandler(
     trancheConfiguration,
-    releasePointMultiplierLookup,
+    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
   )
   private val bookingTimelineService = BookingTimelineService(
@@ -188,6 +194,7 @@ class HintTextTest {
     timelineCalculator,
     timelineAwardedAdjustmentCalculationHandler,
     timelineTrancheCalculationHandler,
+    timelineTrancheThreeCalculationHandler,
     timelineSentenceCalculationHandler,
     timelineUalAdjustmentCalculationHandler,
 

@@ -11,4 +11,6 @@ data class SDS40TrancheConfiguration(
   @DateTimeFormat(pattern = "yyyy-MM-dd") val trancheOneCommencementDate: LocalDate,
   @Name("tranche-two-date")
   @DateTimeFormat(pattern = "yyyy-MM-dd") val trancheTwoCommencementDate: LocalDate,
+  @Name("tranche-three-date")
+  @DateTimeFormat(pattern = "yyyy-MM-dd") val trancheThreeCommencementDate: LocalDate,
 )

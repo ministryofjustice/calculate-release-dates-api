@@ -40,9 +40,14 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
 
   private val testCommencementDate = LocalDate.of(2024, 7, 29)
   private val testTrancheTwoCommencementDate = LocalDate.of(2024, 10, 22)
+  private val testTrancheThreeCommencementDate = LocalDate.of(2024, 12, 16)
 
   @Mock
-  private val trancheConfiguration = SDS40TrancheConfiguration(testCommencementDate, testTrancheTwoCommencementDate)
+  private val trancheConfiguration = SDS40TrancheConfiguration(
+    testCommencementDate,
+    testTrancheTwoCommencementDate,
+    testTrancheThreeCommencementDate,
+  )
 
   private val service = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)
 
@@ -128,7 +133,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       recallType = RecallType.STANDARD_RECALL,
     )
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
-    sentence.identificationTrack = SentenceIdentificationTrack.RECALL
+    sentence.identificationTrack = SentenceIdentificationTrack.SDS_STANDARD_RELEASE
     val earlyTused = LocalDate.of(2024, 12, 2)
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
@@ -188,7 +193,7 @@ class SDSEarlyReleaseDefaultingRulesServiceTest {
       recallType = RecallType.STANDARD_RECALL,
     )
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.TUSED), sentence, testOffender)
-    sentence.identificationTrack = SentenceIdentificationTrack.RECALL
+    sentence.identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE
     val earlyTused = LocalDate.of(2024, 1, 1)
     val sentenceCalculation = SentenceCalculation(
       UnadjustedReleaseDate(
