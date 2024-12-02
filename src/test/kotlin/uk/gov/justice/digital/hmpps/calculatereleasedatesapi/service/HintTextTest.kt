@@ -142,7 +142,6 @@ class HintTextTest {
   private val ersedConfiguration = ersedConfigurationForTests()
   private val workingDayService = WorkingDayService(bankHolidayService)
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultiplierConfigurationForTests())
   private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
   private val ersedCalculator = ErsedCalculator(ersedConfiguration)
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
@@ -155,6 +154,7 @@ class HintTextTest {
   private val bookingCalculationService = BookingCalculationService(sentenceIdentificationService)
   private val hdcedExtractionService = HdcedExtractionService(sentencesExtractionService)
   private val bookingExtractionService = BookingExtractionService(hdcedExtractionService, sentencesExtractionService)
+  private val releasePointMultiplierConfigurationForTests = releasePointMultiplierConfigurationForTests()
 
   private val timelineCalculator = TimelineCalculator(
     sentenceAdjustedCalculationService,
@@ -162,29 +162,29 @@ class HintTextTest {
   )
   private val timelineAwardedAdjustmentCalculationHandler = TimelineAwardedAdjustmentCalculationHandler(
     trancheConfiguration,
-    releasePointMultiplierLookup,
+    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
   )
   private val timelineSentenceCalculationHandler = TimelineSentenceCalculationHandler(
     trancheConfiguration,
-    releasePointMultiplierLookup,
+    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
   )
   private val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
     trancheConfiguration,
-    releasePointMultiplierLookup,
+    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
     trancheAllocationService,
     sentencesExtractionService,
   )
   private val timelineTrancheThreeCalculationHandler = TimelineTrancheThreeCalculationHandler(
     trancheConfiguration,
-    releasePointMultiplierLookup,
+    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
   )
   private val timelineUalAdjustmentCalculationHandler = TimelineUalAdjustmentCalculationHandler(
     trancheConfiguration,
-    releasePointMultiplierLookup,
+    releasePointMultiplierConfigurationForTests,
     timelineCalculator,
   )
   private val bookingTimelineService = BookingTimelineService(

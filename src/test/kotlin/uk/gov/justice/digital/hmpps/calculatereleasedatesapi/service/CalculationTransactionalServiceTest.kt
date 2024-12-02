@@ -647,7 +647,6 @@ class CalculationTransactionalServiceTest {
 
     val workingDayService = WorkingDayService(bankHolidayService)
     val tusedCalculator = TusedCalculator(workingDayService)
-    val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultipliersConfiguration)
 
     val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
@@ -683,29 +682,29 @@ class CalculationTransactionalServiceTest {
     )
     val timelineAwardedAdjustmentCalculationHandler = TimelineAwardedAdjustmentCalculationHandler(
       trancheConfiguration,
-      releasePointMultiplierLookup,
+      releasePointMultipliersConfiguration,
       timelineCalculator,
     )
     val timelineSentenceCalculationHandler = TimelineSentenceCalculationHandler(
       trancheConfiguration,
-      releasePointMultiplierLookup,
+      releasePointMultipliersConfiguration,
       timelineCalculator,
     )
     val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
       trancheConfiguration,
-      releasePointMultiplierLookup,
+      releasePointMultipliersConfiguration,
       timelineCalculator,
       trancheAllocationService,
       sentencesExtractionService,
     )
     val timelineTrancheThreeCalculationHandler = TimelineTrancheThreeCalculationHandler(
       trancheConfiguration,
-      releasePointMultiplierLookup,
+      releasePointMultipliersConfiguration,
       timelineCalculator,
     )
     val timelineUalAdjustmentCalculationHandler = TimelineUalAdjustmentCalculationHandler(
       trancheConfiguration,
-      releasePointMultiplierLookup,
+      releasePointMultipliersConfiguration,
       timelineCalculator,
     )
     val bookingTimelineService = BookingTimelineService(

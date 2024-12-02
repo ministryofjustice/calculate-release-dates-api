@@ -1,27 +1,6 @@
 release-point-multipliers:
-  multipliers:
-    - tracks:
-        - EDS_AUTOMATIC_RELEASE
-        - SDS_TWO_THIRDS_RELEASE
-        - SDS_PLUS_RELEASE
-      multiplier: 0.66666
-    - tracks:
-        - EDS_DISCRETIONARY_RELEASE,
-        - SOPC_PED_AT_TWO_THIRDS,
-        - SOPC_PED_AT_HALFWAY,
-        - AFINE_ARD_AT_FULL_TERM,
-        - BOTUS
-      multiplier: 1.0
-    - tracks:
-        - SDS_EARLY_RELEASE
-        - SDS_STANDARD_RELEASE_T3_EXCLUSION
-      multiplier: 0.43
-  historicMultipliers:
-    - tracks:
-        - SDS_EARLY_RELEASE
-        - SDS_STANDARD_RELEASE_T3_EXCLUSION
-      multiplier: 0.5
-  default: 0.5
+  earlyReleasePoint: 0.43
+
 sds-early-release-tranches:
   tranche-one-date: 2024-09-10
   tranche-two-date: 2024-10-22

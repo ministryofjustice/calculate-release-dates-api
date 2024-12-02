@@ -351,7 +351,7 @@ class TrancheAllocationServiceTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       recallType = RecallType.STANDARD_RECALL,
     )
-    sentence.identificationTrack = SentenceIdentificationTrack.RECALL
+    sentence.identificationTrack = SentenceIdentificationTrack.SDS_EARLY_RELEASE
     sentence.releaseDateTypes = ReleaseDateTypes(listOf(ReleaseDateType.PRRD, ReleaseDateType.SLED), sentence, offender = mock<Offender>())
 
     return sentence
