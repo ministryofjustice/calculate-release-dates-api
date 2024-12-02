@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ReleasePointMultipliersConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleasePointMultiplierLookup
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
@@ -11,7 +11,7 @@ import java.time.LocalDate
 
 abstract class TimelineCalculationHandler(
   protected val trancheConfiguration: SDS40TrancheConfiguration,
-  protected val multiplierLookup: ReleasePointMultiplierLookup,
+  private val releasePointConfiguration: ReleasePointMultipliersConfiguration,
   protected val timelineCalculator: TimelineCalculator,
 ) {
   abstract fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult
@@ -31,24 +31,59 @@ abstract class TimelineCalculationHandler(
     timelineCalculationDate: LocalDate,
     earlyReleaseCommencementDate: LocalDate?,
   ): (identification: SentenceIdentificationTrack) -> Double {
-    if (timelineCalculationDate.isAfterOrEqualTo(trancheConfiguration.trancheThreeCommencementDate)) {
-      return { identification: SentenceIdentificationTrack ->
-        if (identification == SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION) {
-          multiplierLookup.historicMultiplierFor(identification)
-        } else {
-          multiplierLookup.multiplierFor(identification)
-        }
-      }
-    }
-
-    if (timelineCalculationDate.isAfterOrEqualTo(earlyReleaseCommencementDate ?: trancheConfiguration.trancheOneCommencementDate)) {
-      return { identification: SentenceIdentificationTrack -> multiplierLookup.multiplierFor(identification) }
-    }
-
-    return { identification: SentenceIdentificationTrack -> multiplierLookup.historicMultiplierFor(identification) }
+    return { identification -> multiplierForIdentification(timelineCalculationDate, earlyReleaseCommencementDate, identification) }
   }
 
+  /**
+   Historic release point is before SDS40 tranching started.
+   */
   fun historicMultiplierFnForDate(): (identification: SentenceIdentificationTrack) -> Double {
-    return { identification: SentenceIdentificationTrack -> multiplierLookup.historicMultiplierFor(identification) }
+    return { identification -> multiplierForIdentification(trancheConfiguration.trancheOneCommencementDate.minusDays(1), null, identification) }
+  }
+
+  private fun multiplierForIdentification(
+    timelineCalculationDate: LocalDate,
+    earlyReleaseCommencementDate: LocalDate?,
+    identification: SentenceIdentificationTrack,
+  ): Double {
+    return when (identification) {
+      SentenceIdentificationTrack.EDS_AUTOMATIC_RELEASE,
+      SentenceIdentificationTrack.SDS_TWO_THIRDS_RELEASE,
+      SentenceIdentificationTrack.SDS_PLUS_RELEASE,
+      -> TWO_THIRDS
+
+      SentenceIdentificationTrack.EDS_DISCRETIONARY_RELEASE,
+      SentenceIdentificationTrack.SOPC_PED_AT_TWO_THIRDS,
+      SentenceIdentificationTrack.SOPC_PED_AT_HALFWAY,
+      SentenceIdentificationTrack.AFINE_ARD_AT_FULL_TERM,
+      SentenceIdentificationTrack.BOTUS,
+      SentenceIdentificationTrack.BOTUS_WITH_HISTORIC_TUSED,
+      -> FULL
+
+      SentenceIdentificationTrack.SDS_EARLY_RELEASE,
+      SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION,
+      -> earlyReleaseMultiplier(timelineCalculationDate, earlyReleaseCommencementDate, identification)
+
+      else -> HALF
+    }
+  }
+
+  private fun earlyReleaseMultiplier(timelineCalculationDate: LocalDate, earlyReleaseCommencementDate: LocalDate?, identification: SentenceIdentificationTrack): Double {
+    return if (timelineCalculationDate.isAfterOrEqualTo(trancheConfiguration.trancheThreeCommencementDate) && identification == SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION) {
+      HALF
+    } else if (timelineCalculationDate.isAfterOrEqualTo(
+        earlyReleaseCommencementDate ?: trancheConfiguration.trancheOneCommencementDate,
+      )
+    ) {
+      releasePointConfiguration.earlyReleasePoint
+    } else {
+      HALF
+    }
+  }
+
+  companion object {
+    private const val HALF = 1.toDouble().div(2)
+    private const val TWO_THIRDS = 2.toDouble().div(3)
+    private const val FULL = 1.toDouble()
   }
 }

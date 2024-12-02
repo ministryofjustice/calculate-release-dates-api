@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ReleasePointMultipliersConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleasePointMultiplierLookup
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.TrancheAllocationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
@@ -16,11 +16,11 @@ import java.time.LocalDate
 @Service
 class TimelineTrancheCalculationHandler(
   trancheConfiguration: SDS40TrancheConfiguration,
-  multiplierLookup: ReleasePointMultiplierLookup,
+  releasePointConfiguration: ReleasePointMultipliersConfiguration,
   timelineCalculator: TimelineCalculator,
   val trancheAllocationService: TrancheAllocationService,
   val sentenceExtractionService: SentencesExtractionService,
-) : TimelineCalculationHandler(trancheConfiguration, multiplierLookup, timelineCalculator) {
+) : TimelineCalculationHandler(trancheConfiguration, releasePointConfiguration, timelineCalculator) {
 
   override fun handle(
     timelineCalculationDate: LocalDate,
