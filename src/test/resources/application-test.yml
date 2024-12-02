@@ -94,13 +94,16 @@ release-point-multipliers:
       multiplier: 1.0
     - tracks:
         - SDS_EARLY_RELEASE
+        - SDS_STANDARD_RELEASE_T3_EXCLUSION
       multiplier: 0.40
   historicMultipliers:
     - tracks:
         - SDS_EARLY_RELEASE
+        - SDS_STANDARD_RELEASE_T3_EXCLUSION
       multiplier: 0.5
   default: 0.5
 
 sds-early-release-tranches:
   tranche-one-date: 2024-09-10
   tranche-two-date: 2024-10-22
+  tranche-three-date: 2024-12-16

@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
+package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
@@ -7,6 +7,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleasePointMultiplierLookup
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -17,7 +20,10 @@ class TimelineSentenceCalculationHandler(
   timelineCalculator: TimelineCalculator,
 ) : TimelineCalculationHandler(trancheConfiguration, multiplierLookup, timelineCalculator) {
 
-  override fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
+  override fun handle(
+    timelineCalculationDate: LocalDate,
+    timelineTrackingData: TimelineTrackingData,
+  ): TimelineHandleResult {
     with(timelineTrackingData) {
       val newlySentenced = futureData.sentences.filter { it.sentencedAt == timelineCalculationDate }
 
@@ -71,8 +77,8 @@ class TimelineSentenceCalculationHandler(
         sentence.sentenceCalculation = SentenceCalculation(
           UnadjustedReleaseDate(
             sentence,
-            multiplerFnForDate(timelineCalculationDate, trancheAndCommencement.second),
-            historicMultiplerFnForDate(),
+            multiplierFnForDate(timelineCalculationDate, trancheAndCommencement.second),
+            historicMultiplierFnForDate(),
             returnToCustodyDate,
           ),
           SentenceAdjustments(),

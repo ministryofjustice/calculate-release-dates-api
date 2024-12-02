@@ -7,4 +7,5 @@ enum class TimelineCalculationType {
   UAL,
   TRANCHE_1,
   TRANCHE_2,
+  TRANCHE_3,
 }

@@ -19,6 +19,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CustodialPeri
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SDSEarlyReleaseDefaultingRulesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.WorkingDayService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineSentenceCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheThreeCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineUalAdjustmentCalculationHandler
 import java.time.LocalDate
 
 @Service
@@ -29,11 +35,18 @@ class BookingTimelineService(
   private val timelineCalculator: TimelineCalculator,
   private val timelineAwardedAdjustmentCalculationHandler: TimelineAwardedAdjustmentCalculationHandler,
   private val timelineTrancheCalculationHandler: TimelineTrancheCalculationHandler,
+  private val trancheThreeCalculationHandler: TimelineTrancheThreeCalculationHandler,
   private val timelineSentenceCalculationHandler: TimelineSentenceCalculationHandler,
   private val timelineUalAdjustmentCalculationHandler: TimelineUalAdjustmentCalculationHandler,
 ) {
 
-  fun calculate(sentences: List<CalculableSentence>, adjustments: Adjustments, offender: Offender, returnToCustodyDate: LocalDate?, options: CalculationOptions): CalculationOutput {
+  fun calculate(
+    sentences: List<CalculableSentence>,
+    adjustments: Adjustments,
+    offender: Offender,
+    returnToCustodyDate: LocalDate?,
+    options: CalculationOptions,
+  ): CalculationOutput {
     val futureData = TimelineFutureData(
       taggedBail = adjustments.getOrEmptyList(TAGGED_BAIL),
       remand = adjustments.getOrEmptyList(REMAND),
@@ -48,6 +61,7 @@ class BookingTimelineService(
     val calculationsByDate = getCalculationsByDate(sentences, futureData)
 
     val earliestSentence = futureData.sentences.minBy { it.sentencedAt }
+
     val timelineTrackingData = TimelineTrackingData(
       futureData,
       calculationsByDate,
@@ -114,7 +128,10 @@ class BookingTimelineService(
       TimelineCalculationType.SENTENCED -> timelineSentenceCalculationHandler
       TimelineCalculationType.ADDITIONAL_DAYS, TimelineCalculationType.RESTORATION_DAYS -> timelineAwardedAdjustmentCalculationHandler
       TimelineCalculationType.UAL -> timelineUalAdjustmentCalculationHandler
-      TimelineCalculationType.TRANCHE_1, TimelineCalculationType.TRANCHE_2 -> timelineTrancheCalculationHandler
+      TimelineCalculationType.TRANCHE_1,
+      TimelineCalculationType.TRANCHE_2,
+      -> timelineTrancheCalculationHandler
+      TimelineCalculationType.TRANCHE_3 -> trancheThreeCalculationHandler
     }
   }
 
@@ -166,28 +183,20 @@ class BookingTimelineService(
   }
 
   private fun getCalculationsByDate(sentences: List<CalculableSentence>, futureData: TimelineFutureData): Map<LocalDate, List<TimelineCalculationDate>> {
-    var allCalculations = (
-      sentences.flatMap { it.sentenceParts() }.map { TimelineCalculationDate(it.sentencedAt, TimelineCalculationType.SENTENCED) } +
-        futureData.additional.map {
-          TimelineCalculationDate(
-            it.appliesToSentencesFrom,
-            TimelineCalculationType.ADDITIONAL_DAYS,
-          )
-        } +
-        futureData.restored.map {
-          TimelineCalculationDate(
-            it.appliesToSentencesFrom,
-            TimelineCalculationType.RESTORATION_DAYS,
-          )
-        } +
-        futureData.ual.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.UAL) }
-      ) +
-      TimelineCalculationDate(trancheConfiguration.trancheOneCommencementDate, TimelineCalculationType.TRANCHE_1) +
-      TimelineCalculationDate(trancheConfiguration.trancheTwoCommencementDate, TimelineCalculationType.TRANCHE_2)
-
-    allCalculations = allCalculations.sortedBy { it.date }.distinct()
-
-    return allCalculations.groupBy { it.date }
+    return (
+      sentences.flatMap { it.sentenceParts().map { part -> TimelineCalculationDate(part.sentencedAt, TimelineCalculationType.SENTENCED) } } +
+        futureData.additional.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.ADDITIONAL_DAYS) } +
+        futureData.restored.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.RESTORATION_DAYS) } +
+        futureData.ual.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.UAL) } +
+        listOf(
+          TimelineCalculationDate(trancheConfiguration.trancheOneCommencementDate, TimelineCalculationType.TRANCHE_1),
+          TimelineCalculationDate(trancheConfiguration.trancheTwoCommencementDate, TimelineCalculationType.TRANCHE_2),
+          TimelineCalculationDate(trancheConfiguration.trancheThreeCommencementDate, TimelineCalculationType.TRANCHE_3),
+        )
+      )
+      .sortedBy { it.date }
+      .distinct()
+      .groupBy { it.date }
   }
 
   companion object {
