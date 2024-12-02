@@ -153,28 +153,20 @@ class OffenceSDSReleaseArrangementLookupService(
     val exclusionForOffence = exclusionsForOffences[offenceCode]
 
     return when (exclusionForOffence?.schedulePart) {
-      SDSEarlyReleaseExclusionSchedulePart.SEXUAL,
-      SDSEarlyReleaseExclusionSchedulePart.SEXUAL_T3,
-      -> SDSEarlyReleaseExclusionType.SEXUAL
-      SDSEarlyReleaseExclusionSchedulePart.DOMESTIC_ABUSE,
-      SDSEarlyReleaseExclusionSchedulePart.DOMESTIC_ABUSE_T3,
-      -> SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE
-      SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY,
-      SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY_T3,
-      -> SDSEarlyReleaseExclusionType.NATIONAL_SECURITY
-      SDSEarlyReleaseExclusionSchedulePart.TERRORISM,
-      SDSEarlyReleaseExclusionSchedulePart.TERRORISM_T3,
-      -> SDSEarlyReleaseExclusionType.TERRORISM
-      SDSEarlyReleaseExclusionSchedulePart.MURDER,
-      SDSEarlyReleaseExclusionSchedulePart.MURDER_T3,
-      -> SDSEarlyReleaseExclusionType.MURDER
-      SDSEarlyReleaseExclusionSchedulePart.VIOLENT_T3,
-      SDSEarlyReleaseExclusionSchedulePart.VIOLENT,
-      -> if (fourYearsOrMore(sentenceAndOffence)) {
-        SDSEarlyReleaseExclusionType.VIOLENT
-      } else {
-        SDSEarlyReleaseExclusionType.NO
-      }
+      SDSEarlyReleaseExclusionSchedulePart.SEXUAL_T3 -> SDSEarlyReleaseExclusionType.SEXUAL_T3
+      SDSEarlyReleaseExclusionSchedulePart.SEXUAL -> SDSEarlyReleaseExclusionType.SEXUAL
+      SDSEarlyReleaseExclusionSchedulePart.DOMESTIC_ABUSE_T3 -> SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE_T3
+      SDSEarlyReleaseExclusionSchedulePart.DOMESTIC_ABUSE -> SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE
+      SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY_T3 -> SDSEarlyReleaseExclusionType.NATIONAL_SECURITY_T3
+      SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY -> SDSEarlyReleaseExclusionType.NATIONAL_SECURITY
+      SDSEarlyReleaseExclusionSchedulePart.TERRORISM_T3 -> SDSEarlyReleaseExclusionType.TERRORISM_T3
+      SDSEarlyReleaseExclusionSchedulePart.TERRORISM -> SDSEarlyReleaseExclusionType.TERRORISM
+      SDSEarlyReleaseExclusionSchedulePart.MURDER_T3 -> SDSEarlyReleaseExclusionType.MURDER_T3
+      SDSEarlyReleaseExclusionSchedulePart.MURDER -> SDSEarlyReleaseExclusionType.MURDER
+      SDSEarlyReleaseExclusionSchedulePart.VIOLENT_T3 ->
+        if (fourYearsOrMore(sentenceAndOffence)) SDSEarlyReleaseExclusionType.VIOLENT_T3 else SDSEarlyReleaseExclusionType.NO
+      SDSEarlyReleaseExclusionSchedulePart.VIOLENT ->
+        if (fourYearsOrMore(sentenceAndOffence)) SDSEarlyReleaseExclusionType.VIOLENT else SDSEarlyReleaseExclusionType.NO
       SDSEarlyReleaseExclusionSchedulePart.NONE -> SDSEarlyReleaseExclusionType.NO
       null -> SDSEarlyReleaseExclusionType.NO
     }
