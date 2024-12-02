@@ -1,0 +1,32 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2024-01-19",
+        "offenceCode": "CJ15005"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "sentencedAt": "2024-04-29",
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2024-04-29",
+        "numberOfDays": 100,
+        "fromDate": "2024-01-20",
+        "toDate": "2024-04-28"
+      }
+    ]
+  },
+  "calculateErsed": false
+}

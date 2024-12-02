@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationP
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.releasePointMultiplierConfigurationForTests
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheThreeDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
@@ -89,11 +90,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.BookingTimelineService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineAwardedAdjustmentCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineSentenceCalculationHandler
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrancheCalculationHandler
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineUalAdjustmentCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineSentenceCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheThreeCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineUalAdjustmentCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.AdjustmentValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.BotusValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DtoValidationService
@@ -183,6 +185,7 @@ class CalculationTransactionalServiceTest {
       val trancheConfiguration = SDS40TrancheConfiguration(
         sdsEarlyReleaseTrancheOneDate(defaultParams(params)),
         sdsEarlyReleaseTrancheTwoDate(defaultParams(params)),
+        sdsEarlyReleaseTrancheThreeDate(defaultParams(params)),
       )
       val myValidationService = getActiveValidationService(sentencesExtractionService, trancheConfiguration)
 
@@ -644,17 +647,20 @@ class CalculationTransactionalServiceTest {
 
     val workingDayService = WorkingDayService(bankHolidayService)
     val tusedCalculator = TusedCalculator(workingDayService)
-    val sentenceAggregator = SentenceAggregator()
-    val releasePointMultiplierLookup = ReleasePointMultiplierLookup(releasePointMultipliersConfiguration)
 
     val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val sentenceAdjustedCalculationService =
       SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
     val sentencesExtractionService = SentencesExtractionService()
-    val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator)
+    val trancheConfiguration = SDS40TrancheConfiguration(
+      sdsEarlyReleaseTrancheOneDate(params),
+      sdsEarlyReleaseTrancheTwoDate(params),
+      sdsEarlyReleaseTrancheThreeDate(params),
+    )
 
-    val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(params), sdsEarlyReleaseTrancheTwoDate(params))
+    val sentenceIdentificationService = SentenceIdentificationService(tusedCalculator, hdcedCalculator, trancheConfiguration)
+
     val tranche = Tranche(trancheConfiguration)
 
     val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
@@ -676,24 +682,29 @@ class CalculationTransactionalServiceTest {
     )
     val timelineAwardedAdjustmentCalculationHandler = TimelineAwardedAdjustmentCalculationHandler(
       trancheConfiguration,
-      releasePointMultiplierLookup,
+      releasePointMultipliersConfiguration,
       timelineCalculator,
     )
     val timelineSentenceCalculationHandler = TimelineSentenceCalculationHandler(
       trancheConfiguration,
-      releasePointMultiplierLookup,
+      releasePointMultipliersConfiguration,
       timelineCalculator,
     )
     val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
       trancheConfiguration,
-      releasePointMultiplierLookup,
+      releasePointMultipliersConfiguration,
       timelineCalculator,
       trancheAllocationService,
       sentencesExtractionService,
     )
+    val timelineTrancheThreeCalculationHandler = TimelineTrancheThreeCalculationHandler(
+      trancheConfiguration,
+      releasePointMultipliersConfiguration,
+      timelineCalculator,
+    )
     val timelineUalAdjustmentCalculationHandler = TimelineUalAdjustmentCalculationHandler(
       trancheConfiguration,
-      releasePointMultiplierLookup,
+      releasePointMultipliersConfiguration,
       timelineCalculator,
     )
     val bookingTimelineService = BookingTimelineService(
@@ -703,9 +714,9 @@ class CalculationTransactionalServiceTest {
       timelineCalculator,
       timelineAwardedAdjustmentCalculationHandler,
       timelineTrancheCalculationHandler,
+      timelineTrancheThreeCalculationHandler,
       timelineSentenceCalculationHandler,
       timelineUalAdjustmentCalculationHandler,
-
     )
 
     val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())

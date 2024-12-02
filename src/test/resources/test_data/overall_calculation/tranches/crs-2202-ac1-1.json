@@ -1,0 +1,33 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2024-04-03",
+        "offenceCode": "ST19001"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 1
+        }
+      },
+      "sentencedAt": "2024-04-03",
+      "recallType": "STANDARD_RECALL",
+      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE_T3"
+    }
+  ],
+  "adjustments": {
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "appliesToSentencesFrom": "2024-06-20",
+        "numberOfDays": 2,
+        "fromDate": "2024-06-20",
+        "toDate": "2024-06-22"
+      }
+    ]
+  },
+  "calculateErsed": false
+}
