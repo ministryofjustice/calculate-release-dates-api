@@ -16,17 +16,6 @@ abstract class TimelineCalculationHandler(
 ) {
   abstract fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult
 
-  /**
-   * Return lambda function which receives the sentence track and returns the
-   * sentence multiplier for use when calculating the earliest release date.
-   *
-   * 1. If timelineCalculationDate if on or after tranche three commencement date and
-   *    the track is SDS_STANDARD_RELEASE_T3_EXCLUSION, then return default SDS_STANDARD multiplier,
-   *    as related offence is now excluded from early release
-   * 2. If timelineCalculationDate date is on or after trancheOneCommencementDate, return multiplier which
-   *    may be eligible for early release (early release scheme commenced as of tranche one)
-   * 3. Default to historic multipliers, which are pre early release
-   */
   fun multiplierFnForDate(
     timelineCalculationDate: LocalDate,
     earlyReleaseCommencementDate: LocalDate?,
