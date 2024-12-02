@@ -102,5 +102,5 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
       " Any offences under this act must be on or after 01 December 2020.\n Change the offence date or choose a relevant offence.",
   ),
   SE2020_INVALID_OFFENCE_COURT_DETAIL("Court case %s count %s offence date is before the offence became law. Change the offence date or choose a relevant offence."),
-  REMAND_ON_OR_AFTER_SENTENCE_DATE("The ‘From’ or ‘To’ date of the remand period must be earlier than the sentence date for Court case %s Count %s"),
+  REMAND_ON_OR_AFTER_SENTENCE_DATE("The 'From' or 'To' date of the remand period must be earlier than the sentence date for court case %s count %s."),
 }
