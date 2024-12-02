@@ -1,0 +1,34 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2024-04-03",
+        "offenceCode": "PH97005"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 1,
+          "MONTHS": 10
+        }
+      },
+      "sentencedAt": "2024-09-11",
+      "recallType": "STANDARD_RECALL",
+      "hasAnSDSEarlyReleaseExclusion": "DOMESTIC_ABUSE_T3"
+    }
+  ],
+  "adjustments": {
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "appliesToSentencesFrom": "2024-09-11",
+        "numberOfDays": 5,
+        "fromDate": "2025-09-05",
+        "toDate": "2025-09-09"
+      }
+    ]
+  },
+  "calculateErsed": false
+}

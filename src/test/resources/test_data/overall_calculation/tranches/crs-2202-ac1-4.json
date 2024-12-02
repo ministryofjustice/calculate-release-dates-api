@@ -1,0 +1,32 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2024-04-03",
+        "offenceCode": "SE20012"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 3
+        }
+      },
+      "sentencedAt": "2024-10-11",
+      "recallType": "FIXED_TERM_RECALL_14",
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
+    }
+  ],
+  "adjustments": {
+    "RECALL_TAGGED_BAIL": [
+      {
+        "appliesToSentencesFrom": "2024-10-11",
+        "numberOfDays": 5
+      }
+    ]
+  },
+  "returnToCustodyDate": "2024-12-20",
+  "calculateErsed": false
+}

@@ -12,7 +12,6 @@ enum class SDSEarlyReleaseExclusionSchedulePart {
   DOMESTIC_ABUSE_T3,
   NATIONAL_SECURITY_T3,
   TERRORISM_T3,
-  MURDER,
   MURDER_T3,
   NONE,
 }
