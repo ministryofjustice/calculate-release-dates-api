@@ -886,7 +886,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
         ),
       ),
       RelevantRemandSentence(
-        sentenceDate = LocalDate.of(2021, 1, 4),
+        sentenceDate = LocalDate.of(2021, 2, 1),
         bookingId = "RELREMR".hashCode().toLong(),
         recallDate = LocalDate.of(2022, 2, 4),
         sequence = 1,
@@ -905,8 +905,8 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       .expectBody(RelevantRemandCalculationResult::class.java)
       .returnResult().responseBody!!
 
-    assertThat(calculation.postRecallReleaseDate).isEqualTo(LocalDate.of(2022, 6, 2))
-    assertThat(calculation.releaseDate).isEqualTo(LocalDate.of(2021, 9, 2))
+    assertThat(calculation.postRecallReleaseDate).isEqualTo(LocalDate.of(2022, 6, 30))
+    assertThat(calculation.releaseDate).isEqualTo(LocalDate.of(2021, 9, 30))
     assertThat(calculation.validationMessages).isEmpty()
   }
 

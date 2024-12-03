@@ -142,7 +142,7 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
       .expectBody(UnusedDeductionCalculationResponse::class.java)
       .returnResult().responseBody!!
 
-    Assertions.assertThat(calculation.validationMessages).contains(ValidationMessage(ValidationCode.REMAND_OVERLAPS_WITH_SENTENCE, arguments = listOf("2021-02-01", "2021-03-12", adjustments[0].fromDate.toString(), adjustments[0].toDate.toString())))
+    Assertions.assertThat(calculation.validationMessages).contains(ValidationMessage(ValidationCode.REMAND_ON_OR_AFTER_SENTENCE_DATE, arguments = listOf("2", "2")))
   }
 
   @Test
@@ -172,7 +172,7 @@ class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
       .expectBody(UnusedDeductionCalculationResponse::class.java)
       .returnResult().responseBody!!
 
-    Assertions.assertThat(calculation.validationMessages).contains(ValidationMessage(ValidationCode.REMAND_OVERLAPS_WITH_SENTENCE, arguments = listOf("2021-02-01", "2021-04-20", adjustments[0].fromDate.toString(), adjustments[0].toDate.toString())))
+    Assertions.assertThat(calculation.validationMessages).contains(ValidationMessage(ValidationCode.REMAND_ON_OR_AFTER_SENTENCE_DATE, arguments = listOf("2", "2")))
   }
 
   @Test
