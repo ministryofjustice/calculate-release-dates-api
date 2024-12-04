@@ -18,7 +18,8 @@ data class AFineSentence(
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType), Term {
 
   override val isSDSPlus: Boolean = false
-  override val isSDSPlusEligibleSentenceAndOffence: Boolean = false
+  override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false
+  override val isSDSPlusOffenceInPeriod: Boolean = false
 
   override fun buildString(): String {
     return "AFineSentence\t:\t\n" +

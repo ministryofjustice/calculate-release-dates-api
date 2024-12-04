@@ -54,9 +54,9 @@ class HdcedCalculator(
 
   fun hasSdsPlus(sentence: CalculableSentence): Boolean {
     return if (sentence is ConsecutiveSentence) {
-      sentence.orderedSentences.any { it.isSDSPlusEligibleSentenceAndOffence }
+      sentence.orderedSentences.any { it.isSDSPlusEligibleSentenceTypeLengthAndOffence }
     } else {
-      sentence.isSDSPlusEligibleSentenceAndOffence
+      sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence
     }
   }
 

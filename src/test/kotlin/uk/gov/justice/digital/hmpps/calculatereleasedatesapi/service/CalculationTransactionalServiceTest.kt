@@ -839,7 +839,8 @@ class CalculationTransactionalServiceTest {
             originalSentence,
             originalSentence.offences[0],
             isSdsPlus = false,
-            isSDSPlusEligibleSentenceAndOffence = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -895,7 +896,7 @@ class CalculationTransactionalServiceTest {
           "\"offenceCode\":null},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}}," +
           "\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\"," +
           "\"consecutiveSentenceUUIDs\":[],\"caseSequence\":1,\"lineSequence\":2,\"caseReference\":null," +
-          "\"recallType\":null,\"isSDSPlus\":false,\"isSDSPlusEligibleSentenceAndOffence\":false,\"hasAnSDSEarlyReleaseExclusion\":\"NO\"}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
+          "\"recallType\":null,\"isSDSPlus\":false,\"isSDSPlusEligibleSentenceTypeLengthAndOffence\":false,\"isSDSPlusOffenceInPeriod\":false,\"hasAnSDSEarlyReleaseExclusion\":\"NO\"}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
           "\"bookingId\":12345}",
       )
 
@@ -953,7 +954,7 @@ class CalculationTransactionalServiceTest {
       caseSequence = 1,
       lineSequence = 2,
       isSDSPlus = false,
-      isSDSPlusEligibleSentenceAndOffence = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 

@@ -228,10 +228,11 @@ class ValidationServiceTest {
         PrisonApiSourceData(
           listOf(
             SentenceAndOffenceWithReleaseArrangements(
-              invalidSentence,
-              false,
-              isSDSPlusEligibleSentenceAndOffence = false,
-              SDSEarlyReleaseExclusionType.NO,
+              source = invalidSentence,
+              isSdsPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
+              hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
           VALID_PRISONER,
@@ -264,7 +265,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = invalidSentence,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -299,7 +301,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = invalidSentence,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -332,7 +335,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = invalidSentence,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -365,7 +369,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = validSentence,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -389,7 +394,8 @@ class ValidationServiceTest {
           SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = false,
-            isSDSPlusEligibleSentenceAndOffence = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -408,7 +414,8 @@ class ValidationServiceTest {
           SentenceAndOffenceWithReleaseArrangements(
             validEdsSentence,
             isSdsPlus = false,
-            isSDSPlusEligibleSentenceAndOffence = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -437,7 +444,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = sentence,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -474,7 +482,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = sentence,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -510,7 +519,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = sentence,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             ),
           ),
@@ -555,14 +565,16 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           }.map {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -605,14 +617,16 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           }.map {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -644,7 +658,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -705,7 +720,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -749,7 +765,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -793,7 +810,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -821,7 +839,8 @@ class ValidationServiceTest {
           SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = false,
-            isSDSPlusEligibleSentenceAndOffence = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -861,10 +880,11 @@ class ValidationServiceTest {
         PrisonApiSourceData(
           sentences.map {
             SentenceAndOffenceWithReleaseArrangements(
-              it,
-              false,
-              false,
-              SDSEarlyReleaseExclusionType.NO,
+              source = it,
+              isSdsPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
+              hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
           VALID_PRISONER,
@@ -902,7 +922,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -927,10 +948,11 @@ class ValidationServiceTest {
       PrisonApiSourceData(
         listOf(validEdsSentence).map {
           SentenceAndOffenceWithReleaseArrangements(
-            it,
-            false,
-            false,
-            SDSEarlyReleaseExclusionType.NO,
+            source = it,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
         VALID_PRISONER,
@@ -1007,7 +1029,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1034,7 +1057,8 @@ class ValidationServiceTest {
         SentenceAndOffenceWithReleaseArrangements(
           source = validSdsSentence,
           isSdsPlus = false,
-          isSDSPlusEligibleSentenceAndOffence = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         ),
       )
@@ -1045,7 +1069,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1068,10 +1093,11 @@ class ValidationServiceTest {
         PrisonApiSourceData(
           sentences.map {
             SentenceAndOffenceWithReleaseArrangements(
-              it,
-              false,
-              false,
-              SDSEarlyReleaseExclusionType.NO,
+              source = it,
+              isSdsPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
+              hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
           VALID_PRISONER,
@@ -1090,7 +1116,15 @@ class ValidationServiceTest {
     val sentences = listOf(validAFineSentence)
     val result = validationService.validateBeforeCalculation(
       PrisonApiSourceData(
-        sentences.map { SentenceAndOffenceWithReleaseArrangements(it, false, false, SDSEarlyReleaseExclusionType.NO) },
+        sentences.map {
+          SentenceAndOffenceWithReleaseArrangements(
+            source = it,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          )
+        },
         VALID_PRISONER,
         VALID_ADJUSTMENTS,
         listOf(OffenderFinePayment(1, LocalDate.now(), BigDecimal.ONE)),
@@ -1126,7 +1160,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1165,7 +1200,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1206,7 +1242,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1241,7 +1278,8 @@ class ValidationServiceTest {
           SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = false,
-            isSDSPlusEligibleSentenceAndOffence = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -1279,7 +1317,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1323,10 +1362,11 @@ class ValidationServiceTest {
         PrisonApiSourceData(
           sentences.map {
             SentenceAndOffenceWithReleaseArrangements(
-              it,
-              false,
-              false,
-              SDSEarlyReleaseExclusionType.NO,
+              source = it,
+              isSdsPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
+              hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
           VALID_PRISONER,
@@ -1365,10 +1405,11 @@ class ValidationServiceTest {
         PrisonApiSourceData(
           sentences.map {
             SentenceAndOffenceWithReleaseArrangements(
-              it,
-              false,
-              false,
-              SDSEarlyReleaseExclusionType.NO,
+              source = it,
+              isSdsPlus = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
+              hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
           VALID_PRISONER,
@@ -1418,7 +1459,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1481,7 +1523,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1517,7 +1560,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1554,7 +1598,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1590,7 +1635,8 @@ class ValidationServiceTest {
           SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = false,
-            isSDSPlusEligibleSentenceAndOffence = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -1624,7 +1670,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1657,7 +1704,8 @@ class ValidationServiceTest {
             SentenceAndOffenceWithReleaseArrangements(
               source = it,
               isSdsPlus = false,
-              isSDSPlusEligibleSentenceAndOffence = false,
+              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+              isSDSPlusOffenceInPeriod = false,
               hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
             )
           },
@@ -1684,7 +1732,8 @@ class ValidationServiceTest {
           SentenceAndOffenceWithReleaseArrangements(
             source = validSdsSentence,
             isSdsPlus = false,
-            isSDSPlusEligibleSentenceAndOffence = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -1708,7 +1757,8 @@ class ValidationServiceTest {
           SentenceAndOffenceWithReleaseArrangements(
             source = validSdsSentence,
             isSdsPlus = false,
-            isSDSPlusEligibleSentenceAndOffence = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -1732,7 +1782,8 @@ class ValidationServiceTest {
           SentenceAndOffenceWithReleaseArrangements(
             source = validEdsRecallSentence,
             isSdsPlus = false,
-            isSDSPlusEligibleSentenceAndOffence = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -1755,7 +1806,8 @@ class ValidationServiceTest {
           SentenceAndOffenceWithReleaseArrangements(
             source = validSopcRecallSentence,
             isSdsPlus = false,
-            isSDSPlusEligibleSentenceAndOffence = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
@@ -1782,7 +1834,8 @@ class ValidationServiceTest {
           SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = false,
-            isSDSPlusEligibleSentenceAndOffence = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -1799,10 +1852,11 @@ class ValidationServiceTest {
       VALID_FTR_SOURCE_DATA.copy(
         sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map {
           SentenceAndOffenceWithReleaseArrangements(
-            it,
-            false,
-            false,
-            SDSEarlyReleaseExclusionType.NO,
+            source = it,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
         returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_28.returnToCustodyDate),
@@ -1821,6 +1875,7 @@ class ValidationServiceTest {
         sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE).map {
           SentenceAndOffenceWithReleaseArrangements(
             it,
+            false,
             false,
             false,
             SDSEarlyReleaseExclusionType.NO,
@@ -1862,7 +1917,15 @@ class ValidationServiceTest {
             sentenceAndOffences = listOf(
               FTR_14_DAY_SENTENCE,
               FTR_28_DAY_SENTENCE,
-            ).map { SentenceAndOffenceWithReleaseArrangements(it, false, false, SDSEarlyReleaseExclusionType.NO) },
+            ).map {
+              SentenceAndOffenceWithReleaseArrangements(
+                source = it,
+                isSdsPlus = false,
+                isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+                isSDSPlusOffenceInPeriod = false,
+                hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+              )
+            },
             returnToCustodyDate = ReturnToCustodyDate(BOOKING_ID, FTR_DETAILS_14.returnToCustodyDate),
           ),
           USER_INPUTS,
@@ -1877,10 +1940,11 @@ class ValidationServiceTest {
           VALID_FTR_SOURCE_DATA.copy(
             sentenceAndOffences = listOf(FTR_14_DAY_SENTENCE).map {
               SentenceAndOffenceWithReleaseArrangements(
-                it,
-                false,
-                false,
-                SDSEarlyReleaseExclusionType.NO,
+                source = it,
+                isSdsPlus = false,
+                isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+                isSDSPlusOffenceInPeriod = false,
+                hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
             fixedTermRecallDetails = FTR_DETAILS_28,
@@ -1898,10 +1962,11 @@ class ValidationServiceTest {
           VALID_FTR_SOURCE_DATA.copy(
             sentenceAndOffences = listOf(FTR_28_DAY_SENTENCE).map {
               SentenceAndOffenceWithReleaseArrangements(
-                it,
-                false,
-                false,
-                SDSEarlyReleaseExclusionType.NO,
+                source = it,
+                isSdsPlus = false,
+                isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+                isSDSPlusOffenceInPeriod = false,
+                hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
             fixedTermRecallDetails = FTR_DETAILS_14,
@@ -2001,6 +2066,7 @@ class ValidationServiceTest {
           sentenceAndOffences = listOf(
             SentenceAndOffenceWithReleaseArrangements(
               validSdsSentence,
+              false,
               false,
               false,
               SDSEarlyReleaseExclusionType.NO,
@@ -2175,7 +2241,8 @@ class ValidationServiceTest {
               SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
-                isSDSPlusEligibleSentenceAndOffence = false,
+                isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2201,10 +2268,11 @@ class ValidationServiceTest {
           PrisonApiSourceData(
             sentenceAndOffences = listOf(sentenceAndOffences).map {
               SentenceAndOffenceWithReleaseArrangements(
-                it,
-                false,
-                false,
-                SDSEarlyReleaseExclusionType.NO,
+                source = it,
+                isSdsPlus = false,
+                isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+                isSDSPlusOffenceInPeriod = false,
+                hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
             prisonerDetails = VALID_PRISONER,
@@ -2228,10 +2296,11 @@ class ValidationServiceTest {
           PrisonApiSourceData(
             sentenceAndOffences = listOf(sentenceAndOffences).map {
               SentenceAndOffenceWithReleaseArrangements(
-                it,
-                false,
-                false,
-                SDSEarlyReleaseExclusionType.NO,
+                source = it,
+                isSdsPlus = false,
+                isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+                isSDSPlusOffenceInPeriod = false,
+                hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
             prisonerDetails = VALID_PRISONER,
@@ -2257,7 +2326,8 @@ class ValidationServiceTest {
               SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
-                isSDSPlusEligibleSentenceAndOffence = false,
+                isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2284,7 +2354,8 @@ class ValidationServiceTest {
               SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
-                isSDSPlusEligibleSentenceAndOffence = false,
+                isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2311,7 +2382,8 @@ class ValidationServiceTest {
               SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
-                isSDSPlusEligibleSentenceAndOffence = false,
+                isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2337,7 +2409,8 @@ class ValidationServiceTest {
               SentenceAndOffenceWithReleaseArrangements(
                 source = it,
                 isSdsPlus = false,
-                isSDSPlusEligibleSentenceAndOffence = false,
+                isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               )
             },
@@ -2374,7 +2447,8 @@ class ValidationServiceTest {
               SentenceAndOffenceWithReleaseArrangements(
                 source = validSdsSentence,
                 isSdsPlus = false,
-                isSDSPlusEligibleSentenceAndOffence = false,
+                isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               ),
             ),
@@ -2410,7 +2484,8 @@ class ValidationServiceTest {
               SentenceAndOffenceWithReleaseArrangements(
                 source = validSdsSentence,
                 isSdsPlus = false,
-                isSDSPlusEligibleSentenceAndOffence = false,
+                isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               ),
             ),
@@ -2446,7 +2521,8 @@ class ValidationServiceTest {
               SentenceAndOffenceWithReleaseArrangements(
                 source = validSdsSentence,
                 isSdsPlus = false,
-                isSDSPlusEligibleSentenceAndOffence = false,
+                isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               ),
             ),
@@ -2482,7 +2558,8 @@ class ValidationServiceTest {
               SentenceAndOffenceWithReleaseArrangements(
                 source = validSdsSentence,
                 isSdsPlus = false,
-                isSDSPlusEligibleSentenceAndOffence = false,
+                isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+                isSDSPlusOffenceInPeriod = false,
                 hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
               ),
             ),
@@ -2532,7 +2609,8 @@ class ValidationServiceTest {
       courtDescription = null,
       consecutiveToSequence = 3,
       isSDSPlus = false,
-      isSDSPlusEligibleSentenceAndOffence = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     val sentence2 = sentence1.copy(
@@ -2567,7 +2645,8 @@ class ValidationServiceTest {
       courtDescription = null,
       consecutiveToSequence = 1,
       isSDSPlus = false,
-      isSDSPlusEligibleSentenceAndOffence = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
@@ -2610,7 +2689,8 @@ class ValidationServiceTest {
       courtDescription = null,
       consecutiveToSequence = 3,
       isSDSPlus = false,
-      isSDSPlusEligibleSentenceAndOffence = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     val sentence2 = SentenceAndOffenceWithReleaseArrangements(
@@ -2637,7 +2717,8 @@ class ValidationServiceTest {
       courtDescription = null,
       consecutiveToSequence = 3,
       isSDSPlus = false,
-      isSDSPlusEligibleSentenceAndOffence = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     val sentence3 = SentenceAndOffenceWithReleaseArrangements(
@@ -2664,7 +2745,8 @@ class ValidationServiceTest {
       courtDescription = null,
       consecutiveToSequence = 1,
       isSDSPlus = false,
-      isSDSPlusEligibleSentenceAndOffence = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
@@ -2701,7 +2783,8 @@ class ValidationServiceTest {
           SentenceAndOffenceWithReleaseArrangements(
             source = it,
             isSdsPlus = true,
-            isSDSPlusEligibleSentenceAndOffence = true,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
             hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           )
         },
@@ -2969,7 +3052,8 @@ class ValidationServiceTest {
           ),
         ),
         isSdsPlus = false,
-        isSDSPlusEligibleSentenceAndOffence = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -2986,7 +3070,8 @@ class ValidationServiceTest {
           ),
         ),
         isSdsPlus = false,
-        isSDSPlusEligibleSentenceAndOffence = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3024,7 +3109,8 @@ class ValidationServiceTest {
           ),
         ),
         isSdsPlus = false,
-        isSDSPlusEligibleSentenceAndOffence = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3042,7 +3128,8 @@ class ValidationServiceTest {
           ),
         ),
         isSdsPlus = false,
-        isSDSPlusEligibleSentenceAndOffence = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3080,7 +3167,8 @@ class ValidationServiceTest {
           ),
         ),
         isSdsPlus = false,
-        isSDSPlusEligibleSentenceAndOffence = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3117,7 +3205,8 @@ class ValidationServiceTest {
           ),
         ),
         isSdsPlus = false,
-        isSDSPlusEligibleSentenceAndOffence = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3134,7 +3223,8 @@ class ValidationServiceTest {
           ),
         ),
         isSdsPlus = false,
-        isSDSPlusEligibleSentenceAndOffence = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3172,7 +3262,8 @@ class ValidationServiceTest {
           ),
         ),
         isSdsPlus = false,
-        isSDSPlusEligibleSentenceAndOffence = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3191,7 +3282,8 @@ class ValidationServiceTest {
           ),
         ),
         isSdsPlus = false,
-        isSDSPlusEligibleSentenceAndOffence = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3210,7 +3302,8 @@ class ValidationServiceTest {
           ),
         ),
         isSdsPlus = false,
-        isSDSPlusEligibleSentenceAndOffence = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3241,7 +3334,7 @@ class ValidationServiceTest {
 
     val sentence1 = (
       SentenceAndOffenceWithReleaseArrangements(
-        validSdsSentence.copy(
+        source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2023, 4, 14),
           lineSequence = 1,
           caseSequence = 1,
@@ -3250,15 +3343,16 @@ class ValidationServiceTest {
             offenceStartDate = LocalDate.of(2020, 10, 23),
           ),
         ),
-        false,
-        false,
-        SDSEarlyReleaseExclusionType.NO,
+        isSdsPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
+        hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
 
     val sentence2 = (
       SentenceAndOffenceWithReleaseArrangements(
-        validSdsSentence.copy(
+        source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2023, 7, 16),
           lineSequence = 1,
           caseSequence = 2,
@@ -3267,15 +3361,16 @@ class ValidationServiceTest {
             offenceStartDate = LocalDate.of(2020, 11, 15),
           ),
         ),
-        false,
-        false,
-        SDSEarlyReleaseExclusionType.NO,
+        isSdsPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
+        hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
 
     val sentence3 = (
       SentenceAndOffenceWithReleaseArrangements(
-        validSdsSentence.copy(
+        source = validSdsSentence.copy(
           sentenceDate = LocalDate.of(2023, 8, 18),
           lineSequence = 1,
           caseSequence = 3,
@@ -3284,9 +3379,10 @@ class ValidationServiceTest {
             offenceStartDate = LocalDate.of(2021, 12, 2),
           ),
         ),
-        false,
-        false,
-        SDSEarlyReleaseExclusionType.NO,
+        isSdsPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
+        hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
 
@@ -3326,7 +3422,8 @@ class ValidationServiceTest {
           ),
         ),
         isSdsPlus = false,
-        isSDSPlusEligibleSentenceAndOffence = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3363,7 +3460,8 @@ class ValidationServiceTest {
           ),
         ),
         isSdsPlus = false,
-        isSDSPlusEligibleSentenceAndOffence = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
         hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
       )
       )
@@ -3468,7 +3566,8 @@ class ValidationServiceTest {
         SentenceAndOffenceWithReleaseArrangements(
           source = it,
           isSdsPlus = false,
-          isSDSPlusEligibleSentenceAndOffence = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         )
       },

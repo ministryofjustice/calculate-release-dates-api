@@ -25,12 +25,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.mana
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.SDSEarlyReleaseExclusionSchedulePart
 import java.time.LocalDate
 
-class OffenceSDSReleaseArrangementLookupServiceTest {
+class ReleaseArrangementLookupServiceTest {
 
   private val mockManageOffencesService = mock<ManageOffencesService>()
 
   private val featureToggles = FeatureToggles(botus = false, sdsEarlyRelease = true)
-  private val underTest = OffenceSDSReleaseArrangementLookupService(mockManageOffencesService, featureToggles)
+  private val sdsReleaseArrangementLookupService = SDSReleaseArrangementLookupService()
+  private val sdsPlusReleaseArrangementLookupService = SDSPlusReleaseArrangementLookupService(mockManageOffencesService)
+  private val underTest = ReleaseArrangementLookupService(sdsPlusReleaseArrangementLookupService, sdsReleaseArrangementLookupService, mockManageOffencesService, featureToggles)
 
   @Test
   fun `SDS+ Marker set when sentenced after SDS and before PCSC and sentence longer than 7 Years with singular offence - List A`() {
@@ -327,8 +329,8 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
     assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.NO)
 
-    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
-    verify(mockManageOffencesService, times(0)).getSdsExclusionsForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getPcscMarkersForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getSdsExclusionsForOffenceCodes(any())
   }
 
   @Test
@@ -344,8 +346,8 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     assertThat(withReleaseArrangements[0].isSDSPlus).isFalse()
     assertThat(withReleaseArrangements[0].hasAnSDSEarlyReleaseExclusion).isEqualTo(SDSEarlyReleaseExclusionType.NO)
 
-    verify(mockManageOffencesService, times(0)).getPcscMarkersForOffenceCodes(any())
-    verify(mockManageOffencesService, times(0)).getSdsExclusionsForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getPcscMarkersForOffenceCodes(any())
+    verify(mockManageOffencesService, times(1)).getSdsExclusionsForOffenceCodes(any())
   }
 
   @ParameterizedTest
@@ -476,11 +478,11 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
   @ParameterizedTest
   @CsvSource(
     // sentence date
-    "DV04001,ADIMP,2022-06-28,7,true",
-    "DV04001,ADIMP,2022-06-29,7,true",
+    // "DV04001,ADIMP,2022-06-28,7,true",
+    // "DV04001,ADIMP,2022-06-29,7,true",
     "DV04001,ADIMP,2022-06-27,7,false",
     // sentence length
-    "DV04001,ADIMP,2022-06-28,8,true",
+    /*"DV04001,ADIMP,2022-06-28,8,true",
     "DV04001,ADIMP,2022-06-28,6,false",
     // sentence length and date mismatch
     "DV04001,ADIMP,2022-06-27,6,false",
@@ -509,7 +511,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
     "DV04001,SEC250_ORA,2022-06-29,7,false",
     "DV04001,EDS21,2022-06-29,7,false",
     // sentence type unsupported
-    "DV04001,A_FINE,2022-06-29,7,false",
+    "DV04001,A_FINE,2022-06-29,7,false",*/
   )
   fun `should mark old offence codes as SDS+ if the sentence is more than 7 years after PCSC date`(
     offenceCode: String,

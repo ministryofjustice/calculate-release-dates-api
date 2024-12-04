@@ -15,7 +15,8 @@
         }
       },
       "sentencedAt": "2022-06-20",
-      "isSDSPlusEligibleSentenceAndOffence": "true"
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": "true",
+      "isSDSPlusOffenceInPeriod": "false"
     },
     {
       "type": "StandardSentence",

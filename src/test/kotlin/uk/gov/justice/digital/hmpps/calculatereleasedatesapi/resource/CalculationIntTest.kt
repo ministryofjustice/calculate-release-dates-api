@@ -469,6 +469,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
   @Test
   fun `Run calculation on pre prod bug where adjustments are applied to wrong sentences CRS-829 AC-1`() {
+    mockManageOffencesClient.noneInPCSC(listOf("FI68421", "MD71131C", "MD71230", "MD71239"))
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/CRS-829-1")
       .accept(MediaType.APPLICATION_JSON)
@@ -554,6 +555,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
   @Test
   fun `Run calculation on EDS sentence`() {
+    mockManageOffencesClient.noneInPCSC(listOf("CD79009", "TR68132"))
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/EDS")
       .accept(MediaType.APPLICATION_JSON)
@@ -740,6 +742,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
   @Test
   fun `Run calculation on EDS recall sentence`() {
+    mockManageOffencesClient.noneInPCSC(listOf("A1234BC"))
     val calculation: CalculatedReleaseDates = webTestClient.post()
       .uri("/calculation/EDSRECALL")
       .accept(MediaType.APPLICATION_JSON)
@@ -944,6 +947,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
   @Test
   fun `Run relevant remand calculation against a recall`() {
+    mockManageOffencesClient.noneInPCSC(listOf("CD71040", "CJ88117"))
     val request = RelevantRemandCalculationRequest(
       listOf(
         RelevantRemand(
@@ -980,6 +984,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
   @Test
   fun `Run relevant remand calculation which fails validation`() {
+    mockManageOffencesClient.noneInPCSC(listOf("CS00011", "WR91001"))
     val request = RelevantRemandCalculationRequest(
       listOf(
         RelevantRemand(

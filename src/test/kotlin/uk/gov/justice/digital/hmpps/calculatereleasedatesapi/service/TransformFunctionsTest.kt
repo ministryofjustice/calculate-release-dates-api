@@ -96,7 +96,8 @@ class TransformFunctionsTest {
       ),
       offence,
       isSdsPlus = true,
-      isSDSPlusEligibleSentenceAndOffence = true,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+      isSDSPlusOffenceInPeriod = true,
       hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
@@ -110,7 +111,8 @@ class TransformFunctionsTest {
         lineSequence = lineSequence,
         caseSequence = caseSequence,
         isSDSPlus = true,
-        isSDSPlusEligibleSentenceAndOffence = true,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+        isSDSPlusOffenceInPeriod = true,
         hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       ),
     )
@@ -439,7 +441,8 @@ class TransformFunctionsTest {
       ),
       offence,
       isSdsPlus = true,
-      isSDSPlusEligibleSentenceAndOffence = true,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
       hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 

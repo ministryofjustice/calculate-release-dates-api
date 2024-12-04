@@ -81,7 +81,8 @@ class BookingServiceTest {
     ),
     offences[0],
     isSdsPlus = false,
-    isSDSPlusEligibleSentenceAndOffence = false,
+    isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+    isSDSPlusOffenceInPeriod = false,
     hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
   )
   private val bookingAndSentenceAdjustment = BookingAndSentenceAdjustments(

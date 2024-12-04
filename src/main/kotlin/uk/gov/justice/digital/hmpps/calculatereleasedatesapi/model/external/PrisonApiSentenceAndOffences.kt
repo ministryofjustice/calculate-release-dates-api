@@ -24,10 +24,11 @@ data class PrisonApiSentenceAndOffences(
 ) {
   fun toLatest(): List<SentenceAndOffenceWithReleaseArrangements> = offences.map { offence ->
     SentenceAndOffenceWithReleaseArrangements(
-      this,
-      offence,
+      source = this,
+      offence = offence,
       isSdsPlus = false,
-      isSDSPlusEligibleSentenceAndOffence = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
       hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
     )
   }

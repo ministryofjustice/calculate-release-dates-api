@@ -72,7 +72,7 @@ class BulkComparisonServiceTest {
   private val calculationTransactionalService = mock<CalculationTransactionalService>()
   private val objectMapper: ObjectMapper = TestUtil.objectMapper()
   private val comparisonRepository = mock<ComparisonRepository>()
-  private var pcscLookupService = mock<OffenceSDSReleaseArrangementLookupService>()
+  private var pcscLookupService = mock<ReleaseArrangementLookupService>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
   private val comparisonPersonDiscrepancyRepository = mock<ComparisonPersonDiscrepancyRepository>()
   private val comparisonPersonDiscrepancyCategoryRepository = mock<ComparisonPersonDiscrepancyCategoryRepository>()
@@ -471,7 +471,8 @@ class BulkComparisonServiceTest {
         SentenceAndOffenceWithReleaseArrangements(
           it,
           isSdsPlus = false,
-          isSDSPlusEligibleSentenceAndOffence = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         )
       },
@@ -517,7 +518,8 @@ class BulkComparisonServiceTest {
         SentenceAndOffenceWithReleaseArrangements(
           it,
           isSdsPlus = false,
-          isSDSPlusEligibleSentenceAndOffence = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         )
       },
@@ -567,7 +569,8 @@ class BulkComparisonServiceTest {
         SentenceAndOffenceWithReleaseArrangements(
           it,
           isSdsPlus = false,
-          isSDSPlusEligibleSentenceAndOffence = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         )
       },

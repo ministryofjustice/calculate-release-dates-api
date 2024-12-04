@@ -36,8 +36,8 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
       REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID,
       listOf(
         ValidationMessage(
-          ValidationCode.REMAND_ON_OR_AFTER_SENTENCE_DATE,
-          arguments = listOf("1", "1"),
+          ValidationCode.REMAND_OVERLAPS_WITH_SENTENCE,
+          arguments = listOf("2000-04-29", "2001-02-23", "2000-04-28", "2000-04-30"),
         ),
       ),
     )
@@ -61,7 +61,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation for overlapping remand and custodial period`() {
-    mockManageOffencesClient.noneInPCSC(listOf("MD71526", "MD71530"))
+    mockManageOffencesClient.noneInPCSC(listOf("MD71526", "MD71530", "MD71533", "PC02021"))
     runValidationAndCheckMessages("CRS-1394", listOf())
   }
 
@@ -184,6 +184,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on adjustment after release with a term`() {
+    mockManageOffencesClient.noneInPCSC(listOf("RT88333", "TH68013"))
     runValidationAndCheckMessages("CRS-1191-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
   }
 

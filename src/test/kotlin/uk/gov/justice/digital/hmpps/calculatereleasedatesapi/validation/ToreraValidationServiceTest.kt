@@ -139,7 +139,8 @@ class ToreraValidationServiceTest {
       courtDescription = null,
       consecutiveToSequence = null,
       isSDSPlus = false,
-      isSDSPlusEligibleSentenceAndOffence = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 

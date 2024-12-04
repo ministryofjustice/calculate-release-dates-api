@@ -15,7 +15,7 @@
         }
       },
       "sentencedAt": "2020-03-27",
-      "isSDSPlusEligibleSentenceAndOffence": "true"
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": "true"
     }
   ],
   "adjustments": {}

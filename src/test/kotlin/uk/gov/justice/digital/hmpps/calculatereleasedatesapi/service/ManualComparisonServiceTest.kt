@@ -169,7 +169,8 @@ class ManualComparisonServiceTest {
       courtDescription = null,
       fineAmount = null,
       isSDSPlus = true,
-      isSDSPlusEligibleSentenceAndOffence = true,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     val person = ComparisonPerson(

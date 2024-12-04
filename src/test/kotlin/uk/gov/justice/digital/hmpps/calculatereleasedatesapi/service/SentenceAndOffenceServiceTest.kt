@@ -195,7 +195,8 @@ class SentenceAndOffenceServiceTest {
         courtDescription = null,
         consecutiveToSequence = null,
         isSDSPlus = false,
-        isSDSPlusEligibleSentenceAndOffence = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
         hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       )
     }
@@ -224,7 +225,8 @@ class SentenceAndOffenceServiceTest {
         courtDescription = null,
         consecutiveToSequence = null,
         isSDSPlus = true,
-        isSDSPlusEligibleSentenceAndOffence = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
         hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
       )
     }
@@ -255,7 +257,8 @@ class SentenceAndOffenceServiceTest {
       courtDescription = null,
       consecutiveToSequence = null,
       isSDSPlus = true,
-      isSDSPlusEligibleSentenceAndOffence = true,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
   }

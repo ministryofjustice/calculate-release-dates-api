@@ -1131,7 +1131,7 @@ class CalculationResultEnrichmentServiceTest {
     return ReleaseDate(date, type)
   }
 
-  private fun sentenceAndOffence(sentenceCalculationType: String, sentenceDate: LocalDate = LocalDate.of(2020, 1, 2), bookingId: Long = 0, sentenceSequence: Int = 0, lineSequence: Int = 0, sentenceTerm: Int = 5, isSdsPlus: Boolean = false, isSDSPlusEligibleSentenceAndOffence: Boolean = false) =
+  private fun sentenceAndOffence(sentenceCalculationType: String, sentenceDate: LocalDate = LocalDate.of(2020, 1, 2), bookingId: Long = 0, sentenceSequence: Int = 0, lineSequence: Int = 0, sentenceTerm: Int = 5, isSdsPlus: Boolean = false, isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false) =
     SentenceAndOffenceWithReleaseArrangements(
       bookingId = bookingId,
       sentenceSequence = sentenceSequence,
@@ -1151,7 +1151,8 @@ class CalculationResultEnrichmentServiceTest {
       courtDescription = null,
       consecutiveToSequence = null,
       isSDSPlus = isSdsPlus,
-      isSDSPlusEligibleSentenceAndOffence = isSDSPlusEligibleSentenceAndOffence,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
@@ -1183,7 +1184,8 @@ class CalculationResultEnrichmentServiceTest {
     courtDescription = null,
     consecutiveToSequence = null,
     isSDSPlus = false,
-    isSDSPlusEligibleSentenceAndOffence = false,
+    isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+    isSDSPlusOffenceInPeriod = false,
     hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
   )
 
