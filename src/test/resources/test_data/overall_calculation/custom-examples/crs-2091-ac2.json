@@ -1,0 +1,124 @@
+{
+  "offender": {
+    "reference": "A2356AK",
+    "dateOfBirth": "1966-03-02",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 2917706,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-04-04",
+        "offenceCode": "CJ88159"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 6
+        }
+      },
+      "identifier": "dc9d55f8-4f0f-31f0-ba5a-77cc1dc5911c",
+      "sentencedAt": "2024-05-14",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "consecutiveSentenceUUIDs": [
+      ]
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-03-29",
+        "offenceCode": "TH68010"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 6
+        }
+      },
+      "identifier": "04176863-4148-37f6-b1de-ca3fa93f50c1",
+      "sentencedAt": "2024-05-14",
+      "caseSequence": 1,
+      "lineSequence": 2,
+      "consecutiveSentenceUUIDs": [
+        "dc9d55f8-4f0f-31f0-ba5a-77cc1dc5911c"
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-02-18",
+        "offenceCode": "TH68010"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 6
+        }
+      },
+      "identifier": "efbcede0-5706-3df1-8867-9ede4812c2d7",
+      "sentencedAt": "2024-05-14",
+      "caseSequence": 1,
+      "lineSequence": 3,
+      "consecutiveSentenceUUIDs": [
+        "04176863-4148-37f6-b1de-ca3fa93f50c1"
+      ]
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-03-01",
+        "offenceCode": "TH68010"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 6
+        }
+      },
+      "identifier": "86528295-9273-3095-896b-cafb1d32409b",
+      "sentencedAt": "2024-05-14",
+      "caseSequence": 1,
+      "lineSequence": 4,
+      "consecutiveSentenceUUIDs": [
+        "efbcede0-5706-3df1-8867-9ede4812c2d7"
+      ]
+    },
+    {
+      "type": "BotusSentence",
+      "offence": {
+        "committedAt": "2024-02-20",
+        "offenceCode": "CJ03524"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 7
+        }
+      },
+      "identifier": "eda41523-ee9a-3b98-8246-4fc69c6605b9",
+      "sentencedAt": "2024-05-14",
+      "caseSequence": 1,
+      "lineSequence": 5,
+      "consecutiveSentenceUUIDs": [
+        "86528295-9273-3095-896b-cafb1d32409b"
+      ]
+    },
+    {
+      "type": "BotusSentence",
+      "offence": {
+        "committedAt": "2024-02-20",
+        "offenceCode": "CJ03524"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 7
+        }
+      },
+      "identifier": "ed25bd31-b5b3-33f5-bc63-d54cf4b7219b",
+      "sentencedAt": "2024-05-14",
+      "caseSequence": 1,
+      "lineSequence": 6,
+      "consecutiveSentenceUUIDs": [
+        "eda41523-ee9a-3b98-8246-4fc69c6605b9"
+      ]
+    }
+  ]
+}
