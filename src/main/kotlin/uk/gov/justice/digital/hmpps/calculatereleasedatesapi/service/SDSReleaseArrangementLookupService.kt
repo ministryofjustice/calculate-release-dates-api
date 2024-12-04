@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSPlusCheckResult
@@ -47,16 +45,20 @@ class SDSReleaseArrangementLookupService {
 
     return when (exclusionForOffence.schedulePart) {
       SDSEarlyReleaseExclusionSchedulePart.SEXUAL_T3,
-      SDSEarlyReleaseExclusionSchedulePart.SEXUAL -> SDSEarlyReleaseExclusionType.SEXUAL
+      SDSEarlyReleaseExclusionSchedulePart.SEXUAL,
+      -> SDSEarlyReleaseExclusionType.SEXUAL
 
       SDSEarlyReleaseExclusionSchedulePart.DOMESTIC_ABUSE_T3,
-      SDSEarlyReleaseExclusionSchedulePart.DOMESTIC_ABUSE -> SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE
+      SDSEarlyReleaseExclusionSchedulePart.DOMESTIC_ABUSE,
+      -> SDSEarlyReleaseExclusionType.DOMESTIC_ABUSE
 
       SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY_T3,
-      SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY -> SDSEarlyReleaseExclusionType.NATIONAL_SECURITY
+      SDSEarlyReleaseExclusionSchedulePart.NATIONAL_SECURITY,
+      -> SDSEarlyReleaseExclusionType.NATIONAL_SECURITY
 
       SDSEarlyReleaseExclusionSchedulePart.TERRORISM_T3,
-      SDSEarlyReleaseExclusionSchedulePart.TERRORISM -> SDSEarlyReleaseExclusionType.TERRORISM
+      SDSEarlyReleaseExclusionSchedulePart.TERRORISM,
+      -> SDSEarlyReleaseExclusionType.TERRORISM
 
       SDSEarlyReleaseExclusionSchedulePart.MURDER_T3 -> SDSEarlyReleaseExclusionType.MURDER_T3
 
@@ -66,7 +68,6 @@ class SDSReleaseArrangementLookupService {
       SDSEarlyReleaseExclusionSchedulePart.NONE -> SDSEarlyReleaseExclusionType.NO
     }
   }
-
 
   private fun evaluateViolentExclusion(
     sentenceAndOffence: SentenceAndOffence,
