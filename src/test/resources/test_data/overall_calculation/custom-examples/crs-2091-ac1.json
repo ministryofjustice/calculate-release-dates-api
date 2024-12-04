@@ -1,0 +1,66 @@
+{
+  "offender": {
+    "reference": "A123456A",
+    "dateOfBirth": "1972-11-29",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 2925636,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-03-24",
+        "offenceCode": "SE20001"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 140
+        }
+      },
+      "identifier": "85544a02-30df-3a61-9791-a62f5e3c112b",
+      "sentencedAt": "2024-04-16",
+      "caseSequence": 1,
+      "lineSequence": 3,
+      "consecutiveSentenceUUIDs": []
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-04-01",
+        "offenceCode": "SE20001"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 112
+        }
+      },
+      "identifier": "196979bf-d2e7-37c4-8807-8d798774536f",
+      "sentencedAt": "2024-04-16",
+      "caseSequence": 1,
+      "lineSequence": 4,
+      "consecutiveSentenceUUIDs": [
+        "85544a02-30df-3a61-9791-a62f5e3c112b"
+      ]
+    },
+    {
+      "type": "BotusSentence",
+      "offence": {
+        "committedAt": "2024-03-13",
+        "offenceCode": "CJ03524"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 14
+        }
+      },
+       "identifier": "9148f787-e673-3a3c-8c84-c5ce363a1863",
+
+      "sentencedAt": "2024-04-16",
+      "caseSequence": 1,
+      "lineSequence": 7,
+      "consecutiveSentenceUUIDs": [
+        "196979bf-d2e7-37c4-8807-8d798774536f"
+      ]
+    }
+  ]
+}
