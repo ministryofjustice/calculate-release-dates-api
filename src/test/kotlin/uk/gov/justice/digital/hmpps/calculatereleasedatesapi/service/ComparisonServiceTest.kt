@@ -541,6 +541,8 @@ class ComparisonServiceTest {
       courtDescription = null,
       fineAmount = null,
       isSDSPlus = true,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     val person = ComparisonPerson(

@@ -22,6 +22,8 @@ data class SentenceAndOffencesWithSDSPlus(
   val courtDescription: String?,
   val fineAmount: BigDecimal?,
   val isSDSPlus: Boolean,
+  val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean,
+  val isSDSPlusOffenceInPeriod: Boolean,
 ) {
   fun toLatest(): List<SentenceAndOffenceWithReleaseArrangements> = offences.map {
     SentenceAndOffenceWithReleaseArrangements(
@@ -41,6 +43,8 @@ data class SentenceAndOffencesWithSDSPlus(
       this.courtDescription,
       this.fineAmount,
       this.isSDSPlus,
+      this.isSDSPlusEligibleSentenceTypeLengthAndOffence,
+      this.isSDSPlusOffenceInPeriod,
       SDSEarlyReleaseExclusionType.NO,
     )
   }

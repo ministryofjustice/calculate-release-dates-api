@@ -56,7 +56,7 @@ class BulkComparisonService(
   private val calculationTransactionalService: CalculationTransactionalService,
   private val objectMapper: ObjectMapper,
   private val comparisonRepository: ComparisonRepository,
-  private val pcscLookupService: OffenceSDSReleaseArrangementLookupService,
+  private val releaseArrangementLookupService: ReleaseArrangementLookupService,
   private val calculationReasonRepository: CalculationReasonRepository,
   private val comparisonPersonDiscrepancyRepository: ComparisonPersonDiscrepancyRepository,
   private val comparisonPersonDiscrepancyCategoryRepository: ComparisonPersonDiscrepancyCategoryRepository,
@@ -207,7 +207,7 @@ class BulkComparisonService(
     establishment: String?,
   ) {
     val sentenceAndOffencesWithReleaseArrangementsForBooking =
-      pcscLookupService.populateReleaseArrangements(normalisedSentenceAndOffences(envelope))
+      releaseArrangementLookupService.populateReleaseArrangements(normalisedSentenceAndOffences(envelope))
     val sdsPlusSentenceAndOffences = sentenceAndOffencesWithReleaseArrangementsForBooking.filter { it.isSDSPlus }
     val mismatch = buildMismatch(envelope, sentenceAndOffencesWithReleaseArrangementsForBooking)
 

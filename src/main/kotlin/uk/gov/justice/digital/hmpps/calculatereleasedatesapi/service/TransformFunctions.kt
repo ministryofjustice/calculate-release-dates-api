@@ -157,6 +157,8 @@ fun transform(
           caseReference = sentence.caseReference,
           recallType = sentenceCalculationType.recallType,
           isSDSPlus = sentence.isSDSPlus,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence,
+          isSDSPlusOffenceInPeriod = sentence.isSDSPlusOffenceInPeriod,
           hasAnSDSEarlyReleaseExclusion = sentence.hasAnSDSEarlyReleaseExclusion,
         )
       }
