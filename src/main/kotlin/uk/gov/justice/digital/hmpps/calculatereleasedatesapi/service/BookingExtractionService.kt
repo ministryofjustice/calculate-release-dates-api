@@ -88,7 +88,9 @@ class BookingExtractionService(
     }
 
     if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
-      dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
+      if (hdcedExtractionService.releaseDateIsAfterHdced(sentenceCalculation)) {
+        dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
+      }
     }
 
     if (sentenceCalculation.notionalConditionalReleaseDate != null) {
