@@ -89,9 +89,7 @@ class ManualCalculationController(
   fun storeManualCalculation(
     @PathVariable prisonerId: String,
     @RequestBody manualEntryRequest: ManualEntryRequest,
-  ): ManualCalculationResponse {
-    return manualCalculationService.storeManualCalculation(prisonerId, manualEntryRequest)
-  }
+  ): ManualCalculationResponse = manualCalculationService.storeManualCalculation(prisonerId, manualEntryRequest)
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
