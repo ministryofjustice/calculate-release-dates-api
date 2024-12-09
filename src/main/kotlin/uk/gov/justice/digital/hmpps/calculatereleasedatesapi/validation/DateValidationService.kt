@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 @Service
 class DateValidationService {
 
-  val incompatibleDatePairs = listOf(
+  private val incompatibleDatePairs = listOf(
     Pair("CRD", "ARD"),
     Pair("HDCED", "PRRD"),
     Pair("HDCAD", "PRRD"),
@@ -18,6 +18,8 @@ class DateValidationService {
   )
 
   val requiredDatesInContext = mapOf(Pair("CRD", "SED") to "LED")
+
+  fun getIncompatibleDatePairs(): List<Pair<String, String>> = incompatibleDatePairs
 
   fun validateDates(dates: List<String>): List<ValidationMessage> {
     val incompatibleDates = incompatibleDatePairs.filter { dates.contains(it.first) && dates.contains(it.second) }

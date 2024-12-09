@@ -18,9 +18,10 @@ class DateValidationServiceTest {
 
   @Test
   fun `validateDates should return incompatible dates error`() {
-    val dates = listOf("HDCED", "PED")
-    val result = dateValidationService.validateDates(dates)
-    assertEquals("HDCED and PED cannot be selected together", result.first().message)
+    dateValidationService.getIncompatibleDatePairs().forEach { (first, second) ->
+      val result = dateValidationService.validateDates(listOf(first, second))
+      assertEquals("$first and $second cannot be selected together", result.first().message)
+    }
   }
 
   @Test

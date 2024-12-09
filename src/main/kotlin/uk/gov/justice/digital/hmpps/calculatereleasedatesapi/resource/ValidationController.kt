@@ -117,7 +117,6 @@ class ValidationController(
     ],
   )
   fun validateForDatesManualEntry(
-    @Parameter(required = true, example = "CRD, ARD", description = "comma separated list of dates to validate")
     @RequestParam releaseDates: List<String>,
   ): List<ValidationMessage> {
     log.info("Request received to validate calculation dates for ${releaseDates.size} dates")
