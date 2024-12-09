@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
 import org.springframework.context.annotation.Profile
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
@@ -23,8 +22,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateTy
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.DAYS
@@ -168,7 +165,6 @@ class UnsupportedSDS40RecallSentenceTest {
   )
 
   private companion object {
-    val FIRST_MAY_2018: LocalDate = LocalDate.of(2018, 5, 1)
     val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
     val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     val DOB: LocalDate = LocalDate.of(1980, 1, 1)
@@ -219,58 +215,5 @@ class UnsupportedSDS40RecallSentenceTest {
       isSDSPlus = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
-
-    val ONE_DAY_DURATION = Duration(mapOf(DAYS to 1L))
-    val OFFENCE = Offence(LocalDate.of(2020, 1, 1))
-    val STANDARD_SENTENCE = StandardDeterminateSentence(
-      OFFENCE,
-      ONE_DAY_DURATION,
-      LocalDate.of(2020, 1, 1),
-      isSDSPlus = false,
-      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
-    )
-
-    private fun getActiveValidationService(sentencesExtractionService: SentencesExtractionService, trancheConfiguration: SDS40TrancheConfiguration, botus: Boolean = true): ValidationService {
-      val featureToggles = FeatureToggles(botus, true, false, sds40ConsecutiveManualJourney = true)
-      val validationUtilities = ValidationUtilities()
-      val fineValidationService = FineValidationService(validationUtilities)
-      val adjustmentValidationService = AdjustmentValidationService()
-      val dtoValidationService = DtoValidationService()
-      val botusValidationService = BotusValidationService()
-      val recallValidationService = RecallValidationService(trancheConfiguration, validationUtilities)
-      val unsupportedValidationService = UnsupportedValidationService()
-      val postCalculationValidationService = PostCalculationValidationService(trancheConfiguration, featureToggles)
-      val section91ValidationService = Section91ValidationService(validationUtilities)
-      val sopcValidationService = SOPCValidationService(validationUtilities)
-      val edsValidationService = EDSValidationService(validationUtilities)
-      val manageOffencesService = mock<ManageOffencesService>()
-      val toreraValidationService = ToreraValidationService(manageOffencesService)
-      val sentenceValidationService = SentenceValidationService(
-        validationUtilities,
-        sentencesExtractionService,
-        section91ValidationService = section91ValidationService,
-        sopcValidationService = sopcValidationService,
-        fineValidationService,
-        edsValidationService = edsValidationService,
-      )
-      val preCalculationValidationService = PreCalculationValidationService(
-        featureToggles = featureToggles,
-        fineValidationService = fineValidationService,
-        adjustmentValidationService = adjustmentValidationService,
-        dtoValidationService = dtoValidationService,
-        botusValidationService = botusValidationService,
-        unsupportedValidationService = unsupportedValidationService,
-        toreraValidationService = toreraValidationService,
-      )
-
-      return ValidationService(
-        preCalculationValidationService = preCalculationValidationService,
-        adjustmentValidationService = adjustmentValidationService,
-        recallValidationService = recallValidationService,
-        sentenceValidationService = sentenceValidationService,
-        validationUtilities = validationUtilities,
-        postCalculationValidationService = postCalculationValidationService,
-      )
-    }
   }
 }

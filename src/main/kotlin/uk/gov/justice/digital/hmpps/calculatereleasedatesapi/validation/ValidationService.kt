@@ -16,6 +16,7 @@ class ValidationService(
   private val sentenceValidationService: SentenceValidationService,
   private val validationUtilities: ValidationUtilities,
   private val postCalculationValidationService: PostCalculationValidationService,
+  private val dateValidationService: DateValidationService,
 ) {
 
   fun validateBeforeCalculation(
@@ -103,6 +104,8 @@ class ValidationService(
   fun validateBeforeCalculation(booking: Booking): List<ValidationMessage> = recallValidationService.validateFixedTermRecall(booking)
 
   fun validateSentenceForManualEntry(sentences: List<SentenceAndOffence>): MutableList<ValidationMessage> = sentences.map { sentenceValidationService.validateSentenceForManualEntry(it) }.flatten().toMutableList()
+
+  fun validateRequestedDates(dates: List<String>): List<ValidationMessage> = dateValidationService.validateDates(dates)
 
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)

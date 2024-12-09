@@ -3454,6 +3454,7 @@ class ValidationServiceTest {
     val edsValidationService = EDSValidationService(validationUtilities)
     val manageOffencesService = mock<ManageOffencesService>()
     val toreraValidationService = ToreraValidationService(manageOffencesService)
+    val dateValidationService = DateValidationService()
     val sentenceValidationService = SentenceValidationService(
       validationUtilities,
       sentencesExtractionService,
@@ -3479,6 +3480,7 @@ class ValidationServiceTest {
       sentenceValidationService = sentenceValidationService,
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
+      dateValidationService = dateValidationService,
     )
   }
 }
