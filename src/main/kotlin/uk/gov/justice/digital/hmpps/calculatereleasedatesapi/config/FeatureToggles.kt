@@ -10,4 +10,5 @@ data class FeatureToggles(
   var supportInactiveSentencesAndAdjustments: Boolean = false,
   var toreraOffenceToManualJourney: Boolean = false,
   var sds40ConsecutiveManualJourney: Boolean = false,
+  var botusConsecutiveJourney: Boolean = false,
 )
