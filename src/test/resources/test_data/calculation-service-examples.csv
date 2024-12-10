@@ -659,3 +659,5 @@ custom-examples,crs-2162-2,,,
 validation,CRS-2207,,,
 custom-examples,crs-2210-concurrent-recall-ual-timeline-bug,,,
 
+custom-examples,CRS-2228-ual-after-crd-only-applies-to-recall-1,,,
+custom-examples,CRS-2228-ual-after-crd-only-applies-to-recall-2,,,
