@@ -3445,7 +3445,7 @@ class ValidationServiceTest {
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService()
     val dtoValidationService = DtoValidationService()
-    val botusValidationService = BotusValidationService()
+    val botusValidationService = BotusValidationService(featureToggles)
     val recallValidationService = RecallValidationService(trancheConfiguration, validationUtilities)
     val unsupportedValidationService = UnsupportedValidationService()
     val postCalculationValidationService = PostCalculationValidationService(trancheConfiguration, featureToggles)
