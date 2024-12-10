@@ -35,7 +35,7 @@ class TimelineUalAdjustmentCalculationHandler(
     with(timelineTrackingData) {
       val hasFixedTermRecall =
         returnToCustodyDate != null && licenseSentences.any { it.recallType?.isFixedTermRecall == true }
-      licenseSentences.forEach { sentence ->
+      licenseSentences.filter { it.isRecall() }.forEach { sentence ->
         val ualAfterFtr =
           if (hasFixedTermRecall && timelineCalculationDate.isAfterOrEqualTo(returnToCustodyDate!!) && timelineCalculationDate.isBeforeOrEqualTo(
               sentence.sentenceCalculation.releaseDate,
