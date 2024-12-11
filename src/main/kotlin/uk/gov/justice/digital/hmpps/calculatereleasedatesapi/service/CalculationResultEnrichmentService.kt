@@ -78,7 +78,7 @@ class CalculationResultEnrichmentService(
   }
 
   private fun tusedHints(type: ReleaseDateType): List<ReleaseDateHint> = if (type == ReleaseDateType.TUSED) {
-    listOf(ReleaseDateHint("TUSED recorded in NOMIS at time of release"))
+    listOf(ReleaseDateHint("TUSED from last calculation saved to NOMIS"))
   } else {
     emptyList()
   }
