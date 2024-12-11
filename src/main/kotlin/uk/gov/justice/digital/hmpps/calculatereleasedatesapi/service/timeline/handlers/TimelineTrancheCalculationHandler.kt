@@ -55,6 +55,11 @@ class TimelineTrancheCalculationHandler(
             )
             it.sentenceCalculation.trancheCommencement = trancheCommencementDate
           }
+        } else if (timelineCalculationDate == trancheConfiguration.trancheTwoCommencementDate) {
+          custodialSentences.forEach {
+            it.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
+              multiplierFnForDate(timelineCalculationDate, trancheCommencementDate)
+          }
         } else {
           // No sentences at tranche date.
           return TimelineHandleResult(true)
