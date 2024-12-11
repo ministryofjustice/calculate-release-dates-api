@@ -13,7 +13,6 @@ generic-service:
     PRISON_API_URL: https://prison-api.prison.service.justice.gov.uk
     ADJUSTMENTS_API_URL: https://adjustments-api.hmpps.service.justice.gov.uk
     MANAGE-OFFENCES_API_URL: https://manage-offences-api.hmpps.service.justice.gov.uk
-    BOTUS_FEATURE_TOGGLE: "false"
     BOTUS_CONSECUTIVE_JOURNEY_FEATURE_TOGGLE: "false"
     SDS_EARLY_RELEASE_FEATURE_TOGGLE: "true"
     SDS_EARLY_RELEASE_HINTS_FEATURE_TOGGLE: "true"
