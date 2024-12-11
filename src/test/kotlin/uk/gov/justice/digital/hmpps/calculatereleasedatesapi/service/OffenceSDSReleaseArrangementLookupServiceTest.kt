@@ -28,7 +28,7 @@ class OffenceSDSReleaseArrangementLookupServiceTest {
 
   private val mockManageOffencesService = mock<ManageOffencesService>()
 
-  private val featureToggles = FeatureToggles(botus = false, sdsEarlyRelease = true)
+  private val featureToggles = FeatureToggles(sdsEarlyRelease = true)
   private val underTest = OffenceSDSReleaseArrangementLookupService(mockManageOffencesService, featureToggles)
 
   @Test
