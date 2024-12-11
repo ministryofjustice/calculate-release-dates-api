@@ -1169,43 +1169,6 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test BOTUS feature toggle results in unsupported sentence type if disabled`() {
-    val validationService =
-      getActiveValidationService(
-        trancheConfiguration = TRANCHE_CONFIGURATION,
-        sentencesExtractionService = SentencesExtractionService(),
-        botus = false,
-      )
-    val sentenceAndOffences = validSdsSentence.copy(
-      sentenceCalculationType = SentenceCalculationType.BOTUS.name,
-      terms = listOf(
-        SentenceTerms(0, 0, 0, 10, SentenceTerms.LICENCE_TERM_CODE),
-      ),
-    )
-    val result = validationService.validateBeforeCalculation(
-      PrisonApiSourceData(
-        sentenceAndOffences = listOf(sentenceAndOffences).map {
-          SentenceAndOffenceWithReleaseArrangements(
-            it,
-            false,
-            SDSEarlyReleaseExclusionType.NO,
-          )
-        },
-        prisonerDetails = VALID_PRISONER,
-        bookingAndSentenceAdjustments = BookingAndSentenceAdjustments(emptyList(), emptyList()),
-        returnToCustodyDate = null,
-      ),
-      USER_INPUTS,
-    )
-    assertThat(result).containsExactly(
-      ValidationMessage(
-        UNSUPPORTED_SENTENCE_TYPE,
-        listOf("2003", "This is a sentence type"),
-      ),
-    )
-  }
-
-  @Test
   fun `Test A DTO sentence consecutive from unsupported`() {
     val sentences = listOf(
       validSdsSentence.copy(
@@ -3438,9 +3401,8 @@ class ValidationServiceTest {
   private fun getActiveValidationService(
     sentencesExtractionService: SentencesExtractionService,
     trancheConfiguration: SDS40TrancheConfiguration,
-    botus: Boolean = true,
   ): ValidationService {
-    val featureToggles = FeatureToggles(botus, true, false, sds40ConsecutiveManualJourney = true)
+    val featureToggles = FeatureToggles(sdsEarlyRelease = true, sdsEarlyReleaseHints = false, sds40ConsecutiveManualJourney = true)
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService()
@@ -3454,6 +3416,7 @@ class ValidationServiceTest {
     val edsValidationService = EDSValidationService(validationUtilities)
     val manageOffencesService = mock<ManageOffencesService>()
     val toreraValidationService = ToreraValidationService(manageOffencesService)
+    val dateValidationService = DateValidationService()
     val sentenceValidationService = SentenceValidationService(
       validationUtilities,
       sentencesExtractionService,
@@ -3479,6 +3442,7 @@ class ValidationServiceTest {
       sentenceValidationService = sentenceValidationService,
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
+      dateValidationService = dateValidationService,
     )
   }
 }

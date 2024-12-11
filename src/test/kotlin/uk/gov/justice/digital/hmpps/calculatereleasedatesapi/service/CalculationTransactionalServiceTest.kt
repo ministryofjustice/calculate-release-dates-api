@@ -98,6 +98,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.ha
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineUalAdjustmentCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.AdjustmentValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.BotusValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DateValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.DtoValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.EDSValidationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.FineValidationService
@@ -755,7 +756,7 @@ class CalculationTransactionalServiceTest {
     sentencesExtractionService: SentencesExtractionService,
     trancheConfiguration: SDS40TrancheConfiguration,
   ): ValidationService {
-    val featureToggles = FeatureToggles(true, true, false, sds40ConsecutiveManualJourney = true)
+    val featureToggles = FeatureToggles(sdsEarlyRelease = true, sdsEarlyReleaseHints = false, sds40ConsecutiveManualJourney = true)
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService()
@@ -768,6 +769,7 @@ class CalculationTransactionalServiceTest {
     val sopcValidationService = SOPCValidationService(validationUtilities)
     val edsValidationService = EDSValidationService(validationUtilities)
     val toreraValidationService = ToreraValidationService(manageOffencesService)
+    val dateValidationService = DateValidationService()
     val sentenceValidationService = SentenceValidationService(
       validationUtilities,
       sentencesExtractionService,
@@ -793,6 +795,7 @@ class CalculationTransactionalServiceTest {
       sentenceValidationService = sentenceValidationService,
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
+      dateValidationService = dateValidationService,
     )
   }
 

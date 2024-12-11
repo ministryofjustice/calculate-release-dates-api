@@ -70,7 +70,6 @@ domain-events-sns:
   provider: localstack
 
 feature-toggles:
-  botus: true
   sds-early-release: true
   support-inactive-sentences-and-adjustments: false
   sds40-consecutive-manual-journey: true
