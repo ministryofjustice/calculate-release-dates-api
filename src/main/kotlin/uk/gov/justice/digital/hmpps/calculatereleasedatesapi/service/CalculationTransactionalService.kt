@@ -363,9 +363,7 @@ class CalculationTransactionalService(
   }
 
   @Transactional(readOnly = true)
-  fun findCalculationResults(calculationRequestId: Long): CalculatedReleaseDates {
-    return transform(getCalculationRequest(calculationRequestId))
-  }
+  fun findCalculationResults(calculationRequestId: Long): CalculatedReleaseDates = transform(getCalculationRequest(calculationRequestId))
 
   @Transactional(readOnly = true)
   fun findUserInput(calculationRequestId: Long): CalculationUserInputs {
@@ -409,16 +407,12 @@ class CalculationTransactionalService(
     return prisonApiDataMapper.mapReturnToCustodyDate(calculationRequest)
   }
 
-  private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest {
-    return calculationRequestRepository.findById(calculationRequestId).orElseThrow {
-      EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId ")
-    }
+  private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest = calculationRequestRepository.findById(calculationRequestId).orElseThrow {
+    EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId ")
   }
 
-  private fun getCalculationRequestByReference(calculationReference: String): CalculationRequest {
-    return calculationRequestRepository.findByCalculationReference(UUID.fromString(calculationReference)).orElseThrow {
-      EntityNotFoundException("No calculation results exist for calculationReference $calculationReference ")
-    }
+  private fun getCalculationRequestByReference(calculationReference: String): CalculationRequest = calculationRequestRepository.findByCalculationReference(UUID.fromString(calculationReference)).orElseThrow {
+    EntityNotFoundException("No calculation results exist for calculationReference $calculationReference ")
   }
 
   @Transactional(readOnly = true)
@@ -541,6 +535,8 @@ class CalculationTransactionalService(
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
     return validationService.validateSentenceForManualEntry(sourceData.sentenceAndOffences)
   }
+
+  fun validateRequestedDates(dates: List<String>): List<ValidationMessage> = validationService.validateRequestedDates(dates)
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
