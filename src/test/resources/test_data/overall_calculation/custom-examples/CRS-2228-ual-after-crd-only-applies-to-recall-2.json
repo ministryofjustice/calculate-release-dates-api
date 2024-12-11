@@ -1,0 +1,44 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2023-11-09",
+        "offenceCode": "TH68028C"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 11
+        }
+      },
+      "sentencedAt": "2024-02-06"
+    },
+    {
+      "offence": {
+        "committedAt": "2023-11-09",
+        "offenceCode": "TH68013"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 12
+        }
+      },
+      "sentencedAt": "2023-12-11",
+      "recallType": "FIXED_TERM_RECALL_28"
+    }
+  ],
+  "adjustments": {
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "appliesToSentencesFrom": "2024-11-24",
+        "numberOfDays": 18,
+        "fromDate": "2024-11-24",
+        "toDate": "2024-12-11"
+      }
+    ]
+  },
+  "returnToCustodyDate": "2024-12-12"
+}
