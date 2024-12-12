@@ -3656,14 +3656,13 @@ class ValidationServiceTest {
   private fun getActiveValidationService(
     sentencesExtractionService: SentencesExtractionService,
     trancheConfiguration: SDS40TrancheConfiguration,
-    botus: Boolean = true,
   ): ValidationService {
-    val featureToggles = FeatureToggles(botus, true, false, sds40ConsecutiveManualJourney = true)
+    val featureToggles = FeatureToggles(sdsEarlyRelease = true, sdsEarlyReleaseHints = false, sds40ConsecutiveManualJourney = true)
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService()
     val dtoValidationService = DtoValidationService()
-    val botusValidationService = BotusValidationService()
+    val botusValidationService = BotusValidationService(featureToggles)
     val recallValidationService = RecallValidationService(trancheConfiguration, validationUtilities)
     val unsupportedValidationService = UnsupportedValidationService()
     val postCalculationValidationService = PostCalculationValidationService(trancheConfiguration, featureToggles)
@@ -3672,6 +3671,7 @@ class ValidationServiceTest {
     val edsValidationService = EDSValidationService(validationUtilities)
     val manageOffencesService = mock<ManageOffencesService>()
     val toreraValidationService = ToreraValidationService(manageOffencesService)
+    val dateValidationService = DateValidationService()
     val sentenceValidationService = SentenceValidationService(
       validationUtilities,
       sentencesExtractionService,
@@ -3697,6 +3697,7 @@ class ValidationServiceTest {
       sentenceValidationService = sentenceValidationService,
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
+      dateValidationService = dateValidationService,
     )
   }
 }

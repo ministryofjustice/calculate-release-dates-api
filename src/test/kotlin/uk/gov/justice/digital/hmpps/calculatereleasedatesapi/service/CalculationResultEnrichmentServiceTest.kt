@@ -795,7 +795,7 @@ class CalculationResultEnrichmentServiceTest {
     val releaseDates = listOf(tusedType)
     val calculationBreakdown = CalculationBreakdown(emptyList(), null)
     val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown, source)
-    assertThat(results[tusedType.type]?.hints).isEqualTo(listOf(ReleaseDateHint("TUSED recorded in NOMIS at time of release")))
+    assertThat(results[tusedType.type]?.hints).isEqualTo(listOf(ReleaseDateHint("TUSED from last calculation saved to NOMIS")))
   }
 
   @Nested

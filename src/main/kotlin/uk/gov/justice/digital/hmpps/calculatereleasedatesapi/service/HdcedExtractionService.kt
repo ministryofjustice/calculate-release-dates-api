@@ -34,11 +34,24 @@ class HdcedExtractionService(
         )
 
         if (hdcedSentence != null) {
-          return resolveEligibilityDate(hdcedSentence, conflictingSentence)
+          if (latestAdjustedReleaseDateIsAfterHdced(hdcedSentence.sentenceCalculation, latestAdjustedReleaseDate)) {
+            return resolveEligibilityDate(hdcedSentence, conflictingSentence)
+          }
         }
       }
     }
     return null
+  }
+
+  fun latestAdjustedReleaseDateIsAfterHdced(sentenceCalculation: SentenceCalculation, latestReleaseDate: LocalDate): Boolean {
+    val hdcedDate = sentenceCalculation.homeDetentionCurfewEligibilityDate
+    return hdcedDate?.let { latestReleaseDate.isAfter(it) } ?: false
+  }
+
+  fun releaseDateIsAfterHdced(sentenceCalculation: SentenceCalculation): Boolean {
+    val releaseDate = sentenceCalculation.releaseDate
+    val hdcedDate = sentenceCalculation.homeDetentionCurfewEligibilityDate
+    return hdcedDate?.let { releaseDate.isAfter(it) } ?: false
   }
 
   private fun getLatestConflictingSentence(
