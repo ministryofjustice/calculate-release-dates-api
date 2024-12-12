@@ -1264,7 +1264,6 @@ class ValidationServiceTest {
       getActiveValidationService(
         trancheConfiguration = TRANCHE_CONFIGURATION,
         sentencesExtractionService = SentencesExtractionService(),
-        botus = false,
       )
     val sentenceAndOffences = validSdsSentence.copy(
       sentenceCalculationType = SentenceCalculationType.BOTUS.name,

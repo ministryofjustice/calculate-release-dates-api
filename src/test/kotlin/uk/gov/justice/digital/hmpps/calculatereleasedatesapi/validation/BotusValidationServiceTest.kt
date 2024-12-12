@@ -87,6 +87,8 @@ class BotusValidationServiceTest {
         SentenceAndOffenceWithReleaseArrangements(
           source = it,
           isSdsPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
           hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
         )
       },

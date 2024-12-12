@@ -29,7 +29,7 @@ class ReleaseArrangementLookupServiceTest {
 
   private val mockManageOffencesService = mock<ManageOffencesService>()
 
-  private val featureToggles = FeatureToggles(botus = false, sdsEarlyRelease = true)
+  private val featureToggles = FeatureToggles(sdsEarlyRelease = true)
   private val sdsReleaseArrangementLookupService = SDSReleaseArrangementLookupService()
   private val sdsPlusReleaseArrangementLookupService = SDSPlusReleaseArrangementLookupService(mockManageOffencesService)
   private val underTest = ReleaseArrangementLookupService(sdsPlusReleaseArrangementLookupService, sdsReleaseArrangementLookupService, mockManageOffencesService, featureToggles)
