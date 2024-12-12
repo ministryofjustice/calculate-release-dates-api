@@ -214,6 +214,7 @@ class CalculationTransactionalServiceTest {
       val result = bookingData.first
       assertEquals(result.dates, calculatedReleaseDates.calculationResult.dates)
       assertEquals(result.effectiveSentenceLength, calculatedReleaseDates.calculationResult.effectiveSentenceLength)
+      assertEquals(result.affectedBySds40, calculatedReleaseDates.calculationResult.affectedBySds40)
       if (bookingData.second.contains("sdsEarlyReleaseAllocatedTranche")) {
         assertEquals(result.sdsEarlyReleaseAllocatedTranche, calculatedReleaseDates.calculationResult.sdsEarlyReleaseAllocatedTranche)
         assertEquals(result.sdsEarlyReleaseTranche, calculatedReleaseDates.calculationResult.sdsEarlyReleaseTranche)
