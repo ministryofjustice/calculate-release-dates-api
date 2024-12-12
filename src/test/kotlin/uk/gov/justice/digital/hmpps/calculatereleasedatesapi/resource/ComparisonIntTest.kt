@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Discre
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyPriority
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancySubCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonDiscrepancySummary
@@ -32,7 +33,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Comp
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 
-class ComparisonIntTest(private val mockPrisonService: MockPrisonService) : IntegrationTestBase() {
+class ComparisonIntTest(private val mockPrisonService: MockPrisonService, private val mockManageOffencesClient: MockManageOffencesClient) : IntegrationTestBase() {
 
   @Autowired
   lateinit var comparisonPersonRepository: ComparisonPersonRepository
@@ -46,6 +47,7 @@ class ComparisonIntTest(private val mockPrisonService: MockPrisonService) : Inte
     comparisonRepository.deleteAll()
     mockPrisonService.withPrisonCalculableSentences("ABC", "ABC")
     mockPrisonService.withInstAgencies(listOf(Agency("ABC", "prison ABC"), Agency("HDC4P", "prison HDC4P")))
+    mockManageOffencesClient.noneInPCSC(listOf("MD71134", "MD71191"))
   }
 
   @Test

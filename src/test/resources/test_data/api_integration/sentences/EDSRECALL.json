@@ -26,7 +26,7 @@
   "offences": [{
     "offenderChargeId": 1,
     "offenceStartDate": "2018-03-30",
-    "offenceCode": "An offence",
+    "offenceCode": "A1234BC",
     "offenceDescription": "Offending",
     "indicators": []
   }]
