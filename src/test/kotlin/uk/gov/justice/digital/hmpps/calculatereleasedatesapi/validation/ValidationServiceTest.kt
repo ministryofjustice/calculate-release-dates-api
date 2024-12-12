@@ -1258,7 +1258,6 @@ class ValidationServiceTest {
     assertThat(result).isEmpty()
   }
 
-
   @Test
   fun `Test A DTO sentence consecutive from unsupported`() {
     val sentences = listOf(
