@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.AdjustmentServiceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.AdjustmentServiceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UnusedDeductionCalculationResponse
@@ -12,10 +13,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import java.time.LocalDate
 import java.util.UUID
 
-class UnusedDeductionsControllerIntTest : IntegrationTestBase() {
+class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: MockManageOffencesClient) : IntegrationTestBase() {
 
   @Test
   fun `Run unused deductions calculation`() {
+    mockManageOffencesClient.noneInPCSC(listOf("TH68010A", "TH68037"))
     val adjustments = listOf(
       AdjustmentServiceAdjustment(
         fromDate = LocalDate.of(2020, 2, 1),

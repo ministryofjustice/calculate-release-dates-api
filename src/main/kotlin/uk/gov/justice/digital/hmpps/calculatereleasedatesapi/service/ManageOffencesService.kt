@@ -8,8 +8,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.mana
 class ManageOffencesService(
   private val manageOffencesApiClient: ManageOffencesApiClient,
 ) {
-  fun getPcscMarkersForOffenceCodes(vararg offenceCodes: String): List<OffencePcscMarkers> {
-    return manageOffencesApiClient.getPCSCMarkersForOffences(offenceCodes.toList())
+
+  fun getPcscMarkersForOffenceCodes(offenceCodes: List<String>): List<OffencePcscMarkers> {
+    return manageOffencesApiClient.getPCSCMarkersForOffences(offenceCodes)
   }
 
   fun getSdsExclusionsForOffenceCodes(offenceCodes: List<String>): List<SDSEarlyReleaseExclusionForOffenceCode> {

@@ -18,9 +18,9 @@ class ManageOffencesServiceTest {
 
   @Test
   fun getPcscMarkersForOffenceCodes() {
-    whenever(mockManageOffencesApiClient.getPCSCMarkersForOffences(listOf(OFFENCE_CODE_SOME_PCSC_MARKERS))).thenReturn(listOf(dummyOffencePcscSomeMarkers))
+    whenever(mockManageOffencesApiClient.getPCSCMarkersForOffences(OFFENCE_CODE_SOME_PCSC_MARKERS)).thenReturn(listOf(dummyOffencePcscSomeMarkers))
     val testResult = underTest.getPcscMarkersForOffenceCodes(OFFENCE_CODE_SOME_PCSC_MARKERS)
-    verify(mockManageOffencesApiClient, times(1)).getPCSCMarkersForOffences(listOf(OFFENCE_CODE_SOME_PCSC_MARKERS))
+    verify(mockManageOffencesApiClient, times(1)).getPCSCMarkersForOffences(OFFENCE_CODE_SOME_PCSC_MARKERS)
     assertThat(listOf(dummyOffencePcscSomeMarkers)).isEqualTo(testResult)
   }
 
@@ -38,9 +38,9 @@ class ManageOffencesServiceTest {
   }
 
   companion object {
-    private const val OFFENCE_CODE_SOME_PCSC_MARKERS = "AV82002"
+    private val OFFENCE_CODE_SOME_PCSC_MARKERS = listOf("AV82002")
     private val dummyOffencePcscSomeMarkers = OffencePcscMarkers(
-      offenceCode = OFFENCE_CODE_SOME_PCSC_MARKERS,
+      offenceCode = OFFENCE_CODE_SOME_PCSC_MARKERS[0],
       pcscMarkers = PcscMarkers(
         inListA = true,
         inListB = false,

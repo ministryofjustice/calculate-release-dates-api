@@ -17,13 +17,13 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Offe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ManageOffencesApiClient
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenceSDSReleaseArrangementLookupService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ReleaseArrangementLookupService
 import java.time.LocalDate
 
-class OffenceSDSReleaseArrangementLookupServiceIntTest(private val mockManageOffencesClient: MockManageOffencesClient) : IntegrationTestBase() {
+class ReleaseArrangementLookupServiceIntTest(private val mockManageOffencesClient: MockManageOffencesClient) : IntegrationTestBase() {
 
   @Autowired
-  lateinit var offenceSDSReleaseArrangementLookupService: OffenceSDSReleaseArrangementLookupService
+  lateinit var releaseArrangementLookupService: ReleaseArrangementLookupService
 
   @BeforeEach
   fun setUp() {
@@ -62,7 +62,7 @@ class OffenceSDSReleaseArrangementLookupServiceIntTest(private val mockManageOff
     )
 
     UserContext.setAuthToken("123456")
-    val markedUp = offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(inputOffenceList)
+    val markedUp = releaseArrangementLookupService.populateReleaseArrangements(inputOffenceList)
     assertTrue(markedUp[0].isSDSPlus)
   }
 
@@ -104,7 +104,7 @@ class OffenceSDSReleaseArrangementLookupServiceIntTest(private val mockManageOff
       )
 
       UserContext.setAuthToken("123456")
-      offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(inputOffenceList)
+      releaseArrangementLookupService.populateReleaseArrangements(inputOffenceList)
     }
 
     assertTrue(exception is ManageOffencesApiClient.MaxRetryAchievedException)
@@ -163,7 +163,7 @@ class OffenceSDSReleaseArrangementLookupServiceIntTest(private val mockManageOff
     )
 
     UserContext.setAuthToken("123456")
-    val markedUp = offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(inputOffenceList)
+    val markedUp = releaseArrangementLookupService.populateReleaseArrangements(inputOffenceList)
     assertTrue(markedUp[0].isSDSPlus)
   }
 }
