@@ -9,4 +9,6 @@ data class HdcedConfiguration(
   val custodialPeriodMidPointDays: Long,
   val custodialPeriodAboveMidpointDeductionDays: Long,
   val custodialPeriodBelowMidpointMinimumDeductionDays: Long,
+  val custodialPeriodMidPointDaysHdc365: Long,
+  val custodialPeriodAboveMidpointDeductionDaysHdc365: Long,
 )

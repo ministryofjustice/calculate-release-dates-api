@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED365
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -43,8 +44,48 @@ class HdcedExtractionService(
     return null
   }
 
-  fun latestAdjustedReleaseDateIsAfterHdced(sentenceCalculation: SentenceCalculation, latestReleaseDate: LocalDate): Boolean {
+  // Exact copy of extractManyHomeDetentionCurfewEligibilityDate, will repplace the above after hdc365 commencement
+  fun extractManyHomeDetentionCurfewEligibilityDateHDC365(
+    sentences: List<CalculableSentence>,
+    mostRecentSentencesByReleaseDate: List<CalculableSentence>,
+  ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
+    val latestAdjustedReleaseDate = getLatestAdjustedReleaseDate(mostRecentSentencesByReleaseDate)
+
+    if (sentences.none { it.isSDSPlus }) {
+      val latestEligibleSentence = getLatestHdcedEligibleSentence(sentences)
+
+      if (hasLatestEligibleSentenceGotHdced365Date(latestEligibleSentence)) {
+        val hdcedSentence = getMostRecentHDCED365SentenceApplying14DayRule(sentences, latestAdjustedReleaseDate)
+
+        val conflictingSentence = getLatestConflictingNonHdc365Sentence(
+          sentences,
+          hdcedSentence?.sentenceCalculation?.homeDetentionCurfewEligibilityDateHDC365,
+          hdcedSentence,
+        )
+
+        if (hdcedSentence != null) {
+          if (latestAdjustedReleaseDateIsAfterHdced365(hdcedSentence.sentenceCalculation, latestAdjustedReleaseDate)) {
+            return resolveEligibilityDateHDC365(hdcedSentence, conflictingSentence)
+          }
+        }
+      }
+    }
+    return null
+  }
+
+  fun latestAdjustedReleaseDateIsAfterHdced(
+    sentenceCalculation: SentenceCalculation,
+    latestReleaseDate: LocalDate,
+  ): Boolean {
     val hdcedDate = sentenceCalculation.homeDetentionCurfewEligibilityDate
+    return hdcedDate?.let { latestReleaseDate.isAfter(it) } ?: false
+  }
+
+  fun latestAdjustedReleaseDateIsAfterHdced365(
+    sentenceCalculation: SentenceCalculation,
+    latestReleaseDate: LocalDate,
+  ): Boolean {
+    val hdcedDate = sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365
     return hdcedDate?.let { latestReleaseDate.isAfter(it) } ?: false
   }
 
@@ -81,6 +122,7 @@ class HdcedExtractionService(
 
     return hdcSentence to calculatedHDCED
   }
+
   private fun getReleaseDateCalculationBreakDownFromLatestConflictingSentence(
     latestConflictingSentence: Pair<CalculableSentence?, LocalDate?>,
     hdcedSentenceDate: LocalDate,
@@ -116,6 +158,10 @@ class HdcedExtractionService(
     return latestEligibleSentences?.sentenceCalculation?.homeDetentionCurfewEligibilityDate != null
   }
 
+  // Copy of hasLatestEligibleSentenceGotHdcedDate
+  private fun hasLatestEligibleSentenceGotHdced365Date(latestEligibleSentences: CalculableSentence?): Boolean =
+    latestEligibleSentences?.sentenceCalculation?.homeDetentionCurfewEligibilityDateHDC365 != null
+
   private fun getMostRecentHDCEDSentenceApplying14DayRule(
     sentences: List<CalculableSentence>,
     latestReleaseDate: LocalDate,
@@ -126,6 +172,17 @@ class HdcedExtractionService(
     )
   }
 
+  // Copy of getMostRecentHDCEDSentenceApplying14DayRule
+  private fun getMostRecentHDCED365SentenceApplying14DayRule(
+    sentences: List<CalculableSentence>,
+    latestReleaseDate: LocalDate,
+  ): CalculableSentence? {
+    return extractionService.mostRecentSentenceOrNull(
+      sentences.filter { !latestReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
+      SentenceCalculation::homeDetentionCurfewEligibilityDateHDC365,
+    )
+  }
+
   private fun getLatestConflictingNonHdcSentence(
     sentences: List<CalculableSentence>,
     hdcedDate: LocalDate?,
@@ -133,6 +190,19 @@ class HdcedExtractionService(
   ): Pair<CalculableSentence?, LocalDate?> {
     return getLatestConflictingSentence(
       sentences.filter { it.sentenceCalculation.homeDetentionCurfewEligibilityDate == null },
+      hdcedDate,
+      hdcedSentence,
+    )
+  }
+
+  // Copy of getLatestConflictingNonHdcSentence (axtually both methods would return the same result regardless, but separated out for consistency
+  private fun getLatestConflictingNonHdc365Sentence(
+    sentences: List<CalculableSentence>,
+    hdcedDate: LocalDate?,
+    hdcedSentence: CalculableSentence?,
+  ): Pair<CalculableSentence?, LocalDate?> {
+    return getLatestConflictingSentence(
+      sentences.filter { it.sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365 == null },
       hdcedDate,
       hdcedSentence,
     )
@@ -153,6 +223,25 @@ class HdcedExtractionService(
     } else {
       hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to
         hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
+    }
+  }
+
+  // Copy of resolveEligibilityDate until commencement date
+  private fun resolveEligibilityDateHDC365(
+    hdcedSentence: CalculableSentence,
+    conflictingSentence: Pair<CalculableSentence?, LocalDate?>,
+  ): Pair<LocalDate, ReleaseDateCalculationBreakdown> {
+    return if (hdcedSentence != conflictingSentence.first &&
+      conflictingSentence.first != null &&
+      conflictingSentence.second != null
+    ) {
+      getReleaseDateCalculationBreakDownFromLatestConflictingSentence(
+        conflictingSentence,
+        hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!!,
+      )
+    } else {
+      hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!! to
+        hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED365]!!
     }
   }
 }

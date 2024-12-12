@@ -142,6 +142,12 @@ data class SentenceCalculation(
   var numberOfDaysToHomeDetentionCurfewEligibilityDate: Long = 0
   var homeDetentionCurfewEligibilityDate: LocalDate? = null
 
+  //  Home Detention Curfew Eligibility Date 365 (HDCED365)
+  // These will eventually replace numberOfDaysToHomeDetentionCurfewEligibilityDate and homeDetentionCurfewEligibilityDate
+  // at the moment calculating both until the commencement date
+  var numberOfDaysToHomeDetentionCurfewEligibilityDateHDC365: Long = 0
+  var homeDetentionCurfewEligibilityDateHDC365: LocalDate? = null
+
   var breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
 
   // Notional Conditional Release Date (NCRD)

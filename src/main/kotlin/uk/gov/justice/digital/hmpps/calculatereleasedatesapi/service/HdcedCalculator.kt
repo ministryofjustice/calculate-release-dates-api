@@ -89,10 +89,17 @@ class HdcedCalculator(
       sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = 0
       sentenceCalculation.breakdownByReleaseDateType.remove(ReleaseDateType.HDCED)
     } else {
+      // NEED HDCED
       if (params.custodialPeriod < hdcedConfiguration.custodialPeriodMidPointDays) {
         calculateHdcedUnderMidpoint(sentenceCalculation, sentence, params)
       } else {
         calculateHdcedOverMidpoint(sentenceCalculation, sentence, params)
+      }
+
+      if (params.custodialPeriod < hdcedConfiguration.custodialPeriodMidPointDaysHdc365) {
+        calculateHdcedUnderMidpointHDC365(sentenceCalculation, sentence, params)
+      } else {
+        calculateHdcedOverMidpointHDC365(sentenceCalculation, sentence, params)
       }
     }
   }
@@ -121,6 +128,46 @@ class HdcedCalculator(
       )
     } else {
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED] =
+        ReleaseDateCalculationBreakdown(
+          rules = setOf(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT),
+          rulesWithExtraAdjustments = mapOf(
+            CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT to AdjustmentDuration(
+              halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod,
+            ),
+          ),
+          adjustedDays = params.adjustedDays,
+          releaseDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
+          unadjustedDate = sentence.sentencedAt,
+        )
+    }
+  }
+
+  // This is an exact copy of calculateHdcedUnderMidpoint - the only difference being it saves it against HDCED365 Release Date type
+  // Duplicated the method rather than modified it with switches as the other method can just be deleted after the HDC365 commencement date
+  private fun calculateHdcedUnderMidpointHDC365(
+    sentenceCalculation: SentenceCalculation,
+    sentence: CalculableSentence,
+    params: HdcedParams,
+  ) {
+    val halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod = max(
+      hdcedConfiguration.custodialPeriodBelowMidpointMinimumDeductionDays, //28
+      ceil(params.custodialPeriod.div(HALF)).toLong(),
+    )
+
+    sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDateHDC365 =
+      halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod.plus(params.adjustedDays)
+    sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365 =
+      params.dateHdcAppliesFrom.plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate)
+
+    if (isCalculatedHdcLessThanTheMinimumHDCPeriod(sentence, sentenceCalculation, params)) {
+      calculateHdcedMinimumCustodialPeriodHDC365(
+        sentence,
+        sentenceCalculation,
+        CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT,
+        params,
+      )
+    } else {
+      sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED365] =
         ReleaseDateCalculationBreakdown(
           rules = setOf(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT),
           rulesWithExtraAdjustments = mapOf(
@@ -168,6 +215,42 @@ class HdcedCalculator(
     }
   }
 
+  // This is an almost exact copy of calculateHdcedOverMidpoint method - the only differences being it saves it against HDCED365 Release Date type and uses the new config params (365 days instead of 180)
+  // Duplicated the method rather than modified it with switches as the other method can just be deleted after the HDC365 commencement date
+  private fun calculateHdcedOverMidpointHDC365(
+    sentenceCalculation: SentenceCalculation,
+    sentence: CalculableSentence,
+    params: HdcedParams,
+  ) {
+    sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDateHDC365 =
+      sentenceCalculation.numberOfDaysToDeterminateReleaseDate
+        .minus(hdcedConfiguration.custodialPeriodAboveMidpointDeductionDaysHdc365 + 1) // Changed for HDC365 Extra plus one because we use the numberOfDaysToDeterminateReleaseDate param and not the sentencedAt param
+        .plus(params.adjustedDays)
+    sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365 = sentence.sentencedAt
+      .plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate)
+
+    if (isCalculatedHdcLessThanTheMinimumHDCPeriod(sentence, sentenceCalculation, params)) {
+      // set to 14
+      calculateHdcedMinimumCustodialPeriodHDC365(
+        sentence,
+        sentenceCalculation,
+        CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD,
+        params,
+      )
+    } else {
+      sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED365] =
+        ReleaseDateCalculationBreakdown(
+          rules = setOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD),
+          rulesWithExtraAdjustments = mapOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD to AdjustmentDuration(-hdcedConfiguration.custodialPeriodAboveMidpointDeductionDaysHdc365)),
+          adjustedDays = params.adjustedDays,
+          releaseDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
+          unadjustedDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!.plusDays(
+            hdcedConfiguration.custodialPeriodAboveMidpointDeductionDaysHdc365,
+          ),
+        )
+    }
+  }
+
   private fun getAddedDays(sentenceCalculation: SentenceCalculation) = sentenceCalculation.adjustments.ualDuringCustody +
     sentenceCalculation.adjustments.awardedDuringCustody -
     sentenceCalculation.adjustments.unusedAdaDays -
@@ -198,6 +281,33 @@ class HdcedCalculator(
         ),
         adjustedDays = params.addedDays,
         releaseDate = sentenceCalculation.homeDetentionCurfewEligibilityDate!!,
+        unadjustedDate = sentence.sentencedAt,
+      )
+  }
+
+  // Exact copy of above calculateHdcedMinimumCustodialPeriod method, just sets the HDC365 version, this willreplace the original after commencement of HDC365
+  private fun calculateHdcedMinimumCustodialPeriodHDC365(
+    sentence: CalculableSentence,
+    sentenceCalculation: SentenceCalculation,
+    parentRule: CalculationRule,
+    params: HdcedParams,
+  ) {
+    sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365 =
+      sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc).plusDays(
+        params.addedDays,
+      )
+    sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDateHDC365 =
+      hdcedConfiguration.minimumDaysOnHdc.plus(params.addedDays)
+    sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED365] =
+      ReleaseDateCalculationBreakdown(
+        rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, parentRule),
+        rulesWithExtraAdjustments = mapOf(
+          CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD to AdjustmentDuration(
+            hdcedConfiguration.minimumDaysOnHdc,
+          ),
+        ),
+        adjustedDays = params.addedDays,
+        releaseDate = sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!!,
         unadjustedDate = sentence.sentencedAt,
       )
   }

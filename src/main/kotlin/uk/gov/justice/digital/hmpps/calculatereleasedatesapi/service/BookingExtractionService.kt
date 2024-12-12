@@ -89,7 +89,11 @@ class BookingExtractionService(
 
     if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
       if (hdcedExtractionService.releaseDateIsAfterHdced(sentenceCalculation)) {
-        dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
+        if (LocalDate.now().isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+          dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
+        } else {
+          dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!!
+        }
       }
     }
 
@@ -175,6 +179,11 @@ class BookingExtractionService(
 
     val latestHDCEDAndBreakdown =
       hdcedExtractionService.extractManyHomeDetentionCurfewEligibilityDate(sentences, mostRecentSentencesByReleaseDate)
+    val latestHDCEDAndBreakdownHDC365 =
+      hdcedExtractionService.extractManyHomeDetentionCurfewEligibilityDateHDC365(
+        sentences,
+        mostRecentSentencesByReleaseDate
+      )
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
       extractManyTopUpSuperVisionDate(sentences, latestLicenseExpiryDate)
@@ -292,9 +301,14 @@ class BookingExtractionService(
       breakdownByReleaseDateType[TUSED] = latestTUSEDAndBreakdown.second
     }
 
-    if (latestHDCEDAndBreakdown != null) {
-      dates[HDCED] = latestHDCEDAndBreakdown.first
-      breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdown.second
+    if (latestHDCEDAndBreakdown != null && latestHDCEDAndBreakdownHDC365 != null) {
+      if (LocalDate.now().isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+        dates[HDCED] = latestHDCEDAndBreakdown.first
+        breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdown.second
+      } else {
+        dates[HDCED] = latestHDCEDAndBreakdownHDC365.first
+        breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdownHDC365.second
+      }
     }
 
     if (latestNotionalConditionalReleaseDate != null) {

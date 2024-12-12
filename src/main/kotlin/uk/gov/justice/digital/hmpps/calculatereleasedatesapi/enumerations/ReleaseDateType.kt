@@ -24,5 +24,5 @@ enum class ReleaseDateType(val description: String) {
   None("None of the above dates apply"),
   Tariff("known as the Tariff expiry date"),
   ROTL("Release on temporary licence"),
-  HDCED4PLUS("HDCED4+"), // for legacy calculations only
+  HDCED365("HDCED Calculation where max time is 365 Days aka HDC-12"), // will become HDCED after 23 Jun 2025
 }
