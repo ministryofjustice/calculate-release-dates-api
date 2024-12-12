@@ -23,6 +23,7 @@ data class SentenceCalculation(
     get() {
       val date = unadjustedReleaseDate.unadjustedHistoricDeterminateReleaseDate
         .plusDays(adjustments.adjustmentsForInitalRelease())
+        .minusDays(adjustments.unusedAdaDays)
       return if (date.isAfter(sentence.sentencedAt)) {
         date
       } else {

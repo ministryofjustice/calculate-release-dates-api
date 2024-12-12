@@ -133,6 +133,7 @@ class BookingExtractionService(
       getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedExpiryDate),
       false,
       historicalTusedSource,
+      affectedBySds40 = isAffectedBySds40(sentence),
     )
   }
 
@@ -340,7 +341,14 @@ class BookingExtractionService(
       otherDates.toMap(),
       effectiveSentenceLength,
       ersedNotApplicableDueToDtoLaterThanCrd,
+      affectedBySds40 = mostRecentSentencesByReleaseDate.any { isAffectedBySds40(it) },
     )
+  }
+
+  private fun isAffectedBySds40(sentence: CalculableSentence): Boolean {
+    return !sentence.isRecall() &&
+      sentence.sentenceParts().any { it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE } &&
+      sentence.sentenceCalculation.adjustedDeterminateReleaseDate != sentence.sentenceCalculation.adjustedHistoricDeterminateReleaseDate
   }
 
   fun extractCrdOrArd(
