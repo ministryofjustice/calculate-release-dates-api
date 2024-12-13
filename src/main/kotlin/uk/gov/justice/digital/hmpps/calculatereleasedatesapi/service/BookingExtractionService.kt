@@ -87,10 +87,13 @@ class BookingExtractionService(
       dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
     }
 
+    // Change to check commencement date against HDC180 rather than today
     if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
       if (hdcedExtractionService.releaseDateIsAfterHdced(sentenceCalculation)) {
-        if (LocalDate.now().isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+        if (sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
           dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
+        } else if (sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+          dates[HDCED] = ImportantDates.HDC_365_COMMENCEMENT_DATE
         } else {
           dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!!
         }
@@ -301,10 +304,14 @@ class BookingExtractionService(
       breakdownByReleaseDateType[TUSED] = latestTUSEDAndBreakdown.second
     }
 
+    // Change to check commencement date against HDC180 rather than today
     if (latestHDCEDAndBreakdown != null && latestHDCEDAndBreakdownHDC365 != null) {
-      if (LocalDate.now().isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+      if (latestHDCEDAndBreakdown.first.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
         dates[HDCED] = latestHDCEDAndBreakdown.first
         breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdown.second
+      } else if (latestHDCEDAndBreakdownHDC365.first.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+        dates[HDCED] = ImportantDates.HDC_365_COMMENCEMENT_DATE
+        breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdownHDC365.second // tag that it has been reset to commencement??
       } else {
         dates[HDCED] = latestHDCEDAndBreakdownHDC365.first
         breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdownHDC365.second
