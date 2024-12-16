@@ -23,6 +23,7 @@ data class SentenceCalculation(
     get() {
       val date = unadjustedReleaseDate.unadjustedHistoricDeterminateReleaseDate
         .plusDays(adjustments.adjustmentsForInitalRelease())
+        .minusDays(adjustments.unusedAdaDays)
       return if (date.isAfter(sentence.sentencedAt)) {
         date
       } else {
@@ -40,13 +41,9 @@ data class SentenceCalculation(
       }
     }
 
-  fun isImmediateRelease(): Boolean {
-    return sentence.sentencedAt == adjustedDeterminateReleaseDate
-  }
+  fun isImmediateRelease(): Boolean = sentence.sentencedAt == adjustedDeterminateReleaseDate
 
-  fun isImmediateCustodyRelease(): Boolean {
-    return isImmediateRelease() && (1 - adjustments.adjustmentsForInitalRelease()) == releaseDateCalculation.numberOfDaysToDeterminateReleaseDate.toLong()
-  }
+  fun isImmediateCustodyRelease(): Boolean = isImmediateRelease() && (1 - adjustments.adjustmentsForInitalRelease()) == releaseDateCalculation.numberOfDaysToDeterminateReleaseDate.toLong()
 
   val numberOfDaysToAddToLicenceExpiryDate: Int
     get() {
@@ -181,9 +178,7 @@ data class SentenceCalculation(
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
 
-  private fun isDateDefaultedToCommencement(releaseDate: LocalDate): Boolean {
-    return !sentence.isRecall() && trancheCommencement != null && sentence.sentenceParts().any { it.identificationTrack.isEarlyReleaseTrancheOneTwo() } && releaseDate.isBefore(trancheCommencement)
-  }
+  private fun isDateDefaultedToCommencement(releaseDate: LocalDate): Boolean = !sentence.isRecall() && trancheCommencement != null && sentence.sentenceParts().any { it.identificationTrack.isEarlyReleaseTrancheOneTwo() } && releaseDate.isBefore(trancheCommencement)
 
   fun buildString(releaseDateTypes: List<ReleaseDateType>): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
