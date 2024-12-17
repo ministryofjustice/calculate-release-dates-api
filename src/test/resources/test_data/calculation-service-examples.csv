@@ -399,6 +399,10 @@ custom-examples,CRS-2233-ac1,,,,true
 custom-examples,CRS-2233-ac2,,,,true
 custom-examples,CRS-2233-ac3,,,,true
 custom-examples,CRS-2233-ac4,,,,true
+custom-examples,crs-2233-ac5,,,,true
+custom-examples,crs-2233-ac6,,,,true
+custom-examples,crs-2233-ac7,,,,true
+custom-examples,crs-2233-ac8,,,,true
 
 alternative-release-point,1,,sds-45,,
 alternative-release-point,2,,sds-45,,
@@ -502,16 +506,16 @@ tranches,crs-2192-ac2-1,,,,
 tranches,crs-2192-ac2-2,,,,
 
 tranches,crs-2202-ac1-1,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE,
-tranches,crs-2202-ac1-2,,,,
-tranches,crs-2202-ac1-3,,,,
-tranches,crs-2202-ac1-4,,,,
-tranches,crs-2202-ac1-5,,,,
-tranches,crs-2202-ac1-6,,,,
-tranches,crs-2202-ac1-7,,,,
-tranches,crs-2202-ac1-8,,,,
-tranches,crs-2202-ac2-1,,,,
-tranches,crs-2202-ac2-3,,,,
-tranches,crs-2202-ac3-1,,,,
+tranches,crs-2202-ac1-2,,,,true
+tranches,crs-2202-ac1-3,,,,true
+tranches,crs-2202-ac1-4,,,,true
+tranches,crs-2202-ac1-5,,,,true
+tranches,crs-2202-ac1-6,,,,true
+tranches,crs-2202-ac1-7,,,,true
+tranches,crs-2202-ac1-8,,,,true
+tranches,crs-2202-ac2-1,,,,true
+tranches,crs-2202-ac2-3,,,,true
+tranches,crs-2202-ac3-1,,,,true
 
 custom-examples,crs-2062-SDS40-tused-bug,,,,
 custom-examples,crs-2063-SDS40-FTR-tused,,,,
