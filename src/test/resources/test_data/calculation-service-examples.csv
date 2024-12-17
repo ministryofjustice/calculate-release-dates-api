@@ -399,10 +399,10 @@ custom-examples,CRS-2233-ac1,,,,true
 custom-examples,CRS-2233-ac2,,,,true
 custom-examples,CRS-2233-ac3,,,,true
 custom-examples,CRS-2233-ac4,,,,true
-custom-examples,crs-2233-ac5,,,,true
-custom-examples,crs-2233-ac6,,,,true
-custom-examples,crs-2233-ac7,,,,true
-custom-examples,crs-2233-ac8,,,,true
+custom-examples,CRS-2233-ac5,,,,true
+custom-examples,CRS-2233-ac6,,,,true
+custom-examples,CRS-2233-ac7,,,,true
+custom-examples,CRS-2233-ac8,,,,true
 
 alternative-release-point,1,,sds-45,,
 alternative-release-point,2,,sds-45,,
