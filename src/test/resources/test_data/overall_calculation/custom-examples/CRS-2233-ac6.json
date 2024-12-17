@@ -1,0 +1,22 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2024-09-20"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 1,
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2024-09-20",
+      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL_T3"
+    }
+  ]
+}
