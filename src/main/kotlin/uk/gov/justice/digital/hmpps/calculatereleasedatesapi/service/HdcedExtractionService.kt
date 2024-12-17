@@ -46,7 +46,8 @@ class HdcedExtractionService(
     return null
   }
 
-  // Exact copy of extractManyHomeDetentionCurfewEligibilityDate, will repplace the above after hdc365 commencement
+  // This is a copy of extractManyHomeDetentionCurfewEligibilityDate method - the only difference being it saves against the new HDCED365 variant and uses it's config
+  // Duplicated the method rather than modified it with switches as the other method can just be deleted after the HDC365 commencement date
   fun extractManyHomeDetentionCurfewEligibilityDateHDC365(
     sentences: List<CalculableSentence>,
     mostRecentSentencesByReleaseDate: List<CalculableSentence>,
@@ -83,6 +84,7 @@ class HdcedExtractionService(
     return hdcedDate?.let { latestReleaseDate.isAfter(it) } ?: false
   }
 
+  // This is a copy of latestAdjustedReleaseDateIsAfterHdced for HDCED365
   fun latestAdjustedReleaseDateIsAfterHdced365(
     sentenceCalculation: SentenceCalculation,
     latestReleaseDate: LocalDate,
@@ -124,7 +126,6 @@ class HdcedExtractionService(
 
     return hdcSentence to calculatedHDCED
   }
-
   private fun getReleaseDateCalculationBreakDownFromLatestConflictingSentence(
     latestConflictingSentence: Pair<CalculableSentence?, LocalDate?>,
     hdcedSentenceDate: LocalDate,
@@ -160,7 +161,7 @@ class HdcedExtractionService(
     return latestEligibleSentences?.sentenceCalculation?.homeDetentionCurfewEligibilityDate != null
   }
 
-  // Copy of hasLatestEligibleSentenceGotHdcedDate
+  // Copy of hasLatestEligibleSentenceGotHdcedDate for HDCED365
   private fun hasLatestEligibleSentenceGotHdced365Date(latestEligibleSentences: CalculableSentence?): Boolean =
     latestEligibleSentences?.sentenceCalculation?.homeDetentionCurfewEligibilityDateHDC365 != null
 
@@ -174,7 +175,7 @@ class HdcedExtractionService(
     )
   }
 
-  // Copy of getMostRecentHDCEDSentenceApplying14DayRule
+  // Copy of getMostRecentHDCEDSentenceApplying14DayRule for HDCED365
   private fun getMostRecentHDCED365SentenceApplying14DayRule(
     sentences: List<CalculableSentence>,
     latestReleaseDate: LocalDate,
@@ -197,7 +198,7 @@ class HdcedExtractionService(
     )
   }
 
-  // Copy of getLatestConflictingNonHdcSentence (axtually both methods would return the same result regardless, but separated out for consistency
+  // Copy of getLatestConflictingNonHdcSentence for HDCED365
   private fun getLatestConflictingNonHdc365Sentence(
     sentences: List<CalculableSentence>,
     hdcedDate: LocalDate?,
@@ -228,7 +229,7 @@ class HdcedExtractionService(
     }
   }
 
-  // Copy of resolveEligibilityDate until commencement date
+  // Copy of resolveEligibilityDate for HDCED365
   private fun resolveEligibilityDateHDC365(
     hdcedSentence: CalculableSentence,
     conflictingSentence: Pair<CalculableSentence?, LocalDate?>,
@@ -245,9 +246,5 @@ class HdcedExtractionService(
       hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!! to
         hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED365]!!
     }
-  }
-
-  companion object {
-    val log: Logger = LoggerFactory.getLogger(HdcedExtractionService::class.java)
   }
 }

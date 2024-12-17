@@ -85,7 +85,9 @@ class BookingExtractionService(
       dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
     }
 
-    // Change to check commencement date against HDC180 rather than today
+    // Changed logic for Home Detention Curfew Eligibility Date 365 (HDCED365)
+    // Eventually only HDC365 will apply
+    // TODO FEATURE TOGGLE + maybe check hdc265 not null
     if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
       if (hdcedExtractionService.releaseDateIsAfterHdced(sentenceCalculation)) {
         if (sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
@@ -307,7 +309,9 @@ class BookingExtractionService(
       breakdownByReleaseDateType[TUSED] = latestTUSEDAndBreakdown.second
     }
 
-    // Change to check commencement date against HDC180 rather than today
+    // Changed logic for Home Detention Curfew Eligibility Date 365 (HDCED365)
+    // Eventually only HDC365 will apply
+    // TODO FEATURE TOGGLE
     if (latestHDCEDAndBreakdown != null && latestHDCEDAndBreakdownHDC365 != null) {
       if (latestHDCEDAndBreakdown.first.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
         dates[HDCED] = latestHDCEDAndBreakdown.first
