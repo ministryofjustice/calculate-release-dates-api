@@ -142,8 +142,8 @@ class BookingExtractionService(
     )
   }
 
-  // Changed logic for Home Detention Curfew Eligibility Date 365 (HDC65)
-  // Eventually only HDC365 will apply
+  // Changed logic for Home Detention Curfew Eligibility Date 365 (HDC-365)
+  // Eventually only HDC365 will apply (after commencement date)
   private fun setHdcedDate(
     sentenceCalculation: SentenceCalculation,
     sentence: CalculableSentence,
@@ -381,8 +381,8 @@ class BookingExtractionService(
     )
   }
 
-  // Includes logic for Home Detention Curfew Eligibility Date 365 (HDC65)
-  // Eventually only HDC365 will apply
+  // Includes logic for Home Detention Curfew Eligibility Date 365 (HDC-365)
+  // Eventually only HDC365 will apply (after commencement date)
   private fun setHdcedDateAndBreakdownDetails(
     latestHDCEDAndBreakdown: Pair<LocalDate, ReleaseDateCalculationBreakdown>?,
     latestHDCEDAndBreakdownHDC365: Pair<LocalDate, ReleaseDateCalculationBreakdown>?,
@@ -396,7 +396,7 @@ class BookingExtractionService(
       } else if (latestHDCEDAndBreakdownHDC365.first.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
         dates[HDCED] = ImportantDates.HDC_365_COMMENCEMENT_DATE
         breakdownByReleaseDateType[HDCED] =
-          latestHDCEDAndBreakdownHDC365.second // TODO Tag that it has been reset to commencement?? to be considered in upcoming hint text ticket
+          latestHDCEDAndBreakdownHDC365.second // TODO set rule that it has been reset to commencement?? to be considered in upcoming hint text ticket
       } else {
         dates[HDCED] = latestHDCEDAndBreakdownHDC365.first
         breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdownHDC365.second

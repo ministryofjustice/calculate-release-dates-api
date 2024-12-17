@@ -139,9 +139,7 @@ data class SentenceCalculation(
   var numberOfDaysToHomeDetentionCurfewEligibilityDate: Long = 0
   var homeDetentionCurfewEligibilityDate: LocalDate? = null
 
-  //  Home Detention Curfew Eligibility Date 365 (HDC-365)
-  // These will eventually replace numberOfDaysToHomeDetentionCurfewEligibilityDate and homeDetentionCurfewEligibilityDate
-  // at the moment calculating both until the commencement date
+  // HDC-465 These will eventually replace the above HDC equivalents after the HDC-365 commencement date
   var numberOfDaysToHomeDetentionCurfewEligibilityDateHDC365: Long = 0
   var homeDetentionCurfewEligibilityDateHDC365: LocalDate? = null
 
