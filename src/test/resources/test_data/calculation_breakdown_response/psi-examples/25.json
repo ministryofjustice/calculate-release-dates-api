@@ -90,7 +90,22 @@
       "adjustedDays": 0,
       "releaseDate": "2015-05-09",
       "unadjustedDate": "2015-02-22"
+    },
+    "HDCED365": {
+      "rules": [
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
+          "adjustmentValue": 76,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": 0,
+      "releaseDate": "2015-05-09",
+      "unadjustedDate": "2015-02-22"
     }
   },
-  "otherDates": {}
+  "otherDates": {},
+  "ersedNotApplicableDueToDtoLaterThanCrd": false
 }

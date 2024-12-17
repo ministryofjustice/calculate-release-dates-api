@@ -57,6 +57,20 @@
       "adjustedDays": 106,
       "releaseDate": "2021-03-27",
       "unadjustedDate": "2020-10-19"
+    },
+    "HDCED365": {
+      "rules": [
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
+          "adjustmentValue": 53,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": 106,
+      "releaseDate": "2021-03-27",
+      "unadjustedDate": "2020-10-19"
     }
   },
   "otherDates": {},
