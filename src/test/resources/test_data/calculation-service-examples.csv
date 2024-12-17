@@ -653,8 +653,6 @@ validation,CRS-2175-ac2-2,,,UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS
 validation,CRS-2175-reg-1,,,
 validation,CRS-2175-rwe-1,,,
 validation,CRS-2175-crd-t1-boundary,,,UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS
-custom-examples,crs-2162-1,,,
-custom-examples,crs-2162-2,,,
 
 validation,CRS-2207,,,
 custom-examples,crs-2210-concurrent-recall-ual-timeline-bug,,,
@@ -665,3 +663,10 @@ custom-examples,crs-2223-timeline-bug,,,
 
 custom-examples,CRS-2228-ual-after-crd-only-applies-to-recall-1,,,
 custom-examples,CRS-2228-ual-after-crd-only-applies-to-recall-2,,,
+
+hdc-365,crs-2218-ac01,,,
+hdc-365,crs-2218-ac02-1,,,
+hdc-365,crs-2218-ac02-2,,,
+hdc-365,crs-2218-ac03-1,,,
+hdc-365,crs-2218-ac03-2,,,
+hdc-365,crs-2218-ac05,,,

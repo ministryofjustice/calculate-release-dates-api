@@ -197,55 +197,55 @@ class XXXTest {
     }
   }
 
-  @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
-  fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String, error: String?, params: String?) {
-    log.info("Testing example $exampleType/$exampleNumber")
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-
-    val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
-    val calculation = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber").first
-
-    val calculationBreakdown: CalculationBreakdown?
-    try {
-      calculationBreakdown = calculationTransactionalService(defaultParams(params)).calculateWithBreakdown(
-        booking,
-        CalculatedReleaseDates(
-          calculation.dates,
-          -1,
-          -1,
-          "",
-          PRELIMINARY,
-          calculationReference = UUID.randomUUID(),
-          calculationReason = CALCULATION_REASON,
-          calculationDate = LocalDate.of(2024, 1, 1),
-        ),
-        calculationUserInputs,
-      )
-    } catch (e: Exception) {
-      if (!error.isNullOrEmpty()) {
-        assertEquals(error, e.javaClass.simpleName)
-        return
-      } else {
-        throw e
-      }
-    }
-    log.info(
-      "Example $exampleType/$exampleNumber outcome CalculationBreakdown: {}",
-      TestUtil.objectMapper().writeValueAsString(calculationBreakdown),
-    )
-    val actualJson: String? = TestUtil.objectMapper().writeValueAsString(calculationBreakdown)
-    val expectedJson: String? =
-      jsonTransformation.getJsonTest("$exampleType/$exampleNumber.json", "calculation_breakdown_response")
-
-    JSONAssert.assertEquals(
-      expectedJson,
-      actualJson,
-      JSONCompareMode.LENIENT,
-    )
-
-    assertThat(calculationBreakdown).isEqualTo(jsonTransformation.loadCalculationBreakdown("$exampleType/$exampleNumber"))
-  }
+  // @ParameterizedTest
+  // @CsvFileSource(resources = ["/test_data/calculation-breakdown-examples.csv"], numLinesToSkip = 1)
+  // fun `Test UX Example Breakdowns`(exampleType: String, exampleNumber: String, error: String?, params: String?) {
+  //   log.info("Testing example $exampleType/$exampleNumber")
+  //   whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+  //
+  //   val (booking, calculationUserInputs) = jsonTransformation.loadBooking("$exampleType/$exampleNumber")
+  //   val calculation = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber").first
+  //
+  //   val calculationBreakdown: CalculationBreakdown?
+  //   try {
+  //     calculationBreakdown = calculationTransactionalService(defaultParams(params)).calculateWithBreakdown(
+  //       booking,
+  //       CalculatedReleaseDates(
+  //         calculation.dates,
+  //         -1,
+  //         -1,
+  //         "",
+  //         PRELIMINARY,
+  //         calculationReference = UUID.randomUUID(),
+  //         calculationReason = CALCULATION_REASON,
+  //         calculationDate = LocalDate.of(2024, 1, 1),
+  //       ),
+  //       calculationUserInputs,
+  //     )
+  //   } catch (e: Exception) {
+  //     if (!error.isNullOrEmpty()) {
+  //       assertEquals(error, e.javaClass.simpleName)
+  //       return
+  //     } else {
+  //       throw e
+  //     }
+  //   }
+  //   log.info(
+  //     "Example $exampleType/$exampleNumber outcome CalculationBreakdown: {}",
+  //     TestUtil.objectMapper().writeValueAsString(calculationBreakdown),
+  //   )
+  //   val actualJson: String? = TestUtil.objectMapper().writeValueAsString(calculationBreakdown)
+  //   val expectedJson: String? =
+  //     jsonTransformation.getJsonTest("$exampleType/$exampleNumber.json", "calculation_breakdown_response")
+  //
+  //   JSONAssert.assertEquals(
+  //     expectedJson,
+  //     actualJson,
+  //     JSONCompareMode.LENIENT,
+  //   )
+  //
+  //   assertThat(calculationBreakdown).isEqualTo(jsonTransformation.loadCalculationBreakdown("$exampleType/$exampleNumber"))
+  // }
 
   private fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
 

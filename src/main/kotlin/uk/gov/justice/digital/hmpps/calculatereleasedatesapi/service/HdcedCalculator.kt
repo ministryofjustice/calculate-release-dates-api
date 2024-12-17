@@ -95,15 +95,20 @@ class HdcedCalculator(
       sentenceCalculation.breakdownByReleaseDateType.remove(ReleaseDateType.HDCED365)
     } else {
       // NEED HDCED
+      log.info("Calculating HDCED >> custodialPeriod " + params.custodialPeriod)
       if (params.custodialPeriod < hdcedConfiguration.custodialPeriodMidPointDays) {
+        log.info("Calculating HDCED Under Midpoint")
         calculateHdcedUnderMidpoint(sentenceCalculation, sentence, params)
       } else {
+        log.info("Calculating HDCED Over Midpoint")
         calculateHdcedOverMidpoint(sentenceCalculation, sentence, params)
       }
 
       if (params.custodialPeriod < hdcedConfiguration.custodialPeriodMidPointDaysHdc365) {
+        log.info("Calculating HDCED365 Under Midpoint")
         calculateHdcedUnderMidpointHDC365(sentenceCalculation, sentence, params)
       } else {
+        log.info("Calculating HDCED365 Over Midpoint")
         calculateHdcedOverMidpointHDC365(sentenceCalculation, sentence, params)
       }
     }
@@ -196,6 +201,7 @@ class HdcedCalculator(
       sentenceCalculation.numberOfDaysToDeterminateReleaseDate
         .minus(hdcedConfiguration.custodialPeriodAboveMidpointDeductionDays + 1) // Extra plus one because we use the numberOfDaysToDeterminateReleaseDate param and not the sentencedAt param
         .plus(params.adjustedDays)
+    log.info(("HDCED numberOfDaysToHomeDetentionCurfewEligibilityDate: " + sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate))
     sentenceCalculation.homeDetentionCurfewEligibilityDate = sentence.sentencedAt
       .plusDays(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate)
 
