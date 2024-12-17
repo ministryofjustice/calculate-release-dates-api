@@ -139,7 +139,7 @@ data class SentenceCalculation(
   var numberOfDaysToHomeDetentionCurfewEligibilityDate: Long = 0
   var homeDetentionCurfewEligibilityDate: LocalDate? = null
 
-  //  Home Detention Curfew Eligibility Date 365 (HDCED365)
+  //  Home Detention Curfew Eligibility Date 365 (HDC-365)
   // These will eventually replace numberOfDaysToHomeDetentionCurfewEligibilityDate and homeDetentionCurfewEligibilityDate
   // at the moment calculating both until the commencement date
   var numberOfDaysToHomeDetentionCurfewEligibilityDateHDC365: Long = 0
@@ -213,9 +213,9 @@ data class SentenceCalculation(
       "${numberOfDaysToHomeDetentionCurfewEligibilityDate}\n" +
       "Home Detention Curfew Eligibility Date (HDCED)\t:\t" +
       "${homeDetentionCurfewEligibilityDate?.format(formatter)}\n" +
-      "Number of days to Home Detention Curfew Eligibility Date (HDCED365)\t:\t" +
+      "Number of days to Home Detention Curfew Eligibility Date (HDC-365)\t:\t" +
       "${numberOfDaysToHomeDetentionCurfewEligibilityDateHDC365}\n" +
-      "Home Detention Curfew Eligibility Date using HDC-365 rules (HDCED365)\t:\t" +
+      "Home Detention Curfew Eligibility Date using HDC-365 rules\t:\t" +
       "${homeDetentionCurfewEligibilityDateHDC365?.format(formatter)}\n" +
       "Effective $expiryDateType\t:\t${expiryDate.format(formatter)}\n" +
       "Effective $releaseDateType\t:\t${releaseDate.format(formatter)}\n" +

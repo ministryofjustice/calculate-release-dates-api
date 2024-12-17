@@ -146,7 +146,7 @@ class HdcedCalculator(
     }
   }
 
-  // This is a copy of calculateHdcedUnderMidpoint - the only difference being it saves against the new HDCED365 variant and uses it's config
+  // This is a copy of calculateHdcedUnderMidpoint - the only difference being it saves against the new HDC-365 variant and uses it's config
   // Duplicated the method rather than modified it with switches as the other method can just be deleted after the HDC365 commencement date
   private fun calculateHdcedUnderMidpointHDC365(
     sentenceCalculation: SentenceCalculation,
@@ -219,7 +219,7 @@ class HdcedCalculator(
     }
   }
 
-  // This is a copy of calculateHdcedOverMidpoint method - the only difference being it saves against the new HDCED365 variant and uses it's config
+  // This is a copy of calculateHdcedOverMidpoint method - the only difference being it saves against the new HDC-365 variant and uses it's config
   // Duplicated the method rather than modified it with switches as the other method can just be deleted after the HDC365 commencement date
   private fun calculateHdcedOverMidpointHDC365(
     sentenceCalculation: SentenceCalculation,
@@ -288,7 +288,7 @@ class HdcedCalculator(
       )
   }
 
-  // This is a copy of calculateHdcedMinimumCustodialPeriod method - the only difference being it saves against the new HDCED365 variant and uses it's config
+  // This is a copy of calculateHdcedMinimumCustodialPeriod method - the only difference being it saves against the new HDC-365 variant and uses it's config
   // Duplicated the method rather than modified it with switches as the other method can just be deleted after the HDC365 commencement date
   private fun calculateHdcedMinimumCustodialPeriodHDC365(
     sentence: CalculableSentence,
@@ -331,7 +331,7 @@ class HdcedCalculator(
     sentenceCalculation: SentenceCalculation,
     params: HdcedParams,
   ) =
-    // Is the HDCED365 date BEFORE additional days are added less than the minimum.
+    // Is the HDC-365 date BEFORE additional days are added less than the minimum.
     sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc)
       .isAfterOrEqualTo(sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!!.minusDays(params.addedDays))
 

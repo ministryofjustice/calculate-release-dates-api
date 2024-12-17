@@ -142,7 +142,7 @@ class BookingExtractionService(
     )
   }
 
-  // Changed logic for Home Detention Curfew Eligibility Date 365 (HDCED365)
+  // Changed logic for Home Detention Curfew Eligibility Date 365 (HDC65)
   // Eventually only HDC365 will apply
   private fun setHdcedDate(
     sentenceCalculation: SentenceCalculation,
@@ -381,7 +381,7 @@ class BookingExtractionService(
     )
   }
 
-  // Includes logic for Home Detention Curfew Eligibility Date 365 (HDCED365)
+  // Includes logic for Home Detention Curfew Eligibility Date 365 (HDC65)
   // Eventually only HDC365 will apply
   private fun setHdcedDateAndBreakdownDetails(
     latestHDCEDAndBreakdown: Pair<LocalDate, ReleaseDateCalculationBreakdown>?,
