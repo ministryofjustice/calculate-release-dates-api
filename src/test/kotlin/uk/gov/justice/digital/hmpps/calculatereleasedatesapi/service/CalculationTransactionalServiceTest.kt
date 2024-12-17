@@ -680,6 +680,7 @@ class CalculationTransactionalServiceTest {
     val bookingExtractionService = BookingExtractionService(
       hdcedExtractionService,
       sentencesExtractionService,
+      FeatureToggles(hdc365 = true),
     )
     val timelineCalculator = TimelineCalculator(
       sentenceAdjustedCalculationService,

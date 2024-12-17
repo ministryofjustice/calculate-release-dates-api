@@ -153,7 +153,7 @@ class HintTextTest {
   private val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)
   private val bookingCalculationService = BookingCalculationService(sentenceIdentificationService)
   private val hdcedExtractionService = HdcedExtractionService(sentencesExtractionService)
-  private val bookingExtractionService = BookingExtractionService(hdcedExtractionService, sentencesExtractionService)
+  private val bookingExtractionService = BookingExtractionService(hdcedExtractionService, sentencesExtractionService, FeatureToggles(hdc365 = true))
   private val releasePointMultiplierConfigurationForTests = releasePointMultiplierConfigurationForTests()
 
   private val timelineCalculator = TimelineCalculator(

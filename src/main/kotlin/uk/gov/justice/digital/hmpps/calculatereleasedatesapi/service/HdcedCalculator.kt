@@ -154,7 +154,7 @@ class HdcedCalculator(
     params: HdcedParams,
   ) {
     val halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod = max(
-      hdcedConfiguration.custodialPeriodBelowMidpointMinimumDeductionDays, // 28
+      hdcedConfiguration.custodialPeriodBelowMidpointMinimumDeductionDays,
       ceil(params.custodialPeriod.div(HALF)).toLong(),
     )
 

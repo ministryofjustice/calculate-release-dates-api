@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.ERSED_ADJUSTED_TO_MTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
@@ -43,6 +44,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 class BookingExtractionService(
   val hdcedExtractionService: HdcedExtractionService,
   val extractionService: SentencesExtractionService,
+  val featureToggles: FeatureToggles,
 ) {
 
   fun extract(
@@ -85,19 +87,14 @@ class BookingExtractionService(
       dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
     }
 
-    // Changed logic for Home Detention Curfew Eligibility Date 365 (HDCED365)
-    // Eventually only HDC365 will apply
-    // TODO FEATURE TOGGLE + maybe check hdc265 not null
-    if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
-      if (hdcedExtractionService.releaseDateIsAfterHdced(sentenceCalculation)) {
-        if (sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+    if (!featureToggles.hdc365) {
+      if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
+        if (hdcedExtractionService.releaseDateIsAfterHdced(sentenceCalculation)) {
           dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
-        } else if (sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
-          dates[HDCED] = ImportantDates.HDC_365_COMMENCEMENT_DATE
-        } else {
-          dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!!
         }
       }
+    } else {
+      setHdcedDate(sentenceCalculation, sentence, dates)
     }
 
     if (sentenceCalculation.notionalConditionalReleaseDate != null) {
@@ -145,6 +142,26 @@ class BookingExtractionService(
     )
   }
 
+  // Changed logic for Home Detention Curfew Eligibility Date 365 (HDCED365)
+  // Eventually only HDC365 will apply
+  private fun setHdcedDate(
+    sentenceCalculation: SentenceCalculation,
+    sentence: CalculableSentence,
+    dates: MutableMap<ReleaseDateType, LocalDate>,
+  ) {
+    if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
+      if (hdcedExtractionService.releaseDateIsAfterHdced(sentenceCalculation)) {
+        if (sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+          dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
+        } else if (sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+          dates[HDCED] = ImportantDates.HDC_365_COMMENCEMENT_DATE
+        } else {
+          dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!!
+        }
+      }
+    }
+  }
+
   /**
    *  Method applies business logic for when there are multiple sentences in a booking and the impact each may have on one another
    */
@@ -187,7 +204,7 @@ class BookingExtractionService(
     val latestHDCEDAndBreakdownHDC365 =
       hdcedExtractionService.extractManyHomeDetentionCurfewEligibilityDateHDC365(
         sentences,
-        mostRecentSentencesByReleaseDate
+        mostRecentSentencesByReleaseDate,
       )
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
@@ -309,20 +326,13 @@ class BookingExtractionService(
       breakdownByReleaseDateType[TUSED] = latestTUSEDAndBreakdown.second
     }
 
-    // Changed logic for Home Detention Curfew Eligibility Date 365 (HDCED365)
-    // Eventually only HDC365 will apply
-    // TODO FEATURE TOGGLE
-    if (latestHDCEDAndBreakdown != null && latestHDCEDAndBreakdownHDC365 != null) {
-      if (latestHDCEDAndBreakdown.first.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+    if (!featureToggles.hdc365) {
+      if (latestHDCEDAndBreakdown != null) {
         dates[HDCED] = latestHDCEDAndBreakdown.first
         breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdown.second
-      } else if (latestHDCEDAndBreakdownHDC365.first.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
-        dates[HDCED] = ImportantDates.HDC_365_COMMENCEMENT_DATE
-        breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdownHDC365.second // tag that it has been reset to commencement??
-      } else {
-        dates[HDCED] = latestHDCEDAndBreakdownHDC365.first
-        breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdownHDC365.second
       }
+    } else {
+      setHdcedDateAndBreakdownDetails(latestHDCEDAndBreakdown, latestHDCEDAndBreakdownHDC365, dates, breakdownByReleaseDateType)
     }
 
     if (latestNotionalConditionalReleaseDate != null) {
@@ -369,6 +379,29 @@ class BookingExtractionService(
       effectiveSentenceLength,
       ersedNotApplicableDueToDtoLaterThanCrd,
     )
+  }
+
+  // Includes logic for Home Detention Curfew Eligibility Date 365 (HDCED365)
+  // Eventually only HDC365 will apply
+  private fun setHdcedDateAndBreakdownDetails(
+    latestHDCEDAndBreakdown: Pair<LocalDate, ReleaseDateCalculationBreakdown>?,
+    latestHDCEDAndBreakdownHDC365: Pair<LocalDate, ReleaseDateCalculationBreakdown>?,
+    dates: MutableMap<ReleaseDateType, LocalDate>,
+    breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
+  ) {
+    if (latestHDCEDAndBreakdown != null && latestHDCEDAndBreakdownHDC365 != null) {
+      if (latestHDCEDAndBreakdown.first.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+        dates[HDCED] = latestHDCEDAndBreakdown.first
+        breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdown.second
+      } else if (latestHDCEDAndBreakdownHDC365.first.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+        dates[HDCED] = ImportantDates.HDC_365_COMMENCEMENT_DATE
+        breakdownByReleaseDateType[HDCED] =
+          latestHDCEDAndBreakdownHDC365.second // TODO Tag that it has been reset to commencement?? to be considered in upcoming hint text ticket
+      } else {
+        dates[HDCED] = latestHDCEDAndBreakdownHDC365.first
+        breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdownHDC365.second
+      }
+    }
   }
 
   private fun isAffectedBySds40(sentence: CalculableSentence): Boolean = !sentence.isRecall() &&

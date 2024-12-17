@@ -10,4 +10,5 @@ data class FeatureToggles(
   var toreraOffenceToManualJourney: Boolean = false,
   var sds40ConsecutiveManualJourney: Boolean = false,
   var botusConsecutiveJourney: Boolean = false,
+  var hdc365: Boolean = false,
 )
