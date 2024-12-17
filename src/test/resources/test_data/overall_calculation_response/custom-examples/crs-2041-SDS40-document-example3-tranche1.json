@@ -5,5 +5,6 @@
     "HDCED": "2025-01-07",
     "ESED": "2027-04-14"
   },
-  "effectiveSentenceLength": "P3Y5M16D"
+  "effectiveSentenceLength": "P3Y5M16D",
+  "affectedBySds40": true
 }
