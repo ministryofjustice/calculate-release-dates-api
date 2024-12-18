@@ -338,11 +338,11 @@ class BookingExtractionService(
     /** --- ESED --- **/
     dates[ESED] = latestUnadjustedExpiryDate
 
-    val sds40EligibleTypes = listOf(SED, SLED, CRD, ARD, HDCED, TUSED, PED, ERSED)
+    val sds40EligibleReleaseTypes = listOf(CRD, ARD, HDCED, TUSED, PED, ERSED)
 
     val isAnyRelevantSentenceAffectedBySds40 = sentences.any { sentence ->
       isAffectedBySds40(sentence) &&
-        sds40EligibleTypes.any { type ->
+        sds40EligibleReleaseTypes.any { type ->
           val targetDate = dates[type] // only include the eligible types of dates
           targetDate != null && sentence.sentenceCalculation.getDateByType(type) == targetDate
         }
