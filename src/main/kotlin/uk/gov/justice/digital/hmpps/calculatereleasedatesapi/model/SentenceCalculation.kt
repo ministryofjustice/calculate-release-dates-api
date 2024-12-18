@@ -140,11 +140,15 @@ data class SentenceCalculation(
   var numberOfDaysToHomeDetentionCurfewEligibilityDate: Long = 0
   var homeDetentionCurfewEligibilityDate: LocalDate? = null
 
-  // These HDC-365 related interim variables are used to determine the actual HDCED values
-  var noDaysToHdcedUsingPreHdc365Rules: Long = 0
-  var hdcedUsingPreHdc365Rules: LocalDate? = null
-  var noDaysToHdcedUsingPostHdc365Rules: Long = 0
-  var hdcedUsingPostHdc365Rules: LocalDate? = null
+  // These HDC-365 related interim maps are used to determine the actual HDCED values
+  val noDaysToHdcedByCalcType: MutableMap<InterimHdcCalcType, Long> = mutableMapOf(
+    InterimHdcCalcType.HDCED_PRE_365_RULES to 0,
+    InterimHdcCalcType.HDCED_POST_365_RULES to 0,
+  )
+  val hdcedByCalcType: MutableMap<InterimHdcCalcType, LocalDate?> = mutableMapOf(
+    InterimHdcCalcType.HDCED_PRE_365_RULES to null,
+    InterimHdcCalcType.HDCED_POST_365_RULES to null,
+  )
 
   var breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
 

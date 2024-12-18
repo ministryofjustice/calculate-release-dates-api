@@ -92,11 +92,11 @@ class HdcedCalculator(
       sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = 0
       sentenceCalculation.breakdownByReleaseDateType.remove(ReleaseDateType.HDCED)
 
-      // Reset HDC365 fields too (eventually after HDC365 commencement the above can be refactored)
-      sentenceCalculation.hdcedUsingPreHdc365Rules = null
-      sentenceCalculation.noDaysToHdcedUsingPreHdc365Rules = 0
-      sentenceCalculation.hdcedUsingPostHdc365Rules = null
-      sentenceCalculation.noDaysToHdcedUsingPostHdc365Rules = 0
+      // Reset HDC365 fields which are used for interim calculation purposes too
+      sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] = null
+      sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] = 0
+      sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES] = null
+      sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES] = 0
       sentenceCalculation.breakdownByInterimHdcCalcType = mutableMapOf()
     } else {
       if (params.custodialPeriod < hdcedConfiguration.custodialPeriodMidPointDaysPreHdc365) {
@@ -120,22 +120,22 @@ class HdcedCalculator(
   }
 
   private fun applyHdc365Rules(sentenceCalculation: SentenceCalculation) {
-    if (sentenceCalculation.hdcedUsingPreHdc365Rules!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+    if (sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
       setToPreHdc365Values(sentenceCalculation)
-    } else if (sentenceCalculation.hdcedUsingPostHdc365Rules!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
-      sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.noDaysToHdcedUsingPostHdc365Rules
+    } else if (sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+      sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!
       sentenceCalculation.homeDetentionCurfewEligibilityDate = ImportantDates.HDC_365_COMMENCEMENT_DATE
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED] = sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!
     } else {
-      sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.noDaysToHdcedUsingPostHdc365Rules
-      sentenceCalculation.homeDetentionCurfewEligibilityDate = sentenceCalculation.hdcedUsingPostHdc365Rules
+      sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!
+      sentenceCalculation.homeDetentionCurfewEligibilityDate = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED] = sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!
     }
   }
 
   private fun setToPreHdc365Values(sentenceCalculation: SentenceCalculation) {
-    sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.noDaysToHdcedUsingPreHdc365Rules
-    sentenceCalculation.homeDetentionCurfewEligibilityDate = sentenceCalculation.hdcedUsingPreHdc365Rules
+    sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!
+    sentenceCalculation.homeDetentionCurfewEligibilityDate = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]
     sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED] = sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!
   }
 
@@ -149,12 +149,12 @@ class HdcedCalculator(
       ceil(params.custodialPeriod.div(HALF)).toLong(),
     )
 
-    sentenceCalculation.noDaysToHdcedUsingPreHdc365Rules =
+    sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] =
       halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod.plus(params.adjustedDays)
-    sentenceCalculation.hdcedUsingPreHdc365Rules =
-      params.dateHdcAppliesFrom.plusDays(sentenceCalculation.noDaysToHdcedUsingPreHdc365Rules)
+    sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] =
+      params.dateHdcAppliesFrom.plusDays(sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!)
 
-    if (isCalculatedHdcLessThanTheMinimumHDCPeriod(sentence, sentenceCalculation.hdcedUsingPreHdc365Rules!!, params)) {
+    if (isCalculatedHdcLessThanTheMinimumHDCPeriod(sentence, sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!, params)) {
       calculateHdcedMinimumCustodialPeriodUsingPreHdc365Rules(
         sentence,
         sentenceCalculation,
@@ -171,7 +171,7 @@ class HdcedCalculator(
             ),
           ),
           adjustedDays = params.adjustedDays,
-          releaseDate = sentenceCalculation.hdcedUsingPreHdc365Rules!!,
+          releaseDate = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!,
           unadjustedDate = sentence.sentencedAt,
         )
     }
@@ -189,12 +189,12 @@ class HdcedCalculator(
       ceil(params.custodialPeriod.div(HALF)).toLong(),
     )
 
-    sentenceCalculation.noDaysToHdcedUsingPostHdc365Rules =
+    sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES] =
       halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod.plus(params.adjustedDays)
-    sentenceCalculation.hdcedUsingPostHdc365Rules =
-      params.dateHdcAppliesFrom.plusDays(sentenceCalculation.noDaysToHdcedUsingPostHdc365Rules)
+    sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES] =
+      params.dateHdcAppliesFrom.plusDays(sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!)
 
-    if (isCalculatedHdcLessThanTheMinimumHDCPeriod(sentence, sentenceCalculation.hdcedUsingPostHdc365Rules!!, params)) {
+    if (isCalculatedHdcLessThanTheMinimumHDCPeriod(sentence, sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!, params)) {
       calculateHdcedMinimumCustodialUsingPostHdc365Rules(
         sentence,
         sentenceCalculation,
@@ -211,7 +211,7 @@ class HdcedCalculator(
             ),
           ),
           adjustedDays = params.adjustedDays,
-          releaseDate = sentenceCalculation.hdcedUsingPostHdc365Rules!!,
+          releaseDate = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!,
           unadjustedDate = sentence.sentencedAt,
         )
     }
@@ -222,14 +222,14 @@ class HdcedCalculator(
     sentence: CalculableSentence,
     params: HdcedParams,
   ) {
-    sentenceCalculation.noDaysToHdcedUsingPreHdc365Rules =
+    sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] =
       sentenceCalculation.numberOfDaysToDeterminateReleaseDate
         .minus(hdcedConfiguration.custodialPeriodAboveMidpointDeductionDaysPreHdc365 + 1) // Extra plus one because we use the numberOfDaysToDeterminateReleaseDate param and not the sentencedAt param
         .plus(params.adjustedDays)
-    sentenceCalculation.hdcedUsingPreHdc365Rules = sentence.sentencedAt
-      .plusDays(sentenceCalculation.noDaysToHdcedUsingPreHdc365Rules)
+    sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] =
+      sentence.sentencedAt.plusDays(sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!)
 
-    if (isCalculatedHdcLessThanTheMinimumHDCPeriod(sentence, sentenceCalculation.hdcedUsingPreHdc365Rules!!, params)) {
+    if (isCalculatedHdcLessThanTheMinimumHDCPeriod(sentence, sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!, params)) {
       calculateHdcedMinimumCustodialPeriodUsingPreHdc365Rules(
         sentence,
         sentenceCalculation,
@@ -242,8 +242,8 @@ class HdcedCalculator(
           rules = setOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD),
           rulesWithExtraAdjustments = mapOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD to AdjustmentDuration(-hdcedConfiguration.custodialPeriodAboveMidpointDeductionDaysPreHdc365)),
           adjustedDays = params.adjustedDays,
-          releaseDate = sentenceCalculation.hdcedUsingPreHdc365Rules!!,
-          unadjustedDate = sentenceCalculation.hdcedUsingPreHdc365Rules!!.plusDays(
+          releaseDate = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!,
+          unadjustedDate = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!.plusDays(
             hdcedConfiguration.custodialPeriodAboveMidpointDeductionDaysPreHdc365,
           ),
         )
@@ -257,14 +257,14 @@ class HdcedCalculator(
     sentence: CalculableSentence,
     params: HdcedParams,
   ) {
-    sentenceCalculation.noDaysToHdcedUsingPostHdc365Rules =
+    sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES] =
       sentenceCalculation.numberOfDaysToDeterminateReleaseDate
         .minus(hdcedConfiguration.custodialPeriodAboveMidpointDeductionDaysPostHdc365 + 1) // Extra plus one because we use the numberOfDaysToDeterminateReleaseDate param and not the sentencedAt param
         .plus(params.adjustedDays)
-    sentenceCalculation.hdcedUsingPostHdc365Rules = sentence.sentencedAt
-      .plusDays(sentenceCalculation.noDaysToHdcedUsingPostHdc365Rules)
+    sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES] = sentence.sentencedAt
+      .plusDays(sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!)
 
-    if (isCalculatedHdcLessThanTheMinimumHDCPeriod(sentence, sentenceCalculation.hdcedUsingPostHdc365Rules!!, params)) {
+    if (isCalculatedHdcLessThanTheMinimumHDCPeriod(sentence, sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!, params)) {
       calculateHdcedMinimumCustodialUsingPostHdc365Rules(
         sentence,
         sentenceCalculation,
@@ -277,8 +277,8 @@ class HdcedCalculator(
           rules = setOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD),
           rulesWithExtraAdjustments = mapOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD to AdjustmentDuration(-hdcedConfiguration.custodialPeriodAboveMidpointDeductionDaysPostHdc365)),
           adjustedDays = params.adjustedDays,
-          releaseDate = sentenceCalculation.hdcedUsingPostHdc365Rules!!,
-          unadjustedDate = sentenceCalculation.hdcedUsingPostHdc365Rules!!.plusDays(
+          releaseDate = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!,
+          unadjustedDate = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!.plusDays(
             hdcedConfiguration.custodialPeriodAboveMidpointDeductionDaysPostHdc365,
           ),
         )
@@ -299,8 +299,8 @@ class HdcedCalculator(
     parentRule: CalculationRule,
     params: HdcedParams,
   ) {
-    sentenceCalculation.hdcedUsingPreHdc365Rules = sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc).plusDays(params.addedDays)
-    sentenceCalculation.noDaysToHdcedUsingPreHdc365Rules = hdcedConfiguration.minimumDaysOnHdc.plus(params.addedDays)
+    sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] = sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc).plusDays(params.addedDays)
+    sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] = hdcedConfiguration.minimumDaysOnHdc.plus(params.addedDays)
     sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] =
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, parentRule),
@@ -310,7 +310,7 @@ class HdcedCalculator(
           ),
         ),
         adjustedDays = params.addedDays,
-        releaseDate = sentenceCalculation.hdcedUsingPreHdc365Rules!!,
+        releaseDate = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!,
         unadjustedDate = sentence.sentencedAt,
       )
   }
@@ -323,8 +323,8 @@ class HdcedCalculator(
     parentRule: CalculationRule,
     params: HdcedParams,
   ) {
-    sentenceCalculation.hdcedUsingPostHdc365Rules = sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc).plusDays(params.addedDays)
-    sentenceCalculation.noDaysToHdcedUsingPostHdc365Rules = hdcedConfiguration.minimumDaysOnHdc.plus(params.addedDays)
+    sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES] = sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc).plusDays(params.addedDays)
+    sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES] = hdcedConfiguration.minimumDaysOnHdc.plus(params.addedDays)
     sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_POST_365_RULES] =
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, parentRule),
@@ -334,7 +334,7 @@ class HdcedCalculator(
           ),
         ),
         adjustedDays = params.addedDays,
-        releaseDate = sentenceCalculation.hdcedUsingPostHdc365Rules!!,
+        releaseDate = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!,
         unadjustedDate = sentence.sentencedAt,
       )
   }
