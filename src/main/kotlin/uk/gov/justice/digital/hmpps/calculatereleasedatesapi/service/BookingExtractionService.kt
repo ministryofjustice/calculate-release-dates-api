@@ -327,11 +327,13 @@ class BookingExtractionService(
     }
 
     if (!featureToggles.hdc365) {
+      log.info("HDC-365 feature is OFF, setting HDCED based on old rules")
       if (latestHDCEDAndBreakdown != null) {
         dates[HDCED] = latestHDCEDAndBreakdown.first
         breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdown.second
       }
     } else {
+      log.info("HDC-365 feature is ON, setting HDCED based on HDC-365 rules")
       setHdcedDateAndBreakdownDetails(latestHDCEDAndBreakdown, latestHDCEDAndBreakdownHDC365, dates, breakdownByReleaseDateType)
     }
 
