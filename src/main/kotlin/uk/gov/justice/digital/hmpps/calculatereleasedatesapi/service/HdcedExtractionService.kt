@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED365
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -44,50 +43,11 @@ class HdcedExtractionService(
     return null
   }
 
-  // This is a copy of extractManyHomeDetentionCurfewEligibilityDate method - the only difference being it saves against the new HDC-365 variant and uses it's config
-  // Duplicated the method rather than modified it with switches as the other method can just be deleted after the HDC365 commencement date
-  fun extractManyHomeDetentionCurfewEligibilityDateHDC365(
-    sentences: List<CalculableSentence>,
-    mostRecentSentencesByReleaseDate: List<CalculableSentence>,
-  ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
-    val latestAdjustedReleaseDate = getLatestAdjustedReleaseDate(mostRecentSentencesByReleaseDate)
-
-    if (sentences.none { it.isSDSPlus }) {
-      val latestEligibleSentence = getLatestHdcedEligibleSentence(sentences)
-
-      if (hasLatestEligibleSentenceGotHdced365Date(latestEligibleSentence)) {
-        val hdcedSentence = getMostRecentHDCED365SentenceApplying14DayRule(sentences, latestAdjustedReleaseDate)
-
-        val conflictingSentence = getLatestConflictingNonHdc365Sentence(
-          sentences,
-          hdcedSentence?.sentenceCalculation?.homeDetentionCurfewEligibilityDateHDC365,
-          hdcedSentence,
-        )
-
-        if (hdcedSentence != null) {
-          if (latestAdjustedReleaseDateIsAfterHdced365(hdcedSentence.sentenceCalculation, latestAdjustedReleaseDate)) {
-            return resolveEligibilityDateHDC365(hdcedSentence, conflictingSentence)
-          }
-        }
-      }
-    }
-    return null
-  }
-
   fun latestAdjustedReleaseDateIsAfterHdced(
     sentenceCalculation: SentenceCalculation,
     latestReleaseDate: LocalDate,
   ): Boolean {
     val hdcedDate = sentenceCalculation.homeDetentionCurfewEligibilityDate
-    return hdcedDate?.let { latestReleaseDate.isAfter(it) } ?: false
-  }
-
-  // This is a copy of latestAdjustedReleaseDateIsAfterHdced for HDC-365
-  fun latestAdjustedReleaseDateIsAfterHdced365(
-    sentenceCalculation: SentenceCalculation,
-    latestReleaseDate: LocalDate,
-  ): Boolean {
-    val hdcedDate = sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365
     return hdcedDate?.let { latestReleaseDate.isAfter(it) } ?: false
   }
 
@@ -159,10 +119,6 @@ class HdcedExtractionService(
     return latestEligibleSentences?.sentenceCalculation?.homeDetentionCurfewEligibilityDate != null
   }
 
-  // Copy of hasLatestEligibleSentenceGotHdcedDate for HDC-365
-  private fun hasLatestEligibleSentenceGotHdced365Date(latestEligibleSentences: CalculableSentence?): Boolean =
-    latestEligibleSentences?.sentenceCalculation?.homeDetentionCurfewEligibilityDateHDC365 != null
-
   private fun getMostRecentHDCEDSentenceApplying14DayRule(
     sentences: List<CalculableSentence>,
     latestReleaseDate: LocalDate,
@@ -173,17 +129,6 @@ class HdcedExtractionService(
     )
   }
 
-  // Copy of getMostRecentHDCEDSentenceApplying14DayRule for HDC-365
-  private fun getMostRecentHDCED365SentenceApplying14DayRule(
-    sentences: List<CalculableSentence>,
-    latestReleaseDate: LocalDate,
-  ): CalculableSentence? {
-    return extractionService.mostRecentSentenceOrNull(
-      sentences.filter { !latestReleaseDate.isBefore(it.sentencedAt.plusDays(14)) },
-      SentenceCalculation::homeDetentionCurfewEligibilityDateHDC365,
-    )
-  }
-
   private fun getLatestConflictingNonHdcSentence(
     sentences: List<CalculableSentence>,
     hdcedDate: LocalDate?,
@@ -191,19 +136,6 @@ class HdcedExtractionService(
   ): Pair<CalculableSentence?, LocalDate?> {
     return getLatestConflictingSentence(
       sentences.filter { it.sentenceCalculation.homeDetentionCurfewEligibilityDate == null },
-      hdcedDate,
-      hdcedSentence,
-    )
-  }
-
-  // Copy of getLatestConflictingNonHdcSentence for HDC-365
-  private fun getLatestConflictingNonHdc365Sentence(
-    sentences: List<CalculableSentence>,
-    hdcedDate: LocalDate?,
-    hdcedSentence: CalculableSentence?,
-  ): Pair<CalculableSentence?, LocalDate?> {
-    return getLatestConflictingSentence(
-      sentences.filter { it.sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365 == null },
       hdcedDate,
       hdcedSentence,
     )
@@ -224,25 +156,6 @@ class HdcedExtractionService(
     } else {
       hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate!! to
         hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED]!!
-    }
-  }
-
-  // Copy of resolveEligibilityDate for HDC-365
-  private fun resolveEligibilityDateHDC365(
-    hdcedSentence: CalculableSentence,
-    conflictingSentence: Pair<CalculableSentence?, LocalDate?>,
-  ): Pair<LocalDate, ReleaseDateCalculationBreakdown> {
-    return if (hdcedSentence != conflictingSentence.first &&
-      conflictingSentence.first != null &&
-      conflictingSentence.second != null
-    ) {
-      getReleaseDateCalculationBreakDownFromLatestConflictingSentence(
-        conflictingSentence,
-        hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!!,
-      )
-    } else {
-      hdcedSentence.sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!! to
-        hdcedSentence.sentenceCalculation.breakdownByReleaseDateType[HDCED365]!!
     }
   }
 }

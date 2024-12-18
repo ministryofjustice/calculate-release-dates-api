@@ -6,9 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class HdcedConfiguration(
   val minimumDaysOnHdc: Long,
   val minimumCustodialPeriodDays: Long,
-  val custodialPeriodMidPointDays: Long,
-  val custodialPeriodAboveMidpointDeductionDays: Long,
+  val custodialPeriodMidPointDaysPreHdc365: Long,
+  val custodialPeriodAboveMidpointDeductionDaysPreHdc365: Long,
   val custodialPeriodBelowMidpointMinimumDeductionDays: Long,
-  val custodialPeriodMidPointDaysHdc365: Long,
-  val custodialPeriodAboveMidpointDeductionDaysHdc365: Long,
+  val custodialPeriodMidPointDaysPostHdc365: Long,
+  val custodialPeriodAboveMidpointDeductionDaysPostHdc365: Long,
 )

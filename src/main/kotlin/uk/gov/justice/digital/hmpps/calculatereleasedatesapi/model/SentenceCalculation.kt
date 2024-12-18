@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.InterimHdcCalcType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TempReleaseDateType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -140,15 +140,15 @@ data class SentenceCalculation(
   var numberOfDaysToHomeDetentionCurfewEligibilityDate: Long = 0
   var homeDetentionCurfewEligibilityDate: LocalDate? = null
 
-  // HDC-365 These will eventually replace the above HDC equivalents after the HDC-365 commencement date
-  var numberOfDaysToHomeDetentionCurfewEligibilityDateLegacy: Long = 0
-  var homeDetentionCurfewEligibilityDateLegacy: LocalDate? = null
-  var numberOfDaysToHomeDetentionCurfewEligibilityDateHDC365: Long = 0
-  var homeDetentionCurfewEligibilityDateHDC365: LocalDate? = null
+  // These HDC-365 related interim variables are used to determine the actual HDCED values
+  var noDaysToHdcedUsingPreHdc365Rules: Long = 0
+  var hdcedUsingPreHdc365Rules: LocalDate? = null
+  var noDaysToHdcedUsingPostHdc365Rules: Long = 0
+  var hdcedUsingPostHdc365Rules: LocalDate? = null
 
   var breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
 
-  var breakdownByTempHDCType: MutableMap<TempReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
+  var breakdownByInterimHdcCalcType: MutableMap<InterimHdcCalcType, ReleaseDateCalculationBreakdown> = mutableMapOf()
 
   // Notional Conditional Release Date (NCRD)
   var numberOfDaysToNotionalConditionalReleaseDate: Long = 0
@@ -217,9 +217,9 @@ data class SentenceCalculation(
       "Home Detention Curfew Eligibility Date (HDCED)\t:\t" +
       "${homeDetentionCurfewEligibilityDate?.format(formatter)}\n" +
       "Number of days to Home Detention Curfew Eligibility Date (HDC-365)\t:\t" +
-      "${numberOfDaysToHomeDetentionCurfewEligibilityDateHDC365}\n" +
+      "${noDaysToHdcedUsingPostHdc365Rules}\n" +
       "Home Detention Curfew Eligibility Date using HDC-365 rules\t:\t" +
-      "${homeDetentionCurfewEligibilityDateHDC365?.format(formatter)}\n" +
+      "${hdcedUsingPostHdc365Rules?.format(formatter)}\n" +
       "Effective $expiryDateType\t:\t${expiryDate.format(formatter)}\n" +
       "Effective $releaseDateType\t:\t${releaseDate.format(formatter)}\n" +
       "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +

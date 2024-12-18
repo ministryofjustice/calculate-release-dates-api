@@ -1,12 +1,12 @@
 
 hdced:
   minimum-custodial-period-days: 42
-  custodial-period-mid-point-days: 360
+  custodial-period-mid-point-days-pre-hdc-365: 360
   custodial-period-below-midpoint-minimum-deduction-days: 28
-  custodial-period-above-midpoint-deduction-days: 179
+  custodial-period-above-midpoint-deduction-days-pre-hdc-365: 179
   minimum-days-on-hdc: 14
-  custodial-period-mid-point-days-hdc-365: 730
-  custodial-period-above-midpoint-deduction-days-hdc-365: 364
+  custodial-period-mid-point-days-post-hdc-365: 730
+  custodial-period-above-midpoint-deduction-days-post-hdc-365: 364
 
 ersed:
   max-period-days: 544

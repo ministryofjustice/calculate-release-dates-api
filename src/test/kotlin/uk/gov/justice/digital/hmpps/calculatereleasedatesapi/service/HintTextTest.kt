@@ -142,7 +142,7 @@ class HintTextTest {
   private val ersedConfiguration = ersedConfigurationForTests()
   private val workingDayService = WorkingDayService(bankHolidayService)
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
+  private val hdcedCalculator = HdcedCalculator(hdcedConfiguration, featureToggles = FeatureToggles())
   private val ersedCalculator = ErsedCalculator(ersedConfiguration)
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
   private val sentencesExtractionService = SentencesExtractionService()
@@ -153,7 +153,7 @@ class HintTextTest {
   private val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)
   private val bookingCalculationService = BookingCalculationService(sentenceIdentificationService)
   private val hdcedExtractionService = HdcedExtractionService(sentencesExtractionService)
-  private val bookingExtractionService = BookingExtractionService(hdcedExtractionService, sentencesExtractionService, FeatureToggles(hdc365 = true))
+  private val bookingExtractionService = BookingExtractionService(hdcedExtractionService, sentencesExtractionService)
   private val releasePointMultiplierConfigurationForTests = releasePointMultiplierConfigurationForTests()
 
   private val timelineCalculator = TimelineCalculator(
