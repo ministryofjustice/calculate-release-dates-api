@@ -216,10 +216,6 @@ data class SentenceCalculation(
       "${numberOfDaysToHomeDetentionCurfewEligibilityDate}\n" +
       "Home Detention Curfew Eligibility Date (HDCED)\t:\t" +
       "${homeDetentionCurfewEligibilityDate?.format(formatter)}\n" +
-      "Number of days to Home Detention Curfew Eligibility Date (HDC-365)\t:\t" +
-      "${noDaysToHdcedUsingPostHdc365Rules}\n" +
-      "Home Detention Curfew Eligibility Date using HDC-365 rules\t:\t" +
-      "${hdcedUsingPostHdc365Rules?.format(formatter)}\n" +
       "Effective $expiryDateType\t:\t${expiryDate.format(formatter)}\n" +
       "Effective $releaseDateType\t:\t${releaseDate.format(formatter)}\n" +
       "Top-up Expiry Date (Post Sentence Supervision PSS)\t:\t" +
