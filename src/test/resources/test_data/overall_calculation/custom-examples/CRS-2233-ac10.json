@@ -1,0 +1,70 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2024-04-28",
+        "offenceCode": "CJ88144"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 21
+        }
+      },
+      "sentencedAt": "2024-10-29",
+      "consecutiveSentenceUUIDs": [
+        "7728bb3d-cade-3d2b-bec6-5a502ab325a4"
+      ]
+    },
+    {
+      "offence": {
+        "committedAt": "2024-10-05",
+        "offenceCode": "TH68010"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 4
+        }
+      },
+      "sentencedAt": "2024-10-29"
+    },
+    {
+      "offence": {
+        "committedAt": "2024-03-01",
+        "offenceCode": "TH68010"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 6
+        }
+      },
+      "sentencedAt": "2024-10-29",
+      "identifier": "7728bb3d-cade-3d2b-bec6-5a502ab325a4"
+    },
+    {
+      "offence": {
+        "committedAt": "2024-03-01",
+        "offenceCode": "TH68010"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 6
+        }
+      },
+      "sentencedAt": "2024-10-29"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2024-10-29",
+        "numberOfDays": 16,
+        "fromDate": "2024-05-29",
+        "toDate": "2024-06-13"
+      }
+    ]
+  }
+}
