@@ -1,0 +1,78 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01",
+    "isActiveSexOffender": true
+  },
+  "sentences": [
+    {
+      "type": "ExtendedDeterminateSentence",
+      "offence": {
+        "committedAt": "2020-06-30",
+        "offenceCode": "SX03015"
+      },
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 18
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 7
+        }
+      },
+      "sentencedAt": "2024-11-08"
+    },
+    {
+      "offence": {
+        "committedAt": "2016-06-10",
+        "offenceCode": "SX03021"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 6
+        }
+      },
+      "sentencedAt": "2024-11-08",
+      "identifier": "6b30da2d-79fc-3793-85a5-558d12ba0502",
+      "isSDSPlus": true
+    },
+    {
+      "offence": {
+        "committedAt": "2016-06-10",
+        "offenceCode": "SX03025"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 6
+        }
+      },
+      "sentencedAt": "2024-11-08",
+      "identifier": "6b30da2d-79fc-3793-85a5-558d12ba0502",
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+    },
+    {
+      "offence": {
+        "committedAt": "2016-06-10",
+        "offenceCode": "SX03031"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 2
+        }
+      },
+      "sentencedAt": "2024-11-08",
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2024-11-08",
+        "numberOfDays": 175,
+        "fromDate": "2024-05-17",
+        "toDate": "2024-11-07"
+      }
+    ]
+  }
+}

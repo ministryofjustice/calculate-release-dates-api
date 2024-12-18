@@ -41,6 +41,27 @@ data class SentenceCalculation(
       }
     }
 
+  fun getDateByType(type: ReleaseDateType): LocalDate? {
+    if (!breakdownByReleaseDateType.containsKey(type)) {
+      return null
+    }
+
+    return when (type) {
+      ReleaseDateType.ARD -> adjustedDeterminateReleaseDate
+      ReleaseDateType.CRD -> adjustedDeterminateReleaseDate
+      ReleaseDateType.PRRD -> adjustedPostRecallReleaseDate
+      ReleaseDateType.LED -> licenceExpiryDate
+      ReleaseDateType.SED -> expiryDate
+      ReleaseDateType.NPD -> nonParoleDate
+      ReleaseDateType.TUSED -> topUpSupervisionDate
+      ReleaseDateType.PED -> extendedDeterminateParoleEligibilityDate
+      ReleaseDateType.SLED -> expiryDate
+      ReleaseDateType.HDCED -> homeDetentionCurfewEligibilityDate
+      ReleaseDateType.NCRD -> notionalConditionalReleaseDate
+      else -> null
+    }
+  }
+
   fun isImmediateRelease(): Boolean = sentence.sentencedAt == adjustedDeterminateReleaseDate
 
   fun isImmediateCustodyRelease(): Boolean = isImmediateRelease() && (1 - adjustments.adjustmentsForInitalRelease()) == releaseDateCalculation.numberOfDaysToDeterminateReleaseDate.toLong()
