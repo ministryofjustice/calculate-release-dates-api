@@ -79,20 +79,6 @@
       "adjustedDays": 0,
       "releaseDate": "2024-07-24",
       "unadjustedDate": "2024-05-09"
-    },
-    "HDCED365": {
-      "rules": [
-        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT"
-      ],
-      "rulesWithExtraAdjustments": {
-        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
-          "adjustmentValue": 61,
-          "type": "DAYS"
-        }
-      },
-      "adjustedDays": 0,
-      "releaseDate": "2024-07-09",
-      "unadjustedDate": "2024-05-09"
     }
   },
   "otherDates": {},

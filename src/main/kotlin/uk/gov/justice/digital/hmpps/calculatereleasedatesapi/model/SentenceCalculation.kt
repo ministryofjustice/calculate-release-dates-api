@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TempReleaseDateType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -139,11 +140,15 @@ data class SentenceCalculation(
   var numberOfDaysToHomeDetentionCurfewEligibilityDate: Long = 0
   var homeDetentionCurfewEligibilityDate: LocalDate? = null
 
-  // HDC-465 These will eventually replace the above HDC equivalents after the HDC-365 commencement date
+  // HDC-365 These will eventually replace the above HDC equivalents after the HDC-365 commencement date
+  var numberOfDaysToHomeDetentionCurfewEligibilityDateLegacy: Long = 0
+  var homeDetentionCurfewEligibilityDateLegacy: LocalDate? = null
   var numberOfDaysToHomeDetentionCurfewEligibilityDateHDC365: Long = 0
   var homeDetentionCurfewEligibilityDateHDC365: LocalDate? = null
 
   var breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
+
+  var breakdownByTempHDCType: MutableMap<TempReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
 
   // Notional Conditional Release Date (NCRD)
   var numberOfDaysToNotionalConditionalReleaseDate: Long = 0

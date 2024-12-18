@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
@@ -194,8 +195,8 @@ class HdcedCalculatorTest {
 
     calc(sentenceCalculation, sentence)
 
-    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isEqualTo(LocalDate.of(2020, 2, 5))
-    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(35L)
+    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDateLegacy).isEqualTo(LocalDate.of(2020, 2, 5))
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDateLegacy).isEqualTo(35L)
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isEqualTo(
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT),
@@ -239,8 +240,8 @@ class HdcedCalculatorTest {
 
     calc(sentenceCalculation, sentence)
 
-    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isEqualTo(expectedHDCED)
-    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(
+    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDateLegacy).isEqualTo(expectedHDCED)
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDateLegacy).isEqualTo(
       expectedNumberOfDaysToHDCED,
     )
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]?.rules?.first()).isEqualTo(
@@ -265,8 +266,8 @@ class HdcedCalculatorTest {
 
     calc(sentenceCalculation, sentence)
 
-    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isEqualTo(LocalDate.of(2020, 1, 29))
-    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(28L)
+    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDateLegacy).isEqualTo(LocalDate.of(2020, 1, 29))
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDateLegacy).isEqualTo(28L)
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isEqualTo(
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT),
@@ -298,8 +299,8 @@ class HdcedCalculatorTest {
 
     calc(sentenceCalculation, sentence)
 
-    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isEqualTo(LocalDate.of(2020, 1, 15))
-    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(14L)
+    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDateLegacy).isEqualTo(LocalDate.of(2020, 1, 15))
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDateLegacy).isEqualTo(14L)
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isEqualTo(
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT),
@@ -330,8 +331,8 @@ class HdcedCalculatorTest {
 
     calc(sentenceCalculation, sentence)
 
-    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isEqualTo(LocalDate.of(2020, 6, 30))
-    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(181L)
+    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDateLegacy).isEqualTo(LocalDate.of(2020, 6, 30))
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDateLegacy).isEqualTo(181L)
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isEqualTo(
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD),
@@ -363,8 +364,8 @@ class HdcedCalculatorTest {
 
     calc(sentenceCalculation, sentence)
 
-    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isEqualTo(LocalDate.of(2020, 6, 29))
-    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(180L)
+    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDateLegacy).isEqualTo(LocalDate.of(2020, 6, 29))
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDateLegacy).isEqualTo(180L)
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]?.rules?.first()).isEqualTo(
       CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD,
     )
@@ -388,8 +389,8 @@ class HdcedCalculatorTest {
 
     calc(sentenceCalculation, sentence)
 
-    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isEqualTo(LocalDate.of(2020, 1, 15))
-    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(14L)
+    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDateLegacy).isEqualTo(LocalDate.of(2020, 1, 15))
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDateLegacy).isEqualTo(14L)
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isEqualTo(
       ReleaseDateCalculationBreakdown(
         rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD),
@@ -478,7 +479,7 @@ class HdcedCalculatorTest {
     calc(consecSentence.sentenceCalculation, consecSentence)
 
     assertHasHDCED(consecSentence.sentenceCalculation)
-    assertThat(consecSentence.sentenceCalculation.homeDetentionCurfewEligibilityDate).isEqualTo(
+    assertThat(consecSentence.sentenceCalculation.homeDetentionCurfewEligibilityDateLegacy).isEqualTo(
       LocalDate.of(
         2024,
         4,
@@ -548,14 +549,14 @@ class HdcedCalculatorTest {
   }
 
   private fun assertHasNoHDCED(sentenceCalculation: SentenceCalculation) {
-    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isNull()
-    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isZero()
+    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDateLegacy).isNull()
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDateLegacy).isZero()
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isNull()
   }
 
   private fun assertHasHDCED(sentenceCalculation: SentenceCalculation) {
-    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDate).isNotNull()
-    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isPositive()
+    assertThat(sentenceCalculation.homeDetentionCurfewEligibilityDateLegacy).isNotNull()
+    assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDateLegacy).isPositive()
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isNotNull
   }
 

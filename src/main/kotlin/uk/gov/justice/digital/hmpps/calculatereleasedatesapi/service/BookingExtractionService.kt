@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ETD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.HDCED365
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.LTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.MTD
@@ -44,7 +45,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 class BookingExtractionService(
   val hdcedExtractionService: HdcedExtractionService,
   val extractionService: SentencesExtractionService,
-  val featureToggles: FeatureToggles,
+  val featureToggles: FeatureToggles, // TODO remove
 ) {
 
   fun extract(
@@ -87,14 +88,10 @@ class BookingExtractionService(
       dates[TUSED] = sentenceCalculation.topUpSupervisionDate!!
     }
 
-    if (!featureToggles.hdc365) {
-      if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
-        if (hdcedExtractionService.releaseDateIsAfterHdced(sentenceCalculation)) {
-          dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
-        }
+    if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
+      if (hdcedExtractionService.releaseDateIsAfterHdced(sentenceCalculation)) {
+        dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
       }
-    } else {
-      setHdcedDate(sentenceCalculation, sentence, dates)
     }
 
     if (sentenceCalculation.notionalConditionalReleaseDate != null) {
@@ -142,26 +139,6 @@ class BookingExtractionService(
     )
   }
 
-  // Changed logic for Home Detention Curfew Eligibility Date 365 (HDC-365)
-  // Eventually only HDC365 will apply (after commencement date)
-  private fun setHdcedDate(
-    sentenceCalculation: SentenceCalculation,
-    sentence: CalculableSentence,
-    dates: MutableMap<ReleaseDateType, LocalDate>,
-  ) {
-    if (sentenceCalculation.homeDetentionCurfewEligibilityDate != null && !sentence.releaseDateTypes.contains(PED)) {
-      if (hdcedExtractionService.releaseDateIsAfterHdced(sentenceCalculation)) {
-        if (sentenceCalculation.homeDetentionCurfewEligibilityDate!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
-          dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDate!!
-        } else if (sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
-          dates[HDCED] = ImportantDates.HDC_365_COMMENCEMENT_DATE
-        } else {
-          dates[HDCED] = sentenceCalculation.homeDetentionCurfewEligibilityDateHDC365!!
-        }
-      }
-    }
-  }
-
   /**
    *  Method applies business logic for when there are multiple sentences in a booking and the impact each may have on one another
    */
@@ -201,11 +178,6 @@ class BookingExtractionService(
 
     val latestHDCEDAndBreakdown =
       hdcedExtractionService.extractManyHomeDetentionCurfewEligibilityDate(sentences, mostRecentSentencesByReleaseDate)
-    val latestHDCEDAndBreakdownHDC365 =
-      hdcedExtractionService.extractManyHomeDetentionCurfewEligibilityDateHDC365(
-        sentences,
-        mostRecentSentencesByReleaseDate,
-      )
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
       extractManyTopUpSuperVisionDate(sentences, latestLicenseExpiryDate)
@@ -326,15 +298,9 @@ class BookingExtractionService(
       breakdownByReleaseDateType[TUSED] = latestTUSEDAndBreakdown.second
     }
 
-    if (!featureToggles.hdc365) {
-      log.info("HDC-365 feature is OFF, setting HDCED based on old rules")
-      if (latestHDCEDAndBreakdown != null) {
-        dates[HDCED] = latestHDCEDAndBreakdown.first
-        breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdown.second
-      }
-    } else {
-      log.info("HDC-365 feature is ON, setting HDCED based on HDC-365 rules")
-      setHdcedDateAndBreakdownDetails(latestHDCEDAndBreakdown, latestHDCEDAndBreakdownHDC365, dates, breakdownByReleaseDateType)
+    if (latestHDCEDAndBreakdown != null) {
+      dates[HDCED] = latestHDCEDAndBreakdown.first
+      breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdown.second
     }
 
     if (latestNotionalConditionalReleaseDate != null) {
@@ -381,29 +347,6 @@ class BookingExtractionService(
       effectiveSentenceLength,
       ersedNotApplicableDueToDtoLaterThanCrd,
     )
-  }
-
-  // Includes logic for Home Detention Curfew Eligibility Date 365 (HDC-365)
-  // Eventually only HDC365 will apply (after commencement date)
-  private fun setHdcedDateAndBreakdownDetails(
-    latestHDCEDAndBreakdown: Pair<LocalDate, ReleaseDateCalculationBreakdown>?,
-    latestHDCEDAndBreakdownHDC365: Pair<LocalDate, ReleaseDateCalculationBreakdown>?,
-    dates: MutableMap<ReleaseDateType, LocalDate>,
-    breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown>,
-  ) {
-    if (latestHDCEDAndBreakdown != null && latestHDCEDAndBreakdownHDC365 != null) {
-      if (latestHDCEDAndBreakdown.first.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
-        dates[HDCED] = latestHDCEDAndBreakdown.first
-        breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdown.second
-      } else if (latestHDCEDAndBreakdownHDC365.first.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
-        dates[HDCED] = ImportantDates.HDC_365_COMMENCEMENT_DATE
-        breakdownByReleaseDateType[HDCED] =
-          latestHDCEDAndBreakdownHDC365.second // TODO set rule that it has been reset to commencement?? to be considered in upcoming hint text ticket
-      } else {
-        dates[HDCED] = latestHDCEDAndBreakdownHDC365.first
-        breakdownByReleaseDateType[HDCED] = latestHDCEDAndBreakdownHDC365.second
-      }
-    }
   }
 
   private fun isAffectedBySds40(sentence: CalculableSentence): Boolean = !sentence.isRecall() &&
