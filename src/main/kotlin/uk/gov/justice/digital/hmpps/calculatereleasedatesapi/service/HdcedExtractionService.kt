@@ -43,7 +43,10 @@ class HdcedExtractionService(
     return null
   }
 
-  fun latestAdjustedReleaseDateIsAfterHdced(sentenceCalculation: SentenceCalculation, latestReleaseDate: LocalDate): Boolean {
+  fun latestAdjustedReleaseDateIsAfterHdced(
+    sentenceCalculation: SentenceCalculation,
+    latestReleaseDate: LocalDate,
+  ): Boolean {
     val hdcedDate = sentenceCalculation.homeDetentionCurfewEligibilityDate
     return hdcedDate?.let { latestReleaseDate.isAfter(it) } ?: false
   }

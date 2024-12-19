@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.InterimHdcCalcType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -160,7 +161,19 @@ data class SentenceCalculation(
   var numberOfDaysToHomeDetentionCurfewEligibilityDate: Long = 0
   var homeDetentionCurfewEligibilityDate: LocalDate? = null
 
+  // These HDC-365 related interim maps are used to determine the actual HDCED values
+  val noDaysToHdcedByCalcType: MutableMap<InterimHdcCalcType, Long> = mutableMapOf(
+    InterimHdcCalcType.HDCED_PRE_365_RULES to 0,
+    InterimHdcCalcType.HDCED_POST_365_RULES to 0,
+  )
+  val hdcedByCalcType: MutableMap<InterimHdcCalcType, LocalDate?> = mutableMapOf(
+    InterimHdcCalcType.HDCED_PRE_365_RULES to null,
+    InterimHdcCalcType.HDCED_POST_365_RULES to null,
+  )
+
   var breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
+
+  var breakdownByInterimHdcCalcType: MutableMap<InterimHdcCalcType, ReleaseDateCalculationBreakdown> = mutableMapOf()
 
   // Notional Conditional Release Date (NCRD)
   var numberOfDaysToNotionalConditionalReleaseDate: Long = 0

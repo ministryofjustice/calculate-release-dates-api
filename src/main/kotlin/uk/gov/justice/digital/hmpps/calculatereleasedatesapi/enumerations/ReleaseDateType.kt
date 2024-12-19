@@ -24,5 +24,11 @@ enum class ReleaseDateType(val description: String) {
   None("None of the above dates apply"),
   Tariff("known as the Tariff expiry date"),
   ROTL("Release on temporary licence"),
-  HDCED4PLUS("HDCED4+"), // for legacy calculations only
+  HDCED4PLUS("HDCED4+"), // *DO NOT REMOVE* - needed for legacy calculations only
+}
+
+// Used for interim calculations (these are not persisted), e.g. when the result of both types is used to determine the final HDCED
+enum class InterimHdcCalcType() {
+  HDCED_PRE_365_RULES,
+  HDCED_POST_365_RULES,
 }
