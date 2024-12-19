@@ -142,7 +142,7 @@ class HintTextTest {
   private val ersedConfiguration = ersedConfigurationForTests()
   private val workingDayService = WorkingDayService(bankHolidayService)
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
+  private val hdcedCalculator = HdcedCalculator(hdcedConfiguration, featureToggles = FeatureToggles())
   private val ersedCalculator = ErsedCalculator(ersedConfiguration)
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
   private val sentencesExtractionService = SentencesExtractionService()

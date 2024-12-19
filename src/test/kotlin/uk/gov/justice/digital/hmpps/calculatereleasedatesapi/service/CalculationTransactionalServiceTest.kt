@@ -653,7 +653,7 @@ class CalculationTransactionalServiceTest {
     val workingDayService = WorkingDayService(bankHolidayService)
     val tusedCalculator = TusedCalculator(workingDayService)
 
-    val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
+    val hdcedCalculator = HdcedCalculator(hdcedConfiguration, featureToggles = FeatureToggles(hdc365 = true))
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val sentenceAdjustedCalculationService =
       SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)

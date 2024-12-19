@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -37,7 +38,7 @@ import kotlin.math.ceil
 class HdcedCalculatorTest {
 
   private val config: HdcedConfiguration = hdcedConfigurationForTests()
-  private val calculator = HdcedCalculator(config)
+  private val calculator = HdcedCalculator(config, FeatureToggles())
 
   @Test
   fun `shouldn't calculate a date for a sex offender`() {
@@ -359,7 +360,7 @@ class HdcedCalculatorTest {
     )
 
     val sentenceCalculation =
-      sentenceCalculation(sentence, 1000, config.custodialPeriodMidPointDays.toInt())
+      sentenceCalculation(sentence, 1000, config.custodialPeriodMidPointDaysPreHdc365.toInt())
 
     calc(sentenceCalculation, sentence)
 

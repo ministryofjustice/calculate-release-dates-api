@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationP
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheThreeDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
@@ -29,9 +30,7 @@ import java.time.temporal.ChronoUnit.YEARS
 class SentenceIdentificationServiceTest {
   private val workingDayService = mock<WorkingDayService>()
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val hdcedCalculator = HdcedCalculator(
-    hdcedConfigurationForTests(),
-  )
+  private val hdcedCalculator = HdcedCalculator(hdcedConfigurationForTests(), featureToggles = FeatureToggles())
   private val trancheConfiguration = SDS40TrancheConfiguration(sdsEarlyReleaseTrancheOneDate(), sdsEarlyReleaseTrancheTwoDate(), sdsEarlyReleaseTrancheThreeDate())
   private val sentenceIdentificationService: SentenceIdentificationService =
     SentenceIdentificationService(tusedCalculator, hdcedCalculator, trancheConfiguration)

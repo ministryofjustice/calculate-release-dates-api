@@ -148,3 +148,4 @@ feature-toggles:
   support-inactive-sentences-and-adjustments: ${SUPPORT_INACTIVE_SENTENCES_AND_ADJUSTMENTS:false}
   torera-offence-to-manual-journey: ${TORERA_OFFENCE_TO_MANUAL_JOURNEY:false}
   sds40-consecutive-manual-journey: ${SDS40_CONSEC_MANUAL_JOURNEY:false}
+  hdc365: ${HDC_365_FEATURE_TOGGLE:false}
