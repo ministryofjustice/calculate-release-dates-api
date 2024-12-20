@@ -301,9 +301,14 @@ class HdcedCalculator(
   ) {
     sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] = sentence.sentencedAt.plusDays(hdcedConfiguration.minimumDaysOnHdc).plusDays(params.addedDays)
     sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] = hdcedConfiguration.minimumDaysOnHdc.plus(params.addedDays)
+    val rules = if (featureToggles.hdc365) {
+      setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, CalculationRule.HDC_180, parentRule)
+    } else {
+      setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, parentRule)
+    }
     sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] =
       ReleaseDateCalculationBreakdown(
-        rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, parentRule),
+        rules = rules,
         rulesWithExtraAdjustments = mapOf(
           CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD to AdjustmentDuration(
             hdcedConfiguration.minimumDaysOnHdc,
