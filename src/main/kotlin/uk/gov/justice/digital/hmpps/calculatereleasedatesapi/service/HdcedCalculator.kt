@@ -111,6 +111,7 @@ class HdcedCalculator(
         calculateHdcedOverMidpointUsingPostHDC365Rules(sentenceCalculation, sentence, params)
       }
 
+      log.info("CALCULATING HDC-365")
       if (!featureToggles.hdc365) {
         setToPreHdc365Values(sentenceCalculation)
       } else {
@@ -120,6 +121,8 @@ class HdcedCalculator(
   }
 
   private fun applyHdc365Rules(sentenceCalculation: SentenceCalculation) {
+    log.info(">> HDCED_PRE_365_RULES ${sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!}")
+    log.info(">> HDCED_POST_365_RULES ${sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!}")
     if (sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
       setToPreHdc365Values(sentenceCalculation)
     } else if (sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {

@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
@@ -105,10 +106,12 @@ class BookingTimelineService(
           sdsEarlyReleaseTranche = trancheAndCommencement.first,
         )
 
+      log.info("Latest calculation HDCED ${latestCalculation.dates[ReleaseDateType.HDCED]}")
+
       if (beforeTrancheCalculation != null) {
         latestCalculation = sdsEarlyReleaseDefaultingRulesService.applySDSEarlyReleaseRulesAndFinalizeDates(
-          latestCalculation,
-          beforeTrancheCalculation!!,
+          latestCalculation, // early reslease result
+          beforeTrancheCalculation!!, // standard reslease result
           trancheAndCommencement.second!!,
           trancheAndCommencement.first,
           releasedSentences.flatMap { it.sentences },
