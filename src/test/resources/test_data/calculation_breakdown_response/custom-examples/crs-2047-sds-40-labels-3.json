@@ -68,7 +68,8 @@
     "HDCED": {
       "rules": [
         "HDCED_GE_MIN_PERIOD_LT_MIDPOINT",
-        "SDS_STANDARD_RELEASE_APPLIES"
+        "SDS_STANDARD_RELEASE_APPLIES",
+        "HDC_180"
       ],
       "rulesWithExtraAdjustments": {
         "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
