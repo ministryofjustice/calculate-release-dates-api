@@ -1,0 +1,24 @@
+[
+  {
+    "type": "SLED",
+    "date": "2029-07-06",
+    "hints": []
+  },
+  {
+    "type": "CRD",
+    "date": "2025-11-29",
+    "hints": ["The Discretionary Friday/Pre-Bank Holiday Release Scheme Policy applies to this release date.", "40% date has been applied"]
+  },
+  {
+    "type": "HDCED",
+    "date": "2025-06-03",
+    "hints": [
+      "40% date has been applied", "Defaulted to HDC365 commencement"
+    ]
+  },
+  {
+    "type": "ESED",
+    "date": "2029-07-06",
+    "hints": []
+  }
+]

@@ -1,0 +1,73 @@
+{
+  "offender": {
+    "reference": "A9932EA",
+    "dateOfBirth": "1997-02-01",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 1223130,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2019-09-03",
+        "offenceCode": "SF67002"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 42
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "d79dad62-b10f-3d8e-bbe8-d68cd1a7a21d",
+      "recallType": null,
+      "sentencedAt": "2023-12-22",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": null,
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2019-09-03",
+        "offenceCode": "WM85179"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 18
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "dd985393-0a4d-31f0-940c-12bd597051a4",
+      "recallType": null,
+      "sentencedAt": "2023-12-22",
+      "caseSequence": 1,
+      "lineSequence": 2,
+      "caseReference": null,
+      "consecutiveSentenceUUIDs": [
+        "d79dad62-b10f-3d8e-bbe8-d68cd1a7a21d"
+      ],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "toDate": "2023-12-21",
+        "fromDate": "2023-12-19",
+        "numberOfDays": 3,
+        "appliesToSentencesFrom": "2023-12-22"
+      }
+    ]
+  },
+  "historicalTusedData": null,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}
