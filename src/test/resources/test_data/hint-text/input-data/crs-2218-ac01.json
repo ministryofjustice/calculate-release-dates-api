@@ -1,0 +1,47 @@
+{
+  "offender": {
+    "reference": "A9930EA",
+    "dateOfBirth": "2000-06-01",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 1223128,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-09-16",
+        "offenceCode": "TH68023A"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 3,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "941dc101-22f3-3621-9534-5bbe2112694f",
+      "recallType": null,
+      "sentencedAt": "2024-11-13",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": null,
+      "consecutiveSentenceUUIDs": [],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "toDate": "2024-11-12",
+        "fromDate": "2024-09-17",
+        "numberOfDays": 57,
+        "appliesToSentencesFrom": "2024-11-13"
+      }
+    ]
+  },
+  "historicalTusedData": null,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "type": "SLED",
+    "date": "2030-10-15",
+    "hints": []
+  },
+  {
+    "type": "CRD",
+    "date": "2026-08-04",
+    "hints": []
+  },
+  {
+    "type": "HDCED",
+    "date": "2025-08-05",
+    "hints": []
+  },
+  {
+    "type": "ESED",
+    "date": "2031-11-07",
+    "hints": []
+  }
+]

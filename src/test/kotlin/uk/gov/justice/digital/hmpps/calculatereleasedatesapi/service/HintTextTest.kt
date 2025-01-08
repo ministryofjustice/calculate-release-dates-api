@@ -142,7 +142,7 @@ class HintTextTest {
   private val ersedConfiguration = ersedConfigurationForTests()
   private val workingDayService = WorkingDayService(bankHolidayService)
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val hdcedCalculator = HdcedCalculator(hdcedConfiguration, featureToggles = FeatureToggles())
+  private val hdcedCalculator = HdcedCalculator(hdcedConfiguration, featureToggles = FeatureToggles(hdc365 = true))
   private val ersedCalculator = ErsedCalculator(ersedConfiguration)
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
   private val sentencesExtractionService = SentencesExtractionService()
@@ -225,7 +225,7 @@ class HintTextTest {
 
   private val today: LocalDate = LocalDate.now()
   private val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-  private val featureToggles = FeatureToggles(sdsEarlyReleaseHints = true)
+  private val featureToggles = FeatureToggles(sdsEarlyReleaseHints = true, hdc365 = true)
 
   private val nonFridayReleaseService = NonFridayReleaseService(bankHolidayService, clock)
 

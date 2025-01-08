@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_ADJUSTED_TO_365_COMMENCEMENT
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDC_180
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.InterimHdcCalcType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
@@ -123,6 +125,7 @@ class HdcedCalculator(
     if (sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
       setToPreHdc365Values(sentenceCalculation)
     } else if (sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+      addHdc365CommencementDateRule(sentenceCalculation)
       sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!
       sentenceCalculation.homeDetentionCurfewEligibilityDate = ImportantDates.HDC_365_COMMENCEMENT_DATE
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED] = sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!
@@ -164,7 +167,7 @@ class HdcedCalculator(
     } else {
       sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] =
         ReleaseDateCalculationBreakdown(
-          rules = setOf(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT),
+          rules = addHdc365Rule(setOf(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT)),
           rulesWithExtraAdjustments = mapOf(
             CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT to AdjustmentDuration(
               halfTheCustodialPeriodButAtLeastTheMinimumHDCEDPeriod,
@@ -239,7 +242,7 @@ class HdcedCalculator(
     } else {
       sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] =
         ReleaseDateCalculationBreakdown(
-          rules = setOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD),
+          rules = addHdc365Rule(setOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD)),
           rulesWithExtraAdjustments = mapOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD to AdjustmentDuration(-hdcedConfiguration.custodialPeriodAboveMidpointDeductionDaysPreHdc365)),
           adjustedDays = params.adjustedDays,
           releaseDate = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!,
@@ -303,7 +306,7 @@ class HdcedCalculator(
     sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] = hdcedConfiguration.minimumDaysOnHdc.plus(params.addedDays)
     sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES] =
       ReleaseDateCalculationBreakdown(
-        rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, parentRule),
+        rules = addHdc365Rule(setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, parentRule)),
         rulesWithExtraAdjustments = mapOf(
           CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD to AdjustmentDuration(
             hdcedConfiguration.minimumDaysOnHdc,
@@ -355,6 +358,20 @@ class HdcedCalculator(
 
   private fun unadjustedReleasePointIsLessThanMinimumCustodialPeriod(custodialPeriod: Double) =
     custodialPeriod < hdcedConfiguration.minimumCustodialPeriodDays
+
+  private fun addHdc365Rule(baseRules: Set<CalculationRule>): Set<CalculationRule> =
+    if (featureToggles.hdc365) {
+      baseRules + HDC_180
+    } else {
+      baseRules
+    }
+
+  private fun addHdc365CommencementDateRule(sentenceCalculation: SentenceCalculation) {
+    sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_POST_365_RULES] =
+      sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!.copy(
+        rules = sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!.rules + HDCED_ADJUSTED_TO_365_COMMENCEMENT,
+      )
+  }
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)

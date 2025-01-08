@@ -85,7 +85,8 @@
     },
     "HDCED": {
       "rules": [
-        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD"
+        "HDCED_GE_MIDPOINT_LT_MAX_PERIOD",
+        "HDC_180"
       ],
       "rulesWithExtraAdjustments": {
         "HDCED_GE_MIDPOINT_LT_MAX_PERIOD": {
