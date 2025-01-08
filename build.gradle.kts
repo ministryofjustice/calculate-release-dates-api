@@ -46,7 +46,7 @@ dependencies {
   runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
   runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
-  implementation("io.arrow-kt:arrow-core:1.2.4")
+  implementation("io.arrow-kt:arrow-core:2.0.0")
   implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.9.0")
 
   // OpenAPI
