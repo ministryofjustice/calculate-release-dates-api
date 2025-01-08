@@ -62,7 +62,7 @@
       "unadjustedDate": "2025-06-09"
     },
     "HDCED": {
-      "rules": ["HDCED_GE_MIN_PERIOD_LT_MIDPOINT", "SDS_EARLY_RELEASE_APPLIES"],
+      "rules": ["HDCED_GE_MIN_PERIOD_LT_MIDPOINT", "SDS_EARLY_RELEASE_APPLIES", "HDC_180"],
       "rulesWithExtraAdjustments": {
         "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
           "adjustmentValue": 153,

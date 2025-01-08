@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHi
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.HDC_365_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_40_COMMENCEMENT_DATE
 import java.time.Clock
 import java.time.LocalDate
@@ -160,6 +161,10 @@ class CalculationResultEnrichmentService(
           hints += ReleaseDateHint("HDCED adjusted for the PRRD of a recall")
         }
       }
+
+      if (featureToggles.hdc365) {
+        hdc365Hints(hdcRules, date, hints)
+      }
     }
     if (displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
       hints += ReleaseDateHint("The Detention and training order (DTO) release date is later than the Home detention curfew eligibility date (HDCED)")
@@ -167,6 +172,15 @@ class CalculationResultEnrichmentService(
     hints
   } else {
     emptyList()
+  }
+
+  private fun hdc365Hints(hdcRules: Set<CalculationRule>, hdcedDate: LocalDate, hints: MutableList<ReleaseDateHint>) {
+    if (CalculationRule.HDC_180 in hdcRules && hdcedDate < HDC_365_COMMENCEMENT_DATE) {
+      hints += ReleaseDateHint("HDC180 rules have been applied")
+    }
+    if (CalculationRule.HDCED_ADJUSTED_TO_365_COMMENCEMENT in hdcRules) {
+      hints += ReleaseDateHint("Defaulted to HDC365 commencement")
+    }
   }
 
   private fun mtdHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
