@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
 import org.slf4j.Logger
@@ -34,7 +35,7 @@ class ManualComparisonService(
 ) {
 
   fun create(manualComparison: ManualComparisonInput, token: String): Comparison {
-    val comparisonToCreate = transform(objectMapper.valueToTree(manualComparison), serviceUserService.getUsername())
+    val comparisonToCreate = transform(objectMapper.valueToTree(manualComparison) as JsonNode, serviceUserService.getUsername())
     val initialComparisonCreated = comparisonRepository.save(
       comparisonToCreate,
     )
