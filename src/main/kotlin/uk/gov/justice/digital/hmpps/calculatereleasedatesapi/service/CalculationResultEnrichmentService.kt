@@ -179,7 +179,7 @@ class CalculationResultEnrichmentService(
     if (CalculationRule.HDC_180 in hdcRules && hdcedDate < HDC_365_COMMENCEMENT_DATE) {
       hints += ReleaseDateHint("HDC180 rules have been applied")
     }
-    if (CalculationRule.HDC_365 in hdcRules && hdcedDate == HDC_365_COMMENCEMENT_DATE) {
+    if (CalculationRule.HDCED_ADJUSTED_TO_365_COMMENCEMENT in hdcRules) {
       hints += ReleaseDateHint("Defaulted to HDC365 commencement")
     }
   }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_ADJUSTED_TO_365_COMMENCEMENT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.InterimHdcCalcType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
@@ -123,6 +124,7 @@ class HdcedCalculator(
     if (sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
       setToPreHdc365Values(sentenceCalculation)
     } else if (sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+      addHdc365CommencementDateRule(sentenceCalculation)
       sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!
       sentenceCalculation.homeDetentionCurfewEligibilityDate = ImportantDates.HDC_365_COMMENCEMENT_DATE
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED] = sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!
@@ -174,14 +176,6 @@ class HdcedCalculator(
           releaseDate = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!,
           unadjustedDate = sentence.sentencedAt,
         )
-    }
-  }
-
-  private fun getCalculationRules(baseRules: Set<CalculationRule>, hdc365Rule: CalculationRule): Set<CalculationRule> {
-    return if (featureToggles.hdc365) {
-      baseRules + hdc365Rule
-    } else {
-      baseRules
     }
   }
 
@@ -363,6 +357,20 @@ class HdcedCalculator(
 
   private fun unadjustedReleasePointIsLessThanMinimumCustodialPeriod(custodialPeriod: Double) =
     custodialPeriod < hdcedConfiguration.minimumCustodialPeriodDays
+
+  private fun getCalculationRules(baseRules: Set<CalculationRule>, hdc365Rule: CalculationRule): Set<CalculationRule> =
+    if (featureToggles.hdc365) {
+      baseRules + hdc365Rule
+    } else {
+      baseRules
+    }
+
+  private fun addHdc365CommencementDateRule(sentenceCalculation: SentenceCalculation) {
+    sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_POST_365_RULES] =
+      sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!.copy(
+        rules = sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!.rules + HDCED_ADJUSTED_TO_365_COMMENCEMENT,
+      )
+  }
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
