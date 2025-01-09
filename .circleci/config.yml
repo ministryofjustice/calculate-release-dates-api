@@ -29,6 +29,9 @@ jobs:
             - gradle-2-{{ checksum "build.gradle.kts" }}
             - gradle-2-
       - run:
+          name: Verify Test Data Files
+          command: ls -lR src/test/resources/test_data/overall_calculation/custom-examples/
+      - run:
           command: ./gradlew check jacocoTestReport
       - save_cache:
           paths:
