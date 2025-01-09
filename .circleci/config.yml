@@ -26,11 +26,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - gradle-2-{{ checksum "build.gradle.kts" }}
-            - gradle-2-
-      - run:
-          name: Verify Test Data Files
-          command: ls -lR src/test/resources/test_data/overall_calculation/custom-examples/
+            - gradle-{{ checksum "build.gradle.kts" }}
+            - gradle-
       - run:
           command: ./gradlew check jacocoTestReport
       - save_cache:
