@@ -28,7 +28,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 @Service
 class PrisonService(
   private val prisonApiClient: PrisonApiClient,
-  private val offenceSDSReleaseArrangementLookupService: OffenceSDSReleaseArrangementLookupService,
+  private val releaseArrangementLookupService: ReleaseArrangementLookupService,
   private val botusTusedService: BotusTusedService,
   private val featureToggles: FeatureToggles,
 ) {
@@ -95,7 +95,7 @@ class PrisonService(
     val sentencesAndOffences = prisonApiClient.getSentencesAndOffences(bookingId)
       .flatMap { sentenceAndOffences -> sentenceAndOffences.offences.map { offence -> NormalisedSentenceAndOffence(sentenceAndOffences, offence) } }
       .filter { !filterActive || it.sentenceStatus == "A" }
-    return offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(sentencesAndOffences)
+    return releaseArrangementLookupService.populateReleaseArrangements(sentencesAndOffences)
   }
 
   fun postReleaseDates(bookingId: Long, updateOffenderDates: UpdateOffenderDates) {

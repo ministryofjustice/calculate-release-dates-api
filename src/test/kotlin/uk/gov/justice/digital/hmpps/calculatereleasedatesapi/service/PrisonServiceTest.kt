@@ -28,9 +28,9 @@ import java.time.LocalDateTime
 
 class PrisonServiceTest {
   private val prisonApiClient = mock<PrisonApiClient>()
-  private val offenceSDSReleaseArrangementLookupService = mock<OffenceSDSReleaseArrangementLookupService>()
+  private val releaseArrangementLookupService = mock<ReleaseArrangementLookupService>()
   private val botusTusedService = mock<BotusTusedService>()
-  private val prisonService = PrisonService(prisonApiClient, offenceSDSReleaseArrangementLookupService, botusTusedService, FeatureToggles())
+  private val prisonService = PrisonService(prisonApiClient, releaseArrangementLookupService, botusTusedService, FeatureToggles())
 
   @Test
   fun `getCurrentUserPrisonsList should exclude prisons where the establishment is KTI`() {
@@ -168,9 +168,17 @@ class PrisonServiceTest {
 
     )
 
-    val withReleaseArrangements = normalisedOffences.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) }
+    val withReleaseArrangements = normalisedOffences.map {
+      SentenceAndOffenceWithReleaseArrangements(
+        it,
+        isSdsPlus = false,
+        isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+        isSDSPlusOffenceInPeriod = false,
+        hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+      )
+    }
     whenever(prisonApiClient.getSentencesAndOffences(1)).thenReturn(prisonApiSentencesAndOffences)
-    whenever(offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(normalisedOffences)).thenReturn(withReleaseArrangements)
+    whenever(releaseArrangementLookupService.populateReleaseArrangements(normalisedOffences)).thenReturn(withReleaseArrangements)
     assertThat(prisonService.getSentencesAndOffences(1, true)).isEqualTo(withReleaseArrangements)
   }
 
@@ -208,8 +216,28 @@ class PrisonServiceTest {
     val activeOffence = NormalisedSentenceAndOffence(prisonApiSentenceAndOffences1, offence1)
 
     whenever(prisonApiClient.getSentencesAndOffences(1)).thenReturn(listOf(prisonApiSentenceAndOffences1, prisonApiSentenceAndOffences2))
-    whenever(offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(listOf(activeOffence))).thenReturn(listOf(SentenceAndOffenceWithReleaseArrangements(activeOffence, false, SDSEarlyReleaseExclusionType.NO)))
-    assertThat(prisonService.getSentencesAndOffences(1, true)).isEqualTo(listOf(SentenceAndOffenceWithReleaseArrangements(activeOffence, false, SDSEarlyReleaseExclusionType.NO)))
+    whenever(releaseArrangementLookupService.populateReleaseArrangements(listOf(activeOffence))).thenReturn(
+      listOf(
+        SentenceAndOffenceWithReleaseArrangements(
+          source = activeOffence,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        ),
+      ),
+    )
+    assertThat(prisonService.getSentencesAndOffences(1, true)).isEqualTo(
+      listOf(
+        SentenceAndOffenceWithReleaseArrangements(
+          source = activeOffence,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        ),
+      ),
+    )
   }
 
   @Test
@@ -247,8 +275,42 @@ class PrisonServiceTest {
     val inactiveOffence = NormalisedSentenceAndOffence(prisonApiSentenceAndOffences2, offence2)
 
     whenever(prisonApiClient.getSentencesAndOffences(1)).thenReturn(listOf(prisonApiSentenceAndOffences1, prisonApiSentenceAndOffences2))
-    whenever(offenceSDSReleaseArrangementLookupService.populateReleaseArrangements(listOf(activeOffence, inactiveOffence))).thenReturn(listOf(SentenceAndOffenceWithReleaseArrangements(activeOffence, false, SDSEarlyReleaseExclusionType.NO), SentenceAndOffenceWithReleaseArrangements(inactiveOffence, false, SDSEarlyReleaseExclusionType.NO)))
-    assertThat(prisonService.getSentencesAndOffences(1, false)).isEqualTo(listOf(SentenceAndOffenceWithReleaseArrangements(activeOffence, false, SDSEarlyReleaseExclusionType.NO), SentenceAndOffenceWithReleaseArrangements(inactiveOffence, false, SDSEarlyReleaseExclusionType.NO)))
+    whenever(releaseArrangementLookupService.populateReleaseArrangements(listOf(activeOffence, inactiveOffence))).thenReturn(
+      listOf(
+        SentenceAndOffenceWithReleaseArrangements(
+          source = activeOffence,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        ),
+        SentenceAndOffenceWithReleaseArrangements(
+          source = inactiveOffence,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        ),
+      ),
+    )
+    assertThat(prisonService.getSentencesAndOffences(1, false)).isEqualTo(
+      listOf(
+        SentenceAndOffenceWithReleaseArrangements(
+          source = activeOffence,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        ),
+        SentenceAndOffenceWithReleaseArrangements(
+          source = inactiveOffence,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        ),
+      ),
+    )
   }
 
   companion object {

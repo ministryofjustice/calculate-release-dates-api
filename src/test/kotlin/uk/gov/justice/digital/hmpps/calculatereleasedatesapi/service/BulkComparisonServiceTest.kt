@@ -72,7 +72,7 @@ class BulkComparisonServiceTest {
   private val calculationTransactionalService = mock<CalculationTransactionalService>()
   private val objectMapper: ObjectMapper = TestUtil.objectMapper()
   private val comparisonRepository = mock<ComparisonRepository>()
-  private var pcscLookupService = mock<OffenceSDSReleaseArrangementLookupService>()
+  private var pcscLookupService = mock<ReleaseArrangementLookupService>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
   private val comparisonPersonDiscrepancyRepository = mock<ComparisonPersonDiscrepancyRepository>()
   private val comparisonPersonDiscrepancyCategoryRepository = mock<ComparisonPersonDiscrepancyCategoryRepository>()
@@ -467,7 +467,15 @@ class BulkComparisonServiceTest {
             it,
           )
         }
-      }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+      }.map {
+        SentenceAndOffenceWithReleaseArrangements(
+          it,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        )
+      },
     )
 
     assertTrue(mismatch.isValid)
@@ -506,7 +514,15 @@ class BulkComparisonServiceTest {
             it,
           )
         }
-      }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+      }.map {
+        SentenceAndOffenceWithReleaseArrangements(
+          it,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        )
+      },
     )
 
     assertFalse(mismatch.isValid)
@@ -549,7 +565,15 @@ class BulkComparisonServiceTest {
             it,
           )
         }
-      }.map { SentenceAndOffenceWithReleaseArrangements(it, false, SDSEarlyReleaseExclusionType.NO) },
+      }.map {
+        SentenceAndOffenceWithReleaseArrangements(
+          it,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        )
+      },
     )
 
     assertTrue(mismatch.isValid)

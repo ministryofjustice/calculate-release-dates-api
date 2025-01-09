@@ -17,7 +17,9 @@ data class AFineSentence(
   val fineAmount: BigDecimal? = null,
 ) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence, caseReference, recallType), Term {
 
-  override val isSDSPlus = false
+  override val isSDSPlus: Boolean = false
+  override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false
+  override val isSDSPlusOffenceInPeriod: Boolean = false
 
   override fun buildString(): String {
     return "AFineSentence\t:\t\n" +

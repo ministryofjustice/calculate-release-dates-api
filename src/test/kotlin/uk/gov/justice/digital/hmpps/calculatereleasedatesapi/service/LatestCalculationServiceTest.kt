@@ -474,6 +474,8 @@ class LatestCalculationServiceTest {
     courtDescription = null,
     consecutiveToSequence = null,
     isSDSPlus = false,
+    isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+    isSDSPlusOffenceInPeriod = false,
     hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
   )
 

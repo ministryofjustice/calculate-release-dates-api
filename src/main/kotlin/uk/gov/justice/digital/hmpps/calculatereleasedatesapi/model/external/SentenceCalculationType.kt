@@ -121,11 +121,14 @@ enum class SentenceCalculationType(
   TISCS(isSupported = false, isIndeterminate = false),
   STS21(isSupported = false, isIndeterminate = false),
   STS18(isSupported = false, isIndeterminate = false),
+  UNIDENTIFIED(isSupported = false),
   ;
 
   companion object {
     fun from(sentenceCalculationType: String): SentenceCalculationType =
-      entries.firstOrNull { it.primaryName == sentenceCalculationType } ?: valueOf(sentenceCalculationType)
+      entries.firstOrNull { it.primaryName == sentenceCalculationType }
+        ?: entries.firstOrNull { it.name == sentenceCalculationType }
+        ?: UNIDENTIFIED
 
     fun isSupported(sentenceCalculationType: String): Boolean =
       try {
