@@ -7,5 +7,6 @@
   },
   "effectiveSentenceLength": "P7Y4M24D",
   "sdsEarlyReleaseTranche": "TRANCHE_2",
-  "sdsEarlyReleaseAllocatedTranche": "TRANCHE_2"
+  "sdsEarlyReleaseAllocatedTranche": "TRANCHE_2",
+  "affectedBySds40": true
 }

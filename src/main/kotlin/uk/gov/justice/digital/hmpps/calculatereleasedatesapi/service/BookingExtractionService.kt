@@ -49,13 +49,11 @@ class BookingExtractionService(
     sentences: List<CalculableSentence>,
     sentenceGroups: List<List<CalculableSentence>>,
     offender: Offender,
-  ): CalculationResult {
-    return when (sentences.size) {
-      0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
-      1 -> extractSingle(sentences[0])
-      else -> {
-        extractMultiple(sentences, sentenceGroups, offender)
-      }
+  ): CalculationResult = when (sentences.size) {
+    0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
+    1 -> extractSingle(sentences[0])
+    else -> {
+      extractMultiple(sentences, sentenceGroups, offender)
     }
   }
 
@@ -120,7 +118,8 @@ class BookingExtractionService(
     if (
       sentenceIsOrExclusivelyBotus &&
       sentence is BotusSentence &&
-      sentence.latestTusedDate != null && sentenceCalculation.expiryDate.isBefore(sentence.latestTusedDate)
+      sentence.latestTusedDate != null &&
+      sentenceCalculation.expiryDate.isBefore(sentence.latestTusedDate)
     ) {
       dates[TUSED] = sentence.latestTusedDate!!
       historicalTusedSource = sentence.latestTusedSource!!
@@ -133,6 +132,7 @@ class BookingExtractionService(
       getEffectiveSentenceLength(sentence.sentencedAt, sentenceCalculation.unadjustedExpiryDate),
       false,
       historicalTusedSource,
+      affectedBySds40 = isAffectedBySds40(sentence),
     )
   }
 
@@ -206,7 +206,8 @@ class BookingExtractionService(
       SentenceCalculation::notionalConditionalReleaseDate,
     )
 
-    if (latestExpiryDate == latestLicenseExpiryDate && mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes()
+    if (latestExpiryDate == latestLicenseExpiryDate &&
+      mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes()
         .contains(SLED)
     ) {
       dates[SLED] = latestExpiryDate
@@ -228,7 +229,9 @@ class BookingExtractionService(
       dates[SED] = latestExpiryDate
       breakdownByReleaseDateType[SED] =
         mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
-      if (latestLicenseExpiryDate != null && concurrentOraAndNonOraDetails.canHaveLicenseExpiry && latestLicenseExpiryDate.isAfterOrEqualTo(
+      if (latestLicenseExpiryDate != null &&
+        concurrentOraAndNonOraDetails.canHaveLicenseExpiry &&
+        latestLicenseExpiryDate.isAfterOrEqualTo(
           latestReleaseDate,
         )
       ) {
@@ -334,14 +337,33 @@ class BookingExtractionService(
 
     /** --- ESED --- **/
     dates[ESED] = latestUnadjustedExpiryDate
+
+    val sds40EligibleReleaseTypes = listOf(CRD, ARD, HDCED, TUSED, PED, ERSED)
+
+    val isAnyRelevantSentenceAffectedBySds40 = sentences.any { sentence ->
+      isAffectedBySds40(sentence) &&
+        sds40EligibleReleaseTypes.any { type ->
+          val targetDate = dates[type] // only include the eligible types of dates
+          targetDate != null && sentence.sentenceCalculation.getDateByType(type) == targetDate
+        }
+    }
+
     return CalculationResult(
       dates.toMap(),
       breakdownByReleaseDateType.toMap(),
       otherDates.toMap(),
       effectiveSentenceLength,
       ersedNotApplicableDueToDtoLaterThanCrd,
+      affectedBySds40 = isAnyRelevantSentenceAffectedBySds40,
     )
   }
+
+  private fun isAffectedBySds40(sentence: CalculableSentence): Boolean = !sentence.isRecall() &&
+    sentence.sentenceParts().any {
+      it.identificationTrack == SentenceIdentificationTrack.SDS_EARLY_RELEASE ||
+        it.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION
+    } &&
+    sentence.sentenceCalculation.adjustedDeterminateReleaseDate != sentence.sentenceCalculation.adjustedHistoricDeterminateReleaseDate
 
   fun extractCrdOrArd(
     mostRecentSentencesByReleaseDate: List<CalculableSentence>,
@@ -381,7 +403,8 @@ class BookingExtractionService(
           SentenceCalculation::releaseDate,
         )
         val latestNonPedRelease = latestNonPedReleaseSentence?.sentenceCalculation?.releaseDate
-        if (latestNonPedRelease != null && latestNonPedRelease.isAfterOrEqualTo(
+        if (latestNonPedRelease != null &&
+          latestNonPedRelease.isAfterOrEqualTo(
             mostRecentSentenceByAdjustedDeterminateReleaseDate.sentenceCalculation.releaseDate,
           )
         ) {
@@ -463,9 +486,7 @@ class BookingExtractionService(
     return false
   }
 
-  private fun isTusedableDtos(sentences: List<CalculableSentence>, effectiveSentenceLength: Period, offender: Offender): Boolean {
-    return sentences.all { it.isDto() } && effectiveSentenceLength.toTotalMonths() < 24 && !sentences.all { offender.underEighteenAt(it.sentenceCalculation.releaseDate) }
-  }
+  private fun isTusedableDtos(sentences: List<CalculableSentence>, effectiveSentenceLength: Period, offender: Offender): Boolean = sentences.all { it.isDto() } && effectiveSentenceLength.toTotalMonths() < 24 && !sentences.all { offender.underEighteenAt(it.sentenceCalculation.releaseDate) }
 
   private fun calculateErsedWhereDtoIsPresent(
     dates: MutableMap<ReleaseDateType, LocalDate>,
@@ -499,16 +520,15 @@ class BookingExtractionService(
     type: ReleaseDateType,
     latestReleaseDate: LocalDate,
     underEighteenAtEndOfCustodialPeriod: Boolean,
-  ) =
-    if (latestDtoSentence.sentenceCalculation.isImmediateRelease() && latestDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_AFTER_PCSC) {
-      latestDtoSentence.sentencedAt
-    } else if (type == CRD && latestDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC) {
-      latestDtoSentence.sentenceCalculation.unadjustedDeterminateReleaseDate
-    } else if (type == CRD || underEighteenAtEndOfCustodialPeriod) {
-      latestDtoSentence.sentenceCalculation.adjustedDeterminateReleaseDate
-    } else {
-      latestReleaseDate
-    }
+  ) = if (latestDtoSentence.sentenceCalculation.isImmediateRelease() && latestDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_AFTER_PCSC) {
+    latestDtoSentence.sentencedAt
+  } else if (type == CRD && latestDtoSentence.identificationTrack == SentenceIdentificationTrack.DTO_BEFORE_PCSC) {
+    latestDtoSentence.sentenceCalculation.unadjustedDeterminateReleaseDate
+  } else if (type == CRD || underEighteenAtEndOfCustodialPeriod) {
+    latestDtoSentence.sentenceCalculation.adjustedDeterminateReleaseDate
+  } else {
+    latestReleaseDate
+  }
 
   private fun calculateWhenAllDtos(sentence: CalculableSentence, dates: MutableMap<ReleaseDateType, LocalDate>) {
     if (sentence.releaseDateTypes.contains(ETD)) {
@@ -536,8 +556,7 @@ class BookingExtractionService(
     }
   }
 
-  private fun getEffectiveSentenceLength(start: LocalDate, end: LocalDate): Period =
-    Period.between(start, end.plusDays(1))
+  private fun getEffectiveSentenceLength(start: LocalDate, end: LocalDate): Period = Period.between(start, end.plusDays(1))
 
   private fun extractManyNonParoleDate(
     sentences: List<CalculableSentence>,
@@ -564,7 +583,8 @@ class BookingExtractionService(
       .filter { it.sentenceCalculation.topUpSupervisionDate != null }
       .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
 
-    return if (latestTUSEDSentence != null && latestTUSEDSentence.sentenceCalculation.topUpSupervisionDate!!.isAfter(
+    return if (latestTUSEDSentence != null &&
+      latestTUSEDSentence.sentenceCalculation.topUpSupervisionDate!!.isAfter(
         latestLicenseExpiryDate,
       )
     ) {
@@ -621,9 +641,10 @@ class BookingExtractionService(
       }
     }
     val hasLicence = sentences.any {
-      it.sentenceCalculation.licenceExpiryDate != null && it.sentenceCalculation.licenceExpiryDate!!.isAfterOrEqualTo(
-        latestReleaseDate,
-      )
+      it.sentenceCalculation.licenceExpiryDate != null &&
+        it.sentenceCalculation.licenceExpiryDate!!.isAfterOrEqualTo(
+          latestReleaseDate,
+        )
     }
 
     if ((sentences.any { it.isDto() })) {

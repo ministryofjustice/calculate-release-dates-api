@@ -1,0 +1,36 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2024-09-20"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 2
+        }
+      },
+      "sentencedAt": "2024-09-20",
+      "identifier": "cb304745-d781-47d3-b931-4baa31551fc5",
+      "hasAnSDSEarlyReleaseExclusion": "VIOLENT_T3"
+    },
+    {
+      "offence": {
+        "committedAt": "2024-09-20"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 2
+        }
+      },
+      "sentencedAt": "2024-09-20",
+      "hasAnSDSEarlyReleaseExclusion": "VIOLENT_T3",
+      "consecutiveSentenceUUIDs": [
+        "cb304745-d781-47d3-b931-4baa31551fc5"
+      ]
+    }
+  ]
+}

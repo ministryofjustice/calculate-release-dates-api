@@ -21,6 +21,8 @@ generic-service:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
     DB_SSL_ENABLED: "true"
     HMPPS_SQS_USE_WEB_TOKEN: "true"
+    HDC_365_FEATURE_TOGGLE: "true"
+    BOTUS_CONSECUTIVE_JOURNEY_FEATURE_TOGGLE: "true"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
@@ -58,6 +60,6 @@ generic-data-analytics-extractor:
   args: "extract_table_names.py && extract_psql_all_tables_to_csv.sh && transfer_local_to_s3.sh"
   resources:
     requests:
-      memory: 1G
-    limits:
       memory: 2G
+    limits:
+      memory: 4G

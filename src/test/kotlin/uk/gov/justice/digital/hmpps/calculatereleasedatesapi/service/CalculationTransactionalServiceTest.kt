@@ -168,6 +168,7 @@ class CalculationTransactionalServiceTest {
     error: String?,
     params: String?,
     expectedValidationMessage: String?,
+    assertSds40: Boolean? = false,
   ) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
@@ -214,6 +215,9 @@ class CalculationTransactionalServiceTest {
       val result = bookingData.first
       assertEquals(result.dates, calculatedReleaseDates.calculationResult.dates)
       assertEquals(result.effectiveSentenceLength, calculatedReleaseDates.calculationResult.effectiveSentenceLength)
+      if (assertSds40 == true) {
+        assertEquals(result.affectedBySds40, calculatedReleaseDates.calculationResult.affectedBySds40)
+      }
       if (bookingData.second.contains("sdsEarlyReleaseAllocatedTranche")) {
         assertEquals(result.sdsEarlyReleaseAllocatedTranche, calculatedReleaseDates.calculationResult.sdsEarlyReleaseAllocatedTranche)
         assertEquals(result.sdsEarlyReleaseTranche, calculatedReleaseDates.calculationResult.sdsEarlyReleaseTranche)
@@ -649,7 +653,7 @@ class CalculationTransactionalServiceTest {
     val workingDayService = WorkingDayService(bankHolidayService)
     val tusedCalculator = TusedCalculator(workingDayService)
 
-    val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
+    val hdcedCalculator = HdcedCalculator(hdcedConfiguration, featureToggles = FeatureToggles(hdc365 = true))
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val sentenceAdjustedCalculationService =
       SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)

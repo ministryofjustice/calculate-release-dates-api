@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.InterimHdcCalcType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -23,6 +24,7 @@ data class SentenceCalculation(
     get() {
       val date = unadjustedReleaseDate.unadjustedHistoricDeterminateReleaseDate
         .plusDays(adjustments.adjustmentsForInitalRelease())
+        .minusDays(adjustments.unusedAdaDays)
       return if (date.isAfter(sentence.sentencedAt)) {
         date
       } else {
@@ -40,13 +42,30 @@ data class SentenceCalculation(
       }
     }
 
-  fun isImmediateRelease(): Boolean {
-    return sentence.sentencedAt == adjustedDeterminateReleaseDate
+  fun getDateByType(type: ReleaseDateType): LocalDate? {
+    if (!breakdownByReleaseDateType.containsKey(type)) {
+      return null
+    }
+
+    return when (type) {
+      ReleaseDateType.ARD -> adjustedDeterminateReleaseDate
+      ReleaseDateType.CRD -> adjustedDeterminateReleaseDate
+      ReleaseDateType.PRRD -> adjustedPostRecallReleaseDate
+      ReleaseDateType.LED -> licenceExpiryDate
+      ReleaseDateType.SED -> expiryDate
+      ReleaseDateType.NPD -> nonParoleDate
+      ReleaseDateType.TUSED -> topUpSupervisionDate
+      ReleaseDateType.PED -> extendedDeterminateParoleEligibilityDate
+      ReleaseDateType.SLED -> expiryDate
+      ReleaseDateType.HDCED -> homeDetentionCurfewEligibilityDate
+      ReleaseDateType.NCRD -> notionalConditionalReleaseDate
+      else -> null
+    }
   }
 
-  fun isImmediateCustodyRelease(): Boolean {
-    return isImmediateRelease() && (1 - adjustments.adjustmentsForInitalRelease()) == releaseDateCalculation.numberOfDaysToDeterminateReleaseDate.toLong()
-  }
+  fun isImmediateRelease(): Boolean = sentence.sentencedAt == adjustedDeterminateReleaseDate
+
+  fun isImmediateCustodyRelease(): Boolean = isImmediateRelease() && (1 - adjustments.adjustmentsForInitalRelease()) == releaseDateCalculation.numberOfDaysToDeterminateReleaseDate.toLong()
 
   val numberOfDaysToAddToLicenceExpiryDate: Int
     get() {
@@ -142,7 +161,19 @@ data class SentenceCalculation(
   var numberOfDaysToHomeDetentionCurfewEligibilityDate: Long = 0
   var homeDetentionCurfewEligibilityDate: LocalDate? = null
 
+  // These HDC-365 related interim maps are used to determine the actual HDCED values
+  val noDaysToHdcedByCalcType: MutableMap<InterimHdcCalcType, Long> = mutableMapOf(
+    InterimHdcCalcType.HDCED_PRE_365_RULES to 0,
+    InterimHdcCalcType.HDCED_POST_365_RULES to 0,
+  )
+  val hdcedByCalcType: MutableMap<InterimHdcCalcType, LocalDate?> = mutableMapOf(
+    InterimHdcCalcType.HDCED_PRE_365_RULES to null,
+    InterimHdcCalcType.HDCED_POST_365_RULES to null,
+  )
+
   var breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
+
+  var breakdownByInterimHdcCalcType: MutableMap<InterimHdcCalcType, ReleaseDateCalculationBreakdown> = mutableMapOf()
 
   // Notional Conditional Release Date (NCRD)
   var numberOfDaysToNotionalConditionalReleaseDate: Long = 0
@@ -181,9 +212,7 @@ data class SentenceCalculation(
   var topUpSupervisionDate: LocalDate? = null
   var isReleaseDateConditional: Boolean = false
 
-  private fun isDateDefaultedToCommencement(releaseDate: LocalDate): Boolean {
-    return !sentence.isRecall() && trancheCommencement != null && sentence.sentenceParts().any { it.identificationTrack.isEarlyReleaseTrancheOneTwo() } && releaseDate.isBefore(trancheCommencement)
-  }
+  private fun isDateDefaultedToCommencement(releaseDate: LocalDate): Boolean = !sentence.isRecall() && trancheCommencement != null && sentence.sentenceParts().any { it.identificationTrack.isEarlyReleaseTrancheOneTwo() } && releaseDate.isBefore(trancheCommencement)
 
   fun buildString(releaseDateTypes: List<ReleaseDateType>): String {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
