@@ -1,0 +1,24 @@
+[
+  {
+    "type": "SLED",
+    "date": "2027-09-08",
+    "hints": []
+  },
+  {
+    "type": "CRD",
+    "date": "2025-12-08",
+    "hints": []
+  },
+  {
+    "type": "HDCED",
+    "date": "2025-06-03",
+    "hints": [
+      "Defaulted to HDC365 commencement"
+    ]
+  },
+  {
+    "type": "ESED",
+    "date": "2027-09-29",
+    "hints": []
+  }
+]

@@ -1,0 +1,75 @@
+{
+  "concurrentSentences": [],
+  "consecutiveSentence": {
+    "sentencedAt": "2024-10-30",
+    "sentenceLength": "35 months",
+    "sentenceLengthDays": 1065,
+    "dates": {
+      "SLED": {
+        "unadjusted": "2027-09-29",
+        "adjusted": "2027-09-08",
+        "daysFromSentenceStart": 1065,
+        "adjustedByDays": 21
+      },
+      "CRD": {
+        "unadjusted": "2025-12-29",
+        "adjusted": "2025-12-08",
+        "daysFromSentenceStart": 426,
+        "adjustedByDays": 21
+      }
+    },
+    "sentenceParts": [
+      {
+        "lineSequence": 2,
+        "caseSequence": 1,
+        "caseReference": "62WN0674224",
+        "sentenceLength": "1 month",
+        "sentenceLengthDays": 31,
+        "consecutiveToLineSequence": 1,
+        "consecutiveToCaseSequence": 2
+      },
+      {
+        "lineSequence": 1,
+        "caseSequence": 2,
+        "caseReference": "62WN0673124",
+        "sentenceLength": "34 months",
+        "sentenceLengthDays": 1034,
+        "consecutiveToLineSequence": null,
+        "consecutiveToCaseSequence": null
+      }
+    ]
+  },
+  "breakdownByReleaseDateType": {
+    "CRD": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -21,
+      "releaseDate": "2025-12-08",
+      "unadjustedDate": "2025-12-29"
+    },
+    "SLED": {
+      "rules": [],
+      "rulesWithExtraAdjustments": {},
+      "adjustedDays": -21,
+      "releaseDate": "2027-09-08",
+      "unadjustedDate": "2027-09-29"
+    },
+    "HDCED": {
+      "rules": [
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT",
+        "HDCED_ADJUSTED_TO_365_COMMENCEMENT"
+      ],
+      "rulesWithExtraAdjustments": {
+        "HDCED_GE_MIN_PERIOD_LT_MIDPOINT": {
+          "adjustmentValue": 213,
+          "type": "DAYS"
+        }
+      },
+      "adjustedDays": -21,
+      "releaseDate": "2025-05-10",
+      "unadjustedDate": "2024-10-30"
+    }
+  },
+  "otherDates": {},
+  "ersedNotApplicableDueToDtoLaterThanCrd": false
+}

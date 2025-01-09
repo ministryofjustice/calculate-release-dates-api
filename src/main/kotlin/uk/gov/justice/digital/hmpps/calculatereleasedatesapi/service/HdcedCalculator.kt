@@ -368,7 +368,7 @@ class HdcedCalculator(
 
   private fun addHdc365CommencementDateRule(sentenceCalculation: SentenceCalculation) {
     sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_POST_365_RULES] =
-      sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!.copy(
+      sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!.copy(
         rules = sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!.rules + HDCED_ADJUSTED_TO_365_COMMENCEMENT,
       )
   }
