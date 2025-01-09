@@ -26,8 +26,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - gradle-{{ checksum "build.gradle.kts" }}
-            - gradle-
+            - gradle-2-{{ checksum "build.gradle.kts" }}
+            - gradle-2-
       - run:
           command: ./gradlew check jacocoTestReport
       - save_cache:
