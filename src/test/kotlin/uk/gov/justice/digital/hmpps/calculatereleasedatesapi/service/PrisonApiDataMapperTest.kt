@@ -101,8 +101,22 @@ class PrisonApiDataMapperTest {
     val sentencesAndOffences = prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
     assertThat(sentencesAndOffences).isEqualTo(
       listOf(
-        SentenceAndOffenceWithReleaseArrangements(version1, version1.offences[0], false, SDSEarlyReleaseExclusionType.NO),
-        SentenceAndOffenceWithReleaseArrangements(version1, version1.offences[1], false, SDSEarlyReleaseExclusionType.NO),
+        SentenceAndOffenceWithReleaseArrangements(
+          source = version1,
+          offence = version1.offences[0],
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        ),
+        SentenceAndOffenceWithReleaseArrangements(
+          source = version1,
+          offence = version1.offences[1],
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        ),
       ),
     )
   }
@@ -131,6 +145,8 @@ class PrisonApiDataMapperTest {
       courtDescription = null,
       fineAmount = null,
       isSDSPlus = true,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
     )
     val calculationRequest = CalculationRequest(
       sentenceAndOffences = objectMapper.valueToTree(listOf(version2)),
@@ -156,6 +172,8 @@ class PrisonApiDataMapperTest {
       courtDescription = null,
       fineAmount = null,
       isSDSPlus = true,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
     val theOtherSentenceAndOffence = aNewSentenceAndOffence.copy(offence = OffenderOffence(2L, LocalDate.of(2015, 1, 1), null, "Another Dummy Offence", "description", listOf("A")))
@@ -185,6 +203,8 @@ class PrisonApiDataMapperTest {
       courtDescription = null,
       fineAmount = null,
       isSDSPlus = true,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+      isSDSPlusOffenceInPeriod = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.SEXUAL,
     )
     val calculationRequest = CalculationRequest(
@@ -217,6 +237,8 @@ class PrisonApiDataMapperTest {
       courtDescription = null,
       fineAmount = null,
       isSDSPlus = true,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+      isSDSPlusOffenceInPeriod = true,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
@@ -224,7 +246,8 @@ class PrisonApiDataMapperTest {
       "\"sentenceStatus\":\"IMP\",\"sentenceCategory\":\"CAT\",\"sentenceCalculationType\":\"ADIMP\",\"sentenceTypeDescription\":\"ADMIP\"," +
       "\"sentenceDate\":\"2022-06-27\",\"terms\":[{\"years\":8,\"months\":0,\"weeks\":0,\"days\":0,\"code\":\"IMP\"}],\"offence\":" +
       "{\"offenderChargeId\":1,\"offenceStartDate\":\"2015-01-01\",\"offenceEndDate\":null,\"offenceCode\":\"ADIMP_ORA\"," +
-      "\"offenceDescription\":\"description\",\"indicators\":[\"A\"]},\"caseReference\":null,\"courtDescription\":null,\"fineAmount\":null,\"isSDSPlus\":true}]"
+      "\"offenceDescription\":\"description\",\"indicators\":[\"A\"]},\"caseReference\":null,\"courtDescription\":null,\"fineAmount\":null" +
+      ",\"isSDSPlus\":true,\"isSDSPlusEligibleSentenceTypeLengthAndOffence\":true,\"isSDSPlusOffenceInPeriod\":true}]"
 
     val calculationRequest = CalculationRequest(
       sentenceAndOffences = objectMapper.readTree(jsonWithoutHasAnSDSExclusion),

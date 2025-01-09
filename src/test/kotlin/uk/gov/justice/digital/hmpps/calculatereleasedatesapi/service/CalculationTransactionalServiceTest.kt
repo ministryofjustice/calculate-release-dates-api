@@ -263,7 +263,7 @@ class CalculationTransactionalServiceTest {
       TestUtil.objectMapper().writeValueAsString(calculationBreakdown),
     )
     val actualJson: String? = TestUtil.objectMapper().writeValueAsString(calculationBreakdown)
-    val expectedJson: String? =
+    val expectedJson: String =
       jsonTransformation.getJsonTest("$exampleType/$exampleNumber.json", "calculation_breakdown_response")
 
     JSONAssert.assertEquals(
@@ -845,8 +845,10 @@ class CalculationTransactionalServiceTest {
           SentenceAndOffenceWithReleaseArrangements(
             originalSentence,
             originalSentence.offences[0],
-            false,
-            SDSEarlyReleaseExclusionType.NO,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
           ),
         ),
         prisonerDetails,
@@ -901,7 +903,7 @@ class CalculationTransactionalServiceTest {
           "\"offenceCode\":null},\"duration\":{\"durationElements\":{\"DAYS\":0,\"WEEKS\":0,\"MONTHS\":0,\"YEARS\":5}}," +
           "\"sentencedAt\":\"2021-02-03\",\"identifier\":\"5ac7a5ae-fa7b-4b57-a44f-8eddde24f5fa\"," +
           "\"consecutiveSentenceUUIDs\":[],\"caseSequence\":1,\"lineSequence\":2,\"caseReference\":null," +
-          "\"recallType\":null,\"isSDSPlus\":false,\"hasAnSDSEarlyReleaseExclusion\":\"NO\"}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
+          "\"recallType\":null,\"isSDSPlus\":false,\"isSDSPlusEligibleSentenceTypeLengthAndOffence\":false,\"isSDSPlusOffenceInPeriod\":false,\"hasAnSDSEarlyReleaseExclusion\":\"NO\"}],\"adjustments\":{},\"returnToCustodyDate\":null,\"fixedTermRecallDetails\":null," +
           "\"bookingId\":12345}",
       )
 
@@ -959,6 +961,7 @@ class CalculationTransactionalServiceTest {
       caseSequence = 1,
       lineSequence = 2,
       isSDSPlus = false,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 

@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.PRISONER_SUBJECT_TO_PTD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_FROM_TO_DATES_REQUIRED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_OVERLAPS_WITH_REMAND
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.REMAND_OVERLAPS_WITH_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SEC_91_SENTENCE_TYPE_INCORRECT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.SENTENCE_HAS_MULTIPLE_TERMS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL
@@ -37,7 +36,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
       REMAND_OVERLAPS_WITH_SENTENCE_PRISONER_ID,
       listOf(
         ValidationMessage(
-          REMAND_OVERLAPS_WITH_SENTENCE,
+          ValidationCode.REMAND_OVERLAPS_WITH_SENTENCE,
           arguments = listOf("2000-04-29", "2001-02-23", "2000-04-28", "2000-04-30"),
         ),
       ),
@@ -56,16 +55,19 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on future dated adjustments`() {
+    mockManageOffencesClient.noneInPCSC(listOf("CD98075", "CJ88144", "CJ88148", "OF61016", "TH68037"))
     runValidationAndCheckMessages("CRS-1044", listOf(ValidationMessage(ADJUSTMENT_FUTURE_DATED_RADA)))
   }
 
   @Test
   fun `Run validation for overlapping remand and custodial period`() {
+    mockManageOffencesClient.noneInPCSC(listOf("MD71526", "MD71530", "MD71533", "PC02021"))
     runValidationAndCheckMessages("CRS-1394", listOf())
   }
 
   @Test
   fun `Run validation on invalid data`() {
+    mockManageOffencesClient.noneInPCSC(listOf("GBH", "SX03014"))
     runValidationAndCheckMessages(
       VALIDATION_PRISONER_ID,
       listOf(
@@ -131,6 +133,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on extinguished crd booking`() {
+    mockManageOffencesClient.noneInPCSC(listOf("CT94012", "TH68003A", "TH68045"))
     runValidationAndCheckMessages(
       "EXTINGUISH",
       listOf(
@@ -151,6 +154,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on adjustment after release date 1`() {
+    mockManageOffencesClient.noneInPCSC(listOf("MD71134", "MD71191"))
     runValidationAndCheckMessages(
       "CRS-796-1",
       listOf(
@@ -162,6 +166,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on adjustment after release date 1 with more RADA and ADA`() {
+    mockManageOffencesClient.noneInPCSC(listOf("MD71134", "MD71191"))
     runValidationAndCheckMessages(
       "CRS-796-1-more-adas-radas",
       listOf(
@@ -173,11 +178,13 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation on adjustment after release date 2`() {
+    mockManageOffencesClient.noneInPCSC(listOf("CD71040", "FI68247", "FI68410"))
     runValidationAndCheckMessages("CRS-796-2", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
   }
 
   @Test
   fun `Run validation on adjustment after release with a term`() {
+    mockManageOffencesClient.noneInPCSC(listOf("RT88333", "TH68013"))
     runValidationAndCheckMessages("CRS-1191-1", listOf(ValidationMessage(ADJUSTMENT_AFTER_RELEASE_ADA)))
   }
 
