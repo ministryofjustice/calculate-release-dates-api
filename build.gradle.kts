@@ -126,4 +126,5 @@ afterEvaluate {
       "See https://github.com/springdoc/springdoc-openapi-gradle-plugin/issues/102",
     )
   }
+
 }
