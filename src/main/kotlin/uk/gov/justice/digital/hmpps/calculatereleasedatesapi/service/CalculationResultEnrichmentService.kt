@@ -14,8 +14,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHi
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.HDC_365_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SDS_40_COMMENCEMENT_DATE
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isSdsCalcType
 import java.time.Clock
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -75,7 +75,7 @@ class CalculationResultEnrichmentService(
 
     return sentenceAndOffences.none {
       !it.isSDSPlus &&
-        (it.sentenceCalculationType.isSdsCalcType() && it.sentenceDate.isAfter(SDS_40_COMMENCEMENT_DATE))
+        (SentenceCalculationType.isSDSPlusEligible(it.sentenceCalculationType) && it.sentenceDate.isAfter(SDS_40_COMMENCEMENT_DATE))
     }
   }
 
@@ -97,7 +97,7 @@ class CalculationResultEnrichmentService(
   private val longFormat = DateTimeFormatter.ofPattern("cccc, dd LLLL yyyy")
 
   private fun weekendAdjustmentHintOrNull(type: ReleaseDateType, date: LocalDate): ReleaseDateHint? {
-    if (type !in typesAllowedWeekendAdjustment || date.isBefore(LocalDate.now(clock))) {
+    if (!type.allowsWeekendAdjustment || date.isBefore(LocalDate.now(clock))) {
       return null
     }
     val adjustedToWorkingDay = when (type) {
@@ -163,6 +163,10 @@ class CalculationResultEnrichmentService(
           hints += ReleaseDateHint("HDCED adjusted for the PRRD of a recall")
         }
       }
+
+      if (featureToggles.hdc365) {
+        hdc365Hints(hdcRules, date, hints)
+      }
     }
     if (displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
       hints += ReleaseDateHint("The Detention and training order (DTO) release date is later than the Home detention curfew eligibility date (HDCED)")
@@ -170,6 +174,15 @@ class CalculationResultEnrichmentService(
     hints
   } else {
     emptyList()
+  }
+
+  private fun hdc365Hints(hdcRules: Set<CalculationRule>, hdcedDate: LocalDate, hints: MutableList<ReleaseDateHint>) {
+    if (CalculationRule.HDC_180 in hdcRules && hdcedDate < HDC_365_COMMENCEMENT_DATE) {
+      hints += ReleaseDateHint("HDC180 rules have been applied")
+    }
+    if (CalculationRule.HDCED_ADJUSTED_TO_365_COMMENCEMENT in hdcRules) {
+      hints += ReleaseDateHint("Defaulted to HDC365 commencement")
+    }
   }
 
   private fun mtdHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
@@ -235,7 +248,7 @@ class CalculationResultEnrichmentService(
       log.info(">>>>>>>>>>>>>>>>>>>>>>>>>> SDS40 for $type")
       val rules = calculationBreakdown.breakdownByReleaseDateType[type]!!.rules
       log.info("rules: $rules")
-      if (rules.contains(CalculationRule.SDS_EARLY_RELEASE_APPLIES) && earlyReleaseHintTypes.contains(type)) {
+      if (rules.contains(CalculationRule.SDS_EARLY_RELEASE_APPLIES) && type.isEarlyReleaseHintType) {
         return ReleaseDateHint("40% date has been applied")
       }
       if ((
@@ -244,12 +257,12 @@ class CalculationResultEnrichmentService(
               CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT,
             )
           ) &&
-        earlyReleaseHintTypes.contains(type)
+        type.isEarlyReleaseHintType
       ) {
         val trancheText = if (rules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT)) "1" else "2"
         return ReleaseDateHint("Defaulted to tranche $trancheText commencement")
       }
-      if (rules.contains(CalculationRule.SDS_STANDARD_RELEASE_APPLIES) && standardReleaseHintTypes.contains(type)) {
+      if (rules.contains(CalculationRule.SDS_STANDARD_RELEASE_APPLIES) && type.isStandardReleaseHintType) {
         return ReleaseDateHint("50% date has been applied")
       }
     }
@@ -269,28 +282,6 @@ class CalculationResultEnrichmentService(
   }
 
   companion object {
-    private val typesAllowedWeekendAdjustment = listOf(
-      ReleaseDateType.CRD,
-      ReleaseDateType.ARD,
-      ReleaseDateType.PRRD,
-      ReleaseDateType.HDCED,
-      ReleaseDateType.PED,
-      ReleaseDateType.ETD,
-      ReleaseDateType.MTD,
-      ReleaseDateType.LTD,
-    )
-    private val earlyReleaseHintTypes = listOf(
-      ReleaseDateType.CRD,
-      ReleaseDateType.ARD,
-      ReleaseDateType.HDCED,
-      ReleaseDateType.ERSED,
-      ReleaseDateType.PED,
-    )
-    private val standardReleaseHintTypes = listOf(
-      ReleaseDateType.HDCED,
-      ReleaseDateType.ERSED,
-      ReleaseDateType.PED,
-    )
     private val dtoSentenceTypes = listOf(SentenceCalculationType.DTO_ORA.name, SentenceCalculationType.DTO.name)
     private const val HDC_POLICY_ADJUSTED_SENTENCE_DATE_HINT = "Adjusted for sentence date, plus 14 days as per HDC policy"
     private const val HDC_POLICY_URL = "https://assets.publishing.service.gov.uk/media/66701aa6fdbf70d6d79d9705/Home_Detention_Curfew_V7___002_.pdf"

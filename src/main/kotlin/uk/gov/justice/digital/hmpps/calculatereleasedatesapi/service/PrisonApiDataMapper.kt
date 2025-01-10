@@ -51,6 +51,7 @@ class PrisonApiDataMapper(private val objectMapper: ObjectMapper) {
   fun mapReturnToCustodyDate(calculationRequest: CalculationRequest): ReturnToCustodyDate {
     return objectMapper.convertValue(calculationRequest.returnToCustodyDate, ReturnToCustodyDate::class.java)
   }
+
   fun mapOffenderFinePayment(calculationRequest: CalculationRequest): List<OffenderFinePayment> {
     val reader = objectMapper.readerFor(object : TypeReference<List<OffenderFinePayment>>() {})
     return reader.readValue(calculationRequest.offenderFinePayments)

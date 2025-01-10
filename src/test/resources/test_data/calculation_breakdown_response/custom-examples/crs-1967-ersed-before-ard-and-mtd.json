@@ -35,7 +35,8 @@
     "HDCED": {
       "rules": [
           "HDCED_MINIMUM_CUSTODIAL_PERIOD",
-          "HDCED_GE_MIN_PERIOD_LT_MIDPOINT"
+          "HDCED_GE_MIN_PERIOD_LT_MIDPOINT",
+          "HDC_180"
       ],
       "rulesWithExtraAdjustments": {
         "HDCED_MINIMUM_CUSTODIAL_PERIOD": {

@@ -115,8 +115,14 @@ class JsonTransformation {
 
   @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
   private fun getResourceAsText(path: String): String {
-    log.info("Loading file: {}", path)
-    return object {}.javaClass.getResource(path).readText()
+    log.info("Attempting to load file: {}", path)
+    return try {
+      object {}.javaClass.getResource(path)?.readText()
+        ?: throw FileNotFoundException("Resource not found: $path")
+    } catch (e: Exception) {
+      log.error("Error loading resource at path: {}", path, e)
+      throw e
+    }
   }
 
   companion object {

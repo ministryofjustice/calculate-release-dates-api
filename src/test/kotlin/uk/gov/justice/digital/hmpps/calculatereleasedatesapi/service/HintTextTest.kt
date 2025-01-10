@@ -225,7 +225,7 @@ class HintTextTest {
 
   private val today: LocalDate = LocalDate.now()
   private val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-  private val featureToggles = FeatureToggles(sdsEarlyReleaseHints = true)
+  private val featureToggles = FeatureToggles(sdsEarlyReleaseHints = true, hdc365 = true)
 
   private val nonFridayReleaseService = NonFridayReleaseService(bankHolidayService, clock)
 
