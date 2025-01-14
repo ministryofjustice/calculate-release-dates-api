@@ -73,7 +73,7 @@ class SDSPlusCheckResult(
     return if (listDExtended) {
       sentencedAfterPcsc()
     } else {
-      sentencedAfterPcsc() || offenceMarkers?.pcscMarkers?.inListA == true  && sentencedWithinOriginalSdsPlusWindow()
+      sentencedAfterPcsc() || offenceMarkers?.pcscMarkers?.inListA == true && sentencedWithinOriginalSdsPlusWindow()
     }
   }
 

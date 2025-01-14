@@ -83,7 +83,6 @@ class ReleaseArrangementLookupServiceTest {
     assertTrue(returnedResult[0].isSDSPlusEligibleSentenceTypeLengthAndOffence)
   }
 
-
   @Test
   fun `SDS+ is NOT set for ADIMP as sentenced before SDS and not over 7 years in duration`() {
     val returnedResult = underTest.populateReleaseArrangements(sentenceMatchesNoMatchingOffencesDueToSentenceDate)
