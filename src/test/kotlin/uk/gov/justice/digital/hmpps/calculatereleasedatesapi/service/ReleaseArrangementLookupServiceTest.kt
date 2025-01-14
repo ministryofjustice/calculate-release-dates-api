@@ -74,6 +74,17 @@ class ReleaseArrangementLookupServiceTest {
   }
 
   @Test
+  fun `SDS+ is NOT set for SDS+ Over 7 Years, on List D, sentenced prior to PCSC`() {
+    whenever(mockManageOffencesService.getPcscMarkersForOffenceCodes(any())).thenReturn(listOf(pcscListDMarkers))
+
+    val returnedResult = underTest.populateReleaseArrangements(sentencedAfterSDSPlusBeforePCSCLongerThan7Years)
+    assertFalse(returnedResult[0].isSDSPlus)
+    assertFalse(returnedResult[0].isSDSPlusOffenceInPeriod)
+    assertTrue(returnedResult[0].isSDSPlusEligibleSentenceTypeLengthAndOffence)
+  }
+
+
+  @Test
   fun `SDS+ is NOT set for ADIMP as sentenced before SDS and not over 7 years in duration`() {
     val returnedResult = underTest.populateReleaseArrangements(sentenceMatchesNoMatchingOffencesDueToSentenceDate)
     // no call to MO should take place as offences don't match filter.
@@ -654,7 +665,7 @@ class ReleaseArrangementLookupServiceTest {
         null,
         "TEST",
         "TEST",
-        SentenceCalculationType.YOI.toString(),
+        SentenceCalculationType.ADIMP.toString(),
         "TEST",
         LocalDate.of(2021, 4, 2),
         listOf(SentenceTerms(12, 4, 1, 1)),
