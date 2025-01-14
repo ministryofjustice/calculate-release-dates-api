@@ -1,0 +1,25 @@
+[
+  {
+    "type": "SLED",
+    "date": "2027-08-27",
+    "hints": []
+  },
+  {
+    "type": "CRD",
+    "date": "2025-07-22",
+    "hints": ["40% date has been applied"]
+  },
+  {
+    "type": "HDCED",
+    "date": "2025-02-07",
+    "hints": [
+      "40% date has been applied",
+      "HDCED adjusted for the CRD of a concurrent sentence or default term"
+    ]
+  },
+  {
+    "type": "ESED",
+    "date": "2027-08-27",
+    "hints": []
+  }
+]
