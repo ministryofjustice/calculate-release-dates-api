@@ -36,6 +36,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
@@ -70,6 +71,58 @@ class HintTextTest {
   private val nomisCommentService = mock<NomisCommentService>()
   private val bankHolidayService = mock<BankHolidayService>()
   private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
+  private val sentenceDetail = SentenceDetail(
+    sentenceExpiryDate = LocalDate.of(2025, 1, 1),
+    automaticReleaseDate = LocalDate.of(2025, 1, 1),
+    conditionalReleaseDate = LocalDate.of(2025, 1, 1),
+    nonParoleDate = LocalDate.of(2025, 1, 1),
+    postRecallReleaseDate = LocalDate.of(2025, 1, 1),
+    licenceExpiryDate = LocalDate.of(2025, 1, 1),
+    homeDetentionCurfewEligibilityDate = LocalDate.of(2025, 1, 1),
+    paroleEligibilityDate = LocalDate.of(2025, 1, 1),
+    homeDetentionCurfewActualDate = LocalDate.of(2025, 1, 1),
+    actualParoleDate = LocalDate.of(2025, 1, 1),
+    releaseOnTemporaryLicenceDate = LocalDate.of(2025, 1, 1),
+    earlyRemovalSchemeEligibilityDate = LocalDate.of(2025, 1, 1),
+    earlyTermDate = LocalDate.of(2025, 1, 1),
+    midTermDate = LocalDate.of(2025, 1, 1),
+    lateTermDate = LocalDate.of(2025, 1, 1),
+    topupSupervisionExpiryDate = LocalDate.of(2025, 1, 1),
+    tariffDate = LocalDate.of(2025, 1, 1),
+    dtoPostRecallReleaseDate = LocalDate.of(2025, 1, 1),
+    tariffEarlyRemovalSchemeEligibilityDate = LocalDate.of(2025, 1, 1),
+    effectiveSentenceEndDate = LocalDate.of(2025, 1, 1),
+    bookingId = 123,
+    sentenceStartDate = LocalDate.of(2025, 1, 1),
+    additionalDaysAwarded = 0,
+    automaticReleaseOverrideDate = null,
+    conditionalReleaseOverrideDate = null,
+    nonParoleOverrideDate = null,
+    postRecallReleaseOverrideDate = null,
+    dtoPostRecallReleaseDateOverride = null,
+    nonDtoReleaseDate = LocalDate.of(2025, 1, 1),
+    sentenceExpiryCalculatedDate = LocalDate.of(2025, 1, 1),
+    sentenceExpiryOverrideDate = null,
+    licenceExpiryCalculatedDate = null,
+    licenceExpiryOverrideDate = null,
+    paroleEligibilityCalculatedDate = LocalDate.of(2025, 1, 1),
+    paroleEligibilityOverrideDate = null,
+    topupSupervisionExpiryCalculatedDate = LocalDate.of(2025, 1, 1),
+    topupSupervisionExpiryOverrideDate = null,
+    homeDetentionCurfewEligibilityCalculatedDate = LocalDate.of(2025, 1, 1),
+    homeDetentionCurfewEligibilityOverrideDate = null,
+    nonDtoReleaseDateType = "CRD",
+    confirmedReleaseDate = LocalDate.of(2025, 1, 1),
+    releaseDate = LocalDate.of(2025, 1, 1),
+    etdOverrideDate = null,
+    etdCalculatedDate = LocalDate.of(2025, 1, 1),
+    mtdOverrideDate = null,
+    mtdCalculatedDate = LocalDate.of(2025, 1, 1),
+    ltdOverrideDate = null,
+    ltdCalculatedDate = LocalDate.of(2025, 1, 1),
+    topupSupervisionStartDate = LocalDate.of(2025, 1, 1),
+    homeDetentionCurfewEndDate = LocalDate.of(2025, 1, 1),
+  )
 
   @BeforeEach
   fun beforeAll() {
@@ -94,49 +147,67 @@ class HintTextTest {
     assertThat(actualDatesAndHints).isEqualTo(expectedDatesAndHints)
   }
 
-  private fun createCalculatedReleaseDates(calculation: CalculationResult): CalculatedReleaseDates {
-    return CalculatedReleaseDates(
-      dates = calculation.dates,
-      calculationRequestId = -1,
-      bookingId = -1,
-      prisonerId = "",
-      calculationStatus = PRELIMINARY,
-      calculationReference = UUID.randomUUID(),
-      calculationReason = CALCULATION_REASON,
-      calculationDate = LocalDate.of(2024, 1, 1),
+  @ParameterizedTest
+  @CsvFileSource(resources = ["/test_data/hint-text.csv"], numLinesToSkip = 1)
+  fun `Test Hint Text with date overrides`(testCase: String) {
+    log.info("Running hint text test-case with date override $testCase")
+
+    val (booking, calculationUserInputs) = jsonTransformation.loadHintTextBooking(testCase)
+    val calculation = calculationService.calculateReleaseDates(booking, calculationUserInputs)
+    val calculatedReleaseDates = createCalculatedReleaseDates(calculation.calculationResult)
+    val calculationBreakdown = performCalculationBreakdown(booking, calculatedReleaseDates, calculationUserInputs)
+    val breakdownWithHints = enrichBreakdownWithHints(
+      calculation.calculationResult.dates,
+      calculationBreakdown,
+      calculation.calculationResult.dates.map { it.key.name },
     )
+
+    val actualDatesAndHints = mapToDatesAndHints(breakdownWithHints)
+    val expectedDatesAndHints = jsonTransformation.loadHintTextResults(testCase)
+
+    assertThat(actualDatesAndHints).isEqualTo(expectedDatesAndHints.map { it.copy(hints = listOf("Manually overridden") + it.hints) })
   }
+
+  private fun createCalculatedReleaseDates(calculation: CalculationResult): CalculatedReleaseDates = CalculatedReleaseDates(
+    dates = calculation.dates,
+    calculationRequestId = -1,
+    bookingId = -1,
+    prisonerId = "",
+    calculationStatus = PRELIMINARY,
+    calculationReference = UUID.randomUUID(),
+    calculationReason = CALCULATION_REASON,
+    calculationDate = LocalDate.of(2024, 1, 1),
+  )
 
   private fun performCalculationBreakdown(
     booking: Booking,
     calculatedReleaseDates: CalculatedReleaseDates,
     calculationUserInputs: CalculationUserInputs,
-  ): CalculationBreakdown =
-    calculationTransactionalService.calculateWithBreakdown(
-      booking,
-      calculatedReleaseDates,
-      calculationUserInputs,
-    )
+  ): CalculationBreakdown = calculationTransactionalService.calculateWithBreakdown(
+    booking,
+    calculatedReleaseDates,
+    calculationUserInputs,
+  )
 
   private fun enrichBreakdownWithHints(
     dates: Map<ReleaseDateType, LocalDate>,
     calculationBreakdown: CalculationBreakdown,
-  ): Map<ReleaseDateType, DetailedDate> =
-    calculationResultEnrichmentService.addDetailToCalculationDates(
-      releaseDates = dates.map { ReleaseDate(date = it.value, type = it.key) },
-      sentenceAndOffences = SOURCE_DATA.sentenceAndOffences,
-      calculationBreakdown = calculationBreakdown,
-      historicalTusedSource = null,
-    )
+    sentenceOverrideDates: List<String> = emptyList(),
+  ): Map<ReleaseDateType, DetailedDate> = calculationResultEnrichmentService.addDetailToCalculationDates(
+    releaseDates = dates.map { ReleaseDate(date = it.value, type = it.key) },
+    sentenceAndOffences = SOURCE_DATA.sentenceAndOffences,
+    calculationBreakdown = calculationBreakdown,
+    historicalTusedSource = null,
+    sentenceDateOverrides = sentenceOverrideDates,
+  )
 
-  private fun mapToDatesAndHints(breakdownWithHints: Map<ReleaseDateType, DetailedDate>): List<DatesAndHints> =
-    breakdownWithHints.map {
-      DatesAndHints(
-        type = it.key,
-        date = it.value.date,
-        hints = it.value.hints.map { h -> h.text },
-      )
-    }
+  private fun mapToDatesAndHints(breakdownWithHints: Map<ReleaseDateType, DetailedDate>): List<DatesAndHints> = breakdownWithHints.map {
+    DatesAndHints(
+      type = it.key,
+      date = it.value.date,
+      hints = it.value.hints.map { h -> h.text },
+    )
+  }
 
   private val hdcedConfiguration = hdcedConfigurationForTests()
   private val ersedConfiguration = ersedConfigurationForTests()

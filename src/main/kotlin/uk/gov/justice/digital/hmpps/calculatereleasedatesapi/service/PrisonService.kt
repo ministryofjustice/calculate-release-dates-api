@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.core.codec.DecodingException
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
@@ -13,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
@@ -24,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.isSupported
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
+import java.time.LocalDate
 
 @Service
 class PrisonService(
@@ -76,9 +79,7 @@ class PrisonService(
     }
   }
 
-  fun getOffenderDetail(prisonerId: String): PrisonerDetails {
-    return prisonApiClient.getOffenderDetail(prisonerId)
-  }
+  fun getOffenderDetail(prisonerId: String): PrisonerDetails = prisonApiClient.getOffenderDetail(prisonerId)
 
   fun getBookingAndSentenceAdjustments(bookingId: Long, filterActive: Boolean = true): BookingAndSentenceAdjustments {
     val adjustments = prisonApiClient.getSentenceAndBookingAdjustments(bookingId)
@@ -98,16 +99,69 @@ class PrisonService(
     return releaseArrangementLookupService.populateReleaseArrangements(sentencesAndOffences)
   }
 
-  fun postReleaseDates(bookingId: Long, updateOffenderDates: UpdateOffenderDates) {
-    return prisonApiClient.postReleaseDates(bookingId, updateOffenderDates)
+  fun getSentenceOverrides(bookingId: Long, releaseDates: List<ReleaseDate>): List<String> {
+    val sentenceDetail = prisonApiClient.getSentenceDetail(bookingId)
+    val checkOverride: (LocalDate?, LocalDate?, ReleaseDate) -> String? = { overrideDate, actualDate, releaseDate ->
+      if (overrideDate != null && actualDate != releaseDate.date) {
+        releaseDate.type.name
+      } else {
+        null
+      }
+    }
+
+    return releaseDates.mapNotNull { releaseDate ->
+      when (releaseDate.type) {
+        ReleaseDateType.HDCED -> checkOverride(
+          sentenceDetail.homeDetentionCurfewEligibilityOverrideDate,
+          sentenceDetail.homeDetentionCurfewEligibilityDate,
+          releaseDate,
+        )
+        ReleaseDateType.CRD -> checkOverride(
+          sentenceDetail.conditionalReleaseOverrideDate,
+          sentenceDetail.conditionalReleaseDate,
+          releaseDate,
+        )
+        ReleaseDateType.LED, ReleaseDateType.SLED -> checkOverride(
+          sentenceDetail.licenceExpiryOverrideDate,
+          sentenceDetail.licenceExpiryDate,
+          releaseDate,
+        )
+        ReleaseDateType.SED -> checkOverride(
+          sentenceDetail.sentenceExpiryOverrideDate,
+          sentenceDetail.sentenceExpiryDate,
+          releaseDate,
+        )
+        ReleaseDateType.NPD -> checkOverride(
+          sentenceDetail.nonParoleOverrideDate,
+          sentenceDetail.nonParoleDate,
+          releaseDate,
+        )
+        ReleaseDateType.ARD -> checkOverride(
+          sentenceDetail.automaticReleaseOverrideDate,
+          sentenceDetail.automaticReleaseDate,
+          releaseDate,
+        )
+        ReleaseDateType.TUSED -> checkOverride(
+          sentenceDetail.topupSupervisionExpiryOverrideDate,
+          sentenceDetail.topupSupervisionExpiryDate,
+          releaseDate,
+        )
+        ReleaseDateType.PED -> checkOverride(
+          sentenceDetail.paroleEligibilityOverrideDate,
+          sentenceDetail.paroleEligibilityDate,
+          releaseDate,
+        )
+        else -> null
+      }
+    }
   }
 
-  fun getCurrentUserPrisonsList(): List<String> {
-    return prisonApiClient.getCurrentUserCaseLoads()
-      ?.filter { it.caseLoadId != "KTI" }
-      ?.map { caseLoad -> caseLoad.caseLoadId }
-      ?: emptyList()
-  }
+  fun postReleaseDates(bookingId: Long, updateOffenderDates: UpdateOffenderDates) = prisonApiClient.postReleaseDates(bookingId, updateOffenderDates)
+
+  fun getCurrentUserPrisonsList(): List<String> = prisonApiClient.getCurrentUserCaseLoads()
+    ?.filter { it.caseLoadId != "KTI" }
+    ?.map { caseLoad -> caseLoad.caseLoadId }
+    ?: emptyList()
 
   fun getActiveBookingsByEstablishment(establishmentId: String, token: String): List<CalculableSentenceEnvelope> {
     var isLastPage = false
