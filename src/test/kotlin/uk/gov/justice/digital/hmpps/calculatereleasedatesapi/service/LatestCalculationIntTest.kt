@@ -17,12 +17,65 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService) : IntegrationTestBase() {
 
   private val now = LocalDateTime.now()
+  private val sentenceDetailsStub = SentenceDetail(
+    sentenceExpiryDate = null,
+    automaticReleaseDate = null,
+    conditionalReleaseDate = null,
+    nonParoleDate = null,
+    postRecallReleaseDate = null,
+    licenceExpiryDate = LocalDate.of(2016, 11, 6),
+    homeDetentionCurfewEligibilityDate = null,
+    paroleEligibilityDate = null,
+    homeDetentionCurfewActualDate = null,
+    actualParoleDate = null,
+    releaseOnTemporaryLicenceDate = null,
+    earlyRemovalSchemeEligibilityDate = null,
+    earlyTermDate = null,
+    midTermDate = null,
+    lateTermDate = null,
+    topupSupervisionExpiryDate = LocalDate.of(2017, 1, 6),
+    tariffDate = null,
+    dtoPostRecallReleaseDate = null,
+    tariffEarlyRemovalSchemeEligibilityDate = null,
+    effectiveSentenceEndDate = LocalDate.of(2016, 11, 16),
+    bookingId = 123,
+    sentenceStartDate = LocalDate.of(2016, 11, 6),
+    additionalDaysAwarded = 0,
+    automaticReleaseOverrideDate = null,
+    conditionalReleaseOverrideDate = null,
+    nonParoleOverrideDate = null,
+    postRecallReleaseOverrideDate = null,
+    dtoPostRecallReleaseDateOverride = null,
+    nonDtoReleaseDate = null,
+    sentenceExpiryCalculatedDate = null,
+    sentenceExpiryOverrideDate = null,
+    licenceExpiryCalculatedDate = null,
+    licenceExpiryOverrideDate = null,
+    paroleEligibilityCalculatedDate = null,
+    paroleEligibilityOverrideDate = null,
+    topupSupervisionExpiryCalculatedDate = null,
+    topupSupervisionExpiryOverrideDate = null,
+    homeDetentionCurfewEligibilityCalculatedDate = null,
+    homeDetentionCurfewEligibilityOverrideDate = null,
+    nonDtoReleaseDateType = "CRD",
+    confirmedReleaseDate = null,
+    releaseDate = null,
+    etdOverrideDate = null,
+    etdCalculatedDate = null,
+    mtdOverrideDate = null,
+    mtdCalculatedDate = null,
+    ltdOverrideDate = null,
+    ltdCalculatedDate = null,
+    topupSupervisionStartDate = null,
+    homeDetentionCurfewEndDate = null,
+  )
 
   @BeforeEach
   fun setUp() {
@@ -44,9 +97,22 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
     val bookingId = 123456L
     val prisonerId = "ABC123"
     val prisonerDetails = PrisonerDetails(bookingId, prisonerId, "Joe", "Bloggs", LocalDate.of(1970, 1, 1))
-    val offenderKeyDates = OffenderKeyDates("NEW", now, "From NOMIS", conditionalReleaseDate = LocalDate.of(2030, 1, 6), sentenceExpiryDate = LocalDate.of(2025, 2, 14))
+    val offenderKeyDates = OffenderKeyDates(
+      "NEW",
+      now,
+      "From NOMIS",
+      conditionalReleaseDate = LocalDate.of(2030, 1, 6),
+      sentenceExpiryDate = LocalDate.of(2025, 2, 14),
+    )
     stubPrisoner(prisonerDetails)
     stubKeyDates(bookingId, offenderKeyDates)
+    stubSentenceDetails(
+      bookingId,
+      sentenceDetailsStub.copy(
+        conditionalReleaseDate = LocalDate.of(2040, 1, 6),
+        conditionalReleaseOverrideDate = LocalDate.of(2020, 1, 1),
+      ),
+    )
 
     val latestCalculation = webTestClient.get()
       .uri("/calculation/$prisonerId/latest")
@@ -74,6 +140,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
             ReleaseDateType.CRD.description,
             LocalDate.of(2030, 1, 6),
             listOf(
+              ReleaseDateHint("Manually overridden"),
               ReleaseDateHint(
                 "The Discretionary Friday/Pre-Bank Holiday Release Scheme Policy applies to this release date.",
                 "https://www.gov.uk/government/publications/discretionary-fridaypre-bank-holiday-release-scheme-policy-framework",
@@ -105,6 +172,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
       licenceExpiryDate = LocalDate.of(2016, 11, 6),
     )
     stubKeyDates(bookingId, offenderKeyDates)
+    stubSentenceDetails(bookingId, sentenceDetailsStub)
 
     val latestCalculation = webTestClient.get()
       .uri("/calculation/default/latest")
@@ -130,10 +198,27 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
         listOf(
           DetailedDate(ReleaseDateType.SLED, ReleaseDateType.SLED.description, LocalDate.of(2016, 11, 6), emptyList()),
           DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2016, 1, 6), emptyList()),
-          DetailedDate(ReleaseDateType.HDCED, ReleaseDateType.HDCED.description, LocalDate.of(2015, 8, 7), listOf(ReleaseDateHint("HDC180 rules have been applied"))),
+          DetailedDate(
+            ReleaseDateType.HDCED,
+            ReleaseDateType.HDCED.description,
+            LocalDate.of(2015, 8, 7),
+            listOf(ReleaseDateHint("HDC180 rules have been applied")),
+          ),
           DetailedDate(ReleaseDateType.TUSED, ReleaseDateType.TUSED.description, LocalDate.of(2017, 1, 6), emptyList()),
         ),
       ),
+    )
+  }
+
+  private fun stubSentenceDetails(bookingId: Long, sentenceDetail: SentenceDetail) {
+    mockPrisonService.withStub(
+      get("/api/bookings/$bookingId/sentenceDetail")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(objectMapper.writeValueAsString(sentenceDetail))
+            .withStatus(200),
+        ),
     )
   }
 

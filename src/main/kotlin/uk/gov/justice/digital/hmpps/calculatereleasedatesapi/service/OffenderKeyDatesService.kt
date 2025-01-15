@@ -26,15 +26,18 @@ class OffenderKeyDatesService(
 ) {
 
   fun getKeyDatesByCalcId(calculationRequestId: Long): ReleaseDatesAndCalculationContext {
-    val calculationRequest = calculationRequestRepository.findById(calculationRequestId)
-      .orElseThrow {
-        CrdWebException(
-          "Calculation request not found for ID: $calculationRequestId",
+    val calculationRequest = runCatching { calculationRequestRepository.findById(calculationRequestId).get() }
+      .getOrElse {
+        throw CrdWebException(
+          "Unable to retrieve offender key dates",
           HttpStatus.NOT_FOUND,
         )
       }
 
-    val offenderKeyDatesEither = prisonService.getOffenderKeyDates(calculationRequest.bookingId)
+    val offenderKeyDatesEither = prisonService.getOffenderKeyDates(calculationRequest.bookingId).onLeft {
+      throw CrdWebException("Unable to retrieve offender key dates", HttpStatus.NOT_FOUND)
+    }
+
     val dates = offenderKeyDatesEither.map { releaseDates(it) }
       .getOrElse { throw CrdWebException("Error in mapping/enriching release dates", HttpStatus.NOT_FOUND) }
 
