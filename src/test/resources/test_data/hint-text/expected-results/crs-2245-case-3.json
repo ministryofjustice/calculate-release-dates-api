@@ -1,0 +1,22 @@
+[
+  {
+    "type": "SLED",
+    "date": "2030-08-26",
+    "hints": []
+  },
+  {
+    "type": "CRD",
+    "date": "2025-02-24",
+    "hints": []
+  },
+  {
+    "type": "HDCED",
+    "date": "2024-08-29",
+    "hints": ["HDC180 rules have been applied"]
+  },
+  {
+    "type": "ESED",
+    "date": "2030-12-18",
+    "hints": []
+  }
+]

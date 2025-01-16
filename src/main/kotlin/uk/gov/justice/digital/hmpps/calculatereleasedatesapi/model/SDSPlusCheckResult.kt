@@ -24,20 +24,14 @@ class SDSPlusCheckResult(
 
     val offenceCode = sentenceAndOffence.offence.offenceCode
 
-    // check that things are supported and relevant
     eligibleSentence = SentenceCalculationType.isSupported(sentenceAndOffence.sentenceCalculationType) &&
       SentenceCalculationType.isSDSPlusEligible(sentenceAndOffence.sentenceCalculationType)
     offenceMarkers = sdsPlusMarkersByOffences[offenceCode]
     listDExtended = offenceCode in LEGACY_OFFENCE_CODES_FOR_OFFENCES_ON_LIST_D
 
-    // we determine whether the calculation type is none, SDS or SECTION 250
     eligibilityType = getSentenceEligibilityType(sentenceAndOffence.sentenceCalculationType)
     isSDSPlusOffenceInPeriod = offenceWithinDateRangeForLists()
 
-    // we need to know that the sentence type is supported
-    // that the sentence type is SDS (or Section 25)
-    // and it meets the relevant (4 or 7 year) length requirement,
-    // and it's associated with the relevant list
     isSDSPlusEligibleSentenceTypeLengthAndOffence = eligibleSentence && eligibleSentenceTypeLengthAndOffence()
 
     isSDSPlus = isSDSPlusEligibleSentenceTypeLengthAndOffence && isSDSPlusOffenceInPeriod
@@ -79,7 +73,7 @@ class SDSPlusCheckResult(
     return if (listDExtended) {
       sentencedAfterPcsc()
     } else {
-      sentencedAfterPcsc() || sentencedWithinOriginalSdsPlusWindow()
+      sentencedAfterPcsc() || offenceMarkers?.pcscMarkers?.inListA == true && sentencedWithinOriginalSdsPlusWindow()
     }
   }
 
