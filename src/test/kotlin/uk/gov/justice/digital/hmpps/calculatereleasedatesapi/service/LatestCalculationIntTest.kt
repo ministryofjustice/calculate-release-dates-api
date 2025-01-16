@@ -23,60 +23,6 @@ import java.time.LocalDateTime
 
 class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService) : IntegrationTestBase() {
 
-  private val now = LocalDateTime.now()
-  private val sentenceDetailsStub = SentenceDetail(
-    sentenceExpiryDate = null,
-    automaticReleaseDate = null,
-    conditionalReleaseDate = null,
-    nonParoleDate = null,
-    postRecallReleaseDate = null,
-    licenceExpiryDate = LocalDate.of(2016, 11, 6),
-    homeDetentionCurfewEligibilityDate = null,
-    paroleEligibilityDate = null,
-    homeDetentionCurfewActualDate = null,
-    actualParoleDate = null,
-    releaseOnTemporaryLicenceDate = null,
-    earlyRemovalSchemeEligibilityDate = null,
-    earlyTermDate = null,
-    midTermDate = null,
-    lateTermDate = null,
-    topupSupervisionExpiryDate = LocalDate.of(2017, 1, 6),
-    tariffDate = null,
-    dtoPostRecallReleaseDate = null,
-    tariffEarlyRemovalSchemeEligibilityDate = null,
-    effectiveSentenceEndDate = LocalDate.of(2016, 11, 16),
-    bookingId = 123,
-    sentenceStartDate = LocalDate.of(2016, 11, 6),
-    additionalDaysAwarded = 0,
-    automaticReleaseOverrideDate = null,
-    conditionalReleaseOverrideDate = null,
-    nonParoleOverrideDate = null,
-    postRecallReleaseOverrideDate = null,
-    dtoPostRecallReleaseDateOverride = null,
-    nonDtoReleaseDate = null,
-    sentenceExpiryCalculatedDate = null,
-    sentenceExpiryOverrideDate = null,
-    licenceExpiryCalculatedDate = null,
-    licenceExpiryOverrideDate = null,
-    paroleEligibilityCalculatedDate = null,
-    paroleEligibilityOverrideDate = null,
-    topupSupervisionExpiryCalculatedDate = null,
-    topupSupervisionExpiryOverrideDate = null,
-    homeDetentionCurfewEligibilityCalculatedDate = null,
-    homeDetentionCurfewEligibilityOverrideDate = null,
-    nonDtoReleaseDateType = "CRD",
-    confirmedReleaseDate = null,
-    releaseDate = null,
-    etdOverrideDate = null,
-    etdCalculatedDate = null,
-    mtdOverrideDate = null,
-    mtdCalculatedDate = null,
-    ltdOverrideDate = null,
-    ltdCalculatedDate = null,
-    topupSupervisionStartDate = null,
-    homeDetentionCurfewEndDate = null,
-  )
-
   @BeforeEach
   fun setUp() {
     mockPrisonService.withInstAgencies(
@@ -94,16 +40,6 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
 
   @Test
   fun `should be able to get latest calculation when it is from NOMIS`() {
-    val bookingId = 123456L
-    val prisonerId = "ABC123"
-    val prisonerDetails = PrisonerDetails(bookingId, prisonerId, "Joe", "Bloggs", LocalDate.of(1970, 1, 1))
-    val offenderKeyDates = OffenderKeyDates(
-      "NEW",
-      now,
-      "From NOMIS",
-      conditionalReleaseDate = LocalDate.of(2030, 1, 6),
-      sentenceExpiryDate = LocalDate.of(2025, 2, 14),
-    )
     stubPrisoner(prisonerDetails)
     stubKeyDates(bookingId, offenderKeyDates)
     stubSentenceDetails(
@@ -154,25 +90,18 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
 
   @Test
   fun `should be able to get latest calculation when it is from CRDS`() {
-    val bookingId = 1544803905L
     // stubs from JSON for sentence and offences, etc.
-    val prisonerId = "default"
     val prelim = createPreliminaryCalculation(prisonerId)
     val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId)
 
-    val offenderKeyDates = OffenderKeyDates(
-      "NEW",
-      now,
-      "From CRDS: ${confirmed.calculationReference}",
-      conditionalReleaseDate = LocalDate.of(2016, 1, 6),
-      topupSupervisionExpiryDate = LocalDate.of(2017, 1, 6),
-      homeDetentionCurfewEligibilityDate = LocalDate.of(2015, 8, 7),
-      effectiveSentenceEndDate = LocalDate.of(2016, 11, 16),
-      sentenceExpiryDate = LocalDate.of(2016, 11, 6),
-      licenceExpiryDate = LocalDate.of(2016, 11, 6),
-    )
     stubKeyDates(bookingId, offenderKeyDates)
-    stubSentenceDetails(bookingId, sentenceDetailsStub)
+    stubSentenceDetails(
+      bookingId,
+      sentenceDetailsStub.copy(
+        licenceExpiryDate = LocalDate.of(2040, 1, 6),
+        licenceExpiryOverrideDate = LocalDate.of(2020, 1, 1),
+      ),
+    )
 
     val latestCalculation = webTestClient.get()
       .uri("/calculation/default/latest")
@@ -196,7 +125,12 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
         "Initial calculation",
         CalculationSource.CRDS,
         listOf(
-          DetailedDate(ReleaseDateType.SLED, ReleaseDateType.SLED.description, LocalDate.of(2016, 11, 6), emptyList()),
+          DetailedDate(
+            ReleaseDateType.SLED,
+            ReleaseDateType.SLED.description,
+            LocalDate.of(2016, 11, 6),
+            listOf(ReleaseDateHint("Manually overridden")),
+          ),
           DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2016, 1, 6), emptyList()),
           DetailedDate(
             ReleaseDateType.HDCED,
@@ -243,6 +177,72 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
             .withBody(objectMapper.writeValueAsString(prisonerDetails))
             .withStatus(200),
         ),
+    )
+  }
+
+  companion object {
+    private val now = LocalDateTime.now()
+    val bookingId = 123456L
+    val prisonerId = "ABC123"
+    val prisonerDetails = PrisonerDetails(bookingId, prisonerId, "Joe", "Bloggs", LocalDate.of(1970, 1, 1))
+    val offenderKeyDates = OffenderKeyDates(
+      "NEW",
+      now,
+      "From NOMIS",
+      conditionalReleaseDate = LocalDate.of(2030, 1, 6),
+      sentenceExpiryDate = LocalDate.of(2025, 2, 14),
+    )
+    private val sentenceDetailsStub = SentenceDetail(
+      sentenceExpiryDate = null,
+      automaticReleaseDate = null,
+      conditionalReleaseDate = null,
+      nonParoleDate = null,
+      postRecallReleaseDate = null,
+      licenceExpiryDate = LocalDate.of(2016, 11, 6),
+      homeDetentionCurfewEligibilityDate = null,
+      paroleEligibilityDate = null,
+      homeDetentionCurfewActualDate = null,
+      actualParoleDate = null,
+      releaseOnTemporaryLicenceDate = null,
+      earlyRemovalSchemeEligibilityDate = null,
+      earlyTermDate = null,
+      midTermDate = null,
+      lateTermDate = null,
+      topupSupervisionExpiryDate = LocalDate.of(2017, 1, 6),
+      tariffDate = null,
+      dtoPostRecallReleaseDate = null,
+      tariffEarlyRemovalSchemeEligibilityDate = null,
+      effectiveSentenceEndDate = LocalDate.of(2016, 11, 16),
+      bookingId = 123,
+      sentenceStartDate = LocalDate.of(2016, 11, 6),
+      additionalDaysAwarded = 0,
+      automaticReleaseOverrideDate = null,
+      conditionalReleaseOverrideDate = null,
+      nonParoleOverrideDate = null,
+      postRecallReleaseOverrideDate = null,
+      dtoPostRecallReleaseDateOverride = null,
+      nonDtoReleaseDate = null,
+      sentenceExpiryCalculatedDate = null,
+      sentenceExpiryOverrideDate = null,
+      licenceExpiryCalculatedDate = null,
+      licenceExpiryOverrideDate = null,
+      paroleEligibilityCalculatedDate = null,
+      paroleEligibilityOverrideDate = null,
+      topupSupervisionExpiryCalculatedDate = null,
+      topupSupervisionExpiryOverrideDate = null,
+      homeDetentionCurfewEligibilityCalculatedDate = null,
+      homeDetentionCurfewEligibilityOverrideDate = null,
+      nonDtoReleaseDateType = "CRD",
+      confirmedReleaseDate = null,
+      releaseDate = null,
+      etdOverrideDate = null,
+      etdCalculatedDate = null,
+      mtdOverrideDate = null,
+      mtdCalculatedDate = null,
+      ltdOverrideDate = null,
+      ltdCalculatedDate = null,
+      topupSupervisionStartDate = null,
+      homeDetentionCurfewEndDate = null,
     )
   }
 }
