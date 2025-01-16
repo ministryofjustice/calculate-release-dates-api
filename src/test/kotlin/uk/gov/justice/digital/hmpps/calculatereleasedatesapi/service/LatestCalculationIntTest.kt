@@ -41,7 +41,16 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
   @Test
   fun `should be able to get latest calculation when it is from NOMIS`() {
     stubPrisoner(prisonerDetails)
-    stubKeyDates(bookingId, offenderKeyDates)
+    stubKeyDates(
+      bookingId,
+      OffenderKeyDates(
+        "NEW",
+        now,
+        "From NOMIS",
+        conditionalReleaseDate = LocalDate.of(2030, 1, 6),
+        sentenceExpiryDate = LocalDate.of(2025, 2, 14),
+      ),
+    )
     stubSentenceDetails(
       bookingId,
       sentenceDetailsStub.copy(
@@ -90,10 +99,23 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
 
   @Test
   fun `should be able to get latest calculation when it is from CRDS`() {
+    val bookingId = 1544803905L
     // stubs from JSON for sentence and offences, etc.
+    val prisonerId = "default"
     val prelim = createPreliminaryCalculation(prisonerId)
     val confirmed = createConfirmCalculationForPrisoner(prelim.calculationRequestId)
 
+    val offenderKeyDates = OffenderKeyDates(
+      "NEW",
+      now,
+      "From CRDS: ${confirmed.calculationReference}",
+      conditionalReleaseDate = LocalDate.of(2016, 1, 6),
+      topupSupervisionExpiryDate = LocalDate.of(2017, 1, 6),
+      homeDetentionCurfewEligibilityDate = LocalDate.of(2015, 8, 7),
+      effectiveSentenceEndDate = LocalDate.of(2016, 11, 16),
+      sentenceExpiryDate = LocalDate.of(2016, 11, 6),
+      licenceExpiryDate = LocalDate.of(2016, 11, 6),
+    )
     stubKeyDates(bookingId, offenderKeyDates)
     stubSentenceDetails(
       bookingId,
@@ -185,13 +207,6 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
     val bookingId = 123456L
     val prisonerId = "ABC123"
     val prisonerDetails = PrisonerDetails(bookingId, prisonerId, "Joe", "Bloggs", LocalDate.of(1970, 1, 1))
-    val offenderKeyDates = OffenderKeyDates(
-      "NEW",
-      now,
-      "From NOMIS",
-      conditionalReleaseDate = LocalDate.of(2030, 1, 6),
-      sentenceExpiryDate = LocalDate.of(2025, 2, 14),
-    )
     private val sentenceDetailsStub = SentenceDetail(
       sentenceExpiryDate = null,
       automaticReleaseDate = null,
