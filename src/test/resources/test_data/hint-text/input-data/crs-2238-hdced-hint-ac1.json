@@ -1,7 +1,7 @@
 {
   "offender": {
-    "reference": "A3087EL",
-    "dateOfBirth": "1968-04-02",
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01",
     "isActiveSexOffender": false
   },
   "bookingId": 2926156,
@@ -10,7 +10,7 @@
       "type": "StandardSentence",
       "offence": {
         "committedAt": "2022-10-05",
-        "offenceCode": "MD71231"
+        "offenceCode": null
       },
       "duration": {
         "durationElements": {
@@ -34,7 +34,7 @@
       "type": "StandardSentence",
       "offence": {
         "committedAt": "2022-10-05",
-        "offenceCode": "MD71234"
+        "offenceCode": null
       },
       "duration": {
         "durationElements": {
@@ -58,7 +58,7 @@
       "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-01-17",
-        "offenceCode": "TH68010A"
+        "offenceCode": null
       },
       "duration": {
         "durationElements": {
@@ -82,7 +82,7 @@
       "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-01-21",
-        "offenceCode": "TH68010"
+        "offenceCode": null
       },
       "duration": {
         "durationElements": {
@@ -106,7 +106,7 @@
       "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-03-17",
-        "offenceCode": "TH68010"
+        "offenceCode": null
       },
       "duration": {
         "durationElements": {
@@ -130,7 +130,7 @@
       "type": "StandardSentence",
       "offence": {
         "committedAt": "2024-01-18",
-        "offenceCode": "TH68010"
+        "offenceCode": null
       },
       "duration": {
         "durationElements": {
@@ -154,7 +154,7 @@
       "type": "StandardSentence",
       "offence": {
         "committedAt": "2023-12-14",
-        "offenceCode": "ZZ01008"
+        "offenceCode": null
       },
       "duration": {
         "durationElements": {

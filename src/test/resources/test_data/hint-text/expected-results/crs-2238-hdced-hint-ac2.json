@@ -1,26 +1,26 @@
 [
   {
     "type": "SLED",
-    "date": "2028-05-09",
+    "date": "2028-05-23",
     "hints": []
   },
   {
     "type": "CRD",
-    "date": "2025-12-15",
+    "date": "2025-12-29",
     "hints": [
       "40% date has been applied"
     ]
   },
   {
     "type": "HDCED",
-    "date": "2025-06-19",
+    "date": "2025-06-03",
     "hints": [
-      "40% date has been applied"
+      "Defaulted to HDC365 commencement"
     ]
   },
   {
     "type": "ESED",
-    "date": "2028-05-09",
+    "date": "2028-09-05",
     "hints": []
   }
 ]
