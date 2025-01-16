@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
@@ -244,10 +242,7 @@ class CalculationResultEnrichmentService(
 
   private fun sds40Hint(type: ReleaseDateType, calculationBreakdown: CalculationBreakdown): ReleaseDateHint? {
     if (calculationBreakdown.breakdownByReleaseDateType.containsKey(type)) {
-      log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>")
-      log.info(">>>>>>>>>>>>>>>>>>>>>>>>>> SDS40 for $type")
       val rules = calculationBreakdown.breakdownByReleaseDateType[type]!!.rules
-      log.info("rules: $rules")
       if (rules.contains(CalculationRule.SDS_EARLY_RELEASE_APPLIES) && type.isEarlyReleaseHintType && !rules.contains(CalculationRule.HDCED_ADJUSTED_TO_365_COMMENCEMENT)) {
         return ReleaseDateHint("40% date has been applied")
       }
@@ -285,6 +280,5 @@ class CalculationResultEnrichmentService(
     private val dtoSentenceTypes = listOf(SentenceCalculationType.DTO_ORA.name, SentenceCalculationType.DTO.name)
     private const val HDC_POLICY_ADJUSTED_SENTENCE_DATE_HINT = "Adjusted for sentence date, plus 14 days as per HDC policy"
     private const val HDC_POLICY_URL = "https://assets.publishing.service.gov.uk/media/66701aa6fdbf70d6d79d9705/Home_Detention_Curfew_V7___002_.pdf"
-    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }
