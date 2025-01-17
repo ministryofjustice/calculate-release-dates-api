@@ -36,7 +36,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Book
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
@@ -71,58 +70,6 @@ class HintTextTest {
   private val nomisCommentService = mock<NomisCommentService>()
   private val bankHolidayService = mock<BankHolidayService>()
   private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
-  private val sentenceDetail = SentenceDetail(
-    sentenceExpiryDate = LocalDate.of(2025, 1, 1),
-    automaticReleaseDate = LocalDate.of(2025, 1, 1),
-    conditionalReleaseDate = LocalDate.of(2025, 1, 1),
-    nonParoleDate = LocalDate.of(2025, 1, 1),
-    postRecallReleaseDate = LocalDate.of(2025, 1, 1),
-    licenceExpiryDate = LocalDate.of(2025, 1, 1),
-    homeDetentionCurfewEligibilityDate = LocalDate.of(2025, 1, 1),
-    paroleEligibilityDate = LocalDate.of(2025, 1, 1),
-    homeDetentionCurfewActualDate = LocalDate.of(2025, 1, 1),
-    actualParoleDate = LocalDate.of(2025, 1, 1),
-    releaseOnTemporaryLicenceDate = LocalDate.of(2025, 1, 1),
-    earlyRemovalSchemeEligibilityDate = LocalDate.of(2025, 1, 1),
-    earlyTermDate = LocalDate.of(2025, 1, 1),
-    midTermDate = LocalDate.of(2025, 1, 1),
-    lateTermDate = LocalDate.of(2025, 1, 1),
-    topupSupervisionExpiryDate = LocalDate.of(2025, 1, 1),
-    tariffDate = LocalDate.of(2025, 1, 1),
-    dtoPostRecallReleaseDate = LocalDate.of(2025, 1, 1),
-    tariffEarlyRemovalSchemeEligibilityDate = LocalDate.of(2025, 1, 1),
-    effectiveSentenceEndDate = LocalDate.of(2025, 1, 1),
-    bookingId = 123,
-    sentenceStartDate = LocalDate.of(2025, 1, 1),
-    additionalDaysAwarded = 0,
-    automaticReleaseOverrideDate = null,
-    conditionalReleaseOverrideDate = null,
-    nonParoleOverrideDate = null,
-    postRecallReleaseOverrideDate = null,
-    dtoPostRecallReleaseDateOverride = null,
-    nonDtoReleaseDate = LocalDate.of(2025, 1, 1),
-    sentenceExpiryCalculatedDate = LocalDate.of(2025, 1, 1),
-    sentenceExpiryOverrideDate = null,
-    licenceExpiryCalculatedDate = null,
-    licenceExpiryOverrideDate = null,
-    paroleEligibilityCalculatedDate = LocalDate.of(2025, 1, 1),
-    paroleEligibilityOverrideDate = null,
-    topupSupervisionExpiryCalculatedDate = LocalDate.of(2025, 1, 1),
-    topupSupervisionExpiryOverrideDate = null,
-    homeDetentionCurfewEligibilityCalculatedDate = LocalDate.of(2025, 1, 1),
-    homeDetentionCurfewEligibilityOverrideDate = null,
-    nonDtoReleaseDateType = "CRD",
-    confirmedReleaseDate = LocalDate.of(2025, 1, 1),
-    releaseDate = LocalDate.of(2025, 1, 1),
-    etdOverrideDate = null,
-    etdCalculatedDate = LocalDate.of(2025, 1, 1),
-    mtdOverrideDate = null,
-    mtdCalculatedDate = LocalDate.of(2025, 1, 1),
-    ltdOverrideDate = null,
-    ltdCalculatedDate = LocalDate.of(2025, 1, 1),
-    topupSupervisionStartDate = LocalDate.of(2025, 1, 1),
-    homeDetentionCurfewEndDate = LocalDate.of(2025, 1, 1),
-  )
 
   @BeforeEach
   fun beforeAll() {
