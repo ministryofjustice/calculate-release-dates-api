@@ -54,8 +54,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
     stubSentenceDetails(
       bookingId,
       sentenceDetailsStub.copy(
-        conditionalReleaseDate = LocalDate.of(2040, 1, 6),
-        conditionalReleaseOverrideDate = LocalDate.of(2020, 1, 1),
+        conditionalReleaseOverrideDate = LocalDate.of(2030, 1, 6),
       ),
     )
 
@@ -120,8 +119,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
     stubSentenceDetails(
       bookingId,
       sentenceDetailsStub.copy(
-        licenceExpiryDate = LocalDate.of(2040, 1, 6),
-        licenceExpiryOverrideDate = LocalDate.of(2020, 1, 1),
+        licenceExpiryOverrideDate = LocalDate.of(2016, 11, 6),
       ),
     )
 

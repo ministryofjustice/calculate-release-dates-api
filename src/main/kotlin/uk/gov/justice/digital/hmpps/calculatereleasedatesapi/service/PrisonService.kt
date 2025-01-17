@@ -90,7 +90,7 @@ class PrisonService(
   }
 
   fun getSentencesAndOffences(bookingId: Long, filterActive: Boolean = true): List<SentenceAndOffenceWithReleaseArrangements> {
-    // There shouldn't be multiple offences associated to a single sentence; however there are at the moment (NOMIS doesnt
+    // There shouldn't be multiple offences associated to a single sentence; however there are at the moment (NOMIS doesn't
     // guard against it) therefore if there are multiple offences associated with one sentence then each offence is being
     // treated as a separate sentence
     val sentencesAndOffences = prisonApiClient.getSentencesAndOffences(bookingId)
@@ -101,8 +101,8 @@ class PrisonService(
 
   fun getSentenceOverrides(bookingId: Long, releaseDates: List<ReleaseDate>): List<String> {
     val sentenceDetail = prisonApiClient.getSentenceDetail(bookingId)
-    val checkOverride: (LocalDate?, LocalDate?, ReleaseDate) -> String? = { overrideDate, actualDate, releaseDate ->
-      if (overrideDate != null && actualDate != releaseDate.date) {
+    val checkOverride: (LocalDate?, ReleaseDate) -> String? = { overrideDate, releaseDate ->
+      if (overrideDate != null && overrideDate == releaseDate.date) {
         releaseDate.type.name
       } else {
         null
@@ -111,46 +111,14 @@ class PrisonService(
 
     return releaseDates.mapNotNull { releaseDate ->
       when (releaseDate.type) {
-        ReleaseDateType.HDCED -> checkOverride(
-          sentenceDetail.homeDetentionCurfewEligibilityOverrideDate,
-          sentenceDetail.homeDetentionCurfewEligibilityDate,
-          releaseDate,
-        )
-        ReleaseDateType.CRD -> checkOverride(
-          sentenceDetail.conditionalReleaseOverrideDate,
-          sentenceDetail.conditionalReleaseDate,
-          releaseDate,
-        )
-        ReleaseDateType.LED, ReleaseDateType.SLED -> checkOverride(
-          sentenceDetail.licenceExpiryOverrideDate,
-          sentenceDetail.licenceExpiryDate,
-          releaseDate,
-        )
-        ReleaseDateType.SED -> checkOverride(
-          sentenceDetail.sentenceExpiryOverrideDate,
-          sentenceDetail.sentenceExpiryDate,
-          releaseDate,
-        )
-        ReleaseDateType.NPD -> checkOverride(
-          sentenceDetail.nonParoleOverrideDate,
-          sentenceDetail.nonParoleDate,
-          releaseDate,
-        )
-        ReleaseDateType.ARD -> checkOverride(
-          sentenceDetail.automaticReleaseOverrideDate,
-          sentenceDetail.automaticReleaseDate,
-          releaseDate,
-        )
-        ReleaseDateType.TUSED -> checkOverride(
-          sentenceDetail.topupSupervisionExpiryOverrideDate,
-          sentenceDetail.topupSupervisionExpiryDate,
-          releaseDate,
-        )
-        ReleaseDateType.PED -> checkOverride(
-          sentenceDetail.paroleEligibilityOverrideDate,
-          sentenceDetail.paroleEligibilityDate,
-          releaseDate,
-        )
+        ReleaseDateType.HDCED -> checkOverride(sentenceDetail.homeDetentionCurfewEligibilityOverrideDate, releaseDate)
+        ReleaseDateType.CRD -> checkOverride(sentenceDetail.conditionalReleaseOverrideDate, releaseDate)
+        ReleaseDateType.LED, ReleaseDateType.SLED -> checkOverride(sentenceDetail.licenceExpiryOverrideDate, releaseDate)
+        ReleaseDateType.SED -> checkOverride(sentenceDetail.sentenceExpiryOverrideDate, releaseDate)
+        ReleaseDateType.NPD -> checkOverride(sentenceDetail.nonParoleOverrideDate, releaseDate)
+        ReleaseDateType.ARD -> checkOverride(sentenceDetail.automaticReleaseOverrideDate, releaseDate)
+        ReleaseDateType.TUSED -> checkOverride(sentenceDetail.topupSupervisionExpiryOverrideDate, releaseDate)
+        ReleaseDateType.PED -> checkOverride(sentenceDetail.paroleEligibilityOverrideDate, releaseDate)
         else -> null
       }
     }
@@ -185,6 +153,7 @@ class PrisonService(
   fun getAgenciesByType(type: String) = prisonApiClient.getAgenciesByType(type)
 
   fun getOffenderKeyDates(bookingId: Long): Either<String, OffenderKeyDates> = prisonApiClient.getOffenderKeyDates(bookingId)
+
   fun getNOMISCalcReasons(): List<NomisCalculationReason> = prisonApiClient.getNOMISCalcReasons()
 
   fun getNOMISOffenderKeyDates(offenderSentCalcId: Long): Either<String, OffenderKeyDates> = prisonApiClient.getNOMISOffenderKeyDates(offenderSentCalcId)
