@@ -424,9 +424,7 @@ class CalculationController(
     prisonerId: String,
     @RequestBody
     relevantRemandCalculationRequest: RelevantRemandCalculationRequest,
-  ): RelevantRemandCalculationResult {
-    return relevantRemandService.relevantRemandCalculation(prisonerId, relevantRemandCalculationRequest)
-  }
+  ): RelevantRemandCalculationResult = relevantRemandService.relevantRemandCalculation(prisonerId, relevantRemandCalculationRequest)
 
   @GetMapping(value = ["/{prisonerId}/latest"])
   @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
@@ -475,6 +473,32 @@ class CalculationController(
   ): NomisCalculationSummary {
     log.info("Request received to get offender key dates for $offenderSentCalculationId")
     return offenderKeyDatesService.getNomisCalculationSummary(offenderSentCalculationId)
+  }
+
+  @GetMapping(value = ["/nomis-calculation-summary/booking/{bookingId}/calculation/{offenderSentCalculationId}"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Get Nomis calculation summary with release dates (including overrides) for a offenderSentCalculationId",
+    description = "This endpoint will return the nomis calculation summary with release dates based on a offenderSentCalculationId. Any date overridden in Nomis will be highlighted",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns Nomis calculation summary with release dates based on a offenderSentCalculationId"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No nomis calculation summary - release dates exists for this offenderSentCalculationId"),
+    ],
+  )
+  fun getNomisCalculationSummaryWithOverrides(
+    @Parameter(required = true, example = "123456", description = "The offenderSentCalculationId of the offender booking or a calculation")
+    @PathVariable("offenderSentCalculationId")
+    offenderSentCalculationId: Long,
+    @PathVariable("bookingId")
+    bookingId: Long,
+  ): NomisCalculationSummary {
+    log.info("Request received to get offender key dates with overrides for $offenderSentCalculationId")
+    return offenderKeyDatesService.getNomisCalculationSummary(offenderSentCalculationId, bookingId)
   }
 
   @GetMapping(value = ["/release-dates/{calculationRequestId}"])

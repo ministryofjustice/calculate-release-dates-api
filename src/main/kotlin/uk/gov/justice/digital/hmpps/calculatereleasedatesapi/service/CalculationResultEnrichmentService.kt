@@ -31,6 +31,7 @@ class CalculationResultEnrichmentService(
     sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
     calculationBreakdown: CalculationBreakdown?,
     historicalTusedSource: HistoricalTusedSource? = null,
+    sentenceDateOverrides: List<String> = listOf(),
   ): Map<ReleaseDateType, DetailedDate> {
     val releaseDatesMap = releaseDates.associateBy { it.type }
     return releaseDatesMap.mapValues { (_, releaseDate) ->
@@ -38,7 +39,15 @@ class CalculationResultEnrichmentService(
         releaseDate.type,
         releaseDate.type.description,
         releaseDate.date,
-        getHints(releaseDate.type, releaseDate.date, calculationBreakdown, releaseDatesMap, sentenceAndOffences, historicalTusedSource),
+        getHints(
+          releaseDate.type,
+          releaseDate.date,
+          calculationBreakdown,
+          releaseDatesMap,
+          sentenceAndOffences,
+          historicalTusedSource,
+          sentenceDateOverrides,
+        ),
       )
     }
   }
@@ -50,12 +59,20 @@ class CalculationResultEnrichmentService(
     releaseDates: Map<ReleaseDateType, ReleaseDate>,
     sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>?,
     historicalTusedSource: HistoricalTusedSource? = null,
+    sentenceDateOverrides: List<String>,
   ): List<ReleaseDateHint> {
     val hints = mutableListOf<ReleaseDateHint?>()
+
+    if (sentenceDateOverrides.contains(type.name)) {
+      hints += ReleaseDateHint("Manually overridden")
+    }
+
     hints += nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type, date)
+
     if (calculationBreakdown !== null && sentenceAndOffences !== null && showSDS40Hints(sentenceAndOffences)) {
       hints += sds40Hint(type, calculationBreakdown)
     }
+
     hints += ardHints(type, date, sentenceAndOffences, releaseDates)
     hints += crdHints(type, date, sentenceAndOffences, releaseDates)
     hints += pedHints(type, date, sentenceAndOffences, releaseDates, calculationBreakdown)

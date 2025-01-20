@@ -50,11 +50,13 @@ class DetailedCalculationResultsServiceTest {
   private val prisonApiDataMapper = mock<PrisonApiDataMapper>()
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationResultEnrichmentService = mock<CalculationResultEnrichmentService>()
+  private val prisonService = mock<PrisonService>()
   private val service = DetailedCalculationResultsService(
     calculationBreakdownService,
     prisonApiDataMapper,
     calculationRequestRepository,
     calculationResultEnrichmentService,
+    prisonService,
   )
   private val objectMapper = TestUtil.objectMapper()
 

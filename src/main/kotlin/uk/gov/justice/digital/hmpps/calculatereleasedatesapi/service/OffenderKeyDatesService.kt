@@ -1,4 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
+
 import arrow.core.getOrElse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -15,7 +16,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.CalculationController
-import java.util.*
 
 @Service
 @Transactional(readOnly = true)
@@ -26,37 +26,47 @@ class OffenderKeyDatesService(
 ) {
 
   fun getKeyDatesByCalcId(calculationRequestId: Long): ReleaseDatesAndCalculationContext {
-    try {
-      val calculationRequest = calculationRequestRepository.findById(calculationRequestId).get()
-      val offenderKeyDatesEither = prisonService.getOffenderKeyDates(calculationRequest.bookingId)
-
-      return offenderKeyDatesEither
-        .map { releaseDates(it) }
-        .map { calculationResultEnrichmentService.addDetailToCalculationDates(it, null, null).values.toList() }
-        .fold(
-          { throw NoSuchElementException("Error in mapping/enriching release dates") },
-          { enrichedDates ->
-            ReleaseDatesAndCalculationContext(
-              CalculationContext(
-                calculationRequestId,
-                calculationRequest.bookingId,
-                calculationRequest.prisonerId,
-                CalculationStatus.CONFIRMED,
-                calculationRequest.calculationReference,
-                calculationRequest.reasonForCalculation,
-                calculationRequest.otherReasonForCalculation,
-                calculationRequest.calculatedAt.toLocalDate(),
-                calculationRequest.calculationType,
-              ),
-              enrichedDates,
-            )
-          },
+    val calculationRequest = runCatching { calculationRequestRepository.findById(calculationRequestId).get() }
+      .getOrElse {
+        throw CrdWebException(
+          "Unable to retrieve offender key dates",
+          HttpStatus.NOT_FOUND,
         )
-    } catch (exception: Exception) {
-      val message = "Unable to retrieve offender key dates"
-      log.error(message, exception)
-      throw CrdWebException(message, HttpStatus.NOT_FOUND)
+      }
+
+    val offenderKeyDatesEither = prisonService.getOffenderKeyDates(calculationRequest.bookingId).onLeft {
+      throw CrdWebException("Unable to retrieve offender key dates", HttpStatus.NOT_FOUND)
     }
+
+    val dates = offenderKeyDatesEither.map { releaseDates(it) }
+      .getOrElse { throw CrdWebException("Error in mapping/enriching release dates", HttpStatus.NOT_FOUND) }
+
+    val sentenceDateOverrides = prisonService.getSentenceOverrides(calculationRequest.bookingId, dates)
+
+    val enrichedDates = runCatching {
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        dates,
+        null,
+        null,
+        null,
+        sentenceDateOverrides,
+      ).values.toList()
+    }.getOrElse { throw CrdWebException("Unable to retrieve offender key dates", HttpStatus.NOT_FOUND) }
+
+    return ReleaseDatesAndCalculationContext(
+      CalculationContext(
+        calculationRequestId,
+        calculationRequest.bookingId,
+        calculationRequest.prisonerId,
+        CalculationStatus.CONFIRMED,
+        calculationRequest.calculationReference,
+        calculationRequest.reasonForCalculation,
+        calculationRequest.otherReasonForCalculation,
+        calculationRequest.calculatedAt.toLocalDate(),
+        calculationRequest.calculationType,
+      ),
+      enrichedDates,
+    )
   }
 
   fun getNomisCalculationSummary(offenderSentCalculationId: Long): NomisCalculationSummary {
@@ -64,17 +74,57 @@ class OffenderKeyDatesService(
     val nomisOffenderKeyDates = prisonService.getNOMISOffenderKeyDates(offenderSentCalculationId)
       .getOrElse { problemMessage -> throw CrdWebException(problemMessage, HttpStatus.NOT_FOUND) }
     val releaseDatesForSentCalculationId = releaseDates(nomisOffenderKeyDates)
-    val detailsReleaseDates = calculationResultEnrichmentService.addDetailToCalculationDates(releaseDatesForSentCalculationId, null, null).values.toList()
-    val nomisReason = prisonService.getNOMISCalcReasons().find { it.code == nomisOffenderKeyDates.reasonCode }?.description ?: nomisOffenderKeyDates.reasonCode
-    return NomisCalculationSummary(nomisReason, nomisOffenderKeyDates.calculatedAt, nomisOffenderKeyDates.comment, detailsReleaseDates)
+
+    val detailsReleaseDates = calculationResultEnrichmentService.addDetailToCalculationDates(
+      releaseDatesForSentCalculationId,
+      null,
+      null,
+      null,
+      listOf(),
+    ).values.toList()
+
+    val nomisReason =
+      prisonService.getNOMISCalcReasons().find { it.code == nomisOffenderKeyDates.reasonCode }?.description
+        ?: nomisOffenderKeyDates.reasonCode
+    return NomisCalculationSummary(
+      nomisReason,
+      nomisOffenderKeyDates.calculatedAt,
+      nomisOffenderKeyDates.comment,
+      detailsReleaseDates,
+    )
   }
 
-  private fun createASLEDIfWeCan(prisonerCalculation: OffenderKeyDates): ReleaseDate? {
-    return if (prisonerCalculation.sentenceExpiryDate != null && prisonerCalculation.licenceExpiryDate != null && prisonerCalculation.sentenceExpiryDate == prisonerCalculation.licenceExpiryDate) {
-      ReleaseDate(prisonerCalculation.sentenceExpiryDate, ReleaseDateType.SLED)
-    } else {
-      null
-    }
+  fun getNomisCalculationSummary(offenderSentCalculationId: Long, bookingId: Long): NomisCalculationSummary {
+    CalculationController.log.info("Request received to get offender key dates for $offenderSentCalculationId")
+    val nomisOffenderKeyDates = prisonService.getNOMISOffenderKeyDates(offenderSentCalculationId)
+      .getOrElse { problemMessage -> throw CrdWebException(problemMessage, HttpStatus.NOT_FOUND) }
+    val releaseDatesForSentCalculationId = releaseDates(nomisOffenderKeyDates)
+
+    val sentenceDateOverrides = prisonService.getSentenceOverrides(bookingId, releaseDatesForSentCalculationId)
+
+    val detailsReleaseDates = calculationResultEnrichmentService.addDetailToCalculationDates(
+      releaseDatesForSentCalculationId,
+      null,
+      null,
+      null,
+      sentenceDateOverrides,
+    ).values.toList()
+
+    val nomisReason =
+      prisonService.getNOMISCalcReasons().find { it.code == nomisOffenderKeyDates.reasonCode }?.description
+        ?: nomisOffenderKeyDates.reasonCode
+    return NomisCalculationSummary(
+      nomisReason,
+      nomisOffenderKeyDates.calculatedAt,
+      nomisOffenderKeyDates.comment,
+      detailsReleaseDates,
+    )
+  }
+
+  private fun createASLEDIfWeCan(prisonerCalculation: OffenderKeyDates): ReleaseDate? = if (prisonerCalculation.sentenceExpiryDate != null && prisonerCalculation.licenceExpiryDate != null && prisonerCalculation.sentenceExpiryDate == prisonerCalculation.licenceExpiryDate) {
+    ReleaseDate(prisonerCalculation.sentenceExpiryDate, ReleaseDateType.SLED)
+  } else {
+    null
   }
 
   fun releaseDates(prisonerCalculation: OffenderKeyDates): List<ReleaseDate> {

@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
 import java.time.Duration
 
 @Service
@@ -43,6 +44,12 @@ class PrisonApiClient(
       .bodyToMono(typeReference<PrisonerDetails>())
       .block()!!
   }
+
+  fun getSentenceDetail(bookingId: Long): SentenceDetail = webClient.get()
+    .uri("/api/bookings/$bookingId/sentenceDetail")
+    .retrieve()
+    .bodyToMono(typeReference<SentenceDetail>())
+    .block()!!
 
   fun getSentenceAndBookingAdjustments(bookingId: Long): BookingAndSentenceAdjustments {
     log.info("Requesting sentence and booking adjustment details for bookingId $bookingId")
@@ -92,13 +99,11 @@ class PrisonApiClient(
       .block()!!
   }
 
-  fun getCurrentUserCaseLoads(): ArrayList<CaseLoad>? {
-    return webClient.get()
-      .uri("/api/users/me/caseLoads")
-      .retrieve()
-      .bodyToMono(typeReference<ArrayList<CaseLoad>>())
-      .block()
-  }
+  fun getCurrentUserCaseLoads(): ArrayList<CaseLoad>? = webClient.get()
+    .uri("/api/users/me/caseLoads")
+    .retrieve()
+    .bodyToMono(typeReference<ArrayList<CaseLoad>>())
+    .block()
 
   fun getCalculableSentenceEnvelopesByEstablishment(
     establishmentId: String,
@@ -120,52 +125,46 @@ class PrisonApiClient(
       .block()!!
   }
 
-  fun getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds: List<String>, token: String): List<CalculableSentenceEnvelope> {
-    return bulkComparisonWebClient.get()
-      .uri { uriBuilder ->
-        uriBuilder.path("/api/bookings/latest/calculable-sentence-envelope")
-          .queryParam("offenderNo", prisonerIds)
-          .build()
+  fun getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds: List<String>, token: String): List<CalculableSentenceEnvelope> = bulkComparisonWebClient.get()
+    .uri { uriBuilder ->
+      uriBuilder.path("/api/bookings/latest/calculable-sentence-envelope")
+        .queryParam("offenderNo", prisonerIds)
+        .build()
+    }
+    .header("Authorization", token)
+    .httpRequest { httpRequest ->
+      run {
+        val reactorRequest = httpRequest.getNativeRequest<HttpClientRequest>()
+        reactorRequest.responseTimeout(Duration.ofMinutes(10))
       }
-      .header("Authorization", token)
-      .httpRequest { httpRequest ->
-        run {
-          val reactorRequest = httpRequest.getNativeRequest<HttpClientRequest>()
-          reactorRequest.responseTimeout(Duration.ofMinutes(10))
-        }
-      }
-      .retrieve()
-      .bodyToMono(typeReference<List<CalculableSentenceEnvelope>>())
-      .block()!!
-  }
+    }
+    .retrieve()
+    .bodyToMono(typeReference<List<CalculableSentenceEnvelope>>())
+    .block()!!
 
-  fun getCalculationsForAPrisonerId(prisonerId: String): List<SentenceCalculationSummary> {
-    return webClient.get()
-      .uri { uriBuilder ->
-        uriBuilder.path("/api/offender-dates/calculations/$prisonerId")
-          .build()
-      }
-      .retrieve()
-      .bodyToMono(typeReference<List<SentenceCalculationSummary>>())
-      .block()!!
-  }
+  fun getCalculationsForAPrisonerId(prisonerId: String): List<SentenceCalculationSummary> = webClient.get()
+    .uri { uriBuilder ->
+      uriBuilder.path("/api/offender-dates/calculations/$prisonerId")
+        .build()
+    }
+    .retrieve()
+    .bodyToMono(typeReference<List<SentenceCalculationSummary>>())
+    .block()!!
 
-  fun getOffenderKeyDates(bookingId: Long): Either<String, OffenderKeyDates> {
-    return webClient.get()
-      .uri { uriBuilder ->
-        uriBuilder.path("/api/offender-dates/$bookingId")
-          .build()
+  fun getOffenderKeyDates(bookingId: Long): Either<String, OffenderKeyDates> = webClient.get()
+    .uri { uriBuilder ->
+      uriBuilder.path("/api/offender-dates/$bookingId")
+        .build()
+    }
+    .exchangeToMono { response ->
+      when (response.statusCode()) {
+        HttpStatus.OK -> response.bodyToMono(typeReference<OffenderKeyDates>()).map { it.right() }
+        HttpStatus.NOT_FOUND -> Mono.just("Booking ($bookingId) not found or has no calculations".left())
+        HttpStatus.FORBIDDEN -> Mono.just("User is not allowed to view the booking ($bookingId)".left())
+        else -> Mono.just("Booking ($bookingId) could not be loaded for an unknown reason. Status ${response.statusCode().value()}".left())
       }
-      .exchangeToMono { response ->
-        when (response.statusCode()) {
-          HttpStatus.OK -> response.bodyToMono(typeReference<OffenderKeyDates>()).map { it.right() }
-          HttpStatus.NOT_FOUND -> Mono.just("Booking ($bookingId) not found or has no calculations".left())
-          HttpStatus.FORBIDDEN -> Mono.just("User is not allowed to view the booking ($bookingId)".left())
-          else -> Mono.just("Booking ($bookingId) could not be loaded for an unknown reason. Status ${response.statusCode().value()}".left())
-        }
-      }
-      .block()!!
-  }
+    }
+    .block()!!
 
   fun getAgenciesByType(agencyType: String): List<Agency> {
     log.info("Requesting agencies with type: $agencyType")
@@ -176,41 +175,35 @@ class PrisonApiClient(
       .block()!!
   }
 
-  fun getNOMISCalcReasons(): List<NomisCalculationReason> {
-    return webClient.get()
-      .uri("/api/reference-domains/domains/CALC_REASON/codes")
-      .retrieve()
-      .bodyToMono(typeReference<List<NomisCalculationReason>>())
-      .block()!!
-  }
+  fun getNOMISCalcReasons(): List<NomisCalculationReason> = webClient.get()
+    .uri("/api/reference-domains/domains/CALC_REASON/codes")
+    .retrieve()
+    .bodyToMono(typeReference<List<NomisCalculationReason>>())
+    .block()!!
 
-  fun getNOMISOffenderKeyDates(offenderSentCalcId: Long): Either<String, OffenderKeyDates> {
-    return webClient.get()
-      .uri { uriBuilder ->
-        uriBuilder.path("/api/offender-dates/sentence-calculation/$offenderSentCalcId")
-          .build()
+  fun getNOMISOffenderKeyDates(offenderSentCalcId: Long): Either<String, OffenderKeyDates> = webClient.get()
+    .uri { uriBuilder ->
+      uriBuilder.path("/api/offender-dates/sentence-calculation/$offenderSentCalcId")
+        .build()
+    }
+    .exchangeToMono { response ->
+      when (response.statusCode()) {
+        HttpStatus.OK -> response.bodyToMono(typeReference<OffenderKeyDates>()).map { it.right() }
+        HttpStatus.NOT_FOUND -> Mono.just("Offender Key Dates for offenderSentCalcId ($offenderSentCalcId) not found or has no calculations".left())
+        HttpStatus.FORBIDDEN -> Mono.just("User is not allowed to view the Offender Key Dates for offenderSentCalcId ($offenderSentCalcId)".left())
+        else -> Mono.just("Offender Key Dates for offenderSentCalcId ($offenderSentCalcId) could not be loaded for an unknown reason. Status ${response.statusCode().value()}".left())
       }
-      .exchangeToMono { response ->
-        when (response.statusCode()) {
-          HttpStatus.OK -> response.bodyToMono(typeReference<OffenderKeyDates>()).map { it.right() }
-          HttpStatus.NOT_FOUND -> Mono.just("Offender Key Dates for offenderSentCalcId ($offenderSentCalcId) not found or has no calculations".left())
-          HttpStatus.FORBIDDEN -> Mono.just("User is not allowed to view the Offender Key Dates for offenderSentCalcId ($offenderSentCalcId)".left())
-          else -> Mono.just("Offender Key Dates for offenderSentCalcId ($offenderSentCalcId) could not be loaded for an unknown reason. Status ${response.statusCode().value()}".left())
-        }
+    }
+    .block()!!
+  fun getLatestTusedDataForBotus(nomisId: String): Either<String, NomisTusedData> = webClient.get()
+    .uri("/api/offender-dates/latest-tused/$nomisId")
+    .exchangeToMono { response ->
+      when (response.statusCode()) {
+        HttpStatus.OK -> response.bodyToMono(typeReference<NomisTusedData>()).map { it.right() }
+        HttpStatus.BAD_REQUEST -> Mono.just("Bad request".left())
+        HttpStatus.FORBIDDEN -> Mono.just("User not authorised to access Tused".left())
+        HttpStatus.NOT_FOUND -> Mono.just("No Tused could be retrieved for Nomis ID $nomisId".left())
+        else -> Mono.just("Unknown: status code was ${response.statusCode().value()}".left())
       }
-      .block()!!
-  }
-  fun getLatestTusedDataForBotus(nomisId: String): Either<String, NomisTusedData> {
-    return webClient.get()
-      .uri("/api/offender-dates/latest-tused/$nomisId")
-      .exchangeToMono { response ->
-        when (response.statusCode()) {
-          HttpStatus.OK -> response.bodyToMono(typeReference<NomisTusedData>()).map { it.right() }
-          HttpStatus.BAD_REQUEST -> Mono.just("Bad request".left())
-          HttpStatus.FORBIDDEN -> Mono.just("User not authorised to access Tused".left())
-          HttpStatus.NOT_FOUND -> Mono.just("No Tused could be retrieved for Nomis ID $nomisId".left())
-          else -> Mono.just("Unknown: status code was ${response.statusCode().value()}".left())
-        }
-      }.block()!!
-  }
+    }.block()!!
 }

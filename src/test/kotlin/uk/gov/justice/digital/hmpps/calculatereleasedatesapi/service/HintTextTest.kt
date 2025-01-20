@@ -100,49 +100,67 @@ class HintTextTest {
     assertThat(actualDatesAndHints).isEqualTo(expectedDatesAndHints)
   }
 
-  private fun createCalculatedReleaseDates(calculation: CalculationResult): CalculatedReleaseDates {
-    return CalculatedReleaseDates(
-      dates = calculation.dates,
-      calculationRequestId = -1,
-      bookingId = -1,
-      prisonerId = "",
-      calculationStatus = PRELIMINARY,
-      calculationReference = UUID.randomUUID(),
-      calculationReason = CALCULATION_REASON,
-      calculationDate = LocalDate.of(2024, 1, 1),
+  @ParameterizedTest
+  @CsvFileSource(resources = ["/test_data/hint-text.csv"], numLinesToSkip = 1)
+  fun `Test Hint Text with date overrides`(testCase: String) {
+    log.info("Running hint text test-case with date override $testCase")
+
+    val (booking, calculationUserInputs) = jsonTransformation.loadHintTextBooking(testCase)
+    val calculation = calculationService.calculateReleaseDates(booking, calculationUserInputs)
+    val calculatedReleaseDates = createCalculatedReleaseDates(calculation.calculationResult)
+    val calculationBreakdown = performCalculationBreakdown(booking, calculatedReleaseDates, calculationUserInputs)
+    val breakdownWithHints = enrichBreakdownWithHints(
+      calculation.calculationResult.dates,
+      calculationBreakdown,
+      calculation.calculationResult.dates.map { it.key.name },
     )
+
+    val actualDatesAndHints = mapToDatesAndHints(breakdownWithHints)
+    val expectedDatesAndHints = jsonTransformation.loadHintTextResults(testCase)
+
+    assertThat(actualDatesAndHints).isEqualTo(expectedDatesAndHints.map { it.copy(hints = listOf("Manually overridden") + it.hints) })
   }
+
+  private fun createCalculatedReleaseDates(calculation: CalculationResult): CalculatedReleaseDates = CalculatedReleaseDates(
+    dates = calculation.dates,
+    calculationRequestId = -1,
+    bookingId = -1,
+    prisonerId = "",
+    calculationStatus = PRELIMINARY,
+    calculationReference = UUID.randomUUID(),
+    calculationReason = CALCULATION_REASON,
+    calculationDate = LocalDate.of(2024, 1, 1),
+  )
 
   private fun performCalculationBreakdown(
     booking: Booking,
     calculatedReleaseDates: CalculatedReleaseDates,
     calculationUserInputs: CalculationUserInputs,
-  ): CalculationBreakdown =
-    calculationTransactionalService.calculateWithBreakdown(
-      booking,
-      calculatedReleaseDates,
-      calculationUserInputs,
-    )
+  ): CalculationBreakdown = calculationTransactionalService.calculateWithBreakdown(
+    booking,
+    calculatedReleaseDates,
+    calculationUserInputs,
+  )
 
   private fun enrichBreakdownWithHints(
     dates: Map<ReleaseDateType, LocalDate>,
     calculationBreakdown: CalculationBreakdown,
-  ): Map<ReleaseDateType, DetailedDate> =
-    calculationResultEnrichmentService.addDetailToCalculationDates(
-      releaseDates = dates.map { ReleaseDate(date = it.value, type = it.key) },
-      sentenceAndOffences = SOURCE_DATA.sentenceAndOffences,
-      calculationBreakdown = calculationBreakdown,
-      historicalTusedSource = null,
-    )
+    sentenceOverrideDates: List<String> = emptyList(),
+  ): Map<ReleaseDateType, DetailedDate> = calculationResultEnrichmentService.addDetailToCalculationDates(
+    releaseDates = dates.map { ReleaseDate(date = it.value, type = it.key) },
+    sentenceAndOffences = SOURCE_DATA.sentenceAndOffences,
+    calculationBreakdown = calculationBreakdown,
+    historicalTusedSource = null,
+    sentenceDateOverrides = sentenceOverrideDates,
+  )
 
-  private fun mapToDatesAndHints(breakdownWithHints: Map<ReleaseDateType, DetailedDate>): List<DatesAndHints> =
-    breakdownWithHints.map {
-      DatesAndHints(
-        type = it.key,
-        date = it.value.date,
-        hints = it.value.hints.map { h -> h.text },
-      )
-    }
+  private fun mapToDatesAndHints(breakdownWithHints: Map<ReleaseDateType, DetailedDate>): List<DatesAndHints> = breakdownWithHints.map {
+    DatesAndHints(
+      type = it.key,
+      date = it.value.date,
+      hints = it.value.hints.map { h -> h.text },
+    )
+  }
 
   private val hdcedConfiguration = hdcedConfigurationForTests()
   private val ersedConfiguration = ersedConfigurationForTests()
