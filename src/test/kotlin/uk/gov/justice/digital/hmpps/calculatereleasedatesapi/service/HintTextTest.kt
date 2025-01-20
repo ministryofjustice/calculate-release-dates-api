@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -29,6 +30,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NonFridayReleaseDay
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
@@ -74,6 +76,10 @@ class HintTextTest {
   @BeforeEach
   fun beforeAll() {
     Mockito.`when`(bankHolidayService.getBankHolidays()).thenReturn(BANK_HOLIDAYS)
+    Mockito.`when`(nonFridayReleaseService.getDate(any<ReleaseDate>())).thenAnswer { invocation ->
+      val releaseDate = invocation.getArgument<ReleaseDate>(0)
+      NonFridayReleaseDay(releaseDate.date)
+    }
   }
 
   @ParameterizedTest
@@ -227,7 +233,8 @@ class HintTextTest {
   private val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
   private val featureToggles = FeatureToggles(sdsEarlyReleaseHints = true, hdc365 = true)
 
-  private val nonFridayReleaseService = NonFridayReleaseService(bankHolidayService, clock)
+//  private val nonFridayReleaseService = NonFridayReleaseService(bankHolidayService, clock)
+  private val nonFridayReleaseService = mock<NonFridayReleaseService>()
 
   private val calculationResultEnrichmentService = CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock, featureToggles)
 
