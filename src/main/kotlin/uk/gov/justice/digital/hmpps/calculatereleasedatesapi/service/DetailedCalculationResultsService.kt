@@ -22,6 +22,7 @@ open class DetailedCalculationResultsService(
   private val prisonApiDataMapper: PrisonApiDataMapper,
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
+  private val prisonService: PrisonService,
 ) {
 
   @Transactional(readOnly = true)
@@ -37,9 +38,17 @@ open class DetailedCalculationResultsService(
       .filter { it.outcomeDate != null }
       .map { ReleaseDate(it.outcomeDate!!, ReleaseDateType.valueOf(it.calculationDateType)) }
 
+    val sentenceDateOverrides = prisonService.getSentenceOverrides(calculationRequest.bookingId, releaseDates)
+
     return DetailedCalculationResults(
       calculationContext(calculationRequestId, calculationRequest),
-      calculationResultEnrichmentService.addDetailToCalculationDates(releaseDates, sentenceAndOffences, calculationBreakdown, calculationRequest.historicalTusedSource),
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        releaseDates,
+        sentenceAndOffences,
+        calculationBreakdown,
+        calculationRequest.historicalTusedSource,
+        sentenceDateOverrides,
+      ),
       approvedDates(calculationRequest.approvedDatesSubmissions.firstOrNull()),
       CalculationOriginalData(
         prisonerDetails,
@@ -66,16 +75,12 @@ open class DetailedCalculationResultsService(
     calculationRequest.calculationType,
   )
 
-  private fun approvedDates(latestApprovedDatesSubmission: ApprovedDatesSubmission?): Map<ReleaseDateType, DetailedDate>? {
-    return latestApprovedDatesSubmission?.approvedDates?.associate {
-      val type = ReleaseDateType.valueOf(it.calculationDateType)
-      type to DetailedDate(type, type.description, it.outcomeDate, emptyList())
-    }
+  private fun approvedDates(latestApprovedDatesSubmission: ApprovedDatesSubmission?): Map<ReleaseDateType, DetailedDate>? = latestApprovedDatesSubmission?.approvedDates?.associate {
+    val type = ReleaseDateType.valueOf(it.calculationDateType)
+    type to DetailedDate(type, type.description, it.outcomeDate, emptyList())
   }
 
-  private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest {
-    return calculationRequestRepository.findById(calculationRequestId).orElseThrow {
-      EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId")
-    }
+  private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest = calculationRequestRepository.findById(calculationRequestId).orElseThrow {
+    EntityNotFoundException("No calculation results exist for calculationRequestId $calculationRequestId")
   }
 }

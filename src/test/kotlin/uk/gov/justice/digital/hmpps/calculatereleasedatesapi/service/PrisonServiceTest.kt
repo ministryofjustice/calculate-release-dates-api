@@ -11,11 +11,13 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadFunction
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CaseLoadType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RestResponsePage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -23,6 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -313,6 +316,144 @@ class PrisonServiceTest {
     )
   }
 
+  @Test
+  fun `getSentenceOverrides should return correct overrides`() {
+    val bookingId = 123456L
+    val releaseDates = listOf(
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.CRD),
+      ReleaseDate(LocalDate.of(2023, 2, 1), ReleaseDateType.LED),
+      ReleaseDate(LocalDate.of(2023, 3, 1), ReleaseDateType.SED),
+    )
+    val sentenceDetail = sentenceDetailsStub.copy(
+      conditionalReleaseOverrideDate = LocalDate.of(2023, 1, 1),
+      conditionalReleaseDate = LocalDate.of(2023, 1, 2),
+      licenceExpiryOverrideDate = LocalDate.of(2023, 2, 1),
+      licenceExpiryDate = LocalDate.of(2023, 2, 2),
+      sentenceExpiryOverrideDate = LocalDate.of(2023, 3, 1),
+      sentenceExpiryDate = LocalDate.of(2023, 3, 2),
+    )
+
+    whenever(prisonApiClient.getSentenceDetail(bookingId)).thenReturn(sentenceDetail)
+
+    val result = prisonService.getSentenceOverrides(bookingId, releaseDates)
+
+    assertThat(result).containsExactlyInAnyOrder("CRD", "LED", "SED")
+  }
+
+  @Test
+  fun `getSentenceOverrides should return empty list when no overrides`() {
+    val bookingId = 123456L
+    val releaseDates = listOf(
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.CRD),
+      ReleaseDate(LocalDate.of(2023, 2, 1), ReleaseDateType.LED),
+      ReleaseDate(LocalDate.of(2023, 3, 1), ReleaseDateType.SED),
+    )
+    val sentenceDetail = sentenceDetailsStub.copy(
+      conditionalReleaseOverrideDate = null,
+      conditionalReleaseDate = LocalDate.of(2023, 1, 1),
+      licenceExpiryOverrideDate = null,
+      licenceExpiryDate = LocalDate.of(2023, 2, 1),
+      sentenceExpiryOverrideDate = null,
+      sentenceExpiryDate = LocalDate.of(2023, 3, 1),
+    )
+
+    whenever(prisonApiClient.getSentenceDetail(bookingId)).thenReturn(sentenceDetail)
+
+    val result = prisonService.getSentenceOverrides(bookingId, releaseDates)
+
+    assertThat(result).isEmpty()
+  }
+
+  @Test
+  fun `getSentenceOverrides should handle all release date types`() {
+    val bookingId = 123456L
+    val releaseDates = listOf(
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.HDCED),
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.CRD),
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.LED),
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.SED),
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.NPD),
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.ARD),
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.TUSED),
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.PED),
+    )
+    val sentenceDetail = sentenceDetailsStub.copy(
+      homeDetentionCurfewEligibilityOverrideDate = LocalDate.of(2023, 1, 1),
+      homeDetentionCurfewEligibilityDate = LocalDate.of(2023, 1, 2),
+      conditionalReleaseOverrideDate = LocalDate.of(2023, 1, 1),
+      conditionalReleaseDate = LocalDate.of(2023, 1, 2),
+      licenceExpiryOverrideDate = LocalDate.of(2023, 1, 1),
+      licenceExpiryDate = LocalDate.of(2023, 1, 2),
+      sentenceExpiryOverrideDate = LocalDate.of(2023, 1, 1),
+      sentenceExpiryDate = LocalDate.of(2023, 1, 2),
+      nonParoleOverrideDate = LocalDate.of(2023, 1, 1),
+      nonParoleDate = LocalDate.of(2023, 1, 2),
+      automaticReleaseOverrideDate = LocalDate.of(2023, 1, 1),
+      automaticReleaseDate = LocalDate.of(2023, 1, 2),
+      topupSupervisionExpiryOverrideDate = LocalDate.of(2023, 1, 1),
+      topupSupervisionExpiryDate = LocalDate.of(2023, 1, 2),
+      paroleEligibilityOverrideDate = LocalDate.of(2023, 1, 1),
+      paroleEligibilityDate = LocalDate.of(2023, 1, 2),
+    )
+
+    whenever(prisonApiClient.getSentenceDetail(bookingId)).thenReturn(sentenceDetail)
+
+    val result = prisonService.getSentenceOverrides(bookingId, releaseDates)
+
+    assertThat(result).containsExactlyInAnyOrder("HDCED", "CRD", "LED", "SED", "NPD", "ARD", "TUSED", "PED")
+  }
+
+  @Test
+  fun `getSentenceOverrides should ignore all release dates where not override date is present`() {
+    val bookingId = 123456L
+    val releaseDates = listOf(
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.HDCED),
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.CRD),
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.LED),
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.SED),
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.NPD),
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.ARD),
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.TUSED),
+      ReleaseDate(LocalDate.of(2023, 1, 1), ReleaseDateType.PED),
+    )
+    val sentenceDetail = sentenceDetailsStub.copy(
+      homeDetentionCurfewEligibilityDate = LocalDate.of(2023, 1, 2),
+      conditionalReleaseDate = LocalDate.of(2023, 1, 2),
+      licenceExpiryDate = LocalDate.of(2023, 1, 2),
+      sentenceExpiryDate = LocalDate.of(2023, 1, 2),
+      nonParoleDate = LocalDate.of(2023, 1, 2),
+      automaticReleaseDate = LocalDate.of(2023, 1, 2),
+      topupSupervisionExpiryDate = LocalDate.of(2023, 1, 2),
+      paroleEligibilityDate = LocalDate.of(2023, 1, 2),
+    )
+
+    whenever(prisonApiClient.getSentenceDetail(bookingId)).thenReturn(sentenceDetail)
+
+    val result = prisonService.getSentenceOverrides(bookingId, releaseDates)
+
+    assertThat(result).isEmpty()
+  }
+
+  @Test
+  fun `getSentenceOverrides should return empty list when no release dates provided`() {
+    val bookingId = 123456L
+    val releaseDates = emptyList<ReleaseDate>()
+    val sentenceDetail = sentenceDetailsStub.copy(
+      conditionalReleaseOverrideDate = LocalDate.of(2023, 1, 1),
+      conditionalReleaseDate = LocalDate.of(2023, 1, 2),
+      licenceExpiryOverrideDate = LocalDate.of(2023, 2, 1),
+      licenceExpiryDate = LocalDate.of(2023, 2, 2),
+      sentenceExpiryOverrideDate = LocalDate.of(2023, 3, 1),
+      sentenceExpiryDate = LocalDate.of(2023, 3, 2),
+    )
+
+    whenever(prisonApiClient.getSentenceDetail(bookingId)).thenReturn(sentenceDetail)
+
+    val result = prisonService.getSentenceOverrides(bookingId, releaseDates)
+
+    assertThat(result).isEmpty()
+  }
+
   companion object {
     private val mapper = ObjectMapper()
 
@@ -359,6 +500,59 @@ class PrisonServiceTest {
       totalElements = 2,
       size = 1,
       number = 1,
+    )
+
+    private val sentenceDetailsStub = SentenceDetail(
+      sentenceExpiryDate = null,
+      automaticReleaseDate = null,
+      conditionalReleaseDate = null,
+      nonParoleDate = null,
+      postRecallReleaseDate = null,
+      licenceExpiryDate = null,
+      homeDetentionCurfewEligibilityDate = null,
+      paroleEligibilityDate = null,
+      homeDetentionCurfewActualDate = null,
+      actualParoleDate = null,
+      releaseOnTemporaryLicenceDate = null,
+      earlyRemovalSchemeEligibilityDate = null,
+      earlyTermDate = null,
+      midTermDate = null,
+      lateTermDate = null,
+      topupSupervisionExpiryDate = LocalDate.of(2017, 1, 6),
+      tariffDate = null,
+      dtoPostRecallReleaseDate = null,
+      tariffEarlyRemovalSchemeEligibilityDate = null,
+      effectiveSentenceEndDate = LocalDate.of(2016, 11, 16),
+      bookingId = 123,
+      sentenceStartDate = LocalDate.of(2016, 11, 6),
+      additionalDaysAwarded = 0,
+      automaticReleaseOverrideDate = null,
+      conditionalReleaseOverrideDate = null,
+      nonParoleOverrideDate = null,
+      postRecallReleaseOverrideDate = null,
+      dtoPostRecallReleaseDateOverride = null,
+      nonDtoReleaseDate = null,
+      sentenceExpiryCalculatedDate = null,
+      sentenceExpiryOverrideDate = null,
+      licenceExpiryCalculatedDate = null,
+      licenceExpiryOverrideDate = null,
+      paroleEligibilityCalculatedDate = null,
+      paroleEligibilityOverrideDate = null,
+      topupSupervisionExpiryCalculatedDate = null,
+      topupSupervisionExpiryOverrideDate = null,
+      homeDetentionCurfewEligibilityCalculatedDate = null,
+      homeDetentionCurfewEligibilityOverrideDate = null,
+      nonDtoReleaseDateType = "CRD",
+      confirmedReleaseDate = null,
+      releaseDate = null,
+      etdOverrideDate = null,
+      etdCalculatedDate = null,
+      mtdOverrideDate = null,
+      mtdCalculatedDate = null,
+      ltdOverrideDate = null,
+      ltdCalculatedDate = null,
+      topupSupervisionStartDate = null,
+      homeDetentionCurfewEndDate = null,
     )
   }
 }

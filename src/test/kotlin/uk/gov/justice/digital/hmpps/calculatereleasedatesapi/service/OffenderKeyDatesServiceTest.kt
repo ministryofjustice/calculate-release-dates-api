@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers.anyList
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
@@ -25,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateHint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDatesAndCalculationContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.LocalDate
@@ -73,11 +75,33 @@ open class OffenderKeyDatesServiceTest {
       ),
     )
 
-    val detailedDates = mapOf(ReleaseDateType.HDCED to DetailedDate(ReleaseDateType.HDCED, ReleaseDateType.HDCED.description, LocalDate.of(2024, 1, 1), emptyList()))
+    val detailedDates = mapOf(
+      ReleaseDateType.HDCED to DetailedDate(
+        ReleaseDateType.HDCED,
+        ReleaseDateType.HDCED.description,
+        LocalDate.of(2024, 1, 1),
+        emptyList(),
+      ),
+    )
 
     whenever(prisonService.getNOMISOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(Mockito.anyList(), isNull(), isNull(), isNull())).thenReturn(detailedDates)
-    whenever(prisonService.getNOMISCalcReasons()).thenReturn(listOf(NomisCalculationReason(code = "FS", description = "Further Sentence")))
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        Mockito.anyList(),
+        isNull(),
+        isNull(),
+        isNull(),
+        anyList(),
+      ),
+    ).thenReturn(detailedDates)
+    whenever(prisonService.getNOMISCalcReasons()).thenReturn(
+      listOf(
+        NomisCalculationReason(
+          code = "FS",
+          description = "Further Sentence",
+        ),
+      ),
+    )
 
     val result = underTest.getNomisCalculationSummary(offenderSentCalcId)
 
@@ -119,7 +143,14 @@ open class OffenderKeyDatesServiceTest {
       ),
     )
 
-    val detailedDates = mapOf(ReleaseDateType.HDCED to DetailedDate(ReleaseDateType.HDCED, ReleaseDateType.HDCED.description, LocalDate.of(2024, 1, 1), emptyList()))
+    val detailedDates = mapOf(
+      ReleaseDateType.HDCED to DetailedDate(
+        ReleaseDateType.HDCED,
+        ReleaseDateType.HDCED.description,
+        LocalDate.of(2024, 1, 1),
+        emptyList(),
+      ),
+    )
     val calcRequest = CalculationRequest(
       1,
       reference,
@@ -143,7 +174,15 @@ open class OffenderKeyDatesServiceTest {
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
     whenever(calculationRequestRepository.findById(calcRequestId)).thenReturn(Optional.of(calcRequest))
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(Mockito.anyList(), isNull(), isNull(), isNull())).thenReturn(detailedDates)
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        Mockito.anyList(),
+        isNull(),
+        isNull(),
+        isNull(),
+        anyList(),
+      ),
+    ).thenReturn(detailedDates)
 
     val result = underTest.getKeyDatesByCalcId(calcRequestId)
 
@@ -234,7 +273,15 @@ open class OffenderKeyDatesServiceTest {
 
     whenever(prisonService.getOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
     whenever(calculationRequestRepository.findById(calcRequestId)).thenReturn(Optional.of(calcRequest))
-    whenever(calculationResultEnrichmentService.addDetailToCalculationDates(Mockito.anyList(), isNull(), isNull(), isNull()))
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        Mockito.anyList(),
+        isNull(),
+        isNull(),
+        isNull(),
+        anyList(),
+      ),
+    )
       .thenThrow(NoSuchElementException("Error"))
 
     val exception = assertThrows<CrdWebException> {
@@ -242,6 +289,53 @@ open class OffenderKeyDatesServiceTest {
     }
 
     assertThat(exception.message).isEqualTo(errorMessage)
+  }
+
+  @Test
+  fun `Test NomisCalculationSummary returns Nomis override dates`() {
+    val offenderSentCalcId = 5636121L
+    val offenderKeyDates = OffenderKeyDates(
+      reasonCode = "FS",
+      calculatedAt = LocalDateTime.of(2024, 2, 29, 10, 30),
+      comment = null,
+      conditionalReleaseDate = LocalDate.of(2024, 1, 1),
+      homeDetentionCurfewEligibilityDate = LocalDate.of(2024, 1, 2),
+    )
+
+    val detailedDates = mapOf(
+      ReleaseDateType.CRD to DetailedDate(
+        ReleaseDateType.CRD,
+        ReleaseDateType.CRD.description,
+        offenderKeyDates.conditionalReleaseDate!!,
+        listOf(ReleaseDateHint("Manually overridden")),
+      ),
+      ReleaseDateType.HDCED to DetailedDate(
+        ReleaseDateType.HDCED,
+        ReleaseDateType.HDCED.description,
+        offenderKeyDates.homeDetentionCurfewEligibilityDate!!,
+        emptyList(),
+      ),
+    )
+
+    whenever(prisonService.getNOMISOffenderKeyDates(any())).thenReturn(offenderKeyDates.right())
+    whenever(
+      calculationResultEnrichmentService.addDetailToCalculationDates(
+        Mockito.anyList(),
+        isNull(),
+        isNull(),
+        isNull(),
+        anyList(),
+      ),
+    ).thenReturn(detailedDates)
+
+    val result = underTest.getNomisCalculationSummary(offenderSentCalcId)
+    assertThat(result.releaseDates.size).isEqualTo(2)
+    val crdDate = result.releaseDates.find { it.type == ReleaseDateType.CRD }
+    val hdcDate = result.releaseDates.find { it.type == ReleaseDateType.HDCED }
+
+    assertThat(result.releaseDates.size).isEqualTo(2)
+    assertThat(crdDate!!.hints.contains(ReleaseDateHint("Manually overridden")))
+    assertThat(hdcDate!!.hints.none { it == ReleaseDateHint("Manually overridden") })
   }
 
   @Test
