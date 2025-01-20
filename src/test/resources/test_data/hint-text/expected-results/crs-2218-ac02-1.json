@@ -7,7 +7,10 @@
   {
     "type": "CRD",
     "date": "2025-11-29",
-    "hints": ["The Discretionary Friday/Pre-Bank Holiday Release Scheme Policy applies to this release date.", "40% date has been applied"]
+    "hints": [
+      "Friday, 28 November 2025 when adjusted to a working day",
+      "40% date has been applied"
+    ]
   },
   {
     "type": "HDCED",
