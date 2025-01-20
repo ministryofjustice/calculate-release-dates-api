@@ -1,13 +1,15 @@
 [
   {
     "type": "SLED",
-    "date": "2028-12-18",
+    "date": "2028-05-09",
     "hints": []
   },
   {
     "type": "CRD",
-    "date": "2025-12-18",
-    "hints": ["40% date has been applied"]
+    "date": "2025-12-15",
+    "hints": [
+      "40% date has been applied"
+    ]
   },
   {
     "type": "HDCED",
@@ -18,7 +20,7 @@
   },
   {
     "type": "ESED",
-    "date": "2028-12-21",
+    "date": "2028-05-09",
     "hints": []
   }
 ]

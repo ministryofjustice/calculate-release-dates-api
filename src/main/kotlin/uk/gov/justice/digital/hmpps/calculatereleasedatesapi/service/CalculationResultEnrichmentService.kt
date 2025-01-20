@@ -243,7 +243,7 @@ class CalculationResultEnrichmentService(
   private fun sds40Hint(type: ReleaseDateType, calculationBreakdown: CalculationBreakdown): ReleaseDateHint? {
     if (calculationBreakdown.breakdownByReleaseDateType.containsKey(type)) {
       val rules = calculationBreakdown.breakdownByReleaseDateType[type]!!.rules
-      if (rules.contains(CalculationRule.SDS_EARLY_RELEASE_APPLIES) && type.isEarlyReleaseHintType) {
+      if (rules.contains(CalculationRule.SDS_EARLY_RELEASE_APPLIES) && type.isEarlyReleaseHintType && !rules.contains(CalculationRule.HDCED_ADJUSTED_TO_365_COMMENCEMENT)) {
         return ReleaseDateHint("40% date has been applied")
       }
       if ((
@@ -257,7 +257,7 @@ class CalculationResultEnrichmentService(
         val trancheText = if (rules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT)) "1" else "2"
         return ReleaseDateHint("Defaulted to tranche $trancheText commencement")
       }
-      if (rules.contains(CalculationRule.SDS_STANDARD_RELEASE_APPLIES) && type.isStandardReleaseHintType) {
+      if (rules.contains(CalculationRule.SDS_STANDARD_RELEASE_APPLIES) && type.isStandardReleaseHintType && !rules.contains(CalculationRule.HDCED_ADJUSTED_TO_365_COMMENCEMENT)) {
         return ReleaseDateHint("50% date has been applied")
       }
     }
