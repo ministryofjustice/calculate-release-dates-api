@@ -233,7 +233,6 @@ class HintTextTest {
   private val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
   private val featureToggles = FeatureToggles(sdsEarlyReleaseHints = true, hdc365 = true)
 
-//  private val nonFridayReleaseService = NonFridayReleaseService(bankHolidayService, clock)
   private val nonFridayReleaseService = mock<NonFridayReleaseService>()
 
   private val calculationResultEnrichmentService = CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock, featureToggles)
