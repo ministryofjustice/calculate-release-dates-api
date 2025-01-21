@@ -18,15 +18,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisTusedDat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RestResponsePage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
 import java.time.Duration
+import java.time.LocalDate
 
 @Service
 class PrisonApiClient(
@@ -195,6 +197,16 @@ class PrisonApiClient(
       }
     }
     .block()!!
+
+  fun getExternalMovements(prisonerId: String, earliestSentenceDate: LocalDate): List<PrisonApiExternalMovement> {
+    log.info("Requesting external movements for $prisonerId")
+    return webClient.get()
+      .uri("/api/movements/offender/$prisonerId?allBookings=true&movementTypes=ADM&movementTypes=REL&movementsAfter=$earliestSentenceDate")
+      .retrieve()
+      .bodyToMono(typeReference<List<PrisonApiExternalMovement>>())
+      .block()!!
+  }
+
   fun getLatestTusedDataForBotus(nomisId: String): Either<String, NomisTusedData> = webClient.get()
     .uri("/api/offender-dates/latest-tused/$nomisId")
     .exchangeToMono { response ->
