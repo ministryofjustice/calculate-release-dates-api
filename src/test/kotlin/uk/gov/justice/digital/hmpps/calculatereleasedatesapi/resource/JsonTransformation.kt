@@ -89,6 +89,10 @@ class JsonTransformation {
     return getAllJsonFromDir("api_integration/prisonerCalculableSentenceEnvelope")
   }
 
+  fun getAllExternalMovementsJson(): Map<String, String> {
+    return getAllJsonFromDir("api_integration/externalmovements")
+  }
+
   fun getApiIntegrationJson(fileName: String, type: String): String {
     return getResourceAsText("/test_data/api_integration/$type/$fileName.json")
   }

@@ -12,4 +12,5 @@ data class Booking(
   val fixedTermRecallDetails: FixedTermRecallDetails? = null,
   val bookingId: Long = -1L,
   val historicalTusedData: HistoricalTusedData? = null,
+  val externalMovements: List<ExternalMovement> = emptyList(),
 )

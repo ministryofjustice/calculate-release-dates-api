@@ -24,6 +24,6 @@ class CalculationService(
 
     val sentencesToCalculate = bookingCalculationService.getSentencesToCalculate(booking)
 
-    return bookingTimelineService.calculate(sentencesToCalculate, booking.adjustments, booking.offender, booking.returnToCustodyDate, options)
+    return bookingTimelineService.calculate(sentencesToCalculate, booking.adjustments, booking.offender, booking.returnToCustodyDate, options, booking.externalMovements)
   }
 }

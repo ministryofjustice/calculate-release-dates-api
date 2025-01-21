@@ -11,4 +11,5 @@ data class FeatureToggles(
   var sds40ConsecutiveManualJourney: Boolean = false,
   var botusConsecutiveJourney: Boolean = false,
   var hdc365: Boolean = false,
+  var externalMovementsEnabled: Boolean = false,
 )

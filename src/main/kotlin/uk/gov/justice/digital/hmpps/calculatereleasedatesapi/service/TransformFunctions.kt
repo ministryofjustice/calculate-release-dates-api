@@ -82,6 +82,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.GenuineOverrideResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
@@ -93,7 +94,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
@@ -105,6 +105,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -847,5 +849,16 @@ fun transform(
     sentenceAndOffenceAnalysis,
     sentenceAndOffences.isSDSPlus,
     sentenceAndOffences.hasAnSDSEarlyReleaseExclusion,
+  )
+}
+
+fun transform(
+  externalMovement: PrisonApiExternalMovement,
+): ExternalMovement? {
+  val externalMovementReason = externalMovement.transformMovementReason() ?: return null
+  return ExternalMovement(
+    movementDate = externalMovement.movementDate,
+    movementReason = externalMovementReason,
+    direction = externalMovement.transformMovementDirection(),
   )
 }
