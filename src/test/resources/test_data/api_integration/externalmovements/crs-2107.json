@@ -1,0 +1,46 @@
+[
+  {
+    "offenderNo": "ABC123",
+    "createDateTime": "2023-06-16T10:35:17",
+    "movementType": "ADM",
+    "movementTypeDescription": "Admission",
+    "directionCode": "IN",
+    "movementDate": "2023-06-16",
+    "movementTime": "2023-06-16T10:35:17",
+    "movementReason": "Unconvicted Remand",
+    "movementReasonCode": "N"
+  },
+  {
+    "offenderNo": "ABC123",
+    "createDateTime": "2024-06-02T10:35:17",
+    "movementType": "REL",
+    "movementTypeDescription": "Release",
+    "directionCode": "OUT",
+    "movementDate": "2024-06-02",
+    "movementTime": "2024-06-02T10:35:17",
+    "movementReason": "ECSL Release",
+    "movementReasonCode": "ECSL"
+  },
+  {
+    "offenderNo": "ABC123",
+    "createDateTime": "2024-06-18T10:35:17",
+    "movementType": "ADM",
+    "movementTypeDescription": "Admission",
+    "directionCode": "IN",
+    "movementDate": "2024-06-18",
+    "movementTime": "2024-06-18T10:35:17",
+    "movementReason": "Imprisonment Without Option",
+    "movementReasonCode": "I"
+  },
+  {
+    "offenderNo": "ABC123",
+    "createDateTime": "2024-09-10T10:35:17",
+    "movementType": "REL",
+    "movementTypeDescription": "Release",
+    "directionCode": "OUT",
+    "movementDate": "2024-09-10",
+    "movementTime": "2024-09-10T10:35:17",
+    "movementReason": "Conditional Release (CJA91) -SH Term>1YR",
+    "movementReasonCode": "CR"
+  }
+]

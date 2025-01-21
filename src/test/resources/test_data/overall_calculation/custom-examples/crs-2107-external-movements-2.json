@@ -1,0 +1,109 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2023-08-01",
+        "offenceCode": "TH68013"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 11
+        }
+      },
+      "sentencedAt": "2024-05-18",
+      "identifier": "f3f33a7f-9d6f-3382-8bd4-7e1abefce2cf",
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "offence": {
+        "committedAt": "2024-01-02",
+        "offenceCode": "FA06003"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 8
+        }
+      },
+      "sentencedAt": "2024-08-25",
+      "identifier": "a76a4b3d-1c07-3684-b839-a2616c87ae34",
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "offence": {
+        "committedAt": "2024-01-02",
+        "offenceCode": "FA06003"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 4
+        }
+      },
+      "sentencedAt": "2024-08-25",
+      "identifier": "b71e09b6-3728-3b80-8e86-b1c40d52c812",
+      "consecutiveSentenceUUIDs": ["a76a4b3d-1c07-3684-b839-a2616c87ae34"],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "offence": {
+        "committedAt": "2024-01-02",
+        "offenceCode": "FA06003"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 3
+        }
+      },
+      "sentencedAt": "2024-08-25",
+      "identifier": "a31d5d02-611f-43b0-8b1a-4b1edc955e7e",
+      "consecutiveSentenceUUIDs": ["b71e09b6-3728-3b80-8e86-b1c40d52c812"],
+      "hasAnSDSEarlyReleaseExclusion": "NO"
+    },
+    {
+      "offence": {
+        "committedAt": "2024-01-02",
+        "offenceCode": "SX03001C"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 26
+        }
+      },
+      "sentencedAt": "2024-11-14",
+      "identifier": "d84a2c6a-e11c-3f2c-885e-ca04b55451e5",
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2024-08-25",
+        "numberOfDays": 20,
+        "fromDate": "2024-04-28",
+        "toDate": "2024-05-17"
+      },
+      {
+        "appliesToSentencesFrom": "2024-11-14",
+        "numberOfDays": 40,
+        "fromDate": "2024-03-19",
+        "toDate": "2024-04-27"
+      },
+      {
+        "appliesToSentencesFrom": "2024-08-25",
+        "numberOfDays": 60,
+        "fromDate": "2024-06-26",
+        "toDate": "2024-08-24"
+      }
+    ]
+  },
+  "externalMovements": [
+    {
+      "movementDate": "2024-09-10",
+      "movementReason": "HDC",
+      "direction": "OUT"
+    }
+  ]
+}
