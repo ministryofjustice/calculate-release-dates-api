@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 data class BotusSentence(
   override val offence: Offence,
@@ -19,25 +19,17 @@ data class BotusSentence(
   override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false
   override val isSDSPlusOffenceInPeriod: Boolean = false
 
-  override fun buildString(): String {
-    return "Sentence\t:\t\n" +
-      "Identification Track\t:\t${identificationTrack}\n" +
-      "Duration\t:\t$duration\n" +
-      "${duration.toPeriodString(sentencedAt)}\n" +
-      "Release Date Types\t:\t$releaseDateTypes\n" +
-      "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
-      sentenceCalculation.buildString(releaseDateTypes.initialTypes)
-  }
+  override fun buildString(): String = "Sentence\t:\t\n" +
+    "Identification Track\t:\t${identificationTrack}\n" +
+    "Duration\t:\t$duration\n" +
+    "${duration.toPeriodString(sentencedAt)}\n" +
+    "Release Date Types\t:\t$releaseDateTypes\n" +
+    "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
+    sentenceCalculation.buildString(releaseDateTypes.initialTypes)
 
-  override fun getLengthInDays(): Int {
-    return duration.getLengthInDays(this.sentencedAt)
-  }
+  override fun getLengthInDays(): Int = duration.getLengthInDays(this.sentencedAt)
 
-  override fun hasAnyEdsOrSopcSentence(): Boolean {
-    return false
-  }
+  override fun hasAnyEdsOrSopcSentence(): Boolean = false
 
-  override fun isOrExclusivelyBotus(): Boolean {
-    return true
-  }
+  override fun isOrExclusivelyBotus(): Boolean = true
 }
