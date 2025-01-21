@@ -16,11 +16,15 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CustodialPeriod
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovement
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementDirection
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SDSEarlyReleaseDefaultingRulesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.WorkingDayService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalAdmissionMovementCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalReleaseMovementCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineSentenceCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheThreeCalculationHandler
@@ -38,6 +42,8 @@ class BookingTimelineService(
   private val trancheThreeCalculationHandler: TimelineTrancheThreeCalculationHandler,
   private val timelineSentenceCalculationHandler: TimelineSentenceCalculationHandler,
   private val timelineUalAdjustmentCalculationHandler: TimelineUalAdjustmentCalculationHandler,
+  private val timelineExternalReleaseMovementCalculationHandler: TimelineExternalReleaseMovementCalculationHandler,
+  private val timelineExternalAdmissionMovementCalculationHandler: TimelineExternalAdmissionMovementCalculationHandler,
 ) {
 
   fun calculate(
@@ -46,6 +52,7 @@ class BookingTimelineService(
     offender: Offender,
     returnToCustodyDate: LocalDate?,
     options: CalculationOptions,
+    externalMovements: List<ExternalMovement>,
   ): CalculationOutput {
     val futureData = TimelineFutureData(
       taggedBail = adjustments.getOrEmptyList(TAGGED_BAIL),
@@ -58,7 +65,7 @@ class BookingTimelineService(
       sentences = sentences.sortedBy { it.sentencedAt },
     )
 
-    val calculationsByDate = getCalculationsByDate(sentences, futureData)
+    val calculationsByDate = getCalculationsByDate(sentences, futureData, externalMovements)
 
     val earliestSentence = futureData.sentences.minBy { it.sentencedAt }
 
@@ -132,6 +139,8 @@ class BookingTimelineService(
       TimelineCalculationType.TRANCHE_2,
       -> timelineTrancheCalculationHandler
       TimelineCalculationType.TRANCHE_3 -> trancheThreeCalculationHandler
+      TimelineCalculationType.EXTERNAL_ADMISSION -> timelineExternalAdmissionMovementCalculationHandler
+      TimelineCalculationType.EXTERNAL_RELEASE -> timelineExternalReleaseMovementCalculationHandler
     }
   }
 
@@ -182,7 +191,7 @@ class BookingTimelineService(
     }
   }
 
-  private fun getCalculationsByDate(sentences: List<CalculableSentence>, futureData: TimelineFutureData): Map<LocalDate, List<TimelineCalculationDate>> {
+  private fun getCalculationsByDate(sentences: List<CalculableSentence>, futureData: TimelineFutureData, externalMovements: List<ExternalMovement>): Map<LocalDate, List<TimelineCalculationDate>> {
     return (
       sentences.flatMap { it.sentenceParts().map { part -> TimelineCalculationDate(part.sentencedAt, TimelineCalculationType.SENTENCED) } } +
         futureData.additional.map { TimelineCalculationDate(it.appliesToSentencesFrom, TimelineCalculationType.ADDITIONAL_DAYS) } +
@@ -192,7 +201,8 @@ class BookingTimelineService(
           TimelineCalculationDate(trancheConfiguration.trancheOneCommencementDate, TimelineCalculationType.TRANCHE_1),
           TimelineCalculationDate(trancheConfiguration.trancheTwoCommencementDate, TimelineCalculationType.TRANCHE_2),
           TimelineCalculationDate(trancheConfiguration.trancheThreeCommencementDate, TimelineCalculationType.TRANCHE_3),
-        )
+        ) +
+        externalMovements.map { TimelineCalculationDate(it.movementDate, if (it.direction == ExternalMovementDirection.OUT) TimelineCalculationType.EXTERNAL_RELEASE else TimelineCalculationType.EXTERNAL_ADMISSION) }
       )
       .sortedBy { it.date }
       .distinct()

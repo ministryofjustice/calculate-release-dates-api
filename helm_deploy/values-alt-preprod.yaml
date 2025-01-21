@@ -26,6 +26,7 @@ generic-service:
     TORERA_OFFENCE_TO_MANUAL_JOURNEY: "true"
     SDS40_CONSEC_MANUAL_JOURNEY: "true"
     HDC_365_FEATURE_TOGGLE: "false"
+    EXTERNAL_MOVEMENTS_FEATURE_TOGGLE: "false"
 
   serviceAccountName: calculate-release-dates-api-preprod
 

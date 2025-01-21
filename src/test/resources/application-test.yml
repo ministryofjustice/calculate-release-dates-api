@@ -74,6 +74,7 @@ feature-toggles:
   support-inactive-sentences-and-adjustments: false
   sds40-consecutive-manual-journey: true
   hdc365: true
+  externalMovementsEnabled: true
 
 hdced4:
   hdc4-commencement-date: 2025-01-01

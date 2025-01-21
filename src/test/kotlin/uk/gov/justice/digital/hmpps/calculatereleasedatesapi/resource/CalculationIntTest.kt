@@ -45,12 +45,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantReman
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UserInputType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.PcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import java.time.Duration
 import java.time.LocalDate
@@ -1071,6 +1071,26 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       .isEqualTo("2015-03-17")
   }
 
+  @Test
+  fun `Run calculation with external movements`() {
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/crs-2107")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(calculationRequestModel)
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[CRD]).isEqualTo(
+      LocalDate.of(2024, 9, 10),
+    )
+    assertThat(calculation.dates[SLED]).isEqualTo(
+      LocalDate.of(2025, 9, 14),
+    )
+  }
   val calculationRequestModel = CalculationRequestModel(CalculationUserInputs(), 1L)
 
   companion object {

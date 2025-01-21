@@ -21,6 +21,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.retry.support.RetryTemplate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
@@ -91,6 +92,7 @@ class BulkComparisonServiceTest {
     comparisonPersonDiscrepancyCategoryRepository,
     serviceUserService,
     botusTusedService,
+    FeatureToggles(),
     retryTemplate,
   )
 

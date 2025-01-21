@@ -61,6 +61,9 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
     val finePayments = jsonTransformation.getAllOffenderFinePaymentsJson()
     val defaultFinePayment = finePayments[DEFAULT]!!
 
+    val externalMovements = jsonTransformation.getAllExternalMovementsJson()
+    val defaultExternalMovements = externalMovements[DEFAULT]!!
+
     val returnToCustodyDates = jsonTransformation.getAllReturnToCustodyDatesJson()
 
     val allPrisoners = (adjustments.keys + sentences.keys + prisoners.keys).distinct()
@@ -110,6 +113,15 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
         defaultFinePayment
       }
       prisonApi.stubOffenderFinePayments(it.hashCode().toLong(), finePayment)
+
+      val externalMovement = if (externalMovements.containsKey(it)) {
+        log.info("Stubbing external movements prisonerId $it, bookingId ${it.hashCode().toLong()} from file $it")
+        externalMovements[it]!!
+      } else {
+        log.info("Stubbing external movements prisonerId $it, bookingId ${it.hashCode().toLong()} from file $DEFAULT")
+        defaultExternalMovements
+      }
+      prisonApi.stubExternalMovements(it, externalMovement)
 
       prisonApi.stubPostOffenderDates(it.hashCode().toLong())
 
@@ -246,6 +258,17 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
   fun stubOffenderFinePayments(bookingId: Long, json: String): StubMapping =
     stubFor(
       get("/api/offender-fine-payment/booking/$bookingId")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(json)
+            .withStatus(200),
+        ),
+    )
+
+  fun stubExternalMovements(prisonerId: String, json: String): StubMapping =
+    stubFor(
+      get(urlPathEqualTo("/api/movements/offender/$prisonerId"))
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")

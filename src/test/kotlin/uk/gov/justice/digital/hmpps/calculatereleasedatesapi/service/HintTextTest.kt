@@ -34,10 +34,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NonFridayRele
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
@@ -47,6 +47,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.BookingTimelineService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalAdmissionMovementCalculationHandler
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalReleaseMovementCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineSentenceCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineTrancheThreeCalculationHandler
@@ -211,6 +213,16 @@ class HintTextTest {
     releasePointMultiplierConfigurationForTests,
     timelineCalculator,
   )
+  val timelineExternalReleaseMovementCalculationHandler = TimelineExternalReleaseMovementCalculationHandler(
+    trancheConfiguration,
+    releasePointMultiplierConfigurationForTests,
+    timelineCalculator,
+  )
+  val timelineExternalAdmissionMovementCalculationHandler = TimelineExternalAdmissionMovementCalculationHandler(
+    trancheConfiguration,
+    releasePointMultiplierConfigurationForTests,
+    timelineCalculator,
+  )
   private val bookingTimelineService = BookingTimelineService(
     workingDayService,
     trancheConfiguration,
@@ -221,7 +233,8 @@ class HintTextTest {
     timelineTrancheThreeCalculationHandler,
     timelineSentenceCalculationHandler,
     timelineUalAdjustmentCalculationHandler,
-
+    timelineExternalReleaseMovementCalculationHandler,
+    timelineExternalAdmissionMovementCalculationHandler,
   )
   private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
   private val calculationService = CalculationService(

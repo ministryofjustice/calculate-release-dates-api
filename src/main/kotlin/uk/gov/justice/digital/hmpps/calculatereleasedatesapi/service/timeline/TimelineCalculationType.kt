@@ -8,4 +8,6 @@ enum class TimelineCalculationType {
   TRANCHE_1,
   TRANCHE_2,
   TRANCHE_3,
+  EXTERNAL_ADMISSION,
+  EXTERNAL_RELEASE,
 }
