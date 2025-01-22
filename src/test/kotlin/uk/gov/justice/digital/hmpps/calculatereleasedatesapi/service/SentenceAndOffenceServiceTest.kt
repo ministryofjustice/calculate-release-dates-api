@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.anyLong
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.InjectMocks
 import org.mockito.Mock
@@ -40,7 +41,7 @@ class SentenceAndOffenceServiceTest {
   @Test
   fun `If no previous calculation return sentenceAndOffences`() {
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences)
-    whenever(calculationRequestRepository.findFirstByBookingIdOrderByCalculatedAtDesc(anyLong())).thenReturn(Optional.empty())
+    whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(anyLong(), anyString())).thenReturn(Optional.empty())
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(2)
     val analysedSentenceAndOffence = AnalysedSentenceAndOffence(
@@ -77,7 +78,7 @@ class SentenceAndOffenceServiceTest {
   @Test
   fun `If no change since previous calculation return sentenceAndOffences with SAME annotation`() {
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences)
-    whenever(calculationRequestRepository.findFirstByBookingIdOrderByCalculatedAtDesc(anyLong())).thenReturn(Optional.of(calculationRequest))
+    whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(anyLong(), anyString())).thenReturn(Optional.of(calculationRequest))
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(sentenceAndOffences)
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(2)
@@ -91,7 +92,7 @@ class SentenceAndOffenceServiceTest {
     val defaultedSentencesAndOffences = sentenceAndOffences.map { it.copy(isSDSPlus = false) }
     val calcRequestWithMissingSDSPlusFlag = CalculationRequest(sentenceAndOffences = objectToJson(defaultedSentencesAndOffences, jacksonObjectMapper().findAndRegisterModules()))
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(defaultedSentencesAndOffences)
-    whenever(calculationRequestRepository.findFirstByBookingIdOrderByCalculatedAtDesc(anyLong())).thenReturn(Optional.of(calcRequestWithMissingSDSPlusFlag))
+    whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(anyLong(), anyString())).thenReturn(Optional.of(calcRequestWithMissingSDSPlusFlag))
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(2)
     assertThat(response[0].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
@@ -101,7 +102,7 @@ class SentenceAndOffenceServiceTest {
   @Test
   fun `If offence change since previous calculation return sentenceAndOffences with CHANGE annotation`() {
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences)
-    whenever(calculationRequestRepository.findFirstByBookingIdOrderByCalculatedAtDesc(anyLong())).thenReturn(Optional.of(changedCalculationRequest))
+    whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(anyLong(), anyString())).thenReturn(Optional.of(changedCalculationRequest))
     whenever(prisonApiDataMapper.mapSentencesAndOffences(changedCalculationRequest)).thenReturn(changedSentenceAndOffences)
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(2)
@@ -112,7 +113,7 @@ class SentenceAndOffenceServiceTest {
   @Test
   fun `If a new sentence appears since previous calculation return sentenceAndOffences with SAME and NEW annotation`() {
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences + newSentenceAndOffences)
-    whenever(calculationRequestRepository.findFirstByBookingIdOrderByCalculatedAtDesc(anyLong())).thenReturn(Optional.of(calculationRequest))
+    whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(anyLong(), anyString())).thenReturn(Optional.of(calculationRequest))
     whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(sentenceAndOffences)
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(4)

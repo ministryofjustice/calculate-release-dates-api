@@ -32,7 +32,6 @@ class ThingsToDoService(
 
   private fun isCalculationRequired(offenderDetails: PrisonerDetails): Boolean {
     val sentencesAndOffences = sentenceAndOffenceService.getSentencesAndOffences(offenderDetails.bookingId)
-    // TODO fix bug that affects getAnalyzedAdjustments method - see CRS-2199
     val adjustments = adjustmentsService.getAnalyzedAdjustments(offenderDetails.bookingId)
 
     return hasNewOrUpdatedSentences(sentencesAndOffences) ||
