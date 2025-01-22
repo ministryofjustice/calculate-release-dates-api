@@ -66,17 +66,13 @@ class AdjustmentValidationService {
 
   internal fun validateAdditionAdjustmentsInsideLatestReleaseDate(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
     val adjustments = getSortedAdjustments(booking)
-    val latestReleaseDate = calculationOutput.custodialPeriod.mapNotNull { period ->
-      period.sentences
-        .filterNot { it is Term }
-        .maxOfOrNull { it.sentenceCalculation.releaseDateDefaultedByCommencement }
-    }.maxOrNull()
+    val nonTermSentences = calculationOutput.custodialPeriod.flatMap { it.sentences }.filterNot { it is Term }
 
-    if (latestReleaseDate == null) {
-      log.warn("validateAdditionAdjustmentsInsideLatestReleaseDate: No release date found for sentences within timeline calculation")
+    if (nonTermSentences.isEmpty()) {
       return emptyList()
     }
 
+    val latestReleaseDate = nonTermSentences.maxOf { it.sentenceCalculation.releaseDateDefaultedByCommencement }
     val messages = mutableSetOf<ValidationMessage>()
 
     adjustments.forEach { (type, adjustment) ->
