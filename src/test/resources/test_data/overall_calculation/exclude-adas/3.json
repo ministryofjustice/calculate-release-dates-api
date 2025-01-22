@@ -1,0 +1,21 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "type": "DetentionAndTrainingOrderSentence",
+      "offence": {
+        "committedAt": "2023-06-29",
+        "offenceCode": "FA06001"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 16
+        }
+      },
+      "sentencedAt": "2023-11-17"
+    }
+  ]
+}

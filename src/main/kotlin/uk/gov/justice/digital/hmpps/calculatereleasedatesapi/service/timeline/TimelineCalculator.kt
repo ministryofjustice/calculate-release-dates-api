@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentenceAdjustedCalculationService
 import java.time.temporal.ChronoUnit
@@ -46,9 +47,11 @@ class TimelineCalculator(
       }
       val unusedLicenseDays = group.filter {
         val ledBreakdown = it.sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.LED]
-        ledBreakdown != null && ledBreakdown.rules.contains(CalculationRule.LED_CONSEC_ORA_AND_NON_ORA) && it.sentenceCalculation.licenceExpiryDate!!.isAfter(
-          expiry,
-        )
+        ledBreakdown != null &&
+          ledBreakdown.rules.contains(CalculationRule.LED_CONSEC_ORA_AND_NON_ORA) &&
+          it.sentenceCalculation.licenceExpiryDate!!.isAfter(
+            expiry,
+          )
       }.maxOfOrNull {
         ChronoUnit.DAYS.between(expiry, it.sentenceCalculation.licenceExpiryDate!!)
       }
@@ -85,11 +88,13 @@ class TimelineCalculator(
   fun setAdjustments(sentences: List<CalculableSentence>, sentenceAdjustment: SentenceAdjustments) {
     sentences.forEach { sentence ->
       var adjustments = sentenceAdjustment
-      if (sentence is AFineSentence) {
+
+      if (sentence.sentenceParts().all { it is Term }) {
         adjustments = adjustments.copy(
           awardedDuringCustody = 0,
         )
       }
+
       if (sentence is AFineSentence && sentence.offence.isCivilOffence()) {
         adjustments = adjustments.copy(
           remand = 0,
