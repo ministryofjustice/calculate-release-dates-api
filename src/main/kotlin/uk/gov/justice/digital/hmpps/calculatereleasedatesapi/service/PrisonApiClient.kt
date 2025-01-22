@@ -32,22 +32,22 @@ import java.time.LocalDate
 
 @Service
 class PrisonApiClient(
-  @Qualifier("prisonApiWebClient") private val webClient: WebClient,
-  @Qualifier("prisonApiBulkComparisonWebClient") private val bulkComparisonWebClient: WebClient,
+  @Qualifier("prisonApiUserAuthWebClient") private val userAuthWebClient: WebClient,
+  @Qualifier("prisonApiSystemAuthWebClient") private val systemAuthWebClient: WebClient,
 ) {
   private inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T>() {}
   private val log = LoggerFactory.getLogger(this::class.java)
 
   fun getOffenderDetail(prisonerId: String): PrisonerDetails {
     log.info("Requesting details for prisoner $prisonerId")
-    return webClient.get()
+    return userAuthWebClient.get()
       .uri("/api/offenders/$prisonerId")
       .retrieve()
       .bodyToMono(typeReference<PrisonerDetails>())
       .block()!!
   }
 
-  fun getSentenceDetail(bookingId: Long): SentenceDetail = webClient.get()
+  fun getSentenceDetail(bookingId: Long): SentenceDetail = userAuthWebClient.get()
     .uri("/api/bookings/$bookingId/sentenceDetail")
     .retrieve()
     .bodyToMono(typeReference<SentenceDetail>())
@@ -55,7 +55,7 @@ class PrisonApiClient(
 
   fun getSentenceAndBookingAdjustments(bookingId: Long): BookingAndSentenceAdjustments {
     log.info("Requesting sentence and booking adjustment details for bookingId $bookingId")
-    return webClient.get()
+    return userAuthWebClient.get()
       .uri("/api/adjustments/$bookingId/sentence-and-booking")
       .retrieve()
       .bodyToMono(typeReference<BookingAndSentenceAdjustments>())
@@ -64,7 +64,7 @@ class PrisonApiClient(
 
   fun getSentencesAndOffences(bookingId: Long): List<PrisonApiSentenceAndOffences> {
     log.info("Requesting sentence terms for bookingId $bookingId")
-    return webClient.get()
+    return userAuthWebClient.get()
       .uri("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
       .retrieve()
       .bodyToMono(typeReference<List<PrisonApiSentenceAndOffences>>())
@@ -73,7 +73,7 @@ class PrisonApiClient(
 
   fun getFixedTermRecallDetails(bookingId: Long): FixedTermRecallDetails {
     log.info("Requesting return to fixed term recall details for bookingId $bookingId")
-    return webClient.get()
+    return userAuthWebClient.get()
       .uri("/api/bookings/$bookingId/fixed-term-recall")
       .retrieve()
       .bodyToMono(typeReference<FixedTermRecallDetails>())
@@ -82,7 +82,7 @@ class PrisonApiClient(
 
   fun postReleaseDates(bookingId: Long, updateOffenderDates: UpdateOffenderDates) {
     log.info("Writing release dates to NOMIS for bookingId $bookingId")
-    webClient.post()
+    userAuthWebClient.post()
       .uri("/api/offender-dates/$bookingId")
       .bodyValue(updateOffenderDates)
       .retrieve()
@@ -94,14 +94,14 @@ class PrisonApiClient(
 
   fun getOffenderFinePayments(bookingId: Long): List<OffenderFinePayment> {
     log.info("Requesting offender fine payments for bookingId $bookingId")
-    return webClient.get()
+    return userAuthWebClient.get()
       .uri("api/offender-fine-payment/booking/$bookingId")
       .retrieve()
       .bodyToMono(typeReference<List<OffenderFinePayment>>())
       .block()!!
   }
 
-  fun getCurrentUserCaseLoads(): ArrayList<CaseLoad>? = webClient.get()
+  fun getCurrentUserCaseLoads(): ArrayList<CaseLoad>? = userAuthWebClient.get()
     .uri("/api/users/me/caseLoads")
     .retrieve()
     .bodyToMono(typeReference<ArrayList<CaseLoad>>())
@@ -113,7 +113,7 @@ class PrisonApiClient(
     token: String,
   ): RestResponsePage<CalculableSentenceEnvelope> {
     log.info("Requesting personId and booking details for latest booking of all offenders at establishment $establishmentId and page $pageNumber")
-    return bulkComparisonWebClient.get()
+    return systemAuthWebClient.get()
       .uri("/api/prison/$establishmentId/booking/latest/paged/calculable-sentence-envelope?page=$pageNumber")
       .header("Authorization", token)
       .httpRequest { httpRequest ->
@@ -127,7 +127,7 @@ class PrisonApiClient(
       .block()!!
   }
 
-  fun getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds: List<String>, token: String): List<CalculableSentenceEnvelope> = bulkComparisonWebClient.get()
+  fun getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds: List<String>, token: String): List<CalculableSentenceEnvelope> = systemAuthWebClient.get()
     .uri { uriBuilder ->
       uriBuilder.path("/api/bookings/latest/calculable-sentence-envelope")
         .queryParam("offenderNo", prisonerIds)
@@ -144,7 +144,7 @@ class PrisonApiClient(
     .bodyToMono(typeReference<List<CalculableSentenceEnvelope>>())
     .block()!!
 
-  fun getCalculationsForAPrisonerId(prisonerId: String): List<SentenceCalculationSummary> = webClient.get()
+  fun getCalculationsForAPrisonerId(prisonerId: String): List<SentenceCalculationSummary> = userAuthWebClient.get()
     .uri { uriBuilder ->
       uriBuilder.path("/api/offender-dates/calculations/$prisonerId")
         .build()
@@ -153,7 +153,7 @@ class PrisonApiClient(
     .bodyToMono(typeReference<List<SentenceCalculationSummary>>())
     .block()!!
 
-  fun getOffenderKeyDates(bookingId: Long): Either<String, OffenderKeyDates> = webClient.get()
+  fun getOffenderKeyDates(bookingId: Long): Either<String, OffenderKeyDates> = userAuthWebClient.get()
     .uri { uriBuilder ->
       uriBuilder.path("/api/offender-dates/$bookingId")
         .build()
@@ -170,20 +170,20 @@ class PrisonApiClient(
 
   fun getAgenciesByType(agencyType: String): List<Agency> {
     log.info("Requesting agencies with type: $agencyType")
-    return webClient.get()
+    return userAuthWebClient.get()
       .uri("/api/agencies/type/$agencyType")
       .retrieve()
       .bodyToMono(typeReference<List<Agency>>())
       .block()!!
   }
 
-  fun getNOMISCalcReasons(): List<NomisCalculationReason> = webClient.get()
+  fun getNOMISCalcReasons(): List<NomisCalculationReason> = userAuthWebClient.get()
     .uri("/api/reference-domains/domains/CALC_REASON/codes")
     .retrieve()
     .bodyToMono(typeReference<List<NomisCalculationReason>>())
     .block()!!
 
-  fun getNOMISOffenderKeyDates(offenderSentCalcId: Long): Either<String, OffenderKeyDates> = webClient.get()
+  fun getNOMISOffenderKeyDates(offenderSentCalcId: Long): Either<String, OffenderKeyDates> = userAuthWebClient.get()
     .uri { uriBuilder ->
       uriBuilder.path("/api/offender-dates/sentence-calculation/$offenderSentCalcId")
         .build()
@@ -200,14 +200,14 @@ class PrisonApiClient(
 
   fun getExternalMovements(prisonerId: String, earliestSentenceDate: LocalDate): List<PrisonApiExternalMovement> {
     log.info("Requesting external movements for $prisonerId")
-    return webClient.get()
+    return systemAuthWebClient.get()
       .uri("/api/movements/offender/$prisonerId?allBookings=true&movementTypes=ADM&movementTypes=REL&movementsAfter=$earliestSentenceDate")
       .retrieve()
       .bodyToMono(typeReference<List<PrisonApiExternalMovement>>())
       .block()!!
   }
 
-  fun getLatestTusedDataForBotus(nomisId: String): Either<String, NomisTusedData> = webClient.get()
+  fun getLatestTusedDataForBotus(nomisId: String): Either<String, NomisTusedData> = userAuthWebClient.get()
     .uri("/api/offender-dates/latest-tused/$nomisId")
     .exchangeToMono { response ->
       when (response.statusCode()) {
