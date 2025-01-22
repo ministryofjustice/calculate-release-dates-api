@@ -72,7 +72,7 @@ class AdjustmentValidationService {
         .maxOfOrNull { it.sentenceCalculation.releaseDateDefaultedByCommencement }
     }.maxOrNull()
 
-    if (latestReleaseDate !is LocalDate) {
+    if (latestReleaseDate == null) {
       log.warn("validateAdditionAdjustmentsInsideLatestReleaseDate: No release date found for sentences within timeline calculation")
       return emptyList()
     }
