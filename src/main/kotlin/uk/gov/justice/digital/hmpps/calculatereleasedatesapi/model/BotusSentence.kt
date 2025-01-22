@@ -14,7 +14,8 @@ data class BotusSentence(
   override val lineSequence: Int? = null,
   var latestTusedDate: LocalDate? = null,
   var latestTusedSource: HistoricalTusedSource? = null,
-) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence) {
+) : AbstractSentence(offence, sentencedAt, identifier, consecutiveSentenceUUIDs, caseSequence, lineSequence),
+  Term {
   override val isSDSPlus: Boolean = false
   override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false
   override val isSDSPlusOffenceInPeriod: Boolean = false

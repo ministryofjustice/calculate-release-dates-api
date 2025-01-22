@@ -80,7 +80,12 @@ class ValidationService(
     calculationOutput.custodialPeriod.forEach { messages += sentenceValidationService.validateSentenceHasNotBeenExtinguished(it) }
     messages += adjustmentValidationService.validateRemandOverlappingRemand(booking)
     messages += adjustmentValidationService.validateRemandOverlappingSentences(calculationOutput, booking)
-    messages += adjustmentValidationService.validateAdditionAdjustmentsInsideLatestReleaseDate(calculationOutput, booking)
+    if (!calculationOutput.sentences.all { it.isOrExclusivelyBotus() }) {
+      messages += adjustmentValidationService.validateAdditionAdjustmentsInsideLatestReleaseDate(
+        calculationOutput,
+        booking,
+      )
+    }
     messages += recallValidationService.validateFixedTermRecallAfterCalc(calculationOutput, booking)
     messages += recallValidationService.validateUnsupportedRecallTypes(calculationOutput, booking)
     messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationOutput)

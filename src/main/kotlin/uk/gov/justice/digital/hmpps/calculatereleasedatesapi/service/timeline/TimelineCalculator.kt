@@ -5,7 +5,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceIdentificationTrack
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -90,7 +89,7 @@ class TimelineCalculator(
     sentences.forEach { sentence ->
       var adjustments = sentenceAdjustment
 
-      if (sentence is Term || sentence is BotusSentence || sentence.isDto() || sentence.isOrExclusivelyBotus()) {
+      if (sentence.sentenceParts().all { it is Term }) {
         adjustments = adjustments.copy(
           awardedDuringCustody = 0,
         )
