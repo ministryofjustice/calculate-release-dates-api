@@ -29,7 +29,7 @@ interface CalculationRequestRepository : JpaRepository<CalculationRequest, Long>
   fun findAllByPrisonerIdAndCalculationStatus(prisonerId: String, calculationStatus: String): List<CalculationRequest>
 
   @EntityGraph(value = "CalculationRequest.detail", type = EntityGraphType.LOAD)
-  fun findFirstByBookingIdOrderByCalculatedAtDesc(bookingId: Long): Optional<CalculationRequest>
+  fun findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(bookingId: Long, status: String = CalculationStatus.CONFIRMED.name): Optional<CalculationRequest>
 
   @EntityGraph(value = "CalculationRequest.detail", type = EntityGraphType.LOAD)
   fun findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId: String, status: String = CalculationStatus.CONFIRMED.name): Optional<CalculationRequest>

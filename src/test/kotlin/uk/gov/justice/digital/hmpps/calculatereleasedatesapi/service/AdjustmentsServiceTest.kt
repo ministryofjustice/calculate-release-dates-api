@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyLong
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
@@ -37,7 +38,7 @@ class AdjustmentsServiceTest {
   fun `All adjustments are new`() {
     val bookingAndOffenceAdjustments = BookingAndSentenceAdjustments(listOf(BookingAdjustment(true, LocalDate.MIN, null, 3, BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED)), emptyList())
     whenever(prisonService.getBookingAndSentenceAdjustments(anyLong(), anyBoolean())).thenReturn(bookingAndOffenceAdjustments)
-    whenever(calculationRequestRepository.findFirstByBookingIdOrderByCalculatedAtDesc(anyLong())).thenReturn(Optional.empty())
+    whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(anyLong(), anyString())).thenReturn(Optional.empty())
     val analyzedAdjustments = underTest.getAnalyzedAdjustments(123)
     assertThat(analyzedAdjustments).isNotNull
     assertThat(analyzedAdjustments.bookingAdjustments).hasSize(1)
@@ -48,7 +49,7 @@ class AdjustmentsServiceTest {
   fun `All adjustments are same`() {
     val bookingAndOffenceAdjustments = BookingAndSentenceAdjustments(listOf(BookingAdjustment(true, LocalDate.MIN, null, 3, BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED)), emptyList())
     whenever(prisonService.getBookingAndSentenceAdjustments(anyLong(), anyBoolean())).thenReturn(bookingAndOffenceAdjustments)
-    whenever(calculationRequestRepository.findFirstByBookingIdOrderByCalculatedAtDesc(anyLong())).thenReturn(Optional.of(CalculationRequest(adjustments = objectToJson(bookingAndOffenceAdjustments, jacksonObjectMapper().findAndRegisterModules()))))
+    whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(anyLong(), anyString())).thenReturn(Optional.of(CalculationRequest(adjustments = objectToJson(bookingAndOffenceAdjustments, jacksonObjectMapper().findAndRegisterModules()))))
     val analyzedAdjustments = underTest.getAnalyzedAdjustments(123)
     assertThat(analyzedAdjustments).isNotNull
     assertThat(analyzedAdjustments.bookingAdjustments).hasSize(1)
@@ -60,7 +61,7 @@ class AdjustmentsServiceTest {
     val bookingAndOffenceAdjustments = BookingAndSentenceAdjustments(listOf(BookingAdjustment(true, LocalDate.MIN, null, 3, BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED)), listOf(SentenceAdjustment(1, true, LocalDate.MIN, null, 5, SentenceAdjustmentType.TAGGED_BAIL)))
     val noSentenceAdjustment = BookingAndSentenceAdjustments(listOf(BookingAdjustment(true, LocalDate.MIN, null, 3, BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED)), emptyList())
     whenever(prisonService.getBookingAndSentenceAdjustments(anyLong(), anyBoolean())).thenReturn(bookingAndOffenceAdjustments)
-    whenever(calculationRequestRepository.findFirstByBookingIdOrderByCalculatedAtDesc(anyLong())).thenReturn(Optional.of(CalculationRequest(adjustments = objectToJson(noSentenceAdjustment, jacksonObjectMapper().findAndRegisterModules()))))
+    whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(anyLong(), anyString())).thenReturn(Optional.of(CalculationRequest(adjustments = objectToJson(noSentenceAdjustment, jacksonObjectMapper().findAndRegisterModules()))))
     val analyzedAdjustments = underTest.getAnalyzedAdjustments(123)
     assertThat(analyzedAdjustments).isNotNull
     assertThat(analyzedAdjustments.bookingAdjustments).hasSize(1)
