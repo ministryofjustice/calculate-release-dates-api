@@ -16,35 +16,27 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 import java.time.LocalDate
 
 @Service
-class AdjustmentValidationService() {
+class AdjustmentValidationService {
 
-  internal fun validateIfAdjustmentsAreSupported(adjustments: List<BookingAdjustment>): List<ValidationMessage> {
-    return mutableListOf<ValidationMessage>().apply {
-      addAll(lawfullyAtLargeIsNotSupported(adjustments))
-      addAll(specialRemissionIsNotSupported(adjustments))
-    }
+  internal fun validateIfAdjustmentsAreSupported(adjustments: List<BookingAdjustment>): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
+    addAll(lawfullyAtLargeIsNotSupported(adjustments))
+    addAll(specialRemissionIsNotSupported(adjustments))
   }
 
-  internal fun throwErrorIfAdditionAdjustmentsAfterLatestReleaseDate(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
-    return mutableListOf<ValidationMessage>().apply {
-      addAll(validateAllSentenceAdjustmentsHaveFromOrToDates(adjustments))
-      addAll(validateBookingAdjustment(adjustments.bookingAdjustments))
-      addAll(validateRemandOverlappingRemand(adjustments))
-    }
+  internal fun throwErrorIfAdditionAdjustmentsAfterLatestReleaseDate(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
+    addAll(validateAllSentenceAdjustmentsHaveFromOrToDates(adjustments))
+    addAll(validateBookingAdjustment(adjustments.bookingAdjustments))
+    addAll(validateRemandOverlappingRemand(adjustments))
   }
 
-  private fun validateAllSentenceAdjustmentsHaveFromOrToDates(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
-    return adjustments.sentenceAdjustments.flatMap { validateSentenceAdjustmentHaveFromOrToDates(it) }.toMutableList()
-  }
+  private fun validateAllSentenceAdjustmentsHaveFromOrToDates(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> = adjustments.sentenceAdjustments.flatMap { validateSentenceAdjustmentHaveFromOrToDates(it) }.toMutableList()
 
-  private fun validateSentenceAdjustmentHaveFromOrToDates(sentenceAdjustment: SentenceAdjustment): List<ValidationMessage> {
-    return if (sentenceAdjustment.type == SentenceAdjustmentType.REMAND &&
-      (sentenceAdjustment.fromDate == null || sentenceAdjustment.toDate == null)
-    ) {
-      listOf(ValidationMessage(ValidationCode.REMAND_FROM_TO_DATES_REQUIRED))
-    } else {
-      emptyList()
-    }
+  private fun validateSentenceAdjustmentHaveFromOrToDates(sentenceAdjustment: SentenceAdjustment): List<ValidationMessage> = if (sentenceAdjustment.type == SentenceAdjustmentType.REMAND &&
+    (sentenceAdjustment.fromDate == null || sentenceAdjustment.toDate == null)
+  ) {
+    listOf(ValidationMessage(ValidationCode.REMAND_FROM_TO_DATES_REQUIRED))
+  } else {
+    emptyList()
   }
 
   internal fun validateRemandOverlappingRemand(booking: Booking): List<ValidationMessage> {
@@ -74,10 +66,13 @@ class AdjustmentValidationService() {
 
   internal fun validateAdditionAdjustmentsInsideLatestReleaseDate(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
     val adjustments = getSortedAdjustments(booking)
-    val latestReleaseDate = calculationOutput.custodialPeriod.mapNotNull { period ->
-      period.sentences.filterNot { it is Term }
-        .maxOfOrNull { it.sentenceCalculation.releaseDateDefaultedByCommencement }
-    }.maxOrNull()
+    val nonTermSentences = calculationOutput.custodialPeriod.flatMap { it.sentences }.filterNot { it is Term }
+
+    if (nonTermSentences.isEmpty()) {
+      return emptyList()
+    }
+
+    val latestReleaseDate = nonTermSentences.maxOf { it.sentenceCalculation.releaseDateDefaultedByCommencement }
     val messages = mutableSetOf<ValidationMessage>()
 
     adjustments.forEach { (type, adjustment) ->
@@ -102,27 +97,22 @@ class AdjustmentValidationService() {
     return (adas + radas).sortedBy { it.second.appliesToSentencesFrom }
   }
 
-  private fun lawfullyAtLargeIsNotSupported(adjustments: List<BookingAdjustment>): List<ValidationMessage> {
-    return if (adjustments.any { it.type == BookingAdjustmentType.LAWFULLY_AT_LARGE }) {
-      listOf(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE))
-    } else {
-      emptyList()
-    }
+  private fun lawfullyAtLargeIsNotSupported(adjustments: List<BookingAdjustment>): List<ValidationMessage> = if (adjustments.any { it.type == BookingAdjustmentType.LAWFULLY_AT_LARGE }) {
+    listOf(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE))
+  } else {
+    emptyList()
   }
 
-  private fun specialRemissionIsNotSupported(adjustments: List<BookingAdjustment>): List<ValidationMessage> {
-    return if (adjustments.any { it.type == BookingAdjustmentType.SPECIAL_REMISSION }) {
-      listOf(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION))
-    } else {
-      emptyList()
-    }
+  private fun specialRemissionIsNotSupported(adjustments: List<BookingAdjustment>): List<ValidationMessage> = if (adjustments.any { it.type == BookingAdjustmentType.SPECIAL_REMISSION }) {
+    listOf(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION))
+  } else {
+    emptyList()
   }
 
-  private fun validateBookingAdjustment(bookingAdjustments: List<BookingAdjustment>): List<ValidationMessage> =
-    bookingAdjustments.filter {
-      val dateToValidate = if (it.type == BookingAdjustmentType.UNLAWFULLY_AT_LARGE && it.toDate != null) it.toDate else it.fromDate
-      BOOKING_ADJUSTMENTS_TO_VALIDATE.contains(it.type) && dateToValidate.isAfter(LocalDate.now())
-    }.map { it.type }.distinct().map { ValidationMessage(ADJUSTMENT_FUTURE_DATED_MAP[it]!!) }
+  private fun validateBookingAdjustment(bookingAdjustments: List<BookingAdjustment>): List<ValidationMessage> = bookingAdjustments.filter {
+    val dateToValidate = if (it.type == BookingAdjustmentType.UNLAWFULLY_AT_LARGE && it.toDate != null) it.toDate else it.fromDate
+    BOOKING_ADJUSTMENTS_TO_VALIDATE.contains(it.type) && dateToValidate.isAfter(LocalDate.now())
+  }.map { it.type }.distinct().map { ValidationMessage(ADJUSTMENT_FUTURE_DATED_MAP[it]!!) }
 
   private fun logIntersectionWarning(range1: LocalDateRange, range2: LocalDateRange, messageTemplate: String) {
     val args = listOf(range1.toString(), range2.toString())
@@ -134,14 +124,12 @@ class AdjustmentValidationService() {
     )
   }
 
-  private fun buildMessageArguments(range1: LocalDateRange, range2: LocalDateRange): List<String> {
-    return listOf(
-      range1.start.toString(),
-      range1.end.toString(),
-      range2.start.toString(),
-      range2.end.toString(),
-    )
-  }
+  private fun buildMessageArguments(range1: LocalDateRange, range2: LocalDateRange): List<String> = listOf(
+    range1.start.toString(),
+    range1.end.toString(),
+    range2.start.toString(),
+    range2.end.toString(),
+  )
 
   internal fun validateRemandOverlappingSentences(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
     val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
