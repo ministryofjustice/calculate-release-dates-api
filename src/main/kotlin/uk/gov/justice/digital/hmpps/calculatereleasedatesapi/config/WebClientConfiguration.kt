@@ -25,7 +25,7 @@ class WebClientConfiguration(
 ) {
 
   @Bean
-  fun prisonApiWebClient(webClientBuilder: WebClient.Builder): WebClient {
+  fun prisonApiUserAuthWebClient(webClientBuilder: WebClient.Builder): WebClient {
     return webClientBuilder
       .baseUrl(prisonApiUri)
       .filter(addAuthHeaderFilterFunction())
@@ -33,7 +33,7 @@ class WebClientConfiguration(
   }
 
   @Bean
-  fun prisonApiBulkComparisonWebClient(
+  fun prisonApiSystemAuthWebClient(
     builder: WebClient.Builder,
     authorizedClientManager: OAuth2AuthorizedClientManager,
   ): WebClient {
