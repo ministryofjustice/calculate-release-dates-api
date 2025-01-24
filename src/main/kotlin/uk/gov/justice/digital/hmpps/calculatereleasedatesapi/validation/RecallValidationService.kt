@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
@@ -26,6 +27,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 class RecallValidationService(
   private val trancheConfiguration: SDS40TrancheConfiguration,
   private val validationUtilities: ValidationUtilities,
+  private val featureToggles: FeatureToggles,
 ) {
 
   internal fun validateFixedTermRecall(sourceData: PrisonApiSourceData): List<ValidationMessage> {
@@ -96,24 +98,33 @@ class RecallValidationService(
   }
 
   private fun hasUnsupportedRecallType(calculationOutput: CalculationOutput, booking: Booking): Boolean {
-    return calculationOutput.sentences.any { sentence ->
-      val hasTusedReleaseDateType = sentence.releaseDateTypes.contains(ReleaseDateType.TUSED)
-      val isDeterminateOrConsecutiveSentence = sentence.sentenceParts().any { it is StandardDeterminateSentence }
-      val sentencedBeforeCommencement = sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)
-      val adjustedReleaseDateAfterOrEqualCommencement = sentence.sentenceCalculation.adjustedHistoricDeterminateReleaseDate
-        .isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
+    if (!featureToggles.externalMovementsEnabled) {
+      return calculationOutput.sentences.any { sentence ->
+        val hasTusedReleaseDateType = sentence.releaseDateTypes.contains(ReleaseDateType.TUSED)
+        val isDeterminateOrConsecutiveSentence = sentence.sentenceParts().any { it is StandardDeterminateSentence }
+        val sentencedBeforeCommencement = sentence.sentencedAt.isBefore(trancheConfiguration.trancheOneCommencementDate)
+        val adjustedReleaseDateAfterOrEqualCommencement =
+          sentence.sentenceCalculation.adjustedHistoricDeterminateReleaseDate
+            .isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
 
-      val result = hasTusedReleaseDateType &&
-        isDeterminateOrConsecutiveSentence &&
-        sentence.isRecall() &&
-        sentencedBeforeCommencement &&
-        adjustedReleaseDateAfterOrEqualCommencement
+        val result = hasTusedReleaseDateType &&
+          isDeterminateOrConsecutiveSentence &&
+          sentence.isRecall() &&
+          sentencedBeforeCommencement &&
+          adjustedReleaseDateAfterOrEqualCommencement
 
-      if (result) {
-        log.info("Unsupported recall type found for sentence ${sentence.sentenceParts().map { (it as AbstractSentence).identifier }} in booking for ${booking.offender.reference}.")
+        if (result) {
+          log.info(
+            "Unsupported recall type found for sentence ${
+              sentence.sentenceParts().map { (it as AbstractSentence).identifier }
+            } in booking for ${booking.offender.reference}.",
+          )
+        }
+        return@any result
       }
-      return@any result
     }
+    // SDS40 recalls are supported with external movements.
+    return false
   }
 
   internal fun validateFixedTermRecall(booking: Booking): List<ValidationMessage> {
