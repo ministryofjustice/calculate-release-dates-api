@@ -3695,13 +3695,13 @@ class ValidationServiceTest {
     sentencesExtractionService: SentencesExtractionService,
     trancheConfiguration: SDS40TrancheConfiguration,
   ): ValidationService {
-    val featureToggles = FeatureToggles(sdsEarlyRelease = true, sdsEarlyReleaseHints = false, sds40ConsecutiveManualJourney = true)
+    val featureToggles = FeatureToggles(sdsEarlyRelease = true, sdsEarlyReleaseHints = false, sds40ConsecutiveManualJourney = true, externalMovementsEnabled = false)
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService()
     val dtoValidationService = DtoValidationService()
     val botusValidationService = BotusValidationService(featureToggles)
-    val recallValidationService = RecallValidationService(trancheConfiguration, validationUtilities)
+    val recallValidationService = RecallValidationService(trancheConfiguration, validationUtilities, featureToggles)
     val unsupportedValidationService = UnsupportedValidationService()
     val postCalculationValidationService = PostCalculationValidationService(trancheConfiguration, featureToggles)
     val section91ValidationService = Section91ValidationService(validationUtilities)

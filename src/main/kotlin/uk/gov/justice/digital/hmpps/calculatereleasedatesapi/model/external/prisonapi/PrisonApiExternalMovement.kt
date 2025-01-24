@@ -25,6 +25,7 @@ data class PrisonApiExternalMovement(
       "DE", "DEIRC", "DL", "DD", "ETR" -> ExternalMovementReason.ERS
       "PX" -> ExternalMovementReason.PAROLE
       "ECSLIRC", "ECSL" -> ExternalMovementReason.ECSL
+      "N", "I", "L", "V", "W", "G", "B", "25", "Y", "F", "C", "27", "26", "ETRLR", "ETB", "29", "ELR" -> ExternalMovementReason.ADMISSION
       else -> null
     }
   }

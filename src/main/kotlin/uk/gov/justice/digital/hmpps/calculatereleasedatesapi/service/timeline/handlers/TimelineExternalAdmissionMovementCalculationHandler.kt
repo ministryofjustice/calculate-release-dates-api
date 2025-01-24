@@ -16,8 +16,8 @@ class TimelineExternalAdmissionMovementCalculationHandler(
 ) : TimelineCalculationHandler(trancheConfiguration, releasePointConfiguration, timelineCalculator) {
   override fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
     with(timelineTrackingData) {
-      // TODO
+      inPrison = true
     }
-    return TimelineHandleResult(skipCalculation = true)
+    return TimelineHandleResult()
   }
 }
