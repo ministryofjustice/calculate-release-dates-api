@@ -68,7 +68,7 @@ class AdjustmentValidationService {
 
   internal fun validateAdditionAdjustmentsInsideLatestReleaseDate(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
     val adjustments = getSortedAdjustments(booking)
-    val nonTermSentences = calculationOutput.custodialPeriod.flatMap { it.sentences }.filterNot { it is Term }
+    val nonTermSentences = calculationOutput.sentenceGroup.flatMap { it.sentences }.filterNot { it is Term }
 
     if (nonTermSentences.isEmpty()) {
       return emptyList()
@@ -151,7 +151,7 @@ class AdjustmentValidationService {
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
 
-      val sentenceRanges = calculationOutput.custodialPeriod.filter { period -> period.sentences.none { it.isRecall() } }.map { LocalDateRange.of(it.from, it.to) }
+      val sentenceRanges = calculationOutput.sentenceGroup.filter { period -> period.sentences.none { it.isRecall() } }.map { LocalDateRange.of(it.from, it.to) }
 
       remandRanges.forEach { remandRange ->
         sentenceRanges.forEach { sentenceRange ->

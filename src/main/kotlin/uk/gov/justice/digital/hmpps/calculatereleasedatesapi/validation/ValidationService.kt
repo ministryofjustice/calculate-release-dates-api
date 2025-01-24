@@ -77,7 +77,7 @@ class ValidationService(
   ): List<ValidationMessage> {
     log.info("Validating booking after calculation")
     val messages = mutableListOf<ValidationMessage>()
-    calculationOutput.custodialPeriod.forEach { messages += sentenceValidationService.validateSentenceHasNotBeenExtinguished(it) }
+    calculationOutput.sentenceGroup.forEach { messages += sentenceValidationService.validateSentenceHasNotBeenExtinguished(it) }
     messages += adjustmentValidationService.validateRemandOverlappingRemand(booking)
     messages += adjustmentValidationService.validateRemandOverlappingSentences(calculationOutput, booking)
     messages += adjustmentValidationService.validateAdditionAdjustmentsInsideLatestReleaseDate(calculationOutput, booking)
