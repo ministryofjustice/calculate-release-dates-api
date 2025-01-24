@@ -69,6 +69,14 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
     "There is a Special Remission (SR) adjustment on the associated booking",
     UNSUPPORTED_CALCULATION,
   ),
+  UNSUPPORTED_ADJUSTMENT_TIME_SPENT_IN_CUSTODY_ABROAD(
+    "There is a time spent in custody abroad (TCA) adjustment on the associated sentence",
+    UNSUPPORTED_CALCULATION,
+  ),
+  UNSUPPORTED_ADJUSTMENT_TIME_SPENT_AS_AN_APPEAL_APPLICANT(
+    "There is a time spent as an appeal applicant (TSA) adjustment on the associated sentence",
+    UNSUPPORTED_CALCULATION,
+  ),
   UNSUPPORTED_DTO_RECALL_SEC104_SEC105("A detention and training order has a SEC104 or SEC105 breach term.", UNSUPPORTED_CALCULATION),
   UNSUPPORTED_SENTENCE_TYPE("Unsupported sentence type %s %s", UNSUPPORTED_SENTENCE),
   ZERO_IMPRISONMENT_TERM("Court case %s count %s must include an imprisonment term greater than zero."),
