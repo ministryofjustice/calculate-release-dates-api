@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.PCSC_COMMENCEMENT_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.ImportantDates.SENTENCING_ACT_2020_COMMENCEMENT
 
@@ -85,7 +84,7 @@ class PreCalculationValidationService(
 
   fun validateUnsupportedCalculation(sourceData: PrisonApiSourceData): List<ValidationMessage> {
     val messages = fineValidationService.validateFineSentenceSupported(sourceData).toMutableList()
-    messages += adjustmentValidationService.validateIfAdjustmentsAreSupported(sourceData.bookingAndSentenceAdjustments.bookingAdjustments)
+    messages += adjustmentValidationService.validateIfAdjustmentsAreSupported(sourceData.bookingAndSentenceAdjustments)
     messages += dtoValidationService.validate(sourceData)
     messages += botusValidationService.validate(sourceData)
     return messages

@@ -360,6 +360,8 @@ fun transform(sentenceAdjustmentType: SentenceAdjustmentType): AdjustmentType? {
     SentenceAdjustmentType.REMAND -> REMAND
     SentenceAdjustmentType.TAGGED_BAIL -> TAGGED_BAIL
     SentenceAdjustmentType.UNUSED_REMAND -> null
+    SentenceAdjustmentType.TIME_SPENT_IN_CUSTODY_ABROAD -> null
+    SentenceAdjustmentType.TIME_SPENT_AS_AN_APPEAL_APPLICANT -> null
   }
 }
 
