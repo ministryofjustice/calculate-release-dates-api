@@ -14,6 +14,7 @@ enum class ExternalMovementReason {
   PAROLE,
   ECSL,
   CRD,
+  ADMISSION,
 }
 
 enum class ExternalMovementDirection {

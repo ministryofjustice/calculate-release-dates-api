@@ -658,5 +658,7 @@ exclude-adas,3,,,,
 exclude-adas,4,,,,
 exclude-adas,5,,,,
 exclude-adas,6,,,,
-custom-examples,crs-2107-external-movements-1,,,,
-custom-examples,crs-2107-external-movements-1,,,,
+custom-examples,crs-2107-external-movements-1,,,,TRUE
+custom-examples,crs-2107-external-movements-2,,,,TRUE
+custom-examples,crs-2261-external-movements-admission-1,,,,TRUE
+custom-examples,crs-2261-external-movements-admission-2,,,,TRUE

@@ -32,8 +32,8 @@ class TimelineTrancheCalculationHandler(
       if (isLatestPotentialEarlyReleaseBeforeTrancheOneCommencement(allSentences)) {
         return TimelineHandleResult(true)
       }
-
-      if (custodialSentences.isNotEmpty()) {
+      val nonRecallSentences = allSentences.flatten().filterNot { it.isRecall() }
+      if (nonRecallSentences.isNotEmpty() && inPrison) {
         val tranche = trancheAllocationService.calculateTranche(allSentences.flatten())
 
         val trancheCommencementDate = when (tranche) {
@@ -42,7 +42,9 @@ class TimelineTrancheCalculationHandler(
           else -> null
         }
 
-        trancheAndCommencement = tranche to trancheCommencementDate
+        if (trancheCommencementDate == timelineCalculationDate) {
+          trancheAndCommencement = tranche to trancheCommencementDate
+        }
 
         if (requiresTranchingNow(timelineCalculationDate, timelineTrackingData)) {
           beforeTrancheCalculation = timelineCalculator.getLatestCalculation(allSentences, offender)
@@ -54,11 +56,6 @@ class TimelineTrancheCalculationHandler(
               unusedLicenceAdaDays = 0,
             )
             it.sentenceCalculation.trancheCommencement = trancheCommencementDate
-          }
-        } else if (timelineCalculationDate == trancheConfiguration.trancheTwoCommencementDate) {
-          custodialSentences.forEach {
-            it.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
-              multiplierFnForDate(timelineCalculationDate, trancheCommencementDate)
           }
         } else {
           // No sentences at tranche date.

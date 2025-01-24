@@ -25,9 +25,12 @@ class TimelineSentenceCalculationHandler(
     timelineTrackingData: TimelineTrackingData,
   ): TimelineHandleResult {
     with(timelineTrackingData) {
+      inPrison = true
       val newlySentenced = futureData.sentences.filter { it.sentencedAt == timelineCalculationDate }
 
       shareAdjustmentsFromExistingCustodialSentencesToNewlySentenced(timelineCalculationDate, timelineTrackingData, newlySentenced)
+
+      handleNewlySentencedPartOfConsecutiveSentence(timelineCalculationDate, timelineTrackingData)
 
       padas = 0
       custodialSentences.addAll(newlySentenced)
@@ -36,6 +39,20 @@ class TimelineSentenceCalculationHandler(
       shareDeductionsThatAreApplicableToThisSentenceDate(timelineCalculationDate, timelineTrackingData)
     }
     return TimelineHandleResult()
+  }
+
+  private fun handleNewlySentencedPartOfConsecutiveSentence(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData) {
+    with(timelineTrackingData) {
+      // This new sentence is part of a consecutive sentence starting on an earlier date.
+      custodialSentences.filter {
+        it.sentencedAt != timelineCalculationDate && it.sentenceParts()
+          .any { part -> part.sentencedAt == timelineCalculationDate }
+      }
+        .forEach {
+          it.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
+            multiplierFnForDate(timelineCalculationDate.minusDays(1), trancheAndCommencement.second) // Use day before sentencing for when someone is sentenced for another consecutive part on tranche commencement.
+        }
+    }
   }
 
   private fun shareDeductionsThatAreApplicableToThisSentenceDate(
