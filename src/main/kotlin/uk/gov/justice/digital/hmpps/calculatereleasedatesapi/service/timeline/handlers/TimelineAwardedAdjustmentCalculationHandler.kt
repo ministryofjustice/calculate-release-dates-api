@@ -24,16 +24,16 @@ class TimelineAwardedAdjustmentCalculationHandler(
       val radas = futureData.restored.filter { it.appliesToSentencesFrom == timelineCalculationDate }
       val radaDays = radas.map { it.numberOfDays }.reduceOrNull { acc, it -> acc + it }?.toLong() ?: 0L
 
-      if (custodialSentences.isEmpty()) {
+      if (currentSentenceGroup.isEmpty()) {
         // This is a PADA. No calculation required. Set value here to be applied to later sentences.
         padas += adaDays - radaDays
         return TimelineHandleResult(true)
       } else {
         val maxReleaseNonTermRelease =
-          custodialSentences.filterNot { it is Term }.maxOfOrNull { it.sentenceCalculation.releaseDate }
+          currentSentenceGroup.filterNot { it is Term }.maxOfOrNull { it.sentenceCalculation.releaseDate }
         if (maxReleaseNonTermRelease != null && maxReleaseNonTermRelease.isAfterOrEqualTo(timelineCalculationDate)) {
           timelineCalculator.setAdjustments(
-            custodialSentences,
+            currentSentenceGroup,
             SentenceAdjustments(
               awardedDuringCustody = adaDays - radaDays,
             ),

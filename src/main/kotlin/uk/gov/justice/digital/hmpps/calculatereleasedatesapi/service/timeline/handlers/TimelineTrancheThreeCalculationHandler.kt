@@ -21,7 +21,7 @@ class TimelineTrancheThreeCalculationHandler(
     timelineTrackingData: TimelineTrackingData,
   ): TimelineHandleResult {
     with(timelineTrackingData) {
-      custodialSentences
+      currentSentenceGroup
         .filter { sentence -> sentence.sentenceParts().any { it.identificationTrack == SentenceIdentificationTrack.SDS_STANDARD_RELEASE_T3_EXCLUSION } }
         .forEach {
           it.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =

@@ -4,8 +4,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEar
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CustodialPeriod
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
 import java.time.LocalDate
 
 data class TimelineTrackingData(
@@ -15,8 +15,9 @@ data class TimelineTrackingData(
   val returnToCustodyDate: LocalDate?,
   val offender: Offender,
   val options: CalculationOptions,
-  val releasedSentences: MutableList<CustodialPeriod> = emptyList<CustodialPeriod>().toMutableList(),
-  val custodialSentences: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
+
+  val releasedSentenceGroups: MutableList<SentenceGroup> = emptyList<SentenceGroup>().toMutableList(),
+  val currentSentenceGroup: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
   val licenseSentences: MutableList<CalculableSentence> = emptyList<CalculableSentence>().toMutableList(),
 
   var inPrison: Boolean = true,

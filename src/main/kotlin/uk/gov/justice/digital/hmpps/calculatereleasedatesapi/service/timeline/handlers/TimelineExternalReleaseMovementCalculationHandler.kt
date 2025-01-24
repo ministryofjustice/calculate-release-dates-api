@@ -17,7 +17,7 @@ class TimelineExternalReleaseMovementCalculationHandler(
   override fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
     with(timelineTrackingData) {
       inPrison = false
-      if (custodialSentences.isNotEmpty()) {
+      if (currentSentenceGroup.isNotEmpty()) {
         latestRelease = timelineCalculationDate to latestRelease.second
       }
     }

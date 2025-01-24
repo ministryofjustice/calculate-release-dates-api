@@ -3,10 +3,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CustodialPeriod
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
@@ -229,9 +229,9 @@ class SentenceValidationService(
 
     return validationMessages
   }
-  internal fun validateSentenceHasNotBeenExtinguished(custodialPeriod: CustodialPeriod): List<ValidationMessage> {
+  internal fun validateSentenceHasNotBeenExtinguished(sentenceGroup: SentenceGroup): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
-    val determinateSentences = custodialPeriod.sentences.filter { !it.isRecall() }
+    val determinateSentences = sentenceGroup.sentences.filter { !it.isRecall() }
     if (determinateSentences.isNotEmpty()) {
       val earliestSentenceDate = determinateSentences.minOf { it.sentencedAt }
       val latestReleaseDateSentence = extractionService.mostRecentSentence(
