@@ -33,7 +33,7 @@ class TimelineSentenceCalculationHandler(
       handleNewlySentencedPartOfConsecutiveSentence(timelineCalculationDate, timelineTrackingData)
 
       padas = 0
-      custodialSentences.addAll(newlySentenced)
+      currentSentenceGroup.addAll(newlySentenced)
       futureData.sentences -= newlySentenced
 
       shareDeductionsThatAreApplicableToThisSentenceDate(timelineCalculationDate, timelineTrackingData)
@@ -44,7 +44,7 @@ class TimelineSentenceCalculationHandler(
   private fun handleNewlySentencedPartOfConsecutiveSentence(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData) {
     with(timelineTrackingData) {
       // This new sentence is part of a consecutive sentence starting on an earlier date.
-      custodialSentences.filter {
+      currentSentenceGroup.filter {
         it.sentencedAt != timelineCalculationDate && it.sentenceParts()
           .any { part -> part.sentencedAt == timelineCalculationDate }
       }
@@ -65,7 +65,7 @@ class TimelineSentenceCalculationHandler(
       val recallTaggedBail = futureData.recallTaggedBail.filter { it.appliesToSentencesFrom == timelineCalculationDate }
       val recallRemand = futureData.recallRemand.filter { it.appliesToSentencesFrom == timelineCalculationDate }
       timelineCalculator.setAdjustments(
-        custodialSentences,
+        currentSentenceGroup,
         SentenceAdjustments(
           taggedBail = taggedBail.map { it.numberOfDays }.reduceOrNull { acc, it -> acc + it }?.toLong() ?: 0L,
           remand = remand.map { it.numberOfDays }.reduceOrNull { acc, it -> acc + it }?.toLong() ?: 0L,
@@ -89,7 +89,7 @@ class TimelineSentenceCalculationHandler(
   ) {
     with(timelineTrackingData) {
       val existingAdjustments =
-        custodialSentences.firstOrNull()?.sentenceCalculation?.adjustments ?: SentenceAdjustments()
+        currentSentenceGroup.firstOrNull()?.sentenceCalculation?.adjustments ?: SentenceAdjustments()
       newlySentenced.forEach { sentence ->
         sentence.sentenceCalculation = SentenceCalculation(
           UnadjustedReleaseDate(
@@ -103,7 +103,7 @@ class TimelineSentenceCalculationHandler(
         )
       }
       // New sentence. Find any served adas.
-      val servedAdas = findServedAdas(timelineCalculationDate, custodialSentences, latestRelease)
+      val servedAdas = findServedAdas(timelineCalculationDate, currentSentenceGroup, latestRelease)
       timelineCalculator.setAdjustments(
         newlySentenced,
         SentenceAdjustments(

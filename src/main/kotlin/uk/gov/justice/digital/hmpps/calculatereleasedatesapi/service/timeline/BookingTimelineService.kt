@@ -15,10 +15,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CustodialPeriod
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementDirection
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SDSEarlyReleaseDefaultingRulesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.WorkingDayService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
@@ -96,18 +96,18 @@ class BookingTimelineService(
 
   private fun calculateFinalReleaseDatesAfterTimeline(timelineTrackingData: TimelineTrackingData): CalculationOutput {
     with(timelineTrackingData) {
-      if (custodialSentences.isNotEmpty()) {
-        releasedSentences.add(
-          CustodialPeriod(
-            custodialSentences.minOf { it.sentencedAt },
+      if (currentSentenceGroup.isNotEmpty()) {
+        releasedSentenceGroups.add(
+          SentenceGroup(
+            currentSentenceGroup.minOf { it.sentencedAt },
             latestRelease.first,
-            custodialSentences.toList(),
+            currentSentenceGroup.toList(),
           ),
         )
-        custodialSentences.clear()
+        currentSentenceGroup.clear()
       }
       latestCalculation =
-        timelineCalculator.getLatestCalculation(releasedSentences.map { it.sentences }, offender).copy(
+        timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender).copy(
           sdsEarlyReleaseAllocatedTranche = trancheAndCommencement.first,
           sdsEarlyReleaseTranche = trancheAndCommencement.first,
         )
@@ -118,13 +118,13 @@ class BookingTimelineService(
           beforeTrancheCalculation!!,
           trancheAndCommencement.second!!,
           trancheAndCommencement.first,
-          releasedSentences.flatMap { it.sentences },
+          releasedSentenceGroups.flatMap { it.sentences },
         )
       }
 
       return CalculationOutput(
-        releasedSentences.flatMap { it.sentences },
-        releasedSentences,
+        releasedSentenceGroups.flatMap { it.sentences },
+        releasedSentenceGroups,
         latestCalculation,
       )
     }
@@ -146,8 +146,8 @@ class BookingTimelineService(
 
   private fun calculateLatestCustodialRelease(timelineTrackingData: TimelineTrackingData) {
     with(timelineTrackingData) {
-      if (custodialSentences.isNotEmpty()) {
-        val latestReleaseSentence = custodialSentences.maxBy { it.sentenceCalculation.adjustedDeterminateReleaseDate }
+      if (currentSentenceGroup.isNotEmpty()) {
+        val latestReleaseSentence = currentSentenceGroup.maxBy { it.sentenceCalculation.adjustedDeterminateReleaseDate }
         val releaseDate =
           if (beforeTrancheCalculation != null && latestReleaseSentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(
               trancheAndCommencement.second!!,
@@ -165,23 +165,23 @@ class BookingTimelineService(
   private fun checkForReleasesAndLicenseExpiry(date: LocalDate, timelineTrackingData: TimelineTrackingData) {
     with(timelineTrackingData) {
       if (date.isAfter(latestRelease.first)) {
-        if (custodialSentences.isNotEmpty()) {
+        if (currentSentenceGroup.isNotEmpty()) {
           // Release has happened. do extraction here.
-          releasedSentences.add(
-            CustodialPeriod(
-              custodialSentences.minOf { it.sentencedAt },
+          releasedSentenceGroups.add(
+            SentenceGroup(
+              currentSentenceGroup.minOf { it.sentencedAt },
               latestRelease.first,
-              custodialSentences.toList(),
+              currentSentenceGroup.toList(),
             ),
           )
-          custodialSentences.forEach {
+          currentSentenceGroup.forEach {
             if (it.sentenceCalculation.licenceExpiryDate?.isAfter(date) == true) {
               licenseSentences.add(it)
             }
           }
-          custodialSentences.clear()
+          currentSentenceGroup.clear()
         }
-        latestCalculation = timelineCalculator.getLatestCalculation(releasedSentences.map { it.sentences }, offender)
+        latestCalculation = timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender)
       }
       if (licenseSentences.isNotEmpty()) {
         licenseSentences.removeIf {
