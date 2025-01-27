@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
@@ -44,6 +45,8 @@ class BookingTimelineService(
   private val timelineUalAdjustmentCalculationHandler: TimelineUalAdjustmentCalculationHandler,
   private val timelineExternalReleaseMovementCalculationHandler: TimelineExternalReleaseMovementCalculationHandler,
   private val timelineExternalAdmissionMovementCalculationHandler: TimelineExternalAdmissionMovementCalculationHandler,
+  private val timelineAdjustmentService: TimelineAdjustmentService,
+  private val featureToggles: FeatureToggles,
 ) {
 
   fun calculate(
@@ -91,10 +94,13 @@ class BookingTimelineService(
       calculateLatestCustodialRelease(timelineTrackingData)
     }
 
-    return calculateFinalReleaseDatesAfterTimeline(timelineTrackingData)
+    return calculateFinalReleaseDatesAfterTimeline(timelineTrackingData, adjustments)
   }
 
-  private fun calculateFinalReleaseDatesAfterTimeline(timelineTrackingData: TimelineTrackingData): CalculationOutput {
+  private fun calculateFinalReleaseDatesAfterTimeline(
+    timelineTrackingData: TimelineTrackingData,
+    adjustments: Adjustments,
+  ): CalculationOutput {
     with(timelineTrackingData) {
       if (currentSentenceGroup.isNotEmpty()) {
         releasedSentenceGroups.add(
@@ -120,6 +126,10 @@ class BookingTimelineService(
           trancheAndCommencement.first,
           releasedSentenceGroups.flatMap { it.sentences },
         )
+
+        if (featureToggles.adjustmentsAfterTrancheEnabled) {
+          latestCalculation = timelineAdjustmentService.applyTrancheAdjustmentLogic(latestCalculation, adjustments, trancheAndCommencement)
+        }
       }
 
       return CalculationOutput(
