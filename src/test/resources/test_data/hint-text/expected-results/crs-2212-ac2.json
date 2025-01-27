@@ -1,0 +1,24 @@
+[
+  {
+    "type": "SLED",
+    "date": "2028-03-18",
+    "hints": []
+  },
+  {
+    "type": "CRD",
+    "date": "2025-04-16",
+    "hints": ["40% date has been applied"]
+  },
+  {
+    "type": "HDCED",
+    "date": "2024-11-11",
+    "hints": [
+      "Defaulted to tranche 2 commencement"
+    ]
+  },
+  {
+    "type": "ESED",
+    "date": "2028-09-21",
+    "hints": []
+  }
+]

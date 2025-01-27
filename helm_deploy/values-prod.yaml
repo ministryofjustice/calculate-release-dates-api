@@ -21,7 +21,8 @@ generic-service:
     SDS40_CONSEC_MANUAL_JOURNEY: "true"
     HDC_365_FEATURE_TOGGLE: "false"
     EXTERNAL_MOVEMENTS_FEATURE_TOGGLE: "false"
-    
+    ADJUSTMENTS_AFTER_TRANCHE_FEATURE_TOGGLE: "false"
+
   serviceAccountName: calculate-release-dates-api-prod
 
   resources:

@@ -150,3 +150,4 @@ feature-toggles:
   sds40-consecutive-manual-journey: ${SDS40_CONSEC_MANUAL_JOURNEY:false}
   hdc365: ${HDC_365_FEATURE_TOGGLE:false}
   externalMovementsEnabled: ${EXTERNAL_MOVEMENTS_FEATURE_TOGGLE:false}
+  adjustmentsAfterTrancheEnabled: ${ADJUSTMENTS_AFTER_TRANCHE_FEATURE_TOGGLE:false}

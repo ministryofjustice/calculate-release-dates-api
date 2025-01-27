@@ -45,6 +45,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource.JsonTransformation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.BookingTimelineService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineAdjustmentService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineAwardedAdjustmentCalculationHandler
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers.TimelineExternalAdmissionMovementCalculationHandler
@@ -223,6 +224,9 @@ class HintTextTest {
     releasePointMultiplierConfigurationForTests,
     timelineCalculator,
   )
+
+  private val timelineAdjustmentService = TimelineAdjustmentService()
+
   private val bookingTimelineService = BookingTimelineService(
     workingDayService,
     trancheConfiguration,
@@ -235,6 +239,8 @@ class HintTextTest {
     timelineUalAdjustmentCalculationHandler,
     timelineExternalReleaseMovementCalculationHandler,
     timelineExternalAdmissionMovementCalculationHandler,
+    timelineAdjustmentService,
+    featureToggles = FeatureToggles(adjustmentsAfterTrancheEnabled = true),
   )
   private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
   private val calculationService = CalculationService(
