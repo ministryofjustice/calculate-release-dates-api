@@ -736,6 +736,7 @@ class CalculationTransactionalServiceTest {
       timelineUalAdjustmentCalculationHandler,
       timelineExternalReleaseMovementCalculationHandler,
       timelineExternalAdmissionMovementCalculationHandler,
+      featureToggles = FeatureToggles(adjustmentsAfterTrancheEnabled = true),
     )
 
     val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())

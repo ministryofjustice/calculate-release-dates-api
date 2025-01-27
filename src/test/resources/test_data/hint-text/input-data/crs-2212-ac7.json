@@ -1,0 +1,90 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 2894467,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2023-12-24",
+        "offenceCode": null
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 30
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "5bf5aa8c-83f1-3472-8b7d-8fa0dd608eec",
+      "recallType": null,
+      "sentencedAt": "2024-01-24",
+      "caseSequence": 1,
+      "lineSequence": 1,
+      "caseReference": "47EE4037123",
+      "consecutiveSentenceUUIDs": [],
+      "isSDSPlusOffenceInPeriod": false,
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2023-12-24",
+        "offenceCode": null
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 6
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "fbf73d10-6f75-3493-9148-acb839fc4767",
+      "recallType": null,
+      "sentencedAt": "2024-01-24",
+      "caseSequence": 1,
+      "lineSequence": 2,
+      "caseReference": "47EE4037123",
+      "consecutiveSentenceUUIDs": [],
+      "isSDSPlusOffenceInPeriod": false,
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "toDate": "2024-01-23",
+        "fromDate": "2023-12-26",
+        "numberOfDays": 29,
+        "appliesToSentencesFrom": "2024-01-24"
+      }
+    ],
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "toDate": "2024-06-16",
+        "fromDate": "2024-05-24",
+        "numberOfDays": 24,
+        "appliesToSentencesFrom": "2024-05-24"
+      },
+      {
+        "toDate": "2024-10-08",
+        "fromDate": "2024-09-19",
+        "numberOfDays": 20,
+        "appliesToSentencesFrom": "2024-09-19"
+      }
+    ]
+  },
+  "historicalTusedData": null,
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null,
+  "calculateErsed": true
+}

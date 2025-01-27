@@ -235,6 +235,7 @@ class HintTextTest {
     timelineUalAdjustmentCalculationHandler,
     timelineExternalReleaseMovementCalculationHandler,
     timelineExternalAdmissionMovementCalculationHandler,
+    featureToggles = FeatureToggles(adjustmentsAfterTrancheEnabled = true),
   )
   private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
   private val calculationService = CalculationService(
