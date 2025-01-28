@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestManualReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestSentenceUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequestUserInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationType
@@ -864,3 +865,12 @@ fun transform(
     direction = externalMovement.transformMovementDirection(),
   )
 }
+
+fun transform(
+  calculationRequest: CalculationRequest,
+  manualCalculationReasons: ValidationMessage,
+): CalculationRequestManualReason = CalculationRequestManualReason(
+  calculationRequest = calculationRequest,
+  code = manualCalculationReasons.code,
+  message = manualCalculationReasons.message,
+)

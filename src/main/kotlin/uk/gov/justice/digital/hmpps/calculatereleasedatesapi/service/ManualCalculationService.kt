@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Upda
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.LocalDate
 import java.time.Period
 
@@ -38,6 +39,7 @@ class ManualCalculationService(
   private val nomisCommentService: NomisCommentService,
   private val buildProperties: BuildProperties,
   private val bookingCalculationService: BookingCalculationService,
+  private val validationService: ValidationService,
 ) {
 
   fun hasIndeterminateSentences(bookingId: Long): Boolean {
@@ -55,11 +57,11 @@ class ManualCalculationService(
   fun storeManualCalculation(
     prisonerId: String,
     manualEntryRequest: ManualEntryRequest,
-    isGenuineOverride: Boolean? = false,
+    isGenuineOverride: Boolean = false,
   ): ManualCalculationResponse {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
     val calculationUserInputs = CalculationUserInputs()
-    var booking = bookingService.getBooking(sourceData, calculationUserInputs)
+    val booking = bookingService.getBooking(sourceData, calculationUserInputs)
 
     val effectiveSentenceLength = try {
       calculateEffectiveSentenceLength(booking, manualEntryRequest)
@@ -71,7 +73,13 @@ class ManualCalculationService(
     val reasonForCalculation = calculationReasonRepository.findById(manualEntryRequest.reasonForCalculationId)
       .orElse(null) // TODO: This should thrown an EntityNotFoundException when the reason is mandatory.
     val type =
-      if (isGenuineOverride!!) CalculationType.MANUAL_OVERRIDE else if (hasIndeterminateSentences(booking.bookingId)) CalculationType.MANUAL_INDETERMINATE else CalculationType.MANUAL_DETERMINATE
+      if (isGenuineOverride) {
+        CalculationType.MANUAL_OVERRIDE
+      } else if (hasIndeterminateSentences(booking.bookingId)) {
+        CalculationType.MANUAL_INDETERMINATE
+      } else {
+        CalculationType.MANUAL_DETERMINATE
+      }
 
     val calculationRequest = transform(
       booking,
@@ -84,10 +92,19 @@ class ManualCalculationService(
       version = buildProperties.version,
     ).withType(type)
 
+    val manualCalcCauses = validationService.validateSupportedSentencesAndCalculations(sourceData)
+
     return try {
       val savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
+
+      if (manualCalcCauses.isNotEmpty()) {
+        savedCalculationRequest.manualCalculationReason = manualCalcCauses.map { transform(savedCalculationRequest, it) }
+        calculationRequestRepository.save(savedCalculationRequest)
+      }
+
       val calculationOutcomes =
         manualEntryRequest.selectedManualEntryDates.map { transform(savedCalculationRequest, it) }
+
       calculationOutcomeRepository.saveAll(calculationOutcomes)
       val enteredDates =
         writeToNomisAndPublishEvent(
