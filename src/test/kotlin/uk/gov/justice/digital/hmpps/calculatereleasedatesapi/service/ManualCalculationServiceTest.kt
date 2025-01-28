@@ -9,6 +9,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
@@ -44,6 +45,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.LocalDate
 import java.time.Period
 import java.time.temporal.ChronoUnit
@@ -60,6 +64,7 @@ class ManualCalculationServiceTest {
   private val serviceUserService = mock<ServiceUserService>()
   private val nomisCommentService = mock<NomisCommentService>()
   private val bookingCalculationService = mock<BookingCalculationService>()
+  private val validationService = mock<ValidationService>()
   private val manualCalculationService = ManualCalculationService(
     prisonService,
     bookingService,
@@ -72,6 +77,7 @@ class ManualCalculationServiceTest {
     nomisCommentService,
     TEST_BUILD_PROPERTIES,
     bookingCalculationService,
+    validationService,
   )
   private val calculationRequestArgumentCaptor = argumentCaptor<CalculationRequest>()
 
@@ -545,6 +551,33 @@ class ManualCalculationServiceTest {
 
     manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
     verify(calculationRequestRepository).save(calculationRequestArgumentCaptor.capture())
+    val actualRequest = calculationRequestArgumentCaptor.firstValue
+    assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
+  }
+
+  @Test
+  fun `Check manual journey records validation reasons`() {
+    whenever(prisonService.getPrisonApiSourceData(PRISONER_ID)).thenReturn(FAKE_SOURCE_DATA)
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+    whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
+    whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(
+      listOf(
+        ValidationMessage(ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL),
+        ValidationMessage(ValidationCode.BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE),
+      ),
+    )
+
+    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
+    val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
+
+    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
+
+    // save should be called twice, one for initial creation, then one for manual calc reasons
+    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
     val actualRequest = calculationRequestArgumentCaptor.firstValue
     assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
   }
