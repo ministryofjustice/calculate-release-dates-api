@@ -18,9 +18,11 @@ import java.time.LocalDate
 @Service
 class AdjustmentValidationService {
 
-  internal fun validateIfAdjustmentsAreSupported(adjustments: List<BookingAdjustment>): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
-    addAll(lawfullyAtLargeIsNotSupported(adjustments))
-    addAll(specialRemissionIsNotSupported(adjustments))
+  internal fun validateIfAdjustmentsAreSupported(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
+    addAll(lawfullyAtLargeIsNotSupported(adjustments.bookingAdjustments))
+    addAll(specialRemissionIsNotSupported(adjustments.bookingAdjustments))
+    addAll(timeSpentInCustodyAbroadIsNotSupported(adjustments.sentenceAdjustments))
+    addAll(timeSpentAsAnAppealApplicantIsNotSupported(adjustments.sentenceAdjustments))
   }
 
   internal fun throwErrorIfAdditionAdjustmentsAfterLatestReleaseDate(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
@@ -66,7 +68,7 @@ class AdjustmentValidationService {
 
   internal fun validateAdditionAdjustmentsInsideLatestReleaseDate(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
     val adjustments = getSortedAdjustments(booking)
-    val nonTermSentences = calculationOutput.custodialPeriod.flatMap { it.sentences }.filterNot { it is Term }
+    val nonTermSentences = calculationOutput.sentenceGroup.flatMap { it.sentences }.filterNot { it is Term }
 
     if (nonTermSentences.isEmpty()) {
       return emptyList()
@@ -108,6 +110,17 @@ class AdjustmentValidationService {
   } else {
     emptyList()
   }
+  private fun timeSpentInCustodyAbroadIsNotSupported(adjustments: List<SentenceAdjustment>): List<ValidationMessage> = if (adjustments.any { it.type == SentenceAdjustmentType.TIME_SPENT_IN_CUSTODY_ABROAD }) {
+    listOf(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_TIME_SPENT_IN_CUSTODY_ABROAD))
+  } else {
+    emptyList()
+  }
+
+  private fun timeSpentAsAnAppealApplicantIsNotSupported(adjustments: List<SentenceAdjustment>): List<ValidationMessage> = if (adjustments.any { it.type == SentenceAdjustmentType.TIME_SPENT_AS_AN_APPEAL_APPLICANT }) {
+    listOf(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_TIME_SPENT_AS_AN_APPEAL_APPLICANT))
+  } else {
+    emptyList()
+  }
 
   private fun validateBookingAdjustment(bookingAdjustments: List<BookingAdjustment>): List<ValidationMessage> = bookingAdjustments.filter {
     val dateToValidate = if (it.type == BookingAdjustmentType.UNLAWFULLY_AT_LARGE && it.toDate != null) it.toDate else it.fromDate
@@ -138,7 +151,7 @@ class AdjustmentValidationService {
     if (remandPeriods.isNotEmpty()) {
       val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
 
-      val sentenceRanges = calculationOutput.custodialPeriod.filter { period -> period.sentences.none { it.isRecall() } }.map { LocalDateRange.of(it.from, it.to) }
+      val sentenceRanges = calculationOutput.sentenceGroup.filter { period -> period.sentences.none { it.isRecall() } }.map { LocalDateRange.of(it.from, it.to) }
 
       remandRanges.forEach { remandRange ->
         sentenceRanges.forEach { sentenceRange ->

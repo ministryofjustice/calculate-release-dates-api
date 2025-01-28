@@ -45,6 +45,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType.TAGGED_BAIL
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType.TIME_SPENT_AS_AN_APPEAL_APPLICANT
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType.TIME_SPENT_IN_CUSTODY_ABROAD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
@@ -212,6 +215,30 @@ class ValidationServiceTest {
       ),
     ),
     emptyList(),
+  )
+
+  private val timeSpentInCustodyAbroadSentenceAdjustment = BookingAndSentenceAdjustments(
+    emptyList(),
+    listOf(
+      SentenceAdjustment(
+        sentenceSequence = 1,
+        active = true,
+        numberOfDays = 23,
+        type = TIME_SPENT_IN_CUSTODY_ABROAD,
+      ),
+    ),
+  )
+
+  private val timeSpentAsAnAppealApplicantSentenceAdjustment = BookingAndSentenceAdjustments(
+    emptyList(),
+    listOf(
+      SentenceAdjustment(
+        sentenceSequence = 1,
+        active = true,
+        numberOfDays = 32,
+        type = TIME_SPENT_AS_AN_APPEAL_APPLICANT,
+      ),
+    ),
   )
 
   @ParameterizedTest
@@ -1473,7 +1500,7 @@ class ValidationServiceTest {
           fromDate = LocalDate.of(2021, 1, 30),
           toDate = LocalDate.of(2021, 1, 31),
           numberOfDays = 1,
-          type = SentenceAdjustmentType.TAGGED_BAIL,
+          type = TAGGED_BAIL,
         ),
       ),
     )
@@ -1732,6 +1759,56 @@ class ValidationServiceTest {
 
     assertThat(result).isEqualTo(
       listOf(ValidationMessage(UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION)),
+    )
+  }
+
+  @Test
+  fun `Test time spent in custody abroad adjustments throw validation errors`() {
+    val result = validationService.validateBeforeCalculation(
+      sourceData = PrisonApiSourceData(
+        sentenceAndOffences = listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            source = validSdsSentence,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
+        ),
+        prisonerDetails = VALID_PRISONER,
+        bookingAndSentenceAdjustments = timeSpentInCustodyAbroadSentenceAdjustment,
+        returnToCustodyDate = null,
+      ),
+      calculationUserInputs = CalculationUserInputs(),
+    )
+
+    assertThat(result).isEqualTo(
+      listOf(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_TIME_SPENT_IN_CUSTODY_ABROAD)),
+    )
+  }
+
+  @Test
+  fun `Test time as an appeal applicant adjustments throw validation errors`() {
+    val result = validationService.validateBeforeCalculation(
+      sourceData = PrisonApiSourceData(
+        sentenceAndOffences = listOf(
+          SentenceAndOffenceWithReleaseArrangements(
+            source = validSdsSentence,
+            isSdsPlus = false,
+            isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+            isSDSPlusOffenceInPeriod = false,
+            hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+          ),
+        ),
+        prisonerDetails = VALID_PRISONER,
+        bookingAndSentenceAdjustments = timeSpentAsAnAppealApplicantSentenceAdjustment,
+        returnToCustodyDate = null,
+      ),
+      calculationUserInputs = CalculationUserInputs(),
+    )
+
+    assertThat(result).isEqualTo(
+      listOf(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_TIME_SPENT_AS_AN_APPEAL_APPLICANT)),
     )
   }
 
@@ -3618,13 +3695,13 @@ class ValidationServiceTest {
     sentencesExtractionService: SentencesExtractionService,
     trancheConfiguration: SDS40TrancheConfiguration,
   ): ValidationService {
-    val featureToggles = FeatureToggles(sdsEarlyRelease = true, sdsEarlyReleaseHints = false, sds40ConsecutiveManualJourney = true)
+    val featureToggles = FeatureToggles(sdsEarlyRelease = true, sdsEarlyReleaseHints = false, sds40ConsecutiveManualJourney = true, externalMovementsEnabled = false)
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService()
     val dtoValidationService = DtoValidationService()
     val botusValidationService = BotusValidationService(featureToggles)
-    val recallValidationService = RecallValidationService(trancheConfiguration, validationUtilities)
+    val recallValidationService = RecallValidationService(trancheConfiguration, validationUtilities, featureToggles)
     val unsupportedValidationService = UnsupportedValidationService()
     val postCalculationValidationService = PostCalculationValidationService(trancheConfiguration, featureToggles)
     val section91ValidationService = Section91ValidationService(validationUtilities)

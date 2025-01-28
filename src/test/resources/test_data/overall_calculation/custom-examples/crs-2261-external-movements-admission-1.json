@@ -1,0 +1,56 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2023-10-17",
+        "offenceCode": "TH68001"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 25
+        }
+      },
+      "sentencedAt": "2024-04-04"
+    },
+    {
+      "offence": {
+        "committedAt": "2024-10-09",
+        "offenceCode": "SE20001"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 4
+        }
+      },
+      "sentencedAt": "2024-10-10"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2024-04-04",
+        "numberOfDays": 62,
+        "fromDate": "2024-02-02",
+        "toDate": "2024-04-03"
+      }
+    ]
+  },
+  "externalMovements": [
+    {
+      "movementDate": "2024-09-06",
+      "movementReason": "HDC",
+      "direction": "OUT"
+    },
+    {
+      "movementDate": "2024-10-10",
+      "movementReason": "ADMISSION",
+      "direction": "IN"
+    }
+  ]
+}
+
+

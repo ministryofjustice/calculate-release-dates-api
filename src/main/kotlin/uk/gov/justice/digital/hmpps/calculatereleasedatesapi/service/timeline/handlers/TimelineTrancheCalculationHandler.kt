@@ -27,13 +27,13 @@ class TimelineTrancheCalculationHandler(
     timelineTrackingData: TimelineTrackingData,
   ): TimelineHandleResult {
     with(timelineTrackingData) {
-      val allSentences = releasedSentences.map { it.sentences }.plus(listOf(custodialSentences))
+      val allSentences = releasedSentenceGroups.map { it.sentences }.plus(listOf(currentSentenceGroup))
 
       if (isLatestPotentialEarlyReleaseBeforeTrancheOneCommencement(allSentences)) {
         return TimelineHandleResult(true)
       }
-
-      if (custodialSentences.isNotEmpty()) {
+      val nonRecallSentences = allSentences.flatten().filterNot { it.isRecall() }
+      if (nonRecallSentences.isNotEmpty() && inPrison) {
         val tranche = trancheAllocationService.calculateTranche(allSentences.flatten())
 
         val trancheCommencementDate = when (tranche) {
@@ -42,11 +42,13 @@ class TimelineTrancheCalculationHandler(
           else -> null
         }
 
-        trancheAndCommencement = tranche to trancheCommencementDate
+        if (trancheCommencementDate == timelineCalculationDate) {
+          trancheAndCommencement = tranche to trancheCommencementDate
+        }
 
         if (requiresTranchingNow(timelineCalculationDate, timelineTrackingData)) {
           beforeTrancheCalculation = timelineCalculator.getLatestCalculation(allSentences, offender)
-          custodialSentences.forEach {
+          currentSentenceGroup.forEach {
             it.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
               multiplierFnForDate(timelineCalculationDate, trancheCommencementDate)
             it.sentenceCalculation.adjustments = it.sentenceCalculation.adjustments.copy(
@@ -54,11 +56,6 @@ class TimelineTrancheCalculationHandler(
               unusedLicenceAdaDays = 0,
             )
             it.sentenceCalculation.trancheCommencement = trancheCommencementDate
-          }
-        } else if (timelineCalculationDate == trancheConfiguration.trancheTwoCommencementDate) {
-          custodialSentences.forEach {
-            it.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
-              multiplierFnForDate(timelineCalculationDate, trancheCommencementDate)
           }
         } else {
           // No sentences at tranche date.
@@ -86,7 +83,7 @@ class TimelineTrancheCalculationHandler(
 
   private fun requiresTranchingNow(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): Boolean {
     with(timelineTrackingData) {
-      val anyEarlyRelease = custodialSentences.any { sentence ->
+      val anyEarlyRelease = currentSentenceGroup.any { sentence ->
         sentence.sentenceParts().any { it.identificationTrack.isEarlyReleaseTrancheOneTwo() }
       }
 
