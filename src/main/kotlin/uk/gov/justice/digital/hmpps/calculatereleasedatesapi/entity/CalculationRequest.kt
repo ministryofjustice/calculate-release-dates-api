@@ -128,6 +128,9 @@ data class CalculationRequest(
   @OneToOne(mappedBy = "calculationRequest", cascade = [CascadeType.ALL])
   val allocatedSDSTranche: TrancheOutcome? = null,
 
+  @OneToMany(mappedBy = "calculationRequest", cascade = [CascadeType.ALL])
+  var manualCalculationReason: List<CalculationRequestManualReason>? = null,
+
   val version: String = "1",
 ) {
   init {
@@ -147,11 +150,7 @@ data class CalculationRequest(
   override fun hashCode(): Int = javaClass.hashCode()
 
   @Override
-  override fun toString(): String {
-    return this::class.simpleName + "(calculationReference = $calculationReference )"
-  }
+  override fun toString(): String = this::class.simpleName + "(calculationReference = $calculationReference )"
 
-  fun withType(calculationType: CalculationType): CalculationRequest {
-    return copy(calculationType = calculationType)
-  }
+  fun withType(calculationType: CalculationType): CalculationRequest = copy(calculationType = calculationType)
 }
