@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import java.time.LocalDate
 
 @Service
@@ -53,8 +54,7 @@ class PrisonService(
     val tusedData = getLatestTusedDataForBotus(prisonerDetails.offenderNo).getOrNull()
     val bookingHasBotus = sentenceAndOffences.any { isSupported(it.sentenceCalculationType) && from(it.sentenceCalculationType).sentenceClazz == BotusSentence::class.java }
     val historicalTusedData = if (tusedData != null && bookingHasBotus) botusTusedService.identifyTused(tusedData) else null
-    val earliestSentenceDate = sentenceAndOffences.minOf { it.sentenceDate }
-    val externalMovements = if (featureToggles.externalMovementsEnabled) prisonApiClient.getExternalMovements(prisonerDetails.offenderNo, earliestSentenceDate) else emptyList()
+    val externalMovements = getExternalMovements(sentenceAndOffences, prisonerDetails)
 
     return PrisonApiSourceData(
       sentenceAndOffences,
@@ -66,6 +66,19 @@ class PrisonService(
       historicalTusedData,
       externalMovements,
     )
+  }
+
+  private fun getExternalMovements(
+    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
+    prisonerDetails: PrisonerDetails,
+  ): List<PrisonApiExternalMovement> {
+    if (featureToggles.externalMovementsEnabled) {
+      val earliestSentenceDate = sentenceAndOffences.minOfOrNull { it.sentenceDate }
+      if (earliestSentenceDate != null) {
+        return prisonApiClient.getExternalMovements(prisonerDetails.offenderNo, earliestSentenceDate)
+      }
+    }
+    return emptyList()
   }
 
   private fun getFixedTermRecallDetails(
