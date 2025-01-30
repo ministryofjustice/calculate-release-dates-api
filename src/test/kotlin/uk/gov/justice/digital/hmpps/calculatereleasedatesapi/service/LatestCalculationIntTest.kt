@@ -156,7 +156,7 @@ class LatestCalculationIntTest(private val mockPrisonService: MockPrisonService)
             ReleaseDateType.HDCED,
             ReleaseDateType.HDCED.description,
             LocalDate.of(2015, 8, 7),
-            listOf(ReleaseDateHint("HDC180 rules have been applied")),
+            emptyList(),
           ),
           DetailedDate(ReleaseDateType.TUSED, ReleaseDateType.TUSED.description, LocalDate.of(2017, 1, 6), emptyList()),
         ),
