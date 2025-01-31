@@ -92,6 +92,8 @@ class UnusedDeductionsCalculationService(
       AdjustmentServiceAdjustmentType.REMAND -> SentenceAdjustmentType.REMAND
       AdjustmentServiceAdjustmentType.UNUSED_DEDUCTIONS -> SentenceAdjustmentType.UNUSED_REMAND
       AdjustmentServiceAdjustmentType.TAGGED_BAIL -> SentenceAdjustmentType.TAGGED_BAIL
+      AdjustmentServiceAdjustmentType.CUSTODY_ABROAD -> SentenceAdjustmentType.TIME_SPENT_IN_CUSTODY_ABROAD
+      AdjustmentServiceAdjustmentType.APPEAL_APPLICANT -> SentenceAdjustmentType.TIME_SPENT_AS_AN_APPEAL_APPLICANT
       else -> null
     }
   }
