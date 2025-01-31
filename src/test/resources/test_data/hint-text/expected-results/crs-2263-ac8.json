@@ -1,27 +1,27 @@
 [
   {
     "type": "SLED",
-    "date": "2026-06-24",
+    "date": "2028-07-11",
     "hints": []
   },
   {
     "type": "CRD",
-    "date": "2025-02-06",
+    "date": "2026-02-26",
     "hints": []
   },
   {
     "type": "HDCED",
-    "date": "2024-09-30",
-    "hints": []
+    "date": "2025-06-03",
+    "hints": ["365-day HDC rules apply"]
   },
   {
     "type": "ERSED",
-    "date": "2024-09-23",
+    "date": "2025-05-11",
     "hints": []
   },
   {
     "type": "ESED",
-    "date": "2026-07-23",
+    "date": "2028-07-11",
     "hints": []
   }
 ]

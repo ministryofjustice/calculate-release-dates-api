@@ -68,7 +68,7 @@ class CalculationResultEnrichmentService(
 
     hints += nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type, date)
 
-    if (calculationBreakdown !== null && sentenceAndOffences !== null && showSDS40Hints(sentenceAndOffences)) {
+    if (calculationBreakdown !== null && sentenceAndOffences !== null && showSDS40Hints(sentenceAndOffences, calculationBreakdown)) {
       hints += sds40Hint(type, calculationBreakdown)
     }
 
@@ -84,8 +84,13 @@ class CalculationResultEnrichmentService(
     return hints.filterNotNull()
   }
 
-  private fun showSDS40Hints(sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>): Boolean {
+  private fun showSDS40Hints(
+    sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
+    calculationBreakdown: CalculationBreakdown,
+  ): Boolean {
     if (!featureToggles.sdsEarlyReleaseHints) return false
+
+    if (!calculationBreakdown.showSds40Hints) return false
 
     return sentenceAndOffences.none {
       !it.isSDSPlus &&
