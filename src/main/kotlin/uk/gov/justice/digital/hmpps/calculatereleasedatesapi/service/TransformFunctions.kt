@@ -559,6 +559,7 @@ fun transform(
     },
     breakdownByReleaseDateType = breakdownByReleaseDateType,
     otherDates = otherDates,
+    showSds40Hints = booking.calculationResult.showSds40Hints,
   )
 }
 

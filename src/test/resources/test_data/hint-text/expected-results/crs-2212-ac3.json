@@ -7,14 +7,12 @@
   {
     "type": "CRD",
     "date": "2026-02-19",
-    "hints": ["40% date has been applied"]
+    "hints": []
   },
   {
     "type": "PED",
     "date": "2024-11-06",
-    "hints": [
-      "Defaulted to tranche 2 commencement"
-    ]
+    "hints": []
   },
   {
     "type": "ESED",
