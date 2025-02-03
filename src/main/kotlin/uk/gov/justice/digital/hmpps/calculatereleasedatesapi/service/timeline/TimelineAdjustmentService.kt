@@ -158,7 +158,7 @@ class TimelineAdjustmentService {
   }
 
   private fun determineSuppressSds40Hints(calculation: CalculationResult, trancheCommencementDate: LocalDate, adjustments: Adjustments): CalculationResult {
-    val suppressSds40Hints = SUPPRESS_SDS_40_HINT_ADJUSTMENT_TYPED
+    val suppressSds40Hints = SUPPRESS_SDS_40_HINT_ADJUSTMENT_TYPES
       .flatMap { adjustments.getOrEmptyList(it) }
       .any { it.appliesToSentencesFrom.isAfterOrEqualTo(trancheCommencementDate) }
 
@@ -190,7 +190,7 @@ class TimelineAdjustmentService {
       ReleaseDateType.PED,
     )
 
-    val SUPPRESS_SDS_40_HINT_ADJUSTMENT_TYPED =
+    val SUPPRESS_SDS_40_HINT_ADJUSTMENT_TYPES =
       listOf(REMAND, TAGGED_BAIL, UNLAWFULLY_AT_LARGE, ADDITIONAL_DAYS_AWARDED, RESTORATION_OF_ADDITIONAL_DAYS_AWARDED)
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
