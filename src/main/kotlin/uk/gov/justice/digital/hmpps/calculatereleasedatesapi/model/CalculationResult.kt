@@ -16,4 +16,5 @@ data class CalculationResult(
   val sdsEarlyReleaseAllocatedTranche: SDSEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
   val sdsEarlyReleaseTranche: SDSEarlyReleaseTranche = SDSEarlyReleaseTranche.TRANCHE_0,
   val affectedBySds40: Boolean = false,
+  val showSds40Hints: Boolean = true,
 )
