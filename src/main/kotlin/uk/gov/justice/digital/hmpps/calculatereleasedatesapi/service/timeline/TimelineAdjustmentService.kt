@@ -4,10 +4,15 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.REMAND
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.ADJUSTED_AFTER_TRANCHE_COMMENCEMENT
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.SDS_STANDARD_RELEASE_APPLIES
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentDuration
@@ -46,15 +51,9 @@ class TimelineAdjustmentService {
     commencementDate: LocalDate,
   ): CalculationResult {
     val rulesToHandle = listOf(
-      CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT,
-      CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT,
-      CalculationRule.SDS_STANDARD_RELEASE_APPLIES,
-    )
-
-    val releaseDateTypesToAdjust = listOf(
-      ReleaseDateType.HDCED,
-      ReleaseDateType.ERSED,
-      ReleaseDateType.PED,
+      SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT,
+      SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT,
+      SDS_STANDARD_RELEASE_APPLIES,
     )
 
     var updatedCalculation = calculation
@@ -66,7 +65,7 @@ class TimelineAdjustmentService {
 
     if (numberOfDaysToAdjust != 0L) {
       for (rule in rulesToHandle) {
-        for (releaseDateType in releaseDateTypesToAdjust) {
+        for (releaseDateType in RELEASE_DATE_TYPES_TO_ADJUST) {
           updatedCalculation = adjustReleaseDateForType(
             updatedCalculation,
             numberOfDaysToAdjust,
@@ -77,6 +76,8 @@ class TimelineAdjustmentService {
         }
       }
     }
+
+    updatedCalculation = determineSuppressSds40Hints(updatedCalculation, commencementDate, adjustments)
 
     return updatedCalculation
   }
@@ -121,14 +122,12 @@ class TimelineAdjustmentService {
 
     if (updatedCalculation.dates[releaseDateType]?.isBefore(commencementDate) == true &&
       rule in listOf(
-        CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT,
-        CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT,
+        SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT,
+        SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_2_COMMENCEMENT,
       )
     ) {
       updatedCalculation = updatedCalculation.copy(
-        dates = updatedCalculation.dates.plus(
-          releaseDateType to commencementDate,
-        ),
+        dates = updatedCalculation.dates.plus(releaseDateType to commencementDate),
       )
     }
 
@@ -158,6 +157,14 @@ class TimelineAdjustmentService {
     return totalAdjustmentsToApply.toLong()
   }
 
+  private fun determineSuppressSds40Hints(calculation: CalculationResult, trancheCommencementDate: LocalDate, adjustments: Adjustments): CalculationResult {
+    val suppressSds40Hints = SUPPRESS_SDS_40_HINT_ADJUSTMENT_TYPED
+      .flatMap { adjustments.getOrEmptyList(it) }
+      .any { it.appliesToSentencesFrom.isAfterOrEqualTo(trancheCommencementDate) }
+
+    return if (suppressSds40Hints) calculation.copy(showSds40Hints = false) else calculation
+  }
+
   private fun updateBreakdownWithTrancheAdjustedRule(
     calculation: CalculationResult,
     releaseDateType: ReleaseDateType,
@@ -177,6 +184,14 @@ class TimelineAdjustmentService {
   }
 
   companion object {
+    val RELEASE_DATE_TYPES_TO_ADJUST = listOf(
+      ReleaseDateType.HDCED,
+      ReleaseDateType.ERSED,
+      ReleaseDateType.PED,
+    )
+
+    val SUPPRESS_SDS_40_HINT_ADJUSTMENT_TYPED =
+      listOf(REMAND, TAGGED_BAIL, UNLAWFULLY_AT_LARGE, ADDITIONAL_DAYS_AWARDED, RESTORATION_OF_ADDITIONAL_DAYS_AWARDED)
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }

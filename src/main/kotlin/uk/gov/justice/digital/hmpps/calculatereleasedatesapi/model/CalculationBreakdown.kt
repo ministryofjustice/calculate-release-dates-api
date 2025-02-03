@@ -12,4 +12,5 @@ data class CalculationBreakdown(
   val breakdownByReleaseDateType: Map<ReleaseDateType, ReleaseDateCalculationBreakdown> = emptyMap(),
   val otherDates: Map<ReleaseDateType, LocalDate> = emptyMap(),
   var ersedNotApplicableDueToDtoLaterThanCrd: Boolean = false,
+  val showSds40Hints: Boolean = true,
 )

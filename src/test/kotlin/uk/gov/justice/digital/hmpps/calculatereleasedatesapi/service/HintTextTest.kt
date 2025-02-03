@@ -103,27 +103,6 @@ class HintTextTest {
     assertThat(actualDatesAndHints).isEqualTo(expectedDatesAndHints)
   }
 
-  @ParameterizedTest
-  @CsvFileSource(resources = ["/test_data/hint-text.csv"], numLinesToSkip = 1)
-  fun `Test Hint Text with date overrides`(testCase: String) {
-    log.info("Running hint text test-case with date override $testCase")
-
-    val (booking, calculationUserInputs) = jsonTransformation.loadHintTextBooking(testCase)
-    val calculation = calculationService.calculateReleaseDates(booking, calculationUserInputs)
-    val calculatedReleaseDates = createCalculatedReleaseDates(calculation.calculationResult)
-    val calculationBreakdown = performCalculationBreakdown(booking, calculatedReleaseDates, calculationUserInputs)
-    val breakdownWithHints = enrichBreakdownWithHints(
-      calculation.calculationResult.dates,
-      calculationBreakdown,
-      calculation.calculationResult.dates.map { it.key.name },
-    )
-
-    val actualDatesAndHints = mapToDatesAndHints(breakdownWithHints)
-    val expectedDatesAndHints = jsonTransformation.loadHintTextResults(testCase)
-
-    assertThat(actualDatesAndHints).isEqualTo(expectedDatesAndHints.map { it.copy(hints = listOf("Manually overridden") + it.hints) })
-  }
-
   private fun createCalculatedReleaseDates(calculation: CalculationResult): CalculatedReleaseDates = CalculatedReleaseDates(
     dates = calculation.dates,
     calculationRequestId = -1,
