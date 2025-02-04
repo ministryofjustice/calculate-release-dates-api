@@ -5,8 +5,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.DTO
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.DTO_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 @Service
 class DtoValidationService {
@@ -26,7 +24,7 @@ class DtoValidationService {
     prisonApiSourceData.sentenceAndOffences.forEach { sentenceAndOffence ->
       val sentenceCalculationType = SentenceCalculationType.from(sentenceAndOffence.sentenceCalculationType)
       val hasDtoRecall = hasDtoRecallTerms(sentenceAndOffence)
-      val hasDto = isDtoSentence(sentenceCalculationType)
+      val hasDto = SentenceCalculationType.isDTOType(sentenceAndOffence.sentenceCalculationType)
 
       if (hasDto) bookingHasDto = true
       if (sentenceCalculationType.recallType != null) bookingHasRecall = true
@@ -45,7 +43,7 @@ class DtoValidationService {
     val messages = mutableListOf<ValidationMessage>()
 
     prisonApiSourceData.sentenceAndOffences.forEach { sentenceAndOffence ->
-      if (isDtoSentence(SentenceCalculationType.from(sentenceAndOffence.sentenceCalculationType))) {
+      if (SentenceCalculationType.isDTOType(sentenceAndOffence.sentenceCalculationType)) {
         if (isConsecutiveToNonDto(sentenceAndOffence, prisonApiSourceData)) {
           messages.add(ValidationMessage(code = ValidationCode.DTO_CONSECUTIVE_TO_SENTENCE))
         }
@@ -62,10 +60,6 @@ class DtoValidationService {
     return sentenceAndOffence.terms.any {
       it.code == SentenceTerms.BREACH_OF_SUPERVISION_REQUIREMENTS_TERM_CODE || it.code == SentenceTerms.BREACH_DUE_TO_IMPRISONABLE_OFFENCE_TERM_CODE
     }
-  }
-
-  private fun isDtoSentence(sentenceCalculationType: SentenceCalculationType): Boolean {
-    return sentenceCalculationType == DTO || sentenceCalculationType == DTO_ORA
   }
 
   private fun isConsecutiveToNonDto(sentenceAndOffence: SentenceAndOffence, sourceData: PrisonApiSourceData): Boolean {

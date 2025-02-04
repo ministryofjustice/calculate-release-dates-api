@@ -50,6 +50,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
 
   @Test
   fun `Run validation for DTO concurrent to recall`() {
+    mockManageOffencesClient.noneInPCSC(listOf("CD71040", "CJ88117"))
     runValidationAndCheckMessages("CRS-1145-AC1", listOf(ValidationMessage(code = UNSUPPORTED_CALCULATION_DTO_WITH_RECALL)))
   }
 

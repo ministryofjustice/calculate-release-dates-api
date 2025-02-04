@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSente
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.IndeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
@@ -12,25 +13,25 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.ST
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 
+private val UNSUPPORTED: Class<out AbstractSentence>? = null
+
 // These SentenceCalculationType values come from NOMIS - they map to offender_sentences.sentence_calc_type in NOMIS
 enum class SentenceCalculationType(
   val recallType: RecallType? = null,
-  val sentenceClazz: Class<out AbstractSentence> = StandardDeterminateSentence::class.java,
+  val sentenceClazz: Class<out AbstractSentence>? = StandardDeterminateSentence::class.java,
   val primaryName: String? = null,
-  val isSupported: Boolean = true,
-  val isIndeterminate: Boolean = false,
   val isSDS40Eligible: Boolean = false,
-  val isToreraEligible: ToreraEligibilityType = ToreraEligibilityType.NONE,
+  val toreraEligibilityType: ToreraEligibilityType = ToreraEligibilityType.NONE,
   val sdsPlusEligibilityType: SDSPlusEligibilityType = SDSPlusEligibilityType.NONE,
 ) {
-  ADIMP(isSDS40Eligible = true, isToreraEligible = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
-  ADIMP_ORA(isSDS40Eligible = true, isToreraEligible = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
-  YOI(isSDS40Eligible = true, isToreraEligible = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
-  YOI_ORA(isSDS40Eligible = true, isToreraEligible = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
+  ADIMP(isSDS40Eligible = true, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
+  ADIMP_ORA(isSDS40Eligible = true, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
+  YOI(isSDS40Eligible = true, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
+  YOI_ORA(isSDS40Eligible = true, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
   SEC91_03(isSDS40Eligible = true),
   SEC91_03_ORA(isSDS40Eligible = true),
-  SEC250(isSDS40Eligible = true, isToreraEligible = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
-  SEC250_ORA(isSDS40Eligible = true, isToreraEligible = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
+  SEC250(isSDS40Eligible = true, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
+  SEC250_ORA(isSDS40Eligible = true, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
   LR(recallType = STANDARD_RECALL, isSDS40Eligible = true),
   LR_ORA(recallType = STANDARD_RECALL, isSDS40Eligible = true),
   LR_YOI_ORA(recallType = STANDARD_RECALL, isSDS40Eligible = true),
@@ -40,28 +41,28 @@ enum class SentenceCalculationType(
   FTR_14_HDC_ORA(
     recallType = FIXED_TERM_RECALL_14,
     primaryName = "14FTRHDC_ORA",
-    isSupported = false,
+    sentenceClazz = UNSUPPORTED,
     isSDS40Eligible = true,
   ),
-  FTR(FIXED_TERM_RECALL_28, isSDS40Eligible = true),
-  FTR_ORA(FIXED_TERM_RECALL_28, isSDS40Eligible = true),
-  FTR_HDC_ORA(FIXED_TERM_RECALL_28, isSupported = false, isSDS40Eligible = true),
-  FTR_SCH15(FIXED_TERM_RECALL_28, isSDS40Eligible = true),
-  FTRSCH15_ORA(FIXED_TERM_RECALL_28, isSDS40Eligible = true),
-  FTRSCH18(FIXED_TERM_RECALL_28, isSDS40Eligible = true),
-  FTRSCH18_ORA(FIXED_TERM_RECALL_28, isSDS40Eligible = true),
-  FTR_HDC(isSupported = false, isIndeterminate = false, isSDS40Eligible = true),
-  HDR(isSupported = false, isIndeterminate = false, isSDS40Eligible = true),
-  HDR_ORA(isSupported = false, isIndeterminate = false, isSDS40Eligible = true, recallType = STANDARD_RECALL),
+  FTR(recallType = FIXED_TERM_RECALL_28, isSDS40Eligible = true),
+  FTR_ORA(recallType = FIXED_TERM_RECALL_28, isSDS40Eligible = true),
+  FTR_HDC_ORA(recallType = FIXED_TERM_RECALL_28, sentenceClazz = UNSUPPORTED, isSDS40Eligible = true),
+  FTR_SCH15(recallType = FIXED_TERM_RECALL_28, isSDS40Eligible = true),
+  FTRSCH15_ORA(recallType = FIXED_TERM_RECALL_28, isSDS40Eligible = true),
+  FTRSCH18(recallType = FIXED_TERM_RECALL_28, isSDS40Eligible = true),
+  FTRSCH18_ORA(recallType = FIXED_TERM_RECALL_28, isSDS40Eligible = true),
+  FTR_HDC(sentenceClazz = UNSUPPORTED, isSDS40Eligible = true),
+  HDR(sentenceClazz = UNSUPPORTED, isSDS40Eligible = true),
+  HDR_ORA(sentenceClazz = UNSUPPORTED, isSDS40Eligible = true, recallType = STANDARD_RECALL),
   LASPO_AR(sentenceClazz = ExtendedDeterminateSentence::class.java),
   LASPO_DR(sentenceClazz = ExtendedDeterminateSentence::class.java),
   EDS18(sentenceClazz = ExtendedDeterminateSentence::class.java),
   EDS21(sentenceClazz = ExtendedDeterminateSentence::class.java),
   EDSU18(sentenceClazz = ExtendedDeterminateSentence::class.java),
   SDOPCU18(sentenceClazz = SopcSentence::class.java),
-  SOPC18(sentenceClazz = SopcSentence::class.java, isToreraEligible = ToreraEligibilityType.SOPC),
-  SOPC21(sentenceClazz = SopcSentence::class.java, isToreraEligible = ToreraEligibilityType.SOPC),
-  SEC236A(sentenceClazz = SopcSentence::class.java, isToreraEligible = ToreraEligibilityType.SOPC),
+  SOPC18(sentenceClazz = SopcSentence::class.java, toreraEligibilityType = ToreraEligibilityType.SOPC),
+  SOPC21(sentenceClazz = SopcSentence::class.java, toreraEligibilityType = ToreraEligibilityType.SOPC),
+  SEC236A(sentenceClazz = SopcSentence::class.java, toreraEligibilityType = ToreraEligibilityType.SOPC),
   AFINE(sentenceClazz = AFineSentence::class.java, primaryName = "A/FINE"),
   LR_EDS18(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
   LR_EDS21(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
@@ -73,75 +74,73 @@ enum class SentenceCalculationType(
   LR_SOPC21(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
   DTO(sentenceClazz = DetentionAndTrainingOrderSentence::class.java),
   DTO_ORA(sentenceClazz = DetentionAndTrainingOrderSentence::class.java),
-  IPP(isSupported = false, isIndeterminate = true),
-  LIFE(isSupported = false, isIndeterminate = true),
-  LIFE_IPP(isSupported = false, isIndeterminate = true, primaryName = "LIFE/IPP"),
-  LR_IPP(isSupported = false, isIndeterminate = true, recallType = STANDARD_RECALL),
-  MLP(isSupported = false, isIndeterminate = true),
-  DLP(isSupported = false, isIndeterminate = true),
-  ALP(isSupported = false, isIndeterminate = true),
-  LEGACY(isSupported = false, isIndeterminate = true),
-  LR_LIFE(isSupported = false, isIndeterminate = true, recallType = STANDARD_RECALL),
-  HMPL(isSupported = false, isIndeterminate = true),
-  DFL(isSupported = false, isIndeterminate = true),
-  LR_ALP(isSupported = false, isIndeterminate = true, recallType = STANDARD_RECALL),
-  ALP_LASPO(isSupported = false, isIndeterminate = true),
-  LR_DLP(isSupported = false, isIndeterminate = true, recallType = STANDARD_RECALL),
-  LR_MLP(isSupported = false, isIndeterminate = true, recallType = STANDARD_RECALL),
-  SEC94(isSupported = false, isIndeterminate = true),
-  SEC93_03(isSupported = false, isIndeterminate = true),
-  ALP_CODE18(isSupported = false, isIndeterminate = true),
-  DPP(isSupported = false, isIndeterminate = true),
-  SEC272(isSupported = false, isIndeterminate = true),
-  SEC275(isSupported = false, isIndeterminate = true),
-  ALP_CODE21(isSupported = false, isIndeterminate = true),
-  LR_DPP(isSupported = false, isIndeterminate = true, recallType = STANDARD_RECALL),
-  LR_ALP_CDE18(isSupported = false, isIndeterminate = true, recallType = STANDARD_RECALL),
-  LR_ALP_CDE21(isSupported = false, isIndeterminate = true, recallType = STANDARD_RECALL),
-  LR_ALP_LASPO(isSupported = false, isIndeterminate = true, recallType = STANDARD_RECALL),
-  ZMD(isSupported = false, isIndeterminate = true),
-  SEC93(isSupported = false, isIndeterminate = true),
-  TWENTY(isSupported = false, isIndeterminate = true, primaryName = "20"),
-  NP(isSupported = false, isIndeterminate = false),
-  LR_EPP(isSupported = false, isIndeterminate = false, recallType = STANDARD_RECALL),
-  CR(isSupported = false, isIndeterminate = false),
-  BOTUS(isSupported = true, isIndeterminate = false, sentenceClazz = BotusSentence::class.java),
-  AR(isSupported = false, isIndeterminate = false),
-  EPP(isSupported = false, isIndeterminate = false),
-  CUR_ORA(isSupported = false, isIndeterminate = false, recallType = STANDARD_RECALL),
-  A_FINE(isSupported = false, isIndeterminate = false, primaryName = "A/FINE"),
-  CUR(isSupported = false, isIndeterminate = false, recallType = STANDARD_RECALL),
-  CIVIL(isSupported = false, isIndeterminate = false),
-  EXT(isSupported = false, isIndeterminate = false),
-  LR_ES(isSupported = false, isIndeterminate = false, recallType = STANDARD_RECALL),
-  YRO(isSupported = false, isIndeterminate = false),
-  SEC91(isSupported = false, isIndeterminate = false),
-  VOO(isSupported = false, isIndeterminate = false),
-  TISCS(isSupported = false, isIndeterminate = false),
-  STS21(isSupported = false, isIndeterminate = false),
-  STS18(isSupported = false, isIndeterminate = false),
-  UNIDENTIFIED(isSupported = false),
+  IPP(sentenceClazz = IndeterminateSentence::class.java),
+  LIFE(sentenceClazz = IndeterminateSentence::class.java),
+  LIFE_IPP(sentenceClazz = IndeterminateSentence::class.java, primaryName = "LIFE/IPP"),
+  LR_IPP(sentenceClazz = IndeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  MLP(sentenceClazz = IndeterminateSentence::class.java),
+  DLP(sentenceClazz = IndeterminateSentence::class.java),
+  ALP(sentenceClazz = IndeterminateSentence::class.java),
+  LEGACY(sentenceClazz = IndeterminateSentence::class.java),
+  LR_LIFE(sentenceClazz = IndeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  HMPL(sentenceClazz = IndeterminateSentence::class.java),
+  DFL(sentenceClazz = IndeterminateSentence::class.java),
+  LR_ALP(sentenceClazz = IndeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  ALP_LASPO(sentenceClazz = IndeterminateSentence::class.java),
+  LR_DLP(sentenceClazz = IndeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  LR_MLP(sentenceClazz = IndeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  SEC94(sentenceClazz = IndeterminateSentence::class.java),
+  SEC93_03(sentenceClazz = IndeterminateSentence::class.java),
+  ALP_CODE18(sentenceClazz = IndeterminateSentence::class.java),
+  DPP(sentenceClazz = IndeterminateSentence::class.java),
+  SEC272(sentenceClazz = IndeterminateSentence::class.java),
+  SEC275(sentenceClazz = IndeterminateSentence::class.java),
+  ALP_CODE21(sentenceClazz = IndeterminateSentence::class.java),
+  LR_DPP(sentenceClazz = IndeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  LR_ALP_CDE18(sentenceClazz = IndeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  LR_ALP_CDE21(sentenceClazz = IndeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  LR_ALP_LASPO(sentenceClazz = IndeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  ZMD(sentenceClazz = IndeterminateSentence::class.java),
+  SEC93(sentenceClazz = IndeterminateSentence::class.java),
+  TWENTY(sentenceClazz = IndeterminateSentence::class.java, primaryName = "20"),
+  NP(sentenceClazz = UNSUPPORTED),
+  LR_EPP(sentenceClazz = UNSUPPORTED, recallType = STANDARD_RECALL),
+  CR(sentenceClazz = UNSUPPORTED),
+  BOTUS(sentenceClazz = BotusSentence::class.java),
+  AR(sentenceClazz = UNSUPPORTED),
+  EPP(sentenceClazz = UNSUPPORTED),
+  CUR_ORA(sentenceClazz = UNSUPPORTED, recallType = STANDARD_RECALL),
+  A_FINE(sentenceClazz = UNSUPPORTED, primaryName = "A/FINE"),
+  CUR(sentenceClazz = UNSUPPORTED, recallType = STANDARD_RECALL),
+  CIVIL(sentenceClazz = UNSUPPORTED),
+  EXT(sentenceClazz = UNSUPPORTED),
+  LR_ES(sentenceClazz = UNSUPPORTED, recallType = STANDARD_RECALL),
+  YRO(sentenceClazz = UNSUPPORTED),
+  SEC91(sentenceClazz = UNSUPPORTED),
+  VOO(sentenceClazz = UNSUPPORTED),
+  TISCS(sentenceClazz = UNSUPPORTED),
+  STS21(sentenceClazz = UNSUPPORTED),
+  STS18(sentenceClazz = UNSUPPORTED),
+  UNIDENTIFIED(sentenceClazz = UNSUPPORTED),
   ;
 
   companion object {
+
     fun from(sentenceCalculationType: String): SentenceCalculationType =
       entries.firstOrNull { it.primaryName == sentenceCalculationType }
         ?: entries.firstOrNull { it.name == sentenceCalculationType }
         ?: UNIDENTIFIED
 
     fun isSupported(sentenceCalculationType: String): Boolean =
-      try {
-        from(sentenceCalculationType).isSupported
-      } catch (error: IllegalArgumentException) {
-        false
-      }
+      runCatching { from(sentenceCalculationType).sentenceClazz }
+        .getOrNull()
+        .let { clazz ->
+          clazz != UNSUPPORTED && clazz != IndeterminateSentence::class.java
+        }
 
     fun isIndeterminate(sentenceCalculationType: String): Boolean =
-      try {
-        from(sentenceCalculationType).isIndeterminate
-      } catch (error: IllegalArgumentException) {
-        false
-      }
+      runCatching { from(sentenceCalculationType).sentenceClazz }
+        .getOrNull() == IndeterminateSentence::class.java
 
     fun isSDSPlusEligible(sentenceCalculationType: String, eligibilityType: SDSPlusEligibilityType = SDSPlusEligibilityType.NONE): Boolean {
       return when (eligibilityType) {
@@ -160,11 +159,15 @@ enum class SentenceCalculationType(
 
     fun isToreraEligible(sentenceCalculationType: String, eligibilityType: ToreraEligibilityType): Boolean {
       return try {
-        from(sentenceCalculationType).isToreraEligible == eligibilityType
+        from(sentenceCalculationType).toreraEligibilityType == eligibilityType
       } catch (error: IllegalArgumentException) {
         false
       }
     }
+
+    fun isDTOType(sentenceCalculationType: String): Boolean =
+      runCatching { from(sentenceCalculationType).sentenceClazz }
+        .getOrNull() == DetentionAndTrainingOrderSentence::class.java
   }
   enum class SDSPlusEligibilityType {
     NONE,
