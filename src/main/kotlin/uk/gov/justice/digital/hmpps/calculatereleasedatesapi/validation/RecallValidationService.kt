@@ -19,7 +19,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.FTR_14_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.temporal.ChronoUnit.MONTHS
 
@@ -84,8 +83,8 @@ class RecallValidationService(
   ): Triple<Int, Boolean, Boolean> {
     val recallLength = ftrDetails.recallLength
     val bookingsSentenceTypes = sentencesAndOffences.map { from(it.sentenceCalculationType) }
-    val has14DayFTRSentence = bookingsSentenceTypes.any { it == FTR_14_ORA }
-    val has28DayFTRSentence = SentenceCalculationType.entries.any { it.isFixedTermRecall && it != FTR_14_ORA && bookingsSentenceTypes.contains(it) }
+    val has14DayFTRSentence = bookingsSentenceTypes.any { it == SentenceCalculationType.FTR_14_ORA }
+    val has28DayFTRSentence = SentenceCalculationType.entries.any { it.recallType?.isFixedTermRecall ?: false && it != SentenceCalculationType.FTR_14_ORA && bookingsSentenceTypes.contains(it) }
     return Triple(recallLength, has14DayFTRSentence, has28DayFTRSentence)
   }
 
