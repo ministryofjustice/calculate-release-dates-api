@@ -12,5 +12,4 @@ data class FeatureToggles(
   var botusConsecutiveJourney: Boolean = false,
   var hdc365: Boolean = false,
   var externalMovementsEnabled: Boolean = false,
-  var adjustmentsAfterTrancheEnabled: Boolean = false,
 )
