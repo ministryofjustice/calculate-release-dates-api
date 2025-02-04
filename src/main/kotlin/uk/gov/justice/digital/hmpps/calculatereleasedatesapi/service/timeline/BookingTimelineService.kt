@@ -127,9 +127,7 @@ class BookingTimelineService(
           releasedSentenceGroups.flatMap { it.sentences },
         )
 
-        if (featureToggles.adjustmentsAfterTrancheEnabled) {
-          latestCalculation = timelineAdjustmentService.applyTrancheAdjustmentLogic(latestCalculation, adjustments, trancheAndCommencement)
-        }
+        latestCalculation = timelineAdjustmentService.applyTrancheAdjustmentLogic(latestCalculation, adjustments, trancheAndCommencement)
       }
 
       return CalculationOutput(

@@ -75,11 +75,9 @@ feature-toggles:
   sds40-consecutive-manual-journey: true
   hdc365: true
   externalMovementsEnabled: true
-  adjustmentsAfterTrancheEnabled: true
 
 hdced4:
   hdc4-commencement-date: 2025-01-01
-
 
 release-point-multipliers:
   earlyReleasePoint: 0.4

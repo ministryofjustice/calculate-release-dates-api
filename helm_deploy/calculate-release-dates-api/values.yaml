@@ -23,7 +23,6 @@ generic-service:
     HMPPS_SQS_USE_WEB_TOKEN: "true"
     HDC_365_FEATURE_TOGGLE: "true"
     BOTUS_CONSECUTIVE_JOURNEY_FEATURE_TOGGLE: "true"
-    ADJUSTMENTS_AFTER_TRANCHE_FEATURE_TOGGLE: "true"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
