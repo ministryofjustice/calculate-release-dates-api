@@ -116,15 +116,17 @@ class HdcedCalculator(
       if (!featureToggles.hdc365) {
         setToPreHdc365Values(sentenceCalculation)
       } else {
-        applyHdc365Rules(sentenceCalculation)
+        applyHdc365Rules(sentenceCalculation, params)
       }
     }
   }
 
-  private fun applyHdc365Rules(sentenceCalculation: SentenceCalculation) {
-    if (sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+  private fun applyHdc365Rules(sentenceCalculation: SentenceCalculation, params: HdcedParams) {
+    val preCommencement = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!.minusDays(params.addedDays)
+    val postCommencement = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!.minusDays(params.addedDays)
+    if (preCommencement.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
       setToPreHdc365Values(sentenceCalculation)
-    } else if (sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+    } else if (postCommencement.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
       addHdc365CommencementDateRule(sentenceCalculation)
       sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!
       sentenceCalculation.homeDetentionCurfewEligibilityDate = ImportantDates.HDC_365_COMMENCEMENT_DATE
