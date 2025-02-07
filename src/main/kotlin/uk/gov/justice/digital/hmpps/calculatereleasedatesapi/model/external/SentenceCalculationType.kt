@@ -21,19 +21,18 @@ enum class SentenceCalculationType(
   val sentenceClazz: Class<out AbstractSentence>? = StandardDeterminateSentence::class.java,
   val recallType: RecallType? = null,
   val primaryName: String? = null,
-  val isSDS40Eligible: Boolean = false,
   val toreraEligibilityType: ToreraEligibilityType = ToreraEligibilityType.NONE,
   val sdsPlusEligibilityType: SDSPlusEligibilityType = SDSPlusEligibilityType.NONE,
 ) {
   //region SDS / ORA Sentences
-  ADIMP(isSDS40Eligible = true, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
-  ADIMP_ORA(isSDS40Eligible = true, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
-  YOI(isSDS40Eligible = true, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
-  YOI_ORA(isSDS40Eligible = true, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
-  SEC250(isSDS40Eligible = true, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
-  SEC250_ORA(isSDS40Eligible = true, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
-  SEC91_03(isSDS40Eligible = true),
-  SEC91_03_ORA(isSDS40Eligible = true),
+  ADIMP(sentenceClazz = StandardDeterminateSentence::class.java, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
+  ADIMP_ORA(sentenceClazz = StandardDeterminateSentence::class.java, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
+  YOI(sentenceClazz = StandardDeterminateSentence::class.java, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
+  YOI_ORA(sentenceClazz = StandardDeterminateSentence::class.java, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
+  SEC250(sentenceClazz = StandardDeterminateSentence::class.java, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
+  SEC250_ORA(sentenceClazz = StandardDeterminateSentence::class.java, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
+  SEC91_03(sentenceClazz = StandardDeterminateSentence::class.java),
+  SEC91_03_ORA(sentenceClazz = StandardDeterminateSentence::class.java),
   //endregion
 
   //region Extended Determinate Sentences
@@ -59,11 +58,11 @@ enum class SentenceCalculationType(
   //endregion
 
   //region Standard Recall Sentences
-  LR(recallType = STANDARD_RECALL, isSDS40Eligible = true),
-  LR_ORA(recallType = STANDARD_RECALL, isSDS40Eligible = true),
-  LR_YOI_ORA(recallType = STANDARD_RECALL, isSDS40Eligible = true),
-  LR_SEC91_ORA(recallType = STANDARD_RECALL, isSDS40Eligible = true),
-  LRSEC250_ORA(recallType = STANDARD_RECALL, isSDS40Eligible = true),
+  LR(sentenceClazz = StandardDeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  LR_ORA(sentenceClazz = StandardDeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  LR_YOI_ORA(sentenceClazz = StandardDeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  LR_SEC91_ORA(sentenceClazz = StandardDeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  LRSEC250_ORA(sentenceClazz = StandardDeterminateSentence::class.java, recallType = STANDARD_RECALL),
   LR_EDS18(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
   LR_EDS21(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
   LR_EDSU18(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
@@ -75,13 +74,13 @@ enum class SentenceCalculationType(
   //endregion
 
   //region Fixed Term Recall Sentences
-  FTR_14_ORA(recallType = FIXED_TERM_RECALL_14, primaryName = "14FTR_ORA", isSDS40Eligible = true),
-  FTR(recallType = FIXED_TERM_RECALL_28, isSDS40Eligible = true),
-  FTR_ORA(recallType = FIXED_TERM_RECALL_28, isSDS40Eligible = true),
-  FTR_SCH15(recallType = FIXED_TERM_RECALL_28, isSDS40Eligible = true),
-  FTRSCH15_ORA(recallType = FIXED_TERM_RECALL_28, isSDS40Eligible = true),
-  FTRSCH18(recallType = FIXED_TERM_RECALL_28, isSDS40Eligible = true),
-  FTRSCH18_ORA(recallType = FIXED_TERM_RECALL_28, isSDS40Eligible = true),
+  FTR_14_ORA(sentenceClazz = StandardDeterminateSentence::class.java, recallType = FIXED_TERM_RECALL_14, primaryName = "14FTR_ORA"),
+  FTR(sentenceClazz = StandardDeterminateSentence::class.java, recallType = FIXED_TERM_RECALL_28),
+  FTR_ORA(sentenceClazz = StandardDeterminateSentence::class.java, recallType = FIXED_TERM_RECALL_28),
+  FTR_SCH15(sentenceClazz = StandardDeterminateSentence::class.java, recallType = FIXED_TERM_RECALL_28),
+  FTRSCH15_ORA(sentenceClazz = StandardDeterminateSentence::class.java, recallType = FIXED_TERM_RECALL_28),
+  FTRSCH18(sentenceClazz = StandardDeterminateSentence::class.java, recallType = FIXED_TERM_RECALL_28),
+  FTRSCH18_ORA(sentenceClazz = StandardDeterminateSentence::class.java, recallType = FIXED_TERM_RECALL_28),
   //endregion
 
   //region Indeterminate Sentences
@@ -136,18 +135,17 @@ enum class SentenceCalculationType(
   //endregion
 
   //region Unsupported Recall Sentences
-  FTR_HDC(sentenceClazz = UNSUPPORTED, isSDS40Eligible = true, recallType = FIXED_TERM_RECALL_14),
+  FTR_HDC(sentenceClazz = UNSUPPORTED, recallType = FIXED_TERM_RECALL_14),
   LR_ES(sentenceClazz = UNSUPPORTED, recallType = STANDARD_RECALL),
   LR_EPP(sentenceClazz = UNSUPPORTED, recallType = STANDARD_RECALL),
-  FTR_HDC_ORA(recallType = FIXED_TERM_RECALL_28, sentenceClazz = UNSUPPORTED, isSDS40Eligible = true),
+  FTR_HDC_ORA(recallType = FIXED_TERM_RECALL_28, sentenceClazz = UNSUPPORTED),
   FTR_14_HDC_ORA(
     recallType = FIXED_TERM_RECALL_14,
     primaryName = "14FTRHDC_ORA",
     sentenceClazz = UNSUPPORTED,
-    isSDS40Eligible = true,
   ),
-  HDR_ORA(sentenceClazz = UNSUPPORTED, isSDS40Eligible = true, recallType = STANDARD_RECALL_255),
-  HDR(sentenceClazz = UNSUPPORTED, isSDS40Eligible = true, recallType = STANDARD_RECALL_255),
+  HDR_ORA(sentenceClazz = UNSUPPORTED, recallType = STANDARD_RECALL_255),
+  HDR(sentenceClazz = UNSUPPORTED, recallType = STANDARD_RECALL_255),
   CUR(sentenceClazz = UNSUPPORTED, recallType = STANDARD_RECALL_255),
   CUR_ORA(sentenceClazz = UNSUPPORTED, recallType = STANDARD_RECALL_255),
   //endregion
@@ -165,15 +163,21 @@ enum class SentenceCalculationType(
         ?: UNIDENTIFIED
 
     fun isSupported(sentenceCalculationType: String): Boolean =
-      runCatching { from(sentenceCalculationType).sentenceClazz }
-        .getOrNull()
-        .let { clazz ->
-          clazz != UNSUPPORTED && clazz != IndeterminateSentence::class.java
-        }
+      !(isIndeterminate(sentenceCalculationType) || isUnsupported(sentenceCalculationType))
 
     fun isIndeterminate(sentenceCalculationType: String): Boolean =
-      runCatching { from(sentenceCalculationType).sentenceClazz }
-        .getOrNull() == IndeterminateSentence::class.java
+      try {
+        from(sentenceCalculationType).sentenceClazz == IndeterminateSentence::class.java
+      } catch (error: IllegalArgumentException) {
+        false
+      }
+
+    private fun isUnsupported(sentenceCalculationType: String): Boolean =
+      try {
+        from(sentenceCalculationType).sentenceClazz == null
+      } catch (error: IllegalArgumentException) {
+        false
+      }
 
     fun isSDSPlusEligible(sentenceCalculationType: String, eligibilityType: SDSPlusEligibilityType = SDSPlusEligibilityType.NONE): Boolean {
       return when (eligibilityType) {
@@ -185,7 +189,7 @@ enum class SentenceCalculationType(
 
     fun isSDS40Eligible(sentenceCalculationType: String): Boolean =
       try {
-        from(sentenceCalculationType).isSDS40Eligible
+        from(sentenceCalculationType).sentenceClazz == StandardDeterminateSentence::class.java
       } catch (error: IllegalArgumentException) {
         false
       }
