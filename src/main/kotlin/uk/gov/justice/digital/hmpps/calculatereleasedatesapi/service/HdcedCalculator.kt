@@ -116,18 +116,20 @@ class HdcedCalculator(
       if (!featureToggles.hdc365) {
         setToPreHdc365Values(sentenceCalculation)
       } else {
-        applyHdc365Rules(sentenceCalculation)
+        applyHdc365Rules(sentenceCalculation, params)
       }
     }
   }
 
-  private fun applyHdc365Rules(sentenceCalculation: SentenceCalculation) {
-    if (sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+  private fun applyHdc365Rules(sentenceCalculation: SentenceCalculation, params: HdcedParams) {
+    val pre365Hdc365WithoutAddedDays = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_PRE_365_RULES]!!.minusDays(params.addedDays)
+    val post365Hdc365WithoutAddedDays = sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!.minusDays(params.addedDays)
+    if (pre365Hdc365WithoutAddedDays.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
       setToPreHdc365Values(sentenceCalculation)
-    } else if (sentenceCalculation.hdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
+    } else if (post365Hdc365WithoutAddedDays.isBefore(ImportantDates.HDC_365_COMMENCEMENT_DATE)) {
       addHdc365CommencementDateRule(sentenceCalculation)
       sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!
-      sentenceCalculation.homeDetentionCurfewEligibilityDate = ImportantDates.HDC_365_COMMENCEMENT_DATE
+      sentenceCalculation.homeDetentionCurfewEligibilityDate = ImportantDates.HDC_365_COMMENCEMENT_DATE.plusDays(params.addedDays)
       sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED] = sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!
     } else {
       sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate = sentenceCalculation.noDaysToHdcedByCalcType[InterimHdcCalcType.HDCED_POST_365_RULES]!!
