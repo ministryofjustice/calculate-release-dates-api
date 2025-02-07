@@ -18,7 +18,7 @@ private val UNSUPPORTED: Class<out AbstractSentence>? = null
 
 // These SentenceCalculationType values come from NOMIS - they map to offender_sentences.sentence_calc_type in NOMIS
 enum class SentenceCalculationType(
-  val sentenceClazz: Class<out AbstractSentence>? = StandardDeterminateSentence::class.java,
+  val sentenceClazz: Class<out AbstractSentence>?,
   val recallType: RecallType? = null,
   val primaryName: String? = null,
   val toreraEligibilityType: ToreraEligibilityType = ToreraEligibilityType.NONE,
@@ -63,14 +63,14 @@ enum class SentenceCalculationType(
   LR_YOI_ORA(sentenceClazz = StandardDeterminateSentence::class.java, recallType = STANDARD_RECALL),
   LR_SEC91_ORA(sentenceClazz = StandardDeterminateSentence::class.java, recallType = STANDARD_RECALL),
   LRSEC250_ORA(sentenceClazz = StandardDeterminateSentence::class.java, recallType = STANDARD_RECALL),
-  LR_EDS18(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
-  LR_EDS21(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
-  LR_EDSU18(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
-  LR_LASPO_AR(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
-  LR_LASPO_DR(recallType = STANDARD_RECALL, sentenceClazz = ExtendedDeterminateSentence::class.java),
-  LR_SEC236A(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
-  LR_SOPC18(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
-  LR_SOPC21(recallType = STANDARD_RECALL, sentenceClazz = SopcSentence::class.java),
+  LR_EDS18(sentenceClazz = ExtendedDeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  LR_EDS21(sentenceClazz = ExtendedDeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  LR_EDSU18(sentenceClazz = ExtendedDeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  LR_LASPO_AR(sentenceClazz = ExtendedDeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  LR_LASPO_DR(sentenceClazz = ExtendedDeterminateSentence::class.java, recallType = STANDARD_RECALL),
+  LR_SEC236A(sentenceClazz = SopcSentence::class.java, recallType = STANDARD_RECALL),
+  LR_SOPC18(sentenceClazz = SopcSentence::class.java, recallType = STANDARD_RECALL),
+  LR_SOPC21(sentenceClazz = SopcSentence::class.java, recallType = STANDARD_RECALL),
   //endregion
 
   //region Fixed Term Recall Sentences
@@ -140,9 +140,9 @@ enum class SentenceCalculationType(
   LR_EPP(sentenceClazz = UNSUPPORTED, recallType = STANDARD_RECALL),
   FTR_HDC_ORA(recallType = FIXED_TERM_RECALL_28, sentenceClazz = UNSUPPORTED),
   FTR_14_HDC_ORA(
+    sentenceClazz = UNSUPPORTED,
     recallType = FIXED_TERM_RECALL_14,
     primaryName = "14FTRHDC_ORA",
-    sentenceClazz = UNSUPPORTED,
   ),
   HDR_ORA(sentenceClazz = UNSUPPORTED, recallType = STANDARD_RECALL_255),
   HDR(sentenceClazz = UNSUPPORTED, recallType = STANDARD_RECALL_255),
