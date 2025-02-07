@@ -141,6 +141,7 @@ class CalculationTransactionalServiceTest {
   private val nomisCommentService = mock<NomisCommentService>()
   private val bankHolidayService = mock<BankHolidayService>()
   private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
+  private val fixedTermRecallsService = FixedTermRecallsService()
 
   private val fakeSourceData = PrisonApiSourceData(
     emptyList(),
@@ -197,7 +198,7 @@ class CalculationTransactionalServiceTest {
       returnedValidationMessages = myValidationService.validateBookingAfterCalculation(
         calculatedReleaseDates,
         booking,
-      )
+      ).distinct()
     } catch (e: Exception) {
       if (!error.isNullOrEmpty()) {
         assertEquals(error, e.javaClass.simpleName)
@@ -211,12 +212,15 @@ class CalculationTransactionalServiceTest {
       TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
     )
     if (expectedValidationMessage != null) {
-      assertThat(returnedValidationMessages).hasSize(1) // etc
-      assertThat(returnedValidationMessages[0].code.toString()).isEqualTo(expectedValidationMessage)
+      val expectedExceptions = expectedValidationMessage.split("|")
+      assertThat(returnedValidationMessages).hasSize(expectedExceptions.size)
+      expectedExceptions.forEachIndexed { index, exception ->
+        assertThat(returnedValidationMessages[index].code.toString()).isEqualTo(exception)
+      }
     } else {
       val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
       val result = bookingData.first
-      assertEquals(result.dates, calculatedReleaseDates.calculationResult.dates)
+      assertEquals(result.dates.entries.sortedBy { it.key }, calculatedReleaseDates.calculationResult.dates.entries.sortedBy { it.key })
       assertEquals(result.effectiveSentenceLength, calculatedReleaseDates.calculationResult.effectiveSentenceLength)
       if (assertSds40 == true) {
         assertEquals(result.affectedBySds40, calculatedReleaseDates.calculationResult.affectedBySds40)
@@ -683,6 +687,7 @@ class CalculationTransactionalServiceTest {
     val bookingExtractionService = BookingExtractionService(
       hdcedExtractionService,
       sentencesExtractionService,
+      fixedTermRecallsService,
     )
     val timelineCalculator = TimelineCalculator(
       sentenceAdjustedCalculationService,

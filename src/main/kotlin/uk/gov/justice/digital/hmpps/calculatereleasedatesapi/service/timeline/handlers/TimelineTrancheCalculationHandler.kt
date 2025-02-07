@@ -47,7 +47,7 @@ class TimelineTrancheCalculationHandler(
         }
 
         if (requiresTranchingNow(timelineCalculationDate, timelineTrackingData)) {
-          beforeTrancheCalculation = timelineCalculator.getLatestCalculation(allSentences, offender)
+          beforeTrancheCalculation = timelineCalculator.getLatestCalculation(allSentences, offender, timelineTrackingData.returnToCustodyDate)
           currentSentenceGroup.forEach {
             it.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
               multiplierFnForDate(timelineCalculationDate, trancheCommencementDate)
