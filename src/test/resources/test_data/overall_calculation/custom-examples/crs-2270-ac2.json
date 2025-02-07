@@ -1,0 +1,36 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2024-04-02"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 2,
+          "MONTHS": 10
+        }
+      },
+      "sentencedAt": "2024-10-15"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2024-10-15",
+        "numberOfDays": 2,
+        "fromDate": "2024-10-13",
+        "toDate": "2024-10-14"
+      }
+    ],
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "appliesToSentencesFrom": "2025-01-12",
+        "numberOfDays": 15
+      }
+    ]
+  }
+}

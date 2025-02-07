@@ -1,0 +1,35 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2024-04-02"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 12
+        }
+      },
+      "sentencedAt": "2025-05-25"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2025-05-25",
+        "numberOfDays": 120,
+        "fromDate": "2025-01-24",
+        "toDate": "2025-05-24"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "numberOfDays": 5,
+        "appliesToSentencesFrom": "2025-05-26"
+      }
+    ]
+  }
+}
