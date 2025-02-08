@@ -11,7 +11,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSen
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.MONTHS
+import kotlin.math.abs
 
 @Service
 class FixedTermRecallsService {
@@ -40,8 +42,8 @@ class FixedTermRecallsService {
 
   fun hasHomeDetentionCurfew(dates: Map<ReleaseDateType, LocalDate>): Boolean {
     val postRecallReleaseDate = dates[PRRD] ?: return false
-    val latestDateEntry = dates.filterKeys { it == CRD || it == ARD || it == NPD }.maxByOrNull { it.value }
-    return postRecallReleaseDate != dates[CRD] && latestDateEntry != null && postRecallReleaseDate.isBefore(latestDateEntry.value)
+    val latestDateEntry = dates.filterKeys { it == CRD || it == ARD || it == NPD }.maxByOrNull { it.value } ?: return false
+    return postRecallReleaseDate != dates[CRD] && postRecallReleaseDate.isBefore(latestDateEntry.value)
   }
 
   private fun getFixedTermRecallSentences(sentences: List<CalculableSentence>): List<CalculableSentence> {
@@ -65,25 +67,8 @@ class FixedTermRecallsService {
     return fixedTermRecallSentences.filterNot { it.sentencedAt == sledSentence?.sentencedAt }.lastOrNull()
   }
 
-  private fun getLatestReleaseDate(currentSentence: CalculableSentence, previousSentence: CalculableSentence) =
-    if (currentSentence.sentenceCalculation.expiryDate > previousSentence.sentenceCalculation.expiryDate) {
-      previousSentence.sentenceCalculation.releaseDate
-    } else {
-      currentSentence.sentenceCalculation.releaseDate
-    }
-
   private fun getRecallSentenceDuration(sentence: CalculableSentence): Long =
     if (sentence.recallType == FIXED_TERM_RECALL_14) 14 else 28
-
-  private fun getLatestSentenceForDuration(currentSentence: CalculableSentence, previousSentence: CalculableSentence) =
-    if (
-      (currentSentence.recallType == FIXED_TERM_RECALL_14 && currentSentence.durationIsLessThan(12, MONTHS)) ||
-      (currentSentence.recallType == FIXED_TERM_RECALL_28 && currentSentence.durationIsGreaterThan(12, MONTHS))
-    ) {
-      currentSentence
-    } else {
-      previousSentence
-    }
 
   private fun findMixedDurationReleaseDate(
     sledSentence: CalculableSentence,
@@ -94,15 +79,26 @@ class FixedTermRecallsService {
       return sledSentence.sentenceCalculation.releaseDate
     }
 
+    val (twelveMonthReleaseDate, elevenMonthReleaseDate) =
+      if (sledSentence.durationIsLessThan(12, MONTHS))
+        previousSentence.sentenceCalculation.releaseDate to sledSentence.sentenceCalculation.releaseDate
+      else
+        sledSentence.sentenceCalculation.releaseDate to previousSentence.sentenceCalculation.releaseDate
+
+    val daysToTwelveMonthRelease =
+      ChronoUnit.DAYS.between(returnToCustodyDate, twelveMonthReleaseDate)
+
     val recallDuration = getRecallSentenceDuration(sledSentence)
-    val recallDatePlusRecallDuration = returnToCustodyDate.plusDays(recallDuration)
+    val adjustedRecallDate = returnToCustodyDate.plusDays(recallDuration)
 
-    val latestSentenceForDuration = getLatestSentenceForDuration(sledSentence, previousSentence)
+    if (abs(daysToTwelveMonthRelease) < 14) {
+      return if (adjustedRecallDate < elevenMonthReleaseDate) adjustedRecallDate else elevenMonthReleaseDate
+    }
 
-    return if (recallDatePlusRecallDuration > latestSentenceForDuration.sentenceCalculation.releaseDate) {
-      latestSentenceForDuration.sentenceCalculation.releaseDate
+    return if (adjustedRecallDate <= twelveMonthReleaseDate) {
+      adjustedRecallDate
     } else {
-      getLatestReleaseDate(sledSentence, previousSentence)
+      twelveMonthReleaseDate
     }
   }
 }
