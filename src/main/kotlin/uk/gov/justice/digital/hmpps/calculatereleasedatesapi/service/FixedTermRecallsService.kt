@@ -80,10 +80,11 @@ class FixedTermRecallsService {
     }
 
     val (twelveMonthReleaseDate, elevenMonthReleaseDate) =
-      if (sledSentence.durationIsLessThan(12, MONTHS))
+      if (sledSentence.durationIsLessThan(12, MONTHS)) {
         previousSentence.sentenceCalculation.releaseDate to sledSentence.sentenceCalculation.releaseDate
-      else
+      } else {
         sledSentence.sentenceCalculation.releaseDate to previousSentence.sentenceCalculation.releaseDate
+      }
 
     val daysToTwelveMonthRelease =
       ChronoUnit.DAYS.between(returnToCustodyDate, twelveMonthReleaseDate)
