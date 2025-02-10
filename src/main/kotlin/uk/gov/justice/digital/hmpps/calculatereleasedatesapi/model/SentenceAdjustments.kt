@@ -23,7 +23,7 @@ data class SentenceAdjustments(
     return ualDuringCustody - deductions
   }
 
-  fun adjustmentsForInitalRelease(): Long {
+  fun adjustmentsForInitialRelease(): Long {
     return adjustmentsForInitialReleaseWithoutAwarded() + awardedDuringCustody - servedAdaDays
   }
 

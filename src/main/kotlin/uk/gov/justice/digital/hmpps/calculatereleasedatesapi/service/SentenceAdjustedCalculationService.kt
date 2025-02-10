@@ -277,7 +277,7 @@ class SentenceAdjustedCalculationService(
         .minusDays(ONE)
 
       sentenceCalculation.notionalConditionalReleaseDate = unAdjustedNotionalConditionalReleaseDate.plusDays(
-        sentenceCalculation.adjustments.adjustmentsForInitalRelease(),
+        sentenceCalculation.adjustments.adjustmentsForInitialRelease(),
       )
 
       val dayAfterNotionalConditionalReleaseDate =

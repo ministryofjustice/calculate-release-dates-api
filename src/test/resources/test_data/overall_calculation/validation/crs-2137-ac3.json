@@ -1,0 +1,40 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "recallType": "FIXED_TERM_RECALL_28",
+      "offence": {
+        "committedAt": "2023-12-11",
+        "offenceCode": "SX03220"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 12
+        }
+      },
+      "sentencedAt": "2023-12-11"
+    },
+    {
+      "recallType": "FIXED_TERM_RECALL_28",
+      "offence": {
+        "committedAt": "2024-02-06",
+        "offenceCode": "SX03220"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 11
+        }
+      },
+      "sentencedAt": "2024-02-06"
+    }
+  ],
+  "returnToCustodyDate": "2024-12-02",
+  "fixedTermRecallDetails": {
+    "bookingId": 1234567,
+    "returnToCustodyDate": "2024-12-02",
+    "recallLength": 28
+  }
+}

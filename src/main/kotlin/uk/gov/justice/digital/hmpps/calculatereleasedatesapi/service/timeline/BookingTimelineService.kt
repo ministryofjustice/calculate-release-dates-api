@@ -113,7 +113,9 @@ class BookingTimelineService(
         currentSentenceGroup.clear()
       }
       latestCalculation =
-        timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender).copy(
+        timelineCalculator.getLatestCalculation(
+          releasedSentenceGroups.map { it.sentences }, offender, returnToCustodyDate,
+        ).copy(
           sdsEarlyReleaseAllocatedTranche = trancheAndCommencement.first,
           sdsEarlyReleaseTranche = trancheAndCommencement.first,
         )
@@ -189,7 +191,7 @@ class BookingTimelineService(
           }
           currentSentenceGroup.clear()
         }
-        latestCalculation = timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender)
+        latestCalculation = timelineCalculator.getLatestCalculation(releasedSentenceGroups.map { it.sentences }, offender, returnToCustodyDate)
       }
       if (licenseSentences.isNotEmpty()) {
         licenseSentences.removeIf {

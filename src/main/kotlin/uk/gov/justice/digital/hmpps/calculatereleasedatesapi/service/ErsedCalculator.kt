@@ -82,7 +82,7 @@ class ErsedCalculator(val ersedConfiguration: ErsedConfiguration) {
       sentence.sentencedAt
         .plusDays(ceil(daysUntilRelease.toDouble() / 2).toLong())
     val minimumEffectiveErsed = unadjustedErsed
-      .plusDays(sentenceCalculation.adjustments.adjustmentsForInitalRelease())
+      .plusDays(sentenceCalculation.adjustments.adjustmentsForInitialRelease())
     val minimumEffectiveErsedReleaseCalcBreakdown = ReleaseDateCalculationBreakdown(
       rules = setOf(CalculationRule.ERSED_MIN_EFFECTIVE_DATE),
       releaseDate = minimumEffectiveErsed,

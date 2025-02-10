@@ -1,0 +1,70 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "recallType": "FIXED_TERM_RECALL_14",
+      "offence": {
+        "committedAt": "2024-09-12",
+        "offenceCode": "DX03220"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 7
+        }
+      },
+      "sentencedAt": "2024-09-12",
+      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8111"
+    },
+    {
+      "recallType": "FIXED_TERM_RECALL_14",
+      "offence": {
+        "committedAt": "2024-09-12",
+        "offenceCode": "DX03220"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2024-09-12",
+      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8112",
+      "consecutiveSentenceUUIDs": [
+        "9824a90b-ab4b-360d-8003-a7c8f53b8111"
+      ]
+    },
+    {
+      "recallType": "FIXED_TERM_RECALL_14",
+      "offence": {
+        "committedAt": "2024-12-20",
+        "offenceCode": "DX03220"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 11
+        }
+      },
+      "sentencedAt": "2024-12-20",
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
+      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8113"
+    }
+  ],
+  "returnToCustodyDate": "2025-10-03",
+  "fixedTermRecallDetails": {
+    "bookingId": 1234567,
+    "returnToCustodyDate": "2025-10-03",
+    "recallLength": 14
+  },
+  "adjustments": {
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "appliesToSentencesFrom": "2025-10-01",
+        "numberOfDays": 2,
+        "fromDate": "2024-10-01",
+        "toDate": "2025-10-02"
+      }
+    ]
+  }
+}

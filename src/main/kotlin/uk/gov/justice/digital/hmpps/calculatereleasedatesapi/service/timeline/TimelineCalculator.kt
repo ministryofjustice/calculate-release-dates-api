@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Term
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingExtractionService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentenceAdjustedCalculationService
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 @Service
@@ -20,7 +21,7 @@ class TimelineCalculator(
   private val bookingExtractionService: BookingExtractionService,
 ) {
 
-  fun getLatestCalculation(sentences: List<List<CalculableSentence>>, offender: Offender): CalculationResult {
+  fun getLatestCalculation(sentences: List<List<CalculableSentence>>, offender: Offender, returnToCustodyDate: LocalDate? = null): CalculationResult {
     calculateUnusedAdas(sentences)
     sentences.flatten().forEach {
       sentenceAdjustedCalculationService.calculateDatesFromAdjustments(it, offender)
@@ -35,6 +36,7 @@ class TimelineCalculator(
       sentences.flatten(),
       sentences,
       offender,
+      returnToCustodyDate,
     )
   }
 
