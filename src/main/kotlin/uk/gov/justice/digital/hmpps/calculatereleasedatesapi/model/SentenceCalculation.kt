@@ -23,7 +23,7 @@ data class SentenceCalculation(
   val adjustedHistoricDeterminateReleaseDate: LocalDate
     get() {
       val date = unadjustedReleaseDate.unadjustedHistoricDeterminateReleaseDate
-        .plusDays(adjustments.adjustmentsForInitalRelease())
+        .plusDays(adjustments.adjustmentsForInitialRelease())
         .minusDays(adjustments.unusedAdaDays)
       return if (date.isAfter(sentence.sentencedAt)) {
         date
@@ -65,7 +65,7 @@ data class SentenceCalculation(
 
   fun isImmediateRelease(): Boolean = sentence.sentencedAt == adjustedDeterminateReleaseDate
 
-  fun isImmediateCustodyRelease(): Boolean = isImmediateRelease() && (1 - adjustments.adjustmentsForInitalRelease()) == releaseDateCalculation.numberOfDaysToDeterminateReleaseDate.toLong()
+  fun isImmediateCustodyRelease(): Boolean = isImmediateRelease() && (1 - adjustments.adjustmentsForInitialRelease()) == releaseDateCalculation.numberOfDaysToDeterminateReleaseDate.toLong()
 
   val numberOfDaysToAddToLicenceExpiryDate: Int
     get() {
@@ -134,7 +134,7 @@ data class SentenceCalculation(
         return null
       }
       return unadjustedExtendedDeterminateParoleEligibilityDate!!
-        .plusDays(adjustments.adjustmentsForInitalRelease())
+        .plusDays(adjustments.adjustmentsForInitialRelease())
     }
 
   val earlyReleaseSchemeEligibilityDate: LocalDate?

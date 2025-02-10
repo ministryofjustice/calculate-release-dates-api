@@ -43,17 +43,19 @@ import java.time.temporal.ChronoUnit.MONTHS
 class BookingExtractionService(
   val hdcedExtractionService: HdcedExtractionService,
   val extractionService: SentencesExtractionService,
+  val fixedTermRecallsService: FixedTermRecallsService,
 ) {
 
   fun extract(
     sentences: List<CalculableSentence>,
     sentenceGroups: List<List<CalculableSentence>>,
     offender: Offender,
+    returnToCustodyDate: LocalDate? = null,
   ): CalculationResult = when (sentences.size) {
     0 -> throw NoSentencesProvidedException("At least one sentence must be provided")
     1 -> extractSingle(sentences[0])
     else -> {
-      extractMultiple(sentences, sentenceGroups, offender)
+      extractMultiple(sentences, sentenceGroups, offender, returnToCustodyDate)
     }
   }
 
@@ -139,7 +141,12 @@ class BookingExtractionService(
   /**
    *  Method applies business logic for when there are multiple sentences in a booking and the impact each may have on one another
    */
-  private fun extractMultiple(sentences: List<CalculableSentence>, sentenceGroups: List<List<CalculableSentence>>, offender: Offender): CalculationResult {
+  private fun extractMultiple(
+    sentences: List<CalculableSentence>,
+    sentenceGroups: List<List<CalculableSentence>>,
+    offender: Offender,
+    returnToCustodyDate: LocalDate?,
+  ): CalculationResult {
     val dates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val otherDates: MutableMap<ReleaseDateType, LocalDate> = mutableMapOf()
     val breakdownByReleaseDateType: MutableMap<ReleaseDateType, ReleaseDateCalculationBreakdown> = mutableMapOf()
@@ -322,15 +329,14 @@ class BookingExtractionService(
     )
 
     if (mostRecentSentencesByReleaseDate.any { it.isRecall() }) {
-      dates[PRRD] = latestReleaseDate
-      val filteredReleaseDates = dates.filter { (key, _) -> key == CRD || key == ARD || key == NPD }
-      val latestDateEntry = filteredReleaseDates.maxByOrNull { (_, value) -> value }
+      dates[PRRD] = fixedTermRecallsService.calculatePRRD(
+        sentences,
+        latestExpiryDate,
+        returnToCustodyDate,
+        latestReleaseDate,
+      )
 
-      if (
-        dates[CRD] == dates[PRRD] ||
-        (dates[PRRD] != null && (latestDateEntry == null || dates[PRRD]?.isAfter(latestDateEntry.value) == true))
-
-      ) {
+      if (!fixedTermRecallsService.hasHomeDetentionCurfew(dates)) {
         dates.remove(HDCED)
       }
     }
