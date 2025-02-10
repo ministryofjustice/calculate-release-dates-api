@@ -183,7 +183,7 @@ class HintTextTest {
   private val bookingExtractionService = BookingExtractionService(
     hdcedExtractionService,
     sentencesExtractionService,
-    FixedTermRecallsService(featureToggles = FeatureToggles(revisedFixedTermRecallsRules = true))
+    FixedTermRecallsService(featureToggles = FeatureToggles(revisedFixedTermRecallsRules = true)),
   )
   private val releasePointMultiplierConfigurationForTests = releasePointMultiplierConfigurationForTests()
 
