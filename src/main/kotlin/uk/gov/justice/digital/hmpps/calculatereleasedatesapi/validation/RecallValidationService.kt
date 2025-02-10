@@ -154,7 +154,9 @@ class RecallValidationService(
 
     val maxFtrSentence = ftrSentences.maxBy { it.getLengthInDays() }
     val maxFtrSentenceIsLessThan12Months = maxFtrSentence.durationIsLessThan(TWELVE, MONTHS)
-    val ftr14NoUnder12MonthDuration = ftr14Sentences.none { it.durationIsLessThan(TWELVE, MONTHS) }
+
+    val ftr14NoUnder12MonthDuration = if (featureToggles.revisedFixedTermRecallsRules) ftr14Sentences.none { it.durationIsLessThan(TWELVE, MONTHS) } else true
+
     val ftrSentenceExistsInConsecutiveChain = ftrSentences.any { it.consecutiveSentenceUUIDs.isNotEmpty() } ||
       booking.sentences.any {
         it.consecutiveSentenceUUIDs.toSet().intersect(ftrSentencesUuids.toSet()).isNotEmpty()

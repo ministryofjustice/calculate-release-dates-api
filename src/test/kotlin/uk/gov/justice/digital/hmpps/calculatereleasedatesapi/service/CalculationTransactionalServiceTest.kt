@@ -141,7 +141,7 @@ class CalculationTransactionalServiceTest {
   private val nomisCommentService = mock<NomisCommentService>()
   private val bankHolidayService = mock<BankHolidayService>()
   private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
-  private val fixedTermRecallsService = FixedTermRecallsService()
+  private val fixedTermRecallsService = FixedTermRecallsService(featureToggles = FeatureToggles(revisedFixedTermRecallsRules = true))
 
   private val fakeSourceData = PrisonApiSourceData(
     emptyList(),
@@ -784,7 +784,7 @@ class CalculationTransactionalServiceTest {
     sentencesExtractionService: SentencesExtractionService,
     trancheConfiguration: SDS40TrancheConfiguration,
   ): ValidationService {
-    val featureToggles = FeatureToggles(sdsEarlyRelease = true, sdsEarlyReleaseHints = false, sds40ConsecutiveManualJourney = true, externalMovementsEnabled = false)
+    val featureToggles = FeatureToggles(sdsEarlyRelease = true, sdsEarlyReleaseHints = false, sds40ConsecutiveManualJourney = true, externalMovementsEnabled = false, revisedFixedTermRecallsRules = true)
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService()
@@ -824,6 +824,7 @@ class CalculationTransactionalServiceTest {
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
       dateValidationService = dateValidationService,
+      featureToggles = featureToggles,
     )
   }
 
