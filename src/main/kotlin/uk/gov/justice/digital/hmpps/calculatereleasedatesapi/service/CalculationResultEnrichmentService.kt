@@ -182,10 +182,6 @@ class CalculationResultEnrichmentService(
           hints += ReleaseDateHint("HDCED adjusted for the PRRD of a recall")
         }
       }
-
-      if (featureToggles.hdc365) {
-        hdc365Hints(hdcRules, hints)
-      }
     }
     if (displayDateBeforeMtd(date, sentencesAndOffences, releaseDates)) {
       hints += ReleaseDateHint("The Detention and training order (DTO) release date is later than the Home detention curfew eligibility date (HDCED)")
@@ -193,12 +189,6 @@ class CalculationResultEnrichmentService(
     hints
   } else {
     emptyList()
-  }
-
-  private fun hdc365Hints(hdcRules: Set<CalculationRule>, hints: MutableList<ReleaseDateHint>) {
-    if (CalculationRule.HDCED_ADJUSTED_TO_365_COMMENCEMENT in hdcRules) {
-      hints += ReleaseDateHint("365-day HDC rules apply")
-    }
   }
 
   private fun mtdHints(type: ReleaseDateType, date: LocalDate, sentencesAndOffences: List<SentenceAndOffence>?, releaseDates: Map<ReleaseDateType, ReleaseDate>): ReleaseDateHint? {
