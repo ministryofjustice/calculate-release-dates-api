@@ -35,7 +35,7 @@ enum class SentenceCalculationType(
   //endregion
 
   //region Extended Determinate Sentences
-  LASPO_AR(sentenceType = SentenceType.ExtendedDeterminate),
+  LASPO_AR(sentenceType = ExtendedDeterminate),
   LASPO_DR(sentenceType = ExtendedDeterminate),
   EDS18(sentenceType = ExtendedDeterminate),
   EDS21(sentenceType = ExtendedDeterminate),
