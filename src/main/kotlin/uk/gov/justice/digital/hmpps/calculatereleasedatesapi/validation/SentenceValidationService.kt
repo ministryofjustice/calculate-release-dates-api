@@ -98,10 +98,10 @@ class SentenceValidationService(
 
   private fun validateDuration(sentencesAndOffence: SentenceAndOffence): List<ValidationMessage> {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
-    return if (sentenceCalculationType.sentenceClazz == StandardDeterminateSentence::class.java ||
-      sentenceCalculationType.sentenceClazz == AFineSentence::class.java ||
-      sentenceCalculationType.sentenceClazz == DetentionAndTrainingOrderSentence::class.java ||
-      sentenceCalculationType.sentenceClazz == BotusSentence::class.java
+    return if (sentenceCalculationType.sentenceType.sentenceClazz == StandardDeterminateSentence::class.java ||
+      sentenceCalculationType.sentenceType.sentenceClazz == AFineSentence::class.java ||
+      sentenceCalculationType.sentenceType.sentenceClazz == DetentionAndTrainingOrderSentence::class.java ||
+      sentenceCalculationType.sentenceType.sentenceClazz == BotusSentence::class.java
     ) {
       validateSingleTermDuration(sentencesAndOffence)
     } else {
@@ -181,7 +181,7 @@ class SentenceValidationService(
       )
     } else {
       val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
-      if (sentenceCalculationType.sentenceClazz == ExtendedDeterminateSentence::class.java) {
+      if (sentenceCalculationType.sentenceType.sentenceClazz == ExtendedDeterminateSentence::class.java) {
         val duration =
           Period.of(
             licenceTerms[0].years,
@@ -207,7 +207,7 @@ class SentenceValidationService(
             ),
           )
         }
-      } else if (sentenceCalculationType.sentenceClazz == SopcSentence::class.java) {
+      } else if (sentenceCalculationType.sentenceType.sentenceClazz == SopcSentence::class.java) {
         val duration =
           Period.of(
             licenceTerms[0].years,

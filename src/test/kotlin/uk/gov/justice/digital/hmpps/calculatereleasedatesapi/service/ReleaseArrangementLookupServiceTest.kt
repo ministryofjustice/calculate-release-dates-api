@@ -333,7 +333,7 @@ class ReleaseArrangementLookupServiceTest {
 
     val unsupportedSentence = nonSDSPlusSentenceAndOffenceFourYears.copy(
       sentenceCalculationType = SentenceCalculationType.entries.find {
-        it.sentenceClazz != StandardDeterminateSentence::class.java
+        it.sentenceType.sentenceClazz != StandardDeterminateSentence::class.java
       }!!.name,
     )
     val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(unsupportedSentence))
@@ -865,7 +865,7 @@ class ReleaseArrangementLookupServiceTest {
 
     @JvmStatic
     fun provideEligibleSentenceTypes(): List<SentenceCalculationType> {
-      return SentenceCalculationType.entries.filter { it.sentenceClazz == StandardDeterminateSentence::class.java }
+      return SentenceCalculationType.entries.filter { it.sentenceType.sentenceClazz == StandardDeterminateSentence::class.java }
     }
   }
 }
