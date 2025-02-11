@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
@@ -35,7 +35,7 @@ class FineValidationService(private val validationUtilities: ValidationUtilities
 
   private fun getFineSentences(sourceData: PrisonApiSourceData): List<SentenceAndOffence> {
     return sourceData.sentenceAndOffences.filter {
-      SentenceCalculationType.from(it.sentenceCalculationType).sentenceClazz == AFineSentence::class.java
+      SentenceCalculationType.from(it.sentenceCalculationType).sentenceType == SentenceType.AFine
     }
   }
 
@@ -65,6 +65,6 @@ class FineValidationService(private val validationUtilities: ValidationUtilities
   }
 
   private fun isFineSentence(sentencesAndOffence: SentenceAndOffence): Boolean {
-    return SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType).sentenceClazz == AFineSentence::class.java
+    return SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType).sentenceType == SentenceType.AFine
   }
 }
