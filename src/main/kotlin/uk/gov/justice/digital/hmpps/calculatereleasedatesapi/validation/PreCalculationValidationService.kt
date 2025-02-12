@@ -65,7 +65,7 @@ class PreCalculationValidationService(
   fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffence>): List<ValidationMessage> {
     val supportedCategories = listOf("2003", "2020")
     val validationMessages = sentencesAndOffences.filter {
-      !SentenceCalculationType.isSupported(it.sentenceCalculationType) || !supportedCategories.contains(it.sentenceCategory)
+      !SentenceCalculationType.isCalculable(it.sentenceCalculationType) || !supportedCategories.contains(it.sentenceCategory)
     }
       .map {
         ValidationMessage(
