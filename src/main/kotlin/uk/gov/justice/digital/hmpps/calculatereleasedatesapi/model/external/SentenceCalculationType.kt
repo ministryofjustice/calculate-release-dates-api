@@ -123,7 +123,6 @@ enum class SentenceCalculationType(
   CR(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE),
   AR(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE),
   EPP(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE),
-  A_FINE(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE, primaryName = "A/FINE"),
   CIVIL(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE),
   EXT(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE),
   YRO(sentenceType = UNIMPLEMENTED_SENTENCE_TYPE),
