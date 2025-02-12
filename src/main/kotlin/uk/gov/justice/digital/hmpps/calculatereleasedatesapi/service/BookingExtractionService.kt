@@ -595,7 +595,7 @@ class BookingExtractionService(
 
       // CRS-2260 Added breakdown != null check - this can be null in this BOTUS scenario via the full-validation endpoint (fullValidationFromBookingData)
       if (topUpDate != null && breakdown != null && topUpDate.isAfter(latestLicenseExpiryDate)) {
-         topUpDate to breakdown
+        topUpDate to breakdown
       } else {
         null
       }
