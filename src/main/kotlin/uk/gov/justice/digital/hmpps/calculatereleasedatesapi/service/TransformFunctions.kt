@@ -147,7 +147,7 @@ fun transform(
     }
 
     val sentenceCalculationType = SentenceCalculationType.from(sentence.sentenceCalculationType)
-    when (sentenceCalculationType.sentenceType.sentenceClazz) {
+    when (val typeClazz: Class<out AbstractSentence>? = sentenceCalculationType.sentenceType?.sentenceClazz) {
       StandardDeterminateSentence::class.java -> {
         StandardDeterminateSentence(
           sentencedAt = sentence.sentenceDate,
@@ -213,7 +213,7 @@ fun transform(
         val imprisonmentTerm = sentence.terms.first { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
         val licenseTerm = sentence.terms.first { it.code == SentenceTerms.LICENCE_TERM_CODE }
 
-        when (sentenceCalculationType.sentenceType.sentenceClazz) {
+        when (typeClazz) {
           ExtendedDeterminateSentence::class.java -> {
             ExtendedDeterminateSentence(
               sentencedAt = sentence.sentenceDate,

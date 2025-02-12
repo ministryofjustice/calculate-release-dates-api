@@ -16,7 +16,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggl
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -333,7 +332,7 @@ class ReleaseArrangementLookupServiceTest {
 
     val unsupportedSentence = nonSDSPlusSentenceAndOffenceFourYears.copy(
       sentenceCalculationType = SentenceCalculationType.entries.find {
-        it.sentenceType.sentenceClazz != StandardDeterminateSentence::class.java
+        !SentenceCalculationType.isSDS40Eligible(it.name)
       }!!.name,
     )
     val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(unsupportedSentence))
@@ -865,7 +864,7 @@ class ReleaseArrangementLookupServiceTest {
 
     @JvmStatic
     fun provideEligibleSentenceTypes(): List<SentenceCalculationType> {
-      return SentenceCalculationType.entries.filter { it.sentenceType.sentenceClazz == StandardDeterminateSentence::class.java }
+      return SentenceCalculationType.entries.filter { SentenceCalculationType.isSDS40Eligible(it.name) }
     }
   }
 }

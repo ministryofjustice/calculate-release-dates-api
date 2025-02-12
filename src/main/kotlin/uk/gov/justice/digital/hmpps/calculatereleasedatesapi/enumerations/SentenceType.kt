@@ -8,13 +8,20 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeter
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 
-enum class SentenceType(val sentenceClazz: Class<out AbstractSentence>? = null) {
-  StandardDeterminate(StandardDeterminateSentence::class.java),
-  ExtendedDeterminate(ExtendedDeterminateSentence::class.java),
-  Sopc(SopcSentence::class.java),
-  AFine(AFineSentence::class.java),
-  DetentionAndTrainingOrder(DetentionAndTrainingOrderSentence::class.java),
-  Botus(BotusSentence::class.java),
-  Indeterminate(),
-  Unsupported(),
+enum class TermType {
+  IMPRISONMENT,
+  LICENCE,
+}
+
+enum class SentenceType(
+  val sentenceClazz: Class<out AbstractSentence>? = null,
+  val supportedTerms: Set<TermType> = emptySet(),
+) {
+  StandardDeterminate(StandardDeterminateSentence::class.java, setOf(TermType.IMPRISONMENT)),
+  ExtendedDeterminate(ExtendedDeterminateSentence::class.java, setOf(TermType.IMPRISONMENT, TermType.LICENCE)),
+  Sopc(SopcSentence::class.java, setOf(TermType.IMPRISONMENT, TermType.LICENCE)),
+  AFine(AFineSentence::class.java, setOf(TermType.IMPRISONMENT)),
+  DetentionAndTrainingOrder(DetentionAndTrainingOrderSentence::class.java, setOf(TermType.IMPRISONMENT)),
+  Botus(BotusSentence::class.java, setOf(TermType.IMPRISONMENT)),
+  Indeterminate,
 }
