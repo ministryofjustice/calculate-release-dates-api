@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FI
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.STANDARD_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.STANDARD_RECALL_255
 
-private val UNSUPPORTED = null
+private val UNKNOWN_SENTENCE_TYPE = null
 
 // These SentenceCalculationType values come from NOMIS - they map to offender_sentences.sentence_calc_type in NOMIS
 enum class SentenceCalculationType(
@@ -119,39 +119,38 @@ enum class SentenceCalculationType(
   //endregion
 
   //region UNSUPPORTED(null) Sentence Types
-  NP(sentenceType = UNSUPPORTED),
-  CR(sentenceType = UNSUPPORTED),
-  AR(sentenceType = UNSUPPORTED),
-  EPP(sentenceType = UNSUPPORTED),
-  A_FINE(sentenceType = UNSUPPORTED, primaryName = "A/FINE"),
-  CIVIL(sentenceType = UNSUPPORTED),
-  EXT(sentenceType = UNSUPPORTED),
-  YRO(sentenceType = UNSUPPORTED),
-  SEC91(sentenceType = UNSUPPORTED),
-  VOO(sentenceType = UNSUPPORTED),
-  TISCS(sentenceType = UNSUPPORTED),
-  STS21(sentenceType = UNSUPPORTED),
-  STS18(sentenceType = UNSUPPORTED),
+  NP(sentenceType = UNKNOWN_SENTENCE_TYPE),
+  CR(sentenceType = UNKNOWN_SENTENCE_TYPE),
+  AR(sentenceType = UNKNOWN_SENTENCE_TYPE),
+  EPP(sentenceType = UNKNOWN_SENTENCE_TYPE),
+  CIVIL(sentenceType = UNKNOWN_SENTENCE_TYPE),
+  EXT(sentenceType = UNKNOWN_SENTENCE_TYPE),
+  YRO(sentenceType = UNKNOWN_SENTENCE_TYPE),
+  SEC91(sentenceType = UNKNOWN_SENTENCE_TYPE),
+  VOO(sentenceType = UNKNOWN_SENTENCE_TYPE),
+  TISCS(sentenceType = UNKNOWN_SENTENCE_TYPE),
+  STS21(sentenceType = UNKNOWN_SENTENCE_TYPE),
+  STS18(sentenceType = UNKNOWN_SENTENCE_TYPE),
   //endregion
 
   //region UNSUPPORTED(null) Recall Sentences
-  FTR_HDC(sentenceType = UNSUPPORTED, recallType = FIXED_TERM_RECALL_14),
-  LR_ES(sentenceType = UNSUPPORTED, recallType = STANDARD_RECALL),
-  LR_EPP(sentenceType = UNSUPPORTED, recallType = STANDARD_RECALL),
-  FTR_HDC_ORA(recallType = FIXED_TERM_RECALL_28, sentenceType = UNSUPPORTED),
+  FTR_HDC(sentenceType = UNKNOWN_SENTENCE_TYPE, recallType = FIXED_TERM_RECALL_14),
+  LR_ES(sentenceType = UNKNOWN_SENTENCE_TYPE, recallType = STANDARD_RECALL),
+  LR_EPP(sentenceType = UNKNOWN_SENTENCE_TYPE, recallType = STANDARD_RECALL),
+  FTR_HDC_ORA(recallType = FIXED_TERM_RECALL_28, sentenceType = UNKNOWN_SENTENCE_TYPE),
   FTR_14_HDC_ORA(
-    sentenceType = UNSUPPORTED,
+    sentenceType = UNKNOWN_SENTENCE_TYPE,
     recallType = FIXED_TERM_RECALL_14,
     primaryName = "14FTRHDC_ORA",
   ),
-  HDR_ORA(sentenceType = UNSUPPORTED, recallType = STANDARD_RECALL_255),
-  HDR(sentenceType = UNSUPPORTED, recallType = STANDARD_RECALL_255),
-  CUR(sentenceType = UNSUPPORTED, recallType = STANDARD_RECALL_255),
-  CUR_ORA(sentenceType = UNSUPPORTED, recallType = STANDARD_RECALL_255),
+  HDR_ORA(sentenceType = UNKNOWN_SENTENCE_TYPE, recallType = STANDARD_RECALL_255),
+  HDR(sentenceType = UNKNOWN_SENTENCE_TYPE, recallType = STANDARD_RECALL_255),
+  CUR(sentenceType = UNKNOWN_SENTENCE_TYPE, recallType = STANDARD_RECALL_255),
+  CUR_ORA(sentenceType = UNKNOWN_SENTENCE_TYPE, recallType = STANDARD_RECALL_255),
   //endregion
 
   //region Unidentified
-  UNIDENTIFIED(sentenceType = UNSUPPORTED),
+  UNIDENTIFIED(sentenceType = UNKNOWN_SENTENCE_TYPE),
   //endregion
   ;
 
@@ -162,22 +161,9 @@ enum class SentenceCalculationType(
         ?: entries.firstOrNull { it.name == sentenceCalculationType }
         ?: UNIDENTIFIED
 
-    fun isSupported(sentenceCalculationType: String): Boolean =
-      !(isIndeterminate(sentenceCalculationType) || isUNSUPPORTEDSentence(sentenceCalculationType))
+    fun isSupported(sentenceCalculationType: String): Boolean = from(sentenceCalculationType).sentenceType?.sentenceClazz != null
 
-    fun isIndeterminate(sentenceCalculationType: String): Boolean =
-      try {
-        from(sentenceCalculationType).sentenceType == Indeterminate
-      } catch (error: IllegalArgumentException) {
-        false
-      }
-
-    private fun isUNSUPPORTEDSentence(sentenceCalculationType: String): Boolean =
-      try {
-        from(sentenceCalculationType).sentenceType == UNSUPPORTED
-      } catch (error: IllegalArgumentException) {
-        false
-      }
+    fun isIndeterminate(sentenceCalculationType: String): Boolean = from(sentenceCalculationType).sentenceType == Indeterminate
 
     fun isSDSPlusEligible(
       sentenceCalculationType: String,
@@ -190,26 +176,11 @@ enum class SentenceCalculationType(
       }
     }
 
-    fun isSDS40Eligible(sentenceCalculationType: String): Boolean =
-      try {
-        from(sentenceCalculationType).sentenceType == StandardDeterminate
-      } catch (error: IllegalArgumentException) {
-        false
-      }
+    fun isSDS40Eligible(sentenceCalculationType: String): Boolean = from(sentenceCalculationType).sentenceType == StandardDeterminate
 
-    fun isToreraEligible(sentenceCalculationType: String, eligibilityType: ToreraEligibilityType): Boolean =
-      try {
-        from(sentenceCalculationType).toreraEligibilityType == eligibilityType
-      } catch (error: IllegalArgumentException) {
-        false
-      }
+    fun isToreraEligible(sentenceCalculationType: String, eligibilityType: ToreraEligibilityType): Boolean = from(sentenceCalculationType).toreraEligibilityType == eligibilityType
 
-    fun isDTOType(sentenceCalculationType: String): Boolean =
-      try {
-        from(sentenceCalculationType).sentenceType == DetentionAndTrainingOrder
-      } catch (error: IllegalArgumentException) {
-        false
-      }
+    fun isDTOType(sentenceCalculationType: String): Boolean = from(sentenceCalculationType).sentenceType == DetentionAndTrainingOrder
   }
 
   enum class SDSPlusEligibilityType {
