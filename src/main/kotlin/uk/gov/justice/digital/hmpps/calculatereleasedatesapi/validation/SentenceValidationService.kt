@@ -1,14 +1,12 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TermType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -98,11 +96,9 @@ class SentenceValidationService(
 
   private fun validateDuration(sentencesAndOffence: SentenceAndOffence): List<ValidationMessage> {
     val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
-    return if (sentenceCalculationType.sentenceType.sentenceClazz == StandardDeterminateSentence::class.java ||
-      sentenceCalculationType.sentenceType.sentenceClazz == AFineSentence::class.java ||
-      sentenceCalculationType.sentenceType.sentenceClazz == DetentionAndTrainingOrderSentence::class.java ||
-      sentenceCalculationType.sentenceType.sentenceClazz == BotusSentence::class.java
-    ) {
+    val allowedTermTypes = sentenceCalculationType.sentenceType?.supportedTerms ?: emptySet()
+
+    return if (allowedTermTypes == setOf(TermType.IMPRISONMENT)) {
       validateSingleTermDuration(sentencesAndOffence)
     } else {
       validateImprisonmentAndLicenceTermDuration(sentencesAndOffence)
@@ -181,7 +177,8 @@ class SentenceValidationService(
       )
     } else {
       val sentenceCalculationType = SentenceCalculationType.from(sentencesAndOffence.sentenceCalculationType)
-      if (sentenceCalculationType.sentenceType.sentenceClazz == ExtendedDeterminateSentence::class.java) {
+      val typeClazz: Class<out AbstractSentence>? = sentenceCalculationType.sentenceType?.sentenceClazz
+      if (typeClazz == ExtendedDeterminateSentence::class.java) {
         val duration =
           Period.of(
             licenceTerms[0].years,
@@ -207,7 +204,7 @@ class SentenceValidationService(
             ),
           )
         }
-      } else if (sentenceCalculationType.sentenceType.sentenceClazz == SopcSentence::class.java) {
+      } else if (typeClazz == SopcSentence::class.java) {
         val duration =
           Period.of(
             licenceTerms[0].years,

@@ -7,6 +7,7 @@ import org.springframework.core.codec.DecodingException
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisTusedData
@@ -46,10 +47,10 @@ class PrisonService(
     val bookingAndSentenceAdjustments = getBookingAndSentenceAdjustments(prisonerDetails.bookingId, activeDataOnly)
     val bookingHasFixedTermRecall = sentenceAndOffences.any { from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
     val (ftrDetails, returnToCustodyDate) = getFixedTermRecallDetails(prisonerDetails.bookingId, bookingHasFixedTermRecall)
-    val bookingHasAFine = sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.AFine }
+    val bookingHasAFine = sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == SentenceType.AFine }
     val offenderFinePayments = if (bookingHasAFine) prisonApiClient.getOffenderFinePayments(prisonerDetails.bookingId) else listOf()
     val tusedData = getLatestTusedDataForBotus(prisonerDetails.offenderNo).getOrNull()
-    val bookingHasBotus = sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.Botus }
+    val bookingHasBotus = sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == SentenceType.Botus }
     val historicalTusedData = if (tusedData != null && bookingHasBotus) botusTusedService.identifyTused(tusedData) else null
     val externalMovements = getExternalMovements(sentenceAndOffences, prisonerDetails)
 

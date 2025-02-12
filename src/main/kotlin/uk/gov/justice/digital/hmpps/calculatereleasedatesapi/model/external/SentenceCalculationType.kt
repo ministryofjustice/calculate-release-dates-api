@@ -8,16 +8,17 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.Indeterminate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.Sopc
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.StandardDeterminate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.Unsupported
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.STANDARD_RECALL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.STANDARD_RECALL_255
 
+private val UNSUPPORTED = null
+
 // These SentenceCalculationType values come from NOMIS - they map to offender_sentences.sentence_calc_type in NOMIS
 enum class SentenceCalculationType(
-  val sentenceType: SentenceType,
+  val sentenceType: SentenceType?,
   val recallType: RecallType? = null,
   val primaryName: String? = null,
   val toreraEligibilityType: ToreraEligibilityType = ToreraEligibilityType.NONE,
@@ -117,40 +118,40 @@ enum class SentenceCalculationType(
   LR_ALP_LASPO(sentenceType = Indeterminate, recallType = STANDARD_RECALL),
   //endregion
 
-  //region UnsupportedSentence Sentence Types
-  NP(sentenceType = Unsupported),
-  CR(sentenceType = Unsupported),
-  AR(sentenceType = Unsupported),
-  EPP(sentenceType = Unsupported),
-  A_FINE(sentenceType = Unsupported, primaryName = "A/FINE"),
-  CIVIL(sentenceType = Unsupported),
-  EXT(sentenceType = Unsupported),
-  YRO(sentenceType = Unsupported),
-  SEC91(sentenceType = Unsupported),
-  VOO(sentenceType = Unsupported),
-  TISCS(sentenceType = Unsupported),
-  STS21(sentenceType = Unsupported),
-  STS18(sentenceType = Unsupported),
+  //region UNSUPPORTED(null) Sentence Types
+  NP(sentenceType = UNSUPPORTED),
+  CR(sentenceType = UNSUPPORTED),
+  AR(sentenceType = UNSUPPORTED),
+  EPP(sentenceType = UNSUPPORTED),
+  A_FINE(sentenceType = UNSUPPORTED, primaryName = "A/FINE"),
+  CIVIL(sentenceType = UNSUPPORTED),
+  EXT(sentenceType = UNSUPPORTED),
+  YRO(sentenceType = UNSUPPORTED),
+  SEC91(sentenceType = UNSUPPORTED),
+  VOO(sentenceType = UNSUPPORTED),
+  TISCS(sentenceType = UNSUPPORTED),
+  STS21(sentenceType = UNSUPPORTED),
+  STS18(sentenceType = UNSUPPORTED),
   //endregion
 
-  //region UnsupportedSentence Recall Sentences
-  FTR_HDC(sentenceType = Unsupported, recallType = FIXED_TERM_RECALL_14),
-  LR_ES(sentenceType = Unsupported, recallType = STANDARD_RECALL),
-  LR_EPP(sentenceType = Unsupported, recallType = STANDARD_RECALL),
-  FTR_HDC_ORA(recallType = FIXED_TERM_RECALL_28, sentenceType = Unsupported),
+  //region UNSUPPORTED(null) Recall Sentences
+  FTR_HDC(sentenceType = UNSUPPORTED, recallType = FIXED_TERM_RECALL_14),
+  LR_ES(sentenceType = UNSUPPORTED, recallType = STANDARD_RECALL),
+  LR_EPP(sentenceType = UNSUPPORTED, recallType = STANDARD_RECALL),
+  FTR_HDC_ORA(recallType = FIXED_TERM_RECALL_28, sentenceType = UNSUPPORTED),
   FTR_14_HDC_ORA(
-    sentenceType = Unsupported,
+    sentenceType = UNSUPPORTED,
     recallType = FIXED_TERM_RECALL_14,
     primaryName = "14FTRHDC_ORA",
   ),
-  HDR_ORA(sentenceType = Unsupported, recallType = STANDARD_RECALL_255),
-  HDR(sentenceType = Unsupported, recallType = STANDARD_RECALL_255),
-  CUR(sentenceType = Unsupported, recallType = STANDARD_RECALL_255),
-  CUR_ORA(sentenceType = Unsupported, recallType = STANDARD_RECALL_255),
+  HDR_ORA(sentenceType = UNSUPPORTED, recallType = STANDARD_RECALL_255),
+  HDR(sentenceType = UNSUPPORTED, recallType = STANDARD_RECALL_255),
+  CUR(sentenceType = UNSUPPORTED, recallType = STANDARD_RECALL_255),
+  CUR_ORA(sentenceType = UNSUPPORTED, recallType = STANDARD_RECALL_255),
   //endregion
 
   //region Unidentified
-  UNIDENTIFIED(sentenceType = Unsupported),
+  UNIDENTIFIED(sentenceType = UNSUPPORTED),
   //endregion
   ;
 
@@ -162,7 +163,7 @@ enum class SentenceCalculationType(
         ?: UNIDENTIFIED
 
     fun isSupported(sentenceCalculationType: String): Boolean =
-      !(isIndeterminate(sentenceCalculationType) || isUnsupportedSentence(sentenceCalculationType))
+      !(isIndeterminate(sentenceCalculationType) || isUNSUPPORTEDSentence(sentenceCalculationType))
 
     fun isIndeterminate(sentenceCalculationType: String): Boolean =
       try {
@@ -171,9 +172,9 @@ enum class SentenceCalculationType(
         false
       }
 
-    private fun isUnsupportedSentence(sentenceCalculationType: String): Boolean =
+    private fun isUNSUPPORTEDSentence(sentenceCalculationType: String): Boolean =
       try {
-        from(sentenceCalculationType).sentenceType == Unsupported
+        from(sentenceCalculationType).sentenceType == UNSUPPORTED
       } catch (error: IllegalArgumentException) {
         false
       }
