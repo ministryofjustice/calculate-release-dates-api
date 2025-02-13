@@ -1,12 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.DTO
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.DTO_ORA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 @Service
 class DtoValidationService {
@@ -26,7 +24,7 @@ class DtoValidationService {
     prisonApiSourceData.sentenceAndOffences.forEach { sentenceAndOffence ->
       val sentenceCalculationType = SentenceCalculationType.from(sentenceAndOffence.sentenceCalculationType)
       val hasDtoRecall = hasDtoRecallTerms(sentenceAndOffence)
-      val hasDto = isDtoSentence(sentenceCalculationType)
+      val hasDto = SentenceCalculationType.isDTOType(sentenceAndOffence.sentenceCalculationType)
 
       if (hasDto) bookingHasDto = true
       if (sentenceCalculationType.recallType != null) bookingHasRecall = true
@@ -45,7 +43,7 @@ class DtoValidationService {
     val messages = mutableListOf<ValidationMessage>()
 
     prisonApiSourceData.sentenceAndOffences.forEach { sentenceAndOffence ->
-      if (isDtoSentence(SentenceCalculationType.from(sentenceAndOffence.sentenceCalculationType))) {
+      if (SentenceCalculationType.isDTOType(sentenceAndOffence.sentenceCalculationType)) {
         if (isConsecutiveToNonDto(sentenceAndOffence, prisonApiSourceData)) {
           messages.add(ValidationMessage(code = ValidationCode.DTO_CONSECUTIVE_TO_SENTENCE))
         }
@@ -64,10 +62,6 @@ class DtoValidationService {
     }
   }
 
-  private fun isDtoSentence(sentenceCalculationType: SentenceCalculationType): Boolean {
-    return sentenceCalculationType == DTO || sentenceCalculationType == DTO_ORA
-  }
-
   private fun isConsecutiveToNonDto(sentenceAndOffence: SentenceAndOffence, sourceData: PrisonApiSourceData): Boolean {
     return sentenceAndOffence.consecutiveToSequence != null && sequenceNotDto(sentenceAndOffence.consecutiveToSequence!!, sourceData)
   }
@@ -75,12 +69,12 @@ class DtoValidationService {
   private fun hasNonDtoConsecutiveToIt(sentenceAndOffence: SentenceAndOffence, sourceData: PrisonApiSourceData): Boolean {
     return sourceData.sentenceAndOffences.any {
       it.consecutiveToSequence == sentenceAndOffence.sentenceSequence &&
-        SentenceCalculationType.from(it.sentenceCalculationType).sentenceClazz != DetentionAndTrainingOrderSentence::class.java
+        SentenceCalculationType.from(it.sentenceCalculationType).sentenceType != SentenceType.DetentionAndTrainingOrder
     }
   }
 
   private fun sequenceNotDto(consecutiveSequence: Int, sourceData: PrisonApiSourceData): Boolean {
     val consecutiveTo = sourceData.sentenceAndOffences.firstOrNull { it.sentenceSequence == consecutiveSequence }
-    return consecutiveTo != null && SentenceCalculationType.from(consecutiveTo.sentenceCalculationType).sentenceClazz != DetentionAndTrainingOrderSentence::class.java
+    return consecutiveTo != null && SentenceCalculationType.from(consecutiveTo.sentenceCalculationType).sentenceType != SentenceType.DetentionAndTrainingOrder
   }
 }

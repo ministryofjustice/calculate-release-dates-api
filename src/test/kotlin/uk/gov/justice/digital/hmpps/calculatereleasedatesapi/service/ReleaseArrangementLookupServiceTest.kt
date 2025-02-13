@@ -332,7 +332,7 @@ class ReleaseArrangementLookupServiceTest {
 
     val unsupportedSentence = nonSDSPlusSentenceAndOffenceFourYears.copy(
       sentenceCalculationType = SentenceCalculationType.entries.find {
-        !it.isSDS40Eligible
+        !SentenceCalculationType.isSDS40Eligible(it.name)
       }!!.name,
     )
     val withReleaseArrangements = underTest.populateReleaseArrangements(listOf(unsupportedSentence))
@@ -864,7 +864,7 @@ class ReleaseArrangementLookupServiceTest {
 
     @JvmStatic
     fun provideEligibleSentenceTypes(): List<SentenceCalculationType> {
-      return SentenceCalculationType.entries.filter { it.isSDS40Eligible }
+      return SentenceCalculationType.entries.filter { SentenceCalculationType.isSDS40Eligible(it.name) }
     }
   }
 }

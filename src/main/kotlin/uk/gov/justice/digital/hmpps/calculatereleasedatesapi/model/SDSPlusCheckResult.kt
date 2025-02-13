@@ -24,7 +24,7 @@ class SDSPlusCheckResult(
 
     val offenceCode = sentenceAndOffence.offence.offenceCode
 
-    eligibleSentence = SentenceCalculationType.isSupported(sentenceAndOffence.sentenceCalculationType) &&
+    eligibleSentence = SentenceCalculationType.isCalculable(sentenceAndOffence.sentenceCalculationType) &&
       SentenceCalculationType.isSDSPlusEligible(sentenceAndOffence.sentenceCalculationType)
     offenceMarkers = sdsPlusMarkersByOffences[offenceCode]
     listDExtended = offenceCode in LEGACY_OFFENCE_CODES_FOR_OFFENCES_ON_LIST_D
