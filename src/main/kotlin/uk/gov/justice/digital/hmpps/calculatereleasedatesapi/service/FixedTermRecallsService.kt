@@ -29,21 +29,42 @@ class FixedTermRecallsService(private val featureToggles: FeatureToggles) {
     }
 
     val fixedTermRecallSentences = getFixedTermRecallSentences(sentences)
+
+    if (!ftrIsMixedDuration(fixedTermRecallSentences)) {
+      return latestReleaseDate
+    }
+
     val latestSentence = getLatestSentence(fixedTermRecallSentences) ?: return latestReleaseDate
 
-    val recallTypeDuration = getInclusiveDaysByRecallType(latestSentence)
-    val maxReleaseDate = returnToCustodyDate.plusDays(recallTypeDuration)
+    val maxPostRecallDate = returnToCustodyDate
+      .plusDays(if (latestSentence.recallType == FIXED_TERM_RECALL_14) 13 else 27)
+      .plusDays(latestSentence.sentenceCalculation.adjustments.ualAfterFtr)
+      .plusDays(latestSentence.sentenceCalculation.adjustments.awardedDuringCustody)
 
     return if (latestSentence.durationIsGreaterThanOrEqualTo(12, MONTHS)) {
-      calculateOverTwelveMonthsReleaseDate(latestSentence, maxReleaseDate)
+      calculateOverTwelveMonthsReleaseDate(latestSentence, maxPostRecallDate)
     } else {
       calculateUnderTwelveMonthsReleaseDate(
         fixedTermRecallSentences,
         latestSentence,
         returnToCustodyDate,
-        maxReleaseDate,
+        maxPostRecallDate,
         latestReleaseDate,
       )
+    }
+  }
+
+  fun hasHomeDetentionCurfew(dates: Map<ReleaseDateType, LocalDate>): Boolean {
+    val postRecallReleaseDate = dates[PRRD] ?: return false
+    val latestDateEntry = dates.filterKeys { it == CRD || it == ARD || it == NPD }.maxByOrNull { it.value } ?: return false
+    return postRecallReleaseDate != dates[CRD] && postRecallReleaseDate.isBefore(latestDateEntry.value)
+  }
+
+  private fun ftrIsMixedDuration(sentences: List<CalculableSentence>): Boolean {
+    return sentences.any {
+      it.durationIsGreaterThanOrEqualTo(12, MONTHS)
+    } && sentences.any {
+      it.durationIsLessThan(12, MONTHS)
     }
   }
 
@@ -110,13 +131,5 @@ class FixedTermRecallsService(private val featureToggles: FeatureToggles) {
     return sentences
       .filter { it.recallType == FIXED_TERM_RECALL_28 || it.recallType == FIXED_TERM_RECALL_14 && it.releaseDateTypes.contains(SLED) }
       .sortedBy { it.sentencedAt }
-  }
-
-  private fun getInclusiveDaysByRecallType(sentence: CalculableSentence): Long = if (sentence.recallType == FIXED_TERM_RECALL_14) 13 else 27
-
-  fun hasHomeDetentionCurfew(dates: Map<ReleaseDateType, LocalDate>): Boolean {
-    val postRecallReleaseDate = dates[PRRD] ?: return false
-    val latestDateEntry = dates.filterKeys { it == CRD || it == ARD || it == NPD }.maxByOrNull { it.value } ?: return false
-    return postRecallReleaseDate != dates[CRD] && postRecallReleaseDate.isBefore(latestDateEntry.value)
   }
 }
