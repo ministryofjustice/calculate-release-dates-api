@@ -3736,7 +3736,6 @@ class ValidationServiceTest {
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
       dateValidationService = dateValidationService,
-      featureToggles = featureToggles,
     )
   }
 }
