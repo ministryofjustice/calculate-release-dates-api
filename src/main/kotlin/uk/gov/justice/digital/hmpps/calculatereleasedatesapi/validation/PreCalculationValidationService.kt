@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
@@ -30,7 +30,7 @@ class PreCalculationValidationService(
       if (adjustment.type == SentenceAdjustmentType.REMAND || adjustment.type == SentenceAdjustmentType.TAGGED_BAIL) {
         val sentence = sourceData.sentenceAndOffences.firstOrNull { it.sentenceSequence == adjustment.sentenceSequence }
         if (sentence != null &&
-          SentenceCalculationType.from(sentence.sentenceCalculationType).sentenceClazz == DetentionAndTrainingOrderSentence::class.java &&
+          SentenceCalculationType.from(sentence.sentenceCalculationType).sentenceType == SentenceType.DetentionAndTrainingOrder &&
           sentence.sentenceDate.isBefore(
             PCSC_COMMENCEMENT_DATE,
           )
@@ -65,7 +65,7 @@ class PreCalculationValidationService(
   fun validateSupportedSentences(sentencesAndOffences: List<SentenceAndOffence>): List<ValidationMessage> {
     val supportedCategories = listOf("2003", "2020")
     val validationMessages = sentencesAndOffences.filter {
-      !SentenceCalculationType.isSupported(it.sentenceCalculationType) || !supportedCategories.contains(it.sentenceCategory)
+      !SentenceCalculationType.isCalculable(it.sentenceCalculationType) || !supportedCategories.contains(it.sentenceCategory)
     }
       .map {
         ValidationMessage(

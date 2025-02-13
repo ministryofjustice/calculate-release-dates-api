@@ -69,7 +69,7 @@ class RelevantRemandService(
         sentenceAdjustments = sourceData.bookingAndSentenceAdjustments.sentenceAdjustments.filter { !listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.UNUSED_REMAND).contains(it.type) } +
           request.relevantRemands.map {
             val sentence = findSentence(sourceData.sentenceAndOffences, it.sentenceSequence)
-            val adjustmentType: SentenceAdjustmentType = if (sentence != null && SentenceCalculationType.isSupported(sentence.sentenceCalculationType)) {
+            val adjustmentType: SentenceAdjustmentType = if (sentence != null && SentenceCalculationType.isCalculable(sentence.sentenceCalculationType)) {
               val sentenceType = SentenceCalculationType.from(sentence.sentenceCalculationType)
               if (sentenceType.recallType != null) {
                 SentenceAdjustmentType.RECALL_SENTENCE_REMAND
