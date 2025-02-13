@@ -589,14 +589,16 @@ class BookingExtractionService(
       .filter { it.sentenceCalculation.topUpSupervisionDate != null }
       .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
 
-    return if (latestTUSEDSentence != null &&
-      latestTUSEDSentence.sentenceCalculation.topUpSupervisionDate!!.isAfter(
-        latestLicenseExpiryDate,
-      )
-    ) {
-      latestTUSEDSentence.sentenceCalculation.topUpSupervisionDate!! to latestTUSEDSentence.sentenceCalculation.breakdownByReleaseDateType[TUSED]!!
-    } else {
-      null
+    return latestTUSEDSentence?.let { sentence ->
+      val topUpDate = sentence.sentenceCalculation.topUpSupervisionDate
+      val breakdown = sentence.sentenceCalculation.breakdownByReleaseDateType[TUSED]
+
+      // CRS-2260 Added breakdown != null check - this can be null in this BOTUS scenario via the full-validation endpoint (fullValidationFromBookingData)
+      if (topUpDate != null && breakdown != null && topUpDate.isAfter(latestLicenseExpiryDate)) {
+        topUpDate to breakdown
+      } else {
+        null
+      }
     }
   }
 
