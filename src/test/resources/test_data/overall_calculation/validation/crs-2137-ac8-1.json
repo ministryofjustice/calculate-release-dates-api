@@ -1,0 +1,52 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "recallType": "FIXED_TERM_RECALL_28",
+      "offence": {
+        "committedAt": "2024-12-11",
+        "offenceCode": "DX03220"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 12
+        }
+      },
+      "sentencedAt": "2024-12-11",
+      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8111"
+    },
+    {
+      "recallType": "FIXED_TERM_RECALL_28",
+      "offence": {
+        "committedAt": "2024-12-11",
+        "offenceCode": "DX03220"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 11
+        }
+      },
+      "sentencedAt": "2024-12-11",
+      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8112"
+    }
+  ],
+  "adjustments": {
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "appliesToSentencesFrom": "2025-11-28",
+        "numberOfDays": 1,
+        "fromDate": "2025-11-28",
+        "toDate": "2025-11-29"
+      }
+    ]
+  },
+  "returnToCustodyDate": "2025-11-10",
+  "fixedTermRecallDetails": {
+    "bookingId": 1234567,
+    "returnToCustodyDate": "2025-11-10",
+    "recallLength": 28
+  }
+}

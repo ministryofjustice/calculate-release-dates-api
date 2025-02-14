@@ -217,6 +217,8 @@ class CalculationTransactionalServiceTest {
       expectedExceptions.forEachIndexed { index, exception ->
         assertThat(returnedValidationMessages[index].code.toString()).isEqualTo(exception)
       }
+    } else if (returnedValidationMessages.isNotEmpty()) {
+      fail("Validation messages were returned: $returnedValidationMessages")
     } else {
       val bookingData = jsonTransformation.loadCalculationResult("$exampleType/$exampleNumber")
       val result = bookingData.first
@@ -824,7 +826,6 @@ class CalculationTransactionalServiceTest {
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
       dateValidationService = dateValidationService,
-      featureToggles = featureToggles,
     )
   }
 

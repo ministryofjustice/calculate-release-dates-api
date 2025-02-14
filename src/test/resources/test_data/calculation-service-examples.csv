@@ -16,7 +16,7 @@ alternative-release-point,14,,sds-45,,
 alternative-release-point,15,,sds-45,,
 alternative-release-point,16,,sds-45,,
 alternative-release-point,17,,sds-45,,
-alternative-release-point,18,,sds-45,,
+alternative-release-point,18,,sds-45,UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS,,
 alternative-release-point,19,,sds-45,,
 alternative-release-point,20,,sds-45,,
 alternative-release-point,21,,sds-45,,
@@ -220,16 +220,6 @@ custom-examples,crs-1997-ac3-hdc-sopc-consec-sds,,sds-50,,
 custom-examples,crs-1997-ac4-hdc-eds-consec-sds,,sds-50,,
 custom-examples,crs-1997-ac5-hdc-sopc-consec-sds,,sds-50,,
 custom-examples,crs-2038,,,,
-custom-examples,crs-2041-sds40-document-example1-tranche1,,,,
-custom-examples,crs-2041-sds40-document-example1-tranche1,,,,TRUE
-custom-examples,crs-2041-sds40-document-example1-tranche2,,,,
-custom-examples,crs-2041-sds40-document-example1-tranche2,,,,TRUE
-custom-examples,crs-2041-sds40-document-example2-tranche1,,,,
-custom-examples,crs-2041-sds40-document-example2-tranche1,,,,TRUE
-custom-examples,crs-2041-sds40-document-example2-tranche2,,,,
-custom-examples,crs-2041-sds40-document-example2-tranche2,,,,TRUE
-custom-examples,crs-2041-sds40-document-example3-tranche1,,,,
-custom-examples,crs-2041-sds40-document-example3-tranche1,,,,TRUE
 custom-examples,crs-2043-ac1,,,,
 custom-examples,crs-2043-ac2,,,,
 custom-examples,crs-2043-ac3-a,,,,
@@ -249,7 +239,6 @@ custom-examples,crs-2062-sds40-tused-bug,,,,
 custom-examples,crs-2063-sds40-ftr-tused,,,,
 custom-examples,crs-2069,,,,
 custom-examples,crs-2072-sds40-recall-tused-bug,,,,
-custom-examples,crs-2082,,,,
 custom-examples,crs-2108-ual-preprod-bug,,,,
 custom-examples,crs-2130-ual-preprod-bug,,,,
 custom-examples,crs-2131-ada-crd-defaulting,,,,
@@ -279,7 +268,7 @@ custom-examples,crs-2169-ac4-1,,,,
 custom-examples,crs-2169-ac4-2,,,,
 custom-examples,crs-2169-reg-1,,,,
 custom-examples,crs-2210-concurrent-recall-ual-timeline-bug,,,,
-custom-examples,crs-2211,,,,
+custom-examples,crs-2211,,,ADJUSTMENT_AFTER_RELEASE_ADA,
 custom-examples,crs-2211-non-ora,,,,
 custom-examples,crs-2223-timeline-bug,,,,
 custom-examples,crs-2228-ual-after-crd-only-applies-to-recall-1,,,,
@@ -594,7 +583,7 @@ tranches,crs-2105-ac-4-1,,,,TRUE
 tranches,crs-2105-ac-4-2,,,,TRUE
 tranches,crs-2105-ac-4-3,,,,TRUE
 tranches,crs-2105-rwe-1,,,,TRUE
-tranches,crs-2105-rwe-2,,,,TRUE
+tranches,crs-2105-rwe-2,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE,TRUE
 tranches,crs-2105-rwe-3,,,,TRUE
 tranches,crs-2105-rwe-4,,,,TRUE
 tranches,crs-2105-rwe-5,,,,TRUE
@@ -620,7 +609,7 @@ tranches,crs-2192-ac2-1,,,,
 tranches,crs-2192-ac2-2,,,,
 tranches,crs-2202-ac1-1,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE,
 tranches,crs-2202-ac1-2,,,,TRUE
-tranches,crs-2202-ac1-3,,,,TRUE
+tranches,crs-2202-ac1-3,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE,TRUE
 tranches,crs-2202-ac1-4,,,,TRUE
 tranches,crs-2202-ac1-5,,,,TRUE
 tranches,crs-2202-ac1-6,,,,TRUE
@@ -665,6 +654,7 @@ validation,crs-2137-ac5-3,,,,
 validation,crs-2137-ac5-4,,,,
 validation,crs-2137-ac6-1,,,FTR_14_DAYS_AGGREGATE_GE_12_MONTHS|FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS,
 validation,crs-2137-ac7-1,,,FTR_28_DAYS_AGGREGATE_LT_12_MONTHS|FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS,
+validation,crs-2137-ac8-1,,,,
 exclude-adas,1,,,,
 exclude-adas,2,,,,
 exclude-adas,3,,,,

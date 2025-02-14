@@ -25,9 +25,20 @@ class TimelineAwardedAdjustmentCalculationHandler(
       val radaDays = radas.map { it.numberOfDays }.reduceOrNull { acc, it -> acc + it }?.toLong() ?: 0L
 
       if (currentSentenceGroup.isEmpty()) {
-        // This is a PADA. No calculation required. Set value here to be applied to later sentences.
-        padas += adaDays - radaDays
-        return TimelineHandleResult(true)
+        val ftrSentences = licenseSentences.filter { it.recallType?.isFixedTermRecall == true }
+        if (ftrSentences.isNotEmpty() && timelineCalculationDate.isAfterOrEqualTo(timelineTrackingData.returnToCustodyDate!!)) {
+          // We are in FTR time
+          timelineCalculator.setAdjustments(
+            ftrSentences,
+            SentenceAdjustments(
+              awardedAfterDeterminateRelease = adaDays - radaDays,
+            ),
+          )
+        } else {
+          // This is a PADA. No calculation required. Set value here to be applied to later sentences.
+          padas += adaDays - radaDays
+          return TimelineHandleResult(true)
+        }
       } else {
         val maxReleaseNonTermRelease =
           currentSentenceGroup.filterNot { it is Term }.maxOfOrNull { it.sentenceCalculation.releaseDate }
