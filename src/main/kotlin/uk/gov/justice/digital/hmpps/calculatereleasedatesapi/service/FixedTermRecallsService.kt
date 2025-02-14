@@ -38,8 +38,7 @@ class FixedTermRecallsService(private val featureToggles: FeatureToggles) {
 
     val maxPostRecallDate = returnToCustodyDate
       .plusDays(if (latestSentence.recallType == FIXED_TERM_RECALL_14) 13 else 27)
-      .plusDays(latestSentence.sentenceCalculation.adjustments.ualAfterFtr)
-      .plusDays(latestSentence.sentenceCalculation.adjustments.awardedDuringCustody)
+      .plusDays(latestSentence.sentenceCalculation.adjustments.adjustmentsForFixedTermRecall())
 
     return if (latestSentence.durationIsGreaterThanOrEqualTo(12, MONTHS)) {
       calculateOverTwelveMonthsReleaseDate(latestSentence, maxPostRecallDate)

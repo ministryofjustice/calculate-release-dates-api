@@ -36,7 +36,7 @@
   "adjustments": {
     "ADDITIONAL_DAYS_AWARDED": [
       {
-        "appliesToSentencesFrom": "2024-12-11",
+        "appliesToSentencesFrom": "2025-11-28",
         "numberOfDays": 1,
         "fromDate": "2025-11-28",
         "toDate": "2025-11-29"
