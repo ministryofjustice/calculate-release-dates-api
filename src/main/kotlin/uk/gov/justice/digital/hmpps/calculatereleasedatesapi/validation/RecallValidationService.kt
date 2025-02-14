@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
-import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.MONTHS
 import kotlin.math.abs
@@ -32,12 +31,6 @@ class RecallValidationService(
   private val validationUtilities: ValidationUtilities,
   private val featureToggles: FeatureToggles,
 ) {
-
-  private data class MixedDurationRecall(
-    val sledSentence: CalculableSentence,
-    val relatedSentences: List<CalculableSentence>,
-    val returnToCustodyDate: LocalDate,
-  )
 
   internal fun validateFixedTermRecall(sourceData: PrisonApiSourceData): List<ValidationMessage> {
     val ftrDetails = sourceData.fixedTermRecallDetails ?: return emptyList()
@@ -154,7 +147,12 @@ class RecallValidationService(
     val maxFtrSentence = ftrSentences.maxBy { it.getLengthInDays() }
     val maxFtrSentenceIsLessThan12Months = maxFtrSentence.durationIsLessThan(TWELVE, MONTHS)
 
-    val ftr14NoUnder12MonthDuration = if (featureToggles.revisedFixedTermRecallsRules) ftr14Sentences.none { it.durationIsLessThan(TWELVE, MONTHS) } else true
+    // ignore mixed durations if revised rules are not enabled
+    val ftr14NoUnder12MonthDuration = if (featureToggles.revisedFixedTermRecallsRules) {
+      ftr14Sentences.none { it.durationIsLessThan(TWELVE, MONTHS) }
+    } else {
+      true
+    }
 
     val ftrSentenceExistsInConsecutiveChain = ftrSentences.any { it.consecutiveSentenceUUIDs.isNotEmpty() } ||
       booking.sentences.any {
@@ -189,11 +187,38 @@ class RecallValidationService(
   internal fun validateFixedTermRecallAfterCalc(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
     val ftrDetails = booking.fixedTermRecallDetails ?: return messages
+
+    // ignore mixed durations if revised rules are not enabled
+    if (!featureToggles.revisedFixedTermRecallsRules) {
+      return validateSingleDurationRecalls(calculationOutput, ftrDetails, false, false)
+    }
+
+    val ftrSentences = calculationOutput.sentences.filter {
+      it.isRecall() && it.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(booking.fixedTermRecallDetails.returnToCustodyDate)
+    }
+
+    val hasOverTwelveMonthSentence = ftrSentences.any { it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS) }
+    val hasUnderTwelveMonthSentence = ftrSentences.any { it.durationIsLessThan(TWELVE, MONTHS) }
+
+    return if (hasUnderTwelveMonthSentence && hasOverTwelveMonthSentence) {
+      validateMixedDurations(ftrSentences, booking)
+    } else {
+      validateSingleDurationRecalls(calculationOutput, ftrDetails, hasUnderTwelveMonthSentence, hasOverTwelveMonthSentence)
+    }
+  }
+
+  internal fun validateSingleDurationRecalls(
+    calculationOutput: CalculationOutput,
+    ftrDetails: FixedTermRecallDetails,
+    hasUnderTwelveMonthSentence: Boolean,
+    hasOverTwelveMonthSentence: Boolean,
+  ): MutableList<ValidationMessage> {
+    val messages = mutableListOf<ValidationMessage>()
     val recallLength = ftrDetails.recallLength
     val consecutiveSentences = calculationOutput.sentences.filterIsInstance<ConsecutiveSentence>()
 
     consecutiveSentences.forEach {
-      if (it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28) {
+      if (!hasUnderTwelveMonthSentence && it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28) {
         if (recallLength == 14 && it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS)) {
           messages += ValidationMessage(ValidationCode.FTR_14_DAYS_AGGREGATE_GE_12_MONTHS)
         }
@@ -201,7 +226,7 @@ class RecallValidationService(
     }
 
     consecutiveSentences.forEach {
-      if (it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28) {
+      if (!hasOverTwelveMonthSentence && (it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28)) {
         if (recallLength == 28 && it.durationIsLessThan(TWELVE, MONTHS)) {
           messages += ValidationMessage(
             ValidationCode.FTR_28_DAYS_AGGREGATE_LT_12_MONTHS,
@@ -211,100 +236,52 @@ class RecallValidationService(
     }
 
     consecutiveSentences.forEach {
-      if (it.recallType == FIXED_TERM_RECALL_28 && it.durationIsLessThan(TWELVE, MONTHS)) {
+      if (!hasOverTwelveMonthSentence && it.recallType == FIXED_TERM_RECALL_28 && it.durationIsLessThan(TWELVE, MONTHS)) {
         messages += ValidationMessage(ValidationCode.FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS)
       }
     }
 
     consecutiveSentences.forEach {
-      if (it.recallType == FIXED_TERM_RECALL_14 && it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS)) {
+      if (!hasUnderTwelveMonthSentence && it.recallType == FIXED_TERM_RECALL_14 && it.durationIsGreaterThanOrEqualTo(TWELVE, MONTHS)) {
         messages += ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS)
       }
     }
     return messages
   }
 
-  /**
-   * Validates recalls with sentences under and over 12 months for the following violations:
-   *
-   * 1. The current sentence is a 14-day recall and its duration is 12 months or greater.
-   * 2. A previous 14-day recall sentence exists and the gap between the return to custody date and the expiry date of the previous sentence is greater than 14 days.
-   * 3. A previous 28-day recall sentence exists and the gap between the return to custody date and the expiry date of the previous sentence is less than or equal to 14 days.
-   *
-   * @param calculationOutput
-   * @param booking
-   * @return A list of validation messages.
-   */
-  internal fun validateMixedDurations(
-    calculationOutput: CalculationOutput,
+  private fun validateMixedDurations(
+    ftrSentences: List<CalculableSentence>,
     booking: Booking,
   ): List<ValidationMessage> {
-    val mixedDurationRecall = getMixedDurationSled(calculationOutput, booking) ?: return emptyList()
-    val previous14DayRecallSentence = mixedDurationRecall.relatedSentences.lastOrNull { it.recallType == FIXED_TERM_RECALL_14 }
-    val previous28DayRecallSentence = mixedDurationRecall.relatedSentences.lastOrNull { it.recallType == FIXED_TERM_RECALL_28 }
+    val returnToCustodyDate = booking.returnToCustodyDate ?: return emptyList()
+    val latestSled = ftrSentences.maxBy { it.sentenceCalculation.adjustedExpiryDate }
 
-    when {
-      mixedDurationRecall.sledSentence.recallType == FIXED_TERM_RECALL_14 &&
-        mixedDurationRecall.sledSentence.durationIsGreaterThanOrEqualTo(12, MONTHS) -> {
-        return listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_SENTENCE_GT_12_MONTHS))
-      }
-
-      previous14DayRecallSentence != null &&
-        mixedDurationRecall.sledSentence.durationIsLessThan(12, MONTHS) &&
-        mixedDurationRecall.sledSentence.recallType == FIXED_TERM_RECALL_14 &&
-        abs(
-          ChronoUnit.DAYS.between(
-            mixedDurationRecall.returnToCustodyDate,
-            previous14DayRecallSentence.sentenceCalculation.expiryDate,
-          ),
-        ) >= 14 -> {
-        return listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_SENTENCE_GAP_GT_14_DAYS))
-      }
-
-      previous28DayRecallSentence != null &&
-        mixedDurationRecall.sledSentence.durationIsLessThan(12, MONTHS) &&
-        mixedDurationRecall.sledSentence.recallType == FIXED_TERM_RECALL_28 &&
-        abs(
-          ChronoUnit.DAYS.between(
-            mixedDurationRecall.returnToCustodyDate,
-            previous28DayRecallSentence.sentenceCalculation.expiryDate,
-          ),
-        ) <= 14 -> {
-        return listOf(ValidationMessage(ValidationCode.FTR_TYPE_28_DAYS_SENTENCE_GAP_LT_14_DAYS))
-      }
+    val sentencesOver12Months = ftrSentences.filter {
+      it !== latestSled && it.durationIsGreaterThanOrEqualTo(12, MONTHS)
     }
 
-    return emptyList()
-  }
+    val latestSledUnderTwelveMonths = latestSled.durationIsLessThan(TWELVE, MONTHS)
+    val latestSledOverTwelveMonths = !latestSledUnderTwelveMonths
 
-  /**
-   * Sentence matching the SLED date must exist
-   * Return to custody date must exist for valid recall
-   * Recall sentences must contain under and over 12 month durations
-   */
-  private fun getMixedDurationSled(calculationOutput: CalculationOutput, booking: Booking): MixedDurationRecall? {
-    val sled = calculationOutput.calculationResult.dates[ReleaseDateType.SLED] ?: return null
-    val returnToCustodyDate = booking.returnToCustodyDate ?: return null
+    return when {
+      latestSledOverTwelveMonths && latestSled.recallType == FIXED_TERM_RECALL_14 -> {
+        listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_SENTENCE_GT_12_MONTHS))
+      }
 
-    val fixedTermRecallSentences = calculationOutput.sentences.filter {
-      it.recallType == FIXED_TERM_RECALL_14 || it.recallType == FIXED_TERM_RECALL_28
-    }.sortedBy { it.sentencedAt }
+      latestSledUnderTwelveMonths && latestSled.recallType == FIXED_TERM_RECALL_14 && sentencesOver12Months.none {
+        abs(ChronoUnit.DAYS.between(returnToCustodyDate, it.sentenceCalculation.adjustedExpiryDate)) <= 14
+      } -> {
+        listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_SENTENCE_GAP_GT_14_DAYS))
+      }
 
-    if (
-      fixedTermRecallSentences.none { it.durationIsLessThan(12, MONTHS) } ||
-      fixedTermRecallSentences.none { it.durationIsGreaterThanOrEqualTo(12, MONTHS) }
-    ) {
-      return null
+      latestSledUnderTwelveMonths && latestSled.recallType == FIXED_TERM_RECALL_28 && sentencesOver12Months.any {
+        abs(ChronoUnit.DAYS.between(returnToCustodyDate, it.sentenceCalculation.adjustedExpiryDate)) <= 14
+      } -> {
+        listOf(ValidationMessage(ValidationCode.FTR_TYPE_28_DAYS_SENTENCE_GAP_LT_14_DAYS))
+      }
+
+      else -> emptyList()
     }
-
-    val sledSentence =
-      fixedTermRecallSentences.lastOrNull { it.sentenceCalculation.expiryDate == sled } ?: return null
-
-    return MixedDurationRecall(
-      relatedSentences = fixedTermRecallSentences.filterNot { it == sledSentence },
-      returnToCustodyDate = returnToCustodyDate,
-      sledSentence = sledSentence,
-    )
   }
 
   companion object {

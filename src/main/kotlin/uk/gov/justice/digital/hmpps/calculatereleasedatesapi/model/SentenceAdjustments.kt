@@ -44,6 +44,6 @@ data class SentenceAdjustments(
   }
 
   fun adjustmentsForFixedTermRecall(): Long {
-    return ualAfterFtr
+    return ualAfterFtr + awardedAfterDeterminateRelease
   }
 }
