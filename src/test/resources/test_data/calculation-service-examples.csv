@@ -16,7 +16,7 @@ alternative-release-point,14,,sds-45,,
 alternative-release-point,15,,sds-45,,
 alternative-release-point,16,,sds-45,,
 alternative-release-point,17,,sds-45,,
-alternative-release-point,18,,sds-45,,
+alternative-release-point,18,,sds-45,UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS,,
 alternative-release-point,19,,sds-45,,
 alternative-release-point,20,,sds-45,,
 alternative-release-point,21,,sds-45,,
@@ -239,7 +239,6 @@ custom-examples,crs-2062-sds40-tused-bug,,,,
 custom-examples,crs-2063-sds40-ftr-tused,,,,
 custom-examples,crs-2069,,,,
 custom-examples,crs-2072-sds40-recall-tused-bug,,,,
-custom-examples,crs-2082,,,,
 custom-examples,crs-2108-ual-preprod-bug,,,,
 custom-examples,crs-2130-ual-preprod-bug,,,,
 custom-examples,crs-2131-ada-crd-defaulting,,,,
@@ -269,7 +268,7 @@ custom-examples,crs-2169-ac4-1,,,,
 custom-examples,crs-2169-ac4-2,,,,
 custom-examples,crs-2169-reg-1,,,,
 custom-examples,crs-2210-concurrent-recall-ual-timeline-bug,,,,
-custom-examples,crs-2211,,,,
+custom-examples,crs-2211,,,ADJUSTMENT_AFTER_RELEASE_ADA,
 custom-examples,crs-2211-non-ora,,,,
 custom-examples,crs-2223-timeline-bug,,,,
 custom-examples,crs-2228-ual-after-crd-only-applies-to-recall-1,,,,
@@ -584,7 +583,7 @@ tranches,crs-2105-ac-4-1,,,,TRUE
 tranches,crs-2105-ac-4-2,,,,TRUE
 tranches,crs-2105-ac-4-3,,,,TRUE
 tranches,crs-2105-rwe-1,,,,TRUE
-tranches,crs-2105-rwe-2,,,,TRUE
+tranches,crs-2105-rwe-2,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE,TRUE
 tranches,crs-2105-rwe-3,,,,TRUE
 tranches,crs-2105-rwe-4,,,,TRUE
 tranches,crs-2105-rwe-5,,,,TRUE
@@ -610,7 +609,7 @@ tranches,crs-2192-ac2-1,,,,
 tranches,crs-2192-ac2-2,,,,
 tranches,crs-2202-ac1-1,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE,
 tranches,crs-2202-ac1-2,,,,TRUE
-tranches,crs-2202-ac1-3,,,,TRUE
+tranches,crs-2202-ac1-3,,,UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE,TRUE
 tranches,crs-2202-ac1-4,,,,TRUE
 tranches,crs-2202-ac1-5,,,,TRUE
 tranches,crs-2202-ac1-6,,,,TRUE
