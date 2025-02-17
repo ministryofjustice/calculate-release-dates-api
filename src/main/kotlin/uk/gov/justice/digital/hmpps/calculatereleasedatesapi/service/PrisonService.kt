@@ -35,16 +35,15 @@ class PrisonService(
   private val featureToggles: FeatureToggles,
 ) {
   //  The activeDataOnly flag is only used by a test endpoint (1000 calcs test, which is used to test historic data)
-  fun getPrisonApiSourceData(prisonerId: String, overrideSupportInactiveSentencesAndAdjustments: Boolean? = null): PrisonApiSourceData {
+  fun getPrisonApiSourceData(prisonerId: String, inactiveDataOptions: InactiveDataOptions): PrisonApiSourceData {
     val prisonerDetails = getOffenderDetail(prisonerId)
-    var activeOnly = overrideSupportInactiveSentencesAndAdjustments ?: featureToggles.supportInactiveSentencesAndAdjustments
-    activeOnly = activeOnly || prisonerDetails.agencyId != "OUT"
-    return getPrisonApiSourceData(prisonerDetails, activeOnly)
+    return getPrisonApiSourceData(prisonerDetails, inactiveDataOptions)
   }
 
-  fun getPrisonApiSourceData(prisonerDetails: PrisonerDetails, activeDataOnly: Boolean = true): PrisonApiSourceData {
-    val sentenceAndOffences = getSentencesAndOffences(prisonerDetails.bookingId, activeDataOnly)
-    val bookingAndSentenceAdjustments = getBookingAndSentenceAdjustments(prisonerDetails.bookingId, activeDataOnly)
+  fun getPrisonApiSourceData(prisonerDetails: PrisonerDetails, inactiveDataOptions: InactiveDataOptions): PrisonApiSourceData {
+    val activeOnly = inactiveDataOptions.activeOnly(featureToggles.supportInactiveSentencesAndAdjustments, prisonerDetails.agencyId)
+    val sentenceAndOffences = getSentencesAndOffences(prisonerDetails.bookingId, activeOnly)
+    val bookingAndSentenceAdjustments = getBookingAndSentenceAdjustments(prisonerDetails.bookingId, activeOnly)
     val bookingHasFixedTermRecall = sentenceAndOffences.any { from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
     val (ftrDetails, returnToCustodyDate) = getFixedTermRecallDetails(prisonerDetails.bookingId, bookingHasFixedTermRecall)
     val bookingHasAFine = sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == SentenceType.AFine }
@@ -176,5 +175,49 @@ class PrisonService(
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
+  }
+}
+
+/**
+ * Class to represent if inactive data should be included within calculation.
+ *
+ * 1. Inactive data is always included for OUT prisoners.
+ * 2. The default behaviour is defined by a feature toggle
+ * 3. Some endpoints override this behaviour because they require inactive data e.g. recalls, IR
+ */
+class InactiveDataOptions private constructor(
+  private val overrideToIncludeInactiveData: Boolean,
+) {
+
+  fun activeOnly(featureToggle: Boolean, agencyId: String): Boolean {
+    return !includeInactive(featureToggle, agencyId)
+  }
+
+  private fun includeInactive(featureToggle: Boolean, agencyId: String): Boolean {
+    return if (agencyId == "OUT") {
+      true
+    } else if (overrideToIncludeInactiveData) {
+      true
+    } else {
+      featureToggle
+    }
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as InactiveDataOptions
+
+    return overrideToIncludeInactiveData == other.overrideToIncludeInactiveData
+  }
+
+  override fun hashCode(): Int {
+    return overrideToIncludeInactiveData.hashCode()
+  }
+
+  companion object {
+    fun default(): InactiveDataOptions = InactiveDataOptions(false)
+    fun overrideToIncludeInactiveData(): InactiveDataOptions = InactiveDataOptions(true)
   }
 }

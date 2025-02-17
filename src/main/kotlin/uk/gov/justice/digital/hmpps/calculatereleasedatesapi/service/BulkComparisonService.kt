@@ -319,7 +319,6 @@ class BulkComparisonService(
     return calculationTransactionalService.validateAndCalculate(
       calculableSentenceEnvelope.person.prisonerNumber,
       calculationUserInput,
-      false,
       bulkCalculationReason,
       prisonApiSourceData,
     )

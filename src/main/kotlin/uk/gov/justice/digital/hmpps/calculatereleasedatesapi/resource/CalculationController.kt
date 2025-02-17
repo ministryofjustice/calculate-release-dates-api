@@ -40,6 +40,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationBreakdownService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationTransactionalService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.DetailedCalculationResultsService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.InactiveDataOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.LatestCalculationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.OffenderKeyDatesService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.RecallService
@@ -134,7 +135,7 @@ class CalculationController(
     val validationMessages = calculationTransactionalService.fullValidation(
       prisonerId,
       calculationRequestModel.calculationUserInputs ?: CalculationUserInputs(),
-      false,
+      InactiveDataOptions.overrideToIncludeInactiveData(),
     )
 
     return if (validationMessages.isNotEmpty()) {
@@ -144,7 +145,7 @@ class CalculationController(
         calculationTransactionalService.calculate(
           prisonerId,
           calculationRequestModel,
-          false,
+          InactiveDataOptions.overrideToIncludeInactiveData(),
           TEST,
         ),
       )
