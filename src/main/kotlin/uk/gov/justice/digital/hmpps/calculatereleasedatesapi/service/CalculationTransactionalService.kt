@@ -79,10 +79,10 @@ class CalculationTransactionalService(
   fun fullValidation(
     prisonerId: String,
     calculationUserInputs: CalculationUserInputs,
-    activeDataOnly: Boolean = true,
+    inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default(),
   ): List<ValidationMessage> {
     log.info("Full Validation for $prisonerId")
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, activeDataOnly)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, inactiveDataOptions)
     return fullValidationFromSourceData(sourceData, calculationUserInputs)
   }
 
@@ -118,7 +118,6 @@ class CalculationTransactionalService(
   fun validateAndCalculate(
     prisonerId: String,
     calculationUserInputs: CalculationUserInputs,
-    activeDataOnly: Boolean = true,
     calculationReason: CalculationReason,
     providedSourceData: PrisonApiSourceData,
     calculationType: CalculationStatus = PRELIMINARY,
@@ -145,20 +144,19 @@ class CalculationTransactionalService(
     return ValidationResult(messages, booking, calculatedReleaseDates, calculationResult)
   }
 
-  fun supportedValidation(prisonerId: String): List<ValidationMessage> {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
+  fun supportedValidation(prisonerId: String, inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default()): List<ValidationMessage> {
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, inactiveDataOptions)
     return validationService.validateSupportedSentencesAndCalculations(sourceData)
   }
 
-  //  The activeDataOnly flag is only used by a test endpoint (1000 calcs test, which is used to test historic data)
   @Transactional
   fun calculate(
     prisonerId: String,
     calculationRequestModel: CalculationRequestModel,
-    overrideSupportInactiveSentencesAndAdjustments: Boolean? = null,
+    inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default(),
     calculationType: CalculationStatus = PRELIMINARY,
   ): CalculatedReleaseDates {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, overrideSupportInactiveSentencesAndAdjustments)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, inactiveDataOptions)
     val calculationUserInputs = calculationRequestModel.calculationUserInputs ?: CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     val reasonForCalculation = calculationReasonRepository.findById(calculationRequestModel.calculationReasonId)
@@ -198,7 +196,7 @@ class CalculationTransactionalService(
       ).orElseThrow {
         EntityNotFoundException("No preliminary calculation exists for calculationRequestId $calculationRequestId")
       }
-    val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId)
+    val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId, InactiveDataOptions.default())
     val userInput = transform(calculationRequest.calculationRequestUserInput)
     val booking = bookingService.getBooking(sourceData, userInput)
 
@@ -507,7 +505,7 @@ class CalculationTransactionalService(
 
     return if (checkForChange) {
       log.info("Checking for change in data")
-      val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId)
+      val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId, InactiveDataOptions.default())
       val originalCalculationAdjustments =
         objectMapper.treeToValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
       val originalPrisonerDetails =
@@ -532,7 +530,7 @@ class CalculationTransactionalService(
   }
 
   fun validateForManualBooking(prisonerId: String): List<ValidationMessage> {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, InactiveDataOptions.default())
     return validationService.validateSentenceForManualEntry(sourceData.sentenceAndOffences)
   }
 

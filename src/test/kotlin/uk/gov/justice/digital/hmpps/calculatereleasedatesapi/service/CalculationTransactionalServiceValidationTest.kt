@@ -49,7 +49,7 @@ class CalculationTransactionalServiceValidationTest {
     val calculationOutput = CalculationOutput(listOf(), listOf(), mock<CalculationResult>())
 
     // Mocking the behaviour of services
-    whenever(prisonService.getPrisonApiSourceData(prisonerId, true)).thenReturn(fakeSourceData)
+    whenever(prisonService.getPrisonApiSourceData(prisonerId, InactiveDataOptions.default())).thenReturn(fakeSourceData)
     whenever(validationService.validateBeforeCalculation(any(), eq(calculationUserInputs))).thenReturn(fakeMessages)
     whenever(bookingService.getBooking(any(), eq(calculationUserInputs))).thenReturn(BOOKING)
     whenever(calculationService.calculateReleaseDates(any(), eq(calculationUserInputs))).thenReturn(calculationOutput)

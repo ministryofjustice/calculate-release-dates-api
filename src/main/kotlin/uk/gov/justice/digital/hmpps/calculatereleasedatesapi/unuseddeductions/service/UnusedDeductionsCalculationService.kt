@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Unus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.BookingService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.CalculationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.InactiveDataOptions
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.temporal.ChronoUnit
@@ -28,7 +29,7 @@ class UnusedDeductionsCalculationService(
 
   fun calculate(adjustments: List<AdjustmentServiceAdjustment>, offenderNo: String): UnusedDeductionCalculationResponse {
     val prisoner = prisonService.getOffenderDetail(offenderNo)
-    val sourceData = prisonService.getPrisonApiSourceData(prisoner).copy(bookingAndSentenceAdjustments = useAdjustmentsFromAdjustmentsApi(adjustments))
+    val sourceData = prisonService.getPrisonApiSourceData(prisoner, InactiveDataOptions.default()).copy(bookingAndSentenceAdjustments = useAdjustmentsFromAdjustmentsApi(adjustments))
 
     val calculationUserInputs = CalculationUserInputs(useOffenceIndicators = true)
 

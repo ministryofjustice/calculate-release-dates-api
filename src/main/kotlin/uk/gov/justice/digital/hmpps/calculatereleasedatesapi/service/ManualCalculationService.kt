@@ -59,7 +59,7 @@ class ManualCalculationService(
     manualEntryRequest: ManualEntryRequest,
     isGenuineOverride: Boolean = false,
   ): ManualCalculationResponse {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId)
+    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, InactiveDataOptions.default())
     val calculationUserInputs = CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
 
