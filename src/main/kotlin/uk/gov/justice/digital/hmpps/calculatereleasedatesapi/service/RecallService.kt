@@ -25,7 +25,7 @@ class RecallService(
     return calculationTransactionalService.calculate(
       prisonerId,
       calculationRequestModel,
-      overrideSupportInactiveSentencesAndAdjustments = false,
+      InactiveDataOptions.overrideToIncludeInactiveData(),
       calculationType = RECORD_A_RECALL,
     )
   }
