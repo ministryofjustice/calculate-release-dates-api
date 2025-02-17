@@ -41,7 +41,7 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   FTR_TYPE_14_DAYS_AGGREGATE_GE_12_MONTHS("The aggregate sentence length for the consecutive sentences is 12 months or more, so the fixed term sentence type should be 28 days."),
   FTR_TYPE_14_DAYS_SENTENCE_GT_12_MONTHS("<h4>Incorrect recall term</h4><p>A 14-day fixed term recall has been selected.</p><p>Based on the sentence information, this should be a 28-day fixed term recall.</p><p>Change the fixed term recall to 28 days.</p><br/>"),
   FTR_TYPE_14_DAYS_SENTENCE_GAP_GT_14_DAYS("<h4>Incorrect recall term</h4><p>A 14-day fixed term recall has been selected.</p><p>Based on the sentence information, this should be a 28-day fixed term recall.</p><p>Change the fixed term recall to 28 days.</p><br/>"),
-  FTR_TYPE_28_DAYS_SENTENCE_GAP_LT_14_DAYS("<h4>Incorrect recall term</h4><p>A 28-day fixed term recall has been selected.</p><p>Based on the sentence information, this should be a 28-day fixed term recall.</p><p>Change the fixed term recall to 14 days.</p><br/>"),
+  FTR_TYPE_28_DAYS_SENTENCE_GAP_LT_14_DAYS("<h4>Incorrect recall term</h4><p>A 28-day fixed term recall has been selected.</p><p>Based on the sentence information, this should be a 14-day fixed term recall.</p><p>Change the fixed term recall to 14 days.</p><br/>"),
   FTR_TYPE_28_DAYS_SENTENCE_LT_12_MONTHS("The sentence length is less than 12 months, so the fixed term sentence type should be 14 days."),
   FTR_TYPE_28_DAYS_AGGREGATE_LT_12_MONTHS("The aggregate sentence length for the consecutive sentences is less than 12 months, so the fixed term sentence type should be 14 days."),
   LASPO_AR_SENTENCE_TYPE_INCORRECT("The sentence type for court case %s count %s is invalid for the sentence date entered."),
