@@ -54,6 +54,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TERSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.Tariff
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.MissingTermException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoOffenceDatesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
@@ -147,25 +148,7 @@ fun transform(
     }
 
     val sentenceCalculationType = SentenceCalculationType.from(sentence.sentenceCalculationType)
-    when (val typeClazz: Class<out AbstractSentence>? = sentenceCalculationType.sentenceType?.sentenceClazz) {
-      StandardDeterminateSentence::class.java -> {
-        StandardDeterminateSentence(
-          sentencedAt = sentence.sentenceDate,
-          duration = transform(sentence.terms[0]),
-          offence = offence,
-          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-          caseSequence = sentence.caseSequence,
-          lineSequence = sentence.lineSequence,
-          caseReference = sentence.caseReference,
-          recallType = sentenceCalculationType.recallType,
-          isSDSPlus = sentence.isSDSPlus,
-          isSDSPlusEligibleSentenceTypeLengthAndOffence = sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence,
-          isSDSPlusOffenceInPeriod = sentence.isSDSPlusOffenceInPeriod,
-          hasAnSDSEarlyReleaseExclusion = sentence.hasAnSDSEarlyReleaseExclusion,
-        )
-      }
-
+    when (sentenceCalculationType.sentenceType?.sentenceClazz) {
       AFineSentence::class.java -> {
         AFineSentence(
           sentencedAt = sentence.sentenceDate,
@@ -209,43 +192,66 @@ fun transform(
         )
       }
 
+      ExtendedDeterminateSentence::class.java -> {
+        val imprisonmentTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
+          ?: throw MissingTermException("Missing IMPRISONMENT_TERM_CODE for ExtendedDeterminateSentence")
+        val licenseTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.LICENCE_TERM_CODE }
+          ?: throw MissingTermException("Missing LICENCE_TERM_CODE for ExtendedDeterminateSentence")
+
+        ExtendedDeterminateSentence(
+          sentencedAt = sentence.sentenceDate,
+          custodialDuration = transform(imprisonmentTerm),
+          extensionDuration = transform(licenseTerm),
+          automaticRelease = sentenceCalculationType == SentenceCalculationType.LASPO_AR,
+          offence = offence,
+          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+          caseSequence = sentence.caseSequence,
+          lineSequence = sentence.lineSequence,
+          caseReference = sentence.caseReference,
+          recallType = sentenceCalculationType.recallType,
+        )
+      }
+
+      // SopcSentence
+      SopcSentence::class.java -> {
+        val imprisonmentTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
+          ?: throw MissingTermException("Missing IMPRISONMENT_TERM_CODE for SopcSentence")
+        val licenseTerm = sentence.terms.firstOrNull { it.code == SentenceTerms.LICENCE_TERM_CODE }
+          ?: throw MissingTermException("Missing LICENCE_TERM_CODE for SopcSentence")
+
+        SopcSentence(
+          sentencedAt = sentence.sentenceDate,
+          custodialDuration = transform(imprisonmentTerm),
+          extensionDuration = transform(licenseTerm),
+          sdopcu18 = sentenceCalculationType == SentenceCalculationType.SDOPCU18,
+          offence = offence,
+          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+          caseSequence = sentence.caseSequence,
+          lineSequence = sentence.lineSequence,
+          caseReference = sentence.caseReference,
+          recallType = sentenceCalculationType.recallType,
+        )
+      }
+
+      // Fallback Sentence
       else -> {
-        val imprisonmentTerm = sentence.terms.first { it.code == SentenceTerms.IMPRISONMENT_TERM_CODE }
-        val licenseTerm = sentence.terms.first { it.code == SentenceTerms.LICENCE_TERM_CODE }
-
-        when (typeClazz) {
-          ExtendedDeterminateSentence::class.java -> {
-            ExtendedDeterminateSentence(
-              sentencedAt = sentence.sentenceDate,
-              custodialDuration = transform(imprisonmentTerm),
-              extensionDuration = transform(licenseTerm),
-              automaticRelease = sentenceCalculationType == SentenceCalculationType.LASPO_AR,
-              offence = offence,
-              identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-              consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-              caseSequence = sentence.caseSequence,
-              lineSequence = sentence.lineSequence,
-              caseReference = sentence.caseReference,
-              recallType = sentenceCalculationType.recallType,
-            )
-          }
-
-          else -> {
-            SopcSentence(
-              sentencedAt = sentence.sentenceDate,
-              custodialDuration = transform(imprisonmentTerm),
-              extensionDuration = transform(licenseTerm),
-              sdopcu18 = sentenceCalculationType == SentenceCalculationType.SDOPCU18,
-              offence = offence,
-              identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
-              consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
-              caseSequence = sentence.caseSequence,
-              lineSequence = sentence.lineSequence,
-              caseReference = sentence.caseReference,
-              recallType = sentenceCalculationType.recallType,
-            )
-          }
-        }
+        StandardDeterminateSentence(
+          sentencedAt = sentence.sentenceDate,
+          duration = transform(sentence.terms.first()),
+          offence = offence,
+          identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
+          consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,
+          caseSequence = sentence.caseSequence,
+          lineSequence = sentence.lineSequence,
+          caseReference = sentence.caseReference,
+          recallType = sentenceCalculationType.recallType,
+          isSDSPlus = sentence.isSDSPlus,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = sentence.isSDSPlusEligibleSentenceTypeLengthAndOffence,
+          isSDSPlusOffenceInPeriod = sentence.isSDSPlusOffenceInPeriod,
+          hasAnSDSEarlyReleaseExclusion = sentence.hasAnSDSEarlyReleaseExclusion,
+        )
       }
     }
   }
