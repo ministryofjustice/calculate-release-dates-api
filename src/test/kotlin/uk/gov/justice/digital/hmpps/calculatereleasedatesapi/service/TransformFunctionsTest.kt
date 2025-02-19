@@ -5,6 +5,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
@@ -23,16 +25,30 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ESED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.AFine
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.Botus
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.DetentionAndTrainingOrder
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.ExtendedDeterminate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.Indeterminate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.Sopc
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.StandardDeterminate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.MissingTermException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoOffenceDatesProvidedException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.BotusSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Alert
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
@@ -383,6 +399,178 @@ class TransformFunctionsTest {
     assertTrue(comparisonMismatchSummary.mismatches[0].validationMessages.contains(ValidationMessage(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE)))
   }
 
+  @ParameterizedTest
+  @EnumSource(SentenceCalculationType::class)
+  fun `Transform expected sentence types`(type: SentenceCalculationType) {
+    val sequence = 153
+    val lineSequence = 154
+    val caseSequence = 155
+    val offence = OffenderOffence(
+      offenderChargeId = 1L,
+      offenceStartDate = FIRST_JAN_2015,
+      offenceEndDate = SECOND_JAN_2015,
+      offenceCode = "RR1",
+      offenceDescription = "Littering",
+    )
+    val request = SentenceAndOffenceWithReleaseArrangements(
+      PrisonApiSentenceAndOffences(
+        bookingId = BOOKING_ID,
+        sentenceSequence = sequence,
+        sentenceDate = FIRST_JAN_2015,
+        terms = listOf(
+          SentenceTerms(
+            years = 1,
+          ),
+          SentenceTerms(
+            years = 1,
+            code = SentenceTerms.LICENCE_TERM_CODE,
+          ),
+        ),
+        sentenceStatus = "IMP",
+        sentenceCategory = "CAT",
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+        sentenceTypeDescription = "Generic",
+        offences = listOf(offence),
+        lineSequence = lineSequence,
+        caseSequence = caseSequence,
+      ),
+      offence,
+      isSdsPlus = true,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+      isSDSPlusOffenceInPeriod = true,
+      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+
+    val sentenceInstance = transform(request.copy(sentenceCalculationType = type.name), null)
+
+    when (type.sentenceType) {
+      ExtendedDeterminate -> {
+        assertThat(sentenceInstance).isInstanceOf(ExtendedDeterminateSentence::class.java)
+      }
+      Sopc -> {
+        assertThat(sentenceInstance).isInstanceOf(SopcSentence::class.java)
+      }
+      AFine -> {
+        assertThat(sentenceInstance).isInstanceOf(AFineSentence::class.java)
+      }
+      DetentionAndTrainingOrder -> {
+        assertThat(sentenceInstance).isInstanceOf(DetentionAndTrainingOrderSentence::class.java)
+      }
+      Botus -> {
+        assertThat(sentenceInstance).isInstanceOf(BotusSentence::class.java)
+      }
+      StandardDeterminate -> {
+        assertThat(sentenceInstance).isInstanceOf(StandardDeterminateSentence::class.java)
+      }
+      Indeterminate -> {
+        assertThat(sentenceInstance).isInstanceOf(StandardDeterminateSentence::class.java)
+      }
+      null -> {
+        assertThat(sentenceInstance).isInstanceOf(StandardDeterminateSentence::class.java)
+      }
+    }
+  }
+
+  @Test
+  fun `SentenceTypes have expected Recall Type`() {
+    val sequence = 153
+    val lineSequence = 154
+    val caseSequence = 155
+    val offence = OffenderOffence(
+      offenderChargeId = 1L,
+      offenceStartDate = FIRST_JAN_2015,
+      offenceEndDate = SECOND_JAN_2015,
+      offenceCode = "RR1",
+      offenceDescription = "Littering",
+    )
+    val request = SentenceAndOffenceWithReleaseArrangements(
+      PrisonApiSentenceAndOffences(
+        bookingId = BOOKING_ID,
+        sentenceSequence = sequence,
+        sentenceDate = FIRST_JAN_2015,
+        terms = listOf(
+          SentenceTerms(
+            years = 1,
+          ),
+        ),
+        sentenceStatus = "IMP",
+        sentenceCategory = "CAT",
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+        sentenceTypeDescription = "Generic",
+        offences = listOf(offence),
+        lineSequence = lineSequence,
+        caseSequence = caseSequence,
+      ),
+      offence,
+      isSdsPlus = true,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+      isSDSPlusOffenceInPeriod = true,
+      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+    val expectedSentence = StandardDeterminateSentence(
+      sentencedAt = FIRST_JAN_2015,
+      duration = ONE_YEAR_DURATION,
+      offence = Offence(committedAt = SECOND_JAN_2015, offenceCode = "RR1"),
+      recallType = RecallType.FIXED_TERM_RECALL_14,
+      identifier = UUID.nameUUIDFromBytes(("$BOOKING_ID-$sequence").toByteArray()),
+      lineSequence = lineSequence,
+      caseSequence = caseSequence,
+      isSDSPlus = true,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+      isSDSPlusOffenceInPeriod = true,
+      hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+
+    for ((sentenceType, recallType) in SentenceRecallTypePairs) {
+      assertThat(transform(request.copy(sentenceCalculationType = sentenceType), null))
+        .isEqualTo(expectedSentence.copy(recallType = recallType))
+    }
+  }
+
+  @Test
+  fun `Transform throws exception for missing sentence terms needed for EDS sentence`() {
+    val sequence = 153
+    val lineSequence = 154
+    val caseSequence = 155
+    val offence = OffenderOffence(
+      offenderChargeId = 1L,
+      offenceStartDate = FIRST_JAN_2015,
+      offenceEndDate = SECOND_JAN_2015,
+      offenceCode = "RR1",
+      offenceDescription = "Littering",
+    )
+    val request = SentenceAndOffenceWithReleaseArrangements(
+      PrisonApiSentenceAndOffences(
+        bookingId = BOOKING_ID,
+        sentenceSequence = sequence,
+        sentenceDate = FIRST_JAN_2015,
+        terms = listOf(),
+        sentenceStatus = "IMP",
+        sentenceCategory = "CAT",
+        sentenceCalculationType = SentenceCalculationType.EDSU18.name,
+        sentenceTypeDescription = "Generic",
+        offences = listOf(offence),
+        lineSequence = lineSequence,
+        caseSequence = caseSequence,
+      ),
+      offence,
+      isSdsPlus = true,
+      isSDSPlusEligibleSentenceTypeLengthAndOffence = true,
+      isSDSPlusOffenceInPeriod = true,
+      hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+    )
+
+    val exceptionImpCode = assertThrows<MissingTermException> {
+      transform(request, null)
+    }
+    assertThat(exceptionImpCode.message).isEqualTo("Missing IMPRISONMENT_TERM_CODE for ExtendedDeterminateSentence")
+
+    val exceptionLicCode = assertThrows<MissingTermException> {
+      transform(request.copy(terms = listOf(SentenceTerms(years = 1))), null)
+    }
+    assertThat(exceptionLicCode.message).isEqualTo("Missing LICENCE_TERM_CODE for ExtendedDeterminateSentence")
+  }
+
   private fun getComparisonPerson(validationMessages: List<ValidationMessage>? = emptyList()): ComparisonPerson {
     val comparisonPerson = ComparisonPerson(
       id = 1,
@@ -450,6 +638,7 @@ class TransformFunctionsTest {
   }
 
   private companion object {
+    val ONE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 1L))
     val FIVE_YEAR_DURATION = Duration(mutableMapOf(DAYS to 0L, WEEKS to 0L, MONTHS to 0L, YEARS to 5L))
     val FIRST_JAN_2015: LocalDate = LocalDate.of(2015, 1, 1)
     val SECOND_JAN_2015: LocalDate = LocalDate.of(2015, 1, 2)
@@ -458,7 +647,8 @@ class TransformFunctionsTest {
     private const val BOOKING_ID = 12345L
     private val CALCULATION_REFERENCE: UUID = UUID.randomUUID()
     private const val CALCULATION_REQUEST_ID = 100011L
-    val CALCULATION_REASON = CalculationReason(-1, true, false, "Reason", false, "UPDATE", nomisComment = "NOMIS_COMMENT", null)
+    val CALCULATION_REASON =
+      CalculationReason(-1, true, false, "Reason", false, "UPDATE", nomisComment = "NOMIS_COMMENT", null)
 
     val CALCULATION_REQUEST = CalculationRequest(
       id = CALCULATION_REQUEST_ID,
@@ -515,6 +705,80 @@ class TransformFunctionsTest {
       dateOfBirth = DOB,
       firstName = "Harry",
       lastName = "Houdini",
+    )
+
+    val SentenceRecallTypePairs = listOf(
+      Pair("ADIMP", null),
+      Pair("ADIMP_ORA", null),
+      Pair("YOI", null),
+      Pair("YOI_ORA", null),
+      Pair("SEC250", null),
+      Pair("SEC250_ORA", null),
+      Pair("SEC91_03", null),
+      Pair("SEC91_03_ORA", null),
+      Pair("LR", RecallType.STANDARD_RECALL),
+      Pair("LR_ORA", RecallType.STANDARD_RECALL),
+      Pair("LR_YOI_ORA", RecallType.STANDARD_RECALL),
+      Pair("LR_SEC91_ORA", RecallType.STANDARD_RECALL),
+      Pair("LRSEC250_ORA", RecallType.STANDARD_RECALL),
+      Pair("FTR_14_ORA", RecallType.FIXED_TERM_RECALL_14),
+      Pair("FTR", RecallType.FIXED_TERM_RECALL_28),
+      Pair("FTR_ORA", RecallType.FIXED_TERM_RECALL_28),
+      Pair("FTR_SCH15", RecallType.FIXED_TERM_RECALL_28),
+      Pair("FTRSCH15_ORA", RecallType.FIXED_TERM_RECALL_28),
+      Pair("FTRSCH18", RecallType.FIXED_TERM_RECALL_28),
+      Pair("FTRSCH18_ORA", RecallType.FIXED_TERM_RECALL_28),
+      Pair("IPP", null),
+      Pair("LIFE", null),
+      Pair("LIFE_IPP", null),
+      Pair("MLP", null),
+      Pair("DLP", null),
+      Pair("ALP", null),
+      Pair("LEGACY", null),
+      Pair("HMPL", null),
+      Pair("DFL", null),
+      Pair("ALP_LASPO", null),
+      Pair("SEC94", null),
+      Pair("SEC93_03", null),
+      Pair("ALP_CODE18", null),
+      Pair("DPP", null),
+      Pair("SEC272", null),
+      Pair("SEC275", null),
+      Pair("ALP_CODE21", null),
+      Pair("ZMD", null),
+      Pair("SEC93", null),
+      Pair("TWENTY", null),
+      Pair("LR_IPP", RecallType.STANDARD_RECALL),
+      Pair("LR_LIFE", RecallType.STANDARD_RECALL),
+      Pair("LR_ALP", RecallType.STANDARD_RECALL),
+      Pair("LR_DLP", RecallType.STANDARD_RECALL),
+      Pair("LR_MLP", RecallType.STANDARD_RECALL),
+      Pair("LR_DPP", RecallType.STANDARD_RECALL),
+      Pair("LR_ALP_CDE18", RecallType.STANDARD_RECALL),
+      Pair("LR_ALP_CDE21", RecallType.STANDARD_RECALL),
+      Pair("LR_ALP_LASPO", RecallType.STANDARD_RECALL),
+      Pair("NP", null),
+      Pair("CR", null),
+      Pair("AR", null),
+      Pair("EPP", null),
+      Pair("CIVIL", null),
+      Pair("EXT", null),
+      Pair("YRO", null),
+      Pair("SEC91", null),
+      Pair("VOO", null),
+      Pair("TISCS", null),
+      Pair("STS21", null),
+      Pair("STS18", null),
+      Pair("FTR_HDC", RecallType.FIXED_TERM_RECALL_14),
+      Pair("LR_ES", RecallType.STANDARD_RECALL),
+      Pair("LR_EPP", RecallType.STANDARD_RECALL),
+      Pair("FTR_HDC_ORA", RecallType.FIXED_TERM_RECALL_28),
+      Pair("FTR_14_HDC_ORA", RecallType.FIXED_TERM_RECALL_14),
+      Pair("HDR_ORA", RecallType.STANDARD_RECALL_255),
+      Pair("HDR", RecallType.STANDARD_RECALL_255),
+      Pair("CUR", RecallType.STANDARD_RECALL_255),
+      Pair("CUR_ORA", RecallType.STANDARD_RECALL_255),
+      Pair("UNIDENTIFIED", null),
     )
   }
 }
