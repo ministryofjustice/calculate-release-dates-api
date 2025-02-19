@@ -5,6 +5,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
@@ -27,7 +29,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Senten
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.Botus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.DetentionAndTrainingOrder
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.ExtendedDeterminate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.Indeterminate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.Sopc
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType.StandardDeterminate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.MissingTermException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoOffenceDatesProvidedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
@@ -395,8 +399,9 @@ class TransformFunctionsTest {
     assertTrue(comparisonMismatchSummary.mismatches[0].validationMessages.contains(ValidationMessage(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE)))
   }
 
-  @Test
-  fun `Transform expected sentence types`() {
+  @ParameterizedTest
+  @EnumSource(SentenceCalculationType::class)
+  fun `Transform expected sentence types`(type: SentenceCalculationType) {
     val sequence = 153
     val lineSequence = 154
     val caseSequence = 155
@@ -436,38 +441,38 @@ class TransformFunctionsTest {
       hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
-    for ((sentenceTypeString, sentenceType) in SentenceTypePairs) {
-      when (sentenceType) {
-        ExtendedDeterminate -> {
-          assertThat(transform(request.copy(sentenceCalculationType = sentenceTypeString), null))
-            .isInstanceOf(ExtendedDeterminateSentence::class.java)
-        }
-        Sopc -> {
-          assertThat(transform(request.copy(sentenceCalculationType = sentenceTypeString), null))
-            .isInstanceOf(SopcSentence::class.java)
-        }
-        AFine -> {
-          assertThat(transform(request.copy(sentenceCalculationType = sentenceTypeString), null))
-            .isInstanceOf(AFineSentence::class.java)
-        }
-        DetentionAndTrainingOrder -> {
-          assertThat(transform(request.copy(sentenceCalculationType = sentenceTypeString), null))
-            .isInstanceOf(DetentionAndTrainingOrderSentence::class.java)
-        }
-        Botus -> {
-          assertThat(transform(request.copy(sentenceCalculationType = sentenceTypeString), null))
-            .isInstanceOf(BotusSentence::class.java)
-        }
-        else -> {
-          assertThat(transform(request.copy(sentenceCalculationType = sentenceTypeString), null))
-            .isInstanceOf(ExtendedDeterminateSentence::class.java)
-        }
+    val sentenceInstance = transform(request.copy(sentenceCalculationType = type.name), null)
+
+    when (type.sentenceType) {
+      ExtendedDeterminate -> {
+        assertThat(sentenceInstance).isInstanceOf(ExtendedDeterminateSentence::class.java)
+      }
+      Sopc -> {
+        assertThat(sentenceInstance).isInstanceOf(SopcSentence::class.java)
+      }
+      AFine -> {
+        assertThat(sentenceInstance).isInstanceOf(AFineSentence::class.java)
+      }
+      DetentionAndTrainingOrder -> {
+        assertThat(sentenceInstance).isInstanceOf(DetentionAndTrainingOrderSentence::class.java)
+      }
+      Botus -> {
+        assertThat(sentenceInstance).isInstanceOf(BotusSentence::class.java)
+      }
+      StandardDeterminate -> {
+        assertThat(sentenceInstance).isInstanceOf(StandardDeterminateSentence::class.java)
+      }
+      Indeterminate -> {
+        assertThat(sentenceInstance).isInstanceOf(StandardDeterminateSentence::class.java)
+      }
+      null -> {
+        assertThat(sentenceInstance).isInstanceOf(StandardDeterminateSentence::class.java)
       }
     }
   }
 
   @Test
-  fun `Transform using default StandardDeterminateSentence for unsupported CRDS sentences`() {
+  fun `SentenceTypes have expected Recall Type`() {
     val sequence = 153
     val lineSequence = 154
     val caseSequence = 155
@@ -516,7 +521,7 @@ class TransformFunctionsTest {
       hasAnSDSEarlyReleaseExclusion = SDSEarlyReleaseExclusionType.NO,
     )
 
-    for ((sentenceType, recallType) in StandardDeterminateSentenceTypePairs) {
+    for ((sentenceType, recallType) in SentenceRecallTypePairs) {
       assertThat(transform(request.copy(sentenceCalculationType = sentenceType), null))
         .isEqualTo(expectedSentence.copy(recallType = recallType))
     }
@@ -702,31 +707,7 @@ class TransformFunctionsTest {
       lastName = "Houdini",
     )
 
-    val SentenceTypePairs = listOf(
-      Pair("LASPO_AR", ExtendedDeterminate),
-      Pair("LASPO_DR", ExtendedDeterminate),
-      Pair("EDS18", ExtendedDeterminate),
-      Pair("EDS21", ExtendedDeterminate),
-      Pair("EDSU18", ExtendedDeterminate),
-      Pair("SDOPCU18", Sopc),
-      Pair("SOPC18", Sopc),
-      Pair("SOPC21", Sopc),
-      Pair("SEC236A", Sopc),
-      Pair("AFINE", AFine),
-      Pair("DTO", DetentionAndTrainingOrder),
-      Pair("DTO_ORA", DetentionAndTrainingOrder),
-      Pair("BOTUS", Botus),
-      Pair("LR_EDS18", ExtendedDeterminate),
-      Pair("LR_EDS21", ExtendedDeterminate),
-      Pair("LR_EDSU18", ExtendedDeterminate),
-      Pair("LR_LASPO_AR", ExtendedDeterminate),
-      Pair("LR_LASPO_DR", ExtendedDeterminate),
-      Pair("LR_SEC236A", Sopc),
-      Pair("LR_SOPC18", Sopc),
-      Pair("LR_SOPC21", Sopc),
-    )
-
-    val StandardDeterminateSentenceTypePairs = listOf(
+    val SentenceRecallTypePairs = listOf(
       Pair("ADIMP", null),
       Pair("ADIMP_ORA", null),
       Pair("YOI", null),
