@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggl
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
@@ -46,32 +47,46 @@ class PostCalculationValidationService(
   internal fun validateSHPOContainingSX03Offences(
     booking: Booking,
     calculationOutput: CalculationOutput,
-  ): List<ValidationMessage> {
-    val matchingSentences = calculationOutput.sentences
-      .filter {
-        it.sentenceCalculation.adjustedDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate)
-      }
-      .flatMap { if (it is ConsecutiveSentence) it.orderedSentences else listOf(it) }
-      .filter {
-        it is StandardDeterminateSentence &&
-          !it.isSDSPlus &&
-          shpoSX03OffenceCodes.contains(it.offence.offenceCode) &&
-          it.offence.committedAt.isAfterOrEqualTo(shpoBreachOffenceFromDate)
-      }
-
-    // The result having a tranche other than 0 would mean it falls under the SDS40 criteria for assessment,
-    // However the tranche may be 0 for sentences after tranche 1.
-    if (matchingSentences.isNotEmpty() && (
+  ): List<ValidationMessage> = calculationOutput.sentences
+    .filter(::filterSXOffences)
+    .filter(::filterSXOffenceDates)
+    .ifEmpty { return emptyList() }
+    .let { shpoList ->
+      if (
         calculationOutput.calculationResult.sdsEarlyReleaseTranche != SDSEarlyReleaseTranche.TRANCHE_0 ||
-          matchingSentences.any { it.sentencedAt.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate) }
-        )
-    ) {
-      log.info("Unable to determine release provision for SHPO SX03 offence for ${booking.bookingId}")
-      return listOf(ValidationMessage(ValidationCode.UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS))
+        shpoList.any { it.sentencedAt.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate) }
+      ) {
+        log.info("Unable to determine release provision for SHPO SX03 offence for ${booking.bookingId}")
+        listOf(ValidationMessage(ValidationCode.UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS))
+      } else {
+        emptyList()
+      }
     }
 
-    return emptyList()
+  /**
+   * Only return SX03 offences where the offence is NOT SDS-Plus
+   * AND the offence is committed between the SHPO breach offence commencement date and the Tranche 3 commencement date
+   *
+   * This is a period of time when SDS-40 may or may not apply
+   */
+  private fun filterSXOffences(sentence: CalculableSentence): Boolean = sentence.sentenceParts().any {
+    it is StandardDeterminateSentence &&
+      !it.isSDSPlus &&
+      shpoSX03OffenceCodes.contains(it.offence.offenceCode) &&
+      (it.offence.committedAt >= shpoBreachOffenceFromDate && it.offence.committedAt <= trancheConfiguration.trancheThreeCommencementDate)
   }
+
+  /**
+   * Only return where sentence is post SDS-40 commencement date AND
+   * is either a Recall with a top-up supervision date OR the sentence is not a Recall
+   * AND the release date is before the Tranche 3 commencement date
+   *
+   * All releases post Tranche 3 commencement date are SDS-50
+   */
+  private fun filterSXOffenceDates(sentence: CalculableSentence): Boolean =
+    sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isAfterOrEqualTo(trancheConfiguration.trancheOneCommencementDate) &&
+      sentence.sentenceCalculation.adjustedDeterminateReleaseDate.isBefore(trancheConfiguration.trancheThreeCommencementDate) &&
+      (!sentence.isRecall() || sentence.sentenceCalculation.topUpSupervisionDate != null)
 
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
