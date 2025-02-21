@@ -80,6 +80,14 @@ class TusedCalculator(val workingDayService: WorkingDayService) {
     )
   }
 
+  fun getCalculationBreakdownForBotus(sentenceCalculation: SentenceCalculation): ReleaseDateCalculationBreakdown =
+    ReleaseDateCalculationBreakdown(
+      rules = setOf(CalculationRule.BOTUS_LATEST_TUSED_USED) + if (sentenceCalculation.isImmediateRelease()) setOf(CalculationRule.IMMEDIATE_RELEASE) else emptySet(),
+      adjustedDays = getAdjustedDays(sentenceCalculation),
+      releaseDate = sentenceCalculation.topUpSupervisionDate!!,
+      unadjustedDate = sentenceCalculation.unadjustedDeterminateReleaseDate,
+    )
+
   private fun getAdjustedDays(sentenceCalculation: SentenceCalculation): Long {
     return sentenceCalculation.adjustments.adjustmentsForInitialReleaseWithoutAwarded()
   }
