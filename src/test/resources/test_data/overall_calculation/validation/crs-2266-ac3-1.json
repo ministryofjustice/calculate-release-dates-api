@@ -1,0 +1,34 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "type": "FIXED_TERM_RECALL_14",
+        "committedAt": "2024-09-10",
+        "offenceCode": "SX03244"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 3
+        }
+      },
+      "sentencedAt": "2024-09-11",
+      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8114",
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+    }
+  ],
+  "returnToCustodyDate": "2024-12-18",
+  "adjustments": {
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "appliesToSentencesFrom": "2024-09-13",
+        "numberOfDays": 50,
+        "fromDate": "2024-09-13",
+        "toDate": "2024-11-02"
+      }
+    ]
+  }
+}
