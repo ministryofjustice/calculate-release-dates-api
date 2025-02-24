@@ -162,7 +162,7 @@ class PrisonApiClient(
       when (response.statusCode()) {
         HttpStatus.OK -> response.bodyToMono(typeReference<OffenderKeyDates>()).map { it.right() }
         HttpStatus.NOT_FOUND -> Mono.just("Booking ($bookingId) not found or has no calculations".left())
-        HttpStatus.FORBIDDEN ->  {
+        HttpStatus.FORBIDDEN -> {
           val errorMsg = "User is not allowed to view the booking ($bookingId)"
           log.error(errorMsg)
           Mono.just(errorMsg.left())
