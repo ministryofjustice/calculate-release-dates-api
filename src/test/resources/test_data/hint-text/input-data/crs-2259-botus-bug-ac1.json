@@ -1,0 +1,80 @@
+{
+  "offender": {
+    "reference": "A5529ET",
+    "dateOfBirth": "2003-08-26",
+    "isActiveSexOffender": false
+  },
+  "bookingId": 2978516,
+  "sentences": [
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2024-10-28",
+        "offenceCode": "CJ88116"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 8,
+          "YEARS": 0,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "156133fe-289d-3dda-ba20-f0a6a74d3dac",
+      "recallType": null,
+      "sentencedAt": "2024-12-16",
+      "caseSequence": 2,
+      "lineSequence": 2,
+      "caseReference": "52sb0807924",
+      "consecutiveSentenceUUIDs": [],
+      "isSDSPlusOffenceInPeriod": false,
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+    },
+    {
+      "type": "BotusSentence",
+      "offence": {
+        "committedAt": "2024-11-26",
+        "offenceCode": "CJ03524"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 1,
+          "YEARS": 0,
+          "MONTHS": 0
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "cf9725b1-b9a3-3287-b5b9-4e1e03291d52",
+      "recallType": null,
+      "sentencedAt": "2024-12-16",
+      "caseSequence": 3,
+      "lineSequence": 3,
+      "caseReference": null,
+      "latestTusedDate": "2026-10-09",
+      "latestTusedSource": "NOMIS",
+      "consecutiveSentenceUUIDs": [],
+      "isSDSPlusOffenceInPeriod": false,
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "toDate": "2024-11-06",
+        "fromDate": "2024-10-31",
+        "numberOfDays": 7,
+        "appliesToSentencesFrom": "2024-12-16"
+      }
+    ]
+  },
+  "externalMovements": [],
+  "historicalTusedData": {
+    "tused": "2026-10-09",
+    "historicalTusedSource": "NOMIS"
+  },
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}

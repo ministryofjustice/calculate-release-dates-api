@@ -793,7 +793,11 @@ class CalculationResultEnrichmentServiceTest {
   fun `TUSEDs that have historical status should get the appropriate hint`(source: HistoricalTusedSource) {
     val tusedType = getReleaseDateAndStubAdjustments(ReleaseDateType.TUSED, LocalDate.of(2020, 5, 9))
     val releaseDates = listOf(tusedType)
-    val calculationBreakdown = CalculationBreakdown(emptyList(), null)
+    val calculationBreakdown = CalculationBreakdown(
+      concurrentSentences = emptyList(),
+      consecutiveSentence = null,
+      breakdownByReleaseDateType = mapOf(ReleaseDateType.TUSED to BREAKDOWN_BOTUS_LATEST_TUSED_USED),
+    )
     val results = calculationResultEnrichmentService().addDetailToCalculationDates(releaseDates, null, calculationBreakdown, source)
     assertThat(results[tusedType.type]?.hints).isEqualTo(listOf(ReleaseDateHint("TUSED from last calculation saved to NOMIS")))
   }
@@ -1192,5 +1196,14 @@ class CalculationResultEnrichmentServiceTest {
   private fun calculationResultEnrichmentService(today: LocalDate = LocalDate.of(2000, 1, 1), featureToggles: FeatureToggles = FeatureToggles()): CalculationResultEnrichmentService {
     val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
     return CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock, featureToggles)
+  }
+
+  private companion object {
+    private val BREAKDOWN_BOTUS_LATEST_TUSED_USED = ReleaseDateCalculationBreakdown(
+      rules = setOf(CalculationRule.BOTUS_LATEST_TUSED_USED),
+      adjustedDays = 0,
+      releaseDate = LocalDate.now(),
+      unadjustedDate = LocalDate.now(),
+    )
   }
 }

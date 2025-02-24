@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggl
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.TUSED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetailedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
@@ -78,9 +79,8 @@ class CalculationResultEnrichmentService(
     hints += hdcedHints(type, date, sentenceAndOffences, releaseDates, calculationBreakdown)
     hints += mtdHints(type, date, sentenceAndOffences, releaseDates)
     hints += ersedHints(type, releaseDates, calculationBreakdown)
-    if (historicalTusedSource != null) {
-      hints += tusedHints(type)
-    }
+    hints += tusedHints(type, historicalTusedSource, calculationBreakdown)
+
     return hints.filterNotNull()
   }
 
@@ -98,10 +98,18 @@ class CalculationResultEnrichmentService(
     }
   }
 
-  private fun tusedHints(type: ReleaseDateType): List<ReleaseDateHint> = if (type == ReleaseDateType.TUSED) {
-    listOf(ReleaseDateHint("TUSED from last calculation saved to NOMIS"))
-  } else {
-    emptyList()
+  private fun tusedHints(
+    type: ReleaseDateType,
+    historicalTusedSource: HistoricalTusedSource?,
+    calculationBreakdown: CalculationBreakdown?,
+  ): List<ReleaseDateHint> {
+    if (type == TUSED &&
+      historicalTusedSource != null &&
+      calculationBreakdown?.breakdownByReleaseDateType?.get(TUSED)?.rules?.contains(CalculationRule.BOTUS_LATEST_TUSED_USED) == true
+    ) {
+      return listOf(ReleaseDateHint("TUSED from last calculation saved to NOMIS"))
+    }
+    return emptyList()
   }
 
   private fun nonFridayReleaseDateOrWeekendAdjustmentHintOrNull(type: ReleaseDateType, date: LocalDate): ReleaseDateHint? = if (nonFridayReleaseService.getDate(ReleaseDate(date, type)).usePolicy) {
