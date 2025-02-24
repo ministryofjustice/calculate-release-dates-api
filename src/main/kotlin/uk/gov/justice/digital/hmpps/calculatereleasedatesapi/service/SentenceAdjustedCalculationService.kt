@@ -248,6 +248,7 @@ class SentenceAdjustedCalculationService(
   private fun getBotusTusedDate(sentence: BotusSentence, sentenceCalculation: SentenceCalculation) {
     if (sentence.latestTusedDate?.isAfter(sentenceCalculation.releaseDate) == true) {
       sentenceCalculation.topUpSupervisionDate = sentence.latestTusedDate
+      sentenceCalculation.breakdownByReleaseDateType[TUSED] = tusedCalculator.getCalculationBreakdownForBotus(sentenceCalculation)
     }
   }
 

@@ -95,7 +95,11 @@ class HintTextTest {
     val calculatedReleaseDates = createCalculatedReleaseDates(calculation.calculationResult)
     val calculationBreakdown = performCalculationBreakdown(booking, calculatedReleaseDates, calculationUserInputs)
 
-    val breakdownWithHints = enrichBreakdownWithHints(calculation.calculationResult.dates, calculationBreakdown)
+    val breakdownWithHints = enrichBreakdownWithHints(
+      dates = calculation.calculationResult.dates,
+      calculationBreakdown = calculationBreakdown,
+      booking = booking,
+    )
 
     val actualDatesAndHints = mapToDatesAndHints(breakdownWithHints)
     val expectedDatesAndHints = jsonTransformation.loadHintTextResults(testCase)
@@ -113,9 +117,10 @@ class HintTextTest {
     val calculatedReleaseDates = createCalculatedReleaseDates(calculation.calculationResult)
     val calculationBreakdown = performCalculationBreakdown(booking, calculatedReleaseDates, calculationUserInputs)
     val breakdownWithHints = enrichBreakdownWithHints(
-      calculation.calculationResult.dates,
-      calculationBreakdown,
-      calculation.calculationResult.dates.map { it.key.name },
+      dates = calculation.calculationResult.dates,
+      calculationBreakdown = calculationBreakdown,
+      sentenceOverrideDates = calculation.calculationResult.dates.map { it.key.name },
+      booking = booking,
     )
 
     val actualDatesAndHints = mapToDatesAndHints(breakdownWithHints)
@@ -149,11 +154,12 @@ class HintTextTest {
     dates: Map<ReleaseDateType, LocalDate>,
     calculationBreakdown: CalculationBreakdown,
     sentenceOverrideDates: List<String> = emptyList(),
+    booking: Booking,
   ): Map<ReleaseDateType, DetailedDate> = calculationResultEnrichmentService.addDetailToCalculationDates(
     releaseDates = dates.map { ReleaseDate(date = it.value, type = it.key) },
     sentenceAndOffences = SOURCE_DATA.sentenceAndOffences,
     calculationBreakdown = calculationBreakdown,
-    historicalTusedSource = null,
+    historicalTusedSource = booking.historicalTusedData?.historicalTusedSource,
     sentenceDateOverrides = sentenceOverrideDates,
   )
 
