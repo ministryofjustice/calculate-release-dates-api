@@ -1,0 +1,34 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2024-01-14",
+        "offenceCode": "SX03247A"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 14
+        }
+      },
+      "sentencedAt": "2024-02-09",
+      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8114"
+    },
+    {
+      "offence": {
+        "committedAt": "2024-01-14",
+        "offenceCode": "TH68001"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 21
+        }
+      },
+      "sentencedAt": "2024-01-15",
+      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8115"
+    }
+  ]
+}

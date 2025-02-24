@@ -1,0 +1,35 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2023-06-18",
+        "offenceCode": "CJ88150A"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 2,
+          "MONTHS": 10
+        }
+      },
+      "sentencedAt": "2023-08-19"
+    },
+    {
+      "offence": {
+        "committedAt": "2023-05-19",
+        "offenceCode": "SX03244A"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 2,
+          "MONTHS": 1
+        }
+      },
+      "sentencedAt": "2023-09-13",
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+    }
+  ]
+}
