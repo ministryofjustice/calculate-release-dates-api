@@ -6,23 +6,37 @@
   "sentences": [
     {
       "offence": {
-        "committedAt": "2024-03-02",
+        "committedAt": "2024-09-09",
         "offenceCode": "SX03247A"
       },
       "duration": {
         "durationElements": {
-          "MONTHS": 17
+          "MONTHS": 7
         }
       },
       "sentencedAt": "2024-09-11",
+      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8114",
       "hasAnSDSEarlyReleaseExclusion": "SEXUAL"
+    },
+    {
+      "offence": {
+        "committedAt": "2024-09-09",
+        "offenceCode": "OF61058"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 8
+        }
+      },
+      "sentencedAt": "2024-09-09",
+      "identifier": "9824a90b-ab4b-360d-8003-a7c8f53b8115"
     }
   ],
   "adjustments": {
     "TAGGED_BAIL": [
       {
         "appliesToSentencesFrom": "2024-09-11",
-        "numberOfDays": 35
+        "numberOfDays": 20
       }
     ]
   }
