@@ -38,6 +38,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Calcul
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SDSEarlyReleaseTranche
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoActiveBookingException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.PreconditionFailedException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
@@ -413,7 +414,7 @@ class CalculationControllerTest {
         ErrorResponse(
           HttpStatus.NOT_FOUND,
           null,
-          errorMessage,
+          "No active booking available: $errorMessage",
           errorMessage,
         ),
       )
@@ -422,12 +423,12 @@ class CalculationControllerTest {
   @Test
   fun `Test GET of offender Key Dates when there is a problem getting the dates from Prison Service - NOMIS`() {
     val offenderSentCalcId = 5636121L
-    val errorMessage = "There isn't one"
+    val errorMessage = "No active booking"
 
     whenever(
       offenderKeyDatesService.getNomisCalculationSummary(any()),
     ).then {
-      throw CrdWebException(errorMessage, HttpStatus.NOT_FOUND)
+      throw NoActiveBookingException(errorMessage)
     }
 
     val result = mvc.perform(get("/calculation/nomis-calculation-summary/$offenderSentCalcId").accept(APPLICATION_JSON))
@@ -440,7 +441,7 @@ class CalculationControllerTest {
         ErrorResponse(
           HttpStatus.NOT_FOUND,
           null,
-          errorMessage,
+          "No active booking available: $errorMessage",
           errorMessage,
         ),
       )

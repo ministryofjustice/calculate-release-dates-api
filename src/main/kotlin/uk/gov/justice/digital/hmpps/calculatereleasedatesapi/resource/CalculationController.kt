@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.TEST
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoActiveBookingException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRequestModel
@@ -447,7 +448,7 @@ class CalculationController(
   ): LatestCalculation {
     log.info("Request received return latest calculation for prisoner {}", prisonerId)
     val result = latestCalculationService.latestCalculationForPrisoner(prisonerId)
-    return result.getOrElse { problemMessage -> throw EntityNotFoundException(problemMessage) }
+    return result.getOrElse { problemMessage -> throw NoActiveBookingException(problemMessage) }
   }
 
   @GetMapping(value = ["/nomis-calculation-summary/{offenderSentCalculationId}"])
