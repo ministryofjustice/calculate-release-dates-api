@@ -41,6 +41,9 @@ generic-service:
       DB_PASS: "database_password"
     hmpps-domain-events-topic:
       HMPPS_SQS_TOPICS_HMPPSEVENTTOPIC_ARN: "topic_arn"
+    digital-prison-reporting:
+      DPR_USER: "DPR_USER"
+      DPR_PASSWORD: "DPR_PASSWORD"
 
   allowlist:
     cymulate-1: 54.217.50.18/32
