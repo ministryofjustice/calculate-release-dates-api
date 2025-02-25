@@ -84,14 +84,15 @@ class BookingTimelineService(
     calculationsByDate.forEach { (timelineCalculationDate, calculations) ->
       checkForReleasesAndLicenseExpiry(timelineCalculationDate, timelineTrackingData)
 
-      calculations.sortedBy { it.type.ordinal }.forEachIndexed { _, it ->
-        val result = handlerFor(it.type).handle(timelineCalculationDate, timelineTrackingData)
-        if (result.skipCalculation) {
-          return@forEach
-        }
-      }
+      val skipCalculation = calculations.sortedBy { it.type.ordinal }
+        .map {
+          val result = handlerFor(it.type).handle(timelineCalculationDate, timelineTrackingData)
+          result.skipCalculation
+        }.all { it }
 
-      calculateLatestCustodialRelease(timelineTrackingData)
+      if (!skipCalculation) {
+        calculateLatestCustodialRelease(timelineTrackingData)
+      }
     }
 
     return calculateFinalReleaseDatesAfterTimeline(timelineTrackingData, adjustments)
