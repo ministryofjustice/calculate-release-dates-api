@@ -1,0 +1,30 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2020-06-24",
+        "offenceCode": "MD71231"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 38
+        }
+      },
+      "sentencedAt": "2024-09-10"
+    }
+  ],
+  "adjustments": {
+    "ADDITIONAL_DAYS_AWARDED": [
+      {
+        "appliesToSentencesFrom": "2025-02-12",
+        "numberOfDays": 14,
+        "fromDate": "2025-02-12",
+        "toDate": "2025-02-25"
+      }
+    ]
+  }
+}
