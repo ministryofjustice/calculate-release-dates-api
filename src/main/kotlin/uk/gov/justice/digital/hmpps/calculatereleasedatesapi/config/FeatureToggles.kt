@@ -9,6 +9,7 @@ data class FeatureToggles(
   var supportInactiveSentencesAndAdjustments: Boolean = false,
   var toreraOffenceToManualJourney: Boolean = false,
   var botusConsecutiveJourney: Boolean = false,
+  var botusConcurrentJourney: Boolean = false,
   var hdc365: Boolean = false,
   var externalMovementsEnabled: Boolean = false,
   var revisedFixedTermRecallsRules: Boolean = false,

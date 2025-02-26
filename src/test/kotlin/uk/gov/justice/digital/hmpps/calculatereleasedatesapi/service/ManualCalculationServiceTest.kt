@@ -567,7 +567,7 @@ class ManualCalculationServiceTest {
     whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(
       listOf(
         ValidationMessage(ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL),
-        ValidationMessage(ValidationCode.BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE),
+        ValidationMessage(ValidationCode.BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE),
       ),
     )
 
