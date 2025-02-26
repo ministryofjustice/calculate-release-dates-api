@@ -13,6 +13,7 @@ import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.servlet.resource.NoResourceFoundException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.CrdWebException
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoActiveBookingException
 
 @RestControllerAdvice
 class ControllerAdvice {
@@ -129,6 +130,23 @@ class ControllerAdvice {
         developerMessage = e.message,
       ),
     ).also { log.info("No resource found exception: {}", e.message) }
+
+  /**
+   * Do not log the exception. It is expected that there may not be an active booking.
+   * We simply need to return a 404 response.
+   */
+  @ExceptionHandler(NoActiveBookingException::class)
+  fun handleException(e: NoActiveBookingException): ResponseEntity<ErrorResponse> {
+    return ResponseEntity
+      .status(HttpStatus.NOT_FOUND)
+      .body(
+        ErrorResponse(
+          status = HttpStatus.NOT_FOUND.value(),
+          userMessage = "No active booking available: ${e.message}",
+          developerMessage = e.message,
+        ),
+      )
+  }
 
   @ExceptionHandler(java.lang.Exception::class)
   fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse?>? {
