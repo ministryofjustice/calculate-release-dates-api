@@ -1,0 +1,7 @@
+ALTER TABLE  approved_dates_submission_approved_dates ADD COLUMN id INTEGER;
+CREATE SEQUENCE approved_dates_submission_approved_dates_id_seq;
+ALTER TABLE approved_dates_submission_approved_dates ALTER COLUMN id SET DEFAULT nextval('approved_dates_submission_approved_dates_id_seq');
+UPDATE approved_dates_submission_approved_dates SET id = DEFAULT;
+ALTER TABLE approved_dates_submission_approved_dates ALTER COLUMN id SET NOT NULL;
+ALTER TABLE approved_dates_submission_approved_dates ADD CONSTRAINT approved_dates_submission_approved_dates_pkey PRIMARY KEY (id);
+ALTER SEQUENCE approved_dates_submission_approved_dates_id_seq OWNED BY approved_dates_submission_approved_dates.id;
