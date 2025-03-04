@@ -1,9 +1,16 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jlleitschuh.gradle.ktlint.KtlintExtension
+import org.jlleitschuh.gradle.ktlint.tasks.KtLintCheckTask
+import org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.8"
   id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
   kotlin("plugin.spring") version "2.0.21"
   kotlin("plugin.jpa") version "2.0.21"
   id("jacoco")
+  id("org.openapi.generator") version "7.11.0"
 }
 
 configurations {
@@ -75,9 +82,6 @@ dependencies {
     implementation("com.h2database:h2")
   }
 }
-repositories {
-  mavenCentral()
-}
 
 jacoco {
   // You may modify the Jacoco version here
@@ -96,12 +100,6 @@ tasks.jacocoTestCoverageVerification {
 
 kotlin {
   jvmToolchain(21)
-}
-
-tasks {
-  withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
-  }
 }
 
 dependencyCheck {
@@ -125,5 +123,79 @@ afterEvaluate {
     notCompatibleWithConfigurationCache(
       "See https://github.com/springdoc/springdoc-openapi-gradle-plugin/issues/102",
     )
+  }
+}
+
+data class ModelConfiguration(val name: String, val input: String, val output: String, val packageName: String)
+
+val models = listOf(
+  // https://adjustments-api-dev.hmpps.service.justice.gov.uk/v3/api-docs
+  ModelConfiguration(
+    name = "buildAdjustmentsApiModel",
+    input = "adjustments-api-docs.json",
+    output = "adjustmentsapi",
+    packageName = "adjustmentsapi",
+  ),
+  // https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs
+  ModelConfiguration(
+    name = "buildPrisonApiModel",
+    input = "prison-api-docs.json",
+    output = "prisonapi",
+    packageName = "prisonapi",
+  ),
+)
+
+tasks {
+  withType<KotlinCompile> {
+    dependsOn(models.map { it.name })
+    compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+  }
+  withType<KtLintCheckTask> {
+    // Under gradle 8 we must declare the dependency here, even if we're not going to be linting the model
+    mustRunAfter(models.map { it.name })
+  }
+  withType<KtLintFormatTask> {
+    // Under gradle 8 we must declare the dependency here, even if we're not going to be linting the model
+    mustRunAfter(models.map { it.name })
+  }
+}
+
+models.forEach {
+  tasks.register(it.name, GenerateTask::class) {
+    generatorName.set("kotlin")
+    skipValidateSpec.set(true)
+    inputSpec.set("openapi-specs/${it.input}")
+    outputDir.set("$buildDirectory/generated/${it.output}")
+    modelPackage.set("uk.gov.justice.digital.hmpps.calculatereleasedatesapi.${it.packageName}.model")
+    apiPackage.set("uk.gov.justice.digital.hmpps.calculatereleasedatesapi.${it.packageName}.api")
+    configOptions.set(configValues)
+    globalProperties.set(mapOf("models" to ""))
+    generateModelTests.set(false)
+    generateModelDocumentation.set(false)
+  }
+}
+
+val buildDirectory: Directory = layout.buildDirectory.get()
+val configValues = mapOf(
+  "dateLibrary" to "java8-localdatetime",
+  "serializationLibrary" to "jackson",
+  "enumPropertyNaming" to "original",
+)
+
+kotlin {
+  models.map { it.output }.forEach { generatedProject ->
+    sourceSets["main"].apply {
+      kotlin.srcDir("$buildDirectory/generated/$generatedProject/src/main/kotlin")
+    }
+  }
+}
+
+configure<KtlintExtension> {
+  models.map { it.output }.forEach { generatedProject ->
+    filter {
+      exclude {
+        it.file.path.contains("$buildDirectory/generated/$generatedProject/src/main/")
+      }
+    }
   }
 }
