@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.AdjustmentServiceAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UnusedDeductionCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.service.UnusedDeductionsCalculationService
 
@@ -44,7 +44,7 @@ class UnusedDeductionsController(
     @PathVariable("prisonerId")
     prisonerId: String,
     @RequestBody
-    adjustments: List<AdjustmentServiceAdjustment>,
+    adjustments: List<AdjustmentDto>,
   ): UnusedDeductionCalculationResponse {
     log.info("Request received to calculate unused deductions for $prisonerId")
     return unusedDeductionsCalculationService.calculate(adjustments, prisonerId)

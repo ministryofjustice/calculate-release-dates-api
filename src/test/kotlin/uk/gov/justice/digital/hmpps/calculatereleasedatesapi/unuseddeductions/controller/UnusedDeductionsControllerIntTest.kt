@@ -3,10 +3,9 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.c
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.AdjustmentServiceAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.AdjustmentServiceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UnusedDeductionCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
@@ -19,14 +18,14 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
   fun `Run unused deductions calculation`() {
     mockManageOffencesClient.noneInPCSC(listOf("TH68010A", "TH68037"))
     val adjustments = listOf(
-      AdjustmentServiceAdjustment(
+      AdjustmentDto(
         fromDate = LocalDate.of(2020, 2, 1),
         toDate = LocalDate.of(2021, 1, 31),
         days = 396,
         effectiveDays = 396,
         bookingId = "UNUSED".hashCode().toLong(),
         sentenceSequence = 4,
-        adjustmentType = AdjustmentServiceAdjustmentType.REMAND,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
         person = "UNUSED",
         id = UUID.randomUUID(),
       ),
@@ -49,14 +48,14 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
   @Test
   fun `Run unused deductions calculation (not enough deductions)`() {
     val adjustments = listOf(
-      AdjustmentServiceAdjustment(
+      AdjustmentDto(
         fromDate = LocalDate.of(2020, 2, 1),
         toDate = LocalDate.of(2021, 1, 31),
         days = 10,
         effectiveDays = 10,
         bookingId = "UNUSED".hashCode().toLong(),
         sentenceSequence = 4,
-        adjustmentType = AdjustmentServiceAdjustmentType.REMAND,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
         person = "UNUSED",
         id = UUID.randomUUID(),
       ),
@@ -79,25 +78,25 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
   @Test
   fun `Run unused deductions calculation returning validation messages for remand overlapping remand`() {
     val adjustments = listOf(
-      AdjustmentServiceAdjustment(
+      AdjustmentDto(
         fromDate = LocalDate.of(2020, 2, 1),
         toDate = LocalDate.of(2021, 1, 31),
         days = 396,
         effectiveDays = 396,
         bookingId = "UNUSED".hashCode().toLong(),
         sentenceSequence = 4,
-        adjustmentType = AdjustmentServiceAdjustmentType.REMAND,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
         person = "UNUSED",
         id = UUID.randomUUID(),
       ),
-      AdjustmentServiceAdjustment(
+      AdjustmentDto(
         fromDate = LocalDate.of(2020, 5, 1),
         toDate = LocalDate.of(2021, 6, 1),
         days = 31,
         effectiveDays = 31,
         bookingId = "UNUSED".hashCode().toLong(),
         sentenceSequence = 4,
-        adjustmentType = AdjustmentServiceAdjustmentType.REMAND,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
         person = "UNUSED",
         id = UUID.randomUUID(),
       ),
@@ -120,14 +119,14 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
   @Test
   fun `Run unused deductions calculation returning validation messages for remand overlapping sentence`() {
     val adjustments = listOf(
-      AdjustmentServiceAdjustment(
+      AdjustmentDto(
         fromDate = LocalDate.of(2021, 1, 1),
         toDate = LocalDate.of(2021, 2, 20),
         days = 50,
         effectiveDays = 50,
         bookingId = "UNUSED".hashCode().toLong(),
         sentenceSequence = 4,
-        adjustmentType = AdjustmentServiceAdjustmentType.REMAND,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
         person = "UNUSED",
         id = UUID.randomUUID(),
       ),
@@ -150,14 +149,14 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
   @Test
   fun `Run unused deductions calculation returning validation messages for remand overlapping sentence remand starts after sentence date`() {
     val adjustments = listOf(
-      AdjustmentServiceAdjustment(
+      AdjustmentDto(
         fromDate = LocalDate.of(2021, 2, 2),
         toDate = LocalDate.of(2021, 2, 20),
         days = 12,
         effectiveDays = 12,
         bookingId = "UNUSED".hashCode().toLong(),
         sentenceSequence = 4,
-        adjustmentType = AdjustmentServiceAdjustmentType.REMAND,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
         person = "UNUSED",
         id = UUID.randomUUID(),
       ),
@@ -180,12 +179,12 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
   @Test
   fun `Run unused deductions calculation where there is a later sentence date than the one producing the release date`() {
     val adjustments = listOf(
-      AdjustmentServiceAdjustment(
+      AdjustmentDto(
         fromDate = null,
         toDate = null,
         bookingId = "UNUSED-C".hashCode().toLong(),
         sentenceSequence = 2,
-        adjustmentType = AdjustmentServiceAdjustmentType.TAGGED_BAIL,
+        adjustmentType = AdjustmentDto.AdjustmentType.TAGGED_BAIL,
         days = 70,
         effectiveDays = 70,
         person = "UNUSED-C",
@@ -210,12 +209,12 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
   @Test
   fun `Run unused deductions calculation where there is a later sentence date than the one producing the release date (not enough adjustment)`() {
     val adjustments = listOf(
-      AdjustmentServiceAdjustment(
+      AdjustmentDto(
         fromDate = null,
         toDate = null,
         bookingId = "UNUSED-C".hashCode().toLong(),
         sentenceSequence = 2,
-        adjustmentType = AdjustmentServiceAdjustmentType.TAGGED_BAIL,
+        adjustmentType = AdjustmentDto.AdjustmentType.TAGGED_BAIL,
         days = 10,
         effectiveDays = 10,
         person = "UNUSED-C",
@@ -240,14 +239,14 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
   @Test
   fun `Run unused deductions calculation with unsupported adjustment type`() {
     val adjustments = listOf(
-      AdjustmentServiceAdjustment(
+      AdjustmentDto(
         fromDate = LocalDate.of(2020, 2, 1),
         toDate = LocalDate.of(2021, 1, 31),
         days = 396,
         effectiveDays = 396,
         bookingId = "UNUSED".hashCode().toLong(),
         sentenceSequence = 4,
-        adjustmentType = AdjustmentServiceAdjustmentType.LAWFULLY_AT_LARGE,
+        adjustmentType = AdjustmentDto.AdjustmentType.LAWFULLY_AT_LARGE,
         person = "UNUSED",
         id = UUID.randomUUID(),
       ),
@@ -270,14 +269,14 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
   @Test
   fun `Run unused deductions calculation with an SDS40 early release`() {
     val adjustments = listOf(
-      AdjustmentServiceAdjustment(
+      AdjustmentDto(
         fromDate = LocalDate.of(2020, 2, 1),
         toDate = LocalDate.of(2021, 1, 31),
         days = 60,
         effectiveDays = 60,
         bookingId = "UNUSED-E".hashCode().toLong(),
         sentenceSequence = 4,
-        adjustmentType = AdjustmentServiceAdjustmentType.REMAND,
+        adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
         person = "UNUSED-E",
         id = UUID.randomUUID(),
       ),
