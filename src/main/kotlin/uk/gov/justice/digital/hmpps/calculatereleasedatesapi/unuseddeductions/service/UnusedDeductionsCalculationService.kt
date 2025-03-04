@@ -1,10 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.unuseddeductions.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.AdjustmentServiceAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.AdjustmentServiceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
@@ -27,7 +26,7 @@ class UnusedDeductionsCalculationService(
   private val bookingService: BookingService,
 ) {
 
-  fun calculate(adjustments: List<AdjustmentServiceAdjustment>, offenderNo: String): UnusedDeductionCalculationResponse {
+  fun calculate(adjustments: List<AdjustmentDto>, offenderNo: String): UnusedDeductionCalculationResponse {
     val prisoner = prisonService.getOffenderDetail(offenderNo)
     val sourceData = prisonService.getPrisonApiSourceData(prisoner, InactiveDataOptions.default()).copy(bookingAndSentenceAdjustments = useAdjustmentsFromAdjustmentsApi(adjustments))
 
@@ -63,10 +62,10 @@ class UnusedDeductionsCalculationService(
       }
 
       val remand =
-        adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.REMAND }.map { it.days }
+        adjustments.filter { it.adjustmentType == AdjustmentDto.AdjustmentType.REMAND }.map { it.days!! }
           .reduceOrNull { acc, it -> acc + it } ?: 0
       val taggedBail =
-        adjustments.filter { it.adjustmentType == AdjustmentServiceAdjustmentType.TAGGED_BAIL }.map { it.days }
+        adjustments.filter { it.adjustmentType == AdjustmentDto.AdjustmentType.TAGGED_BAIL }.map { it.days!! }
           .reduceOrNull { acc, it -> acc + it } ?: 0
       val deductions = taggedBail + remand
       max(0, deductions - maxDeductions)
@@ -78,33 +77,33 @@ class UnusedDeductionsCalculationService(
     return UnusedDeductionCalculationResponse(unusedDeductions, validationMessages)
   }
 
-  private fun mapToBookingAdjustmentType(adjustmentType: AdjustmentServiceAdjustmentType): BookingAdjustmentType? {
+  private fun mapToBookingAdjustmentType(adjustmentType: AdjustmentDto.AdjustmentType): BookingAdjustmentType? {
     return when (adjustmentType) {
-      AdjustmentServiceAdjustmentType.UNLAWFULLY_AT_LARGE -> BookingAdjustmentType.UNLAWFULLY_AT_LARGE
-      AdjustmentServiceAdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED -> BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
-      AdjustmentServiceAdjustmentType.ADDITIONAL_DAYS_AWARDED -> BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
-      AdjustmentServiceAdjustmentType.LAWFULLY_AT_LARGE -> BookingAdjustmentType.LAWFULLY_AT_LARGE
-      AdjustmentServiceAdjustmentType.SPECIAL_REMISSION -> BookingAdjustmentType.SPECIAL_REMISSION
+      AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE -> BookingAdjustmentType.UNLAWFULLY_AT_LARGE
+      AdjustmentDto.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED -> BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED
+      AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED -> BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED
+      AdjustmentDto.AdjustmentType.LAWFULLY_AT_LARGE -> BookingAdjustmentType.LAWFULLY_AT_LARGE
+      AdjustmentDto.AdjustmentType.SPECIAL_REMISSION -> BookingAdjustmentType.SPECIAL_REMISSION
       else -> null
     }
   }
-  private fun mapToSentenceAdjustmentType(adjustmentType: AdjustmentServiceAdjustmentType): SentenceAdjustmentType? {
+  private fun mapToSentenceAdjustmentType(adjustmentType: AdjustmentDto.AdjustmentType): SentenceAdjustmentType? {
     return when (adjustmentType) {
-      AdjustmentServiceAdjustmentType.REMAND -> SentenceAdjustmentType.REMAND
-      AdjustmentServiceAdjustmentType.UNUSED_DEDUCTIONS -> SentenceAdjustmentType.UNUSED_REMAND
-      AdjustmentServiceAdjustmentType.TAGGED_BAIL -> SentenceAdjustmentType.TAGGED_BAIL
-      AdjustmentServiceAdjustmentType.CUSTODY_ABROAD -> SentenceAdjustmentType.TIME_SPENT_IN_CUSTODY_ABROAD
-      AdjustmentServiceAdjustmentType.APPEAL_APPLICANT -> SentenceAdjustmentType.TIME_SPENT_AS_AN_APPEAL_APPLICANT
+      AdjustmentDto.AdjustmentType.REMAND -> SentenceAdjustmentType.REMAND
+      AdjustmentDto.AdjustmentType.UNUSED_DEDUCTIONS -> SentenceAdjustmentType.UNUSED_REMAND
+      AdjustmentDto.AdjustmentType.TAGGED_BAIL -> SentenceAdjustmentType.TAGGED_BAIL
+      AdjustmentDto.AdjustmentType.CUSTODY_ABROAD -> SentenceAdjustmentType.TIME_SPENT_IN_CUSTODY_ABROAD
+      AdjustmentDto.AdjustmentType.APPEAL_APPLICANT -> SentenceAdjustmentType.TIME_SPENT_AS_AN_APPEAL_APPLICANT
       else -> null
     }
   }
 
-  private fun useAdjustmentsFromAdjustmentsApi(adjustments: List<AdjustmentServiceAdjustment>): BookingAndSentenceAdjustments {
+  private fun useAdjustmentsFromAdjustmentsApi(adjustments: List<AdjustmentDto>): BookingAndSentenceAdjustments {
     return BookingAndSentenceAdjustments(
       bookingAdjustments = adjustments.filter { mapToBookingAdjustmentType(it.adjustmentType) != null }
-        .map { BookingAdjustment(active = true, fromDate = it.fromDate!!, toDate = it.toDate, numberOfDays = it.effectiveDays, type = mapToBookingAdjustmentType(it.adjustmentType)!!) },
+        .map { BookingAdjustment(active = true, fromDate = it.fromDate!!, toDate = it.toDate, numberOfDays = it.effectiveDays!!, type = mapToBookingAdjustmentType(it.adjustmentType)!!) },
       sentenceAdjustments = adjustments.filter { mapToSentenceAdjustmentType(it.adjustmentType) != null }
-        .map { SentenceAdjustment(active = true, fromDate = it.fromDate, toDate = it.toDate, numberOfDays = it.days, sentenceSequence = it.sentenceSequence!!, type = mapToSentenceAdjustmentType(it.adjustmentType)!!) },
+        .map { SentenceAdjustment(active = true, fromDate = it.fromDate, toDate = it.toDate, numberOfDays = it.days!!, sentenceSequence = it.sentenceSequence!!, type = mapToSentenceAdjustmentType(it.adjustmentType)!!) },
 
     )
   }
