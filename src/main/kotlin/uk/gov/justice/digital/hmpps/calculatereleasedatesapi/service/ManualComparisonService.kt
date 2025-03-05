@@ -32,6 +32,7 @@ class ManualComparisonService(
   private var bulkComparisonService: BulkComparisonService,
   private val objectMapper: ObjectMapper,
   private val calculationTransactionalService: CalculationTransactionalService,
+  private val comparisonDiscrepancyService: ComparisonDiscrepancyService,
 ) {
 
   fun create(manualComparison: ManualComparisonInput, token: String): Comparison {
@@ -75,13 +76,13 @@ class ManualComparisonService(
   fun createDiscrepancy(comparisonReference: String, comparisonPersonReference: String, discrepancyInput: CreateComparisonDiscrepancyRequest): ComparisonDiscrepancySummary {
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
     val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
-    return bulkComparisonService.createDiscrepancy(comparison, comparisonPerson, discrepancyInput)
+    return comparisonDiscrepancyService.createDiscrepancy(comparison, comparisonPerson, discrepancyInput)
   }
 
   fun getComparisonPersonDiscrepancy(comparisonReference: String, comparisonPersonReference: String): ComparisonDiscrepancySummary {
     val comparison = comparisonRepository.findByComparisonShortReference(comparisonReference) ?: throw EntityNotFoundException("No comparison results exist for comparisonReference $comparisonReference ")
     val comparisonPerson = comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference) ?: throw EntityNotFoundException("No comparison person results exist for comparisonReference $comparisonReference and comparisonPersonReference $comparisonPersonReference ")
-    return bulkComparisonService.getComparisonPersonDiscrepancy(comparison, comparisonPerson)
+    return comparisonDiscrepancyService.getComparisonPersonDiscrepancy(comparison, comparisonPerson)
   }
 
   companion object {

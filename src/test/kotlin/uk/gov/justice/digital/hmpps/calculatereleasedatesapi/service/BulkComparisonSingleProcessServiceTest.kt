@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.firstValue
@@ -25,23 +24,14 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggl
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancy
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyImpact
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPersonDiscrepancyPriority
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyCategory
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyImpact
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancyPriority
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.DiscrepancySubCategory
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CreateComparisonDiscrepancyRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DiscrepancyCause
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
@@ -54,8 +44,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.Person
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyCategoryRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonDiscrepancyRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
@@ -67,7 +55,7 @@ import java.util.Optional
 import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
-class BulkComparisonServiceTest {
+class BulkComparisonSingleProcessServiceTest {
   private val comparisonPersonRepository = mock<ComparisonPersonRepository>()
   private val prisonService = mock<PrisonService>()
   private val calculationTransactionalService = mock<CalculationTransactionalService>()
@@ -75,12 +63,9 @@ class BulkComparisonServiceTest {
   private val comparisonRepository = mock<ComparisonRepository>()
   private var pcscLookupService = mock<ReleaseArrangementLookupService>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
-  private val comparisonPersonDiscrepancyRepository = mock<ComparisonPersonDiscrepancyRepository>()
-  private val comparisonPersonDiscrepancyCategoryRepository = mock<ComparisonPersonDiscrepancyCategoryRepository>()
-  private var serviceUserService = mock<ServiceUserService>()
   private val botusTusedService = mock<BotusTusedService>()
   private val retryTemplate = RetryTemplate.builder().maxAttempts(3).build() // No backoff to keep test fast
-  private val bulkComparisonService: BulkComparisonService = BulkComparisonService(
+  private val bulkComparisonService = BulkComparisonSingleProcessService(
     comparisonPersonRepository,
     prisonService,
     calculationTransactionalService,
@@ -88,9 +73,6 @@ class BulkComparisonServiceTest {
     comparisonRepository,
     pcscLookupService,
     calculationReasonRepository,
-    comparisonPersonDiscrepancyRepository,
-    comparisonPersonDiscrepancyCategoryRepository,
-    serviceUserService,
     botusTusedService,
     FeatureToggles(),
     retryTemplate,
@@ -594,135 +576,6 @@ class BulkComparisonServiceTest {
     "SOMEONE",
     ComparisonStatus(ComparisonStatusValue.PROCESSING),
   )
-
-  @Test
-  fun `Creates a comparison person discrepancy`() {
-    val comparison = aComparison()
-    val comparisonPerson = aComparisonPerson(
-      comparison.id,
-      USERNAME,
-    )
-
-    val discrepancyImpact = ComparisonPersonDiscrepancyImpact(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION)
-    val discrepancyPriority = ComparisonPersonDiscrepancyPriority(DiscrepancyPriority.MEDIUM_RISK)
-    val discrepancy = ComparisonPersonDiscrepancy(
-      1,
-      comparisonPerson,
-      discrepancyImpact,
-      emptyList(),
-      discrepancyPriority = discrepancyPriority,
-      detail = "detail",
-      action = "action",
-      createdBy = USERNAME,
-    )
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-    whenever(
-      comparisonRepository.findByComparisonShortReference("ABCD1234"),
-    ).thenReturn(comparison)
-    whenever(
-      comparisonPersonRepository.findByComparisonIdAndShortReference(
-        comparison.id,
-        comparisonPerson.shortReference,
-      ),
-    ).thenReturn(comparisonPerson)
-    whenever(comparisonPersonDiscrepancyRepository.save(any())).thenReturn(discrepancy)
-    val discrepancyCause = DiscrepancyCause(DiscrepancyCategory.TUSED, DiscrepancySubCategory.REMAND_OR_UAL_RELATED)
-    val discrepancyRequest = CreateComparisonDiscrepancyRequest(
-      impact = discrepancyImpact.impact,
-      listOf(discrepancyCause),
-      detail = discrepancy.detail,
-      priority = discrepancyPriority.priority,
-      action = discrepancy.action,
-    )
-    val discrepancySummary = bulkComparisonService.createDiscrepancy(
-      comparison,
-      comparisonPerson,
-      discrepancyRequest,
-    )
-
-    verify(comparisonPersonDiscrepancyRepository).save(any())
-    verify(comparisonPersonDiscrepancyCategoryRepository).saveAll(ArgumentMatchers.anyList())
-    assertEquals(discrepancyRequest.impact, discrepancySummary.impact)
-    assertEquals(discrepancyRequest.priority, discrepancySummary.priority)
-    assertEquals(discrepancyRequest.action, discrepancySummary.action)
-    assertEquals(discrepancyRequest.detail, discrepancySummary.detail)
-    val causes = discrepancySummary.causes
-    assertEquals(1, causes.size)
-    assertEquals(discrepancyCause.category, causes[0].category)
-    assertEquals(discrepancyCause.subCategory, causes[0].subCategory)
-  }
-
-  @Test
-  fun `Sets superseded id on an existing discrepancy when creating a new discrepancy`() {
-    val comparison = aComparison()
-    val comparisonPerson = aComparisonPerson(
-      comparison.id,
-      ComparisonServiceTest.USERNAME,
-    )
-
-    val discrepancyImpact = ComparisonPersonDiscrepancyImpact(DiscrepancyImpact.POTENTIAL_UNLAWFUL_DETENTION)
-    val discrepancyPriority = ComparisonPersonDiscrepancyPriority(DiscrepancyPriority.MEDIUM_RISK)
-    val discrepancy = ComparisonPersonDiscrepancy(
-      2,
-      comparisonPerson,
-      discrepancyImpact,
-      emptyList(),
-      discrepancyPriority = discrepancyPriority,
-      detail = "detail",
-      action = "new action",
-      createdBy = USERNAME,
-    )
-    val existingDiscrepancy = ComparisonPersonDiscrepancy(
-      1,
-      comparisonPerson,
-      discrepancyImpact,
-      emptyList(),
-      discrepancyPriority = discrepancyPriority,
-      detail = "detail",
-      action = "exaction",
-      createdBy = USERNAME,
-    )
-    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
-    whenever(
-      comparisonRepository.findByComparisonShortReference("ABCD1234"),
-    ).thenReturn(comparison)
-    whenever(
-      comparisonPersonRepository.findByComparisonIdAndShortReference(
-        comparison.id,
-        comparisonPerson.shortReference,
-      ),
-    ).thenReturn(comparisonPerson)
-    whenever(comparisonPersonDiscrepancyRepository.save(any())).thenReturn(discrepancy)
-    whenever(
-      comparisonPersonDiscrepancyRepository.findTopByComparisonPersonShortReferenceAndSupersededByIdIsNullOrderByCreatedAtDesc(
-        comparisonPerson.shortReference,
-      ),
-    ).thenReturn(existingDiscrepancy)
-
-    val discrepancyCause = DiscrepancyCause(DiscrepancyCategory.TUSED, DiscrepancySubCategory.REMAND_OR_UAL_RELATED)
-    val discrepancyRequest = CreateComparisonDiscrepancyRequest(
-      impact = discrepancyImpact.impact,
-      listOf(discrepancyCause),
-      detail = discrepancy.detail,
-      priority = discrepancyPriority.priority,
-      action = discrepancy.action,
-    )
-    val discrepancySummary = bulkComparisonService.createDiscrepancy(
-      comparison,
-      comparisonPerson,
-      discrepancyRequest,
-    )
-    verify(comparisonPersonDiscrepancyRepository, times(2)).save(any())
-    verify(comparisonPersonDiscrepancyCategoryRepository).saveAll(ArgumentMatchers.anyList())
-    assertEquals(discrepancyRequest.impact, discrepancySummary.impact)
-    assertEquals(discrepancyRequest.priority, discrepancySummary.priority)
-    assertEquals(discrepancyRequest.action, discrepancySummary.action)
-    assertEquals(discrepancyRequest.detail, discrepancySummary.detail)
-    val causes = discrepancySummary.causes
-    assertEquals(1, causes.size)
-    assertEquals(discrepancyCause.category, causes[0].category)
-    assertEquals(discrepancyCause.subCategory, causes[0].subCategory)
-  }
 
   private val bulkCalculationReason =
     CalculationReason(1, true, false, "Bulk Calculation", true, "UPDATE", nomisComment = "NOMIS_COMMENT", null)
