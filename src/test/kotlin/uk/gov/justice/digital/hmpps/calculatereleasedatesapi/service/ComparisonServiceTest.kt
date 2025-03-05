@@ -59,8 +59,9 @@ class ComparisonServiceTest {
   private val comparisonPersonRepository = mock<ComparisonPersonRepository>()
   private val comparisonPersonDiscrepancyRepository = mock<ComparisonPersonDiscrepancyRepository>()
   private var serviceUserService = mock<ServiceUserService>()
-  private var bulkComparisonService = mock<BulkComparisonService>()
+  private var bulkComparisonService = mock<BulkComparisonSingleProcessService>()
   private val calculationTransactionalService = mock<CalculationTransactionalService>()
+  private val comparisonDiscrepancyService = mock<ComparisonDiscrepancyService>()
 
   private val comparisonService = ComparisonService(
     calculationOutcomeRepository,
@@ -72,6 +73,7 @@ class ComparisonServiceTest {
     bulkComparisonService,
     calculationTransactionalService,
     objectMapper,
+    comparisonDiscrepancyService,
   )
 
   @BeforeEach
@@ -500,7 +502,7 @@ class ComparisonServiceTest {
     ).thenReturn(comparisonPerson)
 
     whenever(prisonService.getCurrentUserPrisonsList()).thenReturn(listOf("ABC"))
-    whenever(bulkComparisonService.createDiscrepancy(any(), any(), any())).thenReturn(discrepancySummary)
+    whenever(comparisonDiscrepancyService.createDiscrepancy(any(), any(), any())).thenReturn(discrepancySummary)
     val discrepancyCause = DiscrepancyCause(DiscrepancyCategory.TUSED, DiscrepancySubCategory.REMAND_OR_UAL_RELATED)
     val discrepancyRequest = CreateComparisonDiscrepancyRequest(
       impact = discrepancyImpact.impact,
@@ -515,7 +517,7 @@ class ComparisonServiceTest {
       discrepancyRequest,
     )
 
-    verify(bulkComparisonService).createDiscrepancy(any(), any(), any())
+    verify(comparisonDiscrepancyService).createDiscrepancy(any(), any(), any())
     assertEquals(discrepancySummary, returnedSummary)
   }
 
@@ -556,7 +558,7 @@ class ComparisonServiceTest {
       isFatal = false,
       mismatchType = MismatchType.RELEASE_DATES_MISMATCH,
       validationMessages = objectMapper.valueToTree(emptyList<ValidationMessage>()),
-      calculatedByUsername = BulkComparisonServiceTest.USERNAME,
+      calculatedByUsername = BulkComparisonSingleProcessServiceTest.USERNAME,
       nomisDates = emptyObjectNode,
       overrideDates = emptyObjectNode,
       breakdownByReleaseDateType = emptyObjectNode,

@@ -40,6 +40,7 @@ class ComparisonService(
   private var bulkComparisonService: BulkComparisonService,
   private val calculationTransactionalService: CalculationTransactionalService,
   private val objectMapper: ObjectMapper,
+  private val comparisonDiscrepancyService: ComparisonDiscrepancyService,
 ) {
 
   fun create(comparisonInput: ComparisonInput, token: String): Comparison {
@@ -178,7 +179,7 @@ class ComparisonService(
     if (comparisonPerson.establishment != null && prisonService.getCurrentUserPrisonsList()
         .contains(comparisonPerson.establishment)
     ) {
-      return bulkComparisonService.createDiscrepancy(comparison, comparisonPerson, discrepancyRequest)
+      return comparisonDiscrepancyService.createDiscrepancy(comparison, comparisonPerson, discrepancyRequest)
     }
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())
   }
@@ -193,7 +194,7 @@ class ComparisonService(
       comparisonPersonRepository.findByComparisonIdAndShortReference(comparison.id, comparisonPersonReference)
         ?: throw EntityNotFoundException("Could not find comparison person with reference: $comparisonPersonReference")
     if (comparison.prison != null && prisonService.getCurrentUserPrisonsList().contains(comparison.prison)) {
-      return bulkComparisonService.getComparisonPersonDiscrepancy(comparison, comparisonPerson)
+      return comparisonDiscrepancyService.getComparisonPersonDiscrepancy(comparison, comparisonPerson)
     }
 
     throw CrdWebException("Forbidden", HttpStatus.FORBIDDEN, 403.toString())

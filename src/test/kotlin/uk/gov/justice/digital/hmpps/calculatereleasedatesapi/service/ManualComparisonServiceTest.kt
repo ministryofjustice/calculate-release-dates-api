@@ -42,8 +42,9 @@ class ManualComparisonServiceTest {
   private val comparisonPersonRepository = mock<ComparisonPersonRepository>()
   private val comparisonPersonDiscrepancyRepository = mock<ComparisonPersonDiscrepancyRepository>()
   private var serviceUserService = mock<ServiceUserService>()
-  private var bulkComparisonService = mock<BulkComparisonService>()
+  private var bulkComparisonService = mock<BulkComparisonSingleProcessService>()
   private val calculationTransactionalService = mock<CalculationTransactionalService>()
+  private val comparisonDiscrepancyService = mock<ComparisonDiscrepancyService>()
   private val manualComparisonService: ManualComparisonService = ManualComparisonService(
     comparisonRepository,
     serviceUserService,
@@ -52,6 +53,7 @@ class ManualComparisonServiceTest {
     bulkComparisonService,
     objectMapper,
     calculationTransactionalService,
+    comparisonDiscrepancyService,
   )
 
   @Test
@@ -184,7 +186,7 @@ class ManualComparisonServiceTest {
       isFatal = false,
       mismatchType = MismatchType.RELEASE_DATES_MISMATCH,
       validationMessages = objectMapper.valueToTree(emptyList<ValidationMessage>()),
-      calculatedByUsername = BulkComparisonServiceTest.USERNAME,
+      calculatedByUsername = BulkComparisonSingleProcessServiceTest.USERNAME,
       nomisDates = emptyObjectNode,
       overrideDates = emptyObjectNode,
       breakdownByReleaseDateType = emptyObjectNode,
