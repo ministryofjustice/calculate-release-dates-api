@@ -210,6 +210,11 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
     )
   }
 
+  @Test
+  fun `Run validation on zero day adjustment`() {
+    runValidationAndCheckMessages("ZERO", emptyList())
+  }
+
   private fun runSupportedValidationAndCheckMessages(prisonerId: String, messages: List<ValidationMessage>) {
     val validationMessages = webTestClient.get()
       .uri("/validation/$prisonerId/supported-validation")

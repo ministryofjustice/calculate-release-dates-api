@@ -1091,6 +1091,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       LocalDate.of(2025, 9, 14),
     )
   }
+
   val calculationRequestModel = CalculationRequestModel(CalculationUserInputs(), 1L)
 
   companion object {

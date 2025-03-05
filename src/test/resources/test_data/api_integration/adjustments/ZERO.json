@@ -1,0 +1,34 @@
+{
+   "bookingAdjustments": [
+      {
+         "active": true,
+         "type": "UNLAWFULLY_AT_LARGE",
+         "fromDate": "2015-03-17",
+         "numberOfDays": 29
+      }
+   ],
+   "sentenceAdjustments": [
+      {
+         "sentenceSequence": 1,
+         "active": true,
+         "type": "REMAND",
+         "fromDate": "2000-04-02",
+         "toDate": null,
+         "numberOfDays": 0
+      },
+      {
+         "sentenceSequence": 1,
+         "active": true,
+         "type": "TAGGED_BAIL",
+         "fromDate": "2000-04-02",
+         "numberOfDays": 11
+      },
+      {
+         "sentenceSequence": 1,
+         "active": true,
+         "type": "UNUSED_REMAND",
+         "fromDate": "2000-04-02",
+         "numberOfDays": 11
+      }
+   ]
+}

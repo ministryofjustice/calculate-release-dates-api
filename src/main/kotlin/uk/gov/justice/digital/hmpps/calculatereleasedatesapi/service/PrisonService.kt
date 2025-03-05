@@ -97,8 +97,8 @@ class PrisonService(
   fun getBookingAndSentenceAdjustments(bookingId: Long, filterActive: Boolean = true): BookingAndSentenceAdjustments {
     val adjustments = prisonApiClient.getSentenceAndBookingAdjustments(bookingId)
     return BookingAndSentenceAdjustments(
-      sentenceAdjustments = adjustments.sentenceAdjustments.filter { !filterActive || it.active },
-      bookingAdjustments = adjustments.bookingAdjustments.filter { !filterActive || it.active },
+      sentenceAdjustments = adjustments.sentenceAdjustments.filter { (!filterActive || it.active) && it.numberOfDays > 0 },
+      bookingAdjustments = adjustments.bookingAdjustments.filter { (!filterActive || it.active) && it.numberOfDays > 0 },
     )
   }
 
