@@ -1,26 +1,35 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.BOTUS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE
 
 @Service
 class BotusValidationService(
   private val featureToggles: FeatureToggles,
 ) {
 
+  /**
+   * Only one of the two validation methods must be called based on the feature toggles.
+   * Feature flags will be removed when full BOTUS support is implemented.
+   */
   internal fun validate(sourceData: PrisonApiSourceData): List<ValidationMessage> {
-    if (featureToggles.botusConsecutiveJourney) {
-      log.info("BOTUS consecutive and concurrent journeys are feature enabled - therefore the 'unsupported' validation for BOTUS will not run")
-      return emptyList()
+    if (!featureToggles.botusConsecutiveJourney) {
+      return validateConsecutiveBotus(sourceData)
     }
-    log.info("BOTUS consecutive and concurrent journeys are unsupported, running unsupported validation")
+    if (featureToggles.botusConcurrentJourney) {
+      return validateConcurrentBotus(sourceData)
+    }
+    return emptyList()
+  }
 
+  private fun validateConsecutiveBotus(sourceData: PrisonApiSourceData): List<ValidationMessage> {
     val botusSentences = getBotusSentences(sourceData)
 
     if (botusSentences.isEmpty() || botusSentences.size == sourceData.sentenceAndOffences.size) {
@@ -30,13 +39,52 @@ class BotusValidationService(
     return listOf(ValidationMessage(code = BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE))
   }
 
+  private fun validateConcurrentBotus(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+    val consecutiveSentences = sourceData.sentenceAndOffences
+      .filter { it.consecutiveToSequence != null }
+
+    if (consecutiveSentences.any { isBotusSentence(it) }) {
+      return listOf(ValidationMessage(code = BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE))
+    }
+
+    getConsecutiveChains(consecutiveSentences).forEach { chain ->
+      if (isBotusAdjacentSentence(sourceData, chain.first())) {
+        return listOf(ValidationMessage(code = BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE))
+      }
+    }
+
+    return emptyList()
+  }
+
   private fun getBotusSentences(sourceData: PrisonApiSourceData): List<SentenceAndOffence> {
     return sourceData.sentenceAndOffences.filter {
       SentenceCalculationType.from(it.sentenceCalculationType) == BOTUS
     }
   }
 
-  companion object {
-    private val log = LoggerFactory.getLogger(BotusValidationService::class.java)
+  private fun isBotusSentence(sentence: SentenceAndOffenceWithReleaseArrangements): Boolean {
+    return SentenceCalculationType.from(sentence.sentenceCalculationType) == BOTUS
+  }
+
+  private fun isBotusAdjacentSentence(sourceData: PrisonApiSourceData, index: Int): Boolean {
+    val sentence = sourceData.sentenceAndOffences.firstOrNull { it.sentenceSequence == index }
+    return sentence?.let { isBotusSentence(it) } == true
+  }
+
+  private fun getConsecutiveChains(
+    consecutiveSentences: List<SentenceAndOffenceWithReleaseArrangements>,
+  ): List<List<Int>> {
+    val sentenceChains = mutableListOf<MutableList<Int>>()
+
+    for (sentence in consecutiveSentences.sortedBy { it.consecutiveToSequence }) {
+      val sequence = sentence.consecutiveToSequence ?: continue
+      if (sentenceChains.isEmpty() || sentenceChains.last().last() != sequence - 1) {
+        sentenceChains.add(mutableListOf(sequence))
+      } else {
+        sentenceChains.last().add(sequence)
+      }
+    }
+
+    return sentenceChains
   }
 }

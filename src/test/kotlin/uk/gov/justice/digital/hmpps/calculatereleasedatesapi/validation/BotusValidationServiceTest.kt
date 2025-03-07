@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE
 import java.time.LocalDate
 
 class BotusValidationServiceTest {
@@ -24,6 +25,7 @@ class BotusValidationServiceTest {
   @Test
   fun `should skip validation when botusConsecutiveJourney feature toggle is enabled`() {
     whenever(featureToggles.botusConsecutiveJourney).thenReturn(true)
+    whenever(featureToggles.botusConcurrentJourney).thenReturn(false)
 
     val messages = botusValidationService.validate(SOURCE_DATA)
 
@@ -33,10 +35,75 @@ class BotusValidationServiceTest {
   @Test
   fun `should perform validation when botusConsecutiveJourney feature toggle is disabled`() {
     whenever(featureToggles.botusConsecutiveJourney).thenReturn(false)
+    whenever(featureToggles.botusConcurrentJourney).thenReturn(false)
 
     val messages = botusValidationService.validate(SOURCE_DATA)
 
     assertThat(messages).containsExactly(ValidationMessage(BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE))
+  }
+
+  @Test
+  fun `should perform validation when error when Consecutive chain includes BOTUS sentence as the first sentence in a chain`() {
+    whenever(featureToggles.botusConsecutiveJourney).thenReturn(false)
+    whenever(featureToggles.botusConcurrentJourney).thenReturn(false)
+
+    val messages = botusValidationService.validate(SOURCE_DATA_FIRST_CHAIN_IS_BOTUS)
+
+    assertThat(messages).containsExactly(ValidationMessage(BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE))
+  }
+
+  @Test
+  fun `should skip validation when botusConcurrentJourney feature toggle is disabled`() {
+    whenever(featureToggles.botusConsecutiveJourney).thenReturn(true)
+    whenever(featureToggles.botusConcurrentJourney).thenReturn(false)
+
+    val messages = botusValidationService.validate(SOURCE_DATA)
+
+    assertThat(messages).isEmpty()
+  }
+
+  @Test
+  fun `should perform validation when botusConcurrentJourney feature toggle is enabled`() {
+    whenever(featureToggles.botusConsecutiveJourney).thenReturn(true)
+    whenever(featureToggles.botusConcurrentJourney).thenReturn(true)
+
+    val messages = botusValidationService.validate(SOURCE_DATA)
+
+    assertThat(messages).containsExactly(ValidationMessage(BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE))
+  }
+
+  @Test
+  fun `should perform validation with error when botusConcurrentJourney chain includes BOTUS sentence as the first sentence in a chain`() {
+    whenever(featureToggles.botusConsecutiveJourney).thenReturn(true)
+    whenever(featureToggles.botusConcurrentJourney).thenReturn(true)
+
+    val messages = botusValidationService.validate(SOURCE_DATA_FIRST_CHAIN_IS_BOTUS)
+
+    assertThat(messages).containsExactly(ValidationMessage(BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE))
+  }
+
+  @Test
+  fun `should perform validation with error when botusConcurrentJourney chain includes BOTUS sentence as the first sentence in a chain and sentences out of order`() {
+    whenever(featureToggles.botusConsecutiveJourney).thenReturn(true)
+    whenever(featureToggles.botusConcurrentJourney).thenReturn(true)
+
+    val messages = botusValidationService.validate(
+      SOURCE_DATA_FIRST_CHAIN_IS_BOTUS.copy(
+        sentenceAndOffences = SOURCE_DATA_FIRST_CHAIN_IS_BOTUS.sentenceAndOffences.reversed(),
+      ),
+    )
+
+    assertThat(messages).containsExactly(ValidationMessage(BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE))
+  }
+
+  @Test
+  fun `should perform validation with no error when botusConcurrentJourney chain includes no BOTUS sentence`() {
+    whenever(featureToggles.botusConsecutiveJourney).thenReturn(true)
+    whenever(featureToggles.botusConcurrentJourney).thenReturn(true)
+
+    val messages = botusValidationService.validate(SOURCE_DATE_NO_CONSECUTIVE_BOTUS)
+
+    assertThat(messages).isEmpty()
   }
 
   companion object {
@@ -82,8 +149,78 @@ class BotusValidationServiceTest {
       ),
     )
 
+    private val CONSECUTIVE_NONE_BOTUS_SENTENCES = listOf(
+      BASE_SENTENCE.copy(
+        sentenceSequence = 1,
+      ),
+      BASE_SENTENCE.copy(
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        sentenceCalculationType = SentenceCalculationType.FTR.name,
+        terms = listOf(SentenceTerms(days = 7, code = "IMP")),
+      ),
+      BASE_SENTENCE.copy(
+        lineSequence = 3,
+        sentenceCalculationType = SentenceCalculationType.BOTUS.name,
+      ),
+    )
+
+    private val CONSECUTIVE_BOTUS_SENTENCES_ADJACENT_FIRST = listOf(
+      BASE_SENTENCE.copy(
+        sentenceSequence = 1,
+      ),
+      BASE_SENTENCE.copy(
+        sentenceSequence = 2,
+        sentenceCalculationType = SentenceCalculationType.BOTUS.name,
+      ),
+      BASE_SENTENCE.copy(
+        sentenceSequence = 3,
+        consecutiveToSequence = 2,
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+        terms = listOf(SentenceTerms(days = 7, code = "IMP")),
+      ),
+      BASE_SENTENCE.copy(
+        sentenceSequence = 4,
+        consecutiveToSequence = 3,
+        sentenceCalculationType = SentenceCalculationType.ADIMP.name,
+        terms = listOf(SentenceTerms(days = 3, code = "IMP")),
+      ),
+    )
+
     val SOURCE_DATA = PrisonApiSourceData(
       sentenceAndOffences = CONSECUTIVE_BOTUS_SENTENCES.map {
+        SentenceAndOffenceWithReleaseArrangements(
+          source = it,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        )
+      },
+      prisonerDetails = VALID_PRISONER,
+      bookingAndSentenceAdjustments = VALID_ADJUSTMENTS,
+      offenderFinePayments = listOf(),
+      returnToCustodyDate = null,
+    )
+
+    val SOURCE_DATE_NO_CONSECUTIVE_BOTUS = PrisonApiSourceData(
+      sentenceAndOffences = CONSECUTIVE_NONE_BOTUS_SENTENCES.map {
+        SentenceAndOffenceWithReleaseArrangements(
+          source = it,
+          isSdsPlus = false,
+          isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
+          isSDSPlusOffenceInPeriod = false,
+          hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
+        )
+      },
+      prisonerDetails = VALID_PRISONER,
+      bookingAndSentenceAdjustments = VALID_ADJUSTMENTS,
+      offenderFinePayments = listOf(),
+      returnToCustodyDate = null,
+    )
+
+    val SOURCE_DATA_FIRST_CHAIN_IS_BOTUS = PrisonApiSourceData(
+      sentenceAndOffences = CONSECUTIVE_BOTUS_SENTENCES_ADJACENT_FIRST.map {
         SentenceAndOffenceWithReleaseArrangements(
           source = it,
           isSdsPlus = false,
