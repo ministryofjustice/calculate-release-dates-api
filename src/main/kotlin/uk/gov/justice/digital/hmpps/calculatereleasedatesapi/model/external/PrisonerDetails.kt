@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external
 
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import java.time.LocalDate
 
@@ -12,6 +13,7 @@ data class PrisonerDetails(
   val alerts: List<Alert> = emptyList(),
   val agencyId: String = "",
   val assignedLivingUnit: AssignedLivingUnit? = null,
+  val sentenceDetail: SentenceCalcDates? = null,
 ) {
 
   fun activeAlerts(): List<Alert> {

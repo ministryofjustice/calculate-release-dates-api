@@ -1,0 +1,45 @@
+{
+  "content": [
+    {
+      "prisonerNumber": "default",
+      "bookingId": 1
+    },
+    {
+      "prisonerNumber": "PARALLEL",
+      "bookingId": 2
+    },
+    {
+      "prisonerNumber": "EDS",
+      "bookingId": 3
+    },
+    {
+      "prisonerNumber": "SOPC",
+      "bookingId": 4
+    }
+  ],
+  "pageable": {
+    "pageNumber": 0,
+    "pageSize": 200,
+    "sort": {
+      "empty": false,
+      "sorted": true,
+      "unsorted": false
+    },
+    "offset": 0,
+    "paged": true,
+    "unpaged": false
+  },
+  "last": true,
+  "totalElements": 4,
+  "totalPages": 1,
+  "first": true,
+  "size": 200,
+  "number": 0,
+  "sort": {
+    "empty": false,
+    "sorted": true,
+    "unsorted": false
+  },
+  "numberOfElements": 4,
+  "empty": false
+}

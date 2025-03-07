@@ -89,6 +89,10 @@ class JsonTransformation {
     return getAllJsonFromDir("api_integration/prisonerCalculableSentenceEnvelope")
   }
 
+  fun getAllPrisonCalculableSentenceEnvelopesVersion2Json(): Map<String, String> {
+    return getAllJsonFromDir("api_integration/prisonCalculableSentenceEnvelopeVersion2")
+  }
+
   fun getAllExternalMovementsJson(): Map<String, String> {
     return getAllJsonFromDir("api_integration/externalmovements")
   }

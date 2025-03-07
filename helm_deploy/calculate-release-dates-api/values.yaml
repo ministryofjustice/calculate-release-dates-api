@@ -12,6 +12,13 @@ generic-service:
     enabled: true
     host: app-hostname.local # override per environment
     tlsSecretName: calculate-release-dates-api-cert
+    annotations:
+      nginx.ingress.kubernetes.io/server-snippet: |
+        server_tokens off;
+        location /queue-admin/retry-all-dlqs {
+          deny all;
+          return 401;
+        }
 
   # Environment variables to load into the deployment
   env:
@@ -51,6 +58,9 @@ generic-service:
     cymulate-3: 52.49.144.209/32
     groups:
       - internal
+
+  retryDlqCronjob:
+    enabled: true
 
 generic-prometheus-alerts:
   targetApplication: calculate-release-dates-api

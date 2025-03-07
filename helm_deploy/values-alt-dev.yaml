@@ -25,17 +25,30 @@ generic-service:
     SUPPORT_INACTIVE_SENTENCES_AND_ADJUSTMENTS: "true"
     TORERA_OFFENCE_TO_MANUAL_JOURNEY: "false"
     EXTERNAL_MOVEMENTS_FEATURE_TOGGLE: "false"
+    BULK_CALCULATION_PROCESS: "SQS"
     
   # Switches off the allow list in the DEV env only.
   allowlist: null
 
   serviceAccountName: calculate-release-dates-api-dev
 
+  namespace_secrets:
+    sqs-bulk-comparison-alt-queue:
+      HMPPS_SQS_QUEUES_BULKCOMPARISON_QUEUE_NAME: "sqs_queue_name"
+    sqs-bulk-comparison-alt-dlq:
+      HMPPS_SQS_QUEUES_BULKCOMPARISON_DLQ_NAME: "sqs_queue_name"
+
+
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
   targetApplication: calculate-release-dates-api-alt-dev
   businessHoursOnly: true
+  sqsAlertsQueueNames:
+    - "calculate-release-dates-team-dev-bulk_comparison_alt_queue"
+    - "calculate-release-dates-team-dev-bulk_comparison_alt_dlq"
+  sqsAlertsOldestThreshold: 2
+  sqsAlertsTotalMessagesThreshold: 1
   alertSeverity: legacy-replacement-alerts-non-prod
 
 generic-data-analytics-extractor:
