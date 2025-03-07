@@ -29,6 +29,7 @@ class BulkComparisonEventListener(
       MESSAGE_TYPE -> {
         val message = objectMapper.readValue<InternalMessage<BulkComparisonMessageBody>>(sqsMessage.Message)
         bulkComparisonEventService.handleBulkComparisonMessage(message)
+        bulkComparisonEventService.updateCountsAndCheckIfComparisonIsComplete(message)
       } else -> {}
     }
   }
