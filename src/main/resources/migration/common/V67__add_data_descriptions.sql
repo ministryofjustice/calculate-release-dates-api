@@ -144,4 +144,4 @@ COMMENT ON COLUMN Tranche_Outcome.allocated_tranche IS E'Description: Legacy fie
 COMMENT ON COLUMN Tranche_Outcome.affected_by_sds40 IS E'Description: Whether or not a release date is affected by the Standard Determinate Sentences 40% scheme. \nSource System: CRDS ';
 COMMENT ON COLUMN Tranche_Outcome.outcome_date IS E'Description: The release date output from the calculation. \nSource System: CRDS ';
 COMMENT ON COLUMN Tranche_Outcome.id IS E'Description: The id of the tranche outcome record. \nSource System: CRDS ';
-COMMENT ON COLUMN Tranche_Outcome.tranche IS E'Description: The allocated tranche from Policy\'s understanding at the time the calculation was performed. \nSource System: CRDS ';
+COMMENT ON COLUMN Tranche_Outcome.tranche IS E'Description: The allocated tranche from Policy''s understanding at the time the calculation was performed. \nSource System: CRDS ';
