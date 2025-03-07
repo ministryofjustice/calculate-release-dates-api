@@ -15,30 +15,42 @@ class BotusValidationService(
   private val featureToggles: FeatureToggles,
 ) {
 
+  /**
+   * Only one of the two validation methods must be called based on the feature toggles.
+   * Feature flags will be removed when full BOTUS support is implemented.
+   */
   internal fun validate(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+    if (!featureToggles.botusConsecutiveJourney) {
+      return validateConsecutiveBotus(sourceData)
+    }
     if (featureToggles.botusConcurrentJourney) {
-      val consecutiveSentences = sourceData.sentenceAndOffences
-        .filter { it.consecutiveToSequence != null }
+      return validateConcurrentBotus(sourceData)
+    }
+    return emptyList()
+  }
 
-      if (consecutiveSentences.any { isBotusSentence(it) }) {
-        return listOf(ValidationMessage(code = BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE))
-      }
+  private fun validateConsecutiveBotus(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+    val botusSentences = getBotusSentences(sourceData)
 
-      getConsecutiveChains(consecutiveSentences).forEach { chain ->
-        if (isBotusAdjacentSentence(sourceData, chain.first())) {
-          return listOf(ValidationMessage(code = BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE))
-        }
-      }
+    if (botusSentences.isEmpty() || botusSentences.size == sourceData.sentenceAndOffences.size) {
+      return emptyList()
     }
 
-    if (!featureToggles.botusConsecutiveJourney) {
-      val botusSentences = getBotusSentences(sourceData)
+    return listOf(ValidationMessage(code = BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE))
+  }
 
-      if (botusSentences.isEmpty() || botusSentences.size == sourceData.sentenceAndOffences.size) {
-        return emptyList()
+  private fun validateConcurrentBotus(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+    val consecutiveSentences = sourceData.sentenceAndOffences
+      .filter { it.consecutiveToSequence != null }
+
+    if (consecutiveSentences.any { isBotusSentence(it) }) {
+      return listOf(ValidationMessage(code = BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE))
+    }
+
+    getConsecutiveChains(consecutiveSentences).forEach { chain ->
+      if (isBotusAdjacentSentence(sourceData, chain.first())) {
+        return listOf(ValidationMessage(code = BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE))
       }
-
-      return listOf(ValidationMessage(code = BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE))
     }
 
     return emptyList()
