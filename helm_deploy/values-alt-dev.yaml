@@ -34,9 +34,9 @@ generic-service:
 
   namespace_secrets:
     sqs-bulk-comparison-alt-queue:
-      HMPPS_SQS_QUEUES_BULKCOMPARISON_QUEUE_NAME: "sqs_queue_name"
+      HMPPS_SQS_QUEUES_BULKCOMPARISON_QUEUE_NAME: "sqs_name"
     sqs-bulk-comparison-alt-dlq:
-      HMPPS_SQS_QUEUES_BULKCOMPARISON_DLQ_NAME: "sqs_queue_name"
+      HMPPS_SQS_QUEUES_BULKCOMPARISON_DLQ_NAME: "sqs_name"
 
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
