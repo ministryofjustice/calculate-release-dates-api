@@ -76,7 +76,7 @@ class BotusValidationService(
   ): List<List<Int>> {
     val sentenceChains = mutableListOf<MutableList<Int>>()
 
-    for (sentence in consecutiveSentences) {
+    for (sentence in consecutiveSentences.sortedBy { it.consecutiveToSequence }) {
       val sequence = sentence.consecutiveToSequence ?: continue
       if (sentenceChains.isEmpty() || sentenceChains.last().last() != sequence - 1) {
         sentenceChains.add(mutableListOf(sequence))

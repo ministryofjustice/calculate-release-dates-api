@@ -83,6 +83,20 @@ class BotusValidationServiceTest {
   }
 
   @Test
+  fun `should perform validation with error when botusConcurrentJourney chain includes BOTUS sentence as the first sentence in a chain and sentences out of order`() {
+    whenever(featureToggles.botusConsecutiveJourney).thenReturn(true)
+    whenever(featureToggles.botusConcurrentJourney).thenReturn(true)
+
+    val messages = botusValidationService.validate(
+      SOURCE_DATA_FIRST_CHAIN_IS_BOTUS.copy(
+        sentenceAndOffences = SOURCE_DATA_FIRST_CHAIN_IS_BOTUS.sentenceAndOffences.reversed(),
+      ),
+    )
+
+    assertThat(messages).containsExactly(ValidationMessage(BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE))
+  }
+
+  @Test
   fun `should perform validation with no error when botusConcurrentJourney chain includes no BOTUS sentence`() {
     whenever(featureToggles.botusConsecutiveJourney).thenReturn(true)
     whenever(featureToggles.botusConcurrentJourney).thenReturn(true)
