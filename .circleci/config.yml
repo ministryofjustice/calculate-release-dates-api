@@ -20,8 +20,10 @@ parameters:
 jobs:
   validate:
     executor:
-      name: hmpps/java
-      tag: << pipeline.parameters.java-version >>
+      name: hmpps/localstack
+      jdk_tag: "21.0"
+      localstack_tag: "3"
+      services: "sns,sqs"
     steps:
       - checkout
       - restore_cache:

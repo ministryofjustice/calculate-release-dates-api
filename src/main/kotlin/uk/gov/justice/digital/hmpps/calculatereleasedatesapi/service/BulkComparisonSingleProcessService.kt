@@ -15,8 +15,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
@@ -33,14 +31,11 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Retu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 
 @Service
 @ConditionalOnProperty(value = ["bulk.calculation.process"], havingValue = "single", matchIfMissing = true)
@@ -153,46 +148,31 @@ class BulkComparisonSingleProcessService(
     val sdsPlusSentenceAndOffences = sentenceAndOffencesWithReleaseArrangementsForBooking.filter { it.isSDSPlus }
     val mismatch = buildMismatch(envelope, sentenceAndOffencesWithReleaseArrangementsForBooking)
 
-    if (shouldStoreMismatch()) {
-      val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
-      comparisonPersonRepository.save(
-        ComparisonPerson(
-          comparisonId = comparison.id,
-          person = envelope.person.prisonerNumber,
-          lastName = envelope.person.lastName,
-          latestBookingId = envelope.bookingId,
-          isMatch = mismatch.isMatch,
-          isValid = mismatch.isValid,
-          isFatal = false,
-          mismatchType = mismatch.type,
-          validationMessages = objectMapper.valueToTree(mismatch.messages),
-          calculatedByUsername = comparison.calculatedByUsername,
-          calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
-          nomisDates = envelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) }
-            ?: objectMapper.createObjectNode(),
-          overrideDates = envelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) }
-            ?: objectMapper.createObjectNode(),
-          breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) }
-            ?: objectMapper.createObjectNode(),
-          isActiveSexOffender = mismatch.calculableSentenceEnvelope.person.isActiveSexOffender(),
-          sdsPlusSentencesIdentified = objectMapper.valueToTree(sdsPlusSentenceAndOffences),
-          establishment = establishmentValue,
-        ),
-      )
-    }
-  }
-
-  private fun getEstablishmentValueForComparisonPerson(comparison: Comparison, establishment: String?): String? {
-    val establishmentValue = if (comparison.comparisonType != ComparisonType.MANUAL) {
-      if (establishment == null || establishment == "") {
-        comparison.prison!!
-      } else {
-        establishment
-      }
-    } else {
-      null
-    }
-    return establishmentValue
+    val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
+    comparisonPersonRepository.save(
+      ComparisonPerson(
+        comparisonId = comparison.id,
+        person = envelope.person.prisonerNumber,
+        lastName = envelope.person.lastName,
+        latestBookingId = envelope.bookingId,
+        isMatch = mismatch.isMatch,
+        isValid = mismatch.isValid,
+        isFatal = false,
+        mismatchType = mismatch.type,
+        validationMessages = objectMapper.valueToTree(mismatch.messages),
+        calculatedByUsername = comparison.calculatedByUsername,
+        calculationRequestId = mismatch.calculatedReleaseDates?.calculationRequestId,
+        nomisDates = envelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toCalculatedMap()) }
+          ?: objectMapper.createObjectNode(),
+        overrideDates = envelope.sentenceCalcDates?.let { objectMapper.valueToTree(it.toOverrideMap()) }
+          ?: objectMapper.createObjectNode(),
+        breakdownByReleaseDateType = mismatch.calculationResult?.let { objectMapper.valueToTree(it.breakdownByReleaseDateType) }
+          ?: objectMapper.createObjectNode(),
+        isActiveSexOffender = mismatch.calculableSentenceEnvelope!!.person.isActiveSexOffender(),
+        sdsPlusSentencesIdentified = objectMapper.valueToTree(sdsPlusSentenceAndOffences),
+        establishment = establishmentValue,
+      ),
+    )
   }
 
   private fun normalisedSentenceAndOffences(envelope: CalculableSentenceEnvelope) =
@@ -206,7 +186,7 @@ class BulkComparisonSingleProcessService(
   ): Mismatch {
     val validationResult = validate(calculableSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements)
     val mismatchType =
-      determineMismatchType(validationResult, calculableSentenceEnvelope, sentenceAndOffenceWithReleaseArrangements)
+      determineMismatchType(validationResult, calculableSentenceEnvelope.sentenceCalcDates, sentenceAndOffenceWithReleaseArrangements)
 
     return Mismatch(
       isMatch = mismatchType == MismatchType.NONE,
@@ -217,26 +197,6 @@ class BulkComparisonSingleProcessService(
       type = mismatchType,
       messages = validationResult.messages,
     )
-  }
-
-  fun determineMismatchType(
-    validationResult: ValidationResult,
-    calculableSentenceEnvelope: CalculableSentenceEnvelope,
-    sentenceAndOffenceWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>,
-  ): MismatchType {
-    if (validationResult.messages.isEmpty()) {
-      val datesMatch =
-        doDatesMatch(validationResult.calculatedReleaseDates, calculableSentenceEnvelope.sentenceCalcDates)
-      return if (datesMatch) MismatchType.NONE else MismatchType.RELEASE_DATES_MISMATCH
-    }
-
-    val unsupportedSentenceType =
-      validationResult.messages.any { it.code == ValidationCode.UNSUPPORTED_SENTENCE_TYPE || it.code.validationType == ValidationType.UNSUPPORTED_CALCULATION }
-    if (unsupportedSentenceType) {
-      return MismatchType.UNSUPPORTED_SENTENCE_TYPE
-    }
-
-    return MismatchType.VALIDATION_ERROR
   }
 
   private fun validate(
@@ -262,19 +222,6 @@ class BulkComparisonSingleProcessService(
       bulkCalculationReason,
       prisonApiSourceData,
     )
-  }
-
-  private fun doDatesMatch(
-    calculatedReleaseDates: CalculatedReleaseDates?,
-    sentenceCalcDates: SentenceCalcDates?,
-  ): Boolean {
-    if (calculatedReleaseDates != null && calculatedReleaseDates.dates.isNotEmpty()) {
-      val calculatedSentenceCalcDates = calculatedReleaseDates.toSentenceCalcDates()
-      if (sentenceCalcDates != null) {
-        return calculatedSentenceCalcDates.isSameComparableCalculatedDates(sentenceCalcDates)
-      }
-    }
-    return true
   }
 
   private fun convert(
@@ -370,9 +317,5 @@ class BulkComparisonSingleProcessService(
   private fun setAuthTokenAndLog(token: String) {
     UserContext.setAuthToken(token)
     log.info("Using token: {}", UserContext.getAuthToken())
-  }
-
-  private fun shouldStoreMismatch(): Boolean {
-    return true
   }
 }

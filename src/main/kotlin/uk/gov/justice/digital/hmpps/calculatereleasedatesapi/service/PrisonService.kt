@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Upda
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculableSentenceEnvelopeVersion2
 import java.time.LocalDate
 
 @Service
@@ -159,7 +160,24 @@ class PrisonService(
     return calculableSentenceEnvelope
   }
 
+  fun getActiveBookingsByEstablishmentVersion2(establishmentId: String): List<CalculableSentenceEnvelopeVersion2> {
+    var isLastPage = false
+    var pageNumber = 0
+    val calculableSentenceEnvelope = mutableListOf<CalculableSentenceEnvelopeVersion2>()
+
+    while (!isLastPage) {
+      val calculableSentenceEnvelopePage =
+        prisonApiClient.getCalculableSentenceEnvelopesByEstablishmentVersion2(establishmentId, pageNumber)
+      calculableSentenceEnvelope.addAll(calculableSentenceEnvelopePage.content)
+      isLastPage = calculableSentenceEnvelopePage.isLast
+      pageNumber++
+    }
+    return calculableSentenceEnvelope
+  }
+
   fun getActiveBookingsByPrisonerIds(prisonerIds: List<String>, token: String): List<CalculableSentenceEnvelope> = prisonApiClient.getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds, token)
+
+  fun getActiveBookingsByPrisonerIdsVersion2(prisonerIds: List<String>): List<CalculableSentenceEnvelopeVersion2> = prisonApiClient.getCalculableSentenceEnvelopesByPrisonerIdsVersion2(prisonerIds)
 
   fun getCalculationsForAPrisonerId(prisonerId: String): List<SentenceCalculationSummary> = prisonApiClient.getCalculationsForAPrisonerId(prisonerId)
 

@@ -130,6 +130,12 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
       prisonerCalculableSentenceEnvelopes.forEach { (key, value) ->
         prisonApi.stubPrisonerCalculableSentenceEnvelope(listOf(key), value)
       }
+
+      val prisonCalculableSentenceEnvelopesVersion2 = jsonTransformation.getAllPrisonCalculableSentenceEnvelopesVersion2Json()
+
+      prisonCalculableSentenceEnvelopesVersion2.forEach { (key, value) ->
+        prisonApi.stubPrisonCalculableSentenceEnvelopeVersion2(key, value)
+      }
     }
   }
 
@@ -280,6 +286,17 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
   fun stubPrisonCalculableSentenceEnvelope(establishmentId: String, json: String): StubMapping =
     stubFor(
       get("/api/prison/$establishmentId/booking/latest/paged/calculable-sentence-envelope?page=0")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(json)
+            .withStatus(200),
+        ),
+    )
+
+  fun stubPrisonCalculableSentenceEnvelopeVersion2(establishmentId: String, json: String): StubMapping =
+    stubFor(
+      get("/api/prison/$establishmentId/booking/latest/paged/calculable-sentence-envelope/v2?page=0")
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")

@@ -121,6 +121,7 @@ class CalculationTransactionalService(
     calculationReason: CalculationReason,
     providedSourceData: PrisonApiSourceData,
     calculationType: CalculationStatus = PRELIMINARY,
+    usernameOverride: String? = null,
   ): ValidationResult {
     var messages =
       validationService.validateBeforeCalculation(providedSourceData, calculationUserInputs) // Validation stage 1 of 3
@@ -140,6 +141,7 @@ class CalculationTransactionalService(
       calculationReason,
       calculationUserInputs,
       historicalTusedSource = providedSourceData.historicalTusedData?.historicalTusedSource,
+      usernameOverride = usernameOverride,
     )
     return ValidationResult(messages, booking, calculatedReleaseDates, calculationResult)
   }
@@ -271,12 +273,13 @@ class CalculationTransactionalService(
     calculationFragments: CalculationFragments? = null,
     calculationType: CalculationType = CalculationType.CALCULATED,
     historicalTusedSource: HistoricalTusedSource? = null,
+    usernameOverride: String? = null,
   ): CalculatedReleaseDates {
     val calculationRequest =
       calculationRequestRepository.save(
         transform(
           booking,
-          serviceUserService.getUsername(),
+          usernameOverride ?: serviceUserService.getUsername(),
           calculationStatus,
           sourceData,
           reasonForCalculation,

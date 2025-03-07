@@ -25,4 +25,6 @@ interface ComparisonPersonRepository : JpaRepository<ComparisonPerson, Long> {
   """,
   )
   fun getJsonForBulkComparison(comparisonShortReference: String, shortReference: String): CalculationRequest?
+
+  fun findByComparisonId(comparisonId: Long): List<ComparisonPerson>
 }

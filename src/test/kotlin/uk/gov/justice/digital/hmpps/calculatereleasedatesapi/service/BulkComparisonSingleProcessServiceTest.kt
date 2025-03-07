@@ -13,6 +13,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.firstValue
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.lastValue
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -171,7 +172,7 @@ class BulkComparisonSingleProcessServiceTest {
     val booking =
       Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), isNull())).thenReturn(
       validationResult,
     )
 
@@ -206,7 +207,7 @@ class BulkComparisonSingleProcessServiceTest {
     val booking =
       Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), isNull())).thenReturn(
       validationResult,
     )
 
@@ -234,7 +235,7 @@ class BulkComparisonSingleProcessServiceTest {
     val booking =
       Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), isNull())).thenReturn(
       validationResult,
     )
 
@@ -264,7 +265,7 @@ class BulkComparisonSingleProcessServiceTest {
     val booking =
       Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), isNull())).thenReturn(
       validationResult,
     )
 
@@ -310,7 +311,7 @@ class BulkComparisonSingleProcessServiceTest {
     val booking =
       Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), isNull())).thenReturn(
       validationResult,
     )
 
@@ -376,7 +377,7 @@ class BulkComparisonSingleProcessServiceTest {
     val booking =
       Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, null, null)
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), isNull())).thenReturn(
       validationResult,
     )
 
@@ -411,7 +412,7 @@ class BulkComparisonSingleProcessServiceTest {
     val booking =
       Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, null, null)
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), isNull())).thenReturn(
       validationResult,
     )
 
@@ -438,7 +439,7 @@ class BulkComparisonSingleProcessServiceTest {
       Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, calculatedReleaseDates, null)
 
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), isNull())).thenReturn(
       validationResult,
     )
 
@@ -480,7 +481,7 @@ class BulkComparisonSingleProcessServiceTest {
       null,
     )
 
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), isNull())).thenReturn(
       validationResult,
     )
 
@@ -534,7 +535,7 @@ class BulkComparisonSingleProcessServiceTest {
       Booking(Offender("a", LocalDate.of(1980, 1, 1), true), emptyList(), Adjustments(), null, null, 123)
     val validationResult = ValidationResult(emptyList(), booking, duplicatedReleaseDates, null)
 
-    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any())).thenReturn(
+    whenever(calculationTransactionalService.validateAndCalculate(any(), any(), any(), any(), any(), isNull())).thenReturn(
       validationResult,
     )
 

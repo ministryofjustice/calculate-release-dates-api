@@ -1,0 +1,10 @@
+
+hmpps.sqs:
+  reactiveApi: true
+  provider: localstack
+  queues:
+    bulkcomparison:
+      queueName: "bulkcomparison-${random.uuid}"
+      dlqName: "bulkcomparison-dlq-${random.uuid}"
+      dlqMaxReceiveCount: 3
+      visibilityTimeout: 120

@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 data class Mismatch(
   var isMatch: Boolean,
   var isValid: Boolean,
-  var calculableSentenceEnvelope: CalculableSentenceEnvelope,
+  var calculableSentenceEnvelope: CalculableSentenceEnvelope?,
   var calculatedReleaseDates: CalculatedReleaseDates? = null,
   var messages: List<ValidationMessage> = emptyList(),
   var calculationResult: CalculationResult? = null,
