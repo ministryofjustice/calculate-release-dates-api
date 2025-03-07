@@ -158,6 +158,9 @@ class BulkComparisonEventService(
       ),
     )
 
+    // Sleep to stop conflict where multiple event listeners process at the same time.
+    Thread.sleep(500)
+
     val count = comparisonPersonRepository.countByComparisonId(comparisonId = comparison.id)
     comparison.numberOfPeopleCompared = count
   }
