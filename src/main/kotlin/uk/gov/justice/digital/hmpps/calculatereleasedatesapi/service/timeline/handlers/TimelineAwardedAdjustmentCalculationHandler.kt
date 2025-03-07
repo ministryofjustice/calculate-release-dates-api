@@ -34,9 +34,12 @@ class TimelineAwardedAdjustmentCalculationHandler(
               awardedAfterDeterminateRelease = adaDays - radaDays,
             ),
           )
-        } else {
+        } else if (licenseSentences.isEmpty()) {
           // This is a PADA. No calculation required. Set value here to be applied to later sentences.
           padas += adaDays - radaDays
+          return TimelineHandleResult(true)
+        } else {
+          // standard recall
           return TimelineHandleResult(true)
         }
       } else {
