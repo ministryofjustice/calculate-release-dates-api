@@ -38,6 +38,8 @@ generic-service:
     sqs-bulk-comparison-alt-dlq:
       HMPPS_SQS_QUEUES_BULKCOMPARISON_DLQ_NAME: "sqs_name"
 
+  retryDlqCronjob:
+    enabled: true
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
