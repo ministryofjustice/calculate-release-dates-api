@@ -85,11 +85,16 @@ class BulkComparisonEventService(
     val establishment = message.body.establishment
 
     calculateAndStoreResult(personId, comparison, establishment, message.body.username)
-
-    checkIfComparisonIsComplete(comparison, message.body.totalToCompare)
   }
 
-  private fun checkIfComparisonIsComplete(comparison: Comparison, totalToCompare: Int) {
+  @Transactional
+  fun updateCountsAndCheckIfComparisonIsComplete(message: InternalMessage<BulkComparisonMessageBody>) {
+    val totalToCompare = message.body.totalToCompare
+    val comparison = comparisonRepository.findById(message.body.comparisonId).orElseThrow {
+      EntityNotFoundException("The comparison ${message.body.comparisonId} could not be found.")
+    }
+    val count = comparisonPersonRepository.countByComparisonId(comparisonId = comparison.id)
+    comparison.numberOfPeopleCompared = count
     if (comparison.numberOfPeopleCompared == totalToCompare.toLong()) {
       comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
       comparisonRepository.save(comparison)
@@ -157,11 +162,5 @@ class BulkComparisonEventService(
         establishment = establishmentValue,
       ),
     )
-
-    // Sleep to stop conflict where multiple event listeners process at the same time.
-    Thread.sleep(500)
-
-    val count = comparisonPersonRepository.countByComparisonId(comparisonId = comparison.id)
-    comparison.numberOfPeopleCompared = count
   }
 }
