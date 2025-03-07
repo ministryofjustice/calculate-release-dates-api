@@ -2,8 +2,6 @@
 # Per environment values which override defaults in calculate-release-dates-api/values.yaml
 
 generic-service:
-  fullnameOverride: calculate-release-dates-alt-api
-
   replicaCount: 2
 
   ingress:
@@ -39,6 +37,9 @@ generic-service:
       HMPPS_SQS_QUEUES_BULKCOMPARISON_QUEUE_NAME: "sqs_name"
     sqs-bulk-comparison-alt-dlq:
       HMPPS_SQS_QUEUES_BULKCOMPARISON_DLQ_NAME: "sqs_name"
+
+  retryDlqCronjob:
+    enabled: true
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
