@@ -98,7 +98,7 @@ class BulkComparisonEventService(
     }
     val count = comparisonPersonRepository.countByComparisonId(comparisonId = comparison.id)
     comparison.numberOfPeopleCompared = count
-    if (comparison.numberOfPeopleCompared == totalToCompare.toLong()) {
+    if (comparison.numberOfPeopleCompared >= totalToCompare.toLong()) {
       comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
       comparisonRepository.save(comparison)
     }
@@ -107,6 +107,12 @@ class BulkComparisonEventService(
   private fun calculateAndStoreResult(personId: String, comparison: Comparison, establishment: String?, username: String) {
     val bulkCalculationReason = calculationReasonRepository.findTopByIsBulkTrue().orElseThrow {
       EntityNotFoundException("The bulk calculation reason was not found.")
+    }
+
+    val existingPerson = comparisonPersonRepository.findByComparisonIdAndPerson(comparison.id, personId)
+    if (existingPerson != null) {
+      // Already processed and this is a retry from timeout.
+      return
     }
 
     val sourceData = prisonService.getPrisonApiSourceData(personId, InactiveDataOptions.default())
