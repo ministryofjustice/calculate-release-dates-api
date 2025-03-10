@@ -133,7 +133,6 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_alt_dev
           env: "alt-dev"
-          release_name: PROJECT_NAME_ENV_NAME
           jira_update: true
           pipeline_id: <<pipeline.id>>
           pipeline_number: <<pipeline.number>>
@@ -161,7 +160,6 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_alt_preprod
           env: "alt-preprod"
-          release_name: PROJECT_NAME_ENV_NAME
           jira_update: true
           jira_env_type: staging
           pipeline_id: <<pipeline.id>>
