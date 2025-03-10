@@ -141,7 +141,7 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
 
   override fun beforeEach(context: ExtensionContext) {
     mockPrisonService
-      .withCaseLoadsForMe(DEFAULT_CASELOAD)
+      .withCaseLoadsForMe(DEFAULT_CASELOAD, CaseLoad("PRIS", "PRIS", CaseLoadType.INST, null, currentlyActive = true))
       .withPrisonCalculableSentences("ABC", "default")
     prisonApi.resetRequests()
   }

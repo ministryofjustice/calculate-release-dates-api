@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
@@ -31,20 +32,18 @@ class BulkComparisonEventService(
   private val serviceUserService: ServiceUserService,
 ) : BulkComparisonService {
 
+  @Transactional
+  @Async
   override fun processPrisonComparison(comparison: Comparison, token: String) {
+    setAuthToken(token)
     val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishmentVersion2(comparison.prison!!)
-    activeBookingsAtEstablishment.forEach {
-      bulkComparisonEventPublisher.sendMessage(
-        comparisonId = comparison.id,
-        person = it,
-        totalToCompare = activeBookingsAtEstablishment.size,
-        establishment = null,
-        username = serviceUserService.getUsername(),
-      )
-    }
+    sendMessages(comparison, activeBookingsAtEstablishment.map { it to null })
   }
 
+  @Transactional
+  @Async
   override fun processFullCaseLoadComparison(comparison: Comparison, token: String) {
+    setAuthToken(token)
     val currentUserPrisonsList = prisonService.getCurrentUserPrisonsList()
     val activeBookingsAtEstablishment = mutableListOf<Pair<CalculableSentenceEnvelopeVersion2, String>>()
     for (prison in currentUserPrisonsList) {
@@ -52,25 +51,29 @@ class BulkComparisonEventService(
         prisonService.getActiveBookingsByEstablishmentVersion2(prison).map { it to prison },
       )
     }
-    activeBookingsAtEstablishment.forEach {
+    sendMessages(comparison, activeBookingsAtEstablishment)
+  }
+
+  @Transactional
+  @Async
+  override fun processManualComparison(comparison: Comparison, prisonerIds: List<String>, token: String) {
+    setAuthToken(token)
+    val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIdsVersion2(prisonerIds)
+    sendMessages(comparison, activeBookingsForPrisoners.map { it to null })
+  }
+
+  fun sendMessages(comparison: Comparison, calculations: List<Pair<CalculableSentenceEnvelopeVersion2, String?>>) {
+    // TODO refactor this after removing single process service. The comparison passed into this service is not attached to a transaction.
+    val dbComparison = comparisonRepository.findById(comparison.id).orElseThrow {
+      EntityNotFoundException("The comparison ${comparison.id} could not be found.")
+    }
+    dbComparison.numberOfPeopleExpected = calculations.size.toLong()
+    calculations.forEach {
       bulkComparisonEventPublisher.sendMessage(
         comparisonId = comparison.id,
         person = it.first,
-        totalToCompare = activeBookingsAtEstablishment.size,
+        totalToCompare = calculations.size,
         establishment = it.second,
-        username = serviceUserService.getUsername(),
-      )
-    }
-  }
-
-  override fun processManualComparison(comparison: Comparison, prisonerIds: List<String>, token: String) {
-    val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIdsVersion2(prisonerIds)
-    activeBookingsForPrisoners.forEach {
-      bulkComparisonEventPublisher.sendMessage(
-        comparisonId = comparison.id,
-        person = it,
-        totalToCompare = activeBookingsForPrisoners.size,
-        establishment = null,
         username = serviceUserService.getUsername(),
       )
     }

@@ -85,7 +85,7 @@ class ComparisonControllerTest {
 
   @Test
   fun `Test GET of manual input comparisons`() {
-    val comparisonList = listOf(ComparisonSummary("ABCD1234", null, ComparisonType.ESTABLISHMENT_FULL, LocalDateTime.now(), "JOEL", 0, 0, 0))
+    val comparisonList = listOf(ComparisonSummary("ABCD1234", null, ComparisonType.ESTABLISHMENT_FULL, ComparisonStatusValue.COMPLETED, LocalDateTime.now(), "JOEL", 0, 0, 0, 0))
     whenever(comparisonService.listComparisons()).thenReturn(comparisonList)
 
     val result = mvc.perform(

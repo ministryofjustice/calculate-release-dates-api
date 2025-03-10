@@ -10,7 +10,6 @@ import org.springframework.retry.support.RetryTemplate
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
@@ -55,7 +54,7 @@ class BulkComparisonSingleProcessService(
 
   @Async
   override fun processPrisonComparison(comparison: Comparison, token: String) {
-    setAuthTokenAndLog(token)
+    setAuthToken(token)
     val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishment(comparison.prison!!, token)
     processCalculableSentenceEnvelopes(activeBookingsAtEstablishment, comparison)
     completeComparison(comparison)
@@ -63,7 +62,7 @@ class BulkComparisonSingleProcessService(
 
   @Async
   override fun processFullCaseLoadComparison(comparison: Comparison, token: String) {
-    setAuthTokenAndLog(token)
+    setAuthToken(token)
     val currentUserPrisonsList = prisonService.getCurrentUserPrisonsList()
     log.info("Running case load comparison with prisons: {}", currentUserPrisonsList)
     for (prison in currentUserPrisonsList) {
@@ -75,7 +74,7 @@ class BulkComparisonSingleProcessService(
 
   @Async
   override fun processManualComparison(comparison: Comparison, prisonerIds: List<String>, token: String) {
-    setAuthTokenAndLog(token)
+    setAuthToken(token)
     val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIds(prisonerIds, token)
     processCalculableSentenceEnvelopes(activeBookingsForPrisoners, comparison)
     completeComparison(comparison)
@@ -312,10 +311,5 @@ class BulkComparisonSingleProcessService(
 
   companion object {
     private val log: Logger = LoggerFactory.getLogger(BulkComparisonSingleProcessService::class.java)
-  }
-
-  private fun setAuthTokenAndLog(token: String) {
-    UserContext.setAuthToken(token)
-    log.info("Using token: {}", UserContext.getAuthToken())
   }
 }
