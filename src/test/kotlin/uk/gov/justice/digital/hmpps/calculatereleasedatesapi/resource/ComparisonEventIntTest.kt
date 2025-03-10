@@ -14,13 +14,16 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Compar
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.SqsIntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockPrisonService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 
-class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOffencesClient) : SqsIntegrationTestBase() {
+class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOffencesClient, private val mockPrisonService: MockPrisonService) : SqsIntegrationTestBase() {
 
   @Autowired
   lateinit var comparisonPersonRepository: ComparisonPersonRepository
@@ -43,6 +46,11 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
       ),
       offences = "CD79009,TR68132",
     )
+    mockPrisonService.withInstAgencies(
+      listOf(
+        Agency("PRIS", "prison PRIS"),
+      ),
+    )
   }
 
   @Test
@@ -51,13 +59,24 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
 
     assertEquals(ComparisonType.ESTABLISHMENT_FULL, result.comparisonType)
     assertEquals(0, result.numberOfPeopleCompared)
+    val completedComparison = getComparison(result.comparisonShortReference)
+    assertEquals(4, completedComparison.numberOfPeopleCompared)
     val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
-    assertEquals(4, comparison!!.numberOfPeopleCompared)
-    val personComparison = comparisonPersonRepository.findByComparisonId(comparison.id).find { it.person == "default" }!!
+    val personComparison = comparisonPersonRepository.findByComparisonId(comparison!!.id).find { it.person == "default" }!!
     assertTrue(personComparison.isValid)
     assertTrue(personComparison.isMatch)
     assertEquals("default", personComparison.person)
   }
+
+  private fun getComparison(comparisonRef: String): ComparisonOverview = webTestClient.get()
+    .uri("/comparison/{comparisonId}", comparisonRef)
+    .accept(MediaType.APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATE_COMPARER")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(ComparisonOverview::class.java)
+    .returnResult().responseBody!!
 
   private fun createComparison(prisonId: String, comparisonType: ComparisonType = ComparisonType.ESTABLISHMENT_FULL): Comparison {
     val request = ComparisonInput(objectMapper.createObjectNode(), prisonId, comparisonType)
@@ -71,7 +90,7 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
       .expectHeader().contentType(MediaType.APPLICATION_JSON)
       .expectBody(Comparison::class.java)
       .returnResult().responseBody!!
-    await untilCallTo { comparisonRepository.findByComparisonShortReference(result.comparisonShortReference) } matches {
+    await untilCallTo { getComparison(result.comparisonShortReference) } matches {
       it!!.comparisonStatus.name == ComparisonStatusValue.COMPLETED.name
     }
     return result
