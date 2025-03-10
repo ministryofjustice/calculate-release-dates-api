@@ -1,4 +1,5 @@
 generic-service:
+  productId: "DPS014"
   nameOverride: calculate-release-dates-api
 
   replicaCount: 4
