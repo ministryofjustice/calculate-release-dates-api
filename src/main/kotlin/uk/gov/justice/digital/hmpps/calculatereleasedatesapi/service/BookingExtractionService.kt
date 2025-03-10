@@ -629,7 +629,7 @@ class BookingExtractionService(
         return ConcurrentOraAndNonOraDetails(isReleaseDateConditional = false, canHaveLicenseExpiry = true)
       }
 
-      if (sentences.any { !it.isDto() } && sentences.any { !offender.underEighteenAt(it.sentenceCalculation.releaseDate) }) {
+      if (sentences.any { !it.isDto() } && sentences.all { !offender.underEighteenAt(it.sentenceCalculation.releaseDate) }) {
         return ConcurrentOraAndNonOraDetails(isReleaseDateConditional = true, canHaveLicenseExpiry = true)
       }
     }
