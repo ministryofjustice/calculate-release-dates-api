@@ -2,7 +2,7 @@
 # Per environment values which override defaults in calculate-release-dates-api/values.yaml
 
 generic-service:
-  nameOverride: calculate-release-dates-api-alt
+  nameOverride: alt-calculate-release-dates-api
 
   ingress:
     host: calculate-release-dates-api-alt-preprod.hmpps.service.justice.gov.uk
@@ -49,7 +49,7 @@ generic-service:
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
-  targetApplication: calculate-release-dates-api-alt
+  targetApplication: alt-calculate-release-dates-api
   businessHoursOnly: true
   sqsAlertsQueueNames:
     - "calculate-release-dates-team-preprod-bulk_comparison_alt_queue"
@@ -60,4 +60,4 @@ generic-prometheus-alerts:
 
 generic-data-analytics-extractor:
   enabled: false
-  cronJobNameOverride: calculate-release-dates-alt
+  cronJobNameOverride: alt-calculate-release-dates-api
