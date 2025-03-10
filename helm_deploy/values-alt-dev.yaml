@@ -2,6 +2,7 @@
 # Per environment values which override defaults in calculate-release-dates-api/values.yaml
 
 generic-service:
+  nameOverride: calculate-release-dates-api-alt
   replicaCount: 2
 
   ingress:
