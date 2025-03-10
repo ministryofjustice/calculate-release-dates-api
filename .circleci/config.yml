@@ -126,6 +126,7 @@ workflows:
             - validate
             - build_docker
             - helm_lint
+            - lint-api-docs
       - hmpps/deploy_env:
           name: deploy_alt_dev
           env: "alt-dev"
@@ -142,6 +143,7 @@ workflows:
             - validate
             - build_docker
             - helm_lint
+            - lint-api-docs
       - request-preprod-approval:
           type: approval
           requires:
