@@ -33,7 +33,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.oraAndNoneOraExtraction
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.Period
@@ -610,63 +610,32 @@ class BookingExtractionService(
     effectiveSentenceLength: Period,
     offender: Offender,
   ): ConcurrentOraAndNonOraDetails {
-    val latestReleaseIsConditional = latestReleaseTypes.contains(CRD)
-    val latestSentenceExpiryIsSED = latestExpiryTypes.contains(SED)
-
-    val hasOraSentences = sentences.any { (it is StandardDeterminateSentence) && it.isOraSentence() }
-    val hasNonOraSentencesOfLessThan12Months =
-      sentences.any { (it is StandardDeterminateSentence) && !it.isOraSentence() && it.durationIsLessThan(12, MONTHS) }
-    val mostRecentSentenceWithASed = extractionService.mostRecentSentenceOrNull(
+    // Do we have a mix of ora and non-ora sentences
+    oraAndNoneOraExtraction(
+      latestReleaseTypes,
+      latestExpiryTypes,
+      latestReleaseDate,
       sentences,
-      SentenceCalculation::expiryDate,
-    ) { it.releaseDateTypes.contains(SED) }
-    val mostRecentSentenceWithASled = extractionService.mostRecentSentenceOrNull(
-      sentences,
-      SentenceCalculation::expiryDate,
-    ) { it.releaseDateTypes.contains(SLED) }
-
-    // We have a mix of ora and non-ora sentences
-    if (hasOraSentences && hasNonOraSentencesOfLessThan12Months && mostRecentSentenceWithASed != null && mostRecentSentenceWithASled != null && effectiveSentenceLength.years < FOUR) {
-      if (!latestReleaseIsConditional) {
-        if (latestSentenceExpiryIsSED) {
-          if (latestReleaseDate.isAfter(mostRecentSentenceWithASled.sentenceCalculation.expiryDate)) {
-            return ConcurrentOraAndNonOraDetails(
-              isReleaseDateConditional = false,
-              canHaveLicenseExpiry = false,
-            )
-          } else {
-            return ConcurrentOraAndNonOraDetails(
-              isReleaseDateConditional = true,
-              canHaveLicenseExpiry = true,
-            )
-          }
-        } else {
-          return ConcurrentOraAndNonOraDetails(
-            isReleaseDateConditional = true,
-            canHaveLicenseExpiry = true,
-          )
-        }
-      }
-    }
-    val hasLicence = sentences.any {
-      it.sentenceCalculation.licenceExpiryDate != null &&
-        it.sentenceCalculation.licenceExpiryDate!!.isAfterOrEqualTo(
-          latestReleaseDate,
-        )
+      effectiveSentenceLength,
+    )?.let {
+        oraAndNoneOra: ConcurrentOraAndNonOraDetails ->
+      return oraAndNoneOra
     }
 
-    if ((sentences.any { it.isDto() })) {
-      if (sentences.all { offender.underEighteenAt(it.sentenceCalculation.releaseDate) } && effectiveSentenceLength.toTotalMonths() < 12) {
+    if (sentences.any { it.isDto() }) {
+      if (sentences.all { offender.underEighteenAt(it.sentenceCalculation.releaseDate) } &&
+        effectiveSentenceLength.toTotalMonths() < 12
+      ) {
         return ConcurrentOraAndNonOraDetails(isReleaseDateConditional = false, canHaveLicenseExpiry = true)
       }
-      if (sentences.any { !it.isDto() } && !(sentences.all { offender.underEighteenAt(it.sentenceCalculation.releaseDate) })
-      ) {
+
+      if (sentences.any { !it.isDto() } && sentences.all { !offender.underEighteenAt(it.sentenceCalculation.releaseDate) }) {
         return ConcurrentOraAndNonOraDetails(isReleaseDateConditional = true, canHaveLicenseExpiry = true)
       }
     }
 
     return ConcurrentOraAndNonOraDetails(
-      hasLicence,
+      sentences.any { it.sentenceCalculation.licenceExpiryDate?.isAfterOrEqualTo(latestReleaseDate) ?: false },
       canHaveLicenseExpiry = true,
     )
   }
@@ -678,6 +647,5 @@ class BookingExtractionService(
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
-    private const val FOUR = 4L
   }
 }
