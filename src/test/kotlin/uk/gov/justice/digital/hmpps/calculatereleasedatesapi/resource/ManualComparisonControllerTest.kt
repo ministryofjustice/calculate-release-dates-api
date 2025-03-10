@@ -84,7 +84,8 @@ class ManualComparisonControllerTest {
 
   @Test
   fun `Test GET of preconfigured comparisons`() {
-    whenever(manualComparisonService.listManual()).thenReturn(listOf(ComparisonSummary("ABCD1234", null, ComparisonType.MANUAL, LocalDateTime.now(), "JOEL", 0, 0, 0)))
+    val startTime = LocalDateTime.now().minusHours(2)
+    whenever(manualComparisonService.listManual()).thenReturn(listOf(ComparisonSummary("ABCD1234", null, ComparisonType.MANUAL, ComparisonStatusValue.PROCESSING, startTime, "JOEL", 0, 10, 5, 0)))
 
     val result = mvc.perform(
       MockMvcRequestBuilders.get("/comparison/manual/")
@@ -95,6 +96,9 @@ class ManualComparisonControllerTest {
       .andReturn()
 
     assertThat(result.response.contentAsString).contains("\"comparisonShortReference\":\"ABCD1234\"")
+    assertThat(result.response.contentAsString).contains("\"percentageComplete\":50.0")
+    // Started two hours ago, 50% complete. ETA is in 4 hours from start.
+    assertThat(result.response.contentAsString).contains("\"expectedCompletionTime\":\"${startTime.plusHours(4).toString().take(16)}")
   }
 
   @Test

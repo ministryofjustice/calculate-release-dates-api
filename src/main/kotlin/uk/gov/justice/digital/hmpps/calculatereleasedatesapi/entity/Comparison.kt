@@ -56,6 +56,8 @@ class Comparison(
   @ManyToOne(cascade = [CascadeType.ALL])
   var comparisonStatus: ComparisonStatus,
 
+  var numberOfPeopleExpected: Long = 1,
+
   var numberOfPeopleCompared: Long = 0,
 
   var numberOfPeopleComparisonFailedFor: Long = 0,
