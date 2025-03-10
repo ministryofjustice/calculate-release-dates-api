@@ -49,7 +49,7 @@ generic-service:
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
-  targetApplication: calculate-release-dates-api-alt-preprod
+  targetApplication: calculate-release-dates-api-alt
   businessHoursOnly: true
   sqsAlertsQueueNames:
     - "calculate-release-dates-team-preprod-bulk_comparison_alt_queue"
