@@ -277,7 +277,7 @@ class CalculationResultEnrichmentService(
         return ReleaseDateHint("50% date has been applied")
       }
     }
-    if (type == ReleaseDateType.TUSED && calculationBreakdown.breakdownByReleaseDateType.containsKey(ReleaseDateType.CRD)) {
+    if (type == TUSED && calculationBreakdown.breakdownByReleaseDateType.containsKey(ReleaseDateType.CRD)) {
       val crdRules = calculationBreakdown.breakdownByReleaseDateType[ReleaseDateType.CRD]!!.rules
       if (
         crdRules.contains(CalculationRule.SDS_EARLY_RELEASE_ADJUSTED_TO_TRANCHE_1_COMMENCEMENT) ||
