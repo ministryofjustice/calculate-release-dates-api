@@ -6,4 +6,5 @@ enum class CalculationStatus {
   ERROR,
   TEST,
   RECORD_A_RECALL,
+  BULK,
 }
