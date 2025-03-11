@@ -48,7 +48,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import java.util.UUID
 
 @Service
-@Transactional(readOnly = true)
 class CalculationTransactionalService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationOutcomeRepository: CalculationOutcomeRepository,
@@ -76,6 +75,7 @@ class CalculationTransactionalService(
    *
    * activeDataOnly is only used by the test 1000 calcs functionality
    */
+  @Transactional(readOnly = true)
   fun fullValidation(
     prisonerId: String,
     calculationUserInputs: CalculationUserInputs,
@@ -86,6 +86,7 @@ class CalculationTransactionalService(
     return fullValidationFromSourceData(sourceData, calculationUserInputs)
   }
 
+  @Transactional(readOnly = true)
   fun fullValidationFromSourceData(sourceData: PrisonApiSourceData, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
     val initialValidationMessages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs)
 
@@ -99,6 +100,7 @@ class CalculationTransactionalService(
     return fullValidationFromBookingData(booking, calculationUserInputs)
   }
 
+  @Transactional(readOnly = true)
   fun fullValidationFromBookingData(booking: Booking, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
     val bookingValidationMessages = validationService.validateBeforeCalculation(booking)
 
@@ -114,8 +116,8 @@ class CalculationTransactionalService(
     return validationService.validateBookingAfterCalculation(calculationOutput, booking)
   }
 
-  @Transactional
-  fun validateAndCalculate(
+  // Deliberately not transactional. Transaction started in bulk services.
+  fun validateAndCalculateForBulk(
     prisonerId: String,
     calculationUserInputs: CalculationUserInputs,
     calculationReason: CalculationReason,
@@ -146,6 +148,7 @@ class CalculationTransactionalService(
     return ValidationResult(messages, booking, calculatedReleaseDates, calculationResult)
   }
 
+  @Transactional(readOnly = true)
   fun supportedValidation(prisonerId: String, inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default()): List<ValidationMessage> {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, inactiveDataOptions)
     return validationService.validateSupportedSentencesAndCalculations(sourceData)
@@ -500,6 +503,7 @@ class CalculationTransactionalService(
       .orElseThrow { CalculationNotFoundException("Could not find calculation with request id: ${calculation.calculationRequestId}") }
   }
 
+  @Transactional(readOnly = true)
   fun findCalculationResultsByCalculationReference(
     calculationReference: String,
     checkForChange: Boolean = false,
@@ -532,11 +536,13 @@ class CalculationTransactionalService(
     }
   }
 
+  @Transactional(readOnly = true)
   fun validateForManualBooking(prisonerId: String): List<ValidationMessage> {
     val sourceData = prisonService.getPrisonApiSourceData(prisonerId, InactiveDataOptions.default())
     return validationService.validateSentenceForManualEntry(sourceData.sentenceAndOffences)
   }
 
+  @Transactional(readOnly = true)
   fun validateRequestedDates(dates: List<String>): List<ValidationMessage> = validationService.validateRequestedDates(dates)
 
   companion object {
