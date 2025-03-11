@@ -136,7 +136,7 @@ class BulkComparisonEventService(
         calculationUserInput,
         bulkCalculationReason,
         sourceData,
-        CalculationStatus.TEST,
+        CalculationStatus.BULK,
         username,
       )
     } catch (e: Exception) {
