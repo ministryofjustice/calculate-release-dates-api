@@ -275,13 +275,7 @@ fun transform(prisonerDetails: PrisonerDetails): Offender {
   return Offender(
     dateOfBirth = prisonerDetails.dateOfBirth,
     reference = prisonerDetails.offenderNo,
-    isActiveSexOffender = prisonerDetails.activeAlerts().any {
-      it.alertType == "S" &&
-        (
-          it.alertCode == "SOR" || // Sex offence register
-            it.alertCode == "SR"
-          ) // On sex offender register
-    },
+    isActiveSexOffender = prisonerDetails.isActiveSexOffender(),
   )
 }
 
