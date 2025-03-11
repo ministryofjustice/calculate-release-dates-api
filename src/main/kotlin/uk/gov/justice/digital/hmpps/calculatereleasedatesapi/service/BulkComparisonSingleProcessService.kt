@@ -215,7 +215,7 @@ class BulkComparisonSingleProcessService(
       EntityNotFoundException("The bulk calculation reason was not found.")
     }
 
-    return calculationTransactionalService.validateAndCalculate(
+    return calculationTransactionalService.validateAndCalculateForBulk(
       calculableSentenceEnvelope.person.prisonerNumber,
       calculationUserInput,
       bulkCalculationReason,

@@ -99,8 +99,9 @@ class BulkComparisonEventService(
   @Transactional
   fun updateCountsAndCheckIfComparisonIsComplete(message: InternalMessage<BulkComparisonMessageBody>) {
     val totalToCompare = message.body.totalToCompare
-    val comparison = comparisonRepository.findById(message.body.comparisonId).orElseThrow {
-      EntityNotFoundException("The comparison ${message.body.comparisonId} could not be found.")
+    val comparison = comparisonRepository.findById(message.body.comparisonId).getOrElse {
+      log.error("Couldn't handle message for comparison ${message.body.comparisonId}")
+      return
     }
     val count = comparisonPersonRepository.countByComparisonId(comparisonId = comparison.id)
     comparison.numberOfPeopleCompared = count
@@ -131,7 +132,7 @@ class BulkComparisonEventService(
     val establishmentValue = getEstablishmentValueForComparisonPerson(comparison, establishment)
 
     val validationResult = try {
-      calculationTransactionalService.validateAndCalculate(
+      calculationTransactionalService.validateAndCalculateForBulk(
         personId,
         calculationUserInput,
         bulkCalculationReason,

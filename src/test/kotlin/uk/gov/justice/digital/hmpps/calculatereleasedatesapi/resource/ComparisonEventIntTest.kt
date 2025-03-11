@@ -4,10 +4,15 @@ import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
@@ -22,6 +27,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.mana
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import java.lang.IllegalArgumentException
 
 class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOffencesClient, private val mockPrisonService: MockPrisonService) : SqsIntegrationTestBase() {
 
@@ -30,6 +37,9 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
 
   @Autowired
   lateinit var comparisonRepository: ComparisonRepository
+
+  @SpyBean
+  lateinit var validationService: ValidationService
 
   @BeforeEach
   fun clearTables() {
@@ -65,6 +75,25 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
     val personComparison = comparisonPersonRepository.findByComparisonId(comparison!!.id).find { it.person == "default" }!!
     assertTrue(personComparison.isValid)
     assertTrue(personComparison.isMatch)
+    assertEquals("default", personComparison.person)
+  }
+
+  @Test
+  fun `Run comparison on a prison must compare where there are fatal errors`() {
+    doThrow(IllegalArgumentException("An exception"))
+      .whenever(validationService).validateBeforeCalculation(any(), any())
+
+    val result = createComparison("PRIS")
+
+    assertEquals(ComparisonType.ESTABLISHMENT_FULL, result.comparisonType)
+    assertEquals(0, result.numberOfPeopleCompared)
+    val completedComparison = getComparison(result.comparisonShortReference)
+    assertEquals(4, completedComparison.numberOfPeopleCompared)
+    val comparison = comparisonRepository.findByComparisonShortReference(result.comparisonShortReference)
+    val personComparison = comparisonPersonRepository.findByComparisonId(comparison!!.id).find { it.person == "default" }!!
+    assertFalse(personComparison.isValid)
+    assertFalse(personComparison.isMatch)
+    assertTrue(personComparison.isFatal)
     assertEquals("default", personComparison.person)
   }
 
