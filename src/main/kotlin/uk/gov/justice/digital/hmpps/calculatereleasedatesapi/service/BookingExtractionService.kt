@@ -585,11 +585,20 @@ class BookingExtractionService(
     sentences: List<CalculableSentence>,
     latestLicenseExpiryDate: LocalDate,
   ): Pair<LocalDate, ReleaseDateCalculationBreakdown>? {
-    val latestTUSEDSentence = sentences
-      .filter { it.sentenceCalculation.topUpSupervisionDate != null }
+    val (historicTUSEDs, calculatedTUSEDs) = sentences.partition { it is BotusSentence }
+
+    val latestTUSEDSentence = calculatedTUSEDs
+      .filter { it.isCalculationInitialised() && it.sentenceCalculation.topUpSupervisionDate != null }
       .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
 
-    return latestTUSEDSentence?.let { sentence ->
+    val latestHistoricTUSEDSentence = historicTUSEDs
+      .filter { it.isCalculationInitialised() && it.sentenceCalculation.topUpSupervisionDate != null }
+      .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
+
+    // Use the latest calculated TUSED, otherwise use historic TUSED
+    val latestTUSED = latestTUSEDSentence ?: latestHistoricTUSEDSentence
+
+    return latestTUSED?.let { sentence ->
       val topUpDate = sentence.sentenceCalculation.topUpSupervisionDate
       val breakdown = sentence.sentenceCalculation.breakdownByReleaseDateType[TUSED]
 
