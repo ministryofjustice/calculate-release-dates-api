@@ -250,7 +250,7 @@ class SentenceAdjustedCalculationService(
       determineTUSED(sentenceCalculation, sentence, offender)
       if (sentenceCalculation.topUpSupervisionDate == null) {
         sentenceCalculation.topUpSupervisionDate = sentence.latestTusedDate
-        sentenceCalculation.breakdownByReleaseDateType[TUSED] = tusedCalculator.getCalculationBreakdown(sentenceCalculation)
+        sentenceCalculation.breakdownByReleaseDateType[TUSED] = tusedCalculator.getCalculationBreakdownForBotus(sentenceCalculation)
       }
     }
   }
