@@ -20,6 +20,7 @@ generic-service:
     TORERA_OFFENCE_TO_MANUAL_JOURNEY: "true"
     EXTERNAL_MOVEMENTS_FEATURE_TOGGLE: "false"
     REVISED_FIXED_TERM_RECALLS_RULES: "true"
+    BULK_CALCULATION_PROCESS: "SQS"
 
   serviceAccountName: calculate-release-dates-api-prod
 
@@ -44,7 +45,18 @@ generic-service:
         DB_PASS_PREPROD: "database_password"
         DB_HOST_PREPROD: "rds_instance_address"
 
+  namespace_secrets:
+    sqs-bulk-comparison-queue:
+      HMPPS_SQS_QUEUES_BULKCOMPARISON_QUEUE_NAME: "sqs_name"
+    sqs-bulk-comparison-dlq:
+      HMPPS_SQS_QUEUES_BULKCOMPARISON_DLQ_NAME: "sqs_name"
+
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
+  sqsAlertsQueueNames:
+    - "calculate-release-dates-team-prod-bulk_comparison_queue"
+    - "calculate-release-dates-team-prod-bulk_comparison_dlq"
+  sqsAlertsOldestThreshold: 2
+  sqsAlertsTotalMessagesThreshold: 1
   alertSeverity: legacy-replacement-alerts
