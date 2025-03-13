@@ -7,9 +7,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedRel
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType
 
 interface BulkComparisonService {
 
@@ -31,7 +29,7 @@ interface BulkComparisonService {
     }
 
     val unsupportedSentenceType =
-      validationResult.messages.any { it.code == ValidationCode.UNSUPPORTED_SENTENCE_TYPE || it.code.validationType == ValidationType.UNSUPPORTED_CALCULATION }
+      validationResult.messages.any { it.type.isUnsupported() }
     if (unsupportedSentenceType) {
       return MismatchType.UNSUPPORTED_SENTENCE_TYPE
     }
