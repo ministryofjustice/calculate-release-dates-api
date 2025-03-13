@@ -55,7 +55,6 @@ dependencies {
 
   implementation("io.arrow-kt:arrow-core:2.0.0")
   implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.9.0")
-
   // OpenAPI
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
@@ -63,6 +62,7 @@ dependencies {
   implementation("io.awspring.cloud:spring-cloud-aws-messaging:2.4.4")
   implementation("org.springframework:spring-jms:6.2.0")
   implementation("com.google.code.gson:gson:2.11.0")
+  implementation("org.apache.commons:commons-text:1.13.0")
 
   // SQS
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.2.2")
