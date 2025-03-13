@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.persistence.EntityNotFoundException
+import org.apache.commons.text.WordUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -206,7 +207,7 @@ class BulkComparisonEventService(
       ComparisonPerson(
         comparisonId = comparison.id,
         person = sourceData.prisonerDetails.offenderNo,
-        lastName = sourceData.prisonerDetails.lastName,
+        lastName = WordUtils.capitalizeFully(sourceData.prisonerDetails.lastName),
         latestBookingId = sourceData.prisonerDetails.bookingId,
         isMatch = false,
         isValid = false,
