@@ -5,55 +5,61 @@ import jakarta.persistence.EntityNotFoundException
 import org.apache.commons.text.WordUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.UserContext
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonPerson
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ComparisonStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculableSentenceEnvelopeVersion2
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import kotlin.jvm.optionals.getOrElse
 
 @Service
 class BulkComparisonEventService(
   private val prisonService: PrisonService,
-  private val bulkComparisonEventPublisher: BulkComparisonEventPublisher,
+  private val bulkComparisonEventPublisher: BulkComparisonEventPublisher?,
   private val calculationReasonRepository: CalculationReasonRepository,
   private val calculationTransactionalService: CalculationTransactionalService,
   private val comparisonRepository: ComparisonRepository,
   private val comparisonPersonRepository: ComparisonPersonRepository,
   private val objectMapper: ObjectMapper,
   private val serviceUserService: ServiceUserService,
-) : BulkComparisonService {
+) {
 
   @Transactional
   @Async
-  override fun processPrisonComparison(comparison: Comparison, token: String) {
+  fun processPrisonComparison(comparisonId: Long, token: String) {
     setAuthToken(token)
+    val comparison = getComparison(comparisonId)
     val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishmentVersion2(comparison.prison!!)
-    sendMessages(comparison, activeBookingsAtEstablishment.map { it to null })
+    sendMessages(comparison, activeBookingsAtEstablishment.map { it.prisonerNumber to null })
   }
 
   @Transactional
   @Async
-  override fun processFullCaseLoadComparison(comparison: Comparison, token: String) {
+  fun processFullCaseLoadComparison(comparisonId: Long, token: String) {
     setAuthToken(token)
+    val comparison = getComparison(comparisonId)
     val currentUserPrisonsList = prisonService.getCurrentUserPrisonsList()
-    val activeBookingsAtEstablishment = mutableListOf<Pair<CalculableSentenceEnvelopeVersion2, String>>()
+    val activeBookingsAtEstablishment = mutableListOf<Pair<String, String>>()
     for (prison in currentUserPrisonsList) {
       activeBookingsAtEstablishment.addAll(
-        prisonService.getActiveBookingsByEstablishmentVersion2(prison).map { it to prison },
+        prisonService.getActiveBookingsByEstablishmentVersion2(prison).map { it.prisonerNumber to prison },
       )
     }
     sendMessages(comparison, activeBookingsAtEstablishment)
@@ -61,18 +67,17 @@ class BulkComparisonEventService(
 
   @Transactional
   @Async
-  override fun processManualComparison(comparison: Comparison, prisonerIds: List<String>, token: String) {
+  fun processManualComparison(comparisonId: Long, prisonerIds: List<String>, token: String) {
     setAuthToken(token)
-    val activeBookingsForPrisoners = prisonService.getActiveBookingsByPrisonerIdsVersion2(prisonerIds)
-    sendMessages(comparison, activeBookingsForPrisoners.map { it to null })
+    val comparison = getComparison(comparisonId)
+    sendMessages(comparison, prisonerIds.map { it to null })
   }
 
-  fun sendMessages(comparison: Comparison, calculations: List<Pair<CalculableSentenceEnvelopeVersion2, String?>>) {
-    // TODO refactor this after removing single process service. The comparison passed into this service is not attached to a transaction.
-    val dbComparison = comparisonRepository.findById(comparison.id).orElseThrow {
-      EntityNotFoundException("The comparison ${comparison.id} could not be found.")
+  fun sendMessages(comparison: Comparison, calculations: List<Pair<String, String?>>) {
+    if (bulkComparisonEventPublisher == null) {
+      throw IllegalStateException("Bulk comparison publisher is not configured for this environment")
     }
-    dbComparison.numberOfPeopleExpected = calculations.size.toLong()
+    comparison.numberOfPeopleExpected = calculations.size.toLong()
     calculations.forEach {
       bulkComparisonEventPublisher.sendMessage(
         comparisonId = comparison.id,
@@ -81,6 +86,12 @@ class BulkComparisonEventService(
         establishment = it.second,
         username = serviceUserService.getUsername(),
       )
+    }
+  }
+
+  fun getComparison(comparisonId: Long): Comparison {
+    return comparisonRepository.findById(comparisonId).orElseThrow {
+      EntityNotFoundException("The comparison $comparisonId could not be found.")
     }
   }
 
@@ -226,6 +237,56 @@ class BulkComparisonEventService(
         fatalException = trimmedException,
       ),
     )
+  }
+
+  fun determineMismatchType(
+    validationResult: ValidationResult,
+    sentenceCalcDates: SentenceCalcDates?,
+    sentenceAndOffenceWithReleaseArrangements: List<SentenceAndOffenceWithReleaseArrangements>,
+  ): MismatchType {
+    if (validationResult.messages.isEmpty()) {
+      val datesMatch =
+        doDatesMatch(validationResult.calculatedReleaseDates, sentenceCalcDates)
+      return if (datesMatch) MismatchType.NONE else MismatchType.RELEASE_DATES_MISMATCH
+    }
+
+    val unsupportedSentenceType =
+      validationResult.messages.any { it.type.isUnsupported() }
+    if (unsupportedSentenceType) {
+      return MismatchType.UNSUPPORTED_SENTENCE_TYPE
+    }
+
+    return MismatchType.VALIDATION_ERROR
+  }
+
+  private fun doDatesMatch(
+    calculatedReleaseDates: CalculatedReleaseDates?,
+    sentenceCalcDates: SentenceCalcDates?,
+  ): Boolean {
+    if (calculatedReleaseDates != null && calculatedReleaseDates.dates.isNotEmpty()) {
+      val calculatedSentenceCalcDates = calculatedReleaseDates.toSentenceCalcDates()
+      if (sentenceCalcDates != null) {
+        return calculatedSentenceCalcDates.isSameComparableCalculatedDates(sentenceCalcDates)
+      }
+    }
+    return true
+  }
+
+  fun getEstablishmentValueForComparisonPerson(comparison: Comparison, establishment: String?): String? {
+    val establishmentValue = if (comparison.comparisonType != ComparisonType.MANUAL) {
+      if (establishment == null || establishment == "") {
+        comparison.prison!!
+      } else {
+        establishment
+      }
+    } else {
+      null
+    }
+    return establishmentValue
+  }
+
+  fun setAuthToken(token: String) {
+    UserContext.setAuthToken(token)
   }
 
   companion object {
