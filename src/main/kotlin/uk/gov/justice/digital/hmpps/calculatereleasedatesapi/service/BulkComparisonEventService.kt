@@ -170,7 +170,7 @@ class BulkComparisonEventService(
       ComparisonPerson(
         comparisonId = comparison.id,
         person = personId,
-        lastName = sourceData.prisonerDetails.lastName,
+        lastName = WordUtils.capitalizeFully(sourceData.prisonerDetails.lastName),
         latestBookingId = sourceData.prisonerDetails.bookingId,
         isMatch = mismatch.isMatch,
         isValid = mismatch.isValid,
