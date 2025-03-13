@@ -14,7 +14,6 @@ import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes
 const val MESSAGE_TYPE = "calculate_release_dates_bulk_comparison_request"
 
 @Service
-@ConditionalOnProperty(value = ["bulk.calculation.process"], havingValue = "SQS", matchIfMissing = false)
 class BulkComparisonEventPublisher(
   private val hmppsQueueService: HmppsQueueService,
   private val objectMapper: ObjectMapper,

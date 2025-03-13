@@ -26,7 +26,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import kotlin.jvm.optionals.getOrElse
 
 @Service
-@ConditionalOnProperty(value = ["bulk.calculation.process"], havingValue = "SQS", matchIfMissing = false)
 class BulkComparisonEventService(
   private val prisonService: PrisonService,
   private val bulkComparisonEventPublisher: BulkComparisonEventPublisher,
