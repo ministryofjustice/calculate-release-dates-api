@@ -105,7 +105,7 @@ class PrisonApiClient(
     .bodyToMono(typeReference<ArrayList<CaseLoad>>())
     .block()
 
-  fun getCalculableSentenceEnvelopesByEstablishmentVersion2(
+  fun getCalculablePrisonerByPrison(
     establishmentId: String,
     pageNumber: Int,
   ): RestResponsePage<CalculablePrisoner> {

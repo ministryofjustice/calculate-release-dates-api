@@ -46,7 +46,7 @@ class BulkComparisonEventService(
   fun processPrisonComparison(comparisonId: Long, token: String) {
     setAuthToken(token)
     val comparison = getComparison(comparisonId)
-    val activeBookingsAtEstablishment = prisonService.getActiveBookingsByEstablishmentVersion2(comparison.prison!!)
+    val activeBookingsAtEstablishment = prisonService.getCalculablePrisonerByPrison(comparison.prison!!)
     sendMessages(comparison, activeBookingsAtEstablishment.map { it.prisonerNumber to null })
   }
 
@@ -59,7 +59,7 @@ class BulkComparisonEventService(
     val activeBookingsAtEstablishment = mutableListOf<Pair<String, String>>()
     for (prison in currentUserPrisonsList) {
       activeBookingsAtEstablishment.addAll(
-        prisonService.getActiveBookingsByEstablishmentVersion2(prison).map { it.prisonerNumber to prison },
+        prisonService.getCalculablePrisonerByPrison(prison).map { it.prisonerNumber to prison },
       )
     }
     sendMessages(comparison, activeBookingsAtEstablishment)

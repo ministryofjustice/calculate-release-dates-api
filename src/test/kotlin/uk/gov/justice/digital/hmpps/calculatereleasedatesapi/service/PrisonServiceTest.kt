@@ -52,14 +52,14 @@ class PrisonServiceTest {
   }
 
   @Test
-  fun `The request to fetch Calculable Sentences is sent once per page until the last page is retrieved`() {
-    whenever(prisonApiClient.getCalculableSentenceEnvelopesByEstablishmentVersion2("LEI", 0)).thenReturn(firstPage)
-    whenever(prisonApiClient.getCalculableSentenceEnvelopesByEstablishmentVersion2("LEI", 1)).thenReturn(secondPage)
+  fun `The request to fetch Calculable Prisoners is sent once per page until the last page is retrieved`() {
+    whenever(prisonApiClient.getCalculablePrisonerByPrison("LEI", 0)).thenReturn(firstPage)
+    whenever(prisonApiClient.getCalculablePrisonerByPrison("LEI", 1)).thenReturn(secondPage)
 
-    prisonService.getActiveBookingsByEstablishmentVersion2("LEI")
+    prisonService.getCalculablePrisonerByPrison("LEI")
 
-    verify(prisonApiClient).getCalculableSentenceEnvelopesByEstablishmentVersion2("LEI", 0)
-    verify(prisonApiClient).getCalculableSentenceEnvelopesByEstablishmentVersion2("LEI", 1)
+    verify(prisonApiClient).getCalculablePrisonerByPrison("LEI", 0)
+    verify(prisonApiClient).getCalculablePrisonerByPrison("LEI", 1)
     verifyNoMoreInteractions(prisonApiClient)
   }
 
