@@ -37,7 +37,7 @@ class ComparisonService(
   private var serviceUserService: ServiceUserService,
   private val comparisonPersonRepository: ComparisonPersonRepository,
   private val comparisonPersonDiscrepancyRepository: ComparisonPersonDiscrepancyRepository,
-  private var bulkComparisonService: BulkComparisonService,
+  private var bulkComparisonService: BulkComparisonEventService,
   private val calculationTransactionalService: CalculationTransactionalService,
   private val objectMapper: ObjectMapper,
   private val comparisonDiscrepancyService: ComparisonDiscrepancyService,
@@ -52,9 +52,9 @@ class ComparisonService(
     log.info("500ms wait for $initialComparisonCreated")
     Thread.sleep(500)
     if (comparisonInput.prison != "all") {
-      bulkComparisonService.processPrisonComparison(initialComparisonCreated, token)
+      bulkComparisonService.processPrisonComparison(initialComparisonCreated.id, token)
     } else {
-      bulkComparisonService.processFullCaseLoadComparison(initialComparisonCreated, token)
+      bulkComparisonService.processFullCaseLoadComparison(initialComparisonCreated.id, token)
     }
     return initialComparisonCreated
   }

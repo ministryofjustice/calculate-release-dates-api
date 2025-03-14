@@ -16,3 +16,5 @@ spring:
 
 feature-toggles:
   dto: false
+
+bulk.calculation.process: notsqs

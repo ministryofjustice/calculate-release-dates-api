@@ -26,7 +26,6 @@ generic-service:
     SUPPORT_INACTIVE_SENTENCES_AND_ADJUSTMENTS: "true"
     TORERA_OFFENCE_TO_MANUAL_JOURNEY: "false"
     EXTERNAL_MOVEMENTS_FEATURE_TOGGLE: "false"
-    BULK_CALCULATION_PROCESS: "SQS"
     
   # Switches off the allow list in the DEV env only.
   allowlist: null

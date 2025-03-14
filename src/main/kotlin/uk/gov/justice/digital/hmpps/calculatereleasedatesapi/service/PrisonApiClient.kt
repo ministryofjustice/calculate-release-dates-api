@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
-import reactor.netty.http.client.HttpClientRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Agency
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CaseLoad
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
@@ -24,11 +23,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculableSentenceEnvelopeVersion2
-import java.time.Duration
 import java.time.LocalDate
 
 @Service
@@ -108,26 +105,6 @@ class PrisonApiClient(
     .bodyToMono(typeReference<ArrayList<CaseLoad>>())
     .block()
 
-  fun getCalculableSentenceEnvelopesByEstablishment(
-    establishmentId: String,
-    pageNumber: Int,
-    token: String,
-  ): RestResponsePage<CalculableSentenceEnvelope> {
-    log.info("Requesting personId and booking details for latest booking of all offenders at establishment $establishmentId and page $pageNumber")
-    return systemAuthWebClient.get()
-      .uri("/api/prison/$establishmentId/booking/latest/paged/calculable-sentence-envelope?page=$pageNumber")
-      .header("Authorization", token)
-      .httpRequest { httpRequest ->
-        run {
-          val reactorRequest = httpRequest.getNativeRequest<HttpClientRequest>()
-          reactorRequest.responseTimeout(Duration.ofMinutes(10))
-        }
-      }
-      .retrieve()
-      .bodyToMono(typeReference<RestResponsePage<CalculableSentenceEnvelope>>())
-      .block()!!
-  }
-
   fun getCalculableSentenceEnvelopesByEstablishmentVersion2(
     establishmentId: String,
     pageNumber: Int,
@@ -139,33 +116,6 @@ class PrisonApiClient(
       .bodyToMono(typeReference<RestResponsePage<CalculableSentenceEnvelopeVersion2>>())
       .block()!!
   }
-
-  fun getCalculableSentenceEnvelopesByPrisonerIds(prisonerIds: List<String>, token: String): List<CalculableSentenceEnvelope> = systemAuthWebClient.get()
-    .uri { uriBuilder ->
-      uriBuilder.path("/api/bookings/latest/calculable-sentence-envelope")
-        .queryParam("offenderNo", prisonerIds)
-        .build()
-    }
-    .header("Authorization", token)
-    .httpRequest { httpRequest ->
-      run {
-        val reactorRequest = httpRequest.getNativeRequest<HttpClientRequest>()
-        reactorRequest.responseTimeout(Duration.ofMinutes(10))
-      }
-    }
-    .retrieve()
-    .bodyToMono(typeReference<List<CalculableSentenceEnvelope>>())
-    .block()!!
-
-  fun getCalculableSentenceEnvelopesByPrisonerIdsVersion2(prisonerIds: List<String>): List<CalculableSentenceEnvelopeVersion2> = systemAuthWebClient.get()
-    .uri { uriBuilder ->
-      uriBuilder.path("/api/bookings/latest/calculable-sentence-envelope/v2")
-        .queryParam("offenderNo", prisonerIds)
-        .build()
-    }
-    .retrieve()
-    .bodyToMono(typeReference<List<CalculableSentenceEnvelopeVersion2>>())
-    .block()!!
 
   fun getCalculationsForAPrisonerId(prisonerId: String): List<SentenceCalculationSummary> = systemAuthWebClient.get()
     .uri { uriBuilder ->

@@ -86,3 +86,5 @@ sds-early-release-tranches:
   tranche-one-date: 2024-09-10
   tranche-two-date: 2024-10-22
   tranche-three-date: 2024-12-16
+
+bulk.calculation.process: notsqs

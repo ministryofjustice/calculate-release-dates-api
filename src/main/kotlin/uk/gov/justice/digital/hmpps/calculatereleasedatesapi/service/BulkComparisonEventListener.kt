@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 
 @Service
-@ConditionalOnProperty(value = ["bulk.calculation.process"], havingValue = "SQS", matchIfMissing = false)
+@ConditionalOnProperty(value = ["bulk.calculation.process"], havingValue = "SQS", matchIfMissing = true)
 class BulkComparisonEventListener(
   private val objectMapper: ObjectMapper,
   private val bulkComparisonEventService: BulkComparisonEventService,

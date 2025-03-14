@@ -29,7 +29,7 @@ class ManualComparisonService(
   private var serviceUserService: ServiceUserService,
   private val comparisonPersonRepository: ComparisonPersonRepository,
   private val comparisonPersonDiscrepancyRepository: ComparisonPersonDiscrepancyRepository,
-  private var bulkComparisonService: BulkComparisonService,
+  private var bulkComparisonService: BulkComparisonEventService,
   private val objectMapper: ObjectMapper,
   private val calculationTransactionalService: CalculationTransactionalService,
   private val comparisonDiscrepancyService: ComparisonDiscrepancyService,
@@ -40,7 +40,7 @@ class ManualComparisonService(
     val initialComparisonCreated = comparisonRepository.save(
       comparisonToCreate,
     )
-    bulkComparisonService.processManualComparison(initialComparisonCreated, manualComparison.prisonerIds, token)
+    bulkComparisonService.processManualComparison(initialComparisonCreated.id, manualComparison.prisonerIds, token)
 
     return initialComparisonCreated
   }
