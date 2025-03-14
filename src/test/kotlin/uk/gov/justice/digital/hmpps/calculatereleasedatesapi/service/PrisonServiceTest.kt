@@ -24,8 +24,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.CalculableSentenceEnvelope
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculableSentenceEnvelopeVersion2
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -53,13 +53,13 @@ class PrisonServiceTest {
 
   @Test
   fun `The request to fetch Calculable Sentences is sent once per page until the last page is retrieved`() {
-    whenever(prisonApiClient.getCalculableSentenceEnvelopesByEstablishment("LEI", 0, "")).thenReturn(firstPage)
-    whenever(prisonApiClient.getCalculableSentenceEnvelopesByEstablishment("LEI", 1, "")).thenReturn(secondPage)
+    whenever(prisonApiClient.getCalculableSentenceEnvelopesByEstablishmentVersion2("LEI", 0)).thenReturn(firstPage)
+    whenever(prisonApiClient.getCalculableSentenceEnvelopesByEstablishmentVersion2("LEI", 1)).thenReturn(secondPage)
 
-    prisonService.getActiveBookingsByEstablishment("LEI", "")
+    prisonService.getActiveBookingsByEstablishmentVersion2("LEI")
 
-    verify(prisonApiClient).getCalculableSentenceEnvelopesByEstablishment("LEI", 0, "")
-    verify(prisonApiClient).getCalculableSentenceEnvelopesByEstablishment("LEI", 1, "")
+    verify(prisonApiClient).getCalculableSentenceEnvelopesByEstablishmentVersion2("LEI", 0)
+    verify(prisonApiClient).getCalculableSentenceEnvelopesByEstablishmentVersion2("LEI", 1)
     verifyNoMoreInteractions(prisonApiClient)
   }
 
@@ -457,46 +457,17 @@ class PrisonServiceTest {
   companion object {
     private val mapper = ObjectMapper()
 
-    private const val FIRST_PAGE_PAGEABLE = """
-       "pageable": {
-          "pageNumber": 0,
-          "pageSize": 1,
-          "sort": {
-            "empty": false,
-            "sorted": true,
-            "unsorted": false
-          },
-          "offset": 0,
-          "paged": true,
-          "unpaged": false
-        }
-    """
-    private const val SECOND_PAGE_PAGEABLE = """
-       "pageable": {
-          "pageNumber": 1,
-          "pageSize": 1,
-          "sort": {
-            "empty": false,
-            "sorted": true,
-            "unsorted": false
-          },
-          "offset": 0,
-          "paged": true,
-          "unpaged": false
-        }
-    """
-
-    val firstPage = RestResponsePage<CalculableSentenceEnvelope>(
+    val firstPage = RestResponsePage<CalculableSentenceEnvelopeVersion2>(
       content = emptyList(),
-      pageable = mapper.readTree(FIRST_PAGE_PAGEABLE),
+      pageable = mock(),
       totalElements = 2,
       size = 1,
       number = 0,
     )
 
-    val secondPage = RestResponsePage<CalculableSentenceEnvelope>(
+    val secondPage = RestResponsePage<CalculableSentenceEnvelopeVersion2>(
       content = emptyList(),
-      pageable = mapper.readTree(SECOND_PAGE_PAGEABLE),
+      pageable = mock(),
       totalElements = 2,
       size = 1,
       number = 1,

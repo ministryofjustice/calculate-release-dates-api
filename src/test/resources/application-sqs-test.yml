@@ -8,3 +8,5 @@ hmpps.sqs:
       dlqName: "bulkcomparison-dlq-${random.uuid}"
       dlqMaxReceiveCount: 3
       visibilityTimeout: 120
+
+bulk.calculation.process: true

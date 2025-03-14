@@ -9,7 +9,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
@@ -125,12 +124,6 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
 
       prisonApi.stubPostOffenderDates(it.hashCode().toLong())
 
-      val prisonerCalculableSentenceEnvelopes = jsonTransformation.getAllPrisonerCalculableSentenceEnvelopesJson()
-
-      prisonerCalculableSentenceEnvelopes.forEach { (key, value) ->
-        prisonApi.stubPrisonerCalculableSentenceEnvelope(listOf(key), value)
-      }
-
       val prisonCalculableSentenceEnvelopesVersion2 = jsonTransformation.getAllPrisonCalculableSentenceEnvelopesVersion2Json()
 
       prisonCalculableSentenceEnvelopesVersion2.forEach { (key, value) ->
@@ -142,7 +135,6 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
   override fun beforeEach(context: ExtensionContext) {
     mockPrisonService
       .withCaseLoadsForMe(DEFAULT_CASELOAD, CaseLoad("PRIS", "PRIS", CaseLoadType.INST, null, currentlyActive = true))
-      .withPrisonCalculableSentences("ABC", "default")
     prisonApi.resetRequests()
   }
 
@@ -166,13 +158,6 @@ class MockPrisonService(
 ) {
   fun withCaseLoadsForMe(vararg caseloads: CaseLoad): MockPrisonService {
     prisonApi.stubCaseloads(objectMapper.writeValueAsString(caseloads.toList()))
-    return this
-  }
-
-  fun withPrisonCalculableSentences(establishmentId: String, keyInPrisonCalculableSentenceEnvelopeFolder: String): MockPrisonService {
-    val json = jsonTransformation.getApiIntegrationJson(keyInPrisonCalculableSentenceEnvelopeFolder, "prisonCalculableSentenceEnvelope")
-    assertNotNull(json, "Expected there to be source file in prisonCalculableSentenceEnvelope called $keyInPrisonCalculableSentenceEnvelopeFolder.json")
-    prisonApi.stubPrisonCalculableSentenceEnvelope(establishmentId, json)
     return this
   }
 
@@ -283,17 +268,6 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
         ),
     )
 
-  fun stubPrisonCalculableSentenceEnvelope(establishmentId: String, json: String): StubMapping =
-    stubFor(
-      get("/api/prison/$establishmentId/booking/latest/paged/calculable-sentence-envelope?page=0")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(json)
-            .withStatus(200),
-        ),
-    )
-
   fun stubPrisonCalculableSentenceEnvelopeVersion2(establishmentId: String, json: String): StubMapping =
     stubFor(
       get("/api/prison/$establishmentId/booking/latest/paged/calculable-sentence-envelope/v2?page=0")
@@ -305,9 +279,9 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
         ),
     )
 
-  fun stubPrisonerCalculableSentenceEnvelope(prisonerIds: List<String>, json: String): StubMapping =
+  fun stubManualCalculationSentenceEnvelopeVersion2(prisonerIds: List<String>, json: String): StubMapping =
     stubFor(
-      get(urlPathEqualTo("/api/bookings/latest/calculable-sentence-envelope"))
+      get("api/bookings/latest/calculable-sentence-envelope/v2")
         .withQueryParam("offenderNo", equalTo(prisonerIds.joinToString(",")))
         .willReturn(
           aResponse()

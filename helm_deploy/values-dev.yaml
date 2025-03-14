@@ -27,7 +27,7 @@ generic-service:
     TORERA_OFFENCE_TO_MANUAL_JOURNEY: "true"
     EXTERNAL_MOVEMENTS_FEATURE_TOGGLE: "false"
     REVISED_FIXED_TERM_RECALLS_RULES: "true"
-    BULK_CALCULATION_PROCESS: "SQS"
+  
   # Switches off the allow list in the DEV env only.
   allowlist: null
 

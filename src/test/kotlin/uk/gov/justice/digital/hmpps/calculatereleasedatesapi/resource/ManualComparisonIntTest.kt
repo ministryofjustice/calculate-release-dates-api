@@ -6,19 +6,23 @@ import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.Comparison
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonStatusValue
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ComparisonType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.SqsIntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.wiremock.MockManageOffencesClient
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonPersonOverview
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualComparisonInput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.OffencePcscMarkers
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
 
-class ManualComparisonIntTest : IntegrationTestBase() {
+class ManualComparisonIntTest(private val mockManageOffencesClient: MockManageOffencesClient) : SqsIntegrationTestBase() {
 
   @Autowired
   lateinit var comparisonPersonRepository: ComparisonPersonRepository
@@ -26,9 +30,26 @@ class ManualComparisonIntTest : IntegrationTestBase() {
   @Autowired
   lateinit var comparisonRepository: ComparisonRepository
 
+  @BeforeEach
+  fun clearTables() {
+    comparisonPersonRepository.deleteAll()
+    comparisonRepository.deleteAll()
+    mockManageOffencesClient.withPCSCMarkersResponse(
+      OffencePcscMarkers(
+        offenceCode = "CD79009",
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
+      ),
+      OffencePcscMarkers(
+        offenceCode = "TR68132",
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = false, inListD = false),
+      ),
+      offences = "CD79009,TR68132",
+    )
+  }
+
   @Test
   fun `Run comparison on a prison must compare all viable prisoners`() {
-    val result = createManualComparison("Z0020ZZ")
+    val result = createManualComparison("EDS")
 
     assertEquals(ComparisonType.MANUAL, result.comparisonType)
     assertEquals(0, result.numberOfPeopleCompared)
@@ -37,12 +58,12 @@ class ManualComparisonIntTest : IntegrationTestBase() {
     val personComparison = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(comparison.id)[0]
     assertTrue(personComparison.isValid)
     assertFalse(personComparison.isMatch)
-    assertEquals("Z0020ZZ", personComparison.person)
+    assertEquals("EDS", personComparison.person)
   }
 
   @Test
   fun `Retrieve comparison person must return all dates`() {
-    val comparison = createManualComparison("Z0020ZZ")
+    val comparison = createManualComparison("EDS")
     val storedComparison = comparisonRepository.findByComparisonShortReference(comparison.comparisonShortReference)
     val comparisonPerson = comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison!!.id)[0]
     val result = webTestClient.get()
@@ -57,14 +78,6 @@ class ManualComparisonIntTest : IntegrationTestBase() {
     assertTrue(result.isValid)
     assertFalse(result.isMatch)
     assertEquals(comparisonPerson.person, result.personId)
-  }
-
-  @Test
-  fun `if SLED is present in calculation it must be compared to SED and LED from NOMIS`() {
-    val comparison = createManualComparison("CRS-1704")
-    val storedComparison = comparisonRepository.findByComparisonShortReference(comparison.comparisonShortReference)
-    assertEquals(0, storedComparison!!.numberOfMismatches)
-    assertTrue(comparisonPersonRepository.findByComparisonIdIsAndIsMatchFalse(storedComparison.id).isEmpty())
   }
 
   private fun createManualComparison(prisonerId: String): Comparison {

@@ -7,20 +7,19 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculableSentenceEnvelopeVersion2
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes
 
 const val MESSAGE_TYPE = "calculate_release_dates_bulk_comparison_request"
 
 @Service
-@ConditionalOnProperty(value = ["bulk.calculation.process"], havingValue = "SQS", matchIfMissing = false)
+@ConditionalOnProperty(value = ["bulk.calculation.process"], havingValue = "SQS", matchIfMissing = true)
 class BulkComparisonEventPublisher(
   private val hmppsQueueService: HmppsQueueService,
   private val objectMapper: ObjectMapper,
 ) {
 
-  fun sendMessage(comparisonId: Long, person: CalculableSentenceEnvelopeVersion2, totalToCompare: Int, username: String, establishment: String?) {
+  fun sendMessage(comparisonId: Long, person: String, totalToCompare: Int, username: String, establishment: String?) {
     val queue = hmppsQueueService.findByQueueId("bulkcomparison")
       ?: throw IllegalStateException("Queue not found for bulkcomparison")
     val sqsMessage = SQSMessage(
@@ -28,8 +27,7 @@ class BulkComparisonEventPublisher(
       Message = InternalMessage(
         BulkComparisonMessageBody(
           comparisonId = comparisonId,
-          personId = person.prisonerNumber,
-          bookingId = person.bookingId,
+          personId = person,
           totalToCompare = totalToCompare,
           establishment = establishment,
           username = username,
@@ -56,7 +54,6 @@ data class InternalMessage<T>(
 data class BulkComparisonMessageBody(
   val comparisonId: Long,
   val personId: String,
-  val bookingId: Long,
   val totalToCompare: Int,
   val username: String,
   val establishment: String?,
