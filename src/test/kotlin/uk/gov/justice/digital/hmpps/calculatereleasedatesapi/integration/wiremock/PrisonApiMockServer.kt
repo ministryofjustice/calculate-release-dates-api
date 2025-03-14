@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
@@ -124,10 +123,10 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
 
       prisonApi.stubPostOffenderDates(it.hashCode().toLong())
 
-      val prisonCalculableSentenceEnvelopesVersion2 = jsonTransformation.getAllPrisonCalculableSentenceEnvelopesVersion2Json()
+      val prisonCalculablePrisonersJson = jsonTransformation.getAllPrisonCalculablePrisonersJson()
 
-      prisonCalculableSentenceEnvelopesVersion2.forEach { (key, value) ->
-        prisonApi.stubPrisonCalculableSentenceEnvelopeVersion2(key, value)
+      prisonCalculablePrisonersJson.forEach { (key, value) ->
+        prisonApi.stubPrisonCalculablePrisoners(key, value)
       }
     }
   }
@@ -268,21 +267,9 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
         ),
     )
 
-  fun stubPrisonCalculableSentenceEnvelopeVersion2(establishmentId: String, json: String): StubMapping =
+  fun stubPrisonCalculablePrisoners(establishmentId: String, json: String): StubMapping =
     stubFor(
-      get("/api/prison/$establishmentId/booking/latest/paged/calculable-sentence-envelope/v2?page=0")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(json)
-            .withStatus(200),
-        ),
-    )
-
-  fun stubManualCalculationSentenceEnvelopeVersion2(prisonerIds: List<String>, json: String): StubMapping =
-    stubFor(
-      get("api/bookings/latest/calculable-sentence-envelope/v2")
-        .withQueryParam("offenderNo", equalTo(prisonerIds.joinToString(",")))
+      get("/api/prison/$establishmentId/booking/latest/paged/calculable-prisoner?page=0")
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")

@@ -25,7 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalcu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculableSentenceEnvelopeVersion2
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculablePrisoner
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -457,7 +457,7 @@ class PrisonServiceTest {
   companion object {
     private val mapper = ObjectMapper()
 
-    val firstPage = RestResponsePage<CalculableSentenceEnvelopeVersion2>(
+    val firstPage = RestResponsePage<CalculablePrisoner>(
       content = emptyList(),
       pageable = mock(),
       totalElements = 2,
@@ -465,7 +465,7 @@ class PrisonServiceTest {
       number = 0,
     )
 
-    val secondPage = RestResponsePage<CalculableSentenceEnvelopeVersion2>(
+    val secondPage = RestResponsePage<CalculablePrisoner>(
       content = emptyList(),
       pageable = mock(),
       totalElements = 2,

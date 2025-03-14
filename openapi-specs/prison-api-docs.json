@@ -11,7 +11,7 @@
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
     },
-    "version": "2025-03-04.29189.756a3bf"
+    "version": "2025-03-14.29371.fcbff59"
   },
   "servers": [
     {
@@ -3549,6 +3549,79 @@
         }
       }
     },
+    "/api/aliases/{offenderId}": {
+      "put": {
+        "tags": [
+          "aliases"
+        ],
+        "summary": "Update the prisoner's alias. Requires the PRISON_API__PRISONER_PROFILE__RW role.",
+        "operationId": "updateAlias",
+        "parameters": [
+          {
+            "name": "offenderId",
+            "in": "path",
+            "description": "The alias identifier (offenderId)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAlias"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The prisoner's alias has been updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorePersonRecordAlias"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/agencies/{agencyId}": {
       "get": {
         "tags": [
@@ -6486,6 +6559,78 @@
         }
       }
     },
+    "/api/offenders/{offenderNo}/aliases": {
+      "post": {
+        "tags": [
+          "aliases"
+        ],
+        "summary": "Create a new alias for the prisoner. Requires the PRISON_API__PRISONER_PROFILE__RW role.",
+        "operationId": "createAlias",
+        "parameters": [
+          {
+            "name": "offenderNo",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAlias"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "A new alias for the prisoner has been created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorePersonRecordAlias"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecoverable error occurred whilst processing request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/offenders/adjudication-hearings": {
       "post": {
         "tags": [
@@ -6601,6 +6746,7 @@
     "/api/offender-sentences": {
       "get": {
         "tags": [
+          "integration-api",
           "offender-sentences"
         ],
         "summary": "List of offenders (with associated sentence detail)",
@@ -7696,7 +7842,8 @@
     "/api/images/offenders/{offenderNo}": {
       "get": {
         "tags": [
-          "images"
+          "images",
+          "integration-api"
         ],
         "summary": "Image details related to offender.",
         "description": "Requires role VIEW_PRISONER_DATA.",
@@ -12699,7 +12846,8 @@
     "/api/reference-domains/domains/{domain}/codes": {
       "get": {
         "tags": [
-          "reference-domains"
+          "reference-domains",
+          "integration-api"
         ],
         "summary": "List of reference codes for reference domain.",
         "description": "List of reference codes for reference domain ordered by code ascending. The list is an un-paged flat list<p>This endpoint uses the REPLICA database.</p>",
@@ -13170,97 +13318,13 @@
         }
       }
     },
-    "/api/prison/{agencyId}/booking/latest/paged/calculable-sentence-envelope": {
-      "get": {
-        "tags": [
-          "prison"
-        ],
-        "summary": "Details of the active sentence envelope, a combination of the person information, the active booking and calculable sentences at a particular establishment (paged response)",
-        "operationId": "getCalculableSentenceEnvelopeByEstablishment",
-        "parameters": [
-          {
-            "name": "agencyId",
-            "in": "path",
-            "description": "The identifier of the establishment(prison) to get the active bookings for",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "The page number to retrieve of the paged results (starts at zero)",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            }
-          },
-          {
-            "name": "size",
-            "in": "query",
-            "description": "Requested limit of the page size (i.e. the number of bookings in response)",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 200
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PageCalculableSentenceEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Requested resource not found.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Unrecoverable error occurred whilst processing request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/prison/{agencyId}/booking/latest/paged/calculable-sentence-envelope/v2": {
+    "/api/prison/{agencyId}/booking/latest/paged/calculable-prisoner": {
       "get": {
         "tags": [
           "prison"
         ],
         "summary": "Details of the the person to be calculated at a particular establishment (paged response)",
-        "operationId": "getCalculableSentenceEnvelopeByEstablishmentV2",
+        "operationId": "getCalculablePrisonerEnvelopeByEstablishment",
         "parameters": [
           {
             "name": "agencyId",
@@ -13300,7 +13364,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PageCalculableSentenceEnvelopeVersion2"
+                  "$ref": "#/components/schemas/PageCalculablePrisoner"
                 }
               }
             }
@@ -14008,6 +14072,7 @@
     "/api/offenders/{offenderNo}": {
       "get": {
         "tags": [
+          "integration-api",
           "offenders"
         ],
         "summary": "Full details about the current state of an offender. Requires GLOBAL_SEARCH, VIEW_PRISONER_DATA or a user token with valid offender access",
@@ -14186,6 +14251,7 @@
     "/api/offenders/{offenderNo}/sentences": {
       "get": {
         "tags": [
+          "integration-api",
           "offenders"
         ],
         "summary": "Offender Sentence Details",
@@ -15036,6 +15102,7 @@
     "/api/offenders/{offenderNo}/booking/latest/sentence-summary": {
       "get": {
         "tags": [
+          "integration-api",
           "offenders"
         ],
         "summary": "Offender Sentence Details",
@@ -15270,6 +15337,7 @@
     "/api/offenders/{offenderNo}/addresses": {
       "get": {
         "tags": [
+          "integration-api",
           "offenders"
         ],
         "summary": "Return a list of addresses for a given offender, most recent first.",
@@ -15413,6 +15481,7 @@
     "/api/offender-sentences/booking/{bookingId}/sentences-and-offences": {
       "get": {
         "tags": [
+          "integration-api",
           "offender-sentences"
         ],
         "summary": "Sentence and offence details  for a prisoner",
@@ -18160,7 +18229,8 @@
     "/api/images/{imageId}/data": {
       "get": {
         "tags": [
-          "images"
+          "images",
+          "integration-api"
         ],
         "summary": "Image data (as bytes).",
         "description": "Requires role VIEW_PRISONER_DATA.",
@@ -19478,6 +19548,7 @@
     "/api/bookings/{bookingId}/reasonable-adjustments": {
       "get": {
         "tags": [
+          "integration-api",
           "bookings"
         ],
         "summary": "Reasonable Adjustment Information",
@@ -21284,6 +21355,7 @@
     "/api/bookings/offenderNo/{offenderNo}/visit/balances": {
       "get": {
         "tags": [
+          "integration-api",
           "bookings"
         ],
         "summary": "Balances visit orders and privilege visit orders for offender.",
@@ -21356,6 +21428,7 @@
     "/api/bookings/offenderNo/{offenderNo}/offenceHistory": {
       "get": {
         "tags": [
+          "integration-api",
           "bookings"
         ],
         "summary": "Offence history.",
@@ -21570,124 +21643,6 @@
                 "schema": {
                   "type": "string",
                   "format": "byte"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/bookings/latest/calculable-sentence-envelope": {
-      "get": {
-        "tags": [
-          "bookings"
-        ],
-        "summary": "Details of the active sentence envelope, a combination of the person information, the active booking and calculable sentences for offenders",
-        "operationId": "getCalculableSentenceEnvelopeByOffenderNos",
-        "parameters": [
-          {
-            "name": "offenderNo",
-            "in": "query",
-            "description": "Filter by a list of offender numbers",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "uniqueItems": true
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CalculableSentenceEnvelope"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Unrecoverable error occurred whilst processing request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/bookings/latest/calculable-sentence-envelope/v2": {
-      "get": {
-        "tags": [
-          "bookings"
-        ],
-        "summary": "Details of the of the prisoner to be calculated",
-        "operationId": "getCalculableSentenceEnvelopeByOffenderNosV2",
-        "parameters": [
-          {
-            "name": "offenderNo",
-            "in": "query",
-            "description": "Filter by a list of offender numbers",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "uniqueItems": true
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CalculableSentenceEnvelopeVersion2"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Unrecoverable error occurred whilst processing request.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -26287,6 +26242,190 @@
           }
         }
       },
+      "UpdateAlias": {
+        "type": "object",
+        "description": "Update prisoner's alias",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "Prisoner's first name",
+            "example": "John",
+            "maxLength": 35,
+            "minLength": 0,
+            "pattern": "^[A-Z|a-z ,.'-]+$"
+          },
+          "middleName": {
+            "type": "string",
+            "description": "Prisoner's middle name.",
+            "example": "Middleone",
+            "maxLength": 35,
+            "minLength": 0,
+            "pattern": "^[A-Z|a-z ,.'-]+$"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Prisoner's last name",
+            "example": "Smith",
+            "maxLength": 35,
+            "minLength": 0,
+            "pattern": "^[A-Z|a-z ,.'-]+$"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "The prisoner's date of birth. Must be specified in YYYY-MM-DD format. Range allowed is 16-110 years",
+            "example": "1970-01-01"
+          },
+          "sex": {
+            "type": "string",
+            "description": "A code representing the prisoner's sex (from SEX reference domain).",
+            "enum": [
+              "M",
+              "F",
+              "NK",
+              "NS",
+              "REF"
+            ],
+            "example": "F"
+          },
+          "title": {
+            "type": "string",
+            "description": "A code representing the prisoner's title (from TITLE reference domain).",
+            "enum": [
+              "BR",
+              "DAME",
+              "DR",
+              "FR",
+              "IMAM",
+              "LADY",
+              "LORD",
+              "MISS",
+              "MR",
+              "MRS",
+              "MS",
+              "RABBI",
+              "REV",
+              "SIR",
+              "SR"
+            ],
+            "example": "MR"
+          },
+          "ethnicity": {
+            "type": "string",
+            "description": "A code representing the prisoner's ethnicity (from ETHNICITY reference domain).",
+            "example": "W1"
+          },
+          "nameType": {
+            "type": "string",
+            "description": "The name type (from NAME_TYPE reference domain)",
+            "enum": [
+              "A",
+              "CN",
+              "MAID",
+              "NICK"
+            ],
+            "example": "CN"
+          }
+        },
+        "required": [
+          "dateOfBirth",
+          "firstName",
+          "lastName",
+          "sex"
+        ]
+      },
+      "CorePersonRecordAlias": {
+        "type": "object",
+        "description": "Core Person Record Alias - DTO for use in returning alias data for the Core Person Record proxy",
+        "properties": {
+          "prisonerNumber": {
+            "type": "string",
+            "description": "Prisoner number",
+            "example": "A1234AA"
+          },
+          "offenderId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Offender ID",
+            "example": 543548
+          },
+          "isWorkingName": {
+            "type": "boolean",
+            "description": "Boolean flag to indicate if the alias is a working name",
+            "example": true
+          },
+          "firstName": {
+            "type": "string",
+            "description": "First name",
+            "example": "John"
+          },
+          "middleName": {
+            "type": "string",
+            "description": "Middle name",
+            "example": "Middleone"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name",
+            "example": "Smith"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of birth",
+            "example": "1980-02-28"
+          },
+          "nameType": {
+            "$ref": "#/components/schemas/ReferenceDataValue",
+            "description": "Name type"
+          },
+          "title": {
+            "$ref": "#/components/schemas/ReferenceDataValue",
+            "description": "Title"
+          },
+          "sex": {
+            "$ref": "#/components/schemas/ReferenceDataValue",
+            "description": "Sex"
+          },
+          "ethnicity": {
+            "$ref": "#/components/schemas/ReferenceDataValue",
+            "description": "Ethnicity"
+          }
+        },
+        "required": [
+          "dateOfBirth",
+          "firstName",
+          "isWorkingName",
+          "lastName",
+          "offenderId",
+          "prisonerNumber"
+        ]
+      },
+      "ReferenceDataValue": {
+        "type": "object",
+        "description": "Reference Data Value - basic summary of a reference data code selected as the value for a field",
+        "properties": {
+          "domain": {
+            "type": "string",
+            "description": "Domain",
+            "example": "ETHNICITY"
+          },
+          "code": {
+            "type": "string",
+            "description": "Code",
+            "example": "W1"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the reference data code",
+            "example": "White: Eng./Welsh/Scot./N.Irish/British"
+          }
+        },
+        "required": [
+          "code",
+          "description"
+        ]
+      },
       "RequestToUpdateAgency": {
         "type": "object",
         "description": "Update Agency Request",
@@ -27400,6 +27539,104 @@
           "firstName",
           "gender",
           "lastName"
+        ]
+      },
+      "CreateAlias": {
+        "type": "object",
+        "description": "Create a prisoner alias",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "Prisoner's first name",
+            "example": "John",
+            "maxLength": 35,
+            "minLength": 0,
+            "pattern": "^[A-Z|a-z ,.'-]+$"
+          },
+          "middleName": {
+            "type": "string",
+            "description": "Prisoner's middle name.",
+            "example": "Middleone",
+            "maxLength": 35,
+            "minLength": 0,
+            "pattern": "^[A-Z|a-z ,.'-]+$"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Prisoner's last name",
+            "example": "Smith",
+            "maxLength": 35,
+            "minLength": 0,
+            "pattern": "^[A-Z|a-z ,.'-]+$"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "The prisoner's date of birth. Must be specified in YYYY-MM-DD format. Range allowed is 16-110 years",
+            "example": "1970-01-01"
+          },
+          "sex": {
+            "type": "string",
+            "description": "A code representing the prisoner's sex (from SEX reference domain).",
+            "enum": [
+              "M",
+              "F",
+              "NK",
+              "NS",
+              "REF"
+            ],
+            "example": "F"
+          },
+          "title": {
+            "type": "string",
+            "description": "A code representing the prisoner's title (from TITLE reference domain).",
+            "enum": [
+              "BR",
+              "DAME",
+              "DR",
+              "FR",
+              "IMAM",
+              "LADY",
+              "LORD",
+              "MISS",
+              "MR",
+              "MRS",
+              "MS",
+              "RABBI",
+              "REV",
+              "SIR",
+              "SR"
+            ],
+            "example": "MR"
+          },
+          "ethnicity": {
+            "type": "string",
+            "description": "A code representing the prisoner's ethnicity (from ETHNICITY reference domain).",
+            "example": "W1"
+          },
+          "nameType": {
+            "type": "string",
+            "description": "The name type (from NAME_TYPE reference domain)",
+            "enum": [
+              "A",
+              "CN",
+              "MAID",
+              "NICK"
+            ],
+            "example": "CN"
+          },
+          "isWorkingName": {
+            "type": "boolean",
+            "description": "Boolean flag to indicate if the alias is a working name",
+            "example": true
+          }
+        },
+        "required": [
+          "dateOfBirth",
+          "firstName",
+          "isWorkingName",
+          "lastName",
+          "sex"
         ]
       },
       "OffenderAdjudicationHearing": {
@@ -31049,12 +31286,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -31071,19 +31308,19 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "unpaged": {
-            "type": "boolean"
-          },
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
           "paged": {
             "type": "boolean"
           },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unpaged": {
+            "type": "boolean"
           }
         }
       },
@@ -31352,324 +31589,27 @@
           "offenderNo"
         ]
       },
-      "BookingAdjustment": {
+      "CalculablePrisoner": {
         "type": "object",
-        "description": "Sentence Adjustment values",
+        "description": "The prisoner to be calculated as part of a bulk calculation",
         "properties": {
-          "type": {
+          "prisonerNumber": {
             "type": "string",
-            "description": "Adjustment type",
-            "enum": [
-              "SPECIAL_REMISSION, ADDITIONAL_DAYS_AWARDED, RESTORED_ADDITIONAL_DAYS_AWARDED, UNLAWFULLY_AT_LARGE, LAWFULLY_AT_LARGE"
-            ]
-          },
-          "numberOfDays": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Number of days to adjust",
-            "example": 12
-          },
-          "fromDate": {
-            "type": "string",
-            "format": "date",
-            "description": "The 'from date' of the adjustment",
-            "example": "2022-01-01"
-          },
-          "toDate": {
-            "type": "string",
-            "format": "date",
-            "description": "The 'to date' of the adjustment",
-            "example": "2022-01-31"
-          },
-          "active": {
-            "type": "boolean",
-            "description": "Boolean flag showing if the adjustment is active",
-            "example": true
-          },
-          "comment": {
-            "type": "string",
-            "description": "The user comments for this adjustment",
-            "example": "This is an adjustment"
-          }
-        }
-      },
-      "CalculableSentenceEnvelope": {
-        "type": "object",
-        "description": "The active sentence envelope is a combination of the person information, the active booking and calculable sentences at a particular establishment",
-        "properties": {
-          "person": {
-            "$ref": "#/components/schemas/Person",
-            "description": "The identifiers of a person necessary for a calculation"
+            "description": "Prisoner Identifier",
+            "example": "A1234AA"
           },
           "bookingId": {
             "type": "integer",
             "format": "int64",
             "description": "The booking ID"
-          },
-          "sentenceAndOffences": {
-            "type": "array",
-            "description": "Sentence and offence details  for a prisoner",
-            "items": {
-              "$ref": "#/components/schemas/OffenderSentenceAndOffences"
-            }
-          },
-          "sentenceAdjustments": {
-            "type": "array",
-            "description": "Adjustments at a sentence level",
-            "items": {
-              "$ref": "#/components/schemas/SentenceAdjustmentValues"
-            }
-          },
-          "bookingAdjustments": {
-            "type": "array",
-            "description": "Adjustments at a booking level",
-            "items": {
-              "$ref": "#/components/schemas/BookingAdjustment"
-            }
-          },
-          "offenderFinePayments": {
-            "type": "array",
-            "description": "List of offender fine payments",
-            "items": {
-              "$ref": "#/components/schemas/OffenderFinePaymentDto"
-            }
-          },
-          "fixedTermRecallDetails": {
-            "$ref": "#/components/schemas/FixedTermRecallDetails",
-            "description": "Fixed term recall details"
-          },
-          "sentenceCalcDates": {
-            "$ref": "#/components/schemas/SentenceCalcDates",
-            "description": "The current set of sentence dates determined by NOMIS or recorded via overrides"
-          },
-          "movements": {
-            "type": "array",
-            "description": "The external movements for this calculation",
-            "items": {
-              "$ref": "#/components/schemas/Movement"
-            }
           }
         },
         "required": [
-          "bookingAdjustments",
           "bookingId",
-          "movements",
-          "offenderFinePayments",
-          "person",
-          "sentenceAdjustments",
-          "sentenceAndOffences"
+          "prisonerNumber"
         ]
       },
-      "FixedTermRecallDetails": {
-        "type": "object",
-        "description": "Details relating to the fixed term recall on a booking",
-        "properties": {
-          "bookingId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "The booking id"
-          },
-          "returnToCustodyDate": {
-            "type": "string",
-            "format": "date",
-            "description": "The date the offender returned to custody"
-          },
-          "recallLength": {
-            "type": "integer",
-            "format": "int32",
-            "description": "The length of the fixed term recall"
-          }
-        }
-      },
-      "OffenderFinePaymentDto": {
-        "type": "object",
-        "description": "Offender fine payments",
-        "properties": {
-          "bookingId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "The bookingId this payment relates to"
-          },
-          "sequence": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Payment sequence - a unique identifier a payment on a booking"
-          },
-          "paymentDate": {
-            "type": "string",
-            "format": "date",
-            "description": "The date of the payment"
-          },
-          "paymentAmount": {
-            "type": "number",
-            "description": "The amount of the payment"
-          }
-        }
-      },
-      "OffenderOffence": {
-        "type": "object",
-        "description": "Offence details related to an offender",
-        "properties": {
-          "offenderChargeId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Internal ID for charge relating to offender"
-          },
-          "offenceStartDate": {
-            "type": "string",
-            "format": "date",
-            "description": "Offence Start Date"
-          },
-          "offenceEndDate": {
-            "type": "string",
-            "format": "date",
-            "description": "Offence End Date"
-          },
-          "offenceStatute": {
-            "type": "string",
-            "description": "Offence statute"
-          },
-          "offenceCode": {
-            "type": "string",
-            "description": "Offence Code"
-          },
-          "offenceDescription": {
-            "type": "string",
-            "description": "Offence Description"
-          },
-          "indicators": {
-            "type": "array",
-            "description": "Offence Indicators",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "OffenderSentenceAndOffences": {
-        "type": "object",
-        "description": "Offender sentence and offence details",
-        "properties": {
-          "bookingId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "The bookingId this sentence and offence(s) relates to"
-          },
-          "sentenceSequence": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Sentence sequence - a unique identifier a sentence on a booking"
-          },
-          "consecutiveToSequence": {
-            "type": "integer",
-            "format": "int32",
-            "description": "This sentence is consecutive to this sequence (if populated)"
-          },
-          "lineSequence": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Sentence line sequence - a number representing the order"
-          },
-          "caseSequence": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Case sequence - a number representing the order of the case this sentence belongs to"
-          },
-          "caseReference": {
-            "type": "string",
-            "description": "Case reference - a string identifying the case this sentence belongs to"
-          },
-          "courtDescription": {
-            "type": "string",
-            "description": "Court description - a string describing the the court that the case was heard at"
-          },
-          "sentenceStatus": {
-            "type": "string",
-            "description": "This sentence status: A = Active I = Inactive"
-          },
-          "sentenceCategory": {
-            "type": "string",
-            "description": "The sentence category e.g. 2003 or Licence"
-          },
-          "sentenceCalculationType": {
-            "type": "string",
-            "description": "The sentence calculation type e.g. R or ADIMP_ORA"
-          },
-          "sentenceTypeDescription": {
-            "type": "string",
-            "description": "The sentence type description e.g. Standard Determinate Sentence"
-          },
-          "sentenceDate": {
-            "type": "string",
-            "format": "date",
-            "description": "The sentenced date for this sentence (aka court date)"
-          },
-          "sentenceStartDate": {
-            "type": "string",
-            "format": "date",
-            "description": "Date that this sentence did or will start"
-          },
-          "sentenceEndDate": {
-            "type": "string",
-            "format": "date",
-            "description": "Date that this sentence would expire"
-          },
-          "terms": {
-            "type": "array",
-            "description": "The sentence terms of the sentence",
-            "items": {
-              "$ref": "#/components/schemas/OffenderSentenceTerm"
-            }
-          },
-          "offences": {
-            "type": "array",
-            "description": "The offences related to this sentence (will usually only have one offence per sentence)",
-            "items": {
-              "$ref": "#/components/schemas/OffenderOffence"
-            }
-          },
-          "fineAmount": {
-            "type": "number",
-            "format": "double",
-            "description": "The amount of fine related to the sentence and offence"
-          }
-        }
-      },
-      "OffenderSentenceTerm": {
-        "type": "object",
-        "description": "Offender sentence term",
-        "properties": {
-          "years": {
-            "type": "integer",
-            "format": "int32",
-            "description": "The term duration - years",
-            "example": 1
-          },
-          "months": {
-            "type": "integer",
-            "format": "int32",
-            "description": "The term duration - months",
-            "example": 2
-          },
-          "weeks": {
-            "type": "integer",
-            "format": "int32",
-            "description": "The term duration - weeks",
-            "example": 3
-          },
-          "days": {
-            "type": "integer",
-            "format": "int32",
-            "description": "The term duration - days",
-            "example": 4
-          },
-          "code": {
-            "type": "string",
-            "description": "The sentence term code, indicating if this is the term of imprisonment or license"
-          }
-        }
-      },
-      "PageCalculableSentenceEnvelope": {
+      "PageCalculablePrisoner": {
         "type": "object",
         "properties": {
           "totalElements": {
@@ -31693,7 +31633,7 @@
           "content": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CalculableSentenceEnvelope"
+              "$ref": "#/components/schemas/CalculablePrisoner"
             }
           },
           "number": {
@@ -31703,164 +31643,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
-          },
-          "empty": {
-            "type": "boolean"
-          }
-        }
-      },
-      "Person": {
-        "type": "object",
-        "properties": {
-          "prisonerNumber": {
-            "type": "string",
-            "description": "Prisoner Identifier",
-            "example": "A1234AA"
-          },
-          "dateOfBirth": {
-            "type": "string",
-            "format": "date"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "agencyId": {
-            "type": "string"
-          },
-          "alerts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Alert"
-            }
-          }
-        },
-        "required": [
-          "agencyId",
-          "alerts",
-          "dateOfBirth",
-          "lastName",
-          "prisonerNumber"
-        ]
-      },
-      "SentenceAdjustmentValues": {
-        "type": "object",
-        "description": "Sentence Adjustment values",
-        "properties": {
-          "sentenceSequence": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Sentence sequence",
-            "example": 1
-          },
-          "type": {
-            "type": "string",
-            "description": "Adjustment type",
-            "enum": [
-              "RECALL_SENTENCE_REMAND",
-              "TAGGED_BAIL",
-              "RECALL_SENTENCE_TAGGED_BAIL",
-              "REMAND",
-              "UNUSED_REMAND",
-              "TIME_SPENT_IN_CUSTODY_ABROAD",
-              "TIME_SPENT_AS_AN_APPEAL_APPLICANT"
-            ]
-          },
-          "numberOfDays": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Number of days to adjust",
-            "example": 12
-          },
-          "fromDate": {
-            "type": "string",
-            "format": "date",
-            "description": "The 'from date' of the adjustment",
-            "example": "2022-01-01"
-          },
-          "toDate": {
-            "type": "string",
-            "format": "date",
-            "description": "The 'to date' of the adjustment",
-            "example": "2022-01-31"
-          },
-          "active": {
-            "type": "boolean",
-            "description": "Boolean flag showing if the adjustment is active",
-            "example": true
-          },
-          "comment": {
-            "type": "string",
-            "description": "The user comments for this adjustment",
-            "example": "This is an adjustment"
-          }
-        }
-      },
-      "CalculableSentenceEnvelopeVersion2": {
-        "type": "object",
-        "description": "The active sentence envelope is a prisoner to be calculated as part of a bulk calculation",
-        "properties": {
-          "prisonerNumber": {
-            "type": "string",
-            "description": "Prisoner Identifier",
-            "example": "A1234AA"
-          },
-          "bookingId": {
-            "type": "integer",
-            "format": "int64",
-            "description": "The booking ID"
-          }
-        },
-        "required": [
-          "bookingId",
-          "prisonerNumber"
-        ]
-      },
-      "PageCalculableSentenceEnvelopeVersion2": {
-        "type": "object",
-        "properties": {
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "content": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CalculableSentenceEnvelopeVersion2"
-            }
-          },
-          "number": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "sort": {
-            "$ref": "#/components/schemas/SortObject"
           },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -33707,6 +33495,46 @@
           "sentenceStartDate"
         ]
       },
+      "OffenderOffence": {
+        "type": "object",
+        "description": "Offence details related to an offender",
+        "properties": {
+          "offenderChargeId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Internal ID for charge relating to offender"
+          },
+          "offenceStartDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Offence Start Date"
+          },
+          "offenceEndDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Offence End Date"
+          },
+          "offenceStatute": {
+            "type": "string",
+            "description": "Offence statute"
+          },
+          "offenceCode": {
+            "type": "string",
+            "description": "Offence Code"
+          },
+          "offenceDescription": {
+            "type": "string",
+            "description": "Offence Description"
+          },
+          "indicators": {
+            "type": "array",
+            "description": "Offence Indicators",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "PrisonTerm": {
         "type": "object",
         "description": "Prison Term",
@@ -34239,6 +34067,154 @@
           "offenderNo"
         ]
       },
+      "OffenderSentenceAndOffences": {
+        "type": "object",
+        "description": "Offender sentence and offence details",
+        "properties": {
+          "bookingId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The bookingId this sentence and offence(s) relates to"
+          },
+          "sentenceSequence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Sentence sequence - a unique identifier a sentence on a booking"
+          },
+          "consecutiveToSequence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "This sentence is consecutive to this sequence (if populated)"
+          },
+          "lineSequence": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Sentence line sequence - a number representing the order"
+          },
+          "caseSequence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Case sequence - a number representing the order of the case this sentence belongs to"
+          },
+          "caseReference": {
+            "type": "string",
+            "description": "Case reference - a string identifying the case this sentence belongs to"
+          },
+          "courtDescription": {
+            "type": "string",
+            "description": "Court description - a string describing the the court that the case was heard at"
+          },
+          "sentenceStatus": {
+            "type": "string",
+            "description": "This sentence status: A = Active I = Inactive"
+          },
+          "sentenceCategory": {
+            "type": "string",
+            "description": "The sentence category e.g. 2003 or Licence"
+          },
+          "sentenceCalculationType": {
+            "type": "string",
+            "description": "The sentence calculation type e.g. R or ADIMP_ORA"
+          },
+          "sentenceTypeDescription": {
+            "type": "string",
+            "description": "The sentence type description e.g. Standard Determinate Sentence"
+          },
+          "sentenceDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The sentenced date for this sentence (aka court date)"
+          },
+          "sentenceStartDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date that this sentence did or will start"
+          },
+          "sentenceEndDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date that this sentence would expire"
+          },
+          "terms": {
+            "type": "array",
+            "description": "The sentence terms of the sentence",
+            "items": {
+              "$ref": "#/components/schemas/OffenderSentenceTerm"
+            }
+          },
+          "offences": {
+            "type": "array",
+            "description": "The offences related to this sentence (will usually only have one offence per sentence)",
+            "items": {
+              "$ref": "#/components/schemas/OffenderOffence"
+            }
+          },
+          "fineAmount": {
+            "type": "number",
+            "format": "double",
+            "description": "The amount of fine related to the sentence and offence"
+          }
+        }
+      },
+      "OffenderSentenceTerm": {
+        "type": "object",
+        "description": "Offender sentence term",
+        "properties": {
+          "years": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The term duration - years",
+            "example": 1
+          },
+          "months": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The term duration - months",
+            "example": 2
+          },
+          "weeks": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The term duration - weeks",
+            "example": 3
+          },
+          "days": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The term duration - days",
+            "example": 4
+          },
+          "code": {
+            "type": "string",
+            "description": "The sentence term code, indicating if this is the term of imprisonment or license"
+          }
+        }
+      },
+      "OffenderFinePaymentDto": {
+        "type": "object",
+        "description": "Offender fine payments",
+        "properties": {
+          "bookingId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The bookingId this payment relates to"
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Payment sequence - a unique identifier a payment on a booking"
+          },
+          "paymentDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The date of the payment"
+          },
+          "paymentAmount": {
+            "type": "number",
+            "description": "The amount of the payment"
+          }
+        }
+      },
       "OffenderCalculatedKeyDates": {
         "type": "object",
         "description": "Offender Calculated Key Dates",
@@ -34750,12 +34726,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -36106,12 +36082,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -36606,12 +36582,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -36940,6 +36916,27 @@
           }
         }
       },
+      "FixedTermRecallDetails": {
+        "type": "object",
+        "description": "Details relating to the fixed term recall on a booking",
+        "properties": {
+          "bookingId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The booking id"
+          },
+          "returnToCustodyDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The date the offender returned to custody"
+          },
+          "recallLength": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The length of the fixed term recall"
+          }
+        }
+      },
       "CourtHearings": {
         "type": "object",
         "description": "Represents court hearings for an offender booking.",
@@ -37201,12 +37198,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -37320,12 +37317,12 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
           },
           "empty": {
             "type": "boolean"
@@ -37776,6 +37773,47 @@
           "premise"
         ]
       },
+      "BookingAdjustment": {
+        "type": "object",
+        "description": "Sentence Adjustment values",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Adjustment type",
+            "enum": [
+              "SPECIAL_REMISSION, ADDITIONAL_DAYS_AWARDED, RESTORED_ADDITIONAL_DAYS_AWARDED, UNLAWFULLY_AT_LARGE, LAWFULLY_AT_LARGE"
+            ]
+          },
+          "numberOfDays": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of days to adjust",
+            "example": 12
+          },
+          "fromDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The 'from date' of the adjustment",
+            "example": "2022-01-01"
+          },
+          "toDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The 'to date' of the adjustment",
+            "example": "2022-01-31"
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Boolean flag showing if the adjustment is active",
+            "example": true
+          },
+          "comment": {
+            "type": "string",
+            "description": "The user comments for this adjustment",
+            "example": "This is an adjustment"
+          }
+        }
+      },
       "BookingAndSentenceAdjustments": {
         "type": "object",
         "description": "Adjustments associated at a booking level and a sentence level",
@@ -37793,6 +37831,59 @@
             "items": {
               "$ref": "#/components/schemas/BookingAdjustment"
             }
+          }
+        }
+      },
+      "SentenceAdjustmentValues": {
+        "type": "object",
+        "description": "Sentence Adjustment values",
+        "properties": {
+          "sentenceSequence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Sentence sequence",
+            "example": 1
+          },
+          "type": {
+            "type": "string",
+            "description": "Adjustment type",
+            "enum": [
+              "RECALL_SENTENCE_REMAND",
+              "TAGGED_BAIL",
+              "RECALL_SENTENCE_TAGGED_BAIL",
+              "REMAND",
+              "UNUSED_REMAND",
+              "TIME_SPENT_IN_CUSTODY_ABROAD",
+              "TIME_SPENT_AS_AN_APPEAL_APPLICANT"
+            ]
+          },
+          "numberOfDays": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of days to adjust",
+            "example": 12
+          },
+          "fromDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The 'from date' of the adjustment",
+            "example": "2022-01-01"
+          },
+          "toDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The 'to date' of the adjustment",
+            "example": "2022-01-31"
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Boolean flag showing if the adjustment is active",
+            "example": true
+          },
+          "comment": {
+            "type": "string",
+            "description": "The user comments for this adjustment",
+            "example": "This is an adjustment"
           }
         }
       }

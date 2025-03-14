@@ -25,7 +25,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Upda
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceDetail
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculableSentenceEnvelopeVersion2
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.prisonapi.model.CalculablePrisoner
 import java.time.LocalDate
 
 @Service
@@ -108,12 +108,12 @@ class PrisonApiClient(
   fun getCalculableSentenceEnvelopesByEstablishmentVersion2(
     establishmentId: String,
     pageNumber: Int,
-  ): RestResponsePage<CalculableSentenceEnvelopeVersion2> {
-    log.info("Requesting personId and booking details for latest booking of all offenders at establishment $establishmentId and page $pageNumber")
+  ): RestResponsePage<CalculablePrisoner> {
+    log.info("Requesting calculable prisoners at establishment $establishmentId and page $pageNumber")
     return systemAuthWebClient.get()
-      .uri("/api/prison/$establishmentId/booking/latest/paged/calculable-sentence-envelope/v2?page=$pageNumber")
+      .uri("/api/prison/$establishmentId/booking/latest/paged/calculable-prisoner?page=$pageNumber")
       .retrieve()
-      .bodyToMono(typeReference<RestResponsePage<CalculableSentenceEnvelopeVersion2>>())
+      .bodyToMono(typeReference<RestResponsePage<CalculablePrisoner>>())
       .block()!!
   }
 
