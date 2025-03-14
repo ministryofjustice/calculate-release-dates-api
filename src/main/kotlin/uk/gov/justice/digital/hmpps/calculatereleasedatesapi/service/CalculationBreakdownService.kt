@@ -27,10 +27,17 @@ open class CalculationBreakdownService(
     val bookingAndSentenceAdjustments = calculationRequest.adjustments?.let { prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequest) }
     val returnToCustodyDate = calculationRequest.returnToCustodyDate?.let { prisonApiDataMapper.mapReturnToCustodyDate(calculationRequest) }
     val calculation = transform(calculationRequest)
+    val historicalTusedData = prisonApiDataMapper.mapHistoricalTusedData(calculationRequest)
     return if (sentenceAndOffences != null && prisonerDetails != null && bookingAndSentenceAdjustments != null) {
       val booking = Booking(
         offender = transform(prisonerDetails),
-        sentences = sentenceAndOffences.map { transform(it, calculationUserInputs) },
+        sentences = sentenceAndOffences.map {
+          transform(
+            sentence = it,
+            calculationUserInputs = calculationUserInputs,
+            historicalTusedData = historicalTusedData,
+          )
+        },
         adjustments = transform(bookingAndSentenceAdjustments, sentenceAndOffences),
         bookingId = prisonerDetails.bookingId,
         returnToCustodyDate = returnToCustodyDate?.returnToCustodyDate,
