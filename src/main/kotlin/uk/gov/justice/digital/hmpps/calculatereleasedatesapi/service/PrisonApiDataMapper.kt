@@ -2,8 +2,10 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.convertValue
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffencesWithSDSPlus
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderFinePayment
@@ -55,5 +57,13 @@ class PrisonApiDataMapper(private val objectMapper: ObjectMapper) {
   fun mapOffenderFinePayment(calculationRequest: CalculationRequest): List<OffenderFinePayment> {
     val reader = objectMapper.readerFor(object : TypeReference<List<OffenderFinePayment>>() {})
     return reader.readValue(calculationRequest.offenderFinePayments)
+  }
+
+  fun mapHistoricalTusedData(calculationRequest: CalculationRequest): HistoricalTusedData? {
+    val historicalTusedDataNode = calculationRequest.inputData.findPath("historicalTusedData")
+    if (historicalTusedDataNode.isMissingNode) {
+      return null
+    }
+    return objectMapper.convertValue(historicalTusedDataNode, HistoricalTusedData::class.java)
   }
 }

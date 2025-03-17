@@ -1,0 +1,17 @@
+[
+  {
+    "type": "SED",
+    "date": "2025-03-17",
+    "hints": []
+  },
+  {
+    "type": "ARD",
+    "date": "2025-03-17",
+    "hints": []
+  },
+  {
+    "type": "TUSED",
+    "date": "2025-10-02",
+    "hints": ["TUSED from last calculation saved to NOMIS"]
+  }
+]
