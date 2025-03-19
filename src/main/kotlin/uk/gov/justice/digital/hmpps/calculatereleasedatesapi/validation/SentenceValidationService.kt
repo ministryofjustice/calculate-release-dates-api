@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TermType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
@@ -25,25 +27,7 @@ class SentenceValidationService(
 
   internal fun validateSentences(sentences: List<SentenceAndOffence>): MutableList<ValidationMessage> {
     val validationMessages = sentences.map { validateSentence(it) }.flatten().toMutableList()
-    validationMessages += validateConsecutiveSentenceUnique(sentences)
     return validationMessages
-  }
-
-  private data class ValidateConsecutiveSentenceUniqueRecord(
-    val consecutiveToSequence: Int,
-    val lineSequence: Int,
-    val caseSequence: Int,
-  )
-
-  private fun validateConsecutiveSentenceUnique(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
-    val consecutiveSentences = sentences.filter { it.consecutiveToSequence != null }
-      .map { ValidateConsecutiveSentenceUniqueRecord(it.consecutiveToSequence!!, it.lineSequence, it.caseSequence) }
-      .distinct()
-    val sentencesGroupedByConsecutiveTo = consecutiveSentences.groupBy { it.consecutiveToSequence }
-    return sentencesGroupedByConsecutiveTo.entries.filter { it.value.size > 1 }.map { entry ->
-      val consecutiveToSentence = sentences.first { it.sentenceSequence == entry.key }
-      ValidationMessage(ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO, validationUtilities.getCaseSeqAndLineSeq(consecutiveToSentence))
-    }
   }
 
   private fun validateSentence(it: SentenceAndOffence): List<ValidationMessage> {
@@ -130,6 +114,7 @@ class SentenceValidationService(
     }
     return validationMessages
   }
+
   private fun validateImprisonmentAndLicenceTermDuration(sentencesAndOffence: SentenceAndOffence): List<ValidationMessage> {
     val validationMessages = mutableListOf<ValidationMessage>()
 
@@ -226,6 +211,7 @@ class SentenceValidationService(
 
     return validationMessages
   }
+
   internal fun validateSentenceHasNotBeenExtinguished(sentenceGroup: SentenceGroup): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
     val determinateSentences = sentenceGroup.sentences.filter { !it.isRecall() }
@@ -247,5 +233,23 @@ class SentenceValidationService(
       }
     }
     return messages
+  }
+
+  internal fun validateAnyConcurrentConsecutiveSentences(calculation: CalculationOutput): ValidationMessage? {
+    val consecutiveSentences = calculation.sentences.filterIsInstance<ConsecutiveSentence>()
+    val sentencePartsList = consecutiveSentences.map { it.sentenceParts().first().identifier }
+
+    val concurrentSentences = consecutiveSentences.filter { sentence ->
+      val firstPart = sentence.sentenceParts().firstOrNull()?.identifier
+      firstPart != null && sentencePartsList.contains(firstPart) && sentencePartsList.count { it == firstPart } > 1
+    }
+
+    val longestSentence =
+      concurrentSentences.maxByOrNull { it.sentenceCalculation.releaseDate }?.getCombinedDuration() ?: return null
+
+    return ValidationMessage(
+      ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES,
+      longestSentence.durationElements.entries.sortedByDescending { it.key.ordinal }.map { it.value.toString() },
+    )
   }
 }

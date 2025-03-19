@@ -7,6 +7,7 @@ enum class ValidationType {
   UNSUPPORTED_OFFENCE,
   SUSPENDED_OFFENCE,
   MANUAL_ENTRY_JOURNEY_REQUIRED,
+  CONCURRENT_CONSECUTIVE,
   ;
 
   fun isUnsupported(): Boolean {
