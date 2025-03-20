@@ -332,8 +332,9 @@ class BookingExtractionService(
       dates[PRRD] = fixedTermRecallsService.calculatePRRD(
         sentences,
         latestExpiryDate,
-        returnToCustodyDate,
         latestReleaseDate,
+        returnToCustodyDate,
+        dates[SLED],
       )
 
       if (!fixedTermRecallsService.hasHomeDetentionCurfew(dates)) {

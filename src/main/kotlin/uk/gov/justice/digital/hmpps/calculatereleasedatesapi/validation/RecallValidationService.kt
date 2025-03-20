@@ -201,7 +201,7 @@ class RecallValidationService(
     val hasUnderTwelveMonthSentence = ftrSentences.any { it.durationIsLessThan(TWELVE, MONTHS) }
 
     return if (hasUnderTwelveMonthSentence && hasOverTwelveMonthSentence) {
-      validateMixedDurations(ftrSentences, booking)
+      validateMixedDurations(ftrSentences, booking, calculationOutput)
     } else {
       validateSingleDurationRecalls(calculationOutput, ftrDetails, hasUnderTwelveMonthSentence, hasOverTwelveMonthSentence)
     }
@@ -252,31 +252,43 @@ class RecallValidationService(
   private fun validateMixedDurations(
     ftrSentences: List<CalculableSentence>,
     booking: Booking,
+    calculationOutput: CalculationOutput,
   ): List<ValidationMessage> {
     val returnToCustodyDate = booking.returnToCustodyDate ?: return emptyList()
-    val latestSled = ftrSentences.maxBy { it.sentenceCalculation.adjustedExpiryDate }
+    val calculatedSled = calculationOutput.calculationResult.dates[ReleaseDateType.SLED]
+    val sledSentence = ftrSentences.find { it.sentenceCalculation.adjustedExpiryDate == calculatedSled } ?: return emptyList()
+    val sledSentenceUnder12Months = sledSentence.durationIsLessThan(12, MONTHS)
+    val sledSentenceOver12Months = !sledSentenceUnder12Months
 
-    val sentencesOver12Months = ftrSentences.filter {
-      it !== latestSled && it.durationIsGreaterThanOrEqualTo(12, MONTHS)
+    val closestUnder12MonthSled = ftrSentences.filter {
+      it !== sledSentence &&
+        it.durationIsLessThan(12, MONTHS) &&
+        it.sentenceCalculation.unadjustedExpiryDate.isAfterOrEqualTo(returnToCustodyDate)
+    }.minByOrNull {
+      abs(ChronoUnit.DAYS.between(it.sentenceCalculation.unadjustedExpiryDate, returnToCustodyDate))
     }
 
-    val latestSledUnderTwelveMonths = latestSled.durationIsLessThan(TWELVE, MONTHS)
-    val latestSledOverTwelveMonths = !latestSledUnderTwelveMonths
+    val closest12MonthSled = ftrSentences.filter {
+      it !== sledSentence &&
+        it.durationIsGreaterThanOrEqualTo(12, MONTHS) &&
+        it.sentenceCalculation.unadjustedExpiryDate.isAfterOrEqualTo(returnToCustodyDate)
+    }.minByOrNull {
+      abs(ChronoUnit.DAYS.between(it.sentenceCalculation.unadjustedExpiryDate, returnToCustodyDate))
+    }
 
     return when {
-      latestSledOverTwelveMonths && latestSled.recallType == FIXED_TERM_RECALL_14 -> {
+      sledSentenceOver12Months && closestUnder12MonthSled !== null && closestUnder12MonthSled.recallType == FIXED_TERM_RECALL_14 &&
+        abs(ChronoUnit.DAYS.between(closestUnder12MonthSled.sentenceCalculation.adjustedExpiryDate, calculatedSled)) >= 14 -> {
         listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_SENTENCE_GT_12_MONTHS))
       }
 
-      latestSledUnderTwelveMonths && latestSled.recallType == FIXED_TERM_RECALL_14 && sentencesOver12Months.none {
-        abs(ChronoUnit.DAYS.between(returnToCustodyDate, it.sentenceCalculation.adjustedExpiryDate)) <= 14
-      } -> {
+      sledSentenceUnder12Months && closest12MonthSled != null && sledSentence.recallType == FIXED_TERM_RECALL_14 &&
+        abs(ChronoUnit.DAYS.between(returnToCustodyDate, closest12MonthSled.sentenceCalculation.adjustedExpiryDate)) >= 14 -> {
         listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_SENTENCE_GAP_GT_14_DAYS))
       }
 
-      latestSledUnderTwelveMonths && latestSled.recallType == FIXED_TERM_RECALL_28 && sentencesOver12Months.any {
-        abs(ChronoUnit.DAYS.between(returnToCustodyDate, it.sentenceCalculation.adjustedExpiryDate)) <= 14
-      } -> {
+      closest12MonthSled !== null && sledSentence.recallType == FIXED_TERM_RECALL_28 && sledSentenceUnder12Months &&
+        abs(ChronoUnit.DAYS.between(returnToCustodyDate, closest12MonthSled.sentenceCalculation.adjustedExpiryDate)) <= 14 -> {
         listOf(ValidationMessage(ValidationCode.FTR_TYPE_28_DAYS_SENTENCE_GAP_LT_14_DAYS))
       }
 
