@@ -77,12 +77,6 @@ class ValidationService(
   ): List<ValidationMessage> {
     log.info("Validating booking after calculation")
 
-    val hasConcurrentConsecutiveSentences = sentenceValidationService.validateAnyConcurrentConsecutiveSentences(calculationOutput)
-
-    if (hasConcurrentConsecutiveSentences !== null) {
-      return listOf(hasConcurrentConsecutiveSentences)
-    }
-
     val messages = mutableListOf<ValidationMessage>()
 
     calculationOutput.sentenceGroup.forEach { messages += sentenceValidationService.validateSentenceHasNotBeenExtinguished(it) }
@@ -93,6 +87,12 @@ class ValidationService(
     messages += recallValidationService.validateUnsupportedRecallTypes(calculationOutput, booking)
     messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationOutput)
     messages += postCalculationValidationService.validateSHPOContainingSX03Offences(booking, calculationOutput)
+
+    val hasConcurrentConsecutiveSentences = sentenceValidationService.validateAnyConcurrentConsecutiveSentences(calculationOutput)
+
+    if (hasConcurrentConsecutiveSentences !== null) {
+      messages += hasConcurrentConsecutiveSentences
+    }
 
     return messages
   }
