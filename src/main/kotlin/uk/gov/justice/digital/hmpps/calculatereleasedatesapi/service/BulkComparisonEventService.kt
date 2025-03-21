@@ -46,8 +46,9 @@ class BulkComparisonEventService(
   fun processPrisonComparison(comparisonId: Long, token: String) {
     setAuthToken(token)
     val comparison = getComparison(comparisonId)
-    val activeBookingsAtEstablishment = prisonService.getCalculablePrisonerByPrison(comparison.prison!!)
-    sendMessages(comparison, activeBookingsAtEstablishment.map { it.prisonerNumber to null })
+    val prisoners = prisonService.getCalculablePrisonerByPrison(comparison.prison!!)
+    sendMessages(comparison, prisoners.map { it.prisonerNumber })
+    comparison.numberOfPeopleExpected = prisoners.size.toLong()
   }
 
   @Transactional
@@ -56,13 +57,13 @@ class BulkComparisonEventService(
     setAuthToken(token)
     val comparison = getComparison(comparisonId)
     val currentUserPrisonsList = prisonService.getCurrentUserPrisonsList()
-    val activeBookingsAtEstablishment = mutableListOf<Pair<String, String>>()
+    var count = 0L
     for (prison in currentUserPrisonsList) {
-      activeBookingsAtEstablishment.addAll(
-        prisonService.getCalculablePrisonerByPrison(prison).map { it.prisonerNumber to prison },
-      )
+      val prisoners = prisonService.getCalculablePrisonerByPrison(prison)
+      sendMessages(comparison, prisoners.map { it.prisonerNumber }, prison)
+      count += prisoners.size
     }
-    sendMessages(comparison, activeBookingsAtEstablishment)
+    comparison.numberOfPeopleExpected = count
   }
 
   @Transactional
@@ -70,23 +71,20 @@ class BulkComparisonEventService(
   fun processManualComparison(comparisonId: Long, prisonerIds: List<String>, token: String) {
     setAuthToken(token)
     val comparison = getComparison(comparisonId)
-    sendMessages(comparison, prisonerIds.map { it to null })
+    sendMessages(comparison, prisonerIds)
+    comparison.numberOfPeopleExpected = prisonerIds.size.toLong()
   }
 
-  fun sendMessages(comparison: Comparison, calculations: List<Pair<String, String?>>) {
+  fun sendMessages(comparison: Comparison, calculations: List<String>, establishment: String? = null) {
     if (bulkComparisonEventPublisher == null) {
       throw IllegalStateException("Bulk comparison publisher is not configured for this environment")
     }
-    comparison.numberOfPeopleExpected = calculations.size.toLong()
-    calculations.forEach {
-      bulkComparisonEventPublisher.sendMessage(
-        comparisonId = comparison.id,
-        person = it.first,
-        totalToCompare = calculations.size,
-        establishment = it.second,
-        username = serviceUserService.getUsername(),
-      )
-    }
+    bulkComparisonEventPublisher.sendMessageBatch(
+      comparisonId = comparison.id,
+      persons = calculations,
+      establishment = establishment,
+      username = serviceUserService.getUsername(),
+    )
   }
 
   fun getComparison(comparisonId: Long): Comparison {
@@ -109,14 +107,13 @@ class BulkComparisonEventService(
 
   @Transactional
   fun updateCountsAndCheckIfComparisonIsComplete(message: InternalMessage<BulkComparisonMessageBody>) {
-    val totalToCompare = message.body.totalToCompare
     val comparison = comparisonRepository.findById(message.body.comparisonId).getOrElse {
       log.error("Couldn't handle message for comparison ${message.body.comparisonId}")
       return
     }
     val count = comparisonPersonRepository.countByComparisonId(comparisonId = comparison.id)
     comparison.numberOfPeopleCompared = count
-    if (comparison.numberOfPeopleCompared >= totalToCompare.toLong()) {
+    if (comparison.numberOfPeopleCompared >= comparison.numberOfPeopleExpected) {
       comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.COMPLETED)
       comparisonRepository.save(comparison)
     }

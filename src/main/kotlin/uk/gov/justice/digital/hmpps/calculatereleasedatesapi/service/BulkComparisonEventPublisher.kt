@@ -5,10 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.retry.support.RetryTemplate
 import org.springframework.stereotype.Service
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest
+import software.amazon.awssdk.services.sqs.model.SendMessageBatchRequest
+import software.amazon.awssdk.services.sqs.model.SendMessageBatchRequestEntry
+import software.amazon.awssdk.services.sqs.model.SendMessageBatchResponse
+import uk.gov.justice.hmpps.sqs.DEFAULT_BACKOFF_POLICY
+import uk.gov.justice.hmpps.sqs.DEFAULT_RETRY_POLICY
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
-import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes
+import java.util.UUID
 
 const val MESSAGE_TYPE = "calculate_release_dates_bulk_comparison_request"
 
@@ -19,29 +24,42 @@ class BulkComparisonEventPublisher(
   private val objectMapper: ObjectMapper,
 ) {
 
-  fun sendMessage(comparisonId: Long, person: String, totalToCompare: Int, username: String, establishment: String?) {
+  fun sendMessageBatch(comparisonId: Long, persons: List<String>, username: String, establishment: String?) {
     val queue = hmppsQueueService.findByQueueId("bulkcomparison")
       ?: throw IllegalStateException("Queue not found for bulkcomparison")
-    val sqsMessage = SQSMessage(
-      Type = MESSAGE_TYPE,
-      Message = InternalMessage(
-        BulkComparisonMessageBody(
-          comparisonId = comparisonId,
-          personId = person,
-          totalToCompare = totalToCompare,
-          establishment = establishment,
-          username = username,
-        ),
-      ).toJson(),
-    )
 
-    queue.sqsClient.sendMessage(
-      SendMessageRequest.builder()
+    val publishRequest =
+      SendMessageBatchRequest
+        .builder()
         .queueUrl(queue.queueUrl)
-        .messageBody(sqsMessage.toJson())
-        .eventTypeMessageAttributes(MESSAGE_TYPE)
-        .build(),
-    )
+        .entries(
+          persons.map {
+            val sqsMessage = SQSMessage(
+              Type = MESSAGE_TYPE,
+              Message = InternalMessage(
+                BulkComparisonMessageBody(
+                  comparisonId = comparisonId,
+                  personId = it,
+                  establishment = establishment,
+                  username = username,
+                ),
+              ).toJson(),
+            )
+            SendMessageBatchRequestEntry
+              .builder()
+              .id(UUID.randomUUID().toString())
+              .messageBody(objectMapper.writeValueAsString(sqsMessage))
+              .build()
+          },
+        ).build()
+    val retryTemplate =
+      RetryTemplate().apply {
+        setRetryPolicy(DEFAULT_RETRY_POLICY)
+        setBackOffPolicy(DEFAULT_BACKOFF_POLICY)
+      }
+    retryTemplate.execute<SendMessageBatchResponse, RuntimeException> {
+      queue.sqsClient.sendMessageBatch(publishRequest).get()
+    }
   }
 
   private fun Any.toJson() = objectMapper.writeValueAsString(this)
@@ -54,7 +72,6 @@ data class InternalMessage<T>(
 data class BulkComparisonMessageBody(
   val comparisonId: Long,
   val personId: String,
-  val totalToCompare: Int,
   val username: String,
   val establishment: String?,
 )
