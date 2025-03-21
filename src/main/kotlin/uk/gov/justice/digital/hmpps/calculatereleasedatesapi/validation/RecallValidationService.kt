@@ -20,6 +20,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.findClosest12MonthOrGreaterSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.findClosestUnder12MonthSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.MONTHS
@@ -201,7 +203,7 @@ class RecallValidationService(
     val hasUnderTwelveMonthSentence = ftrSentences.any { it.durationIsLessThan(TWELVE, MONTHS) }
 
     return if (hasUnderTwelveMonthSentence && hasOverTwelveMonthSentence) {
-      validateMixedDurations(ftrSentences, booking)
+      validateMixedDurations(ftrSentences, booking, calculationOutput)
     } else {
       validateSingleDurationRecalls(calculationOutput, ftrDetails, hasUnderTwelveMonthSentence, hasOverTwelveMonthSentence)
     }
@@ -252,31 +254,30 @@ class RecallValidationService(
   private fun validateMixedDurations(
     ftrSentences: List<CalculableSentence>,
     booking: Booking,
+    calculationOutput: CalculationOutput,
   ): List<ValidationMessage> {
     val returnToCustodyDate = booking.returnToCustodyDate ?: return emptyList()
-    val latestSled = ftrSentences.maxBy { it.sentenceCalculation.adjustedExpiryDate }
+    val calculatedSled = calculationOutput.calculationResult.dates[ReleaseDateType.SLED]
+    val sledProducingSentence = ftrSentences.find { it.sentenceCalculation.adjustedExpiryDate == calculatedSled } ?: return emptyList()
+    val sledSentenceUnder12Months = sledProducingSentence.durationIsLessThan(12, MONTHS)
+    val sledSentenceOver12Months = !sledSentenceUnder12Months
 
-    val sentencesOver12Months = ftrSentences.filter {
-      it !== latestSled && it.durationIsGreaterThanOrEqualTo(12, MONTHS)
-    }
-
-    val latestSledUnderTwelveMonths = latestSled.durationIsLessThan(TWELVE, MONTHS)
-    val latestSledOverTwelveMonths = !latestSledUnderTwelveMonths
+    val closestUnder12MonthSentence = ftrSentences.findClosestUnder12MonthSentence(sledProducingSentence, returnToCustodyDate)
+    val closest12MonthSentence = ftrSentences.findClosest12MonthOrGreaterSentence(sledProducingSentence, returnToCustodyDate)
 
     return when {
-      latestSledOverTwelveMonths && latestSled.recallType == FIXED_TERM_RECALL_14 -> {
+      sledSentenceOver12Months && closestUnder12MonthSentence !== null && closestUnder12MonthSentence.recallType == FIXED_TERM_RECALL_14 &&
+        abs(ChronoUnit.DAYS.between(closestUnder12MonthSentence.sentenceCalculation.adjustedExpiryDate, calculatedSled)) >= 14 -> {
         listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_SENTENCE_GT_12_MONTHS))
       }
 
-      latestSledUnderTwelveMonths && latestSled.recallType == FIXED_TERM_RECALL_14 && sentencesOver12Months.none {
-        abs(ChronoUnit.DAYS.between(returnToCustodyDate, it.sentenceCalculation.adjustedExpiryDate)) <= 14
-      } -> {
+      sledSentenceUnder12Months && closest12MonthSentence != null && sledProducingSentence.recallType == FIXED_TERM_RECALL_14 &&
+        abs(ChronoUnit.DAYS.between(returnToCustodyDate, closest12MonthSentence.sentenceCalculation.adjustedExpiryDate)) >= 14 -> {
         listOf(ValidationMessage(ValidationCode.FTR_TYPE_14_DAYS_SENTENCE_GAP_GT_14_DAYS))
       }
 
-      latestSledUnderTwelveMonths && latestSled.recallType == FIXED_TERM_RECALL_28 && sentencesOver12Months.any {
-        abs(ChronoUnit.DAYS.between(returnToCustodyDate, it.sentenceCalculation.adjustedExpiryDate)) <= 14
-      } -> {
+      closest12MonthSentence !== null && sledProducingSentence.recallType == FIXED_TERM_RECALL_28 && sledSentenceUnder12Months &&
+        abs(ChronoUnit.DAYS.between(returnToCustodyDate, closest12MonthSentence.sentenceCalculation.adjustedExpiryDate)) <= 14 -> {
         listOf(ValidationMessage(ValidationCode.FTR_TYPE_28_DAYS_SENTENCE_GAP_LT_14_DAYS))
       }
 
