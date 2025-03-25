@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
@@ -17,6 +18,7 @@ class ValidationService(
   private val validationUtilities: ValidationUtilities,
   private val postCalculationValidationService: PostCalculationValidationService,
   private val dateValidationService: DateValidationService,
+  private val featureToggles: FeatureToggles
 ) {
 
   fun validateBeforeCalculation(
@@ -88,10 +90,13 @@ class ValidationService(
     messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationOutput)
     messages += postCalculationValidationService.validateSHPOContainingSX03Offences(booking, calculationOutput)
 
-    val hasConcurrentConsecutiveSentences = sentenceValidationService.validateAnyConcurrentConsecutiveSentences(calculationOutput)
+    if (featureToggles.concurrentConsecutiveSentencesEnabled) {
+      val hasConcurrentConsecutiveSentences =
+        sentenceValidationService.validateAnyConcurrentConsecutiveSentences(calculationOutput)
 
-    if (hasConcurrentConsecutiveSentences !== null) {
-      messages += hasConcurrentConsecutiveSentences
+      if (hasConcurrentConsecutiveSentences !== null) {
+        messages += hasConcurrentConsecutiveSentences
+      }
     }
 
     return messages

@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TermType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
@@ -23,11 +24,32 @@ class SentenceValidationService(
   private val sopcValidationService: SOPCValidationService,
   private val fineValidationService: FineValidationService,
   private val edsValidationService: EDSValidationService,
+  private val featuresToggles: FeatureToggles,
 ) {
 
   internal fun validateSentences(sentences: List<SentenceAndOffence>): MutableList<ValidationMessage> {
     val validationMessages = sentences.map { validateSentence(it) }.flatten().toMutableList()
+    if (!featuresToggles.concurrentConsecutiveSentencesEnabled) {
+      validationMessages += validateConsecutiveSentenceUnique(sentences)
+    }
     return validationMessages
+  }
+
+  private data class ValidateConsecutiveSentenceUniqueRecord(
+    val consecutiveToSequence: Int,
+    val lineSequence: Int,
+    val caseSequence: Int,
+  )
+
+  private fun validateConsecutiveSentenceUnique(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
+    val consecutiveSentences = sentences.filter { it.consecutiveToSequence != null }
+      .map { ValidateConsecutiveSentenceUniqueRecord(it.consecutiveToSequence!!, it.lineSequence, it.caseSequence) }
+      .distinct()
+    val sentencesGroupedByConsecutiveTo = consecutiveSentences.groupBy { it.consecutiveToSequence }
+    return sentencesGroupedByConsecutiveTo.entries.filter { it.value.size > 1 }.map { entry ->
+      val consecutiveToSentence = sentences.first { it.sentenceSequence == entry.key }
+      ValidationMessage(ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO, validationUtilities.getCaseSeqAndLineSeq(consecutiveToSentence))
+    }
   }
 
   private fun validateSentence(it: SentenceAndOffence): List<ValidationMessage> {
