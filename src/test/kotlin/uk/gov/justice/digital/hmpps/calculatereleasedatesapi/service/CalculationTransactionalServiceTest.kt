@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.left
 import com.fasterxml.jackson.databind.JsonNode
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import jakarta.persistence.EntityNotFoundException
@@ -71,10 +72,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalcula
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
@@ -133,6 +134,7 @@ class CalculationTransactionalServiceTest {
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
   private val manageOffencesService = mock<ManageOffencesService>()
   private val prisonService = mock<PrisonService>()
+  private val calculationSourceDataService = mock<CalculationSourceDataService>()
   private val eventService = mock<EventService>()
   private val bookingService = mock<BookingService>()
   private val validationService = mock<ValidationService>()
@@ -143,13 +145,13 @@ class CalculationTransactionalServiceTest {
   private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
   private val fixedTermRecallsService = FixedTermRecallsService(featureToggles = FeatureToggles(revisedFixedTermRecallsRules = true))
 
-  private val fakeSourceData = PrisonApiSourceData(
+  private val fakeSourceData = CalculationSourceData(
     emptyList(),
     PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
     BookingAndSentenceAdjustments(
       emptyList(),
       emptyList(),
-    ),
+    ).left(),
     listOf(),
     null,
   )
@@ -312,7 +314,7 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES,
       ),
     )
-    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, InactiveDataOptions.default())).thenReturn(
       fakeSourceData,
     )
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
@@ -336,7 +338,7 @@ class CalculationTransactionalServiceTest {
         PRELIMINARY.name,
       ),
     ).thenReturn(Optional.empty())
-    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, InactiveDataOptions.default())).thenReturn(
       fakeSourceData,
     )
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
@@ -357,7 +359,7 @@ class CalculationTransactionalServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(CALCULATION_REQUEST_ID, PRELIMINARY.name))
       .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
-    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, InactiveDataOptions.default())).thenReturn(
       fakeSourceData,
     )
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
@@ -489,7 +491,7 @@ class CalculationTransactionalServiceTest {
     whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
     whenever(calculationRequestRepository.findByIdAndCalculationStatus(CALCULATION_REQUEST_ID, PRELIMINARY.name))
       .thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES.copy(inputData = INPUT_DATA)))
-    whenever(prisonService.getPrisonApiSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, InactiveDataOptions.default())).thenReturn(
+    whenever(calculationSourceDataService.getCalculationSourceData(CALCULATION_REQUEST_WITH_OUTCOMES.prisonerId, InactiveDataOptions.default())).thenReturn(
       fakeSourceData,
     )
     whenever(bookingService.getBooking(fakeSourceData, CalculationUserInputs())).thenReturn(BOOKING)
@@ -623,7 +625,8 @@ class CalculationTransactionalServiceTest {
         CALCULATION_REQUEST_WITH_OUTCOMES,
       ),
     )
-    whenever(prisonService.getPrisonApiSourceData(anyString(), eq(InactiveDataOptions.default()))).thenReturn(SOURCE_DATA)
+    whenever(calculationSourceDataService.getCalculationSourceData(anyString(), eq(InactiveDataOptions.default()))).thenReturn(SOURCE_DATA)
+    whenever(bookingService.getBooking(eq(SOURCE_DATA), any())).thenReturn(BOOKING)
     assertThrows<CalculationDataHasChangedError> {
       calculationTransactionalService().findCalculationResultsByCalculationReference(
         UUID.randomUUID().toString(),
@@ -750,7 +753,7 @@ class CalculationTransactionalServiceTest {
       featureToggles = FeatureToggles(),
     )
 
-    val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
+    val sourceDataMapper = SourceDataMapper(TestUtil.objectMapper())
 
     val calculationService = CalculationService(
       bookingCalculationService,
@@ -769,7 +772,8 @@ class CalculationTransactionalServiceTest {
       calculationReasonRepository,
       TestUtil.objectMapper(),
       prisonService,
-      prisonApiDataMapper,
+      calculationSourceDataService,
+      sourceDataMapper,
       calculationService,
       bookingService,
       validationServiceToUse,
@@ -866,7 +870,7 @@ class CalculationTransactionalServiceTest {
       ),
     )
     val SOURCE_DATA =
-      PrisonApiSourceData(
+      CalculationSourceData(
         listOf(
           SentenceAndOffenceWithReleaseArrangements(
             originalSentence,
@@ -878,7 +882,7 @@ class CalculationTransactionalServiceTest {
           ),
         ),
         prisonerDetails,
-        adjustments,
+        adjustments.left(),
         emptyList(),
         null,
         null,

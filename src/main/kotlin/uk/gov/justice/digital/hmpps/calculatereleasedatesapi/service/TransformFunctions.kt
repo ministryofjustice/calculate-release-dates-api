@@ -1,10 +1,12 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.Either
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationOutcome
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -96,10 +98,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOf
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SopcSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ComparisonInput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
@@ -280,6 +282,40 @@ fun transform(prisonerDetails: PrisonerDetails): Offender {
 }
 
 fun transform(
+  adjustmentsSource: Either<BookingAndSentenceAdjustments, List<AdjustmentDto>>,
+  sentencesAndOffences: List<SentenceAndOffence>,
+): Adjustments {
+  return adjustmentsSource.fold(
+    { transform(it, sentencesAndOffences) },
+    { transform(it, sentencesAndOffences) },
+  )
+}
+
+fun transform(
+  adjustmentsSource: List<AdjustmentDto>,
+  sentencesAndOffences: List<SentenceAndOffence>,
+): Adjustments {
+  val adjustments = Adjustments()
+  adjustmentsSource.forEach {
+    val sentence: SentenceAndOffence? = if (it.sentenceSequence != null) sentencesAndOffences.find { sentence -> it.sentenceSequence == sentence.sentenceSequence } else null
+    val adjustmentType = transform(it.adjustmentType, sentence)
+    if (adjustmentType != null) {
+      adjustments.addAdjustment(
+        adjustmentType,
+        Adjustment(
+          fromDate = it.fromDate,
+          toDate = it.toDate,
+          appliesToSentencesFrom = sentence?.sentenceDate ?: it.fromDate!!,
+          numberOfDays = it.effectiveDays!!,
+
+        ),
+      )
+    }
+  }
+  return adjustments
+}
+
+fun transform(
   bookingAndSentenceAdjustments: BookingAndSentenceAdjustments,
   sentencesAndOffences: List<SentenceAndOffence>,
 ): Adjustments {
@@ -376,11 +412,27 @@ fun transform(bookingAdjustmentType: BookingAdjustmentType): AdjustmentType? {
   }
 }
 
+fun transform(adjustmentType: AdjustmentDto.AdjustmentType, sentence: SentenceAndOffence?): AdjustmentType? {
+  val recallType = sentence?.let { SentenceCalculationType.from(it.sentenceCalculationType).recallType }
+  return when (adjustmentType) {
+    AdjustmentDto.AdjustmentType.REMAND -> if (recallType != null) REMAND else RECALL_REMAND
+    AdjustmentDto.AdjustmentType.TAGGED_BAIL -> if (recallType != null) TAGGED_BAIL else RECALL_TAGGED_BAIL
+    AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE -> UNLAWFULLY_AT_LARGE
+    AdjustmentDto.AdjustmentType.LAWFULLY_AT_LARGE -> null
+    AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED -> ADDITIONAL_DAYS_AWARDED
+    AdjustmentDto.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED -> RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
+    AdjustmentDto.AdjustmentType.SPECIAL_REMISSION -> null
+    AdjustmentDto.AdjustmentType.UNUSED_DEDUCTIONS -> null
+    AdjustmentDto.AdjustmentType.CUSTODY_ABROAD -> null
+    AdjustmentDto.AdjustmentType.APPEAL_APPLICANT -> null
+  }
+}
+
 fun transform(
   booking: Booking,
   username: String,
   calculationStatus: CalculationStatus,
-  sourceData: PrisonApiSourceData,
+  sourceData: CalculationSourceData,
   reasonForCalculation: CalculationReason?,
   objectMapper: ObjectMapper,
   otherReasonDescription: String?,
@@ -399,7 +451,11 @@ fun transform(
     inputData = objectToJson(booking, objectMapper),
     sentenceAndOffences = objectToJson(sourceData.sentenceAndOffences, objectMapper),
     prisonerDetails = objectToJson(sourceData.prisonerDetails, objectMapper),
-    adjustments = objectToJson(sourceData.bookingAndSentenceAdjustments, objectMapper),
+    adjustments = sourceData.bookingAndSentenceAdjustments.fold(
+      { objectToJson(it, objectMapper) },
+      { objectToJson(it, objectMapper) },
+    ),
+    adjustmentsVersion = sourceData.bookingAndSentenceAdjustments.fold({ 0 }, { 1 }),
     offenderFinePayments = objectToJson(sourceData.offenderFinePayments, objectMapper),
     returnToCustodyDate = if (sourceData.returnToCustodyDate != null) objectToJson(sourceData.returnToCustodyDate, objectMapper) else null,
     calculationRequestUserInput = transform(calculationUserInputs),

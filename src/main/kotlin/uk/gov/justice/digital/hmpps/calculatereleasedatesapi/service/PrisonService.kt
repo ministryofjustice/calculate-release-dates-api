@@ -7,7 +7,6 @@ import org.springframework.core.codec.DecodingException
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoValidReturnToCustodyDateException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisCalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NomisTusedData
@@ -17,10 +16,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculationSummary
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType.Companion.from
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
@@ -31,41 +28,10 @@ import java.time.LocalDate
 class PrisonService(
   private val prisonApiClient: PrisonApiClient,
   private val releaseArrangementLookupService: ReleaseArrangementLookupService,
-  private val botusTusedService: BotusTusedService,
   private val featureToggles: FeatureToggles,
 ) {
-  //  The activeDataOnly flag is only used by a test endpoint (1000 calcs test, which is used to test historic data)
-  fun getPrisonApiSourceData(prisonerId: String, inactiveDataOptions: InactiveDataOptions): PrisonApiSourceData {
-    val prisonerDetails = getOffenderDetail(prisonerId)
-    return getPrisonApiSourceData(prisonerDetails, inactiveDataOptions)
-  }
 
-  fun getPrisonApiSourceData(prisonerDetails: PrisonerDetails, inactiveDataOptions: InactiveDataOptions): PrisonApiSourceData {
-    val activeOnly = inactiveDataOptions.activeOnly(featureToggles.supportInactiveSentencesAndAdjustments, prisonerDetails.agencyId)
-    val sentenceAndOffences = getSentencesAndOffences(prisonerDetails.bookingId, activeOnly)
-    val bookingAndSentenceAdjustments = getBookingAndSentenceAdjustments(prisonerDetails.bookingId, activeOnly)
-    val bookingHasFixedTermRecall = sentenceAndOffences.any { from(it.sentenceCalculationType).recallType?.isFixedTermRecall == true }
-    val (ftrDetails, returnToCustodyDate) = getFixedTermRecallDetails(prisonerDetails.bookingId, bookingHasFixedTermRecall)
-    val bookingHasAFine = sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == SentenceType.AFine }
-    val offenderFinePayments = if (bookingHasAFine) prisonApiClient.getOffenderFinePayments(prisonerDetails.bookingId) else listOf()
-    val tusedData = getLatestTusedDataForBotus(prisonerDetails.offenderNo).getOrNull()
-    val bookingHasBotus = sentenceAndOffences.any { from(it.sentenceCalculationType).sentenceType == SentenceType.Botus }
-    val historicalTusedData = if (tusedData != null && bookingHasBotus) botusTusedService.identifyTused(tusedData) else null
-    val externalMovements = getExternalMovements(sentenceAndOffences, prisonerDetails)
-
-    return PrisonApiSourceData(
-      sentenceAndOffences,
-      prisonerDetails,
-      bookingAndSentenceAdjustments,
-      offenderFinePayments,
-      returnToCustodyDate,
-      ftrDetails,
-      historicalTusedData,
-      externalMovements,
-    )
-  }
-
-  private fun getExternalMovements(
+  fun getExternalMovements(
     sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
     prisonerDetails: PrisonerDetails,
   ): List<PrisonApiExternalMovement> {
@@ -78,7 +44,7 @@ class PrisonService(
     return emptyList()
   }
 
-  private fun getFixedTermRecallDetails(
+  fun getFixedTermRecallDetails(
     bookingId: Long,
     bookingHasFixedTermRecall: Boolean,
   ): Pair<FixedTermRecallDetails?, ReturnToCustodyDate?> {
@@ -91,6 +57,8 @@ class PrisonService(
       throw NoValidReturnToCustodyDateException("No valid Return To Custody Date found for bookingId $bookingId")
     }
   }
+
+  fun getOffenderFinePayments(bookingId: Long) = prisonApiClient.getOffenderFinePayments(bookingId)
 
   fun getOffenderDetail(prisonerId: String): PrisonerDetails = prisonApiClient.getOffenderDetail(prisonerId)
 
@@ -173,49 +141,5 @@ class PrisonService(
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
-  }
-}
-
-/**
- * Class to represent if inactive data should be included within calculation.
- *
- * 1. Inactive data is always included for OUT prisoners.
- * 2. The default behaviour is defined by a feature toggle
- * 3. Some endpoints override this behaviour because they require inactive data e.g. recalls, IR
- */
-class InactiveDataOptions private constructor(
-  private val overrideToIncludeInactiveData: Boolean,
-) {
-
-  fun activeOnly(featureToggle: Boolean, agencyId: String): Boolean {
-    return !includeInactive(featureToggle, agencyId)
-  }
-
-  private fun includeInactive(featureToggle: Boolean, agencyId: String): Boolean {
-    return if (agencyId == "OUT") {
-      true
-    } else if (overrideToIncludeInactiveData) {
-      true
-    } else {
-      featureToggle
-    }
-  }
-
-  override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (javaClass != other?.javaClass) return false
-
-    other as InactiveDataOptions
-
-    return overrideToIncludeInactiveData == other.overrideToIncludeInactiveData
-  }
-
-  override fun hashCode(): Int {
-    return overrideToIncludeInactiveData.hashCode()
-  }
-
-  companion object {
-    fun default(): InactiveDataOptions = InactiveDataOptions(false)
-    fun overrideToIncludeInactiveData(): InactiveDataOptions = InactiveDataOptions(true)
   }
 }

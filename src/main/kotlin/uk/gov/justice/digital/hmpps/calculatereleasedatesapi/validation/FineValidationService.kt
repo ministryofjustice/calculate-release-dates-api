@@ -2,15 +2,15 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.SentenceType
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 
 @Service
 class FineValidationService(private val validationUtilities: ValidationUtilities) {
 
-  fun validateFineSentenceSupported(prisonApiSourceData: PrisonApiSourceData): List<ValidationMessage> {
-    val fineSentences = getFineSentences(prisonApiSourceData)
+  fun validateFineSentenceSupported(calculationSourceData: CalculationSourceData): List<ValidationMessage> {
+    val fineSentences = getFineSentences(calculationSourceData)
 
     if (fineSentences.isEmpty()) {
       return emptyList()
@@ -18,7 +18,7 @@ class FineValidationService(private val validationUtilities: ValidationUtilities
 
     val validationMessages = mutableListOf<ValidationMessage>()
 
-    if (hasFinePayments(prisonApiSourceData)) {
+    if (hasFinePayments(calculationSourceData)) {
       validationMessages.add(ValidationMessage(ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS))
     }
 
@@ -26,20 +26,20 @@ class FineValidationService(private val validationUtilities: ValidationUtilities
       validationMessages.add(ValidationMessage(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE_TO))
     }
 
-    if (hasConsecutiveToFineSentence(prisonApiSourceData, fineSentences)) {
+    if (hasConsecutiveToFineSentence(calculationSourceData, fineSentences)) {
       validationMessages.add(ValidationMessage(ValidationCode.A_FINE_SENTENCE_CONSECUTIVE))
     }
 
     return validationMessages
   }
 
-  private fun getFineSentences(sourceData: PrisonApiSourceData): List<SentenceAndOffence> {
+  private fun getFineSentences(sourceData: CalculationSourceData): List<SentenceAndOffence> {
     return sourceData.sentenceAndOffences.filter {
       SentenceCalculationType.from(it.sentenceCalculationType).sentenceType == SentenceType.AFine
     }
   }
 
-  private fun hasFinePayments(sourceData: PrisonApiSourceData): Boolean {
+  private fun hasFinePayments(sourceData: CalculationSourceData): Boolean {
     return sourceData.offenderFinePayments.isNotEmpty()
   }
 
@@ -47,7 +47,7 @@ class FineValidationService(private val validationUtilities: ValidationUtilities
     return fineSentences.any { it.consecutiveToSequence != null }
   }
 
-  private fun hasConsecutiveToFineSentence(sourceData: PrisonApiSourceData, fineSentences: List<SentenceAndOffence>): Boolean {
+  private fun hasConsecutiveToFineSentence(sourceData: CalculationSourceData, fineSentences: List<SentenceAndOffence>): Boolean {
     val sentenceSequenceMap: Map<Int?, SentenceAndOffence> = sourceData.sentenceAndOffences.associateBy { it.sentenceSequence }
     return sourceData.sentenceAndOffences.any {
       it.consecutiveToSequence != null && fineSentences.contains(sentenceSequenceMap[it.consecutiveToSequence])

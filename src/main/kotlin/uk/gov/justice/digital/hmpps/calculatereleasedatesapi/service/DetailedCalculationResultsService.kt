@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 @Suppress("RedundantModalityModifier") // required for spring @Transactional
 open class DetailedCalculationResultsService(
   private val calculationBreakdownService: CalculationBreakdownService,
-  private val prisonApiDataMapper: PrisonApiDataMapper,
+  private val sourceDataMapper: SourceDataMapper,
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
   private val prisonService: PrisonService,
@@ -28,8 +28,8 @@ open class DetailedCalculationResultsService(
   @Transactional(readOnly = true)
   fun findDetailedCalculationResults(calculationRequestId: Long): DetailedCalculationResults {
     val calculationRequest = getCalculationRequest(calculationRequestId)
-    val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { prisonApiDataMapper.mapSentencesAndOffences(calculationRequest) }
-    val prisonerDetails = calculationRequest.prisonerDetails?.let { prisonApiDataMapper.mapPrisonerDetails(calculationRequest) }
+    val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
+    val prisonerDetails = calculationRequest.prisonerDetails?.let { sourceDataMapper.mapPrisonerDetails(calculationRequest) }
     val (breakdownMissingReason, calculationBreakdown) = calculationBreakdownService.getBreakdownSafely(calculationRequest).fold(
       { it to null },
       { null to it },

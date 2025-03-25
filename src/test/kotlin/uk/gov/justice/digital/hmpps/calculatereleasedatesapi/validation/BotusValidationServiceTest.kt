@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
+import arrow.core.left
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
@@ -8,8 +9,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggl
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
@@ -187,7 +188,7 @@ class BotusValidationServiceTest {
       ),
     )
 
-    val SOURCE_DATA = PrisonApiSourceData(
+    val SOURCE_DATA = CalculationSourceData(
       sentenceAndOffences = CONSECUTIVE_BOTUS_SENTENCES.map {
         SentenceAndOffenceWithReleaseArrangements(
           source = it,
@@ -198,12 +199,12 @@ class BotusValidationServiceTest {
         )
       },
       prisonerDetails = VALID_PRISONER,
-      bookingAndSentenceAdjustments = VALID_ADJUSTMENTS,
+      bookingAndSentenceAdjustments = VALID_ADJUSTMENTS.left(),
       offenderFinePayments = listOf(),
       returnToCustodyDate = null,
     )
 
-    val SOURCE_DATE_NO_CONSECUTIVE_BOTUS = PrisonApiSourceData(
+    val SOURCE_DATE_NO_CONSECUTIVE_BOTUS = CalculationSourceData(
       sentenceAndOffences = CONSECUTIVE_NONE_BOTUS_SENTENCES.map {
         SentenceAndOffenceWithReleaseArrangements(
           source = it,
@@ -214,12 +215,12 @@ class BotusValidationServiceTest {
         )
       },
       prisonerDetails = VALID_PRISONER,
-      bookingAndSentenceAdjustments = VALID_ADJUSTMENTS,
+      bookingAndSentenceAdjustments = VALID_ADJUSTMENTS.left(),
       offenderFinePayments = listOf(),
       returnToCustodyDate = null,
     )
 
-    val SOURCE_DATA_FIRST_CHAIN_IS_BOTUS = PrisonApiSourceData(
+    val SOURCE_DATA_FIRST_CHAIN_IS_BOTUS = CalculationSourceData(
       sentenceAndOffences = CONSECUTIVE_BOTUS_SENTENCES_ADJACENT_FIRST.map {
         SentenceAndOffenceWithReleaseArrangements(
           source = it,
@@ -230,7 +231,7 @@ class BotusValidationServiceTest {
         )
       },
       prisonerDetails = VALID_PRISONER,
-      bookingAndSentenceAdjustments = VALID_ADJUSTMENTS,
+      bookingAndSentenceAdjustments = VALID_ADJUSTMENTS.left(),
       offenderFinePayments = listOf(),
       returnToCustodyDate = null,
     )

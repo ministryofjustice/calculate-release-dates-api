@@ -14,10 +14,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import java.time.LocalDate
 
-class PrisonApiDataMapperTest {
+class SourceDataMapperTest {
 
   private val objectMapper = TestUtil.objectMapper()
-  private val prisonApiDataMapper = PrisonApiDataMapper(objectMapper)
+  private val sourceDataMapper = SourceDataMapper(objectMapper)
 
   @Test
   fun `Map version 0 of sentences and offences`() {
@@ -59,7 +59,7 @@ class PrisonApiDataMapperTest {
       sentenceAndOffencesVersion = 0,
     )
 
-    val sentencesAndOffences = prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
+    val sentencesAndOffences = sourceDataMapper.mapSentencesAndOffences(calculationRequest)
 
     assertThat(sentencesAndOffences).isNotNull
     assertThat(sentencesAndOffences).hasSize(2)
@@ -98,7 +98,7 @@ class PrisonApiDataMapperTest {
       sentenceAndOffencesVersion = 1,
     )
 
-    val sentencesAndOffences = prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
+    val sentencesAndOffences = sourceDataMapper.mapSentencesAndOffences(calculationRequest)
     assertThat(sentencesAndOffences).isEqualTo(
       listOf(
         SentenceAndOffenceWithReleaseArrangements(
@@ -178,7 +178,7 @@ class PrisonApiDataMapperTest {
     )
     val theOtherSentenceAndOffence = aNewSentenceAndOffence.copy(offence = OffenderOffence(2L, LocalDate.of(2015, 1, 1), null, "Another Dummy Offence", "description", listOf("A")))
 
-    val sentencesAndOffences = prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
+    val sentencesAndOffences = sourceDataMapper.mapSentencesAndOffences(calculationRequest)
     assertThat(sentencesAndOffences).isEqualTo(listOf(aNewSentenceAndOffence, theOtherSentenceAndOffence))
   }
 
@@ -212,7 +212,7 @@ class PrisonApiDataMapperTest {
       sentenceAndOffencesVersion = 3,
     )
 
-    val sentencesAndOffences = prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
+    val sentencesAndOffences = sourceDataMapper.mapSentencesAndOffences(calculationRequest)
     assertThat(sentencesAndOffences).isEqualTo(listOf(version3))
   }
 
@@ -254,7 +254,7 @@ class PrisonApiDataMapperTest {
       sentenceAndOffencesVersion = 3,
     )
 
-    val sentencesAndOffences = prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
+    val sentencesAndOffences = sourceDataMapper.mapSentencesAndOffences(calculationRequest)
     assertThat(sentencesAndOffences).isEqualTo(listOf(expected))
   }
 }

@@ -1,17 +1,22 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RelevantRemandCalculationResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isBeforeOrEqualTo
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.LocalDate
@@ -22,13 +27,14 @@ class RelevantRemandService(
   private val calculationService: CalculationService,
   private val validationService: ValidationService,
   private val bookingService: BookingService,
+  private val calculationSourceDataService: CalculationSourceDataService,
 ) {
 
   fun relevantRemandCalculation(prisonerId: String, request: RelevantRemandCalculationRequest): RelevantRemandCalculationResult {
     val prisoner = prisonService.getOffenderDetail(prisonerId).copy(
       bookingId = request.sentence.bookingId,
     )
-    val sourceData = filterSentencesAndAdjustmentsForRelevantRemandCalc(prisonService.getPrisonApiSourceData(prisoner, InactiveDataOptions.overrideToIncludeInactiveData()), request)
+    val sourceData = filterSentencesAndAdjustmentsForRelevantRemandCalc(calculationSourceDataService.getCalculationSourceData(prisoner, InactiveDataOptions.overrideToIncludeInactiveData()), request)
     val calculationUserInputs = CalculationUserInputs(useOffenceIndicators = true)
 
     var validationMessages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs)
@@ -62,14 +68,27 @@ class RelevantRemandService(
     )
   }
 
-  private fun filterSentencesAndAdjustmentsForRelevantRemandCalc(sourceData: PrisonApiSourceData, request: RelevantRemandCalculationRequest): PrisonApiSourceData {
+  private fun filterSentencesAndAdjustmentsForRelevantRemandCalc(sourceData: CalculationSourceData, request: RelevantRemandCalculationRequest): CalculationSourceData {
     return sourceData.copy(
       sentenceAndOffences = sourceData.sentenceAndOffences.filter { it.sentenceDate.isBeforeOrEqualTo(request.calculateAt) },
-      bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments.copy(
-        sentenceAdjustments = sourceData.bookingAndSentenceAdjustments.sentenceAdjustments.filter { !listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.UNUSED_REMAND).contains(it.type) } +
-          request.relevantRemands.map {
-            val sentence = findSentence(sourceData.sentenceAndOffences, it.sentenceSequence)
-            val adjustmentType: SentenceAdjustmentType = if (sentence != null && SentenceCalculationType.isCalculable(sentence.sentenceCalculationType)) {
+      bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments.fold(
+        { filterAdjustmentsFromPrisonApi(it, sourceData, request) },
+        { filterAdjustmentsFromAdjustmentsApi(it, sourceData, request) },
+      ),
+    )
+  }
+
+  private fun filterAdjustmentsFromPrisonApi(
+    bookingAndSentenceAdjustments: BookingAndSentenceAdjustments,
+    sourceData: CalculationSourceData,
+    request: RelevantRemandCalculationRequest,
+  ): Either<BookingAndSentenceAdjustments, List<AdjustmentDto>> {
+    return bookingAndSentenceAdjustments.copy(
+      sentenceAdjustments = bookingAndSentenceAdjustments.sentenceAdjustments.filter { !listOf(SentenceAdjustmentType.REMAND, SentenceAdjustmentType.RECALL_SENTENCE_REMAND, SentenceAdjustmentType.UNUSED_REMAND).contains(it.type) } +
+        request.relevantRemands.map {
+          val sentence = findSentence(sourceData.sentenceAndOffences, it.sentenceSequence)
+          val adjustmentType: SentenceAdjustmentType =
+            if (sentence != null && SentenceCalculationType.isCalculable(sentence.sentenceCalculationType)) {
               val sentenceType = SentenceCalculationType.from(sentence.sentenceCalculationType)
               if (sentenceType.recallType != null) {
                 SentenceAdjustmentType.RECALL_SENTENCE_REMAND
@@ -79,10 +98,30 @@ class RelevantRemandService(
             } else {
               SentenceAdjustmentType.REMAND
             }
-            SentenceAdjustment(it.sentenceSequence, true, it.from, it.to, it.days, adjustmentType)
-          },
-      ),
-    )
+          SentenceAdjustment(it.sentenceSequence, true, it.from, it.to, it.days, adjustmentType)
+        },
+    ).left()
+  }
+
+  private fun filterAdjustmentsFromAdjustmentsApi(
+    adjustments: List<AdjustmentDto>,
+    sourceData: CalculationSourceData,
+    request: RelevantRemandCalculationRequest,
+  ): Either<BookingAndSentenceAdjustments, List<AdjustmentDto>> {
+    return (
+      adjustments.filter { !listOf(AdjustmentDto.AdjustmentType.REMAND, AdjustmentDto.AdjustmentType.UNUSED_DEDUCTIONS).contains(it.adjustmentType) } +
+        request.relevantRemands.map {
+          AdjustmentDto(
+            bookingId = request.sentence.bookingId,
+            fromDate = it.from,
+            toDate = it.to,
+            effectiveDays = it.days,
+            adjustmentType = AdjustmentDto.AdjustmentType.REMAND,
+            person = sourceData.prisonerDetails.offenderNo,
+            sentenceSequence = it.sentenceSequence,
+          )
+        }
+      ).right()
   }
 
   private fun findSentence(sentenceAndOffences: List<SentenceAndOffence>, sentenceSequence: Int): SentenceAndOffence? {

@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentAnalysisResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedBookingAdjustment
@@ -13,6 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 @Service
 class AdjustmentsService(
   private val calculationRequestRepository: CalculationRequestRepository,
+  private val sourceDataMapper: SourceDataMapper,
   private val prisonService: PrisonService,
 ) {
 
@@ -20,11 +19,10 @@ class AdjustmentsService(
     val bookingAndSentenceAdjustments = prisonService.getBookingAndSentenceAdjustments(bookingId)
 
     return calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(bookingId).map {
-      val objectMapper = jacksonObjectMapper().findAndRegisterModules()
       if (it.adjustments == null) {
         return@map newAnalyzedBookingAndSentenceAdjustments(bookingAndSentenceAdjustments)
       }
-      val lastAdjustments: BookingAndSentenceAdjustments = objectMapper.readValue(it.adjustments.toString())
+      val lastAdjustments = sourceDataMapper.mapBookingAndSentenceAdjustments(it)
       val analyzedBookingAdjustment: List<AnalyzedBookingAdjustment> =
         bookingAndSentenceAdjustments.bookingAdjustments.map { bookingAdjustment ->
           val analysisResult = if (lastAdjustments.bookingAdjustments.contains(bookingAdjustment)) AdjustmentAnalysisResult.SAME else AdjustmentAnalysisResult.NEW

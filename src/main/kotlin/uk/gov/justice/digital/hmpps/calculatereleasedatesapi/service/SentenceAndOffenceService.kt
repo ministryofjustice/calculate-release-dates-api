@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 class SentenceAndOffenceService(
   private val prisonService: PrisonService,
   private val calculationRequestRepository: CalculationRequestRepository,
-  private val prisonApiDataMapper: PrisonApiDataMapper,
+  private val sourceDataMapper: SourceDataMapper,
 ) {
 
   fun getSentencesAndOffences(bookingId: Long): List<AnalysedSentenceAndOffence> {
@@ -29,7 +29,7 @@ class SentenceAndOffenceService(
     if (latestCalculation.sentenceAndOffences == null) {
       return transform(SentenceAndOffenceAnalysis.NEW, sentencesAndOffences)
     }
-    val lastSentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements> = prisonApiDataMapper.mapSentencesAndOffences(latestCalculation)
+    val lastSentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements> = sourceDataMapper.mapSentencesAndOffences(latestCalculation)
 
     return if (sentencesAndOffences == lastSentenceAndOffences) {
       transform(SentenceAndOffenceAnalysis.SAME, sentencesAndOffences)

@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Mismatch
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.SentenceCalcDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
@@ -32,6 +32,7 @@ import kotlin.jvm.optionals.getOrElse
 @Service
 class BulkComparisonEventService(
   private val prisonService: PrisonService,
+  private val calculationSourceDataService: CalculationSourceDataService,
   private val bulkComparisonEventPublisher: BulkComparisonEventPublisher?,
   private val calculationReasonRepository: CalculationReasonRepository,
   private val calculationTransactionalService: CalculationTransactionalService,
@@ -130,7 +131,7 @@ class BulkComparisonEventService(
       return
     }
 
-    val sourceData = prisonService.getPrisonApiSourceData(personId, InactiveDataOptions.default())
+    val sourceData = calculationSourceDataService.getCalculationSourceData(personId, InactiveDataOptions.default())
 
     val calculationUserInput = CalculationUserInputs(
       listOf(),
@@ -201,7 +202,7 @@ class BulkComparisonEventService(
 
   private fun saveComparisonPersonWithFatalError(
     comparison: Comparison,
-    sourceData: PrisonApiSourceData,
+    sourceData: CalculationSourceData,
     establishment: String?,
     lastException: Throwable,
   ) {

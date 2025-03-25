@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.left
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
@@ -13,7 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBui
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ApprovedDatesSubmissionRepository
@@ -32,6 +33,7 @@ class CalculationTransactionalServiceValidationTest {
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
   private val prisonService = mock<PrisonService>()
+  private val calculationSourceDataService = mock<CalculationSourceDataService>()
   private val eventService = mock<EventService>()
   private val bookingService = mock<BookingService>()
   private val calculationService = mock<CalculationService>()
@@ -49,7 +51,7 @@ class CalculationTransactionalServiceValidationTest {
     val calculationOutput = CalculationOutput(listOf(), listOf(), mock<CalculationResult>())
 
     // Mocking the behaviour of services
-    whenever(prisonService.getPrisonApiSourceData(prisonerId, InactiveDataOptions.default())).thenReturn(fakeSourceData)
+    whenever(calculationSourceDataService.getCalculationSourceData(prisonerId, InactiveDataOptions.default())).thenReturn(fakeSourceData)
     whenever(validationService.validateBeforeCalculation(any(), eq(calculationUserInputs))).thenReturn(fakeMessages)
     whenever(bookingService.getBooking(any(), eq(calculationUserInputs))).thenReturn(BOOKING)
     whenever(calculationService.calculateReleaseDates(any(), eq(calculationUserInputs))).thenReturn(calculationOutput)
@@ -67,7 +69,7 @@ class CalculationTransactionalServiceValidationTest {
   }
 
   private fun calculationTransactionalService(): CalculationTransactionalService {
-    val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
+    val sourceDataMapper = SourceDataMapper(TestUtil.objectMapper())
 
     return CalculationTransactionalService(
       calculationRequestRepository,
@@ -75,7 +77,8 @@ class CalculationTransactionalServiceValidationTest {
       calculationReasonRepository,
       TestUtil.objectMapper(),
       prisonService,
-      prisonApiDataMapper,
+      calculationSourceDataService,
+      sourceDataMapper,
       calculationService,
       bookingService,
       validationService,
@@ -88,13 +91,13 @@ class CalculationTransactionalServiceValidationTest {
     )
   }
 
-  private val fakeSourceData = PrisonApiSourceData(
+  private val fakeSourceData = CalculationSourceData(
     emptyList(),
     PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
     BookingAndSentenceAdjustments(
       emptyList(),
       emptyList(),
-    ),
+    ).left(),
     listOf(),
     null,
   )

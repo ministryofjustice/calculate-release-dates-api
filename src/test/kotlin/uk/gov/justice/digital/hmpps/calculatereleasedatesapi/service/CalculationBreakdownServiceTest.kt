@@ -38,8 +38,8 @@ import java.util.*
 class CalculationBreakdownServiceTest {
 
   private val calculationTransactionalService = mock<CalculationTransactionalService>()
-  private val prisonApiDataMapper = mock<PrisonApiDataMapper>()
-  private val service = CalculationBreakdownService(prisonApiDataMapper, calculationTransactionalService)
+  private val sourceDataMapper = mock<SourceDataMapper>()
+  private val service = CalculationBreakdownService(sourceDataMapper, calculationTransactionalService)
   private val objectMapper = TestUtil.objectMapper()
 
   @Test
@@ -52,11 +52,11 @@ class CalculationBreakdownServiceTest {
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
-    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
 
     val results = service.getBreakdownSafely(calculationRequestWithEverythingForBreakdown)
     assertThat(results).isEqualTo(BreakdownMissingReason.PRISON_API_DATA_MISSING.left())
-    verify(prisonApiDataMapper, never()).mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)
+    verify(sourceDataMapper, never()).mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)
   }
 
   @Test
@@ -69,11 +69,11 @@ class CalculationBreakdownServiceTest {
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
 
     val results = service.getBreakdownSafely(calculationRequestWithEverythingForBreakdown)
     assertThat(results).isEqualTo(BreakdownMissingReason.PRISON_API_DATA_MISSING.left())
-    verify(prisonApiDataMapper, never()).mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)
+    verify(sourceDataMapper, never()).mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)
   }
 
   @Test
@@ -86,12 +86,12 @@ class CalculationBreakdownServiceTest {
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
+    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
 
     val results = service.getBreakdownSafely(calculationRequestWithEverythingForBreakdown)
     assertThat(results).isEqualTo(BreakdownMissingReason.PRISON_API_DATA_MISSING.left())
-    verify(prisonApiDataMapper, never()).mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)
+    verify(sourceDataMapper, never()).mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)
   }
 
   @Test
@@ -104,9 +104,9 @@ class CalculationBreakdownServiceTest {
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
-    whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
+    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
     whenever(calculationTransactionalService.calculateWithBreakdown(any(), any(), any())).then {
       throw BreakdownChangedSinceLastCalculation("Calculation no longer agrees with algorithm.")
     }
@@ -125,9 +125,9 @@ class CalculationBreakdownServiceTest {
         CalculationOutcome(calculationRequestId = CALCULATION_REQUEST_ID, calculationDateType = "CRD", outcomeDate = LocalDate.of(2026, 6, 26)),
       ),
     )
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
-    whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
+    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
     whenever(calculationTransactionalService.calculateWithBreakdown(any(), any(), any())).then {
       throw UnsupportedCalculationBreakdown("Bang!")
     }
@@ -147,9 +147,9 @@ class CalculationBreakdownServiceTest {
       ),
     )
     val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
-    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
-    whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithEverythingForBreakdown)).thenReturn(listOf(originalSentence))
+    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithEverythingForBreakdown)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithEverythingForBreakdown)).thenReturn(adjustments)
     whenever(calculationTransactionalService.calculateWithBreakdown(any(), any(), any())).thenReturn(expectedBreakdown)
     val results = service.getBreakdownSafely(calculationRequestWithEverythingForBreakdown)
     assertThat(results).isEqualTo(expectedBreakdown.right())

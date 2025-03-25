@@ -50,7 +50,7 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
     val prisoners = jsonTransformation.getAllPrisonerDetails()
     val defaultPrisoner = prisoners[DEFAULT]!!
 
-    val adjustments = jsonTransformation.getAllAdjustmentsJson()
+    val adjustments = jsonTransformation.getAllPrisonApiAdjustments()
     val defaultAdjustment = adjustments[DEFAULT]!!
 
     val sentences = jsonTransformation.getAllSentenceAndOffencesJson()
@@ -64,7 +64,7 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
 
     val returnToCustodyDates = jsonTransformation.getAllReturnToCustodyDatesJson()
 
-    val allPrisoners = (adjustments.keys + sentences.keys + prisoners.keys).distinct()
+    val allPrisoners = jsonTransformation.getAllIntegrationPrisonerNames().distinct()
     allPrisoners.forEach {
       val prisoner = if (prisoners.containsKey(it)) {
         log.info("Stubbing prisoner details prisonerId $it, bookingId ${it.hashCode().toLong()} from file $it")
@@ -78,10 +78,10 @@ class PrisonApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallba
       prisonApi.stubGetPrisonerDetails(it, objectMapper.writeValueAsString(prisoner))
 
       val adjustment = if (adjustments.containsKey(it)) {
-        log.info("Stubbing adjustments prisonerId $it, bookingId ${it.hashCode().toLong()} from file $it")
+        log.info("Stubbing prison api adjustments prisonerId $it, bookingId ${it.hashCode().toLong()} from file $it")
         adjustments[it]!!
       } else {
-        log.info("Stubbing adjustments prisonerId $it, bookingId ${it.hashCode().toLong()} from file $DEFAULT")
+        log.info("Stubbing prison api adjustments prisonerId $it, bookingId ${it.hashCode().toLong()} from file $DEFAULT")
         defaultAdjustment
       }
       prisonApi.stubGetSentenceAdjustments(it.hashCode().toLong(), adjustment)
