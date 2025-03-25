@@ -18,7 +18,7 @@ class ValidationService(
   private val validationUtilities: ValidationUtilities,
   private val postCalculationValidationService: PostCalculationValidationService,
   private val dateValidationService: DateValidationService,
-  private val featureToggles: FeatureToggles
+  private val featureToggles: FeatureToggles,
 ) {
 
   fun validateBeforeCalculation(

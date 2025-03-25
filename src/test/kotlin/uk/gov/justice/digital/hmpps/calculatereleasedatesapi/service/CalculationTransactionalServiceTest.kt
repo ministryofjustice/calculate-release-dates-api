@@ -788,7 +788,13 @@ class CalculationTransactionalServiceTest {
     sentencesExtractionService: SentencesExtractionService,
     trancheConfiguration: SDS40TrancheConfiguration,
   ): ValidationService {
-    val featureToggles = FeatureToggles(sdsEarlyRelease = true, sdsEarlyReleaseHints = false, externalMovementsEnabled = false, revisedFixedTermRecallsRules = true)
+    val featureToggles = FeatureToggles(
+      sdsEarlyRelease = true,
+      sdsEarlyReleaseHints = false,
+      externalMovementsEnabled = false,
+      revisedFixedTermRecallsRules = true,
+      concurrentConsecutiveSentencesEnabled = true,
+    )
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService()
@@ -809,6 +815,7 @@ class CalculationTransactionalServiceTest {
       sopcValidationService = sopcValidationService,
       fineValidationService,
       edsValidationService = edsValidationService,
+      featuresToggles = featureToggles,
     )
     val preCalculationValidationService = PreCalculationValidationService(
       featureToggles = featureToggles,
@@ -828,6 +835,7 @@ class CalculationTransactionalServiceTest {
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
       dateValidationService = dateValidationService,
+      featureToggles = featureToggles,
     )
   }
 

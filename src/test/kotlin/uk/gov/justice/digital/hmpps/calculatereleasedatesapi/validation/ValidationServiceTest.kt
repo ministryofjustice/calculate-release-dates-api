@@ -3695,7 +3695,7 @@ class ValidationServiceTest {
     sentencesExtractionService: SentencesExtractionService,
     trancheConfiguration: SDS40TrancheConfiguration,
   ): ValidationService {
-    val featureToggles = FeatureToggles(sdsEarlyRelease = true, sdsEarlyReleaseHints = false, externalMovementsEnabled = false)
+    val featureToggles = FeatureToggles(sdsEarlyRelease = true, sdsEarlyReleaseHints = false, externalMovementsEnabled = false, concurrentConsecutiveSentencesEnabled = true)
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService()
@@ -3717,6 +3717,7 @@ class ValidationServiceTest {
       sopcValidationService = sopcValidationService,
       fineValidationService,
       edsValidationService = edsValidationService,
+      featuresToggles = featureToggles,
     )
     val preCalculationValidationService = PreCalculationValidationService(
       featureToggles = featureToggles,
@@ -3736,6 +3737,7 @@ class ValidationServiceTest {
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
       dateValidationService = dateValidationService,
+      featureToggles = featureToggles,
     )
   }
 }
