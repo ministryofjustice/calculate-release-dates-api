@@ -28,37 +28,39 @@ class BulkComparisonEventPublisher(
     val queue = hmppsQueueService.findByQueueId("bulkcomparison")
       ?: throw IllegalStateException("Queue not found for bulkcomparison")
 
-    val publishRequest =
-      SendMessageBatchRequest
-        .builder()
-        .queueUrl(queue.queueUrl)
-        .entries(
-          persons.map {
-            val sqsMessage = SQSMessage(
-              Type = MESSAGE_TYPE,
-              Message = InternalMessage(
-                BulkComparisonMessageBody(
-                  comparisonId = comparisonId,
-                  personId = it,
-                  establishment = establishment,
-                  username = username,
-                ),
-              ).toJson(),
-            )
-            SendMessageBatchRequestEntry
-              .builder()
-              .id(UUID.randomUUID().toString())
-              .messageBody(objectMapper.writeValueAsString(sqsMessage))
-              .build()
-          },
-        ).build()
-    val retryTemplate =
-      RetryTemplate().apply {
-        setRetryPolicy(DEFAULT_RETRY_POLICY)
-        setBackOffPolicy(DEFAULT_BACKOFF_POLICY)
+    persons.chunked(10).forEach { chunk ->
+      val publishRequest =
+        SendMessageBatchRequest
+          .builder()
+          .queueUrl(queue.queueUrl)
+          .entries(
+            chunk.map {
+              val sqsMessage = SQSMessage(
+                Type = MESSAGE_TYPE,
+                Message = InternalMessage(
+                  BulkComparisonMessageBody(
+                    comparisonId = comparisonId,
+                    personId = it,
+                    establishment = establishment,
+                    username = username,
+                  ),
+                ).toJson(),
+              )
+              SendMessageBatchRequestEntry
+                .builder()
+                .id(UUID.randomUUID().toString())
+                .messageBody(objectMapper.writeValueAsString(sqsMessage))
+                .build()
+            },
+          ).build()
+      val retryTemplate =
+        RetryTemplate().apply {
+          setRetryPolicy(DEFAULT_RETRY_POLICY)
+          setBackOffPolicy(DEFAULT_BACKOFF_POLICY)
+        }
+      retryTemplate.execute<SendMessageBatchResponse, RuntimeException> {
+        queue.sqsClient.sendMessageBatch(publishRequest).get()
       }
-    retryTemplate.execute<SendMessageBatchResponse, RuntimeException> {
-      queue.sqsClient.sendMessageBatch(publishRequest).get()
     }
   }
 

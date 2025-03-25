@@ -700,7 +700,7 @@ fun transform(
     prison = comparison.prison,
     calculatedAt = LocalDateTime.now(),
     calculatedByUsername = username,
-    comparisonStatus = ComparisonStatus(ComparisonStatusValue.PROCESSING),
+    comparisonStatus = ComparisonStatus(ComparisonStatusValue.SETUP),
   )
 }
 
@@ -712,7 +712,7 @@ fun transform(
   comparisonType = MANUAL,
   calculatedAt = LocalDateTime.now(),
   calculatedByUsername = username,
-  comparisonStatus = ComparisonStatus(ComparisonStatusValue.PROCESSING),
+  comparisonStatus = ComparisonStatus(ComparisonStatusValue.SETUP),
 )
 
 fun transform(
