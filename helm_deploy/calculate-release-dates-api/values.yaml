@@ -36,6 +36,7 @@ generic-service:
     SDS_EARLY_RELEASE_HINTS_FEATURE_TOGGLE: "true"
     TORERA_OFFENCE_TO_MANUAL_JOURNEY: "true"
     REVISED_FIXED_TERM_RECALLS_RULES: "true"
+    CONCURRENT_CONSECUTIVE_SENTENCES_ENABLED: "true"
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
