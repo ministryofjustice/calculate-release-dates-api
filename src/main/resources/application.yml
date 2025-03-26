@@ -154,4 +154,4 @@ feature-toggles:
   hdc365: ${HDC_365_FEATURE_TOGGLE:false}
   externalMovementsEnabled: ${EXTERNAL_MOVEMENTS_FEATURE_TOGGLE:false}
   revisedFixedTermRecallsRules: ${REVISED_FIXED_TERM_RECALLS_RULES:false}
-  concurrentConsecutiveSentencesEnabled: ${CONCURRENT_CONSECUTIVE_SENTENCES_ENABLED}
+  concurrentConsecutiveSentencesEnabled: ${CONCURRENT_CONSECUTIVE_SENTENCES_ENABLED:false}
