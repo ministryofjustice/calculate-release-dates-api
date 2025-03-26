@@ -267,7 +267,7 @@ class SentenceValidationService(
     }
 
     val longestSentence =
-      concurrentSentences.maxByOrNull { it.sentenceCalculation.releaseDate }?.getCombinedDuration() ?: return null
+      concurrentSentences.maxByOrNull { it.sentenceCalculation.expiryDate }?.getCombinedDuration() ?: return null
 
     return ValidationMessage(
       ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES,
