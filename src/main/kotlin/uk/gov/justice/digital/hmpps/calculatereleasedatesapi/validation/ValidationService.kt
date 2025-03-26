@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
@@ -17,6 +18,7 @@ class ValidationService(
   private val validationUtilities: ValidationUtilities,
   private val postCalculationValidationService: PostCalculationValidationService,
   private val dateValidationService: DateValidationService,
+  private val featureToggles: FeatureToggles,
 ) {
 
   fun validateBeforeCalculation(
@@ -76,7 +78,9 @@ class ValidationService(
     booking: Booking,
   ): List<ValidationMessage> {
     log.info("Validating booking after calculation")
+
     val messages = mutableListOf<ValidationMessage>()
+
     calculationOutput.sentenceGroup.forEach { messages += sentenceValidationService.validateSentenceHasNotBeenExtinguished(it) }
     messages += adjustmentValidationService.validateRemandOverlappingRemand(booking)
     messages += adjustmentValidationService.validateRemandOverlappingSentences(calculationOutput, booking)
@@ -85,6 +89,15 @@ class ValidationService(
     messages += recallValidationService.validateUnsupportedRecallTypes(calculationOutput, booking)
     messages += postCalculationValidationService.validateSDSImposedConsecBetweenTrancheDatesForTrancheTwoPrisoner(booking, calculationOutput)
     messages += postCalculationValidationService.validateSHPOContainingSX03Offences(booking, calculationOutput)
+
+    if (featureToggles.concurrentConsecutiveSentencesEnabled) {
+      val hasConcurrentConsecutiveSentences =
+        sentenceValidationService.validateAnyConcurrentConsecutiveSentences(calculationOutput)
+
+      if (hasConcurrentConsecutiveSentences !== null) {
+        messages += hasConcurrentConsecutiveSentences
+      }
+    }
 
     return messages
   }

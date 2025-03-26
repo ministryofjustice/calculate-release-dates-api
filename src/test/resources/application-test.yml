@@ -72,7 +72,6 @@ domain-events-sns:
 feature-toggles:
   sds-early-release: true
   support-inactive-sentences-and-adjustments: false
-  sds40-consecutive-manual-journey: true
   hdc365: true
   externalMovementsEnabled: true
 

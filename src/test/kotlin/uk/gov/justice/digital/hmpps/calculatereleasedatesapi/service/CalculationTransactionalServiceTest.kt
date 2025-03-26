@@ -171,8 +171,9 @@ class CalculationTransactionalServiceTest {
     exampleNumber: String,
     error: String?,
     params: String?,
-    expectedValidationMessage: String?,
     assertSds40: Boolean? = false,
+    expectedValidationException: String?,
+    expectedValidationMessage: String?,
   ) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
@@ -211,11 +212,12 @@ class CalculationTransactionalServiceTest {
       "Example $exampleType/$exampleNumber outcome BookingCalculation: {}",
       TestUtil.objectMapper().writeValueAsString(calculatedReleaseDates),
     )
-    if (expectedValidationMessage != null) {
-      val expectedExceptions = expectedValidationMessage.split("|")
+    if (expectedValidationException != null) {
+      val expectedExceptions = expectedValidationException.split("|")
       assertThat(returnedValidationMessages).hasSize(expectedExceptions.size)
       expectedExceptions.forEachIndexed { index, exception ->
         assertThat(returnedValidationMessages[index].code.toString()).isEqualTo(exception)
+        expectedValidationMessage?.let { assertThat(returnedValidationMessages[index].message).isEqualTo(it) }
       }
     } else if (returnedValidationMessages.isNotEmpty()) {
       fail("Validation messages were returned: $returnedValidationMessages")
@@ -786,7 +788,13 @@ class CalculationTransactionalServiceTest {
     sentencesExtractionService: SentencesExtractionService,
     trancheConfiguration: SDS40TrancheConfiguration,
   ): ValidationService {
-    val featureToggles = FeatureToggles(sdsEarlyRelease = true, sdsEarlyReleaseHints = false, externalMovementsEnabled = false, revisedFixedTermRecallsRules = true)
+    val featureToggles = FeatureToggles(
+      sdsEarlyRelease = true,
+      sdsEarlyReleaseHints = false,
+      externalMovementsEnabled = false,
+      revisedFixedTermRecallsRules = true,
+      concurrentConsecutiveSentencesEnabled = true,
+    )
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService()
@@ -807,6 +815,7 @@ class CalculationTransactionalServiceTest {
       sopcValidationService = sopcValidationService,
       fineValidationService,
       edsValidationService = edsValidationService,
+      featuresToggles = featureToggles,
     )
     val preCalculationValidationService = PreCalculationValidationService(
       featureToggles = featureToggles,
@@ -826,6 +835,7 @@ class CalculationTransactionalServiceTest {
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
       dateValidationService = dateValidationService,
+      featureToggles = featureToggles,
     )
   }
 

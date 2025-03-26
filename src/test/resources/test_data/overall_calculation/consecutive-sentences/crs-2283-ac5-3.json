@@ -1,0 +1,95 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "type": "ExtendedDeterminateSentence",
+      "offence": {
+        "committedAt": "2024-11-25",
+        "offenceCode": "TH68036"
+      },
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 5
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 3
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "48e79e3f-fb29-461a-bcca-6a033799ee03",
+      "recallType": null,
+      "sentencedAt": "2024-11-25",
+      "isSDSPlusOffenceInPeriod": false,
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2025-05-14",
+        "offenceCode": "TH68036"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 18
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "f8b7f925-c0d8-4e48-9e6c-0bbc1d537bb3",
+      "recallType": null,
+      "sentencedAt": "2025-05-14",
+      "consecutiveSentenceUUIDs": [
+        "48e79e3f-fb29-461a-bcca-6a033799ee03"
+      ],
+      "isSDSPlusOffenceInPeriod": false,
+      "hasAnSDSEarlyReleaseExclusion": "SEXUAL",
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+    },
+    {
+      "type": "StandardSentence",
+      "offence": {
+        "committedAt": "2025-05-14",
+        "offenceCode": "TH68036"
+      },
+      "duration": {
+        "durationElements": {
+          "DAYS": 0,
+          "WEEKS": 0,
+          "YEARS": 0,
+          "MONTHS": 24
+        }
+      },
+      "isSDSPlus": false,
+      "identifier": "73c2022f-dcc7-4575-b61e-fbe0ca8528d8",
+      "recallType": null,
+      "sentencedAt": "2025-05-14",
+      "consecutiveSentenceUUIDs": [
+        "48e79e3f-fb29-461a-bcca-6a033799ee03"
+      ],
+      "isSDSPlusOffenceInPeriod": false,
+      "hasAnSDSEarlyReleaseExclusion": "NO",
+      "isSDSPlusEligibleSentenceTypeLengthAndOffence": false
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2024-11-25",
+        "numberOfDays": 20,
+        "fromDate": "2024-11-05",
+        "toDate": "2024-11-24"
+      }
+    ]
+  },
+  "externalMovements": [],
+  "returnToCustodyDate": null,
+  "fixedTermRecallDetails": null
+}

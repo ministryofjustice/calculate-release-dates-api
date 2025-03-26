@@ -13,4 +13,5 @@ data class FeatureToggles(
   var hdc365: Boolean = false,
   var externalMovementsEnabled: Boolean = false,
   var revisedFixedTermRecallsRules: Boolean = false,
+  var concurrentConsecutiveSentencesEnabled: Boolean = false,
 )
