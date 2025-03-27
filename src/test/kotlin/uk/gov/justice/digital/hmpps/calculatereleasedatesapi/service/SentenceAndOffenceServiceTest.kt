@@ -33,7 +33,7 @@ class SentenceAndOffenceServiceTest {
   lateinit var calculationRequestRepository: CalculationRequestRepository
 
   @Mock
-  lateinit var prisonApiDataMapper: PrisonApiDataMapper
+  lateinit var sourceDataMapper: SourceDataMapper
 
   @InjectMocks
   lateinit var underTest: SentenceAndOffenceService
@@ -79,7 +79,7 @@ class SentenceAndOffenceServiceTest {
   fun `If no change since previous calculation return sentenceAndOffences with SAME annotation`() {
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences)
     whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(anyLong(), anyString())).thenReturn(Optional.of(calculationRequest))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(sentenceAndOffences)
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(sentenceAndOffences)
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(2)
     assertThat(response[0].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)
@@ -91,7 +91,7 @@ class SentenceAndOffenceServiceTest {
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences.map { it.copy(isSDSPlus = true) })
     val defaultedSentencesAndOffences = sentenceAndOffences.map { it.copy(isSDSPlus = false) }
     val calcRequestWithMissingSDSPlusFlag = CalculationRequest(sentenceAndOffences = objectToJson(defaultedSentencesAndOffences, jacksonObjectMapper().findAndRegisterModules()))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(defaultedSentencesAndOffences)
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(defaultedSentencesAndOffences)
     whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(anyLong(), anyString())).thenReturn(Optional.of(calcRequestWithMissingSDSPlusFlag))
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(2)
@@ -103,7 +103,7 @@ class SentenceAndOffenceServiceTest {
   fun `If offence change since previous calculation return sentenceAndOffences with CHANGE annotation`() {
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences)
     whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(anyLong(), anyString())).thenReturn(Optional.of(changedCalculationRequest))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(changedCalculationRequest)).thenReturn(changedSentenceAndOffences)
+    whenever(sourceDataMapper.mapSentencesAndOffences(changedCalculationRequest)).thenReturn(changedSentenceAndOffences)
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(2)
     assertThat(response[0].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.UPDATED)
@@ -114,7 +114,7 @@ class SentenceAndOffenceServiceTest {
   fun `If a new sentence appears since previous calculation return sentenceAndOffences with SAME and NEW annotation`() {
     whenever(prisonService.getSentencesAndOffences(anyLong(), eq(true))).thenReturn(sentenceAndOffences + newSentenceAndOffences)
     whenever(calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(anyLong(), anyString())).thenReturn(Optional.of(calculationRequest))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(sentenceAndOffences)
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(sentenceAndOffences)
     val response = underTest.getSentencesAndOffences(123)
     assertThat(response).hasSize(4)
     assertThat(response[0].sentenceAndOffenceAnalysis).isEqualTo(SentenceAndOffenceAnalysis.SAME)

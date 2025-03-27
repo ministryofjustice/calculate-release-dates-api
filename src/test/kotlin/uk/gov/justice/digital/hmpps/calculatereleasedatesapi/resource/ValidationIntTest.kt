@@ -85,7 +85,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_ADA),
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_RADA),
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_UAL),
-        ValidationMessage(code = REMAND_OVERLAPS_WITH_REMAND, arguments = listOf("2000-04-01", "2000-04-02", "2000-03-28", "2000-04-28")),
+        ValidationMessage(code = REMAND_OVERLAPS_WITH_REMAND, arguments = listOf("2000-03-28", "2000-04-28", "2000-04-01", "2000-04-02")),
       ),
     )
   }
