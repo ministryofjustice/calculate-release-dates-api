@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.SpyBean
@@ -38,6 +39,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.mana
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.manageoffencesapi.PcscMarkers
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonPersonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.ComparisonRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.PrisonService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.lang.IllegalArgumentException
 
@@ -51,6 +53,9 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
 
   @SpyBean
   lateinit var validationService: ValidationService
+
+  @SpyBean
+  lateinit var prisonService: PrisonService
 
   @BeforeEach
   fun clearTables() {
@@ -190,6 +195,21 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
     assertEquals(createdDiscrepancy, result)
   }
 
+  @Test
+  fun `Run comparison that fatally errors in setup`() {
+    doThrow(IllegalArgumentException("An exception"))
+      .whenever(prisonService).getCalculablePrisonerByPrison(eq("PRIS"))
+
+    val result = createComparison("PRIS", completeStatus = ComparisonStatusValue.ERROR)
+
+    assertEquals(ComparisonType.ESTABLISHMENT_FULL, result.comparisonType)
+    assertEquals(0, result.numberOfPeopleCompared)
+    assertEquals(ComparisonStatusValue.SETUP.name, result.comparisonStatus.name)
+
+    val errorComparison = getComparison(result.comparisonShortReference)
+    assertEquals(ComparisonStatusValue.ERROR.name, errorComparison.comparisonStatus.name)
+  }
+
   private fun getComparison(comparisonRef: String): ComparisonOverview = webTestClient.get()
     .uri("/comparison/{comparisonId}", comparisonRef)
     .accept(MediaType.APPLICATION_JSON)
@@ -200,7 +220,7 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
     .expectBody(ComparisonOverview::class.java)
     .returnResult().responseBody!!
 
-  private fun createComparison(prisonId: String, comparisonType: ComparisonType = ComparisonType.ESTABLISHMENT_FULL): Comparison {
+  private fun createComparison(prisonId: String, comparisonType: ComparisonType = ComparisonType.ESTABLISHMENT_FULL, completeStatus: ComparisonStatusValue = ComparisonStatusValue.COMPLETED): Comparison {
     val request = ComparisonInput(objectMapper.createObjectNode(), prisonId, comparisonType)
     val result = webTestClient.post()
       .uri("/comparison")
@@ -213,7 +233,7 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
       .expectBody(Comparison::class.java)
       .returnResult().responseBody!!
     await untilCallTo { getComparison(result.comparisonShortReference) } matches {
-      it!!.comparisonStatus.name == ComparisonStatusValue.COMPLETED.name
+      it!!.comparisonStatus.name == completeStatus.name
     }
     return result
   }

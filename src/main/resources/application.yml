@@ -155,3 +155,4 @@ feature-toggles:
   externalMovementsEnabled: ${EXTERNAL_MOVEMENTS_FEATURE_TOGGLE:false}
   revisedFixedTermRecallsRules: ${REVISED_FIXED_TERM_RECALLS_RULES:false}
   useAdjustmentsApi: ${USE_ADJUSTMENTS_API:false}
+  concurrentConsecutiveSentencesEnabled: ${CONCURRENT_CONSECUTIVE_SENTENCES_ENABLED:false}

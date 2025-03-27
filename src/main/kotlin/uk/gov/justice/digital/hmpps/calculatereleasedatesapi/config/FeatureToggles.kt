@@ -14,4 +14,5 @@ data class FeatureToggles(
   var externalMovementsEnabled: Boolean = false,
   var revisedFixedTermRecallsRules: Boolean = false,
   var useAdjustmentsApi: Boolean = false,
+  var concurrentConsecutiveSentencesEnabled: Boolean = false,
 )

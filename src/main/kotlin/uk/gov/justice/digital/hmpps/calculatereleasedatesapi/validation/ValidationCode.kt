@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
 import io.swagger.v3.oas.annotations.media.Schema
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.CONCURRENT_CONSECUTIVE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.MANUAL_ENTRY_JOURNEY_REQUIRED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.SUSPENDED_OFFENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.UNSUPPORTED_CALCULATION
@@ -117,4 +118,5 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   REMAND_ON_OR_AFTER_SENTENCE_DATE("The 'From' or 'To' date of the remand period must be earlier than the sentence date for court case %s count %s."),
   DATES_MISSING_REQUIRED_TYPE("You cannot select a %s and a %s without a %s"),
   DATES_PAIRINGS_INVALID("%s and %s cannot be selected together"),
+  CONCURRENT_CONSECUTIVE_SENTENCES("%s years %s months %s weeks %s days", CONCURRENT_CONSECUTIVE),
 }

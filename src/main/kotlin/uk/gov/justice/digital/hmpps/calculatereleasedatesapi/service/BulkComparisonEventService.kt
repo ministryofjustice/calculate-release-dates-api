@@ -45,35 +45,54 @@ class BulkComparisonEventService(
   @Transactional
   @Async
   fun processPrisonComparison(comparisonId: Long, token: String) {
-    setAuthToken(token)
-    val comparison = getComparison(comparisonId)
-    val prisoners = prisonService.getCalculablePrisonerByPrison(comparison.prison!!)
-    sendMessages(comparison, prisoners.map { it.prisonerNumber })
-    comparison.numberOfPeopleExpected = prisoners.size.toLong()
+    try {
+      setAuthToken(token)
+      val comparison = getComparison(comparisonId)
+      val prisoners = prisonService.getCalculablePrisonerByPrison(comparison.prison!!)
+      sendMessages(comparison, prisoners.map { it.prisonerNumber })
+      completeSetup(comparison, prisoners.size.toLong())
+    } catch (e: Exception) {
+      handleErrorInBulkSetup(comparisonId, e)
+    }
   }
 
   @Transactional
   @Async
   fun processFullCaseLoadComparison(comparisonId: Long, token: String) {
-    setAuthToken(token)
-    val comparison = getComparison(comparisonId)
-    val currentUserPrisonsList = prisonService.getCurrentUserPrisonsList()
-    var count = 0L
-    for (prison in currentUserPrisonsList) {
-      val prisoners = prisonService.getCalculablePrisonerByPrison(prison)
-      sendMessages(comparison, prisoners.map { it.prisonerNumber }, prison)
-      count += prisoners.size
+    try {
+      setAuthToken(token)
+      val comparison = getComparison(comparisonId)
+      val currentUserPrisonsList = prisonService.getCurrentUserPrisonsList()
+      var count = 0L
+      for (prison in currentUserPrisonsList) {
+        val prisoners = prisonService.getCalculablePrisonerByPrison(prison)
+        sendMessages(comparison, prisoners.map { it.prisonerNumber }, prison)
+        count += prisoners.size
+      }
+      completeSetup(comparison, count)
+    } catch (e: Exception) {
+      handleErrorInBulkSetup(comparisonId, e)
     }
-    comparison.numberOfPeopleExpected = count
   }
 
   @Transactional
   @Async
   fun processManualComparison(comparisonId: Long, prisonerIds: List<String>, token: String) {
-    setAuthToken(token)
+    try {
+      setAuthToken(token)
+      val comparison = getComparison(comparisonId)
+      sendMessages(comparison, prisonerIds)
+      completeSetup(comparison, prisonerIds.size.toLong())
+    } catch (e: Exception) {
+      handleErrorInBulkSetup(comparisonId, e)
+    }
+  }
+
+  private fun handleErrorInBulkSetup(comparisonId: Long, e: Exception) {
+    log.error("Error setting up bulk comparison $comparisonId", e)
     val comparison = getComparison(comparisonId)
-    sendMessages(comparison, prisonerIds)
-    comparison.numberOfPeopleExpected = prisonerIds.size.toLong()
+    comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.ERROR)
+    comparisonRepository.save(comparison)
   }
 
   fun sendMessages(comparison: Comparison, calculations: List<String>, establishment: String? = null) {
@@ -86,6 +105,12 @@ class BulkComparisonEventService(
       establishment = establishment,
       username = serviceUserService.getUsername(),
     )
+  }
+
+  fun completeSetup(comparison: Comparison, total: Long) {
+    comparison.numberOfPeopleExpected = total
+    comparison.comparisonStatus = ComparisonStatus(comparisonStatusValue = ComparisonStatusValue.PROCESSING)
+    comparisonRepository.save(comparison)
   }
 
   fun getComparison(comparisonId: Long): Comparison {
