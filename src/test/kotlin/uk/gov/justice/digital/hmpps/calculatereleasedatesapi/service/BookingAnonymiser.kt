@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import com.fasterxml.jackson.databind.node.ObjectNode
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.core.io.ClassPathResource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AFineSentence
@@ -24,7 +26,7 @@ class BookingAnonymiser {
   @Test
   fun anonymiseSingleTestCases() {
     val exampleType = "custom-examples"
-    val exampleNumber = "crs-2162-2"
+    val exampleNumber = "crs-2331-bug"
 
     anonymiseTestCase("$exampleType/$exampleNumber")
   }
@@ -132,7 +134,11 @@ class BookingAnonymiser {
       jsonTree.remove("adjustments")
     }
 
+    log.info("Anonomised data: ${TestUtil.minimalTestCaseMapper().writeValueAsString(jsonTree)}")
     TestUtil.minimalTestCaseMapper().writeValue(ClassPathResource("test_data/overall_calculation/$example.json").file, jsonTree)
     // Then copy file manually from build dir.
+  }
+  companion object {
+    val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 }

@@ -88,7 +88,7 @@ class BookingCalculationService(
    */
   private fun collapseDuplicateConsecutiveSentences(consecutiveSentences: List<ConsecutiveSentence>): List<ConsecutiveSentence> {
     return consecutiveSentences.distinctBy {
-      it.orderedSentences.joinToString { sentence -> "${sentence.sentencedAt}${sentence.identificationTrack}${sentence.totalDuration()}${sentence.javaClass}" }
+      it.orderedSentences.joinToString { sentence -> "${sentence.sentencedAt}${sentence.identificationTrack}${sentence.totalDuration()}${sentence.javaClass}${sentence.recallType}" }
     }
   }
 
