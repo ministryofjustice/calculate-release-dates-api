@@ -34,7 +34,7 @@ class TimelineAwardedAdjustmentCalculationHandler(
               awardedAfterDeterminateRelease = adaDays - radaDays,
             ),
           )
-        } else if (licenseSentences.isEmpty()) {
+        } else if (licenseSentences.none { it.isRecall() }) {
           // This is a PADA. No calculation required. Set value here to be applied to later sentences.
           padas += adaDays - radaDays
           return TimelineHandleResult(true)
