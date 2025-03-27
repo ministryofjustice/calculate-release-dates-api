@@ -113,7 +113,7 @@ class UnusedDeductionsControllerIntTest(private val mockManageOffencesClient: Mo
       .expectBody(UnusedDeductionCalculationResponse::class.java)
       .returnResult().responseBody!!
 
-    Assertions.assertThat(calculation.validationMessages).contains(ValidationMessage(ValidationCode.REMAND_OVERLAPS_WITH_REMAND, arguments = listOf(adjustments[1].fromDate.toString(), adjustments[1].toDate.toString(), adjustments[0].fromDate.toString(), adjustments[0].toDate.toString())))
+    Assertions.assertThat(calculation.validationMessages).contains(ValidationMessage(ValidationCode.REMAND_OVERLAPS_WITH_REMAND, arguments = listOf(adjustments[0].fromDate.toString(), adjustments[0].toDate.toString(), adjustments[1].fromDate.toString(), adjustments[1].toDate.toString())))
   }
 
   @Test

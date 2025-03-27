@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.left
 import io.hypersistence.utils.hibernate.type.json.internal.JacksonUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
@@ -34,10 +35,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyRelea
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderKeyDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
@@ -55,6 +56,7 @@ import java.util.*
 
 class ManualCalculationServiceTest {
   private val prisonService = mock<PrisonService>()
+  private val calculationSourceDataService = mock<CalculationSourceDataService>()
   private val bookingService = mock<BookingService>()
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
@@ -78,6 +80,7 @@ class ManualCalculationServiceTest {
     TEST_BUILD_PROPERTIES,
     bookingCalculationService,
     validationService,
+    calculationSourceDataService,
   )
   private val calculationRequestArgumentCaptor = argumentCaptor<CalculationRequest>()
 
@@ -399,7 +402,7 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check noDates is set correctly when indeterminate`() {
-    whenever(prisonService.getPrisonApiSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
@@ -423,7 +426,7 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check noDates is set correctly for determinate manual entry`() {
-    whenever(prisonService.getPrisonApiSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
@@ -449,7 +452,7 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check type is set to Genuine Override when its a genuine override`() {
-    whenever(prisonService.getPrisonApiSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
@@ -469,7 +472,7 @@ class ManualCalculationServiceTest {
   @Test
   fun `Check type is set to manual indeterminate when indeterminate sentences are present`() {
     val offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP", "description", listOf("A"))
-    whenever(prisonService.getPrisonApiSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
@@ -512,7 +515,7 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check ESL is set to zero when exception is thrown calculating ESL`() {
-    whenever(prisonService.getPrisonApiSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
@@ -538,7 +541,7 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check type dates for bookings with fines can be manually set`() {
-    whenever(prisonService.getPrisonApiSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
@@ -557,7 +560,7 @@ class ManualCalculationServiceTest {
 
   @Test
   fun `Check manual journey records validation reasons`() {
-    whenever(prisonService.getPrisonApiSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
     whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
     whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
@@ -605,13 +608,13 @@ class ManualCalculationServiceTest {
       courtDescription = null,
       consecutiveToSequence = null,
     )
-    private val FAKE_SOURCE_DATA = PrisonApiSourceData(
+    private val FAKE_SOURCE_DATA = CalculationSourceData(
       emptyList(),
       PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
       BookingAndSentenceAdjustments(
         emptyList(),
         emptyList(),
-      ),
+      ).left(),
       listOf(),
       null,
     )

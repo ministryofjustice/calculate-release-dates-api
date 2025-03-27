@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -14,8 +15,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_14
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.RecallType.FIXED_TERM_RECALL_28
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.FixedTermRecallDetails
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
@@ -23,6 +24,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.findClosest12MonthOrGreaterSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.findClosestUnder12MonthSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.MONTHS
 import kotlin.math.abs
@@ -34,7 +36,7 @@ class RecallValidationService(
   private val featureToggles: FeatureToggles,
 ) {
 
-  internal fun validateFixedTermRecall(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+  internal fun validateFixedTermRecall(sourceData: CalculationSourceData): List<ValidationMessage> {
     val ftrDetails = sourceData.fixedTermRecallDetails ?: return emptyList()
     val (recallLength, has14DayFTRSentence, has28DayFTRSentence) = getFtrValidationDetails(
       ftrDetails,
@@ -50,14 +52,43 @@ class RecallValidationService(
     }
   }
 
-  internal fun validateRemandPeriodsAgainstSentenceDates(sourceData: PrisonApiSourceData): List<ValidationMessage> {
-    val remandPeriods = sourceData.bookingAndSentenceAdjustments.sentenceAdjustments
-      .filter {
-        it.type in setOf(
-          SentenceAdjustmentType.REMAND,
-          SentenceAdjustmentType.RECALL_SENTENCE_REMAND,
-        )
-      }
+  data class RemandPeriodToValidate(
+    val sentenceSequence: Int,
+    val fromDate: LocalDate,
+    val toDate: LocalDate,
+
+  )
+
+  internal fun validateRemandPeriodsAgainstSentenceDates(sourceData: CalculationSourceData): List<ValidationMessage> {
+    val remandPeriods = sourceData.bookingAndSentenceAdjustments.fold(
+      { adjustments ->
+        adjustments.sentenceAdjustments
+          .filter {
+            it.type in setOf(
+              SentenceAdjustmentType.REMAND,
+              SentenceAdjustmentType.RECALL_SENTENCE_REMAND,
+            ) && it.fromDate != null && it.toDate != null
+          }.map {
+            RemandPeriodToValidate(
+              it.sentenceSequence,
+              it.fromDate!!,
+              it.toDate!!,
+            )
+          }
+      },
+      { adjustments ->
+        adjustments
+          .filter {
+            it.adjustmentType == AdjustmentDto.AdjustmentType.REMAND && it.fromDate != null && it.toDate != null
+          }.map {
+            RemandPeriodToValidate(
+              it.sentenceSequence!!,
+              it.fromDate!!,
+              it.toDate!!,
+            )
+          }
+      },
+    )
 
     val validationMessages = mutableListOf<ValidationMessage>()
 
@@ -68,8 +99,8 @@ class RecallValidationService(
       if (sentence != null) {
         val sentenceDate = sentence.sentenceDate
 
-        val areRemandDatesAfterSentenceDate = (remandPeriod.fromDate?.isAfterOrEqualTo(sentenceDate) ?: false) ||
-          (remandPeriod.toDate?.isAfterOrEqualTo(sentenceDate) ?: false)
+        val areRemandDatesAfterSentenceDate = remandPeriod.fromDate.isAfterOrEqualTo(sentenceDate) ||
+          remandPeriod.toDate.isAfterOrEqualTo(sentenceDate)
 
         if (areRemandDatesAfterSentenceDate) {
           validationMessages.add(

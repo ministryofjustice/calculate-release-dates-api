@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggl
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
 
 @Service
@@ -22,7 +22,7 @@ class ValidationService(
 ) {
 
   fun validateBeforeCalculation(
-    sourceData: PrisonApiSourceData,
+    sourceData: CalculationSourceData,
     calculationUserInputs: CalculationUserInputs,
   ): List<ValidationMessage> {
     log.info("Pre-calculation validation of source data")
@@ -62,7 +62,7 @@ class ValidationService(
     }
 
     val validationMessages = sentenceValidationService.validateSentences(sortedSentences)
-    validationMessages += adjustmentValidationService.throwErrorIfAdditionAdjustmentsAfterLatestReleaseDate(adjustments)
+    validationMessages += adjustmentValidationService.validateAdjustmentsBeforeCalculation(adjustments)
     validationMessages += recallValidationService.validateFixedTermRecall(sourceData)
     validationMessages += recallValidationService.validateRemandPeriodsAgainstSentenceDates(sourceData)
     validationMessages += preCalculationValidationService.validatePrePcscDtoDoesNotHaveRemandOrTaggedBail(sourceData)
@@ -82,7 +82,6 @@ class ValidationService(
     val messages = mutableListOf<ValidationMessage>()
 
     calculationOutput.sentenceGroup.forEach { messages += sentenceValidationService.validateSentenceHasNotBeenExtinguished(it) }
-    messages += adjustmentValidationService.validateRemandOverlappingRemand(booking)
     messages += adjustmentValidationService.validateRemandOverlappingSentences(calculationOutput, booking)
     messages += adjustmentValidationService.validateAdditionAdjustmentsInsideLatestReleaseDate(calculationOutput, booking)
     messages += recallValidationService.validateFixedTermRecallAfterCalc(calculationOutput, booking)
@@ -102,7 +101,7 @@ class ValidationService(
     return messages
   }
 
-  internal fun validateSupportedSentencesAndCalculations(sourceData: PrisonApiSourceData): List<ValidationMessage> {
+  internal fun validateSupportedSentencesAndCalculations(sourceData: CalculationSourceData): List<ValidationMessage> {
     val sentencesAndOffences = sourceData.sentenceAndOffences
     val sortedSentences = sentencesAndOffences.sortedWith(validationUtilities::sortByCaseNumberAndLineSequence)
     val validationMessages = mutableListOf<ValidationMessage>()
@@ -114,7 +113,11 @@ class ValidationService(
     return validationMessages.toList()
   }
 
-  fun validateBeforeCalculation(booking: Booking): List<ValidationMessage> = recallValidationService.validateFixedTermRecall(booking)
+  fun validateBeforeCalculation(booking: Booking): List<ValidationMessage> {
+    val messages = mutableListOf<ValidationMessage>()
+    messages += recallValidationService.validateFixedTermRecall(booking)
+    return messages
+  }
 
   fun validateSentenceForManualEntry(sentences: List<SentenceAndOffence>): MutableList<ValidationMessage> = sentences.map { sentenceValidationService.validateSentenceForManualEntry(it) }.flatten().toMutableList()
 

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
+import arrow.core.left
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
@@ -34,7 +35,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NonFridayRele
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHoliday
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BankHolidays
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.RegionBankHolidays
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
@@ -67,6 +68,7 @@ class HintTextTest {
   private val calculationOutcomeRepository = mock<CalculationOutcomeRepository>()
   private val calculationReasonRepository = mock<CalculationReasonRepository>()
   private val prisonService = mock<PrisonService>()
+  private val calculationSourceDataService = mock<CalculationSourceDataService>()
   private val eventService = mock<EventService>()
   private val bookingService = mock<BookingService>()
   private val validationService = mock<ValidationService>()
@@ -252,7 +254,7 @@ class HintTextTest {
     timelineAdjustmentService,
     featureToggles = FeatureToggles(),
   )
-  private val prisonApiDataMapper = PrisonApiDataMapper(TestUtil.objectMapper())
+  private val sourceDataMapper = SourceDataMapper(TestUtil.objectMapper())
   private val calculationService = CalculationService(
     bookingCalculationService,
     bookingTimelineService,
@@ -264,7 +266,8 @@ class HintTextTest {
     calculationReasonRepository,
     TestUtil.objectMapper(),
     prisonService,
-    prisonApiDataMapper,
+    calculationSourceDataService,
+    sourceDataMapper,
     calculationService,
     bookingService,
     validationService,
@@ -310,13 +313,13 @@ class HintTextTest {
         null,
       )
 
-    private val SOURCE_DATA = PrisonApiSourceData(
+    private val SOURCE_DATA = CalculationSourceData(
       emptyList(),
       PrisonerDetails(offenderNo = "", bookingId = 1, dateOfBirth = LocalDate.of(1, 2, 3)),
       BookingAndSentenceAdjustments(
         emptyList(),
         emptyList(),
-      ),
+      ).left(),
       listOf(),
       null,
     )

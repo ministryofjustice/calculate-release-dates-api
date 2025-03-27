@@ -32,7 +32,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmitCalculationRequest
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSourceData
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.CalculationSourceData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.ReturnToCustodyDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.UpdateOffenderDates
@@ -54,7 +54,8 @@ class CalculationTransactionalService(
   private val calculationReasonRepository: CalculationReasonRepository,
   private val objectMapper: ObjectMapper,
   private val prisonService: PrisonService,
-  private val prisonApiDataMapper: PrisonApiDataMapper,
+  private val calculationSourceDataService: CalculationSourceDataService,
+  private val sourceDataMapper: SourceDataMapper,
   private val calculationService: CalculationService,
   private val bookingService: BookingService,
   private val validationService: ValidationService,
@@ -82,12 +83,12 @@ class CalculationTransactionalService(
     inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default(),
   ): List<ValidationMessage> {
     log.info("Full Validation for $prisonerId")
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, inactiveDataOptions)
+    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
     return fullValidationFromSourceData(sourceData, calculationUserInputs)
   }
 
   @Transactional(readOnly = true)
-  fun fullValidationFromSourceData(sourceData: PrisonApiSourceData, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
+  fun fullValidationFromSourceData(sourceData: CalculationSourceData, calculationUserInputs: CalculationUserInputs): List<ValidationMessage> {
     val initialValidationMessages = validationService.validateBeforeCalculation(sourceData, calculationUserInputs)
 
     if (initialValidationMessages.isNotEmpty()) {
@@ -121,7 +122,7 @@ class CalculationTransactionalService(
     prisonerId: String,
     calculationUserInputs: CalculationUserInputs,
     calculationReason: CalculationReason,
-    providedSourceData: PrisonApiSourceData,
+    providedSourceData: CalculationSourceData,
     calculationType: CalculationStatus = PRELIMINARY,
     usernameOverride: String? = null,
   ): ValidationResult {
@@ -151,7 +152,7 @@ class CalculationTransactionalService(
 
   @Transactional(readOnly = true)
   fun supportedValidation(prisonerId: String, inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default()): List<ValidationMessage> {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, inactiveDataOptions)
+    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
     return validationService.validateSupportedSentencesAndCalculations(sourceData)
   }
 
@@ -162,7 +163,7 @@ class CalculationTransactionalService(
     inactiveDataOptions: InactiveDataOptions = InactiveDataOptions.default(),
     calculationType: CalculationStatus = PRELIMINARY,
   ): CalculatedReleaseDates {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, inactiveDataOptions)
+    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, inactiveDataOptions)
     val calculationUserInputs = calculationRequestModel.calculationUserInputs ?: CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
     val reasonForCalculation = calculationReasonRepository.findById(calculationRequestModel.calculationReasonId)
@@ -202,7 +203,7 @@ class CalculationTransactionalService(
       ).orElseThrow {
         EntityNotFoundException("No preliminary calculation exists for calculationRequestId $calculationRequestId")
       }
-    val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId, InactiveDataOptions.default())
+    val sourceData = calculationSourceDataService.getCalculationSourceData(calculationRequest.prisonerId, InactiveDataOptions.default())
     val userInput = transform(calculationRequest.calculationRequestUserInput)
     val booking = bookingService.getBooking(sourceData, userInput)
 
@@ -227,7 +228,7 @@ class CalculationTransactionalService(
   private fun confirmCalculation(
     prisonerId: String,
     calculationFragments: CalculationFragments,
-    sourceData: PrisonApiSourceData,
+    sourceData: CalculationSourceData,
     booking: Booking,
     userInput: CalculationUserInputs,
     approvedDates: List<ManualEntrySelectedDate>?,
@@ -270,7 +271,7 @@ class CalculationTransactionalService(
   fun calculate(
     booking: Booking,
     calculationStatus: CalculationStatus,
-    sourceData: PrisonApiSourceData,
+    sourceData: CalculationSourceData,
     reasonForCalculation: CalculationReason?,
     calculationUserInputs: CalculationUserInputs,
     otherCalculationReason: String? = null,
@@ -382,7 +383,7 @@ class CalculationTransactionalService(
     if (calculationRequest.sentenceAndOffences == null) {
       throw PrisonApiDataNotFoundException("Sentences and offence data not found for calculation $calculationRequestId")
     }
-    return prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
+    return sourceDataMapper.mapSentencesAndOffences(calculationRequest)
   }
 
   @Transactional(readOnly = true)
@@ -391,7 +392,7 @@ class CalculationTransactionalService(
     if (calculationRequest.prisonerDetails == null) {
       throw PrisonApiDataNotFoundException("Prisoner details data not found for calculation $calculationRequestId")
     }
-    return prisonApiDataMapper.mapPrisonerDetails(calculationRequest)
+    return sourceDataMapper.mapPrisonerDetails(calculationRequest)
   }
 
   @Transactional(readOnly = true)
@@ -400,7 +401,7 @@ class CalculationTransactionalService(
     if (calculationRequest.adjustments == null) {
       throw PrisonApiDataNotFoundException("Adjustments data not found for calculation $calculationRequestId")
     }
-    return prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequest)
+    return sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequest)
   }
 
   @Transactional(readOnly = true)
@@ -409,7 +410,7 @@ class CalculationTransactionalService(
     if (calculationRequest.returnToCustodyDate == null) {
       return null
     }
-    return prisonApiDataMapper.mapReturnToCustodyDate(calculationRequest)
+    return sourceDataMapper.mapReturnToCustodyDate(calculationRequest)
   }
 
   private fun getCalculationRequest(calculationRequestId: Long): CalculationRequest = calculationRequestRepository.findById(calculationRequestId).orElseThrow {
@@ -461,7 +462,7 @@ class CalculationTransactionalService(
   @Transactional
   fun recordError(
     booking: Booking,
-    sourceData: PrisonApiSourceData,
+    sourceData: CalculationSourceData,
     calculationUserInputs: CalculationUserInputs?,
     error: Exception,
     reasonForCalculation: CalculationReason?,
@@ -510,36 +511,22 @@ class CalculationTransactionalService(
     checkForChange: Boolean = false,
   ): CalculatedReleaseDates {
     val calculationRequest = getCalculationRequestByReference(calculationReference)
-
-    return if (checkForChange) {
+    if (checkForChange) {
       log.info("Checking for change in data")
-      val sourceData = prisonService.getPrisonApiSourceData(calculationRequest.prisonerId, InactiveDataOptions.default())
-      val originalCalculationAdjustments =
-        objectMapper.treeToValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
-      val originalPrisonerDetails =
-        objectMapper.treeToValue(calculationRequest.prisonerDetails, PrisonerDetails::class.java)
-      val originalSentenceAndOffences = calculationRequest.sentenceAndOffences?.let {
-        prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)
-      }
-      val originalReturnToCustodyDate =
-        objectMapper.treeToValue(calculationRequest.returnToCustodyDate, ReturnToCustodyDate::class.java)
-      val bookingAndSentenceAdjustments = sourceData.bookingAndSentenceAdjustments
-      val prisonerDetails = sourceData.prisonerDetails
-      val sentenceAndOffences = sourceData.sentenceAndOffences
-      val returnToCustodyDate = sourceData.returnToCustodyDate
-      if (originalCalculationAdjustments == bookingAndSentenceAdjustments && prisonerDetails == originalPrisonerDetails && sentenceAndOffences == originalSentenceAndOffences && returnToCustodyDate == originalReturnToCustodyDate) {
-        return transform(calculationRequest)
-      } else {
+      val sourceData = calculationSourceDataService.getCalculationSourceData(calculationRequest.prisonerId, InactiveDataOptions.default())
+      val userInput = transform(calculationRequest.calculationRequestUserInput)
+      val booking = bookingService.getBooking(sourceData, userInput)
+
+      if (calculationRequest.inputData.hashCode() != objectToJson(booking, objectMapper).hashCode()) {
         throw CalculationDataHasChangedError(calculationReference, calculationRequest.prisonerId)
       }
-    } else {
-      transform(calculationRequest)
     }
+    return transform(calculationRequest)
   }
 
   @Transactional(readOnly = true)
   fun validateForManualBooking(prisonerId: String): List<ValidationMessage> {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, InactiveDataOptions.default())
+    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, InactiveDataOptions.default())
     return validationService.validateSentenceForManualEntry(sourceData.sentenceAndOffences)
   }
 

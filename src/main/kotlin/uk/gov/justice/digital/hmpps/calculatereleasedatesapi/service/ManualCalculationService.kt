@@ -40,6 +40,7 @@ class ManualCalculationService(
   private val buildProperties: BuildProperties,
   private val bookingCalculationService: BookingCalculationService,
   private val validationService: ValidationService,
+  private val calculationSourceDataService: CalculationSourceDataService,
 ) {
 
   fun hasIndeterminateSentences(bookingId: Long): Boolean {
@@ -59,7 +60,7 @@ class ManualCalculationService(
     manualEntryRequest: ManualEntryRequest,
     isGenuineOverride: Boolean = false,
   ): ManualCalculationResponse {
-    val sourceData = prisonService.getPrisonApiSourceData(prisonerId, InactiveDataOptions.default())
+    val sourceData = calculationSourceDataService.getCalculationSourceData(prisonerId, InactiveDataOptions.default())
     val calculationUserInputs = CalculationUserInputs()
     val booking = bookingService.getBooking(sourceData, calculationUserInputs)
 

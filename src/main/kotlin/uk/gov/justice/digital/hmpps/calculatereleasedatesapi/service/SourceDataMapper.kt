@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.convertValue
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.HistoricalTusedData
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Retu
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 
 @Service
-class PrisonApiDataMapper(private val objectMapper: ObjectMapper) {
+class SourceDataMapper(private val objectMapper: ObjectMapper) {
 
   fun mapSentencesAndOffences(calculationRequest: CalculationRequest): List<SentenceAndOffenceWithReleaseArrangements> {
     return when (calculationRequest.sentenceAndOffencesVersion) {
@@ -47,7 +47,15 @@ class PrisonApiDataMapper(private val objectMapper: ObjectMapper) {
   }
 
   fun mapBookingAndSentenceAdjustments(calculationRequest: CalculationRequest): BookingAndSentenceAdjustments {
-    return objectMapper.convertValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
+    return when (calculationRequest.adjustmentsVersion) {
+      // TODO temporary. We should be upgrading v0 to v1 here. But until frontend supports adjustments API use v0.
+      1 -> {
+        val reader = objectMapper.readerFor(object : TypeReference<List<AdjustmentDto>>() {})
+        val adjustments = reader.readValue<List<AdjustmentDto>>(calculationRequest.adjustments)
+        return BookingAndSentenceAdjustments.downgrade(adjustments)
+      }
+      else -> objectMapper.convertValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
+    }
   }
 
   fun mapReturnToCustodyDate(calculationRequest: CalculationRequest): ReturnToCustodyDate {

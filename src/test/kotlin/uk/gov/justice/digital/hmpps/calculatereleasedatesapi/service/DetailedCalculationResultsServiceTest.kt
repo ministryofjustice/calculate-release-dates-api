@@ -47,13 +47,13 @@ import java.util.*
 class DetailedCalculationResultsServiceTest {
 
   private val calculationBreakdownService = mock<CalculationBreakdownService>()
-  private val prisonApiDataMapper = mock<PrisonApiDataMapper>()
+  private val sourceDataMapper = mock<SourceDataMapper>()
   private val calculationRequestRepository = mock<CalculationRequestRepository>()
   private val calculationResultEnrichmentService = mock<CalculationResultEnrichmentService>()
   private val prisonService = mock<PrisonService>()
   private val service = DetailedCalculationResultsService(
     calculationBreakdownService,
-    prisonApiDataMapper,
+    sourceDataMapper,
     calculationRequestRepository,
     calculationResultEnrichmentService,
     prisonService,
@@ -109,9 +109,9 @@ class DetailedCalculationResultsServiceTest {
     val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
     val expectedBreakdown = CalculationBreakdown(emptyList(), null, mapOf(ReleaseDateType.CRD to ReleaseDateCalculationBreakdown(emptySet())), mapOf(ReleaseDateType.PRRD to LocalDate.of(2026, 6, 27)))
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithApprovedDates))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithApprovedDates)).thenReturn(listOf(originalSentence))
-    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithApprovedDates)).thenReturn(prisonerDetails)
-    whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithApprovedDates)).thenReturn(adjustments)
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithApprovedDates)).thenReturn(listOf(originalSentence))
+    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithApprovedDates)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithApprovedDates)).thenReturn(adjustments)
     whenever(calculationResultEnrichmentService.addDetailToCalculationDates(toReleaseDates(calculationRequestWithApprovedDates), listOf(originalSentence), expectedBreakdown)).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(expectedBreakdown.right())
     val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)
@@ -174,9 +174,9 @@ class DetailedCalculationResultsServiceTest {
     )
     val enrichedReleaseDates = mapOf(ReleaseDateType.CRD to DetailedDate(ReleaseDateType.CRD, ReleaseDateType.CRD.description, LocalDate.of(2026, 6, 26), emptyList()))
     whenever(calculationRequestRepository.findById(CALCULATION_REQUEST_ID)).thenReturn(Optional.of(calculationRequestWithApprovedDates))
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequestWithApprovedDates)).thenReturn(listOf(originalSentence))
-    whenever(prisonApiDataMapper.mapPrisonerDetails(calculationRequestWithApprovedDates)).thenReturn(prisonerDetails)
-    whenever(prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithApprovedDates)).thenReturn(adjustments)
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequestWithApprovedDates)).thenReturn(listOf(originalSentence))
+    whenever(sourceDataMapper.mapPrisonerDetails(calculationRequestWithApprovedDates)).thenReturn(prisonerDetails)
+    whenever(sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequestWithApprovedDates)).thenReturn(adjustments)
     whenever(calculationResultEnrichmentService.addDetailToCalculationDates(toReleaseDates(calculationRequestWithApprovedDates), listOf(originalSentence), null)).thenReturn(enrichedReleaseDates)
     whenever(calculationBreakdownService.getBreakdownSafely(any())).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
     val results = service.findDetailedCalculationResults(CALCULATION_REQUEST_ID)

@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation
 
+import arrow.core.Either
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.threeten.extra.LocalDateRange
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
@@ -18,6 +20,10 @@ import java.time.LocalDate
 @Service
 class AdjustmentValidationService {
 
+  internal fun validateIfAdjustmentsAreSupported(adjustments: Either<BookingAndSentenceAdjustments, List<AdjustmentDto>>): List<ValidationMessage> = adjustments.fold(
+    { validateIfAdjustmentsAreSupported(it) },
+    { validateIfAdjustmentsAreSupported(it) },
+  )
   internal fun validateIfAdjustmentsAreSupported(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
     addAll(lawfullyAtLargeIsNotSupported(adjustments.bookingAdjustments))
     addAll(specialRemissionIsNotSupported(adjustments.bookingAdjustments))
@@ -25,44 +31,77 @@ class AdjustmentValidationService {
     addAll(timeSpentAsAnAppealApplicantIsNotSupported(adjustments.sentenceAdjustments))
   }
 
-  internal fun throwErrorIfAdditionAdjustmentsAfterLatestReleaseDate(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
-    addAll(validateAllSentenceAdjustmentsHaveFromOrToDates(adjustments))
+  internal fun validateIfAdjustmentsAreSupported(adjustments: List<AdjustmentDto>): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
+    adjustments.forEach {
+      when (it.adjustmentType) {
+        AdjustmentDto.AdjustmentType.LAWFULLY_AT_LARGE -> add(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_LAWFULLY_AT_LARGE))
+        AdjustmentDto.AdjustmentType.SPECIAL_REMISSION -> add(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_SPECIAL_REMISSION))
+        AdjustmentDto.AdjustmentType.CUSTODY_ABROAD -> add(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_TIME_SPENT_IN_CUSTODY_ABROAD))
+        AdjustmentDto.AdjustmentType.APPEAL_APPLICANT -> add(ValidationMessage(ValidationCode.UNSUPPORTED_ADJUSTMENT_TIME_SPENT_AS_AN_APPEAL_APPLICANT))
+        else -> return@forEach
+      }
+    }
+  }
+
+  internal fun validateAdjustmentsBeforeCalculation(adjustments: Either<BookingAndSentenceAdjustments, List<AdjustmentDto>>): List<ValidationMessage> =
+    adjustments.fold(
+      this::validateAdjustmentsBeforeCalculation,
+      this::validateAdjustmentsBeforeCalculation,
+    )
+
+  internal fun validateAdjustmentsBeforeCalculation(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
+    addAll(validateAllRemandHasFromAndToDates(adjustments))
     addAll(validateBookingAdjustment(adjustments.bookingAdjustments))
-    addAll(validateRemandOverlappingRemand(adjustments))
+    addAll(
+      validateRemandOverlappingRemand(
+        adjustments.sentenceAdjustments
+          .filter { it.type == SentenceAdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
+          .map { LocalDateRange.of(it.fromDate, it.toDate) },
+      ),
+    )
   }
 
-  private fun validateAllSentenceAdjustmentsHaveFromOrToDates(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> = adjustments.sentenceAdjustments.flatMap { validateSentenceAdjustmentHaveFromOrToDates(it) }.toMutableList()
-
-  private fun validateSentenceAdjustmentHaveFromOrToDates(sentenceAdjustment: SentenceAdjustment): List<ValidationMessage> = if (sentenceAdjustment.type == SentenceAdjustmentType.REMAND &&
-    (sentenceAdjustment.fromDate == null || sentenceAdjustment.toDate == null)
-  ) {
-    listOf(ValidationMessage(ValidationCode.REMAND_FROM_TO_DATES_REQUIRED))
-  } else {
-    emptyList()
+  internal fun validateAdjustmentsBeforeCalculation(adjustments: List<AdjustmentDto>): List<ValidationMessage> = mutableListOf<ValidationMessage>().apply {
+    addAll(validateAllRemandHasFromAndToDates(adjustments))
+    addAll(validateAdjustmentFutureDates(adjustments))
+    addAll(
+      validateRemandOverlappingRemand(
+        adjustments
+          .filter { it.adjustmentType == AdjustmentDto.AdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
+          .map { LocalDateRange.of(it.fromDate, it.toDate) },
+      ),
+    )
+  }
+  private fun validateAllRemandHasFromAndToDates(adjustments: List<AdjustmentDto>): List<ValidationMessage> = adjustments.filter { it.adjustmentType == AdjustmentDto.AdjustmentType.REMAND }.flatMap {
+    if (it.fromDate == null || it.toDate == null) {
+      listOf(ValidationMessage(ValidationCode.REMAND_FROM_TO_DATES_REQUIRED))
+    } else {
+      emptyList()
+    }
+  }
+  private fun validateAllRemandHasFromAndToDates(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> = adjustments.sentenceAdjustments.filter { it.type == SentenceAdjustmentType.REMAND }.flatMap {
+    if (it.fromDate == null || it.toDate == null) {
+      listOf(ValidationMessage(ValidationCode.REMAND_FROM_TO_DATES_REQUIRED))
+    } else {
+      emptyList()
+    }
   }
 
-  internal fun validateRemandOverlappingRemand(booking: Booking): List<ValidationMessage> {
-    val remandPeriods = booking.adjustments.getOrEmptyList(AdjustmentType.REMAND)
-
+  fun validateRemandOverlappingRemand(remandRanges: List<LocalDateRange>): List<ValidationMessage> {
     val validationMessages = mutableListOf<ValidationMessage>()
-    if (remandPeriods.isNotEmpty()) {
-      val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
-
-      remandRanges.forEachIndexed { index, remandRange ->
-        remandRanges.drop(index + 1).forEach { otherRemandRange ->
-          if (remandRange.isConnected(otherRemandRange)) {
-            logIntersectionWarning(remandRange, otherRemandRange, "Remand of range %s overlaps with other remand of range %s")
-            validationMessages.add(
-              ValidationMessage(
-                ValidationCode.REMAND_OVERLAPS_WITH_REMAND,
-                arguments = buildMessageArguments(remandRange, otherRemandRange),
-              ),
-            )
-          }
+    remandRanges.forEachIndexed { index, remandRange ->
+      remandRanges.drop(index + 1).forEach { otherRemandRange ->
+        if (remandRange.isConnected(otherRemandRange)) {
+          logIntersectionWarning(remandRange, otherRemandRange, "Remand of range %s overlaps with other remand of range %s")
+          validationMessages.add(
+            ValidationMessage(
+              ValidationCode.REMAND_OVERLAPS_WITH_REMAND,
+              arguments = buildMessageArguments(remandRange, otherRemandRange),
+            ),
+          )
         }
       }
     }
-
     return validationMessages
   }
 
@@ -122,6 +161,11 @@ class AdjustmentValidationService {
     emptyList()
   }
 
+  private fun validateAdjustmentFutureDates(adjustments: List<AdjustmentDto>): List<ValidationMessage> = adjustments.filter {
+    val dateToValidate = if (it.adjustmentType == AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE && it.toDate != null) it.toDate else it.fromDate
+    FUTURE_DATED_ADJUSTMENT_TYPES_TO_VALIDATE.contains(it.adjustmentType) && dateToValidate!!.isAfter(LocalDate.now())
+  }.map { it.adjustmentType }.distinct().map { ValidationMessage(FUTURE_DATED_ADJUSTMENT_TYPES_MAP[it]!!) }
+
   private fun validateBookingAdjustment(bookingAdjustments: List<BookingAdjustment>): List<ValidationMessage> = bookingAdjustments.filter {
     val dateToValidate = if (it.type == BookingAdjustmentType.UNLAWFULLY_AT_LARGE && it.toDate != null) it.toDate else it.fromDate
     BOOKING_ADJUSTMENTS_TO_VALIDATE.contains(it.type) && dateToValidate.isAfter(LocalDate.now())
@@ -171,27 +215,6 @@ class AdjustmentValidationService {
     return validationMessages.toList()
   }
 
-  private fun validateRemandOverlappingRemand(adjustments: BookingAndSentenceAdjustments): List<ValidationMessage> {
-    val remandPeriods =
-      adjustments.sentenceAdjustments.filter { it.type == SentenceAdjustmentType.REMAND && it.fromDate != null && it.toDate != null }
-    if (remandPeriods.isNotEmpty()) {
-      val remandRanges = remandPeriods.map { LocalDateRange.of(it.fromDate, it.toDate) }
-
-      var totalRange: LocalDateRange? = null
-
-      remandRanges.forEach {
-        if (totalRange == null) {
-          totalRange = it
-        } else if (it.isConnected(totalRange)) {
-          val messageArgs =
-            listOf(it.start.toString(), it.end.toString(), totalRange!!.start.toString(), totalRange!!.end.toString())
-          return listOf(ValidationMessage(ValidationCode.REMAND_OVERLAPS_WITH_REMAND, arguments = messageArgs))
-        }
-      }
-    }
-    return emptyList()
-  }
-
   companion object {
     private val BOOKING_ADJUSTMENTS_TO_VALIDATE =
       listOf(
@@ -203,6 +226,17 @@ class AdjustmentValidationService {
       BookingAdjustmentType.ADDITIONAL_DAYS_AWARDED to ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA,
       BookingAdjustmentType.UNLAWFULLY_AT_LARGE to ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL,
       BookingAdjustmentType.RESTORED_ADDITIONAL_DAYS_AWARDED to ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA,
+    )
+    private val FUTURE_DATED_ADJUSTMENT_TYPES_TO_VALIDATE =
+      listOf(
+        AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED,
+        AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE,
+        AdjustmentDto.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED,
+      )
+    private val FUTURE_DATED_ADJUSTMENT_TYPES_MAP = mapOf(
+      AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED to ValidationCode.ADJUSTMENT_FUTURE_DATED_ADA,
+      AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE to ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL,
+      AdjustmentDto.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED to ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA,
     )
 
     private val log = LoggerFactory.getLogger(this::class.java)

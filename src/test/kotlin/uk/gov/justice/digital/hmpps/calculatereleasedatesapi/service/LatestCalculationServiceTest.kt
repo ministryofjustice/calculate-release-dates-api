@@ -42,9 +42,9 @@ class LatestCalculationServiceTest {
   private val calculationRequestRepository: CalculationRequestRepository = mock()
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService = mock()
   private val calculationBreakdownService: CalculationBreakdownService = mock()
-  private val prisonApiDataMapper: PrisonApiDataMapper = mock()
+  private val sourceDataMapper: SourceDataMapper = mock()
   private val offenderKeyDatesService: OffenderKeyDatesService = mock()
-  private val service = LatestCalculationService(prisonService, offenderKeyDatesService, calculationRequestRepository, calculationResultEnrichmentService, calculationBreakdownService, prisonApiDataMapper)
+  private val service = LatestCalculationService(prisonService, offenderKeyDatesService, calculationRequestRepository, calculationResultEnrichmentService, calculationBreakdownService, sourceDataMapper)
   private val objectMapper = TestUtil.objectMapper()
   private val prisonerId = "ABC123"
   private val bookingId = 123456L
@@ -358,7 +358,7 @@ class LatestCalculationServiceTest {
     val expectedBreakdown = CalculationBreakdown(emptyList(), null)
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.of(calculationRequest))
     whenever(calculationBreakdownService.getBreakdownSafely(calculationRequest)).thenReturn(expectedBreakdown.right())
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(someSentence))
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(someSentence))
 
     val dates = listOf(ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED))
     whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
@@ -396,7 +396,7 @@ class LatestCalculationServiceTest {
     val calculationRequest = CalculationRequest(id = 654321, calculationReference = calculationReference, calculatedAt = calculatedAt, prisonerLocation = "ABC", sentenceAndOffences = objectToJson(listOf(someSentence), objectMapper))
     whenever(calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId)).thenReturn(Optional.of(calculationRequest))
     whenever(calculationBreakdownService.getBreakdownSafely(calculationRequest)).thenReturn(BreakdownMissingReason.UNSUPPORTED_CALCULATION_BREAKDOWN.left())
-    whenever(prisonApiDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(someSentence))
+    whenever(sourceDataMapper.mapSentencesAndOffences(calculationRequest)).thenReturn(listOf(someSentence))
 
     val dates = listOf(ReleaseDate(LocalDate.of(2025, 1, 1), ReleaseDateType.SED))
     whenever(offenderKeyDatesService.releaseDates(offenderKeyDates)).thenReturn(dates)
@@ -452,7 +452,7 @@ class LatestCalculationServiceTest {
         detailedDates,
       ).right(),
     )
-    verify(prisonApiDataMapper, never()).mapSentencesAndOffences(calculationRequest)
+    verify(sourceDataMapper, never()).mapSentencesAndOffences(calculationRequest)
   }
 
   private val someSentence = SentenceAndOffenceWithReleaseArrangements(

@@ -24,7 +24,7 @@ class LatestCalculationService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val calculationResultEnrichmentService: CalculationResultEnrichmentService,
   private val calculationBreakdownService: CalculationBreakdownService,
-  private val prisonApiDataMapper: PrisonApiDataMapper,
+  private val sourceDataMapper: SourceDataMapper,
 ) {
 
   @Transactional(readOnly = true)
@@ -51,7 +51,7 @@ class LatestCalculationService(
         if (calculationRequest.prisonerLocation != null) {
           location = prisonService.getAgenciesByType("INST").firstOrNull { it.agencyId == location }?.description ?: location
         }
-        val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { prisonApiDataMapper.mapSentencesAndOffences(calculationRequest) }
+        val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
         val breakdown = calculationBreakdownService.getBreakdownSafely(calculationRequest).getOrNull()
         toLatestCalculation(
           CalculationSource.CRDS,

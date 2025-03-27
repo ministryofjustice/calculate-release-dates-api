@@ -33,7 +33,7 @@ class PrisonServiceTest {
   private val prisonApiClient = mock<PrisonApiClient>()
   private val releaseArrangementLookupService = mock<ReleaseArrangementLookupService>()
   private val botusTusedService = mock<BotusTusedService>()
-  private val prisonService = PrisonService(prisonApiClient, releaseArrangementLookupService, botusTusedService, FeatureToggles())
+  private val prisonService = PrisonService(prisonApiClient, releaseArrangementLookupService, FeatureToggles())
 
   @Test
   fun `getCurrentUserPrisonsList should exclude prisons where the establishment is KTI`() {

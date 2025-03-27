@@ -16,18 +16,18 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationBr
 @Transactional(readOnly = true)
 @Suppress("RedundantModalityModifier") // required for spring @Transactional
 open class CalculationBreakdownService(
-  private val prisonApiDataMapper: PrisonApiDataMapper,
+  private val sourceDataMapper: SourceDataMapper,
   private val calculationTransactionalService: CalculationTransactionalService,
 ) {
 
   fun getBreakdownSafely(calculationRequest: CalculationRequest): Either<BreakdownMissingReason, CalculationBreakdown> {
-    val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { prisonApiDataMapper.mapSentencesAndOffences(calculationRequest) }
-    val prisonerDetails = calculationRequest.prisonerDetails?.let { prisonApiDataMapper.mapPrisonerDetails(calculationRequest) }
+    val sentenceAndOffences = calculationRequest.sentenceAndOffences?.let { sourceDataMapper.mapSentencesAndOffences(calculationRequest) }
+    val prisonerDetails = calculationRequest.prisonerDetails?.let { sourceDataMapper.mapPrisonerDetails(calculationRequest) }
     val calculationUserInputs = transform(calculationRequest.calculationRequestUserInput)
-    val bookingAndSentenceAdjustments = calculationRequest.adjustments?.let { prisonApiDataMapper.mapBookingAndSentenceAdjustments(calculationRequest) }
-    val returnToCustodyDate = calculationRequest.returnToCustodyDate?.let { prisonApiDataMapper.mapReturnToCustodyDate(calculationRequest) }
+    val bookingAndSentenceAdjustments = calculationRequest.adjustments?.let { sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequest) }
+    val returnToCustodyDate = calculationRequest.returnToCustodyDate?.let { sourceDataMapper.mapReturnToCustodyDate(calculationRequest) }
     val calculation = transform(calculationRequest)
-    val historicalTusedData = prisonApiDataMapper.mapHistoricalTusedData(calculationRequest)
+    val historicalTusedData = sourceDataMapper.mapHistoricalTusedData(calculationRequest)
     return if (sentenceAndOffences != null && prisonerDetails != null && bookingAndSentenceAdjustments != null) {
       val booking = Booking(
         offender = transform(prisonerDetails),

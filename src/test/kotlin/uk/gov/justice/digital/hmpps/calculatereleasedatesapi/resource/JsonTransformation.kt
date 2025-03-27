@@ -73,7 +73,11 @@ class JsonTransformation {
     return getAllJsonFromDir("api_integration/sentences")
   }
 
-  fun getAllAdjustmentsJson(): Map<String, String> {
+  fun getAllPrisonApiAdjustments(): Map<String, String> {
+    return getAllJsonFromDir("api_integration/prisonapiadjustments")
+  }
+
+  fun getAllAdjustments(): Map<String, String> {
     return getAllJsonFromDir("api_integration/adjustments")
   }
 
@@ -86,7 +90,7 @@ class JsonTransformation {
   }
 
   fun getAllPrisonCalculablePrisonersJson(): Map<String, String> {
-    return getAllJsonFromDir("api_integration/prisonCalculablePrisoners")
+    return getAllJsonFromDir("prisonCalculablePrisoners")
   }
 
   fun getAllExternalMovementsJson(): Map<String, String> {
@@ -101,17 +105,32 @@ class JsonTransformation {
     return getResourceAsText("/test_data/$calculationType/$fileName")
   }
 
+  fun getAllIntegrationPrisonerNames(): List<String> = getAllFilenamesFromDir("api_integration")
+
   fun getAllJsonFromDir(fileName: String): Map<String, String> {
+    val json = mutableMapOf<String, String>()
+    doAllInDir(fileName) { it ->
+      json[it.name.replace(".json", "")] = it.readText()
+    }
+    return json
+  }
+
+  private fun getAllFilenamesFromDir(fileName: String): List<String> {
+    val files = mutableListOf<String>()
+    doAllInDir(fileName) { it ->
+      files.add(it.name.replace(".json", ""))
+    }
+    return files
+  }
+
+  fun doAllInDir(fileName: String, comsumer: (File) -> Unit) {
     val dir = File(object {}.javaClass.getResource("/test_data/$fileName").file)
     if (dir.isDirectory) {
-      val json = mutableMapOf<String, String>()
-      val originalPath = dir.path + "/"
       dir.walk().forEach {
         if (it.extension == "json") {
-          json[it.path.replace(originalPath, "").replace(".json", "")] = it.readText()
+          comsumer(it)
         }
       }
-      return json
     } else {
       throw FileNotFoundException("File $fileName was not a directory")
     }

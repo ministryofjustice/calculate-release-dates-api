@@ -1,0 +1,101 @@
+[
+  {
+    "id": "a832551d-79a2-406a-8672-db1759793b55",
+    "bookingId": 1085415,
+    "person": "ADJ-API",
+    "adjustmentType": "ADDITIONAL_DAYS_AWARDED",
+    "toDate": null,
+    "fromDate": "2017-02-03",
+    "days": 23,
+    "remand": null,
+    "additionalDaysAwarded": {
+      "adjudicationId": [
+        "1467917-1",
+        "1467454-1"
+      ],
+      "prospective": false
+    },
+    "unlawfullyAtLarge": null,
+    "lawfullyAtLarge": null,
+    "specialRemission": null,
+    "taggedBail": null,
+    "timeSpentInCustodyAbroad": null,
+    "timeSpentAsAnAppealApplicant": null,
+    "sentenceSequence": null,
+    "recallId": null,
+    "adjustmentTypeText": "ADA (Additional days awarded)",
+    "adjustmentArithmeticType": "ADDITION",
+    "prisonName": "Kirkham (HMP)",
+    "prisonId": "KMI",
+    "lastUpdatedBy": "ADJUSTMENTS_USER",
+    "status": "ACTIVE",
+    "lastUpdatedDate": "2025-02-13T13:50:25.368231",
+    "createdDate": "2025-02-13T13:50:25.368231",
+    "effectiveDays": 23,
+    "source": "DPS"
+  },
+  {
+    "id": "1fcfc371-af9f-4360-8d7f-694795c63bee",
+    "bookingId": 1085415,
+    "person": "ADJ-API",
+    "adjustmentType": "UNLAWFULLY_AT_LARGE",
+    "toDate": "2018-11-03",
+    "fromDate": "2018-10-28",
+    "days": 7,
+    "remand": null,
+    "additionalDaysAwarded": null,
+    "unlawfullyAtLarge": {
+      "type": "RECALL"
+    },
+    "lawfullyAtLarge": null,
+    "specialRemission": null,
+    "taggedBail": null,
+    "timeSpentInCustodyAbroad": null,
+    "timeSpentAsAnAppealApplicant": null,
+    "sentenceSequence": null,
+    "recallId": null,
+    "adjustmentTypeText": "UAL (Unlawfully at large)",
+    "adjustmentArithmeticType": "ADDITION",
+    "prisonName": "Kirkham (HMP)",
+    "prisonId": "KMI",
+    "lastUpdatedBy": "ADJUSTMENTS_USER",
+    "status": "ACTIVE",
+    "lastUpdatedDate": "2025-02-12T11:42:47.07435",
+    "createdDate": "2025-02-12T11:42:47.07435",
+    "effectiveDays": 7,
+    "source": "DPS"
+  },
+  {
+    "id": "65b87bbc-46e3-4e91-87bb-f242cdc6d8fc",
+    "bookingId": 1085415,
+    "person": "ADJ-API",
+    "adjustmentType": "REMAND",
+    "toDate": "2023-04-01",
+    "fromDate": "2023-02-01",
+    "days": 60,
+    "remand": {
+      "chargeId": [
+        3453261
+      ]
+    },
+    "additionalDaysAwarded": null,
+    "unlawfullyAtLarge": null,
+    "lawfullyAtLarge": null,
+    "specialRemission": null,
+    "taggedBail": null,
+    "timeSpentInCustodyAbroad": null,
+    "timeSpentAsAnAppealApplicant": null,
+    "sentenceSequence": 1,
+    "recallId": null,
+    "adjustmentTypeText": "Remand",
+    "adjustmentArithmeticType": "DEDUCTION",
+    "prisonName": "Moorland (HMP & YOI)",
+    "prisonId": "MDI",
+    "lastUpdatedBy": "ADJUSTMENTS_USER",
+    "status": "ACTIVE",
+    "lastUpdatedDate": "2025-03-25T11:17:10.028323",
+    "createdDate": "2025-03-25T11:17:10.028323",
+    "effectiveDays": 60,
+    "source": "DPS"
+  }
+]
