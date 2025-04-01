@@ -16,6 +16,7 @@ data class PrisonApiExternalMovement(
   val movementTime: LocalTime?,
   val movementReason: String?,
   val movementReasonCode: String,
+  val fromAgency: String?,
   val commentText: String?,
 ) {
 
@@ -27,9 +28,25 @@ data class PrisonApiExternalMovement(
       "ECSLIRC", "ECSL" -> ExternalMovementReason.ECSL
       "CR", "AR", "CE" -> ExternalMovementReason.CRD
       "D3", "D2", "D1", "D4" -> ExternalMovementReason.DTO
-      "N", "I", "L", "V", "W", "G", "B", "25", "Y", "F", "C", "27", "26", "ETRLR", "ETB", "29", "ELR" -> ExternalMovementReason.ADMISSION
+      "E", "R", "I", "T" -> getExternalMovementReasonForErsAdmission()
+      "N", "L", "V", "W", "G", "B", "25", "Y", "F", "C", "27", "26", "ETRLR", "ETB", "29", "ELR" -> ExternalMovementReason.ADMISSION
       else -> null
     }
+  }
+
+  private fun getExternalMovementReasonForErsAdmission(): ExternalMovementReason {
+    return if (isFromIRC() || isFromImmigrationCourt()) {
+      ExternalMovementReason.ERS_RETURN
+    } else
+      ExternalMovementReason.ADMISSION
+  }
+
+  private fun isFromIRC(): Boolean {
+    return (fromAgency?: "").contains("IRC")
+  }
+
+  private fun isFromImmigrationCourt(): Boolean {
+    return (fromAgency?: "")  == "IMM"
   }
 
   fun transformMovementDirection(): ExternalMovementDirection {
