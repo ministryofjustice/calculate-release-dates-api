@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.Bo
 
 @Service
 class CalculationService(
-  private val bookingCalculationService: BookingCalculationService,
+  val sentenceIdentificationService: SentenceIdentificationService,
   private val bookingTimelineService: BookingTimelineService,
 ) {
 
@@ -19,11 +19,10 @@ class CalculationService(
   ): CalculationOutput {
     val options = CalculationOptions(calculationUserInputs.calculateErsed)
     // identify the types of the sentences
-    bookingCalculationService
-      .identify(booking)
+    for (sentence in booking.sentences) {
+      sentenceIdentificationService.identify(sentence, booking.offender)
+    }
 
-    val sentencesToCalculate = bookingCalculationService.getSentencesToCalculate(booking)
-
-    return bookingTimelineService.calculate(sentencesToCalculate, booking.adjustments, booking.offender, booking.returnToCustodyDate, options, booking.externalMovements)
+    return bookingTimelineService.calculate(booking.sentences, booking.adjustments, booking.offender, booking.returnToCustodyDate, options, booking.externalMovements)
   }
 }

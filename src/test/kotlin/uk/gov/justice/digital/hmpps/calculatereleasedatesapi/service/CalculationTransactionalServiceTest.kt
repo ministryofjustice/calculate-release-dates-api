@@ -166,9 +166,10 @@ class CalculationTransactionalServiceTest {
   @Captor
   lateinit var updatedOffenderDatesArgumentCaptor: ArgumentCaptor<UpdateOffenderDates>
 
+
   @Test
   fun blah() {
-    `Test Example`("custom-examples", "crs-2107-external-movements-ac5", null, null, null, null, null)
+    `Test Example`("custom-examples", "crs-1090-eds-sopc-recalls-ac6", null, null, null, null, null)
   }
 /*
 CalculationTransactionalServiceTest. [678] exampleType=custom-examples, exampleNumber=crs-2107-external-movements-ac2-1, error=null, params=null, assertSds40=null, expectedValidationException=TRUE, expectedValidationMessage=null
@@ -703,7 +704,7 @@ CalculationTransactionalServiceTest. [686] exampleType=custom-examples, exampleN
 
     val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)
-    val bookingCalculationService = BookingCalculationService(
+    val sentenceCombinationService = SentenceCombinationService(
       sentenceIdentificationService,
     )
 
@@ -728,6 +729,7 @@ CalculationTransactionalServiceTest. [686] exampleType=custom-examples, exampleN
       trancheConfiguration,
       releasePointMultipliersConfiguration,
       timelineCalculator,
+      sentenceCombinationService
     )
     val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
       trancheConfiguration,
@@ -770,14 +772,13 @@ CalculationTransactionalServiceTest. [686] exampleType=custom-examples, exampleN
       timelineUalAdjustmentCalculationHandler,
       timelineExternalReleaseMovementCalculationHandler,
       timelineExternalAdmissionMovementCalculationHandler,
-      timelineAdjustmentService,
-      featureToggles = FeatureToggles(),
+      timelineAdjustmentService
     )
 
     val sourceDataMapper = SourceDataMapper(TestUtil.objectMapper())
 
     val calculationService = CalculationService(
-      bookingCalculationService,
+      sentenceIdentificationService,
       bookingTimelineService,
     )
 

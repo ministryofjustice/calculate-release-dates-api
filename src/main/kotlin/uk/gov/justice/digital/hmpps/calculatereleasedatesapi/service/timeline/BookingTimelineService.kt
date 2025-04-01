@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Adjust
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RESTORATION_OF_ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.TAGGED_BAIL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.UNLAWFULLY_AT_LARGE
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOptions
@@ -46,11 +47,10 @@ class BookingTimelineService(
   private val timelineExternalReleaseMovementCalculationHandler: TimelineExternalReleaseMovementCalculationHandler,
   private val timelineExternalAdmissionMovementCalculationHandler: TimelineExternalAdmissionMovementCalculationHandler,
   private val timelineAdjustmentService: TimelineAdjustmentService,
-  private val featureToggles: FeatureToggles,
 ) {
 
   fun calculate(
-    sentences: List<CalculableSentence>,
+    sentences: List<AbstractSentence>,
     adjustments: Adjustments,
     offender: Offender,
     returnToCustodyDate: LocalDate?,
@@ -88,6 +88,7 @@ class BookingTimelineService(
 
       val results = calculations.sortedBy { it.type.ordinal }.map {
         handlerFor(it.type).handle(timelineCalculationDate, timelineTrackingData)
+
       }
       val anyCalculationRequired = results.any { it.requiresCalculation }
       val anySkipCalculation = results.any { it.skipCalculationForEntireDate }
