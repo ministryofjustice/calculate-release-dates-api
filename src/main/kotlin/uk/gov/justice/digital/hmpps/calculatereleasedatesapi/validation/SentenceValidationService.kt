@@ -259,11 +259,27 @@ class SentenceValidationService(
 
   internal fun validateAnyConcurrentConsecutiveSentences(calculation: CalculationOutput): ValidationMessage? {
     val consecutiveSentences = calculation.sentences.filterIsInstance<ConsecutiveSentence>()
-    val sentencePartsList = consecutiveSentences.map { it.sentenceParts().first().identifier }
 
+    /** check for any none consecutive sentences with a consecutiveSentenceUUID */
+    val otherSentenceParentUUIDs = calculation.sentences
+      .asSequence()
+      .filterIsInstance<AbstractSentence>()
+      .flatMap { it.consecutiveSentenceUUIDs }
+      .toSet()
+
+    val parentIdentifiers = consecutiveSentences.map { it.sentenceParts().first().identifier }
+
+    /**
+     * find consecutive sentences where the parent sentence identifier is already used by another consecutive sentence
+     * or where a none consecutive sentence has the same parent
+     */
     val concurrentSentences = consecutiveSentences.filter { sentence ->
-      val firstPart = sentence.sentenceParts().firstOrNull()?.identifier
-      firstPart != null && sentencePartsList.contains(firstPart) && sentencePartsList.count { it == firstPart } > 1
+      val parentIdentifier = sentence.sentenceParts().firstOrNull()?.identifier ?: return@filter false
+      val hasDuplicateParent = parentIdentifiers.count { it == parentIdentifier } > 1
+      val hasParentByNoneConsecutive = otherSentenceParentUUIDs.isNotEmpty() && sentence.sentenceParts().any {
+        it.consecutiveSentenceUUIDs.any { uuid -> uuid in otherSentenceParentUUIDs }
+      }
+      hasDuplicateParent || hasParentByNoneConsecutive
     }
 
     val longestSentence =
