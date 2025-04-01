@@ -259,21 +259,27 @@ class SentenceValidationService(
 
   internal fun validateAnyConcurrentConsecutiveSentences(calculation: CalculationOutput): ValidationMessage? {
     val consecutiveSentences = calculation.sentences.filterIsInstance<ConsecutiveSentence>()
+
+    /** check for any none consecutive sentences with a consecutiveSentenceUUID */
     val otherSentenceParentUUIDs = calculation.sentences
       .asSequence()
       .filterIsInstance<AbstractSentence>()
-      .flatMap { it.consecutiveSentenceUUIDs.asSequence() }
+      .flatMap { it.consecutiveSentenceUUIDs }
       .toSet()
 
-    val sentencePartsList = consecutiveSentences.map { it.sentenceParts().first().identifier }
+    val parentIdentifiers = consecutiveSentences.map { it.sentenceParts().first().identifier }
 
+    /**
+     * find consecutive sentences where the parent sentence identifier is already used by another consecutive sentence
+     * or where a none consecutive sentence has the same parent
+     */
     val concurrentSentences = consecutiveSentences.filter { sentence ->
-      val firstPart = sentence.sentenceParts().firstOrNull()?.identifier ?: return@filter false
-      val duplicateParent = sentencePartsList.contains(firstPart) && sentencePartsList.count { it == firstPart } > 1
-      val isReferencedByOthers = otherSentenceParentUUIDs.isNotEmpty() && sentence.sentenceParts().any {
+      val parentIdentifier = sentence.sentenceParts().firstOrNull()?.identifier ?: return@filter false
+      val hasDuplicateParent = parentIdentifiers.count { it == parentIdentifier } > 1
+      val hasParentByNoneConsecutive = otherSentenceParentUUIDs.isNotEmpty() && sentence.sentenceParts().any {
         it.consecutiveSentenceUUIDs.any { uuid -> uuid in otherSentenceParentUUIDs }
       }
-      duplicateParent || isReferencedByOthers
+      hasDuplicateParent || hasParentByNoneConsecutive
     }
 
     val longestSentence =
