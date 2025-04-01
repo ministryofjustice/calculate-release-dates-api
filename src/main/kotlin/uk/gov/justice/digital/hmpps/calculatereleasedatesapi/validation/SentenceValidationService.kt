@@ -271,7 +271,7 @@ class SentenceValidationService(
       val firstPart = sentence.sentenceParts().firstOrNull()?.identifier ?: return@filter false
       val duplicateParent = sentencePartsList.contains(firstPart) && sentencePartsList.count { it == firstPart } > 1
       val isReferencedByOthers = otherSentenceParentUUIDs.isNotEmpty() && sentence.sentenceParts().any {
-        part -> part.consecutiveSentenceUUIDs.any { it in otherSentenceParentUUIDs }
+        it.consecutiveSentenceUUIDs.any { uuid -> uuid in otherSentenceParentUUIDs }
       }
       duplicateParent || isReferencedByOthers
     }
