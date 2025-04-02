@@ -555,6 +555,34 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   }
 
   @Test
+  fun `Run calculation CRS-2321 for SEC91_03 sentence where Section 250 SDS rules apply, preventing HDCED`() {
+    val userInput = CalculationUserInputs(
+      useOffenceIndicators = true,
+    )
+
+    mockManageOffencesClient.withPCSCMarkersResponse(
+      OffencePcscMarkers(
+        offenceCode = "TH68007A",
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = true, inListD = false),
+      ),
+      offences = "TH68007A",
+    )
+
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/CRS-2321")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(CalculationRequestModel(userInput, 1L))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates.containsKey(HDCED)).isFalse()
+  }
+
+  @Test
   fun `Run calculation on EDS sentence`() {
     mockManageOffencesClient.noneInPCSC(listOf("CD79009", "TR68132"))
     val calculation: CalculatedReleaseDates = webTestClient.post()
