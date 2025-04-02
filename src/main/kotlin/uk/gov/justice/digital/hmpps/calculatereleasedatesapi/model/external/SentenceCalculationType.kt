@@ -31,8 +31,8 @@ enum class SentenceCalculationType(
   YOI_ORA(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SDS),
   SEC250(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
   SEC250_ORA(sentenceType = StandardDeterminate, toreraEligibilityType = ToreraEligibilityType.SDS, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
-  SEC91_03(sentenceType = StandardDeterminate),
-  SEC91_03_ORA(sentenceType = StandardDeterminate),
+  SEC91_03(sentenceType = StandardDeterminate, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
+  SEC91_03_ORA(sentenceType = StandardDeterminate, sdsPlusEligibilityType = SDSPlusEligibilityType.SECTION250),
   //endregion
 
   //region Extended Determinate Sentences
