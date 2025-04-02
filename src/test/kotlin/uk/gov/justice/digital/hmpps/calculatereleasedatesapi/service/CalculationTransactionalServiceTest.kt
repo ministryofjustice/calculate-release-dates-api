@@ -169,7 +169,7 @@ class CalculationTransactionalServiceTest {
 
   @Test
   fun blah() {
-    `Test Example`("custom-examples", "crs-1090-eds-sopc-recalls-ac6", null, null, null, null, null)
+    `Test Example`("custom-examples", "crs-2131-ada-crd-defaulting", null, null, null, null, null)
   }
 /*
 CalculationTransactionalServiceTest. [678] exampleType=custom-examples, exampleNumber=crs-2107-external-movements-ac2-1, error=null, params=null, assertSds40=null, expectedValidationException=TRUE, expectedValidationMessage=null

@@ -42,7 +42,8 @@ class TimelineSentenceCalculationHandler(
       val afterCombination = sentenceCombinationService.getSentencesToCalculate(currentSentenceGroup, offender)
 
       val newSentencesToCalculate = afterCombination.filter { it.sentenceParts().any { part -> newlySentenced.contains(part) }}
-      val original = currentSentenceGroup.filter { it.sentenceParts().none{ part -> newlySentenced.contains(part) }}
+      val newSentencesWithParts = newSentencesToCalculate.flatMap { it.sentenceParts() }
+      val original = currentSentenceGroup.filter { it.sentenceParts().none { part -> newSentencesWithParts.contains(part) } }
 
       currentSentenceGroup.clear()
       currentSentenceGroup.addAll(newSentencesToCalculate)
