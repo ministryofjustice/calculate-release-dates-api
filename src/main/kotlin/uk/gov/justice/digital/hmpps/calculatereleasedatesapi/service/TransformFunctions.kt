@@ -204,7 +204,7 @@ fun transform(
           sentencedAt = sentence.sentenceDate,
           custodialDuration = transform(imprisonmentTerm),
           extensionDuration = transform(licenseTerm),
-          automaticRelease = sentenceCalculationType == SentenceCalculationType.LASPO_AR,
+          automaticRelease = listOf(SentenceCalculationType.LASPO_AR, SentenceCalculationType.LR_LASPO_AR).contains(sentenceCalculationType),
           offence = offence,
           identifier = generateUUIDForSentence(sentence.bookingId, sentence.sentenceSequence),
           consecutiveSentenceUUIDs = consecutiveSentenceUUIDs,

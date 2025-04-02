@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.h
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ReleasePointMultipliersConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
@@ -29,15 +30,19 @@ class TimelineSentenceCalculationHandler(
     with(timelineTrackingData) {
       inPrison = true
 
-      val servedAdas = findServedAdas(timelineCalculationDate, currentSentenceGroup, latestRelease)
+      var servedAdas = findServedAdas(timelineCalculationDate, currentSentenceGroup, latestRelease)
 
       val existingAdjustments =
         currentSentenceGroup.firstOrNull()?.sentenceCalculation?.adjustments ?: SentenceAdjustments()
 
-
       val newlySentenced = futureData.sentences.filter { it.sentencedAt == timelineCalculationDate }
+      if (newlySentencedIsConsecutiveToAnyExistingSentences(timelineTrackingData, newlySentenced)) {
+        servedAdas = 0
+      }
+
       currentSentenceGroup.addAll(newlySentenced)
       futureData.sentences -= newlySentenced
+
 
       val afterCombination = sentenceCombinationService.getSentencesToCalculate(currentSentenceGroup, offender)
 
@@ -59,6 +64,16 @@ class TimelineSentenceCalculationHandler(
 
     }
     return TimelineHandleResult()
+  }
+
+  private fun newlySentencedIsConsecutiveToAnyExistingSentences(timelineTrackingData: TimelineTrackingData, newlySentenced: List<AbstractSentence>): Boolean {
+    with(timelineTrackingData) {
+      return newlySentenced.any { new ->
+        new.consecutiveSentenceUUIDs.isNotEmpty() && currentSentenceGroup.any { existing ->
+          existing.sentenceParts().map { it.identifier }.contains(new.consecutiveSentenceUUIDs[0])
+        }
+      }
+    }
   }
 
   private fun initialiseCalculationForNewSentences(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData, newSentencesToCalculate: List<CalculableSentence>) {
