@@ -24,9 +24,10 @@ class TimelineExternalReleaseMovementCalculationHandler(
 
       if (thisExternalMovement.movementReason == ExternalMovementReason.ERS) {
         if (nextExternalMovement?.movementReason == ExternalMovementReason.ERS_RETURN ||
-          timelineCalculationDate.isAfterOrEqualTo(ImportantDates.ERS_STOP_CLOCK_COMMENCEMENT))
-        //For this kind of ERS release/return this is not considered a release.
-        return TimelineHandleResult(requiresCalculation = false)
+          timelineCalculationDate.isAfterOrEqualTo(ImportantDates.ERS_STOP_CLOCK_COMMENCEMENT)
+        ) {
+          return TimelineHandleResult(requiresCalculation = false)
+        }
       }
 
       inPrison = false

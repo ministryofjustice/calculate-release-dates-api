@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.ADDITIONAL_DAYS_AWARDED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.AdjustmentType.RECALL_REMAND
@@ -85,10 +84,8 @@ class BookingTimelineService(
     calculationsByDate.forEach { (timelineCalculationDate, calculations) ->
       checkForReleasesAndLicenseExpiry(timelineCalculationDate, timelineTrackingData)
 
-
       val results = calculations.sortedBy { it.type.ordinal }.map {
         handlerFor(it.type).handle(timelineCalculationDate, timelineTrackingData)
-
       }
       val anyCalculationRequired = results.any { it.requiresCalculation }
       val anySkipCalculation = results.any { it.skipCalculationForEntireDate }

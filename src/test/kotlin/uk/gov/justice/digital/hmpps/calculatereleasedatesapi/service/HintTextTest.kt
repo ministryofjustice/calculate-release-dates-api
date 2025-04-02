@@ -208,7 +208,7 @@ class HintTextTest {
     trancheConfiguration,
     releasePointMultiplierConfigurationForTests,
     timelineCalculator,
-    sentenceCombinationService
+    sentenceCombinationService,
   )
   private val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
     trancheConfiguration,
@@ -252,7 +252,7 @@ class HintTextTest {
     timelineUalAdjustmentCalculationHandler,
     timelineExternalReleaseMovementCalculationHandler,
     timelineExternalAdmissionMovementCalculationHandler,
-    timelineAdjustmentService
+    timelineAdjustmentService,
   )
   private val sourceDataMapper = SourceDataMapper(TestUtil.objectMapper())
   private val calculationService = CalculationService(

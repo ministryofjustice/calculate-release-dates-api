@@ -1,13 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
-import arrow.core.left
-import arrow.core.leftNel
-import arrow.core.right
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
@@ -34,7 +30,7 @@ class SentenceCombinationService(
 
   private fun allSdsBeforeLaspo(sentences: List<AbstractSentence>): Boolean = sentences.all { it is StandardDeterminateSentence && it.isBeforeCJAAndLASPO() }
 
-  private fun allDtos(sentences: List<AbstractSentence>,): Boolean = sentences.all { it is DetentionAndTrainingOrderSentence }
+  private fun allDtos(sentences: List<AbstractSentence>): Boolean = sentences.all { it is DetentionAndTrainingOrderSentence }
 
   fun createSingleTermSentences(sentences: List<AbstractSentence>, offender: Offender): SingleTermed? {
     if (sentences.size > 1 &&

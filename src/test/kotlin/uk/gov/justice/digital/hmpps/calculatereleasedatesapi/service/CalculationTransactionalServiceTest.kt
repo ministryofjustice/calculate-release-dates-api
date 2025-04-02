@@ -166,25 +166,6 @@ class CalculationTransactionalServiceTest {
   @Captor
   lateinit var updatedOffenderDatesArgumentCaptor: ArgumentCaptor<UpdateOffenderDates>
 
-
-  @Test
-  fun blah() {
-    `Test Example`("custom-examples", "crs-1310-bug", null, null, null, null, null)
-  }
-/*
-CalculationTransactionalServiceTest. [678] exampleType=custom-examples, exampleNumber=crs-2107-external-movements-ac2-1, error=null, params=null, assertSds40=null, expectedValidationException=TRUE, expectedValidationMessage=null
-CalculationTransactionalServiceTest. [679] exampleType=custom-examples, exampleNumber=crs-2107-external-movements-ac2-2, error=null, params=null, assertSds40=null, expectedValidationException=FALSE, expectedValidationMessage=null
-CalculationTransactionalServiceTest. [680] exampleType=custom-examples, exampleNumber=crs-2107-external-movements-ac2-3, error=null, params=null, assertSds40=null, expectedValidationException=FALSE, expectedValidationMessage=null
-CalculationTransactionalServiceTest. [681] exampleType=custom-examples, exampleNumber=crs-2107-external-movements-ac3, error=null, params=null, assertSds40=null, expectedValidationException=FALSE, expectedValidationMessage=null
-CalculationTransactionalServiceTest. [682] exampleType=custom-examples, exampleNumber=crs-2107-external-movements-ac4, error=null, params=null, assertSds40=null, expectedValidationException=FALSE, expectedValidationMessage=null
-CalculationTransactionalServiceTest. [683] exampleType=custom-examples, exampleNumber=crs-2107-external-movements-ac5, error=null, params=null, assertSds40=null, expectedValidationException=TRUE, expectedValidationMessage=null
-CalculationTransactionalServiceTest. [684] exampleType=custom-examples, exampleNumber=crs-2107-external-movements-ac6, error=null, params=null, assertSds40=null, expectedValidationException=FALSE, expectedValidationMessage=null
-CalculationTransactionalServiceTest. [685] exampleType=custom-examples, exampleNumber=crs-2107-external-movements-ac7, error=null, params=null, assertSds40=null, expectedValidationException=FALSE, expectedValidationMessage=null
-CalculationTransactionalServiceTest. [686] exampleType=custom-examples, exampleNumber=crs-2107-external-movements-ac8, error=null, params=null, assertSds40=null, expectedValidationException=FALSE, expectedValidationMessage=null
-
- */
-
-
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
   fun `Test Example`(
@@ -728,7 +709,7 @@ CalculationTransactionalServiceTest. [686] exampleType=custom-examples, exampleN
       trancheConfiguration,
       releasePointMultipliersConfiguration,
       timelineCalculator,
-      sentenceCombinationService
+      sentenceCombinationService,
     )
     val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
       trancheConfiguration,
@@ -771,7 +752,7 @@ CalculationTransactionalServiceTest. [686] exampleType=custom-examples, exampleN
       timelineUalAdjustmentCalculationHandler,
       timelineExternalReleaseMovementCalculationHandler,
       timelineExternalAdmissionMovementCalculationHandler,
-      timelineAdjustmentService
+      timelineAdjustmentService,
     )
 
     val sourceDataMapper = SourceDataMapper(TestUtil.objectMapper())

@@ -37,16 +37,17 @@ data class PrisonApiExternalMovement(
   private fun getExternalMovementReasonForErsAdmission(): ExternalMovementReason {
     return if (isFromIRC() || isFromImmigrationCourt()) {
       ExternalMovementReason.ERS_RETURN
-    } else
+    } else {
       ExternalMovementReason.ADMISSION
+    }
   }
 
   private fun isFromIRC(): Boolean {
-    return (fromAgency?: "").contains("IRC")
+    return (fromAgency ?: "").contains("IRC")
   }
 
   private fun isFromImmigrationCourt(): Boolean {
-    return (fromAgency?: "")  == "IMM"
+    return (fromAgency ?: "") == "IMM"
   }
 
   fun transformMovementDirection(): ExternalMovementDirection {

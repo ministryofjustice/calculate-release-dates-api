@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline
 
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 
 data class TimelineFutureData(
   var remand: List<Adjustment>,
