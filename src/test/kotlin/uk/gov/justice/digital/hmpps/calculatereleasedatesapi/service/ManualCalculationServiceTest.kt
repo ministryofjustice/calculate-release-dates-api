@@ -153,9 +153,6 @@ class ManualCalculationServiceTest {
 
     @Test
     fun `Check if ESL is set to zero for when calculated ESL is negative`() {
-      // Arrange
-//      whenever(bookingCalculationService.createConsecutiveSentences(any())).thenReturn(emptyList())
-
       // Act
       val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
 

@@ -44,21 +44,19 @@ class TimelineSentenceCalculationHandler(
       currentSentenceGroup.addAll(newlySentenced)
       futureData.sentences -= newlySentenced
 
-      val afterCombination = sentenceCombinationService.getSentencesToCalculate(currentSentenceGroup, offender)
-
-      val newSentencesToCalculate = afterCombination.filter { it.sentenceParts().any { part -> newlySentenced.contains(part) } }
-      val newSentencesWithParts = newSentencesToCalculate.flatMap { it.sentenceParts() }
-      val original = currentSentenceGroup.filter { it.sentenceParts().none { part -> newSentencesWithParts.contains(part) } }
+      val sentencesAfterCombining = sentenceCombinationService.getSentencesToCalculate(currentSentenceGroup, offender)
+      val mergedSentencesWhichHaveNewParts = sentencesAfterCombining.filter { it.sentenceParts().any { part -> newlySentenced.contains(part) } }
+      val partsOfNewlyCombinedSentences = mergedSentencesWhichHaveNewParts.flatMap { it.sentenceParts() }
+      val unchangedByCombiningSentences = currentSentenceGroup.filter { it.sentenceParts().none { part -> partsOfNewlyCombinedSentences.contains(part) } }
 
       currentSentenceGroup.clear()
-      currentSentenceGroup.addAll(newSentencesToCalculate)
-      currentSentenceGroup.addAll(original)
+      currentSentenceGroup.addAll(mergedSentencesWhichHaveNewParts)
+      currentSentenceGroup.addAll(unchangedByCombiningSentences)
+      currentSentenceGroup.apply { sortWith(compareBy { it.sentencedAt }) }
 
-      initialiseCalculationForNewSentences(timelineCalculationDate, timelineTrackingData, newSentencesToCalculate)
+      initialiseCalculationForNewSentences(timelineCalculationDate, timelineTrackingData, mergedSentencesWhichHaveNewParts)
 
-      shareAdjustmentsFromExistingCustodialSentencesToNewlySentenced(newSentencesToCalculate, existingAdjustments, servedAdas)
-
-//      handleNewlySentencedPartOfConsecutiveSentence(timelineCalculationDate, timelineTrackingData)
+      shareAdjustmentsFromExistingCustodialSentencesToNewlySentenced(mergedSentencesWhichHaveNewParts, existingAdjustments, servedAdas)
 
       shareDeductionsThatAreApplicableToThisSentenceDate(timelineCalculationDate, timelineTrackingData)
     }
@@ -89,20 +87,6 @@ class TimelineSentenceCalculationHandler(
           calculateErsed = options.calculateErsed,
         )
       }
-    }
-  }
-
-  private fun handleNewlySentencedPartOfConsecutiveSentence(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData) {
-    with(timelineTrackingData) {
-      // This new sentence is part of a consecutive sentence starting on an earlier date.
-      currentSentenceGroup.filter {
-        it.sentencedAt != timelineCalculationDate && it.sentenceParts()
-          .any { part -> part.sentencedAt == timelineCalculationDate }
-      }
-        .forEach {
-          it.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
-            multiplierFnForDate(timelineCalculationDate.minusDays(1), trancheAndCommencement.second) // Use day before sentencing for when someone is sentenced for another consecutive part on tranche commencement.
-        }
     }
   }
 
