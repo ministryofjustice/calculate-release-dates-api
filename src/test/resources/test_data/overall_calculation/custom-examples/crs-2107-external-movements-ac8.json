@@ -1,0 +1,56 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "type": "DetentionAndTrainingOrderSentence",
+      "offence": {
+        "committedAt": "2022-05-01",
+        "offenceCode": "PC00700"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 10
+        }
+      },
+      "sentencedAt": "2023-05-01"
+    },
+    {
+      "type": "DetentionAndTrainingOrderSentence",
+      "offence": {
+        "committedAt": "2024-03-04",
+        "offenceCode": "CJ08507"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 22
+        }
+      },
+      "sentencedAt": "2023-09-04"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2023-05-01",
+        "numberOfDays": 23,
+        "fromDate": "2023-04-08",
+        "toDate": "2023-04-30"
+      }
+    ]
+  },
+  "externalMovements": [
+    {
+      "movementDate": "2023-09-04",
+      "movementReason": "ADMISSION",
+      "direction": "IN"
+    },
+    {
+      "movementDate": "2023-08-07",
+      "movementReason": "DTO",
+      "direction": "OUT"
+    }
+  ]
+}

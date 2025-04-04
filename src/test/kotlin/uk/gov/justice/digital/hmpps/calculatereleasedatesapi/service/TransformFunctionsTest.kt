@@ -41,6 +41,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ComparisonOve
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.MismatchType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offence
@@ -62,10 +63,12 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.PrisonApiExternalMovement
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.Period
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.MONTHS
@@ -569,6 +572,75 @@ class TransformFunctionsTest {
       transform(request.copy(terms = listOf(SentenceTerms(years = 1))), null)
     }
     assertThat(exceptionLicCode.message).isEqualTo("Missing LICENCE_TERM_CODE for ExtendedDeterminateSentence")
+  }
+
+  @Test
+  fun `Transform external movement`() {
+    val prisonApiExternalMovement = PrisonApiExternalMovement(
+      movementReasonCode = "R",
+      commentText = "",
+      movementDate = LocalDate.now(),
+      movementReason = "A",
+      movementTime = LocalTime.now(),
+      movementType = "A",
+      directionCode = "IN",
+      offenderNo = "ASD",
+      movementTypeDescription = "ASD",
+      createDateTime = LocalDateTime.now(),
+      fromAgency = "bbc",
+    )
+
+    val admission = prisonApiExternalMovement.copy(
+      movementType = "ADM",
+      directionCode = "IN",
+      movementReasonCode = "N",
+    )
+    assertThat(transform(admission)!!.movementReason).isEqualTo(ExternalMovementReason.ADMISSION)
+    val ersReturnFromIRC = admission.copy(
+      movementReasonCode = "E",
+      fromAgency = "IRC",
+    )
+    assertThat(transform(ersReturnFromIRC)!!.movementReason).isEqualTo(ExternalMovementReason.ERS_RETURN)
+    val ersReturnFromImmigrationCourt = ersReturnFromIRC.copy(
+      fromAgency = "IMM",
+    )
+    assertThat(transform(ersReturnFromImmigrationCourt)!!.movementReason).isEqualTo(ExternalMovementReason.ERS_RETURN)
+    val notErsReturn = ersReturnFromImmigrationCourt.copy(
+      fromAgency = "NOT A ERS RETURN",
+    )
+    assertThat(transform(notErsReturn)!!.movementReason).isEqualTo(ExternalMovementReason.ADMISSION)
+
+    val hdcRelease = prisonApiExternalMovement.copy(
+      movementType = "REL",
+      directionCode = "OUT",
+      movementReasonCode = "HR",
+    )
+    assertThat(transform(hdcRelease)!!.movementReason).isEqualTo(ExternalMovementReason.HDC)
+    val ersRelease = hdcRelease.copy(
+      movementReasonCode = "DE",
+    )
+    assertThat(transform(ersRelease)!!.movementReason).isEqualTo(ExternalMovementReason.ERS)
+    val paroleRelease = hdcRelease.copy(
+      movementReasonCode = "PX",
+    )
+    assertThat(transform(paroleRelease)!!.movementReason).isEqualTo(ExternalMovementReason.PAROLE)
+    val ecslRelease = hdcRelease.copy(
+      movementReasonCode = "ECSL",
+    )
+    assertThat(transform(ecslRelease)!!.movementReason).isEqualTo(ExternalMovementReason.ECSL)
+    val crdRelease = hdcRelease.copy(
+      movementReasonCode = "CR",
+    )
+    assertThat(transform(crdRelease)!!.movementReason).isEqualTo(ExternalMovementReason.CRD)
+    val dtoRelease = hdcRelease.copy(
+      movementReasonCode = "D3",
+    )
+    assertThat(transform(dtoRelease)!!.movementReason).isEqualTo(ExternalMovementReason.DTO)
+
+    val unkownType = hdcRelease.copy(
+      movementReasonCode = "THISISNOTATHING",
+    )
+    assertThat(transform(unkownType)).isNull()
   }
 
   private fun getComparisonPerson(validationMessages: List<ValidationMessage>? = emptyList()): ComparisonPerson {

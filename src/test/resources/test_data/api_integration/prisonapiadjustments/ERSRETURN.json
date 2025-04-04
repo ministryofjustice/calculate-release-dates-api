@@ -1,0 +1,28 @@
+{
+  "bookingAdjustments": [
+    {
+      "active": true,
+      "type": "UNLAWFULLY_AT_LARGE",
+      "fromDate": "2022-03-20",
+      "numberOfDays": 3
+    },
+    {
+      "active": true,
+      "type": "ADDITIONAL_DAYS_AWARDED",
+      "fromDate": "2021-12-14",
+      "numberOfDays": 10
+    }
+  ],
+  "sentenceAdjustments": [
+    {
+      "sentenceSequence": 1,
+      "active": true,
+      "type": "REMAND",
+      "fromDate": "2019-01-03",
+      "toDate": "2020-04-01",
+      "numberOfDays": 455
+    }
+  ]
+}
+
+

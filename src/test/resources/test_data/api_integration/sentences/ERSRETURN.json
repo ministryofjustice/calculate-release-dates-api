@@ -1,0 +1,94 @@
+[
+  {
+    "bookingId": 1,
+    "sentenceSequence": 1,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "Standard Determinate",
+    "sentenceDate": "2020-04-02",
+    "terms": [{
+      "years": 7,
+      "months": 0,
+      "weeks": 0,
+      "days": 0
+    }],
+    "offences": [
+      {
+        "offenderChargeId": 9991,
+        "offenceStartDate": "2015-03-17",
+        "offenceCode": "GBH",
+        "offenceDescription": "Grievous bodily harm"
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 2,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "Standard Determinate",
+    "sentenceDate": "2020-04-02",
+    "terms": [{
+      "years": 3,
+      "months": 0,
+      "weeks": 0,
+      "days": 0
+    }],
+    "offences": [
+      {
+        "offenderChargeId": 9991,
+        "offenceStartDate": "2015-03-17",
+        "offenceCode": "GBH",
+        "offenceDescription": "Grievous bodily harm"
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 3,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "Standard Determinate",
+    "sentenceDate": "2020-04-02",
+    "terms": [{
+      "years": 0,
+      "months": 15,
+      "weeks": 0,
+      "days": 0
+    }],
+    "offences": [
+      {
+        "offenderChargeId": 9991,
+        "offenceStartDate": "2015-03-17",
+        "offenceCode": "GBH",
+        "offenceDescription": "Grievous bodily harm"
+      }
+    ]
+  },
+  {
+    "bookingId": 1,
+    "sentenceSequence": 4,
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP_ORA",
+    "sentenceTypeDescription": "Standard Determinate",
+    "sentenceDate": "2022-03-29",
+    "terms": [{
+      "years": 6,
+      "months": 0,
+      "weeks": 0,
+      "days": 0
+    }],
+    "offences": [
+      {
+        "offenderChargeId": 9991,
+        "offenceStartDate": "2015-03-17",
+        "offenceCode": "GBH",
+        "offenceDescription": "Grievous bodily harm"
+      }
+    ]
+  }
+]

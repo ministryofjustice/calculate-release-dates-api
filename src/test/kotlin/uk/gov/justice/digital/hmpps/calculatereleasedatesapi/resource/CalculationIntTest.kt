@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.resource
 
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import jakarta.persistence.EntityNotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.entry
@@ -516,6 +519,28 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     val userInput = CalculationUserInputs(
       useOffenceIndicators = true,
     )
+    mockManageOffencesClient.withStub(
+      get(urlMatching("/schedule/sds-early-release-exclusions\\?offenceCodes=TH68007A,TR68132"))
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(
+              """[
+                {
+                    "offenceCode": "TH68007A",
+                    "schedulePart": "SEXUAL"
+                },
+                {
+                    "offenceCode": "TR68132",
+                    "schedulePart": "SEXUAL"
+                }
+            ]
+              """.trimIndent(),
+            )
+            .withStatus(200)
+            .withTransformers("response-template"),
+        ),
+    )
 
     mockManageOffencesClient.withPCSCMarkersResponse(
       OffencePcscMarkers(
@@ -538,7 +563,6 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .contentType(MediaType.APPLICATION_JSON)
-//      .bodyValue(objectMapper.writeValueAsString(userInput))
       .bodyValue(CalculationRequestModel(userInput, 1L))
       .exchange()
       .expectStatus().isOk
@@ -547,10 +571,10 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       .returnResult().responseBody!!
 
     assertThat(calculation.dates[CRD]).isEqualTo(
-      LocalDate.of(2017, 6, 19),
+      LocalDate.of(2027, 6, 20),
     )
     assertThat(calculation.dates[SLED]).isEqualTo(
-      LocalDate.of(2020, 2, 4),
+      LocalDate.of(2030, 2, 4),
     )
   }
 
@@ -1201,6 +1225,30 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
     )
     assertThat(calculation.dates[SLED]).isEqualTo(
       LocalDate.of(2025, 9, 14),
+    )
+  }
+
+  @Test
+  fun `Run calculation with ERS return external movements`() {
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/ERSRETURN")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(calculationRequestModel.copy(calculationUserInputs = CalculationUserInputs(calculateErsed = true)))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates[CRD]).isEqualTo(
+      LocalDate.of(2024, 1, 8),
+    )
+    assertThat(calculation.dates[SLED]).isEqualTo(
+      LocalDate.of(2026, 12, 29),
+    )
+    assertThat(calculation.dates[ERSED]).isEqualTo(
+      LocalDate.of(2022, 7, 13),
     )
   }
 

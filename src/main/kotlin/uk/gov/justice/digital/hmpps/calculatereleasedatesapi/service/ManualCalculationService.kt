@@ -38,7 +38,8 @@ class ManualCalculationService(
   private val serviceUserService: ServiceUserService,
   private val nomisCommentService: NomisCommentService,
   private val buildProperties: BuildProperties,
-  private val bookingCalculationService: BookingCalculationService,
+  private val sentenceIdentificationService: SentenceIdentificationService,
+  private val sentenceCombinationService: SentenceCombinationService,
   private val validationService: ValidationService,
   private val calculationSourceDataService: CalculationSourceDataService,
 ) {
@@ -182,8 +183,10 @@ class ManualCalculationService(
     ) {
       return Period.ZERO
     } else {
-      bookingCalculationService.identify(booking)
-      val sentences = bookingCalculationService.getSentencesToCalculate(booking)
+      booking.sentences.forEach {
+        sentenceIdentificationService.identify(it, booking.offender)
+      }
+      val sentences = sentenceCombinationService.getSentencesToCalculate(booking.sentences, booking.offender)
       val earliestSentenceDate = sentences.minOfOrNull { it.sentencedAt }
       val sed = getSED(manualEntryRequest)
       return if (sed != null && earliestSentenceDate != null) {

@@ -4,59 +4,54 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DetentionAndTrainingOrderSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.DtoSingleTermSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermed
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import java.util.UUID
 
 @Service
-class BookingCalculationService(
+class SentenceCombinationService(
   val sentenceIdentificationService: SentenceIdentificationService,
 ) {
 
-  fun identify(booking: Booking) {
-    for (sentence in booking.sentences) {
-      sentenceIdentificationService.identify(sentence, booking.offender)
-    }
+  fun getSentencesToCalculate(sentences: List<CalculableSentence>, offender: Offender): List<CalculableSentence> {
+    val singleSentences = sentences.flatMap { it.sentenceParts() }
+    val consecutiveSentences = createConsecutiveSentences(singleSentences, offender)
+
+    val singleTermed = createSingleTermSentences(singleSentences, offender)
+
+    return getAllExtractableSentences(singleSentences, singleTermed, consecutiveSentences)
   }
 
-  private fun allSdsBeforeLaspo(booking: Booking): Boolean = booking.sentences.all { it is StandardDeterminateSentence && it.isBeforeCJAAndLASPO() }
+  private fun allSdsBeforeLaspo(sentences: List<AbstractSentence>): Boolean = sentences.all { it is StandardDeterminateSentence && it.isBeforeCJAAndLASPO() }
 
-  private fun allDtos(booking: Booking): Boolean = booking.sentences.all { it is DetentionAndTrainingOrderSentence }
+  private fun allDtos(sentences: List<AbstractSentence>): Boolean = sentences.all { it is DetentionAndTrainingOrderSentence }
 
-  fun getSentencesToCalculate(booking: Booking): List<CalculableSentence> {
-    val consecutiveSentences = createConsecutiveSentences(booking)
-
-    val singleTermed = createSingleTermSentences(booking)
-
-    return getAllExtractableSentences(booking.sentences, singleTermed, consecutiveSentences)
-  }
-
-  fun createSingleTermSentences(booking: Booking): SingleTermed? {
-    if (booking.sentences.size > 1 &&
-      (allSdsBeforeLaspo(booking) || allDtos(booking)) &&
-      booking.sentences.all { it.consecutiveSentenceUUIDs.isEmpty() } &&
-      booking.sentences.minOf { it.sentencedAt } != booking.sentences.maxOf { it.sentencedAt } &&
-      booking.sentences.all { !it.isRecall() }
+  fun createSingleTermSentences(sentences: List<AbstractSentence>, offender: Offender): SingleTermed? {
+    if (sentences.size > 1 &&
+      (allSdsBeforeLaspo(sentences) || allDtos(sentences)) &&
+      sentences.all { it.consecutiveSentenceUUIDs.isEmpty() } &&
+      sentences.minOf { it.sentencedAt } != sentences.maxOf { it.sentencedAt } &&
+      sentences.all { !it.isRecall() }
     ) {
-      val sentence = if (booking.sentences.any { it is DetentionAndTrainingOrderSentence }) {
-        DtoSingleTermSentence(booking.sentences)
+      val sentence = if (sentences.any { it is DetentionAndTrainingOrderSentence }) {
+        DtoSingleTermSentence(sentences)
       } else {
-        SingleTermSentence(booking.sentences)
+        SingleTermSentence(sentences)
       }
-      sentenceIdentificationService.identify(sentence, booking.offender)
+      sentenceIdentificationService.identify(sentence, offender)
       return sentence
     }
     return null
   }
 
-  fun createConsecutiveSentences(booking: Booking): List<ConsecutiveSentence> {
-    val (baseSentences, consecutiveSentenceParts) = booking.sentences.partition { it.consecutiveSentenceUUIDs.isEmpty() }
+  fun createConsecutiveSentences(sentences: List<AbstractSentence>, offender: Offender): List<ConsecutiveSentence> {
+    val (baseSentences, consecutiveSentenceParts) = sentences.partition { it.consecutiveSentenceUUIDs.isEmpty() }
     val sentencesByPrevious = consecutiveSentenceParts.groupBy {
       it.consecutiveSentenceUUIDs.first()
     }
@@ -76,7 +71,7 @@ class BookingCalculationService(
     )
 
     consecutiveSentences.forEach {
-      sentenceIdentificationService.identify(it, booking.offender)
+      sentenceIdentificationService.identify(it, offender)
     }
     return consecutiveSentences
   }

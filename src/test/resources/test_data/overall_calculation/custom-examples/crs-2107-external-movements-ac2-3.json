@@ -1,0 +1,55 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "type": "SopcSentence",
+      "offence": {
+        "committedAt": "2016-09-14",
+        "offenceCode": "SX03015"
+      },
+      "custodialDuration": {
+        "durationElements": {
+          "YEARS": 6
+        }
+      },
+      "extensionDuration": {
+        "durationElements": {
+          "YEARS": 1
+        }
+      },
+      "sentencedAt": "2018-09-15"
+    },
+    {
+      "type": "AFineSentence",
+      "offence": {
+        "committedAt": "2023-08-17",
+        "offenceCode": "CF17002"
+      },
+      "duration": {
+        "durationElements": {
+          "MONTHS": 30
+        }
+      },
+      "sentencedAt": "2024-05-23",
+      "fineAmount": 250000
+    }
+  ],
+  "adjustments": {
+    "TAGGED_BAIL": [
+      {
+        "appliesToSentencesFrom": "2018-09-15",
+        "numberOfDays": 98
+      }
+    ]
+  },
+  "externalMovements": [
+    {
+      "movementDate": "2023-08-15",
+      "movementReason": "PAROLE",
+      "direction": "OUT"
+    }
+  ]
+}

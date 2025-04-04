@@ -93,7 +93,7 @@ class SDSEarlyReleaseDefaultingRulesService(
     effectiveSentenceLength = earlyReleaseResult.effectiveSentenceLength,
     sdsEarlyReleaseAllocatedTranche = allocatedTranche,
     sdsEarlyReleaseTranche = allocatedTranche,
-    affectedBySds40 = (dates != standardReleaseResult.dates),
+    affectedBySds40 = (dates != standardReleaseResult.dates) || standardReleaseResult.affectedBySds40,
   )
 
   private fun getArdOrCrd(

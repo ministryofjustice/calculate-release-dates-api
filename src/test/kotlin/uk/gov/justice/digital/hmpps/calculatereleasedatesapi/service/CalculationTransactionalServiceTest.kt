@@ -684,7 +684,7 @@ class CalculationTransactionalServiceTest {
 
     val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
     val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)
-    val bookingCalculationService = BookingCalculationService(
+    val sentenceCombinationService = SentenceCombinationService(
       sentenceIdentificationService,
     )
 
@@ -709,6 +709,7 @@ class CalculationTransactionalServiceTest {
       trancheConfiguration,
       releasePointMultipliersConfiguration,
       timelineCalculator,
+      sentenceCombinationService,
     )
     val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
       trancheConfiguration,
@@ -752,13 +753,12 @@ class CalculationTransactionalServiceTest {
       timelineExternalReleaseMovementCalculationHandler,
       timelineExternalAdmissionMovementCalculationHandler,
       timelineAdjustmentService,
-      featureToggles = FeatureToggles(),
     )
 
     val sourceDataMapper = SourceDataMapper(TestUtil.objectMapper())
 
     val calculationService = CalculationService(
-      bookingCalculationService,
+      sentenceIdentificationService,
       bookingTimelineService,
     )
 

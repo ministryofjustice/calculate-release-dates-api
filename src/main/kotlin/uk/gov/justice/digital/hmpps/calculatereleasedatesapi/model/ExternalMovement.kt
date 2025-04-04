@@ -16,6 +16,7 @@ enum class ExternalMovementReason {
   CRD,
   DTO,
   ADMISSION,
+  ERS_RETURN,
 }
 
 enum class ExternalMovementDirection {

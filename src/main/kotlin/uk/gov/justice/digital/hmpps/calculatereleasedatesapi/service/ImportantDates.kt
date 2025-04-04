@@ -14,6 +14,7 @@ object ImportantDates {
   val A_FINE_TEN_MILLION_FULL_RELEASE_DATE: LocalDate = LocalDate.of(2015, 6, 1)
   val SDS_DYO_TORERA_START_DATE: LocalDate = LocalDate.of(2005, 4, 4)
   val SOPC_TORERA_END_DATE: LocalDate = LocalDate.of(2022, 6, 28)
+  val ERS_STOP_CLOCK_COMMENCEMENT: LocalDate = LocalDate.of(2022, 6, 28)
   val SDS_40_COMMENCEMENT_DATE = LocalDate.of(2024, 9, 10)
   val SENTENCING_ACT_2020_COMMENCEMENT: LocalDate = LocalDate.of(2020, 12, 1)
   val HDC_365_COMMENCEMENT_DATE: LocalDate = LocalDate.of(2025, 6, 3)

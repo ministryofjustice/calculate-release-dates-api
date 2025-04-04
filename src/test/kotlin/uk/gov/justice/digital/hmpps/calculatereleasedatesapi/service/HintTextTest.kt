@@ -186,7 +186,7 @@ class HintTextTest {
   private val tranche = Tranche(trancheConfiguration)
   private val trancheAllocationService = TrancheAllocationService(tranche, trancheConfiguration)
   private val sdsEarlyReleaseDefaultingRulesService = SDSEarlyReleaseDefaultingRulesService(trancheConfiguration)
-  private val bookingCalculationService = BookingCalculationService(sentenceIdentificationService)
+  private val sentenceCombinationService = SentenceCombinationService(sentenceIdentificationService)
   private val hdcedExtractionService = HdcedExtractionService(sentencesExtractionService)
   private val bookingExtractionService = BookingExtractionService(
     hdcedExtractionService,
@@ -208,6 +208,7 @@ class HintTextTest {
     trancheConfiguration,
     releasePointMultiplierConfigurationForTests,
     timelineCalculator,
+    sentenceCombinationService,
   )
   private val timelineTrancheCalculationHandler = TimelineTrancheCalculationHandler(
     trancheConfiguration,
@@ -252,11 +253,10 @@ class HintTextTest {
     timelineExternalReleaseMovementCalculationHandler,
     timelineExternalAdmissionMovementCalculationHandler,
     timelineAdjustmentService,
-    featureToggles = FeatureToggles(),
   )
   private val sourceDataMapper = SourceDataMapper(TestUtil.objectMapper())
   private val calculationService = CalculationService(
-    bookingCalculationService,
+    sentenceIdentificationService,
     bookingTimelineService,
   )
 

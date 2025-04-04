@@ -37,6 +37,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.or
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
 import java.time.Period
+import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.MONTHS
 
 @Service
@@ -185,7 +186,7 @@ class BookingExtractionService(
 
     val latestTUSEDAndBreakdown = if (latestLicenseExpiryDate != null) {
       extractManyTopUpSuperVisionDate(sentences, latestLicenseExpiryDate)
-    } else if (isTusedableDtos(sentences, effectiveSentenceLength, offender)) {
+    } else if (isTusedableDtos(sentences, offender)) {
       val latestTUSEDSentence = sentences
         .filter { it.sentenceCalculation.topUpSupervisionDate != null }
         .maxByOrNull { it.sentenceCalculation.topUpSupervisionDate!! }
@@ -493,7 +494,9 @@ class BookingExtractionService(
     return false
   }
 
-  private fun isTusedableDtos(sentences: List<CalculableSentence>, effectiveSentenceLength: Period, offender: Offender): Boolean = sentences.all { it.isDto() } && effectiveSentenceLength.toTotalMonths() < 24 && !sentences.all { offender.underEighteenAt(it.sentenceCalculation.releaseDate) }
+  private fun isTusedableDtos(sentences: List<CalculableSentence>, offender: Offender): Boolean = sentences.all { it.isDto() } &&
+    !sentences.all { offender.underEighteenAt(it.sentenceCalculation.releaseDate) } &&
+    sentences.all { it.durationIsLessThan(2, ChronoUnit.YEARS) }
 
   private fun calculateErsedWhereDtoIsPresent(
     dates: MutableMap<ReleaseDateType, LocalDate>,
