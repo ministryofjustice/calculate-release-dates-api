@@ -1,0 +1,73 @@
+{
+  "offender": {
+    "reference": "ABC123",
+    "dateOfBirth": "1990-01-01"
+  },
+  "sentences": [
+    {
+      "offence": {
+        "committedAt": "2019-12-07",
+        "offenceCode": "MD71531C"
+      },
+      "duration": {
+        "durationElements": {
+          "YEARS": 4,
+          "MONTHS": 6
+        }
+      },
+      "sentencedAt": "2020-11-23"
+    },
+    {
+      "offence": {
+        "committedAt": "2022-02-26",
+        "offenceCode": "MD71531C"
+      },
+      "duration": {
+        "durationElements": {
+          "WEEKS": 6
+        }
+      },
+      "sentencedAt": "2022-03-02"
+    }
+  ],
+  "adjustments": {
+    "REMAND": [
+      {
+        "appliesToSentencesFrom": "2020-11-23",
+        "numberOfDays": 350,
+        "fromDate": "2019-12-09",
+        "toDate": "2020-11-22"
+      }
+    ],
+    "UNLAWFULLY_AT_LARGE": [
+      {
+        "appliesToSentencesFrom": "2022-01-30",
+        "numberOfDays": 3,
+        "fromDate": "2022-01-30"
+      }
+    ]
+  },
+  "externalMovements": [
+    {
+      "movementDate": "2022-01-29",
+      "movementReason": "ERS",
+      "direction": "OUT"
+    },
+    {
+      "movementDate": "2022-02-02",
+      "movementReason": "ERS_RETURN",
+      "direction": "IN"
+    },
+    {
+      "movementDate": "2022-02-19",
+      "movementReason": "ERS",
+      "direction": "OUT"
+    },
+    {
+      "movementDate": "2022-03-02",
+      "movementReason": "ADMISSION",
+      "direction": "IN"
+    }
+  ],
+  "calculateErsed": true
+}

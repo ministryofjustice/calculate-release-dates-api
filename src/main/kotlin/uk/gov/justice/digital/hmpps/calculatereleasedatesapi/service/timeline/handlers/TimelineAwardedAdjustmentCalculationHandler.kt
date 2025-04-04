@@ -37,10 +37,10 @@ class TimelineAwardedAdjustmentCalculationHandler(
         } else if (licenseSentences.none { it.isRecall() }) {
           // This is a PADA. No calculation required. Set value here to be applied to later sentences.
           padas += adaDays - radaDays
-          return TimelineHandleResult(true)
+          return TimelineHandleResult(requiresCalculation = false)
         } else {
           // standard recall
-          return TimelineHandleResult(true)
+          return TimelineHandleResult(requiresCalculation = false)
         }
       } else {
         val maxReleaseNonTermRelease =

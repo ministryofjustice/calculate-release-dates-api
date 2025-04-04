@@ -65,7 +65,8 @@ class ManualCalculationServiceTest {
   private val eventService = mock<EventService>()
   private val serviceUserService = mock<ServiceUserService>()
   private val nomisCommentService = mock<NomisCommentService>()
-  private val bookingCalculationService = mock<BookingCalculationService>()
+  private val sentenceIdentificationService = mock<SentenceIdentificationService>()
+  private val sentenceCombinationService = mock<SentenceCombinationService>()
   private val validationService = mock<ValidationService>()
   private val manualCalculationService = ManualCalculationService(
     prisonService,
@@ -78,7 +79,8 @@ class ManualCalculationServiceTest {
     serviceUserService,
     nomisCommentService,
     TEST_BUILD_PROPERTIES,
-    bookingCalculationService,
+    sentenceIdentificationService,
+    sentenceCombinationService,
     validationService,
     calculationSourceDataService,
   )
@@ -151,9 +153,6 @@ class ManualCalculationServiceTest {
 
     @Test
     fun `Check if ESL is set to zero for when calculated ESL is negative`() {
-      // Arrange
-      whenever(bookingCalculationService.createConsecutiveSentences(any())).thenReturn(emptyList())
-
       // Act
       val result = manualCalculationService.calculateEffectiveSentenceLength(BOOKING, MANUAL_ENTRY)
 
@@ -224,7 +223,7 @@ class ManualCalculationServiceTest {
         sentencedAt = LocalDate.of(2021, 1, 1),
       )
 
-      whenever(bookingCalculationService.getSentencesToCalculate(any())).thenReturn(
+      whenever(sentenceCombinationService.getSentencesToCalculate(any(), any())).thenReturn(
         listOf(
           sentenceOne,
           sentenceTwo,
@@ -246,7 +245,7 @@ class ManualCalculationServiceTest {
         sentencedAt = LocalDate.of(2022, 1, 1),
       )
 
-      whenever(bookingCalculationService.getSentencesToCalculate(any())).thenReturn(
+      whenever(sentenceCombinationService.getSentencesToCalculate(any(), any())).thenReturn(
         listOf(
           sentenceOne,
         ),
@@ -271,7 +270,7 @@ class ManualCalculationServiceTest {
         consecutiveSentenceUUIDs = listOf(StandardSENTENCE.identifier),
       )
 
-      whenever(bookingCalculationService.getSentencesToCalculate(any())).thenReturn(
+      whenever(sentenceCombinationService.getSentencesToCalculate(any(), any())).thenReturn(
         listOf(
           ConsecutiveSentence(
             listOf(
@@ -524,7 +523,7 @@ class ManualCalculationServiceTest {
     whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
 
     // Throw exception during consecutive sentence creation
-    whenever(bookingCalculationService.createConsecutiveSentences(any())).thenThrow(NullPointerException("An error was thrown"))
+    whenever(sentenceCombinationService.createConsecutiveSentences(any(), any())).thenThrow(NullPointerException("An error was thrown"))
     val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
     val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
 

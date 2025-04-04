@@ -262,33 +262,28 @@ class SentenceIdentificationService(
 
   private fun identifyExtendedDeterminate(sentence: ExtendedDeterminateSentence): List<ReleaseDateType> {
     val releaseDateTypes = mutableListOf<ReleaseDateType>()
-    if (sentence.isRecall()) {
+    if (sentence.automaticRelease) {
       sentence.identificationTrack = EDS_AUTOMATIC_RELEASE
       releaseDateTypes.addAll(
         listOf(
           SLED,
-          PRRD,
+          CRD,
         ),
       )
     } else {
-      if (sentence.automaticRelease) {
-        sentence.identificationTrack = EDS_AUTOMATIC_RELEASE
-        releaseDateTypes.addAll(
-          listOf(
-            SLED,
-            CRD,
-          ),
-        )
-      } else {
-        sentence.identificationTrack = EDS_DISCRETIONARY_RELEASE
-        releaseDateTypes.addAll(
-          listOf(
-            SLED,
-            CRD,
-            PED,
-          ),
-        )
-      }
+      sentence.identificationTrack = EDS_DISCRETIONARY_RELEASE
+      releaseDateTypes.addAll(
+        listOf(
+          SLED,
+          CRD,
+          PED,
+        ),
+      )
+    }
+    if (sentence.isRecall()) {
+      releaseDateTypes.remove(CRD)
+      releaseDateTypes.remove(PED)
+      releaseDateTypes.add(PRRD)
     }
     return releaseDateTypes
   }

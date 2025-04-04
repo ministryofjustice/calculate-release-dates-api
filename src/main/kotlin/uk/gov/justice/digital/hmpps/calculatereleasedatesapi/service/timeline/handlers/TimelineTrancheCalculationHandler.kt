@@ -59,7 +59,7 @@ class TimelineTrancheCalculationHandler(
           }
         } else {
           // No sentences at tranche date.
-          return TimelineHandleResult(true)
+          return TimelineHandleResult(requiresCalculation = false)
         }
       }
     }

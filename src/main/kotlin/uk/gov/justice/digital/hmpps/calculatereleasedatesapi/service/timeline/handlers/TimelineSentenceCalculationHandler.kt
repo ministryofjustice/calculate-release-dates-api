@@ -3,21 +3,25 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.h
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ReleasePointMultipliersConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentenceCombinationService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineCalculator
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineHandleResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import kotlin.math.abs
 
 @Service
 class TimelineSentenceCalculationHandler(
   trancheConfiguration: SDS40TrancheConfiguration,
   releasePointConfiguration: ReleasePointMultipliersConfiguration,
   timelineCalculator: TimelineCalculator,
+  private val sentenceCombinationService: SentenceCombinationService,
 ) : TimelineCalculationHandler(trancheConfiguration, releasePointConfiguration, timelineCalculator) {
 
   override fun handle(
@@ -26,32 +30,63 @@ class TimelineSentenceCalculationHandler(
   ): TimelineHandleResult {
     with(timelineTrackingData) {
       inPrison = true
+
+      var servedAdas = findServedAdas(timelineCalculationDate, currentSentenceGroup, latestRelease)
+
+      val existingAdjustments =
+        currentSentenceGroup.maxByOrNull { abs(it.sentenceCalculation.adjustments.adjustmentsForInitialRelease()) }?.sentenceCalculation?.adjustments ?: SentenceAdjustments()
+
       val newlySentenced = futureData.sentences.filter { it.sentencedAt == timelineCalculationDate }
+      if (newlySentencedIsConsecutiveToAnyExistingSentences(timelineTrackingData, newlySentenced)) {
+        servedAdas = 0
+      }
 
-      shareAdjustmentsFromExistingCustodialSentencesToNewlySentenced(timelineCalculationDate, timelineTrackingData, newlySentenced)
-
-      handleNewlySentencedPartOfConsecutiveSentence(timelineCalculationDate, timelineTrackingData)
-
-      padas = 0
       currentSentenceGroup.addAll(newlySentenced)
       futureData.sentences -= newlySentenced
+
+      val sentencesAfterCombining = sentenceCombinationService.getSentencesToCalculate(currentSentenceGroup, offender)
+      val mergedSentencesWhichHaveNewParts = sentencesAfterCombining.filter { it.sentenceParts().any { part -> newlySentenced.contains(part) } }
+      val partsOfNewlyCombinedSentences = mergedSentencesWhichHaveNewParts.flatMap { it.sentenceParts() }
+      val unchangedByCombiningSentences = currentSentenceGroup.filter { it.sentenceParts().none { part -> partsOfNewlyCombinedSentences.contains(part) } }
+
+      currentSentenceGroup.clear()
+      currentSentenceGroup.addAll(mergedSentencesWhichHaveNewParts)
+      currentSentenceGroup.addAll(unchangedByCombiningSentences)
+      currentSentenceGroup.apply { sortWith(compareBy { it.sentencedAt }) }
+
+      initialiseCalculationForNewSentences(timelineCalculationDate, timelineTrackingData, mergedSentencesWhichHaveNewParts)
+
+      shareAdjustmentsFromExistingCustodialSentencesToNewlySentenced(mergedSentencesWhichHaveNewParts, existingAdjustments, servedAdas)
 
       shareDeductionsThatAreApplicableToThisSentenceDate(timelineCalculationDate, timelineTrackingData)
     }
     return TimelineHandleResult()
   }
 
-  private fun handleNewlySentencedPartOfConsecutiveSentence(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData) {
+  private fun newlySentencedIsConsecutiveToAnyExistingSentences(timelineTrackingData: TimelineTrackingData, newlySentenced: List<AbstractSentence>): Boolean {
     with(timelineTrackingData) {
-      // This new sentence is part of a consecutive sentence starting on an earlier date.
-      currentSentenceGroup.filter {
-        it.sentencedAt != timelineCalculationDate && it.sentenceParts()
-          .any { part -> part.sentencedAt == timelineCalculationDate }
-      }
-        .forEach {
-          it.sentenceCalculation.unadjustedReleaseDate.findMultiplierByIdentificationTrack =
-            multiplierFnForDate(timelineCalculationDate.minusDays(1), trancheAndCommencement.second) // Use day before sentencing for when someone is sentenced for another consecutive part on tranche commencement.
+      return newlySentenced.any { new ->
+        new.consecutiveSentenceUUIDs.isNotEmpty() && currentSentenceGroup.any { existing ->
+          existing.sentenceParts().map { it.identifier }.contains(new.consecutiveSentenceUUIDs[0])
         }
+      }
+    }
+  }
+
+  private fun initialiseCalculationForNewSentences(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData, newSentencesToCalculate: List<CalculableSentence>) {
+    with(timelineTrackingData) {
+      newSentencesToCalculate.forEach { sentence ->
+        sentence.sentenceCalculation = SentenceCalculation(
+          UnadjustedReleaseDate(
+            sentence,
+            multiplierFnForDate(timelineCalculationDate, trancheAndCommencement.second),
+            historicMultiplierFnForDate(),
+            returnToCustodyDate,
+          ),
+          SentenceAdjustments(),
+          calculateErsed = options.calculateErsed,
+        )
+      }
     }
   }
 
@@ -72,9 +107,11 @@ class TimelineSentenceCalculationHandler(
           recallTaggedBail = recallTaggedBail.map { it.numberOfDays }.reduceOrNull { acc, it -> acc + it }?.toLong()
             ?: 0L,
           recallRemand = recallRemand.map { it.numberOfDays }.reduceOrNull { acc, it -> acc + it }?.toLong() ?: 0L,
+          awardedDuringCustody = padas,
         ),
       )
 
+      padas = 0
       futureData.taggedBail -= taggedBail
       futureData.remand -= remand
       futureData.recallTaggedBail -= recallTaggedBail
@@ -83,39 +120,21 @@ class TimelineSentenceCalculationHandler(
   }
 
   private fun shareAdjustmentsFromExistingCustodialSentencesToNewlySentenced(
-    timelineCalculationDate: LocalDate,
-    timelineTrackingData: TimelineTrackingData,
-    newlySentenced: List<CalculableSentence>,
+    newSentencesToCalculate: List<CalculableSentence>,
+    existingAdjustments: SentenceAdjustments,
+    servedAdas: Long,
   ) {
-    with(timelineTrackingData) {
-      val existingAdjustments =
-        currentSentenceGroup.firstOrNull()?.sentenceCalculation?.adjustments ?: SentenceAdjustments()
-      newlySentenced.forEach { sentence ->
-        sentence.sentenceCalculation = SentenceCalculation(
-          UnadjustedReleaseDate(
-            sentence,
-            multiplierFnForDate(timelineCalculationDate, trancheAndCommencement.second),
-            historicMultiplierFnForDate(),
-            returnToCustodyDate,
-          ),
-          SentenceAdjustments(),
-          calculateErsed = options.calculateErsed,
-        )
-      }
-      // New sentence. Find any served adas.
-      val servedAdas = findServedAdas(timelineCalculationDate, currentSentenceGroup, latestRelease)
-      timelineCalculator.setAdjustments(
-        newlySentenced,
-        SentenceAdjustments(
-          taggedBail = existingAdjustments.taggedBail,
-          remand = existingAdjustments.remand,
-          recallRemand = existingAdjustments.recallRemand,
-          recallTaggedBail = existingAdjustments.recallTaggedBail,
-          awardedDuringCustody = padas + existingAdjustments.awardedDuringCustody,
-          servedAdaDays = servedAdas,
-        ),
-      )
-    }
+    timelineCalculator.setAdjustments(
+      newSentencesToCalculate,
+      SentenceAdjustments(
+        taggedBail = existingAdjustments.taggedBail,
+        remand = existingAdjustments.remand,
+        recallRemand = existingAdjustments.recallRemand,
+        recallTaggedBail = existingAdjustments.recallTaggedBail,
+        awardedDuringCustody = existingAdjustments.awardedDuringCustody,
+        servedAdaDays = servedAdas,
+      ),
+    )
   }
 
   private fun findServedAdas(
@@ -123,9 +142,11 @@ class TimelineSentenceCalculationHandler(
     custodialSentences: MutableList<CalculableSentence>,
     latestRelease: Pair<LocalDate, CalculableSentence>,
   ): Long {
-    val releaseWithoutAdas = latestRelease.second.sentenceCalculation.releaseDateWithoutAwarded
-    if (custodialSentences.isNotEmpty() && sentenceDate.isAfter(releaseWithoutAdas)) {
-      return ChronoUnit.DAYS.between(releaseWithoutAdas, sentenceDate) - 1
+    if (latestRelease.second.isCalculationInitialised()) {
+      val previousReleaseWithoutAdas = latestRelease.second.sentenceCalculation.releaseDateWithoutAwarded
+      if (custodialSentences.isNotEmpty() && sentenceDate.isAfter(previousReleaseWithoutAdas)) {
+        return ChronoUnit.DAYS.between(previousReleaseWithoutAdas, sentenceDate) - 1
+      }
     }
     return 0
   }
