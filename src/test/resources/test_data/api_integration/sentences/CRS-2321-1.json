@@ -1,0 +1,34 @@
+[
+  {
+    "bookingId": 1202231,
+    "sentenceSequence": 1,
+    "lineSequence": 1,
+    "caseSequence": 1,
+    "courtDescription": "Amersham Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "SEC91_03",
+    "sentenceTypeDescription": "SEC91_03",
+    "sentenceDate": "2020-11-26",
+    "terms": [
+      {
+        "years": 11,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3932966,
+        "offenceStartDate": "2012-05-04",
+        "offenceCode": "OF61016",
+        "offenceDescription": "Serious Assault",
+        "indicators": [
+          "C"
+        ]
+      }
+    ]
+  }
+]
