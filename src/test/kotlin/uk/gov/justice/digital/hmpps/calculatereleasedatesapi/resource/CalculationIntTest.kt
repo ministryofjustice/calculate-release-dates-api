@@ -555,21 +555,21 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
   }
 
   @Test
-  fun `Run calculation CRS-2321 for SEC91_03 sentence where Section 250 SDS rules apply, preventing HDCED`() {
+  fun `Run calculation CRS-2321 for SEC91_03_ORA sentence 7 years or over where Section 250 SDS rules apply, preventing HDCED`() {
     val userInput = CalculationUserInputs(
       useOffenceIndicators = true,
     )
 
     mockManageOffencesClient.withPCSCMarkersResponse(
       OffencePcscMarkers(
-        offenceCode = "TH68007A",
+        offenceCode = "OF61016",
         pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = true, inListD = false),
       ),
-      offences = "TH68007A",
+      offences = "OF61016",
     )
 
     val calculation: CalculatedReleaseDates = webTestClient.post()
-      .uri("/calculation/CRS-2321")
+      .uri("/calculation/CRS-2321-1")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .bodyValue(CalculationRequestModel(userInput, 1L))
@@ -580,6 +580,90 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       .returnResult().responseBody!!
 
     assertThat(calculation.dates.containsKey(HDCED)).isFalse()
+  }
+
+  @Test
+  fun `Run calculation CRS-2321 for SEC91_03 sentence 7 years or over where Section 250 SDS rules apply, preventing HDCED`() {
+    val userInput = CalculationUserInputs(
+      useOffenceIndicators = true,
+    )
+
+    mockManageOffencesClient.withPCSCMarkersResponse(
+      OffencePcscMarkers(
+        offenceCode = "OF61016",
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = true, inListD = false),
+      ),
+      offences = "OF61016",
+    )
+
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/CRS-2321-2")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(CalculationRequestModel(userInput, 1L))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates.containsKey(HDCED)).isFalse()
+  }
+
+  @Test
+  fun `Run calculation CRS-2321 for SEC91_03 sentence under 7 years producing HDCED`() {
+    val userInput = CalculationUserInputs(
+      useOffenceIndicators = true,
+    )
+
+    mockManageOffencesClient.withPCSCMarkersResponse(
+      OffencePcscMarkers(
+        offenceCode = "OF61016",
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = true, inListD = false),
+      ),
+      offences = "OF61016",
+    )
+
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/CRS-2321-3")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(CalculationRequestModel(userInput, 1L))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates.containsKey(HDCED)).isTrue()
+  }
+
+  @Test
+  fun `Run calculation CRS-2321 for SEC91_03_ORA sentence under 7 years producing HDCED`() {
+    val userInput = CalculationUserInputs(
+      useOffenceIndicators = true,
+    )
+
+    mockManageOffencesClient.withPCSCMarkersResponse(
+      OffencePcscMarkers(
+        offenceCode = "OF61016",
+        pcscMarkers = PcscMarkers(inListA = false, inListB = false, inListC = true, inListD = false),
+      ),
+      offences = "OF61016",
+    )
+
+    val calculation: CalculatedReleaseDates = webTestClient.post()
+      .uri("/calculation/CRS-2321-4")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .bodyValue(CalculationRequestModel(userInput, 1L))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(CalculatedReleaseDates::class.java)
+      .returnResult().responseBody!!
+
+    assertThat(calculation.dates.containsKey(HDCED)).isTrue()
   }
 
   @Test

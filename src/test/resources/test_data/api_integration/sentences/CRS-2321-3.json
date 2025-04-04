@@ -7,13 +7,13 @@
     "courtDescription": "Amersham Crown Court",
     "sentenceStatus": "A",
     "sentenceCategory": "2020",
-    "sentenceCalculationType": "SEC91_03_ORA",
-    "sentenceTypeDescription": "SEC91",
-    "sentenceDate": "2012-05-05",
+    "sentenceCalculationType": "SEC91_03",
+    "sentenceTypeDescription": "SEC91_03",
+    "sentenceDate": "2020-11-26",
     "terms": [
       {
-        "years": 7,
-        "months": 0,
+        "years": 6,
+        "months": 11,
         "weeks": 0,
         "days": 0,
         "code": "IMP"
@@ -23,7 +23,7 @@
       {
         "offenderChargeId": 3932966,
         "offenceStartDate": "2012-05-04",
-        "offenceCode": "TH68007A",
+        "offenceCode": "OF61016",
         "offenceDescription": "Serious Assault",
         "indicators": [
           "C"
