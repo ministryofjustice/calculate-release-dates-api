@@ -133,6 +133,10 @@ interface CalculableSentence {
         this.duration
       }
 
+      is ConsecutiveSentence -> {
+        this.getCombinedDuration()
+      }
+
       else -> {
         throw UnknownError("Unknown sentence")
       }
@@ -190,9 +194,7 @@ interface CalculableSentence {
 
   @JsonIgnore
   fun isDto(): Boolean {
-    return this is DetentionAndTrainingOrderSentence ||
-      (this is ConsecutiveSentence && this.orderedSentences.all { it is DetentionAndTrainingOrderSentence }) ||
-      this is DtoSingleTermSentence
+    return this.sentenceParts().all { it is DetentionAndTrainingOrderSentence }
   }
 
   @JsonIgnore
