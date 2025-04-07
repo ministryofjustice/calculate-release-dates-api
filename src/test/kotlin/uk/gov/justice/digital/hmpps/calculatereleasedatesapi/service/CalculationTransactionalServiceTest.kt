@@ -166,6 +166,11 @@ class CalculationTransactionalServiceTest {
   @Captor
   lateinit var updatedOffenderDatesArgumentCaptor: ArgumentCaptor<UpdateOffenderDates>
 
+  @Test
+  fun blah() {
+    `Test Example`("custom-examples", "crs-1164-ac8", null, null, null, null, null)
+  }
+
   @ParameterizedTest
   @CsvFileSource(resources = ["/test_data/calculation-service-examples.csv"], numLinesToSkip = 1)
   fun `Test Example`(
