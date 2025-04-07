@@ -19,7 +19,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationP
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheOneDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheThreeDate
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.sdsEarlyReleaseTrancheTwoDate
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.PRELIMINARY
@@ -177,7 +176,7 @@ class HintTextTest {
   private val ersedConfiguration = ersedConfigurationForTests()
   private val workingDayService = WorkingDayService(bankHolidayService)
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val hdcedCalculator = HdcedCalculator(hdcedConfiguration, featureToggles = FeatureToggles(hdc365 = true))
+  private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
   private val ersedCalculator = ErsedCalculator(ersedConfiguration)
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
   private val sentencesExtractionService = SentencesExtractionService()
@@ -191,7 +190,7 @@ class HintTextTest {
   private val bookingExtractionService = BookingExtractionService(
     hdcedExtractionService,
     sentencesExtractionService,
-    FixedTermRecallsService(featureToggles = FeatureToggles(revisedFixedTermRecallsRules = true)),
+    FixedTermRecallsService(),
   )
   private val releasePointMultiplierConfigurationForTests = releasePointMultiplierConfigurationForTests()
 
@@ -281,11 +280,9 @@ class HintTextTest {
 
   private val today: LocalDate = LocalDate.now()
   private val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-  private val featureToggles = FeatureToggles(sdsEarlyReleaseHints = true, hdc365 = true)
-
   private val nonFridayReleaseService = mock<NonFridayReleaseService>()
 
-  private val calculationResultEnrichmentService = CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock, featureToggles)
+  private val calculationResultEnrichmentService = CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock)
 
   companion object {
     val BANK_HOLIDAYS =

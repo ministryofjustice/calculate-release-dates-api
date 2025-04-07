@@ -84,9 +84,7 @@ class PreCalculationValidationService(
       }
       .toMutableList()
 
-    if (featureToggles.toreraOffenceToManualJourney) {
-      validationMessages += toreraValidationService.validateToreraExempt(sentencesAndOffences)
-    }
+    validationMessages += toreraValidationService.validateToreraExempt(sentencesAndOffences)
 
     return validationMessages.toList()
   }

@@ -181,11 +181,8 @@ class RecallValidationService(
     val maxFtrSentenceIsLessThan12Months = maxFtrSentence.durationIsLessThan(TWELVE, MONTHS)
 
     // ignore mixed durations if revised rules are not enabled
-    val ftr14NoUnder12MonthDuration = if (featureToggles.revisedFixedTermRecallsRules) {
+    val ftr14NoUnder12MonthDuration =
       ftr14Sentences.none { it.durationIsLessThan(TWELVE, MONTHS) }
-    } else {
-      true
-    }
 
     val ftrSentenceExistsInConsecutiveChain = ftrSentences.any { it.consecutiveSentenceUUIDs.isNotEmpty() } ||
       booking.sentences.any {
@@ -220,11 +217,6 @@ class RecallValidationService(
   internal fun validateFixedTermRecallAfterCalc(calculationOutput: CalculationOutput, booking: Booking): List<ValidationMessage> {
     val messages = mutableListOf<ValidationMessage>()
     val ftrDetails = booking.fixedTermRecallDetails ?: return messages
-
-    // ignore mixed durations if revised rules are not enabled
-    if (!featureToggles.revisedFixedTermRecallsRules) {
-      return validateSingleDurationRecalls(calculationOutput, ftrDetails, false, false)
-    }
 
     val ftrSentences = calculationOutput.sentences.filter {
       it.isRecall() && it.sentenceCalculation.adjustedExpiryDate.isAfterOrEqualTo(booking.fixedTermRecallDetails.returnToCustodyDate)
