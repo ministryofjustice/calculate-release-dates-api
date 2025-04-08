@@ -151,7 +151,7 @@ class BulkComparisonEventService(
     }
 
     val existingPerson = comparisonPersonRepository.findByComparisonIdAndPerson(comparison.id, personId)
-    if (existingPerson != null) {
+    if (existingPerson.isNotEmpty()) {
       // Already processed and this is a retry from timeout.
       return
     }

@@ -13,7 +13,7 @@ interface ComparisonPersonRepository : JpaRepository<ComparisonPerson, Long> {
 
   fun findByComparisonIdAndShortReference(comparisonId: Long, shortReference: String): ComparisonPerson?
 
-  fun findByComparisonIdAndPerson(comparisonId: Long, person: String): ComparisonPerson?
+  fun findByComparisonIdAndPerson(comparisonId: Long, person: String): List<ComparisonPerson>
 
   @Query(
     """
