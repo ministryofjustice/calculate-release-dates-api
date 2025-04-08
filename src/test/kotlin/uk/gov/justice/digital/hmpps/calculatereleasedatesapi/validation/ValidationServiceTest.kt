@@ -65,7 +65,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_CONSECUTIVE_TO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_MISSING_FINE_AMOUNT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_CONSECUTIVE_TO_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.DTO_HAS_SENTENCE_CONSECUTIVE_TO_IT
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.EDS18_EDS21_EDSU18_SENTENCE_TYPE_INCORRECT
@@ -1209,84 +1208,6 @@ class ValidationServiceTest {
   }
 
   @Test
-  fun `Test A Botus sentence consecutive to another sentenceType is unsupported`() {
-    val sentences = listOf(
-      validSdsSentence.copy(
-        sentenceSequence = 1,
-      ),
-      validSdsSentence.copy(
-        sentenceSequence = 2,
-        consecutiveToSequence = 1,
-        sentenceCalculationType = "BOTUS",
-        terms = listOf(SentenceTerms(days = 7, code = "IMP")),
-      ),
-    )
-    val result =
-      validationService.validateBeforeCalculation(
-        CalculationSourceData(
-          sentences.map {
-            SentenceAndOffenceWithReleaseArrangements(
-              source = it,
-              isSdsPlus = false,
-              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
-              hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
-            )
-          },
-          VALID_PRISONER,
-          VALID_ADJUSTMENTS,
-          listOf(),
-          null,
-        ),
-        USER_INPUTS,
-      )
-
-    assertThat(result).isEqualTo(
-      listOf(
-        ValidationMessage(BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE),
-      ),
-    )
-  }
-
-  @Test
-  fun `Test Two Botus sentence consecutive are supported`() {
-    val sentences = listOf(
-      validSdsSentence.copy(
-        sentenceSequence = 1,
-        sentenceCalculationType = "BOTUS",
-        terms = listOf(SentenceTerms(days = 7, code = "IMP")),
-      ),
-      validSdsSentence.copy(
-        sentenceSequence = 2,
-        consecutiveToSequence = 1,
-        sentenceCalculationType = "BOTUS",
-        terms = listOf(SentenceTerms(days = 7, code = "IMP")),
-      ),
-    )
-    val result =
-      validationService.validateBeforeCalculation(
-        CalculationSourceData(
-          sentences.map {
-            SentenceAndOffenceWithReleaseArrangements(
-              it,
-              isSdsPlus = false,
-              isSDSPlusEligibleSentenceTypeLengthAndOffence = false,
-              isSDSPlusOffenceInPeriod = false,
-              hasAnSDSExclusion = SDSEarlyReleaseExclusionType.NO,
-            )
-          },
-          VALID_PRISONER,
-          VALID_ADJUSTMENTS,
-          listOf(),
-          null,
-        ),
-        USER_INPUTS,
-      )
-
-    assertThat(result).isEmpty()
-  }
-
-  @Test
   fun `Test A DTO sentence consecutive from unsupported`() {
     val sentences = listOf(
       validSdsSentence.copy(
@@ -2149,7 +2070,9 @@ class ValidationServiceTest {
             consecutiveSentenceTwo,
           ),
         )
+
         val sentences = BookingHelperTest().createConsecutiveSentences(workingBooking)
+        whenever(sentences[0].sentenceCalculation.adjustedExpiryDate).thenReturn(FTR_DETAILS_14.returnToCustodyDate.plusDays(1))
         val result = validationService.validateBookingAfterCalculation(
           CalculationOutput(sentences, emptyList(), mock()),
           workingBooking,
@@ -2186,6 +2109,7 @@ class ValidationServiceTest {
           ),
         )
         val sentences = BookingHelperTest().createConsecutiveSentences(workingBooking)
+        whenever(sentences[0].sentenceCalculation.adjustedExpiryDate).thenReturn(FTR_DETAILS_14.returnToCustodyDate.plusDays(1))
         val result = validationService.validateBookingAfterCalculation(
           CalculationOutput(sentences, emptyList(), mock()),
           workingBooking,
@@ -2217,6 +2141,7 @@ class ValidationServiceTest {
           ),
         )
         val sentences = BookingHelperTest().createConsecutiveSentences(workingBooking)
+        whenever(sentences[0].sentenceCalculation.adjustedExpiryDate).thenReturn(FTR_DETAILS_14.returnToCustodyDate.plusDays(1))
         val result = validationService.validateBookingAfterCalculation(
           CalculationOutput(sentences, emptyList(), mock()),
           workingBooking,
@@ -2254,6 +2179,7 @@ class ValidationServiceTest {
           ),
         )
         val sentences = BookingHelperTest().createConsecutiveSentences(workingBooking)
+        whenever(sentences[0].sentenceCalculation.adjustedExpiryDate).thenReturn(FTR_DETAILS_14.returnToCustodyDate.plusDays(1))
         val result = validationService.validateBookingAfterCalculation(
           CalculationOutput(sentences, emptyList(), mock()),
           workingBooking,
@@ -3696,7 +3622,7 @@ class ValidationServiceTest {
     sentencesExtractionService: SentencesExtractionService,
     trancheConfiguration: SDS40TrancheConfiguration,
   ): ValidationService {
-    val featureToggles = FeatureToggles(sdsEarlyRelease = true, sdsEarlyReleaseHints = false, externalMovementsEnabled = false)
+    val featureToggles = FeatureToggles()
     val validationUtilities = ValidationUtilities()
     val fineValidationService = FineValidationService(validationUtilities)
     val adjustmentValidationService = AdjustmentValidationService()

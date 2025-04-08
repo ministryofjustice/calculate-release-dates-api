@@ -4,7 +4,6 @@ import arrow.core.left
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
@@ -15,7 +14,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Pris
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE
 import java.time.LocalDate
 
@@ -24,50 +22,7 @@ class BotusValidationServiceTest {
   private val botusValidationService = BotusValidationService(featureToggles)
 
   @Test
-  fun `should skip validation when botusConsecutiveJourney feature toggle is enabled`() {
-    whenever(featureToggles.botusConsecutiveJourney).thenReturn(true)
-    whenever(featureToggles.botusConcurrentJourney).thenReturn(false)
-
-    val messages = botusValidationService.validate(SOURCE_DATA)
-
-    assertThat(messages).isEmpty()
-  }
-
-  @Test
-  fun `should perform validation when botusConsecutiveJourney feature toggle is disabled`() {
-    whenever(featureToggles.botusConsecutiveJourney).thenReturn(false)
-    whenever(featureToggles.botusConcurrentJourney).thenReturn(false)
-
-    val messages = botusValidationService.validate(SOURCE_DATA)
-
-    assertThat(messages).containsExactly(ValidationMessage(BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE))
-  }
-
-  @Test
-  fun `should perform validation when error when Consecutive chain includes BOTUS sentence as the first sentence in a chain`() {
-    whenever(featureToggles.botusConsecutiveJourney).thenReturn(false)
-    whenever(featureToggles.botusConcurrentJourney).thenReturn(false)
-
-    val messages = botusValidationService.validate(SOURCE_DATA_FIRST_CHAIN_IS_BOTUS)
-
-    assertThat(messages).containsExactly(ValidationMessage(BOTUS_CONSECUTIVE_OR_CONCURRENT_TO_OTHER_SENTENCE))
-  }
-
-  @Test
-  fun `should skip validation when botusConcurrentJourney feature toggle is disabled`() {
-    whenever(featureToggles.botusConsecutiveJourney).thenReturn(true)
-    whenever(featureToggles.botusConcurrentJourney).thenReturn(false)
-
-    val messages = botusValidationService.validate(SOURCE_DATA)
-
-    assertThat(messages).isEmpty()
-  }
-
-  @Test
   fun `should perform validation when botusConcurrentJourney feature toggle is enabled`() {
-    whenever(featureToggles.botusConsecutiveJourney).thenReturn(true)
-    whenever(featureToggles.botusConcurrentJourney).thenReturn(true)
-
     val messages = botusValidationService.validate(SOURCE_DATA)
 
     assertThat(messages).containsExactly(ValidationMessage(BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE))
@@ -75,9 +30,6 @@ class BotusValidationServiceTest {
 
   @Test
   fun `should perform validation with error when botusConcurrentJourney chain includes BOTUS sentence as the first sentence in a chain`() {
-    whenever(featureToggles.botusConsecutiveJourney).thenReturn(true)
-    whenever(featureToggles.botusConcurrentJourney).thenReturn(true)
-
     val messages = botusValidationService.validate(SOURCE_DATA_FIRST_CHAIN_IS_BOTUS)
 
     assertThat(messages).containsExactly(ValidationMessage(BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE))
@@ -85,9 +37,6 @@ class BotusValidationServiceTest {
 
   @Test
   fun `should perform validation with error when botusConcurrentJourney chain includes BOTUS sentence as the first sentence in a chain and sentences out of order`() {
-    whenever(featureToggles.botusConsecutiveJourney).thenReturn(true)
-    whenever(featureToggles.botusConcurrentJourney).thenReturn(true)
-
     val messages = botusValidationService.validate(
       SOURCE_DATA_FIRST_CHAIN_IS_BOTUS.copy(
         sentenceAndOffences = SOURCE_DATA_FIRST_CHAIN_IS_BOTUS.sentenceAndOffences.reversed(),
@@ -99,9 +48,6 @@ class BotusValidationServiceTest {
 
   @Test
   fun `should perform validation with no error when botusConcurrentJourney chain includes no BOTUS sentence`() {
-    whenever(featureToggles.botusConsecutiveJourney).thenReturn(true)
-    whenever(featureToggles.botusConcurrentJourney).thenReturn(true)
-
     val messages = botusValidationService.validate(SOURCE_DATE_NO_CONSECUTIVE_BOTUS)
 
     assertThat(messages).isEmpty()

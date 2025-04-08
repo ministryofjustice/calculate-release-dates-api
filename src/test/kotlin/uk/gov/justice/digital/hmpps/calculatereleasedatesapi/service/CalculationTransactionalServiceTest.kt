@@ -143,7 +143,7 @@ class CalculationTransactionalServiceTest {
   private val nomisCommentService = mock<NomisCommentService>()
   private val bankHolidayService = mock<BankHolidayService>()
   private val trancheOutcomeRepository = mock<TrancheOutcomeRepository>()
-  private val fixedTermRecallsService = FixedTermRecallsService(featureToggles = FeatureToggles(revisedFixedTermRecallsRules = true))
+  private val fixedTermRecallsService = FixedTermRecallsService()
 
   private val fakeSourceData = CalculationSourceData(
     emptyList(),
@@ -667,7 +667,7 @@ class CalculationTransactionalServiceTest {
     val workingDayService = WorkingDayService(bankHolidayService)
     val tusedCalculator = TusedCalculator(workingDayService)
 
-    val hdcedCalculator = HdcedCalculator(hdcedConfiguration, featureToggles = FeatureToggles(hdc365 = true))
+    val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
     val ersedCalculator = ErsedCalculator(ersedConfiguration)
     val sentenceAdjustedCalculationService =
       SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
@@ -732,6 +732,7 @@ class CalculationTransactionalServiceTest {
       trancheConfiguration,
       releasePointMultipliersConfiguration,
       timelineCalculator,
+      FeatureToggles(externalMovementsSds40 = true, externalMovementsAdjustmentSharing = true),
     )
     val timelineExternalAdmissionMovementCalculationHandler = TimelineExternalAdmissionMovementCalculationHandler(
       trancheConfiguration,
@@ -793,10 +794,6 @@ class CalculationTransactionalServiceTest {
     trancheConfiguration: SDS40TrancheConfiguration,
   ): ValidationService {
     val featureToggles = FeatureToggles(
-      sdsEarlyRelease = true,
-      sdsEarlyReleaseHints = false,
-      externalMovementsEnabled = false,
-      revisedFixedTermRecallsRules = true,
       concurrentConsecutiveSentencesEnabled = true,
     )
     val validationUtilities = ValidationUtilities()

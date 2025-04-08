@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSPlusCheckResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceWithReleaseArrangements
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAndOffence
@@ -13,7 +12,6 @@ class ReleaseArrangementLookupService(
   private val sdsPlusReleaseArrangementLookupService: SDSPlusReleaseArrangementLookupService,
   private val sdsReleaseArrangementLookupService: SDSReleaseArrangementLookupService,
   private val manageOffencesService: ManageOffencesService,
-  private val featureToggles: FeatureToggles,
 ) {
   fun populateReleaseArrangements(sentencesAndOffences: List<SentenceAndOffence>): List<SentenceAndOffenceWithReleaseArrangements> {
     log.info("Checking ${sentencesAndOffences.size} sentences for SDS release arrangements")
@@ -40,7 +38,7 @@ class ReleaseArrangementLookupService(
 
   private fun fetchSdsExclusions(excludeIfSDSPlus: List<SDSPlusCheckResult>): Map<String, SDSEarlyReleaseExclusionForOffenceCode> {
     val offenceCodesExcludingSDSPlus = sdsReleaseArrangementLookupService.offenceCodesExcludingSDSPlus(excludeIfSDSPlus)
-    if (offenceCodesExcludingSDSPlus.isNotEmpty() && featureToggles.sdsEarlyRelease) {
+    if (offenceCodesExcludingSDSPlus.isNotEmpty()) {
       return manageOffencesService
         .getSdsExclusionsForOffenceCodes(offenceCodesExcludingSDSPlus)
         .associateBy { it.offenceCode }

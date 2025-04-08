@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_ADJUSTED_TO_365_COMMENCEMENT
@@ -24,7 +23,6 @@ import kotlin.math.max
 @Service
 class HdcedCalculator(
   val hdcedConfiguration: HdcedConfiguration,
-  val featureToggles: FeatureToggles,
 ) {
 
   fun doesHdcedDateApply(sentence: CalculableSentence, offender: Offender): Boolean {
@@ -113,11 +111,7 @@ class HdcedCalculator(
         calculateHdcedOverMidpointUsingPostHDC365Rules(sentenceCalculation, sentence, params)
       }
 
-      if (!featureToggles.hdc365) {
-        setToPreHdc365Values(sentenceCalculation)
-      } else {
-        applyHdc365Rules(sentenceCalculation, params)
-      }
+      applyHdc365Rules(sentenceCalculation, params)
     }
   }
 
@@ -361,12 +355,7 @@ class HdcedCalculator(
   private fun unadjustedReleasePointIsLessThanMinimumCustodialPeriod(custodialPeriod: Double) =
     custodialPeriod < hdcedConfiguration.minimumCustodialPeriodDays
 
-  private fun addHdc365Rule(baseRules: Set<CalculationRule>): Set<CalculationRule> =
-    if (featureToggles.hdc365) {
-      baseRules + HDC_180
-    } else {
-      baseRules
-    }
+  private fun addHdc365Rule(baseRules: Set<CalculationRule>): Set<CalculationRule> = baseRules + HDC_180
 
   private fun addHdc365CommencementDateRule(sentenceCalculation: SentenceCalculation) {
     sentenceCalculation.breakdownByInterimHdcCalcType[InterimHdcCalcType.HDCED_POST_365_RULES] =
