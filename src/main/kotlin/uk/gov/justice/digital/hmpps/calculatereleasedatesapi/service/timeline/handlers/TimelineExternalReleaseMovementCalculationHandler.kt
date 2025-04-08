@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.handlers
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ReleasePointMultipliersConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExternalMovementReason
@@ -16,6 +17,7 @@ class TimelineExternalReleaseMovementCalculationHandler(
   trancheConfiguration: SDS40TrancheConfiguration,
   releasePointConfiguration: ReleasePointMultipliersConfiguration,
   timelineCalculator: TimelineCalculator,
+  private val featureToggles: FeatureToggles,
 ) : TimelineCalculationHandler(trancheConfiguration, releasePointConfiguration, timelineCalculator) {
   override fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
     with(timelineTrackingData) {
@@ -30,9 +32,13 @@ class TimelineExternalReleaseMovementCalculationHandler(
         }
       }
 
-      inPrison = false
-      if (currentSentenceGroup.isNotEmpty()) {
-        latestRelease = timelineCalculationDate to latestRelease.second
+      if (featureToggles.externalMovementsSds40) {
+        inPrison = false
+      }
+      if (featureToggles.externalMovementsAdjustmentSharing) {
+        if (currentSentenceGroup.isNotEmpty()) {
+          latestRelease = timelineCalculationDate to latestRelease.second
+        }
       }
     }
     return TimelineHandleResult(requiresCalculation = false, skipCalculationForEntireDate = true)

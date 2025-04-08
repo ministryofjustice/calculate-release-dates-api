@@ -11,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.CalculationParamsTestConfigHelper.hdcedConfigurationForTests
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.HdcedConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -38,7 +37,7 @@ import kotlin.math.ceil
 class HdcedCalculatorTest {
 
   private val config: HdcedConfiguration = hdcedConfigurationForTests()
-  private val calculator = HdcedCalculator(config, FeatureToggles())
+  private val calculator = HdcedCalculator(config)
 
   @Test
   fun `shouldn't calculate a date for a sex offender`() {
@@ -199,7 +198,7 @@ class HdcedCalculatorTest {
     assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(35L)
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isEqualTo(
       ReleaseDateCalculationBreakdown(
-        rules = setOf(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT),
+        rules = setOf(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT, CalculationRule.HDC_180),
         rulesWithExtraAdjustments = mapOf(
           CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT to AdjustmentDuration(35, ChronoUnit.DAYS),
         ),
@@ -270,7 +269,7 @@ class HdcedCalculatorTest {
     assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(28L)
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isEqualTo(
       ReleaseDateCalculationBreakdown(
-        rules = setOf(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT),
+        rules = setOf(CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT, CalculationRule.HDC_180),
         rulesWithExtraAdjustments = mapOf(
           CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT to AdjustmentDuration(28, ChronoUnit.DAYS),
         ),
@@ -303,7 +302,7 @@ class HdcedCalculatorTest {
     assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(14L)
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isEqualTo(
       ReleaseDateCalculationBreakdown(
-        rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT),
+        rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT, CalculationRule.HDC_180),
         rulesWithExtraAdjustments = mapOf(
           CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD to AdjustmentDuration(14, ChronoUnit.DAYS),
         ),
@@ -335,7 +334,7 @@ class HdcedCalculatorTest {
     assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(181L)
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isEqualTo(
       ReleaseDateCalculationBreakdown(
-        rules = setOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD),
+        rules = setOf(CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD, CalculationRule.HDC_180),
         rulesWithExtraAdjustments = mapOf(
           CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD to AdjustmentDuration(-179, ChronoUnit.DAYS),
         ),
@@ -393,7 +392,7 @@ class HdcedCalculatorTest {
     assertThat(sentenceCalculation.numberOfDaysToHomeDetentionCurfewEligibilityDate).isEqualTo(14L)
     assertThat(sentenceCalculation.breakdownByReleaseDateType[ReleaseDateType.HDCED]).isEqualTo(
       ReleaseDateCalculationBreakdown(
-        rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD),
+        rules = setOf(CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD, CalculationRule.HDCED_GE_MIDPOINT_LT_MAX_PERIOD, CalculationRule.HDC_180),
         rulesWithExtraAdjustments = mapOf(
           CalculationRule.HDCED_MINIMUM_CUSTODIAL_PERIOD to AdjustmentDuration(14, ChronoUnit.DAYS),
         ),

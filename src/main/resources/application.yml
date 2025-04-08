@@ -145,14 +145,8 @@ domain-events-sns:
       arn: topic_arn
 
 feature-toggles:
-  botus-consecutive-journey: ${BOTUS_CONSECUTIVE_JOURNEY_FEATURE_TOGGLE:false}
-  botus-concurrent-journey: ${BOTUS_CONCURRENT_JOURNEY_FEATURE_TOGGLE:false}
-  sds-early-release: ${SDS_EARLY_RELEASE_FEATURE_TOGGLE:false}
-  sds-early-release-hints: ${SDS_EARLY_RELEASE_HINTS_FEATURE_TOGGLE:false}
   support-inactive-sentences-and-adjustments: ${SUPPORT_INACTIVE_SENTENCES_AND_ADJUSTMENTS:false}
-  torera-offence-to-manual-journey: ${TORERA_OFFENCE_TO_MANUAL_JOURNEY:false}
-  hdc365: ${HDC_365_FEATURE_TOGGLE:false}
-  externalMovementsEnabled: ${EXTERNAL_MOVEMENTS_FEATURE_TOGGLE:false}
-  revisedFixedTermRecallsRules: ${REVISED_FIXED_TERM_RECALLS_RULES:false}
+  externalMovementsSds40: ${EXTERNAL_MOVEMENTS_SDS_40_FEATURE_TOGGLE:false}
+  externalMovementsAdjustmentSharing: ${EXTERNAL_MOVEMENTS_ADJUSTMENTS_FEATURE_TOGGLE:false}
   useAdjustmentsApi: ${USE_ADJUSTMENTS_API:false}
   concurrentConsecutiveSentencesEnabled: ${CONCURRENT_CONSECUTIVE_SENTENCES_ENABLED:false}

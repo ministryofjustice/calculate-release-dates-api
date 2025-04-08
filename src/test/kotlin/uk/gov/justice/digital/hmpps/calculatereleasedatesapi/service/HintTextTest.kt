@@ -177,7 +177,7 @@ class HintTextTest {
   private val ersedConfiguration = ersedConfigurationForTests()
   private val workingDayService = WorkingDayService(bankHolidayService)
   private val tusedCalculator = TusedCalculator(workingDayService)
-  private val hdcedCalculator = HdcedCalculator(hdcedConfiguration, featureToggles = FeatureToggles(hdc365 = true))
+  private val hdcedCalculator = HdcedCalculator(hdcedConfiguration)
   private val ersedCalculator = ErsedCalculator(ersedConfiguration)
   private val sentenceAdjustedCalculationService = SentenceAdjustedCalculationService(tusedCalculator, hdcedCalculator, ersedCalculator)
   private val sentencesExtractionService = SentencesExtractionService()
@@ -191,7 +191,7 @@ class HintTextTest {
   private val bookingExtractionService = BookingExtractionService(
     hdcedExtractionService,
     sentencesExtractionService,
-    FixedTermRecallsService(featureToggles = FeatureToggles(revisedFixedTermRecallsRules = true)),
+    FixedTermRecallsService(),
   )
   private val releasePointMultiplierConfigurationForTests = releasePointMultiplierConfigurationForTests()
 
@@ -231,6 +231,7 @@ class HintTextTest {
     trancheConfiguration,
     releasePointMultiplierConfigurationForTests,
     timelineCalculator,
+    featureToggles = FeatureToggles(),
   )
   val timelineExternalAdmissionMovementCalculationHandler = TimelineExternalAdmissionMovementCalculationHandler(
     trancheConfiguration,
@@ -281,11 +282,9 @@ class HintTextTest {
 
   private val today: LocalDate = LocalDate.now()
   private val clock = Clock.fixed(today.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-  private val featureToggles = FeatureToggles(sdsEarlyReleaseHints = true, hdc365 = true)
-
   private val nonFridayReleaseService = mock<NonFridayReleaseService>()
 
-  private val calculationResultEnrichmentService = CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock, featureToggles)
+  private val calculationResultEnrichmentService = CalculationResultEnrichmentService(nonFridayReleaseService, workingDayService, clock)
 
   companion object {
     val BANK_HOLIDAYS =

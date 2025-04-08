@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.ARD
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.CRD
@@ -18,7 +17,7 @@ import java.time.temporal.ChronoUnit.MONTHS
 import kotlin.math.abs
 
 @Service
-class FixedTermRecallsService(private val featureToggles: FeatureToggles) {
+class FixedTermRecallsService() {
 
   fun calculatePRRD(
     sentences: List<CalculableSentence>,
@@ -27,7 +26,7 @@ class FixedTermRecallsService(private val featureToggles: FeatureToggles) {
     returnToCustodyDate: LocalDate?,
     latestSled: LocalDate?,
   ): LocalDate {
-    if (!featureToggles.revisedFixedTermRecallsRules || returnToCustodyDate == null || latestSled == null) {
+    if (returnToCustodyDate == null || latestSled == null) {
       return latestReleaseDate
     }
 

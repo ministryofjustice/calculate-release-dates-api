@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.HistoricalTusedSource
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType
@@ -23,7 +22,6 @@ class CalculationResultEnrichmentService(
   private val nonFridayReleaseService: NonFridayReleaseService,
   private val workingDayService: WorkingDayService,
   private val clock: Clock,
-  private val featureToggles: FeatureToggles,
 ) {
 
   fun addDetailToCalculationDates(
@@ -88,8 +86,6 @@ class CalculationResultEnrichmentService(
     sentenceAndOffences: List<SentenceAndOffenceWithReleaseArrangements>,
     calculationBreakdown: CalculationBreakdown,
   ): Boolean {
-    if (!featureToggles.sdsEarlyReleaseHints) return false
-
     if (!calculationBreakdown.showSds40Hints) return false
 
     return sentenceAndOffences.none {
