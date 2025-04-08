@@ -732,6 +732,7 @@ class CalculationTransactionalServiceTest {
       trancheConfiguration,
       releasePointMultipliersConfiguration,
       timelineCalculator,
+      FeatureToggles(externalMovementsSds40 = true, externalMovementsAdjustmentSharing = true),
     )
     val timelineExternalAdmissionMovementCalculationHandler = TimelineExternalAdmissionMovementCalculationHandler(
       trancheConfiguration,
@@ -793,7 +794,6 @@ class CalculationTransactionalServiceTest {
     trancheConfiguration: SDS40TrancheConfiguration,
   ): ValidationService {
     val featureToggles = FeatureToggles(
-      externalMovementsEnabled = false,
       concurrentConsecutiveSentencesEnabled = true,
     )
     val validationUtilities = ValidationUtilities()

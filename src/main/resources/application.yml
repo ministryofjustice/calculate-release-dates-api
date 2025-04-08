@@ -146,7 +146,7 @@ domain-events-sns:
 
 feature-toggles:
   support-inactive-sentences-and-adjustments: ${SUPPORT_INACTIVE_SENTENCES_AND_ADJUSTMENTS:false}
-  externalMovementsSds40: ${EXTERNAL_MOVEMENTS_FEATURE_TOGGLE:false}
-  externalMovementsAdjustmentSharing: ${EXTERNAL_MOVEMENTS_FEATURE_TOGGLE:false}
+  externalMovementsSds40: ${EXTERNAL_MOVEMENTS_SDS_40_FEATURE_TOGGLE:false}
+  externalMovementsAdjustmentSharing: ${EXTERNAL_MOVEMENTS_ADJUSTMENTS_FEATURE_TOGGLE:false}
   useAdjustmentsApi: ${USE_ADJUSTMENTS_API:false}
   concurrentConsecutiveSentencesEnabled: ${CONCURRENT_CONSECUTIVE_SENTENCES_ENABLED:false}

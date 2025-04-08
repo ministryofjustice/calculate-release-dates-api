@@ -14,10 +14,10 @@ class BotusValidationService(
 ) {
 
   internal fun validate(sourceData: CalculationSourceData): List<ValidationMessage> {
-    return validateConcurrentBotus(sourceData)
+    return validateUnsupportedConsecutiveBotusSentences(sourceData)
   }
 
-  private fun validateConcurrentBotus(sourceData: CalculationSourceData): List<ValidationMessage> {
+  private fun validateUnsupportedConsecutiveBotusSentences(sourceData: CalculationSourceData): List<ValidationMessage> {
     val consecutiveSentences = sourceData.sentenceAndOffences
       .filter { it.consecutiveToSequence != null }
 

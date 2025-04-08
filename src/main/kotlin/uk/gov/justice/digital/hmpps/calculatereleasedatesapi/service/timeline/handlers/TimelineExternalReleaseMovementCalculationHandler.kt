@@ -17,7 +17,7 @@ class TimelineExternalReleaseMovementCalculationHandler(
   trancheConfiguration: SDS40TrancheConfiguration,
   releasePointConfiguration: ReleasePointMultipliersConfiguration,
   timelineCalculator: TimelineCalculator,
-  private val featureToggles: FeatureToggles
+  private val featureToggles: FeatureToggles,
 ) : TimelineCalculationHandler(trancheConfiguration, releasePointConfiguration, timelineCalculator) {
   override fun handle(timelineCalculationDate: LocalDate, timelineTrackingData: TimelineTrackingData): TimelineHandleResult {
     with(timelineTrackingData) {

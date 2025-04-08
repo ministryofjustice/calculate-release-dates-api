@@ -10,10 +10,9 @@ data class FeatureToggles(
   var externalMovementsSds40: Boolean = false,
   var externalMovementsAdjustmentSharing: Boolean = false,
 ) {
-  
+
   val externalMovementsEnabled: Boolean
     get() {
       return externalMovementsSds40 || externalMovementsAdjustmentSharing
     }
 }
-
