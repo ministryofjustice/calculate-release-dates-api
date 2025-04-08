@@ -20,7 +20,7 @@ generic-service:
     PRISON_API_URL: https://prison-api-preprod.prison.service.justice.gov.uk
     ADJUSTMENTS_API_URL: https://adjustments-api-preprod.hmpps.service.justice.gov.uk
     MANAGE-OFFENCES_API_URL: https://manage-offences-api-preprod.hmpps.service.justice.gov.uk
-    SUPPORT_INACTIVE_SENTENCES_AND_ADJUSTMENTS: "true"
+    USE_ADJUSTMENTS_API: "true"
 
   serviceAccountName: calculate-release-dates-api-preprod
 
