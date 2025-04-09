@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationStatus.TEST
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.exceptions.NoActiveBookingException
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculatedReleaseDates
@@ -401,6 +402,31 @@ class CalculationController(
   ): BookingAndSentenceAdjustments {
     log.info("Request received to get booking and sentence adjustments from $calculationRequestId calculation")
     return calculationTransactionalService.findBookingAndSentenceAdjustmentsFromCalculation(calculationRequestId)
+  }
+
+  // TODO remove params and GET mapping above once adjustments API integration is live.
+  @GetMapping(value = ["/adjustments/{calculationRequestId}"], params = ["adjustments-api"])
+  @PreAuthorize("hasAnyRole('SYSTEM_USER', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Get adjustments for a calculationRequestId",
+    description = "This endpoint will return the adjustments based on a calculationRequestId",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns adjustments"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+      ApiResponse(responseCode = "404", description = "No calculation exists for this calculationRequestId"),
+    ],
+  )
+  fun getAdjustments(
+    @Parameter(required = true, example = "123456", description = "The calculationRequestId of the calculation")
+    @PathVariable("calculationRequestId")
+    calculationRequestId: Long,
+  ): List<AdjustmentDto> {
+    log.info("Request received to get adjustments from $calculationRequestId calculation")
+    return calculationTransactionalService.findAdjustmentsFromCalculation(calculationRequestId)
   }
 
   @PostMapping(value = ["/relevant-remand/{prisonerId}"])

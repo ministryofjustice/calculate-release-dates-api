@@ -50,11 +50,24 @@ class SourceDataMapper(private val objectMapper: ObjectMapper) {
     return when (calculationRequest.adjustmentsVersion) {
       // TODO temporary. We should be upgrading v0 to v1 here. But until frontend supports adjustments API use v0.
       1 -> {
-        val reader = objectMapper.readerFor(object : TypeReference<List<AdjustmentDto>>() {})
-        val adjustments = reader.readValue<List<AdjustmentDto>>(calculationRequest.adjustments)
+        val adjustments = mapAdjustments(calculationRequest)
         return BookingAndSentenceAdjustments.downgrade(adjustments)
       }
       else -> objectMapper.convertValue(calculationRequest.adjustments, BookingAndSentenceAdjustments::class.java)
+    }
+  }
+
+  fun mapAdjustments(calculationRequest: CalculationRequest): List<AdjustmentDto> {
+    return when (calculationRequest.adjustmentsVersion) {
+      0 -> {
+        val bookingAndSentenceAdjustments = mapBookingAndSentenceAdjustments(calculationRequest)
+        val prisoner = mapPrisonerDetails(calculationRequest)
+        bookingAndSentenceAdjustments.upgrade(prisoner)
+      }
+      else -> {
+        val reader = objectMapper.readerFor(object : TypeReference<List<AdjustmentDto>>() {})
+        reader.readValue(calculationRequest.adjustments)
+      }
     }
   }
 

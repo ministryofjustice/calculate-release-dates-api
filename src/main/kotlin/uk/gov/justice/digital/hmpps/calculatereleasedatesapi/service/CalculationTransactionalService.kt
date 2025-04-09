@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.info.BuildProperties
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDates
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.ApprovedDatesSubmission
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationReason
@@ -402,6 +403,15 @@ class CalculationTransactionalService(
       throw PrisonApiDataNotFoundException("Adjustments data not found for calculation $calculationRequestId")
     }
     return sourceDataMapper.mapBookingAndSentenceAdjustments(calculationRequest)
+  }
+
+  @Transactional(readOnly = true)
+  fun findAdjustmentsFromCalculation(calculationRequestId: Long): List<AdjustmentDto> {
+    val calculationRequest = getCalculationRequest(calculationRequestId)
+    if (calculationRequest.adjustments == null) {
+      throw PrisonApiDataNotFoundException("Adjustments data not found for calculation $calculationRequestId")
+    }
+    return sourceDataMapper.mapAdjustments(calculationRequest)
   }
 
   @Transactional(readOnly = true)

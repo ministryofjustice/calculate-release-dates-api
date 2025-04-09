@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.pri
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonerDetails
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustmentType
 
@@ -10,6 +11,46 @@ data class BookingAndSentenceAdjustments(
   val bookingAdjustments: List<BookingAdjustment>,
   val sentenceAdjustments: List<SentenceAdjustment>,
 ) {
+
+  fun upgrade(prisoner: PrisonerDetails): List<AdjustmentDto> {
+    return bookingAdjustments.map {
+      AdjustmentDto(
+        bookingId = prisoner.bookingId,
+        adjustmentType = AdjustmentDto.AdjustmentType.entries.find { type ->
+          try {
+            toBookingAdjustmentType(type) == it.type
+          } catch (e: Exception) {
+            false
+          }
+        }!!,
+        person = prisoner.offenderNo,
+        fromDate = it.fromDate,
+        toDate = it.toDate,
+        days = it.numberOfDays,
+        effectiveDays = it.numberOfDays,
+        status = if (it.active) AdjustmentDto.Status.ACTIVE else AdjustmentDto.Status.INACTIVE,
+      )
+    } + sentenceAdjustments.map {
+      AdjustmentDto(
+        bookingId = prisoner.bookingId,
+        adjustmentType = AdjustmentDto.AdjustmentType.entries.find { type ->
+          try {
+            toSentenceAdjustmentType(type) == it.type
+          } catch (e: Exception) {
+            false
+          }
+        }!!,
+        person = prisoner.offenderNo,
+        fromDate = it.fromDate,
+        toDate = it.toDate,
+        days = it.numberOfDays,
+        effectiveDays = it.numberOfDays,
+        status = if (it.active) AdjustmentDto.Status.ACTIVE else AdjustmentDto.Status.INACTIVE,
+        sentenceSequence = it.sentenceSequence,
+      )
+    }
+  }
+
   companion object {
     private fun toSentenceAdjustmentType(type: AdjustmentDto.AdjustmentType): SentenceAdjustmentType {
       return when (type) {
