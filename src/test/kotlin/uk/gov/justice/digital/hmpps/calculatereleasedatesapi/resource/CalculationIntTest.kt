@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.entity.CalculationRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.CalculationRule.HDCED_GE_MIN_PERIOD_LT_MIDPOINT
@@ -375,7 +376,7 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
 
     assertThat(prisonerDetails).isNotNull
 
-    val adjustments = webTestClient.get()
+    val bookingAndSentenceAdjustments = webTestClient.get()
       .uri("/calculation/adjustments/${calc.calculationRequestId}")
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
@@ -385,7 +386,21 @@ class CalculationIntTest(private val mockManageOffencesClient: MockManageOffence
       .expectBody(BookingAndSentenceAdjustments::class.java)
       .returnResult().responseBody!!
 
+    assertThat(bookingAndSentenceAdjustments).isNotNull
+
+    val adjustments = webTestClient.get()
+      .uri("/calculation/adjustments/${calc.calculationRequestId}?adjustments-api=true")
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(object : ParameterizedTypeReference<List<AdjustmentDto>>() {})
+      .returnResult().responseBody!!
+
     assertThat(adjustments).isNotNull
+
+    assertThat(adjustments.size).isEqualTo(bookingAndSentenceAdjustments.bookingAdjustments.size + bookingAndSentenceAdjustments.sentenceAdjustments.size)
 
     val returnToCustody = webTestClient.get()
       .uri("/calculation/return-to-custody/${calc.calculationRequestId}")
