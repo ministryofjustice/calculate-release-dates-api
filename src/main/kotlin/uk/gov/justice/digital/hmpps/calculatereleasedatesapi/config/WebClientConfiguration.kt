@@ -70,10 +70,15 @@ class WebClientConfiguration(
   }
 
   @Bean
-  fun adjustmentsApiWebClient(webClientBuilder: WebClient.Builder): WebClient {
+  fun adjustmentsApiWebClient(
+    webClientBuilder: WebClient.Builder,
+    authorizedClientManager: OAuth2AuthorizedClientManager,
+  ): WebClient {
+    val oauth2Client = ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
+    oauth2Client.setDefaultClientRegistrationId("adjustments-api")
     return webClientBuilder
       .baseUrl(adjustmentsApiUrl)
-      .filter(addAuthHeaderFilterFunction())
+      .apply(oauth2Client.oauth2Configuration())
       .build()
   }
 
