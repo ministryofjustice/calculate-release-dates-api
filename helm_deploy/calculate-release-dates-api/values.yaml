@@ -71,5 +71,6 @@ generic-data-analytics-extractor:
   resources:
     requests:
       memory: 2G
+      cpu: 1
     limits:
       memory: 4G
