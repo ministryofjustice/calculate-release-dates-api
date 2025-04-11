@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ReleasePoint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
@@ -135,6 +136,23 @@ class TimelineSentenceCalculationHandler(
         servedAdaDays = servedAdas,
       ),
     )
+    applyUalToConsecutiveChain(newSentencesToCalculate)
+  }
+
+  // Previous UAL does not apply to new sentences. However if the new sentence is part of a consec chain that already has UAL, it needs to be applied.
+  private fun applyUalToConsecutiveChain(newSentencesToCalculate: List<CalculableSentence>) {
+    newSentencesToCalculate.filterIsInstance<ConsecutiveSentence>().forEach {
+      val firstSentence = it.sentenceParts()[0]
+      if (firstSentence.isCalculationInitialised()) {
+        val ualAdjustments = firstSentence.sentenceCalculation.adjustments
+        timelineCalculator.setAdjustments(
+          listOf(it),
+          SentenceAdjustments(
+            ualDuringCustody = ualAdjustments.ualDuringCustody,
+          ),
+        )
+      }
+    }
   }
 
   private fun findServedAdas(
