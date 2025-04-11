@@ -1,10 +1,13 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentAnalysisResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedBookingAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedBookingAndSentenceAdjustments
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedSentenceAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedBookingAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedBookingAndSentenceAdjustmentAnalysisResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedBookingAndSentenceAdjustments
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.prisonapi.BookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 
@@ -13,20 +16,40 @@ class AdjustmentsService(
   private val calculationRequestRepository: CalculationRequestRepository,
   private val sourceDataMapper: SourceDataMapper,
   private val prisonService: PrisonService,
+  private val adjustmentsApiClient: AdjustmentsApiClient,
 ) {
 
-  fun getAnalyzedAdjustments(bookingId: Long): AnalyzedBookingAndSentenceAdjustments {
+  fun getAnalysedAdjustments(prisonerId: String): List<AnalysedAdjustment> {
+    val adjustments = adjustmentsApiClient.getAdjustmentsByPerson(prisonerId, null, listOf(AdjustmentDto.Status.ACTIVE))
+
+    return calculationRequestRepository.findFirstByPrisonerIdAndCalculationStatusOrderByCalculatedAtDesc(prisonerId).map { calculationRequest ->
+      if (calculationRequest.adjustments == null) {
+        adjustments.map { AdjustmentAnalysisResult.NEW.adjustment(it) }
+      } else {
+        val lastAdjustments = sourceDataMapper.mapAdjustments(calculationRequest)
+        adjustments.map {
+          if (lastAdjustments.any { inner -> inner.adjustmentType == it.adjustmentType && inner.days == it.days }) {
+            AdjustmentAnalysisResult.SAME.adjustment(it)
+          } else {
+            AdjustmentAnalysisResult.NEW.adjustment(it)
+          }
+        }
+      }
+    }.orElse(adjustments.map { AdjustmentAnalysisResult.NEW.adjustment(it) })
+  }
+
+  fun getAnalysedBookingAndSentenceAdjustments(bookingId: Long): AnalysedBookingAndSentenceAdjustments {
     val bookingAndSentenceAdjustments = prisonService.getBookingAndSentenceAdjustments(bookingId)
 
     return calculationRequestRepository.findFirstByBookingIdAndCalculationStatusOrderByCalculatedAtDesc(bookingId).map {
       if (it.adjustments == null) {
-        return@map newAnalyzedBookingAndSentenceAdjustments(bookingAndSentenceAdjustments)
+        return@map newAnalysedBookingAndSentenceAdjustments(bookingAndSentenceAdjustments)
       }
       val lastAdjustments = sourceDataMapper.mapBookingAndSentenceAdjustments(it)
-      val analyzedBookingAdjustment: List<AnalyzedBookingAdjustment> =
+      val analysedBookingAdjustment: List<AnalysedBookingAdjustment> =
         bookingAndSentenceAdjustments.bookingAdjustments.map { bookingAdjustment ->
-          val analysisResult = if (lastAdjustments.bookingAdjustments.contains(bookingAdjustment)) AdjustmentAnalysisResult.SAME else AdjustmentAnalysisResult.NEW
-          AnalyzedBookingAdjustment(
+          val analysisResult = if (lastAdjustments.bookingAdjustments.contains(bookingAdjustment)) AnalysedBookingAndSentenceAdjustmentAnalysisResult.SAME else AnalysedBookingAndSentenceAdjustmentAnalysisResult.NEW
+          AnalysedBookingAdjustment(
             bookingAdjustment.active,
             bookingAdjustment.fromDate,
             bookingAdjustment.toDate,
@@ -35,10 +58,10 @@ class AdjustmentsService(
             analysisResult,
           )
         }
-      val analyzedSentenceAdjustments: List<AnalyzedSentenceAdjustment> =
+      val analysedSentenceAdjustments: List<AnalysedSentenceAdjustment> =
         bookingAndSentenceAdjustments.sentenceAdjustments.map { sentenceAdjustment ->
-          val analysisResult = if (lastAdjustments.sentenceAdjustments.contains(sentenceAdjustment)) AdjustmentAnalysisResult.SAME else AdjustmentAnalysisResult.NEW
-          AnalyzedSentenceAdjustment(
+          val analysisResult = if (lastAdjustments.sentenceAdjustments.contains(sentenceAdjustment)) AnalysedBookingAndSentenceAdjustmentAnalysisResult.SAME else AnalysedBookingAndSentenceAdjustmentAnalysisResult.NEW
+          AnalysedSentenceAdjustment(
             sentenceAdjustment.sentenceSequence,
             sentenceAdjustment.active,
             sentenceAdjustment.fromDate,
@@ -48,34 +71,34 @@ class AdjustmentsService(
             analysisResult,
           )
         }
-      AnalyzedBookingAndSentenceAdjustments(analyzedBookingAdjustment, analyzedSentenceAdjustments)
+      AnalysedBookingAndSentenceAdjustments(analysedBookingAdjustment, analysedSentenceAdjustments)
     }.orElse(
-      newAnalyzedBookingAndSentenceAdjustments(bookingAndSentenceAdjustments),
+      newAnalysedBookingAndSentenceAdjustments(bookingAndSentenceAdjustments),
     )
   }
 
-  private fun newAnalyzedBookingAndSentenceAdjustments(bookingAndSentenceAdjustments: BookingAndSentenceAdjustments): AnalyzedBookingAndSentenceAdjustments {
+  private fun newAnalysedBookingAndSentenceAdjustments(bookingAndSentenceAdjustments: BookingAndSentenceAdjustments): AnalysedBookingAndSentenceAdjustments {
     val bookingAdjustment = bookingAndSentenceAdjustments.bookingAdjustments.map {
-      AnalyzedBookingAdjustment(
+      AnalysedBookingAdjustment(
         it.active,
         it.fromDate,
         it.toDate,
         it.numberOfDays,
         it.type,
-        AdjustmentAnalysisResult.NEW,
+        AnalysedBookingAndSentenceAdjustmentAnalysisResult.NEW,
       )
     }
     val sentenceAdjustments = bookingAndSentenceAdjustments.sentenceAdjustments.map {
-      AnalyzedSentenceAdjustment(
+      AnalysedSentenceAdjustment(
         it.sentenceSequence,
         it.active,
         it.fromDate,
         it.toDate,
         it.numberOfDays,
         it.type,
-        AdjustmentAnalysisResult.NEW,
+        AnalysedBookingAndSentenceAdjustmentAnalysisResult.NEW,
       )
     }
-    return AnalyzedBookingAndSentenceAdjustments(bookingAdjustment, sentenceAdjustments)
+    return AnalysedBookingAndSentenceAdjustments(bookingAdjustment, sentenceAdjustments)
   }
 }

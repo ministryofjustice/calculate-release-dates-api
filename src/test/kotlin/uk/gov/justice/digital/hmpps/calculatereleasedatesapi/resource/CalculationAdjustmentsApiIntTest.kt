@@ -12,6 +12,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.TestUtil
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.model.AdjustmentDto
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentAnalysisResult
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
@@ -28,20 +30,20 @@ class CalculationAdjustmentsApiIntTest : IntegrationTestBase() {
   @Test
   fun `Adjustments API integration`() {
     val prisoner = "ADJ-API"
-    val result = createPreliminaryCalculation(prisoner)
+
+    // Firstly all adjustments are "NEW"
+    var analysedAdjustments = getAnalysedAdjustments(prisoner)
+    assertThat(analysedAdjustments.all { it.analysisResult == AdjustmentAnalysisResult.NEW }).isEqualTo(true)
+
+    // Calculate release dates and confirm
+    var result = createPreliminaryCalculation(prisoner)
+    result = createConfirmCalculationForPrisoner(result.calculationRequestId)
 
     assertThat(result).isNotNull
     assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2024, 12, 1))
 
-    val storedPrisonApiStructuredAdjustments = webTestClient.get()
-      .uri("/calculation/adjustments/${result.calculationRequestId}")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(BookingAndSentenceAdjustments::class.java)
-      .returnResult().responseBody!!
+    // Get stored adjustments in prison-api structure
+    val storedPrisonApiStructuredAdjustments = getStoredAdjustmentsPrisonApiStructure(result.calculationRequestId)
 
     assertThat(storedPrisonApiStructuredAdjustments.sentenceAdjustments.size).isEqualTo(1)
     assertThat(storedPrisonApiStructuredAdjustments.sentenceAdjustments[0]).isEqualTo(
@@ -74,20 +76,47 @@ class CalculationAdjustmentsApiIntTest : IntegrationTestBase() {
       ),
     )
 
-    val storedAdjustmentsApiAdjustments = webTestClient.get()
-      .uri("/calculation/adjustments/${result.calculationRequestId}?adjustments-api=true")
-      .accept(MediaType.APPLICATION_JSON)
-      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
-      .exchange()
-      .expectStatus().isOk
-      .expectHeader().contentType(MediaType.APPLICATION_JSON)
-      .expectBody(object : ParameterizedTypeReference<List<AdjustmentDto>>() {})
-      .returnResult().responseBody!!
+    // Get stored adjustments in adjustments-api structure
+    val storedAdjustmentsApiAdjustments = getStoredAdjustmentsApiStructure(result.calculationRequestId)
 
     val calculationRequest = calculationRequestRepository.findById(result.calculationRequestId)
       .orElseThrow { EntityNotFoundException("No calculation request exists for id ${result.calculationRequestId}") }
 
     assertThat(calculationRequest.adjustmentsVersion).isEqualTo(1)
     assertThat(calculationRequest.adjustments.toString()).isEqualTo(TestUtil.objectMapper().writeValueAsString(storedAdjustmentsApiAdjustments))
+
+    // Check Analysed adjustments are now all SAME.
+    analysedAdjustments = getAnalysedAdjustments(prisoner)
+
+    assertThat(analysedAdjustments.all { it.analysisResult == AdjustmentAnalysisResult.SAME }).isEqualTo(true)
   }
+
+  private fun getStoredAdjustmentsApiStructure(calculationRequestId: Long) = webTestClient.get()
+    .uri("/calculation/adjustments/$calculationRequestId?adjustments-api=true")
+    .accept(MediaType.APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(object : ParameterizedTypeReference<List<AdjustmentDto>>() {})
+    .returnResult().responseBody!!
+
+  private fun getStoredAdjustmentsPrisonApiStructure(calculationRequestId: Long) = webTestClient.get()
+    .uri("/calculation/adjustments/$calculationRequestId")
+    .accept(MediaType.APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(BookingAndSentenceAdjustments::class.java)
+    .returnResult().responseBody!!
+  private fun getAnalysedAdjustments(prisoner: String) = webTestClient.get()
+    .uri("/adjustments/$prisoner")
+    .accept(MediaType.APPLICATION_JSON)
+    .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+    .exchange()
+    .expectStatus().isOk
+    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+    .expectBody(object : ParameterizedTypeReference<List<AnalysedAdjustment>>() {})
+    .returnResult().responseBody!!
 }
