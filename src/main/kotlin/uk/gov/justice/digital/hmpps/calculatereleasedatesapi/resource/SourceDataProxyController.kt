@@ -12,14 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedBookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.AdjustmentsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentenceAndOffenceService
 
 @RestController
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-@Tag(name = "specialist-support-controller", description = "Operations for specialist support")
-class PrisonApiProxyController(
+@Tag(name = "source-data-proxy-controller", description = "Proxies source data and adds info about changes since last calc")
+class SourceDataProxyController(
   val sentenceAndOffenceService: SentenceAndOffenceService,
   val adjustmentsService: AdjustmentsService,
 ) {
@@ -56,6 +57,24 @@ class PrisonApiProxyController(
     ],
   )
   fun getBookingAndSentenceAdjustments(@PathVariable bookingId: Long): AnalyzedBookingAndSentenceAdjustments {
-    return adjustmentsService.getAnalyzedAdjustments(bookingId)
+    return adjustmentsService.getAnalyzedBookingAndSentenceAdjustments(bookingId)
+  }
+
+  @GetMapping(value = ["/adjustments/{prisonerId}"])
+  @PreAuthorize("hasAnyRole('VIEW_PRISONER_DATA', 'RELEASE_DATES_CALCULATOR')")
+  @ResponseBody
+  @Operation(
+    summary = "Get adjustments",
+    description = "This endpoint will return a response model which shows adjustments. It will notify if there are new adjustments since last calculation",
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Returns a List<AnalyzedAdjustment"),
+      ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
+      ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
+    ],
+  )
+  fun getAdjustments(@PathVariable prisonerId: String): List<AnalyzedAdjustment> {
+    return adjustmentsService.getAnalyzedAdjustments(prisonerId)
   }
 }

@@ -9,5 +9,5 @@ data class AnalyzedBookingAdjustment(
   val toDate: LocalDate? = null,
   val numberOfDays: Int,
   val type: BookingAdjustmentType,
-  val analysisResult: AdjustmentAnalysisResult,
+  val analysisResult: AnalyzedBookingAndSentenceAdjustmentAnalysisResult,
 )

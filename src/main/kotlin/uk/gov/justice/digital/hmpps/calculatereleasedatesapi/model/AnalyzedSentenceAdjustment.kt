@@ -10,5 +10,5 @@ data class AnalyzedSentenceAdjustment(
   val toDate: LocalDate? = null,
   val numberOfDays: Int,
   val type: SentenceAdjustmentType,
-  val analysisResult: AdjustmentAnalysisResult,
+  val analysisResult: AnalyzedBookingAndSentenceAdjustmentAnalysisResult,
 )

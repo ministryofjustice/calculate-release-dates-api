@@ -31,7 +31,7 @@ class ThingsToDoServiceTest {
     fun `Get things to do for a prisoner where there are things to do`() {
       whenever(prisonService.getOffenderDetail(NOMS_ID)).thenReturn(PRISONER_DETAILS)
       whenever(sentenceAndOffenceService.getSentencesAndOffences(BOOKING_ID)).thenReturn(SENTENCES)
-      whenever(adjustmentsService.getAnalyzedAdjustments(BOOKING_ID)).thenReturn(ADJUSTMENTS)
+      whenever(adjustmentsService.getAnalyzedBookingAndSentenceAdjustments(BOOKING_ID)).thenReturn(ADJUSTMENTS)
 
       val thingsToDo = thingsToDoService.getToDoList(NOMS_ID)
 
@@ -42,7 +42,7 @@ class ThingsToDoServiceTest {
     fun `Get things to do for a prisoner when there is nothing to do`() {
       whenever(prisonService.getOffenderDetail(NOMS_ID)).thenReturn(PRISONER_DETAILS)
       whenever(sentenceAndOffenceService.getSentencesAndOffences(BOOKING_ID)).thenReturn(listOf(BASE_SENTENCE.copy(sentenceAndOffenceAnalysis = SentenceAndOffenceAnalysis.SAME)))
-      whenever(adjustmentsService.getAnalyzedAdjustments(BOOKING_ID)).thenReturn(ADJUSTMENTS)
+      whenever(adjustmentsService.getAnalyzedBookingAndSentenceAdjustments(BOOKING_ID)).thenReturn(ADJUSTMENTS)
 
       val thingsToDo = thingsToDoService.getToDoList(NOMS_ID)
 

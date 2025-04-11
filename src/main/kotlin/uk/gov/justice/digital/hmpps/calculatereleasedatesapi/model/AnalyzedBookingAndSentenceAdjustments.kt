@@ -5,7 +5,7 @@ data class AnalyzedBookingAndSentenceAdjustments(
   val sentenceAdjustments: List<AnalyzedSentenceAdjustment>,
 )
 
-enum class AdjustmentAnalysisResult {
+enum class AnalyzedBookingAndSentenceAdjustmentAnalysisResult {
   NEW,
   SAME,
 }
