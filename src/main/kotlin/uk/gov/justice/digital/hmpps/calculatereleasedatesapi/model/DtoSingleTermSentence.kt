@@ -9,15 +9,17 @@ class DtoSingleTermSentence(
   override val sentencedAt: LocalDate,
   override val offence: Offence,
   override val standardSentences: List<AbstractSentence>,
+  val sentences: List<CalculableSentence>,
 ) : SingleTermed, Term {
   override val isSDSPlus: Boolean = false
   override val isSDSPlusEligibleSentenceTypeLengthAndOffence: Boolean = false
   override val isSDSPlusOffenceInPeriod: Boolean = false
-  constructor(standardSentences: List<AbstractSentence>) :
+  constructor(sentences: List<CalculableSentence>) :
     this(
-      standardSentences.minOf(AbstractSentence::sentencedAt),
-      standardSentences.map(AbstractSentence::offence).minByOrNull(Offence::committedAt)!!,
-      standardSentences,
+      sentences.minOf(CalculableSentence::sentencedAt),
+      sentences.map(CalculableSentence::offence).minByOrNull(Offence::committedAt)!!,
+      sentences.flatMap { it.sentenceParts() },
+      sentences,
     )
 
   override val recallType: RecallType?
@@ -36,7 +38,7 @@ class DtoSingleTermSentence(
 
   override fun buildString(): String {
     return "DtoSingleTermSentence\t:\t\n" +
-      "Number of sentences\t:\t${standardSentences.size}\n" +
+      "Number of sentences\t:\t${sentences.size}\n" +
       "Sentence Types\t:\t$releaseDateTypes\n" +
       "Number of Days in Sentence\t:\t${getLengthInDays()}\n" +
       sentenceCalculation.buildString(releaseDateTypes.initialTypes)
@@ -51,7 +53,7 @@ class DtoSingleTermSentence(
   }
 
   fun combinedDuration(): Duration {
-    val sentencesOrderedByLengthThenSentenceDate = standardSentences.sortedWith(compareBy({ it.getLengthInDays() }, { it.sentencedAt }))
+    val sentencesOrderedByLengthThenSentenceDate = sentences.sortedWith(compareBy({ it.getLengthInDays() }, { it.sentencedAt }))
     val longestEarliestSentence = sentencesOrderedByLengthThenSentenceDate.first()
     val shortestRecentSentence = sentencesOrderedByLengthThenSentenceDate.last()
     val durationElements: MutableMap<ChronoUnit, Long> = mutableMapOf()
@@ -78,7 +80,7 @@ class DtoSingleTermSentence(
     return false
   }
 
-  private fun earliestSentencedAt(firstStandardSentence: AbstractSentence, secondStandardSentence: AbstractSentence): LocalDate {
+  private fun earliestSentencedAt(firstStandardSentence: CalculableSentence, secondStandardSentence: CalculableSentence): LocalDate {
     return if (firstStandardSentence.sentencedAt.isBefore(secondStandardSentence.sentencedAt)) {
       firstStandardSentence.sentencedAt
     } else {
@@ -86,7 +88,7 @@ class DtoSingleTermSentence(
     }
   }
 
-  private fun latestExpiryDate(firstStandardSentence: AbstractSentence, secondStandardSentence: AbstractSentence): LocalDate? {
+  private fun latestExpiryDate(firstStandardSentence: CalculableSentence, secondStandardSentence: CalculableSentence): LocalDate? {
     val firstExpiry = firstStandardSentence.totalDuration().getEndDate(firstStandardSentence.sentencedAt)
     val secondExpiry = secondStandardSentence.totalDuration().getEndDate(secondStandardSentence.sentencedAt)
 

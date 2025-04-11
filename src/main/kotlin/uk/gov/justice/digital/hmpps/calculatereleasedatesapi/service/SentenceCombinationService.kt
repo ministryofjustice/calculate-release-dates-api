@@ -20,30 +20,47 @@ class SentenceCombinationService(
 ) {
 
   fun getSentencesToCalculate(sentences: List<CalculableSentence>, offender: Offender): List<CalculableSentence> {
-    val singleSentences = sentences.flatMap { it.sentenceParts() }
+    var singleSentences = sentences.flatMap { it.sentenceParts() }
+
     val consecutiveSentences = createConsecutiveSentences(singleSentences, offender)
+    if (consecutiveSentences.isNotEmpty()) {
+      singleSentences = singleSentences.filter { singleSentence -> consecutiveSentences.none { it.sentenceParts().contains(singleSentence) } }
+    }
 
-    val singleTermed = createSingleTermSentences(singleSentences, offender)
+    val dtoSingleTerm = createDtoSingleTerm(singleSentences + consecutiveSentences, offender)
 
-    return getAllExtractableSentences(singleSentences, singleTermed, consecutiveSentences)
+    if (dtoSingleTerm != null) {
+      singleSentences = singleSentences.filter { !dtoSingleTerm.sentenceParts().contains(it) }
+    }
+
+    val sdsSingleTerm = createSingleSdsTermSentences(singleSentences, offender)
+    if (sdsSingleTerm != null) {
+      singleSentences = singleSentences.filter { !sdsSingleTerm.sentenceParts().contains(it) }
+    }
+
+    return (singleSentences + dtoSingleTerm + consecutiveSentences + sdsSingleTerm).filterNotNull().sortedBy { it.sentencedAt }
   }
 
   private fun allSdsBeforeLaspo(sentences: List<AbstractSentence>): Boolean = sentences.all { it is StandardDeterminateSentence && it.isBeforeCJAAndLASPO() }
 
-  private fun allDtos(sentences: List<AbstractSentence>): Boolean = sentences.all { it is DetentionAndTrainingOrderSentence }
+  fun createDtoSingleTerm(sentences: List<CalculableSentence>, offender: Offender): DtoSingleTermSentence? {
+    val dtoSentences = sentences.filter { it.isDto() }
+    if (dtoSentences.size > 1) {
+      val sentence = DtoSingleTermSentence(dtoSentences)
+      sentenceIdentificationService.identify(sentence, offender)
+      return sentence
+    }
+    return null
+  }
 
-  fun createSingleTermSentences(sentences: List<AbstractSentence>, offender: Offender): SingleTermed? {
+  fun createSingleSdsTermSentences(sentences: List<AbstractSentence>, offender: Offender): SingleTermed? {
     if (sentences.size > 1 &&
-      (allSdsBeforeLaspo(sentences) || allDtos(sentences)) &&
+      allSdsBeforeLaspo(sentences) &&
       sentences.all { it.consecutiveSentenceUUIDs.isEmpty() } &&
       sentences.minOf { it.sentencedAt } != sentences.maxOf { it.sentencedAt } &&
       sentences.all { !it.isRecall() }
     ) {
-      val sentence = if (sentences.any { it is DetentionAndTrainingOrderSentence }) {
-        DtoSingleTermSentence(sentences)
-      } else {
-        SingleTermSentence(sentences)
-      }
+      val sentence = SingleTermSentence(sentences)
       sentenceIdentificationService.identify(sentence, offender)
       return sentence
     }
@@ -107,25 +124,6 @@ class SentenceCombinationService(
         createSentenceChain(it, chainCopy, sentencesByPrevious, chains)
       }
     }
-  }
-
-  private fun getAllExtractableSentences(
-    sentences: List<AbstractSentence>,
-    singleTermed: SingleTermed?,
-    consecutiveSentences: List<ConsecutiveSentence>,
-  ): List<CalculableSentence> {
-    val extractableSentences: MutableList<CalculableSentence> = consecutiveSentences.toMutableList()
-    if (singleTermed != null) {
-      extractableSentences.add(singleTermed)
-    }
-    sentences.forEach {
-      if (consecutiveSentences.none { consecutive -> consecutive.orderedSentences.contains(it) } &&
-        singleTermed?.standardSentences?.contains(it) != true
-      ) {
-        extractableSentences.add(it)
-      }
-    }
-    return extractableSentences.toList()
   }
 
   companion object {
