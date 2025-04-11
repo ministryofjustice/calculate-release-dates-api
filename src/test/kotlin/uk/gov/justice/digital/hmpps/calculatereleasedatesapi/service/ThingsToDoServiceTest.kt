@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ToDoType
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedBookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedBookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SDSEarlyReleaseExclusionType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAndOffenceAnalysis
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ThingsToDo
@@ -31,7 +31,7 @@ class ThingsToDoServiceTest {
     fun `Get things to do for a prisoner where there are things to do`() {
       whenever(prisonService.getOffenderDetail(NOMS_ID)).thenReturn(PRISONER_DETAILS)
       whenever(sentenceAndOffenceService.getSentencesAndOffences(BOOKING_ID)).thenReturn(SENTENCES)
-      whenever(adjustmentsService.getAnalyzedAdjustments(BOOKING_ID)).thenReturn(ADJUSTMENTS)
+      whenever(adjustmentsService.getAnalysedBookingAndSentenceAdjustments(BOOKING_ID)).thenReturn(ADJUSTMENTS)
 
       val thingsToDo = thingsToDoService.getToDoList(NOMS_ID)
 
@@ -42,7 +42,7 @@ class ThingsToDoServiceTest {
     fun `Get things to do for a prisoner when there is nothing to do`() {
       whenever(prisonService.getOffenderDetail(NOMS_ID)).thenReturn(PRISONER_DETAILS)
       whenever(sentenceAndOffenceService.getSentencesAndOffences(BOOKING_ID)).thenReturn(listOf(BASE_SENTENCE.copy(sentenceAndOffenceAnalysis = SentenceAndOffenceAnalysis.SAME)))
-      whenever(adjustmentsService.getAnalyzedAdjustments(BOOKING_ID)).thenReturn(ADJUSTMENTS)
+      whenever(adjustmentsService.getAnalysedBookingAndSentenceAdjustments(BOOKING_ID)).thenReturn(ADJUSTMENTS)
 
       val thingsToDo = thingsToDoService.getToDoList(NOMS_ID)
 
@@ -90,7 +90,7 @@ class ThingsToDoServiceTest {
     )
     val SENTENCES = listOf(BASE_SENTENCE)
 
-    val ADJUSTMENTS = AnalyzedBookingAndSentenceAdjustments(
+    val ADJUSTMENTS = AnalysedBookingAndSentenceAdjustments(
       bookingAdjustments = emptyList(),
       sentenceAdjustments = emptyList(),
     )
