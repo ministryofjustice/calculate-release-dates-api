@@ -40,7 +40,7 @@ class CalculationAdjustmentsApiIntTest : IntegrationTestBase() {
     result = createConfirmCalculationForPrisoner(result.calculationRequestId)
 
     assertThat(result).isNotNull
-    assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2024, 12, 1))
+    assertThat(result.dates[SLED]).isEqualTo(LocalDate.of(2024, 10, 2))
 
     // Get stored adjustments in prison-api structure
     val storedPrisonApiStructuredAdjustments = getStoredAdjustmentsPrisonApiStructure(result.calculationRequestId)
