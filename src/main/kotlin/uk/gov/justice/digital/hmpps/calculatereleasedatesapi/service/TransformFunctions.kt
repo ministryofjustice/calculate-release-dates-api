@@ -415,8 +415,8 @@ fun transform(bookingAdjustmentType: BookingAdjustmentType): AdjustmentType? {
 fun transform(adjustmentType: AdjustmentDto.AdjustmentType, sentence: SentenceAndOffence?): AdjustmentType? {
   val recallType = sentence?.let { SentenceCalculationType.from(it.sentenceCalculationType).recallType }
   return when (adjustmentType) {
-    AdjustmentDto.AdjustmentType.REMAND -> if (recallType != null) REMAND else RECALL_REMAND
-    AdjustmentDto.AdjustmentType.TAGGED_BAIL -> if (recallType != null) TAGGED_BAIL else RECALL_TAGGED_BAIL
+    AdjustmentDto.AdjustmentType.REMAND -> if (recallType == null) REMAND else RECALL_REMAND
+    AdjustmentDto.AdjustmentType.TAGGED_BAIL -> if (recallType == null) TAGGED_BAIL else RECALL_TAGGED_BAIL
     AdjustmentDto.AdjustmentType.UNLAWFULLY_AT_LARGE -> UNLAWFULLY_AT_LARGE
     AdjustmentDto.AdjustmentType.LAWFULLY_AT_LARGE -> null
     AdjustmentDto.AdjustmentType.ADDITIONAL_DAYS_AWARDED -> ADDITIONAL_DAYS_AWARDED
