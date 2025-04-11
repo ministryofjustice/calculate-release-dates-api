@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedBookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedSentenceAndOffence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedAdjustment
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedBookingAndSentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.AdjustmentsService
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentenceAndOffenceService
 
@@ -33,7 +33,7 @@ class SourceDataProxyController(
   )
   @ApiResponses(
     value = [
-      ApiResponse(responseCode = "200", description = "Returns a List<AnalyzedSentenceAndOffences"),
+      ApiResponse(responseCode = "200", description = "Returns a List<AnalysedSentenceAndOffences"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
@@ -51,13 +51,13 @@ class SourceDataProxyController(
   )
   @ApiResponses(
     value = [
-      ApiResponse(responseCode = "200", description = "Returns a List<AnalyzedBookingAndSentenceAdjustments"),
+      ApiResponse(responseCode = "200", description = "Returns a List<AnalysedBookingAndSentenceAdjustments"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun getBookingAndSentenceAdjustments(@PathVariable bookingId: Long): AnalyzedBookingAndSentenceAdjustments {
-    return adjustmentsService.getAnalyzedBookingAndSentenceAdjustments(bookingId)
+  fun getBookingAndSentenceAdjustments(@PathVariable bookingId: Long): AnalysedBookingAndSentenceAdjustments {
+    return adjustmentsService.getAnalysedBookingAndSentenceAdjustments(bookingId)
   }
 
   @GetMapping(value = ["/adjustments/{prisonerId}"])
@@ -69,12 +69,12 @@ class SourceDataProxyController(
   )
   @ApiResponses(
     value = [
-      ApiResponse(responseCode = "200", description = "Returns a List<AnalyzedAdjustment"),
+      ApiResponse(responseCode = "200", description = "Returns a List<AnalysedAdjustment"),
       ApiResponse(responseCode = "401", description = "Unauthorised, requires a valid Oauth2 token"),
       ApiResponse(responseCode = "403", description = "Forbidden, requires an appropriate role"),
     ],
   )
-  fun getAdjustments(@PathVariable prisonerId: String): List<AnalyzedAdjustment> {
-    return adjustmentsService.getAnalyzedAdjustments(prisonerId)
+  fun getAdjustments(@PathVariable prisonerId: String): List<AnalysedAdjustment> {
+    return adjustmentsService.getAnalysedAdjustments(prisonerId)
   }
 }

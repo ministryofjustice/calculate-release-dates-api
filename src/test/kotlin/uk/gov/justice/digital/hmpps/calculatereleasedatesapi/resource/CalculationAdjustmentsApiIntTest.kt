@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.adjustmentsapi.mode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.ReleaseDateType.SLED
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AdjustmentAnalysisResult
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalyzedAdjustment
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AnalysedAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustment
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.BookingAdjustmentType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceAdjustment
@@ -32,8 +32,8 @@ class CalculationAdjustmentsApiIntTest : IntegrationTestBase() {
     val prisoner = "ADJ-API"
 
     // Firstly all adjustments are "NEW"
-    var analyzedAdjustments = getAnalyzedAdjustments(prisoner)
-    assertThat(analyzedAdjustments.all { it.analysisResult == AdjustmentAnalysisResult.NEW }).isEqualTo(true)
+    var analysedAdjustments = getAnalysedAdjustments(prisoner)
+    assertThat(analysedAdjustments.all { it.analysisResult == AdjustmentAnalysisResult.NEW }).isEqualTo(true)
 
     // Calculate release dates and confirm
     var result = createPreliminaryCalculation(prisoner)
@@ -85,10 +85,10 @@ class CalculationAdjustmentsApiIntTest : IntegrationTestBase() {
     assertThat(calculationRequest.adjustmentsVersion).isEqualTo(1)
     assertThat(calculationRequest.adjustments.toString()).isEqualTo(TestUtil.objectMapper().writeValueAsString(storedAdjustmentsApiAdjustments))
 
-    // Check analyzed adjustments are now all SAME.
-    analyzedAdjustments = getAnalyzedAdjustments(prisoner)
+    // Check Analysed adjustments are now all SAME.
+    analysedAdjustments = getAnalysedAdjustments(prisoner)
 
-    assertThat(analyzedAdjustments.all { it.analysisResult == AdjustmentAnalysisResult.SAME }).isEqualTo(true)
+    assertThat(analysedAdjustments.all { it.analysisResult == AdjustmentAnalysisResult.SAME }).isEqualTo(true)
   }
 
   private fun getStoredAdjustmentsApiStructure(calculationRequestId: Long) = webTestClient.get()
@@ -110,13 +110,13 @@ class CalculationAdjustmentsApiIntTest : IntegrationTestBase() {
     .expectHeader().contentType(MediaType.APPLICATION_JSON)
     .expectBody(BookingAndSentenceAdjustments::class.java)
     .returnResult().responseBody!!
-  private fun getAnalyzedAdjustments(prisoner: String) = webTestClient.get()
+  private fun getAnalysedAdjustments(prisoner: String) = webTestClient.get()
     .uri("/adjustments/$prisoner")
     .accept(MediaType.APPLICATION_JSON)
     .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
     .exchange()
     .expectStatus().isOk
     .expectHeader().contentType(MediaType.APPLICATION_JSON)
-    .expectBody(object : ParameterizedTypeReference<List<AnalyzedAdjustment>>() {})
+    .expectBody(object : ParameterizedTypeReference<List<AnalysedAdjustment>>() {})
     .returnResult().responseBody!!
 }
