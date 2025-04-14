@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Upda
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
 import java.time.LocalDate
 import java.time.Period
@@ -42,6 +43,7 @@ class ManualCalculationService(
   private val sentenceCombinationService: SentenceCombinationService,
   private val validationService: ValidationService,
   private val calculationSourceDataService: CalculationSourceDataService,
+  private val calculationService: CalculationService,
 ) {
 
   fun hasIndeterminateSentences(bookingId: Long): Boolean {
@@ -94,14 +96,34 @@ class ManualCalculationService(
       version = buildProperties.version,
     ).withType(type)
 
-    val manualCalcCauses = validationService.validateSupportedSentencesAndCalculations(sourceData)
-
     return try {
       val savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
 
-      if (manualCalcCauses.isNotEmpty()) {
-        savedCalculationRequest.manualCalculationReason = manualCalcCauses.map { transform(savedCalculationRequest, it) }
+      val preCalcManualJourneyErrors = validationService.validateSupportedSentencesAndCalculations(sourceData)
+
+      if (preCalcManualJourneyErrors.isNotEmpty()) {
+        savedCalculationRequest.manualCalculationReason = preCalcManualJourneyErrors.map { transform(savedCalculationRequest, it) }
         calculationRequestRepository.save(savedCalculationRequest)
+      } else {
+        val calculationOutput = calculationService.calculateReleaseDates(
+          booking,
+          calculationUserInputs,
+        )
+
+        val postCalcManualJourneyErrorTypes = listOf(
+          ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE,
+          ValidationCode.UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS,
+          ValidationCode.UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS,
+        )
+
+        val postCalcManualJourneyErrors = validationService
+          .validateBookingAfterCalculation(calculationOutput, booking)
+          .filter { postCalcManualJourneyErrorTypes.contains(it.code) }
+
+        if (postCalcManualJourneyErrors.isNotEmpty()) {
+          savedCalculationRequest.manualCalculationReason = postCalcManualJourneyErrors.map { transform(savedCalculationRequest, it) }
+          calculationRequestRepository.save(savedCalculationRequest)
+        }
       }
 
       val calculationOutcomes =
