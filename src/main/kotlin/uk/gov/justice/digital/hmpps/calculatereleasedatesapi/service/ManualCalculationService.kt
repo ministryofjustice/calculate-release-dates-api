@@ -22,8 +22,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Upda
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationOutcomeRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.MANUAL_ENTRY_JOURNEY_REQUIRED
 import java.time.LocalDate
 import java.time.Period
 
@@ -110,15 +110,9 @@ class ManualCalculationService(
           calculationUserInputs,
         )
 
-        val postCalcManualJourneyErrorTypes = listOf(
-          ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE,
-          ValidationCode.UNSUPPORTED_SDS40_CONSECUTIVE_SDS_BETWEEN_TRANCHE_COMMENCEMENTS,
-          ValidationCode.UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS,
-        )
-
         val postCalcManualJourneyErrors = validationService
           .validateBookingAfterCalculation(calculationOutput, booking)
-          .filter { postCalcManualJourneyErrorTypes.contains(it.code) }
+          .filter { it.type == MANUAL_ENTRY_JOURNEY_REQUIRED  }
 
         if (postCalcManualJourneyErrors.isNotEmpty()) {
           savedCalculationRequest.manualCalculationReason = postCalcManualJourneyErrors.map { transform(savedCalculationRequest, it) }
