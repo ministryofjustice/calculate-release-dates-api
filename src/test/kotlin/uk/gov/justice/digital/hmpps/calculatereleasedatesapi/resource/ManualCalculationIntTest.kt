@@ -56,7 +56,8 @@ class ManualCalculationIntTest : IntegrationTestBase() {
               SubmittedDate(1, 1, LocalDate.now().year + 1),
             ),
           ),
-          1L, "",
+          1L,
+          "",
         ),
       )
       .accept(MediaType.APPLICATION_JSON)
@@ -82,7 +83,8 @@ class ManualCalculationIntTest : IntegrationTestBase() {
               SubmittedDate(1, 1, LocalDate.now().year + 1),
             ),
           ),
-          1L, "",
+          1L,
+          "",
         ),
       )
       .accept(MediaType.APPLICATION_JSON)

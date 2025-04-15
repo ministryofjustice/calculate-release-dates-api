@@ -112,7 +112,7 @@ class ManualCalculationService(
 
         val postCalcManualJourneyErrors = validationService
           .validateBookingAfterCalculation(calculationOutput, booking)
-          .filter { it.type == MANUAL_ENTRY_JOURNEY_REQUIRED  }
+          .filter { it.type == MANUAL_ENTRY_JOURNEY_REQUIRED }
 
         if (postCalcManualJourneyErrors.isNotEmpty()) {
           savedCalculationRequest.manualCalculationReason = postCalcManualJourneyErrors.map { transform(savedCalculationRequest, it) }
