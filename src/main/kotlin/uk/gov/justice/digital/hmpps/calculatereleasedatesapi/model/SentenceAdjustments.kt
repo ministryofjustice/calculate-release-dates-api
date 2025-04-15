@@ -46,4 +46,18 @@ data class SentenceAdjustments(
   fun adjustmentsForFixedTermRecall(): Long {
     return ualAfterFtr + awardedAfterDeterminateRelease
   }
+
+  fun totalAdjustmentDays(): Long =
+    taggedBail +
+      remand +
+      recallTaggedBail +
+      recallRemand +
+      awardedDuringCustody +
+      ualDuringCustody +
+      awardedAfterDeterminateRelease +
+      ualAfterDeterminateRelease +
+      ualAfterFtr +
+      servedAdaDays +
+      unusedAdaDays +
+      unusedLicenceAdaDays
 }

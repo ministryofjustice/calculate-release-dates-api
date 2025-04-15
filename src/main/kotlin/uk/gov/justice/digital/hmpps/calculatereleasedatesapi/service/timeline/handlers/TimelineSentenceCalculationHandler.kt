@@ -5,7 +5,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.ReleasePoint
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.SDS40TrancheConfiguration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculableSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceAdjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.UnadjustedReleaseDate
@@ -15,7 +14,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.Ti
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.timeline.TimelineTrackingData
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import kotlin.math.abs
 
 @Service
 class TimelineSentenceCalculationHandler(
@@ -35,7 +33,7 @@ class TimelineSentenceCalculationHandler(
       var servedAdas = findServedAdas(timelineCalculationDate, currentSentenceGroup, latestRelease)
 
       val existingAdjustments =
-        currentSentenceGroup.maxByOrNull { abs(it.sentenceCalculation.adjustments.adjustmentsForInitialRelease()) }?.sentenceCalculation?.adjustments ?: SentenceAdjustments()
+        currentSentenceGroup.maxByOrNull { it.sentenceCalculation.adjustments.totalAdjustmentDays() }?.sentenceCalculation?.adjustments ?: SentenceAdjustments()
 
       val newlySentenced = futureData.sentences.filter { it.sentencedAt == timelineCalculationDate }
       if (newlySentencedIsConsecutiveToAnyExistingSentences(timelineTrackingData, newlySentenced)) {
@@ -45,19 +43,22 @@ class TimelineSentenceCalculationHandler(
       currentSentenceGroup.addAll(newlySentenced)
       futureData.sentences -= newlySentenced
 
+      val sentencesBeforeCombining = currentSentenceGroup.toList()
       val sentencesAfterCombining = sentenceCombinationService.getSentencesToCalculate(currentSentenceGroup, offender)
-      val mergedSentencesWhichHaveNewParts = sentencesAfterCombining.filter { it.sentenceParts().any { part -> newlySentenced.contains(part) } }
-      val partsOfNewlyCombinedSentences = mergedSentencesWhichHaveNewParts.flatMap { it.sentenceParts() }
+      val combinedSentencesWhichHaveNewParts = sentencesAfterCombining.filter { it.sentenceParts().any { part -> newlySentenced.contains(part) } }
+      val partsOfNewlyCombinedSentences = combinedSentencesWhichHaveNewParts.flatMap { it.sentenceParts() }
       val unchangedByCombiningSentences = currentSentenceGroup.filter { it.sentenceParts().none { part -> partsOfNewlyCombinedSentences.contains(part) } }
 
       currentSentenceGroup.clear()
-      currentSentenceGroup.addAll(mergedSentencesWhichHaveNewParts)
+      currentSentenceGroup.addAll(combinedSentencesWhichHaveNewParts)
       currentSentenceGroup.addAll(unchangedByCombiningSentences)
       currentSentenceGroup.apply { sortWith(compareBy { it.sentencedAt }) }
 
-      initialiseCalculationForNewSentences(timelineCalculationDate, timelineTrackingData, mergedSentencesWhichHaveNewParts)
+      initialiseCalculationForNewSentences(timelineCalculationDate, timelineTrackingData, combinedSentencesWhichHaveNewParts)
 
-      shareAdjustmentsFromExistingCustodialSentencesToNewlySentenced(mergedSentencesWhichHaveNewParts, existingAdjustments, servedAdas)
+      shareAdjustmentsFromExistingCustodialSentencesToNewlySentenced(combinedSentencesWhichHaveNewParts, existingAdjustments, servedAdas)
+
+      applyUalToCombinedSentences(combinedSentencesWhichHaveNewParts, sentencesBeforeCombining)
 
       shareDeductionsThatAreApplicableToThisSentenceDate(timelineCalculationDate, timelineTrackingData)
     }
@@ -136,23 +137,26 @@ class TimelineSentenceCalculationHandler(
         servedAdaDays = servedAdas,
       ),
     )
-    applyUalToConsecutiveChain(newSentencesToCalculate)
   }
 
   // Previous UAL does not apply to new sentences. However if the new sentence is part of a consec chain that already has UAL, it needs to be applied.
-  private fun applyUalToConsecutiveChain(newSentencesToCalculate: List<CalculableSentence>) {
-    newSentencesToCalculate.filterIsInstance<ConsecutiveSentence>().forEach {
-      val firstSentence = it.sentenceParts()[0]
-      if (firstSentence.isCalculationInitialised()) {
-        val ualAdjustments = firstSentence.sentenceCalculation.adjustments
-        timelineCalculator.setAdjustments(
-          listOf(it),
-          SentenceAdjustments(
-            ualDuringCustody = ualAdjustments.ualDuringCustody,
-          ),
-        )
+  private fun applyUalToCombinedSentences(
+    newSentencesToCalculate: List<CalculableSentence>,
+    sentencesBeforeCombining: List<CalculableSentence>,
+  ) {
+    newSentencesToCalculate.filter { it.sentenceParts().size > 1 }
+      .forEach { combined ->
+        val matchingSentenceBeforeMerging = sentencesBeforeCombining.find { it.sentenceParts().any { part -> combined.sentenceParts().contains(part) } }
+        if (matchingSentenceBeforeMerging != null && matchingSentenceBeforeMerging.isCalculationInitialised()) {
+          val ualAdjustments = matchingSentenceBeforeMerging.sentenceCalculation.adjustments
+          timelineCalculator.setAdjustments(
+            listOf(combined),
+            SentenceAdjustments(
+              ualDuringCustody = ualAdjustments.ualDuringCustody,
+            ),
+          )
+        }
       }
-    }
   }
 
   private fun findServedAdas(
