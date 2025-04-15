@@ -29,7 +29,7 @@ class CalculationSourceDataService(
   }
 
   fun getCalculationSourceData(prisonerDetails: PrisonerDetails, inactiveDataOptions: InactiveDataOptions): CalculationSourceData {
-    val activeOnly = inactiveDataOptions.activeOnly(featureToggles.supportInactiveSentencesAndAdjustments, prisonerDetails.agencyId)
+    val activeOnly = inactiveDataOptions.activeOnly(featureToggles.supportInactiveSentencesAndAdjustments)
 
     val sentenceAndOffences = prisonService.getSentencesAndOffences(prisonerDetails.bookingId, activeOnly)
     val adjustments = getAdjustments(prisonerDetails, sentenceAndOffences, activeOnly)
@@ -88,14 +88,12 @@ class InactiveDataOptions private constructor(
   private val overrideToIncludeInactiveData: Boolean,
 ) {
 
-  fun activeOnly(featureToggle: Boolean, agencyId: String): Boolean {
-    return !includeInactive(featureToggle, agencyId)
+  fun activeOnly(featureToggle: Boolean): Boolean {
+    return !includeInactive(featureToggle)
   }
 
-  private fun includeInactive(featureToggle: Boolean, agencyId: String): Boolean {
-    return if (agencyId == "OUT") {
-      true
-    } else if (overrideToIncludeInactiveData) {
+  private fun includeInactive(featureToggle: Boolean): Boolean {
+    return if (overrideToIncludeInactiveData) {
       true
     } else {
       featureToggle
