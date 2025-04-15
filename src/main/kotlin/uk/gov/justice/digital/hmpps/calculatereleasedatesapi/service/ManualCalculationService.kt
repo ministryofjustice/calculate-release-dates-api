@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationType.MANUAL_ENTRY_JOURNEY_REQUIRED
 import java.time.LocalDate
 import java.time.Period
 
@@ -42,6 +43,7 @@ class ManualCalculationService(
   private val sentenceCombinationService: SentenceCombinationService,
   private val validationService: ValidationService,
   private val calculationSourceDataService: CalculationSourceDataService,
+  private val calculationService: CalculationService,
 ) {
 
   fun hasIndeterminateSentences(bookingId: Long): Boolean {
@@ -94,14 +96,28 @@ class ManualCalculationService(
       version = buildProperties.version,
     ).withType(type)
 
-    val manualCalcCauses = validationService.validateSupportedSentencesAndCalculations(sourceData)
-
     return try {
       val savedCalculationRequest = calculationRequestRepository.save(calculationRequest)
 
-      if (manualCalcCauses.isNotEmpty()) {
-        savedCalculationRequest.manualCalculationReason = manualCalcCauses.map { transform(savedCalculationRequest, it) }
+      val preCalcManualJourneyErrors = validationService.validateSupportedSentencesAndCalculations(sourceData)
+
+      if (preCalcManualJourneyErrors.isNotEmpty()) {
+        savedCalculationRequest.manualCalculationReason = preCalcManualJourneyErrors.map { transform(savedCalculationRequest, it) }
         calculationRequestRepository.save(savedCalculationRequest)
+      } else {
+        val calculationOutput = calculationService.calculateReleaseDates(
+          booking,
+          calculationUserInputs,
+        )
+
+        val postCalcManualJourneyErrors = validationService
+          .validateBookingAfterCalculation(calculationOutput, booking)
+          .filter { it.type == MANUAL_ENTRY_JOURNEY_REQUIRED }
+
+        if (postCalcManualJourneyErrors.isNotEmpty()) {
+          savedCalculationRequest.manualCalculationReason = postCalcManualJourneyErrors.map { transform(savedCalculationRequest, it) }
+          calculationRequestRepository.save(savedCalculationRequest)
+        }
       }
 
       val calculationOutcomes =

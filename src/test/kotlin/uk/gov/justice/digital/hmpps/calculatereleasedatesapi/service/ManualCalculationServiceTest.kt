@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.Releas
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.TestBuildPropertiesConfiguration.Companion.TEST_BUILD_PROPERTIES
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Adjustments
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Booking
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationUserInputs
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
@@ -68,6 +69,7 @@ class ManualCalculationServiceTest {
   private val sentenceIdentificationService = mock<SentenceIdentificationService>()
   private val sentenceCombinationService = mock<SentenceCombinationService>()
   private val validationService = mock<ValidationService>()
+  private val calculationService = mock<CalculationService>()
   private val manualCalculationService = ManualCalculationService(
     prisonService,
     bookingService,
@@ -83,6 +85,7 @@ class ManualCalculationServiceTest {
     sentenceCombinationService,
     validationService,
     calculationSourceDataService,
+    calculationService,
   )
   private val calculationRequestArgumentCaptor = argumentCaptor<CalculationRequest>()
 
@@ -570,6 +573,41 @@ class ManualCalculationServiceTest {
       listOf(
         ValidationMessage(ValidationCode.UNSUPPORTED_CALCULATION_DTO_WITH_RECALL),
         ValidationMessage(ValidationCode.BOTUS_CONSECUTIVE_TO_OTHER_SENTENCE),
+      ),
+    )
+
+    val manualCalcRequest = ManualEntrySelectedDate(ReleaseDateType.CRD, "CRD also known as the Conditional Release Date", SubmittedDate(3, 3, 2023))
+    val manualEntryRequest = ManualEntryRequest(listOf(manualCalcRequest), 1L, "")
+
+    manualCalculationService.storeManualCalculation(PRISONER_ID, manualEntryRequest, false)
+
+    // save should be called twice, one for initial creation, then one for manual calc reasons
+    verify(calculationRequestRepository, times(2)).save(calculationRequestArgumentCaptor.capture())
+    val actualRequest = calculationRequestArgumentCaptor.firstValue
+    assertThat(actualRequest.calculationType).isEqualTo(CalculationType.MANUAL_DETERMINATE)
+  }
+
+  @Test
+  fun `Check manual journey records validation reasons for post calculation errors`() {
+    whenever(calculationSourceDataService.getCalculationSourceData(PRISONER_ID, InactiveDataOptions.default())).thenReturn(FAKE_SOURCE_DATA)
+    whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST_WITH_OUTCOMES)
+    whenever(calculationRequestRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REQUEST_WITH_OUTCOMES))
+    whenever(calculationReasonRepository.findById(any())).thenReturn(Optional.of(CALCULATION_REASON))
+    whenever(bookingService.getBooking(FAKE_SOURCE_DATA, CalculationUserInputs())).thenReturn(BOOKING)
+    whenever(serviceUserService.getUsername()).thenReturn(USERNAME)
+    whenever(nomisCommentService.getManualNomisComment(any(), any(), any())).thenReturn("The NOMIS Reason")
+    whenever(calculationService.calculateReleaseDates(any(), any())).thenReturn(
+      CalculationOutput(
+        listOf(),
+        listOf(),
+        mock(),
+      ),
+    )
+    whenever(validationService.validateSupportedSentencesAndCalculations(any())).thenReturn(emptyList())
+    whenever(validationService.validateBookingAfterCalculation(any(), any())).thenReturn(
+      listOf(
+        ValidationMessage(ValidationCode.UNSUPPORTED_SDS40_RECALL_SENTENCE_TYPE),
+        ValidationMessage(ValidationCode.UNABLE_TO_DETERMINE_SHPO_RELEASE_PROVISIONS),
       ),
     )
 
