@@ -8,6 +8,8 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.integration.Integra
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualCalculationResponse
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntryRequest
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ManualEntrySelectedDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SubmittedDate
+import java.time.LocalDate
 
 class ManualCalculationIntTest : IntegrationTestBase() {
 
@@ -31,6 +33,58 @@ class ManualCalculationIntTest : IntegrationTestBase() {
     val response = webTestClient.post()
       .uri("/manual-calculation/$PRISONER_ID")
       .bodyValue(ManualEntryRequest(listOf(ManualEntrySelectedDate(ReleaseDateType.None, "None", null)), 1L, ""))
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ManualCalculationResponse::class.java)
+      .returnResult().responseBody!!
+    assertThat(response.calculationRequestId).isNotNull
+  }
+
+  @Test
+  fun `Stores successful manual calculation triggered by DTO having SEC104 sentence terms`() {
+    val response = webTestClient.post()
+      .uri("/manual-calculation/CRS-2333-1")
+      .bodyValue(
+        ManualEntryRequest(
+          listOf(
+            ManualEntrySelectedDate(
+              ReleaseDateType.CRD,
+              "CRD",
+              SubmittedDate(1, 1, LocalDate.now().year + 1),
+            ),
+          ),
+          1L, "",
+        ),
+      )
+      .accept(MediaType.APPLICATION_JSON)
+      .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
+      .exchange()
+      .expectStatus().isOk
+      .expectHeader().contentType(MediaType.APPLICATION_JSON)
+      .expectBody(ManualCalculationResponse::class.java)
+      .returnResult().responseBody!!
+    assertThat(response.calculationRequestId).isNotNull
+  }
+
+  @Test
+  fun `Stores successful manual calculation triggered by having invalid SHPO offence`() {
+    val response = webTestClient.post()
+      .uri("/manual-calculation/CRS-2333-2")
+      .bodyValue(
+        ManualEntryRequest(
+          listOf(
+            ManualEntrySelectedDate(
+              ReleaseDateType.CRD,
+              "CRD",
+              SubmittedDate(1, 1, LocalDate.now().year + 1),
+            ),
+          ),
+          1L, "",
+        ),
+      )
       .accept(MediaType.APPLICATION_JSON)
       .headers(setAuthorisation(roles = listOf("ROLE_RELEASE_DATES_CALCULATOR")))
       .exchange()
