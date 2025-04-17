@@ -254,7 +254,7 @@ class BookingExtractionService(
       }
     }
 
-    if (sentences.any { it is DetentionAndTrainingOrderSentence }) {
+    if (sentences.any { it.isDto() }) {
       if (sentences.all { it.isDto() }) {
         dates[MTD] = latestReleaseDate
         calculateWhenAllDtos(mostRecentSentenceByExpiryDate, dates)
@@ -603,6 +603,16 @@ class BookingExtractionService(
     val latestTUSED = latestTUSEDSentence ?: latestHistoricTUSEDSentence
 
     return latestTUSED?.let { sentence ->
+      // if DTO has sentence expiry date greater than top-up date, exclude TUSED in place of the SED
+      sentences
+        .filter { it.isDto() && it.isCalculationInitialised() && it.releaseDateTypes.contains(SED) }
+        .maxByOrNull { it.sentenceCalculation.expiryDate }
+        ?.let {
+          if (it.sentenceCalculation.expiryDate > sentence.sentenceCalculation.topUpSupervisionDate) {
+            return null
+          }
+        }
+
       val topUpDate = sentence.sentenceCalculation.topUpSupervisionDate
       val breakdown = sentence.sentenceCalculation.breakdownByReleaseDateType[TUSED]
 
