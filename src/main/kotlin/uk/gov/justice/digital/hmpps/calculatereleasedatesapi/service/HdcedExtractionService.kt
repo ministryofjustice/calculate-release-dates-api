@@ -26,14 +26,14 @@ class HdcedExtractionService(
 
       if (hasLatestEligibleSentenceGotHdcedDate(latestEligibleSentence)) {
         val hdcedSentence = getMostRecentHDCEDSentenceApplying14DayRule(sentences, latestAdjustedReleaseDate)
+        val hdcDate = hdcedSentence?.sentenceCalculation?.homeDetentionCurfewEligibilityDate
 
-        val conflictingSentence = getLatestConflictingNonHdcSentence(
-          sentences,
-          hdcedSentence?.sentenceCalculation?.homeDetentionCurfewEligibilityDate,
-          hdcedSentence,
-        )
-
-        if (hdcedSentence != null) {
+        if (hdcedSentence != null && hdcDate != null) {
+          val conflictingSentence = getLatestConflictingNonHdcSentence(
+            sentences,
+            hdcDate,
+            hdcedSentence,
+          )
           if (latestAdjustedReleaseDateIsAfterHdced(hdcedSentence.sentenceCalculation, latestAdjustedReleaseDate)) {
             return resolveEligibilityDate(hdcedSentence, conflictingSentence)
           }
@@ -59,8 +59,8 @@ class HdcedExtractionService(
 
   private fun getLatestConflictingSentence(
     sentenceGroup: List<CalculableSentence>,
-    calculatedHDCED: LocalDate?,
-    hdcSentence: CalculableSentence?,
+    calculatedHDCED: LocalDate,
+    hdcSentence: CalculableSentence,
   ): Pair<CalculableSentence?, LocalDate?> {
     val otherNonSentencesInGroup =
       sentenceGroup.filter {
@@ -131,8 +131,8 @@ class HdcedExtractionService(
 
   private fun getLatestConflictingNonHdcSentence(
     sentences: List<CalculableSentence>,
-    hdcedDate: LocalDate?,
-    hdcedSentence: CalculableSentence?,
+    hdcedDate: LocalDate,
+    hdcedSentence: CalculableSentence,
   ): Pair<CalculableSentence?, LocalDate?> {
     return getLatestConflictingSentence(
       sentences.filter { it.sentenceCalculation.homeDetentionCurfewEligibilityDate == null },
