@@ -90,7 +90,7 @@ interface CalculableSentence {
       releaseDateTypes.getReleaseDateTypes().contains(ReleaseDateType.PED) && this.sentenceCalculation.extendedDeterminateParoleEligibilityDate == null -> {
         ReleaseDateType.PED
       }
-      sentenceCalculation.isReleaseDateConditional -> {
+      sentenceCalculation.isReleaseDateConditional && durationIsGreaterThan(1, ChronoUnit.DAYS) -> {
         ReleaseDateType.CRD
       }
       releaseDateTypes.contains(ReleaseDateType.MTD) -> {
