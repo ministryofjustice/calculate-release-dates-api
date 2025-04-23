@@ -177,7 +177,17 @@ class SentenceIdentificationServiceTest {
       sentence,
       offender,
     )
-    assertEquals("[SLED, CRD, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[ARD, SED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+  }
+
+  @Test
+  fun `Identify After 2015 2 day`() {
+    val sentence = jsonTransformation.loadSentence("two_day_2018_mar")
+    sentenceIdentificationService.identify(
+      sentence,
+      offender,
+    )
+    assertEquals("[SLED, CRD, TUSED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   // sentenced after: 03/12/2012

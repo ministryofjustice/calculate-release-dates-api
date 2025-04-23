@@ -321,8 +321,12 @@ class SentenceIdentificationService(
       else -> sdsStandardOrEarlyRelease(sentence)
     }
 
-    if (sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) &&
-      sentence.offence.committedAt.isBefore(ImportantDates.ORA_DATE)
+    if (
+      sentence.getLengthInDays() == 1 ||
+      (
+        sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) &&
+          sentence.offence.committedAt.isBefore(ImportantDates.ORA_DATE)
+        )
     ) {
       releaseDateTypes.addAll(
         listOf(
@@ -346,7 +350,7 @@ class SentenceIdentificationService(
   ) {
     sentence.identificationTrack = sdsStandardOrEarlyRelease(sentence)
 
-    if (sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
+    if (sentence.getLengthInDays() > 1 && sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
       releaseDateTypes.addAll(
         listOf(
           CRD,
