@@ -35,21 +35,59 @@ class SentenceValidationService(
     return validationMessages
   }
 
-  private data class ValidateConsecutiveSentenceUniqueRecord(
-    val consecutiveToSequence: Int,
-    val lineSequence: Int,
-    val caseSequence: Int,
-  )
-
   private fun validateConsecutiveSentenceUnique(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
-    val consecutiveSentences = sentences.filter { it.consecutiveToSequence != null }
-      .map { ValidateConsecutiveSentenceUniqueRecord(it.consecutiveToSequence!!, it.lineSequence, it.caseSequence) }
-      .distinct()
-    val sentencesGroupedByConsecutiveTo = consecutiveSentences.groupBy { it.consecutiveToSequence }
-    return sentencesGroupedByConsecutiveTo.entries.filter { it.value.size > 1 }.map { entry ->
-      val consecutiveToSentence = sentences.first { it.sentenceSequence == entry.key }
-      ValidationMessage(ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO, validationUtilities.getCaseSeqAndLineSeq(consecutiveToSentence))
+    val consecutiveSentences = sentences
+      .asSequence()
+      .filter { it.consecutiveToSequence != null }
+      .groupBy { Triple(it.sentenceSequence, it.caseSequence, it.lineSequence) }
+      .mapNotNull { (_, group) -> group.first().consecutiveToSequence }
+      .groupingBy { it }
+      .eachCount()
+      .filterValues { it > 1 }
+      .keys
+
+    val rootSequence = consecutiveSentences.firstOrNull() ?: return emptyList()
+    val rootSentence = sentences.first { it.sentenceSequence == rootSequence }
+    val childSentences = sentences.filter { it.consecutiveToSequence == rootSequence }
+
+    val chains = childSentences.map { child ->
+      buildConsecutiveChain(sentences, mutableListOf(child)) + rootSentence
     }
+
+    val longestChain = chains.maxByOrNull { chain ->
+      chain.sumOf { it.terms.sumOf { term -> term.years + term.months + term.weeks + term.days } }
+    } ?: return emptyList()
+
+    val totalDuration = longestChain
+      .flatMap { it.terms }
+      .fold(mapOf("years" to 0L, "months" to 0L, "weeks" to 0L, "days" to 0L)) { acc, term ->
+        acc + mapOf(
+          "years" to acc.getValue("years") + term.years,
+          "months" to acc.getValue("months") + term.months,
+          "weeks" to acc.getValue("weeks") + term.weeks,
+          "days" to acc.getValue("days") + term.days
+        )
+      }
+
+    return listOf(
+      ValidationMessage(
+        ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES,
+        listOf(
+          totalDuration["years"].toString(),
+          totalDuration["months"].toString(),
+          totalDuration["weeks"].toString(),
+          totalDuration["days"].toString()
+        )
+      )
+    )
+  }
+
+  private fun buildConsecutiveChain(
+    sentences: List<SentenceAndOffence>,
+    chain: MutableList<SentenceAndOffence>
+  ): List<SentenceAndOffence> {
+    val next = sentences.firstOrNull { it.consecutiveToSequence == chain.last().sentenceSequence }
+    return if (next != null) buildConsecutiveChain(sentences, chain.apply { add(next) }) else chain
   }
 
   private fun validateSentence(it: SentenceAndOffence): List<ValidationMessage> {
