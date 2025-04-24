@@ -43,6 +43,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.Calculat
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationReasonRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.CalculationRequestRepository
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.repository.TrancheOutcomeRepository
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationMessage
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationResult
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationService
@@ -136,7 +137,9 @@ class CalculationTransactionalService(
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
     val calculationOutput = calculationService.calculateReleaseDates(booking, calculationUserInputs) // Validation stage 3 of 4
     val calculationResult = calculationOutput.calculationResult
-    messages = validationService.validateBookingAfterCalculation(calculationOutput, booking) // Validation stage 4 of 4
+    messages = validationService.validateBookingAfterCalculation(calculationOutput, booking).filterNot {
+      it.code == ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES
+    } // Validation stage 4 of 4
     if (messages.isNotEmpty()) return ValidationResult(messages, null, null, null)
 
     val calculatedReleaseDates = calculate(
