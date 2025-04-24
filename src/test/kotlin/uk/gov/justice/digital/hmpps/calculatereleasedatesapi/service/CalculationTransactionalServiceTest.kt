@@ -171,11 +171,11 @@ class CalculationTransactionalServiceTest {
   fun `Test Example`(
     exampleType: String,
     exampleNumber: String,
-    error: String?,
-    params: String?,
+    error: String? = null,
+    params: String? = null,
     assertSds40: Boolean? = false,
-    expectedValidationException: String?,
-    expectedValidationMessage: String?,
+    expectedValidationException: String? = null,
+    expectedValidationMessage: String? = null,
   ) {
     log.info("Testing example $exampleType/$exampleNumber")
     whenever(calculationRequestRepository.save(any())).thenReturn(CALCULATION_REQUEST)
