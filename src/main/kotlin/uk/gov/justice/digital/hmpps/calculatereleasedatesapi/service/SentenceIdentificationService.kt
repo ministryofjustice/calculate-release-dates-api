@@ -321,17 +321,14 @@ class SentenceIdentificationService(
       else -> sdsStandardOrEarlyRelease(sentence)
     }
 
-    if (
-      sentence.getLengthInDays() == 1 ||
-      (
-        sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) &&
-          sentence.offence.committedAt.isBefore(ImportantDates.ORA_DATE)
-        )
-    ) {
+    val preOraLessThanTwelve = sentence.durationIsLessThan(TWELVE, ChronoUnit.MONTHS) && sentence.offence.committedAt.isBefore(ImportantDates.ORA_DATE)
+    val oneDateSentence = sentence.durationIsLessThanEqualTo(ONE, ChronoUnit.DAYS)
+    val sentenceDoesntHaveLicensePeriod = preOraLessThanTwelve || oneDateSentence
+    if (sentenceDoesntHaveLicensePeriod) {
       releaseDateTypes.addAll(
         listOf(
-          ARD,
           SED,
+          ARD,
         ),
       )
     } else {
@@ -350,7 +347,7 @@ class SentenceIdentificationService(
   ) {
     sentence.identificationTrack = sdsStandardOrEarlyRelease(sentence)
 
-    if (sentence.getLengthInDays() > 1 && sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
+    if (sentence.durationIsGreaterThanOrEqualTo(FOUR, ChronoUnit.YEARS)) {
       releaseDateTypes.addAll(
         listOf(
           CRD,
@@ -397,6 +394,7 @@ class SentenceIdentificationService(
   companion object {
     private const val FOUR = 4L
     private const val TWELVE = 12L
+    private const val ONE = 1L
     private val TEN_MILLION = BigDecimal("10000000")
   }
 }

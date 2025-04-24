@@ -32,7 +32,6 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationRe
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ReleaseDateCalculationBreakdown
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.sentence.oraAndNoneOraExtraction
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.isAfterOrEqualTo
 import java.time.LocalDate
@@ -65,9 +64,8 @@ class BookingExtractionService(
     val sentenceCalculation = sentence.sentenceCalculation
     var historicalTusedSource: HistoricalTusedSource? = null
     val sentenceIsOrExclusivelyBotus = sentence.isOrExclusivelyBotus()
-    val isOneDaySentence = sentence.getLengthInDays() == 1
 
-    if (sentence.releaseDateTypes.contains(SLED) && !isOneDaySentence) {
+    if (sentence.releaseDateTypes.contains(SLED)) {
       dates[SLED] = sentenceCalculation.expiryDate
     } else {
       dates[SED] = sentenceCalculation.expiryDate
@@ -161,8 +159,7 @@ class BookingExtractionService(
     val mostRecentSentenceByExpiryDate =
       extractionService.mostRecentSentence(sentences, SentenceCalculation::expiryDate)
 
-    val mostRecentSentence = mostRecentSentencesByReleaseDate.first()
-    val latestReleaseDate = mostRecentSentence.sentenceCalculation.releaseDate
+    val latestReleaseDate = mostRecentSentencesByReleaseDate[0].sentenceCalculation.releaseDate
     val latestExpiryDate = mostRecentSentenceByExpiryDate.sentenceCalculation.expiryDate
 
     val latestUnadjustedExpiryDate: LocalDate = extractionService.mostRecent(
@@ -174,13 +171,6 @@ class BookingExtractionService(
       earliestSentenceDate,
       latestUnadjustedExpiryDate,
     )
-
-    val isSDSOneDaySentence = (
-      mostRecentSentence is StandardDeterminateSentence &&
-        effectiveSentenceLength.days == 1 &&
-        effectiveSentenceLength.months == 0 &&
-        effectiveSentenceLength.years == 0
-      )
 
     val latestLicenseExpirySentence: CalculableSentence? = extractionService.mostRecentSentenceOrNull(
       sentences,
@@ -223,10 +213,9 @@ class BookingExtractionService(
       SentenceCalculation::notionalConditionalReleaseDate,
     )
 
-    if (
-      !isSDSOneDaySentence &&
-      latestExpiryDate == latestLicenseExpiryDate &&
-      mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes().contains(SLED)
+    if (latestExpiryDate == latestLicenseExpiryDate &&
+      mostRecentSentenceByExpiryDate.releaseDateTypes.getReleaseDateTypes()
+        .contains(SLED)
     ) {
       dates[SLED] = latestExpiryDate
       breakdownByReleaseDateType[SLED] =
@@ -234,7 +223,7 @@ class BookingExtractionService(
     } else if (sentences.any { it.isDto() } && !sentences.all { it.isDto() }) {
       val latestNonDtoSentence = sentences.sortedBy { it.sentenceCalculation.releaseDate }.last { !it.isDto() }
       val latestDtoSentence = sentences.sortedBy { it.sentenceCalculation.releaseDate }.last { it.isDto() }
-      if (!isSDSOneDaySentence && latestNonDtoSentence.sentenceCalculation.expiryDate.equals(latestDtoSentence.sentenceCalculation.expiryDate)) {
+      if (latestNonDtoSentence.sentenceCalculation.expiryDate.equals(latestDtoSentence.sentenceCalculation.expiryDate)) {
         dates[SLED] = latestExpiryDate
         breakdownByReleaseDateType[SLED] =
           mostRecentSentenceByExpiryDate.sentenceCalculation.breakdownByReleaseDateType[SED]!!
@@ -257,7 +246,7 @@ class BookingExtractionService(
         if (latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(LED)) {
           breakdownByReleaseDateType[LED] =
             latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType[LED]!!
-        } else if (!isSDSOneDaySentence && latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(SLED)) {
+        } else if (latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType.containsKey(SLED)) {
           breakdownByReleaseDateType[LED] =
             latestLicenseExpirySentence.sentenceCalculation.breakdownByReleaseDateType[SLED]!!
         }

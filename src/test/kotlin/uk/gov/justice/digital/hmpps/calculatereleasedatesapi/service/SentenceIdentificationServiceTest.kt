@@ -107,7 +107,7 @@ class SentenceIdentificationServiceTest {
       sentence,
       offender,
     )
-    assertEquals("[ARD, SED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[SED, ARD, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   // sentenced after: 03/12/2012
@@ -177,7 +177,7 @@ class SentenceIdentificationServiceTest {
       sentence,
       offender,
     )
-    assertEquals("[ARD, SED, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
+    assertEquals("[SED, ARD, HDCED]", sentence.releaseDateTypes.getReleaseDateTypes().toString())
   }
 
   @Test
