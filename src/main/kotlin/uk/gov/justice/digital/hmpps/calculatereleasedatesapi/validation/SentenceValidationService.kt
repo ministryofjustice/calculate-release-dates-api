@@ -60,7 +60,7 @@ class SentenceValidationService(
     }
   }
 
-private fun validateConsecutiveSentenceUniqueWithDuration(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
+  private fun validateConsecutiveSentenceUniqueWithDuration(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
     val consecutiveSentences = sentences
       .asSequence()
       .filter { it.consecutiveToSequence != null }
