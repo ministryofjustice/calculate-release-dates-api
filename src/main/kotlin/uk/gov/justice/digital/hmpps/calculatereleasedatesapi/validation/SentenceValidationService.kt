@@ -4,8 +4,6 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TermType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.CalculationOutput
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ConsecutiveSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
@@ -29,8 +27,10 @@ class SentenceValidationService(
 
   internal fun validateSentences(sentences: List<SentenceAndOffence>): MutableList<ValidationMessage> {
     val validationMessages = sentences.map { validateSentence(it) }.flatten().toMutableList()
-    if (!featuresToggles.concurrentConsecutiveSentencesEnabled) {
-      validationMessages += validateConsecutiveSentenceUnique(sentences)
+    validationMessages += if (featuresToggles.concurrentConsecutiveSentencesEnabled) {
+      validateConsecutiveSentenceUniqueWithDuration(sentences)
+    } else {
+      validateConsecutiveSentenceUnique(sentences)
     }
     return validationMessages
   }
@@ -41,6 +41,14 @@ class SentenceValidationService(
     val caseSequence: Int,
   )
 
+  private data class ValidateConsecutiveSentenceRecord(
+    val consecutiveToSequence: Int,
+    val sentenceSequence: Int,
+    val lineSequence: Int,
+    val caseSequence: Int,
+    val terms: List<SentenceTerms>,
+  )
+
   private fun validateConsecutiveSentenceUnique(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
     val consecutiveSentences = sentences.filter { it.consecutiveToSequence != null }
       .map { ValidateConsecutiveSentenceUniqueRecord(it.consecutiveToSequence!!, it.lineSequence, it.caseSequence) }
@@ -49,6 +57,83 @@ class SentenceValidationService(
     return sentencesGroupedByConsecutiveTo.entries.filter { it.value.size > 1 }.map { entry ->
       val consecutiveToSentence = sentences.first { it.sentenceSequence == entry.key }
       ValidationMessage(ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO, validationUtilities.getCaseSeqAndLineSeq(consecutiveToSentence))
+    }
+  }
+
+private fun validateConsecutiveSentenceUniqueWithDuration(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
+    val consecutiveSentences = sentences
+      .asSequence()
+      .filter { it.consecutiveToSequence != null }
+      .map {
+        ValidateConsecutiveSentenceRecord(
+          it.consecutiveToSequence!!,
+          it.sentenceSequence,
+          it.sentenceSequence,
+          it.caseSequence,
+          it.terms,
+        )
+      }.distinct()
+      .toList()
+      .takeIf { it.count() > 0 } ?: return emptyList()
+
+    val duplicateConsecutiveSequences = consecutiveSentences
+      .map { it.consecutiveToSequence }
+      .groupBy { it }
+      .filter { it.value.size > 1 }
+      .values
+      .flatten()
+      .takeIf { it.isNotEmpty() } ?: return emptyList()
+
+    val rootSentence = sentences.firstOrNull { it.sentenceSequence == duplicateConsecutiveSequences.first() } ?: return emptyList()
+    val childSentences = consecutiveSentences.filter { it.consecutiveToSequence == rootSentence.sentenceSequence }.distinct()
+
+    val affectedSentenceChains = childSentences.associate { childSentence ->
+      val chain = mutableListOf<ValidateConsecutiveSentenceRecord>().apply {
+        add(childSentence)
+        walkConsecutiveSentence(consecutiveSentences, childSentences = this)
+      }
+      childSentence.sentenceSequence to (chain.flatMap { it.terms } + rootSentence.terms)
+    }
+
+    val longestTerm =
+      affectedSentenceChains.maxBy { it -> it.value.sumOf { it.years + it.months + it.weeks + it.days } }
+
+    val duration = longestTerm.value.fold(
+      mapOf("days" to 0, "weeks" to 0, "months" to 0, "years" to 0),
+    ) { acc, term ->
+      acc.mapValues { (unit, value) ->
+        value + when (unit) {
+          "days" -> term.days
+          "weeks" -> term.weeks
+          "months" -> term.months
+          "years" -> term.years
+          else -> 0
+        }
+      }
+    }
+
+    return listOf(
+      ValidationMessage(
+        ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES,
+        listOf(
+          duration.getValue("years").toString(),
+          duration.getValue("months").toString(),
+          duration.getValue("weeks").toString(),
+          duration.getValue("days").toString(),
+        ),
+      ),
+    )
+  }
+
+  /** Start from the last sentence in the chain, then work backwards until there are no more parent sentences. */
+  private fun walkConsecutiveSentence(
+    sentences: List<ValidateConsecutiveSentenceRecord>,
+    childSentences: MutableList<ValidateConsecutiveSentenceRecord>,
+  ) {
+    val childSentence = sentences.firstOrNull { it.consecutiveToSequence == childSentences.last().sentenceSequence }
+    if (childSentence != null) {
+      childSentences.add(childSentence)
+      return walkConsecutiveSentence(sentences, childSentences)
     }
   }
 
@@ -255,39 +340,5 @@ class SentenceValidationService(
       }
     }
     return messages
-  }
-
-  internal fun validateAnyConcurrentConsecutiveSentences(calculation: CalculationOutput): ValidationMessage? {
-    val consecutiveSentences = calculation.sentences.filterIsInstance<ConsecutiveSentence>()
-
-    /** check for any none consecutive sentences with a consecutiveSentenceUUID */
-    val otherSentenceParentUUIDs = calculation.sentences
-      .asSequence()
-      .filterIsInstance<AbstractSentence>()
-      .flatMap { it.consecutiveSentenceUUIDs }
-      .toSet()
-
-    val parentIdentifiers = consecutiveSentences.map { it.sentenceParts().first().identifier }
-
-    /**
-     * find consecutive sentences where the parent sentence identifier is already used by another consecutive sentence
-     * or where a none consecutive sentence has the same parent
-     */
-    val concurrentSentences = consecutiveSentences.filter { sentence ->
-      val parentIdentifier = sentence.sentenceParts().firstOrNull()?.identifier ?: return@filter false
-      val hasDuplicateParent = parentIdentifiers.count { it == parentIdentifier } > 1
-      val hasParentByNoneConsecutive = otherSentenceParentUUIDs.isNotEmpty() && sentence.sentenceParts().any {
-        it.consecutiveSentenceUUIDs.any { uuid -> uuid in otherSentenceParentUUIDs }
-      }
-      hasDuplicateParent || hasParentByNoneConsecutive
-    }
-
-    val longestSentence =
-      concurrentSentences.maxByOrNull { it.sentenceCalculation.expiryDate }?.getCombinedDuration() ?: return null
-
-    return ValidationMessage(
-      ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES,
-      longestSentence.durationElements.entries.sortedByDescending { it.key.ordinal }.map { it.value.toString() },
-    )
   }
 }

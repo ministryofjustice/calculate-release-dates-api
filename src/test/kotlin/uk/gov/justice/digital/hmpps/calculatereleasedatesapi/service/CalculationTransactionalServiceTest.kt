@@ -836,7 +836,6 @@ class CalculationTransactionalServiceTest {
       validationUtilities = validationUtilities,
       postCalculationValidationService = postCalculationValidationService,
       dateValidationService = dateValidationService,
-      featureToggles = featureToggles,
     )
   }
 
