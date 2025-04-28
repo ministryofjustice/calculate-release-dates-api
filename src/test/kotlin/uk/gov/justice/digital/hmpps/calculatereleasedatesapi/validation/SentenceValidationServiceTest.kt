@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggl
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.NormalisedSentenceAndOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.OffenderOffence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.PrisonApiSentenceAndOffences
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
 import java.time.LocalDate
@@ -45,7 +46,6 @@ class SentenceValidationServiceTest {
         consecutiveToSequence = 1,
         terms = listOf(
           SentenceTerms(1, 0, 0, 0, code = "IMP"),
-          SentenceTerms(0, 0, 0, 0, code = "LIC"),
         ),
       ),
       activeOffence.copy(
@@ -54,7 +54,6 @@ class SentenceValidationServiceTest {
         consecutiveToSequence = 1,
         terms = listOf(
           SentenceTerms(1, 0, 0, 0, code = "IMP"),
-          SentenceTerms(0, 0, 0, 0, code = "LIC"),
         ),
       ),
       activeOffence.copy(
@@ -63,7 +62,6 @@ class SentenceValidationServiceTest {
         consecutiveToSequence = 3,
         terms = listOf(
           SentenceTerms(0, 0, 0, 2, code = "IMP"),
-          SentenceTerms(0, 0, 0, 0, code = "LIC"),
         ),
       ),
       activeOffence.copy(
@@ -72,7 +70,6 @@ class SentenceValidationServiceTest {
         consecutiveToSequence = 4,
         terms = listOf(
           SentenceTerms(0, 0, 0, 1, code = "IMP"),
-          SentenceTerms(0, 0, 0, 0, code = "LIC"),
         ),
       ),
       activeOffence.copy(
@@ -81,7 +78,6 @@ class SentenceValidationServiceTest {
         consecutiveToSequence = 5,
         terms = listOf(
           SentenceTerms(0, 0, 0, 1, code = "IMP"),
-          SentenceTerms(0, 0, 0, 0, code = "LIC"),
         ),
       ),
       activeOffence.copy(
@@ -90,7 +86,6 @@ class SentenceValidationServiceTest {
         consecutiveToSequence = 4,
         terms = listOf(
           SentenceTerms(0, 0, 0, 2, code = "IMP"),
-          SentenceTerms(0, 0, 0, 0, code = "LIC"),
         ),
       ),
       activeOffence.copy(
@@ -99,7 +94,6 @@ class SentenceValidationServiceTest {
         consecutiveToSequence = 7,
         terms = listOf(
           SentenceTerms(0, 0, 0, 2, code = "IMP"),
-          SentenceTerms(0, 0, 0, 0, code = "LIC"),
         ),
       ),
     )
@@ -118,7 +112,6 @@ class SentenceValidationServiceTest {
         consecutiveToSequence = 1,
         terms = listOf(
           SentenceTerms(1, 0, 0, 0, code = "IMP"),
-          SentenceTerms(0, 0, 0, 0, code = "LIC"),
         ),
       ),
       activeOffence.copy(
@@ -127,7 +120,6 @@ class SentenceValidationServiceTest {
         consecutiveToSequence = 1,
         terms = listOf(
           SentenceTerms(1, 0, 0, 0, code = "IMP"),
-          SentenceTerms(0, 0, 0, 0, code = "LIC"),
         ),
       ),
     )
@@ -145,12 +137,11 @@ class SentenceValidationServiceTest {
       null,
       "A",
       "A",
-      "ADIMP",
+      sentenceCalculationType = SentenceCalculationType.ADIMP.name,
       "",
       LocalDate.now(),
       terms = listOf(
         SentenceTerms(0, 1, 0, 0, code = "IMP"),
-        SentenceTerms(0, 0, 0, 0, code = "LIC"),
       ),
       offences = listOf(offence),
     )
