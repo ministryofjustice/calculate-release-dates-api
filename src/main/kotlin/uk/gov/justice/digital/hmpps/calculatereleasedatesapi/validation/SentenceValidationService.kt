@@ -85,11 +85,13 @@ class SentenceValidationService(
       .flatten()
       .takeIf { it.isNotEmpty() } ?: return emptyList()
 
-    val longestDuration = duplicateConsecutiveSequences.mapNotNull {
+    val duplicates = duplicateConsecutiveSequences.mapNotNull {
       val rootSentence = sentences.firstOrNull { it.sentenceSequence == duplicateConsecutiveSequences.first() } ?: return@mapNotNull null
       val childSentences = consecutiveSentences.filter { it.consecutiveToSequence == rootSentence.sentenceSequence }.distinct()
       computeLongestChain(rootSentence, childSentences, consecutiveSentences)
-    }.maxBy { it.first }
+    }.takeIf { it.isNotEmpty() } ?: return emptyList()
+
+    val longestDuration = duplicates.maxBy { it.first }
 
     val duration = longestDuration.second.fold(
       mapOf("days" to 0, "weeks" to 0, "months" to 0, "years" to 0),
