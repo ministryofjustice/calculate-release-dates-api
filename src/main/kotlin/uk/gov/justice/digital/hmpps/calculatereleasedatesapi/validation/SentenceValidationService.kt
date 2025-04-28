@@ -12,8 +12,9 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
-import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.Consecutil
 import java.time.Period
+import java.time.temporal.ChronoUnit
 
 @Service
 class SentenceValidationService(
@@ -42,14 +43,6 @@ class SentenceValidationService(
     val caseSequence: Int,
   )
 
-  private data class ValidateConsecutiveSentenceRecord(
-    val consecutiveToSequence: Int,
-    val sentenceSequence: Int,
-    val lineSequence: Int,
-    val caseSequence: Int,
-    val terms: List<SentenceTerms>,
-  )
-
   private fun validateConsecutiveSentenceUnique(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
     val consecutiveSentences = sentences.filter { it.consecutiveToSequence != null }
       .map { ValidateConsecutiveSentenceUniqueRecord(it.consecutiveToSequence!!, it.lineSequence, it.caseSequence) }
@@ -57,27 +50,16 @@ class SentenceValidationService(
     val sentencesGroupedByConsecutiveTo = consecutiveSentences.groupBy { it.consecutiveToSequence }
     return sentencesGroupedByConsecutiveTo.entries.filter { it.value.size > 1 }.map { entry ->
       val consecutiveToSentence = sentences.first { it.sentenceSequence == entry.key }
-      ValidationMessage(ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO, validationUtilities.getCaseSeqAndLineSeq(consecutiveToSentence))
+      ValidationMessage(
+        ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO,
+        validationUtilities.getCaseSeqAndLineSeq(consecutiveToSentence),
+      )
     }
   }
 
   private fun validateConsecutiveSentenceUniqueWithDuration(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
-    val consecutiveSentences = sentences
-      .asSequence()
-      .filter { it.consecutiveToSequence != null }
-      .map {
-        ValidateConsecutiveSentenceRecord(
-          it.consecutiveToSequence!!,
-          it.sentenceSequence,
-          it.sentenceSequence,
-          it.caseSequence,
-          it.terms,
-        )
-      }.distinct()
-      .toList()
-      .takeIf { it.count() > 0 } ?: return emptyList()
-
-    val duplicateConsecutiveSequences = consecutiveSentences
+    val distinctSentences = sentences.distinctBy { it.sentenceSequence }
+    val duplicateConsecutiveSequences = distinctSentences
       .map { it.consecutiveToSequence }
       .groupBy { it }
       .filter { it.value.size > 1 }
@@ -85,80 +67,44 @@ class SentenceValidationService(
       .flatten()
       .takeIf { it.isNotEmpty() } ?: return emptyList()
 
-    val duplicates = duplicateConsecutiveSequences.mapNotNull {
-      val rootSentence = sentences.firstOrNull { it.sentenceSequence == duplicateConsecutiveSequences.first() } ?: return@mapNotNull null
-      val childSentences = consecutiveSentences.filter { it.consecutiveToSequence == rootSentence.sentenceSequence }.distinct()
-      computeLongestChain(rootSentence, childSentences, consecutiveSentences)
-    }.takeIf { it.isNotEmpty() } ?: return emptyList()
-
-    val longestDuration = duplicates.maxBy { it.first }
-
-    val duration = longestDuration.second.fold(
-      mapOf("days" to 0, "weeks" to 0, "months" to 0, "years" to 0),
-    ) { acc, term ->
-      acc.mapValues { (unit, value) ->
-        value + when (unit) {
-          "days" -> term.days
-          "weeks" -> term.weeks
-          "months" -> term.months
-          "years" -> term.years
-          else -> 0
+    val chainsOfSentences =
+      Consecutil.createConsecChains(distinctSentences, { it.sentenceSequence }, { it.consecutiveToSequence })
+    val duplicateChains =
+      chainsOfSentences.filter { chain -> chain.any { duplicateConsecutiveSequences.contains(it.consecutiveToSequence) } }
+    val aggregatedDurations = duplicateChains.map { chain ->
+      chain to chain.flatMap { sentence ->
+        sentence.terms.map {
+          uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration(
+            mapOf(
+              ChronoUnit.YEARS to it.years.toLong(),
+              ChronoUnit.MONTHS to it.months.toLong(),
+              ChronoUnit.WEEKS to it.weeks.toLong(),
+              ChronoUnit.DAYS to it.days.toLong(),
+            ),
+          )
         }
+      }.reduce { acc, duration ->
+        acc.appendAll(duration.durationElements)
       }
     }
+    val maximumDuration = aggregatedDurations.maxBy {
+      val chain = it.first
+      val combinedDuration = it.second
+      val earliestSentenceDate = chain.minOf { it.sentenceDate }
+      combinedDuration.getLengthInDays(earliestSentenceDate)
+    }.second
 
     return listOf(
       ValidationMessage(
         ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES,
         listOf(
-          duration.getValue("years").toString(),
-          duration.getValue("months").toString(),
-          duration.getValue("weeks").toString(),
-          duration.getValue("days").toString(),
+          maximumDuration.durationElements[ChronoUnit.YEARS]?.toString() ?: "0",
+          maximumDuration.durationElements[ChronoUnit.MONTHS]?.toString() ?: "0",
+          maximumDuration.durationElements[ChronoUnit.WEEKS]?.toString() ?: "0",
+          maximumDuration.durationElements[ChronoUnit.DAYS]?.toString() ?: "0",
         ),
       ),
     )
-  }
-
-  /**
-   * Return the longest sentence chain relative to the root sentence.
-   * @return Pair of the relative date of the longest chain and the list of terms in the chain.
-   */
-  private fun computeLongestChain(
-    rootSentence: SentenceAndOffence,
-    childSentences: List<ValidateConsecutiveSentenceRecord>,
-    consecutiveSentences: List<ValidateConsecutiveSentenceRecord>,
-  ): Pair<LocalDate, List<SentenceTerms>> {
-    val affectedSentenceChains = childSentences.associate { childSentence ->
-      val chain = mutableListOf<ValidateConsecutiveSentenceRecord>().apply {
-        add(childSentence)
-        walkConsecutiveSentence(consecutiveSentences, childSentences = this)
-      }
-      childSentence.sentenceSequence to (chain.flatMap { it.terms } + rootSentence.terms)
-    }
-
-    val aggregateTerms = affectedSentenceChains.map { (_, terms) ->
-      val date = terms.fold(rootSentence.sentenceDate) { acc, it ->
-        acc.plusYears(it.years.toLong())
-          .plusMonths(it.months.toLong())
-          .plusDays(it.days.toLong())
-      }
-      date to terms
-    }
-
-    return aggregateTerms.maxBy { it.first }
-  }
-
-  /** Start from the last sentence in the chain, then work backwards until there are no more parent sentences. */
-  private fun walkConsecutiveSentence(
-    sentences: List<ValidateConsecutiveSentenceRecord>,
-    childSentences: MutableList<ValidateConsecutiveSentenceRecord>,
-  ) {
-    val childSentence = sentences.firstOrNull { it.consecutiveToSequence == childSentences.last().sentenceSequence }
-    if (childSentence != null) {
-      childSentences.add(childSentence)
-      return walkConsecutiveSentence(sentences, childSentences)
-    }
   }
 
   private fun validateSentence(it: SentenceAndOffence): List<ValidationMessage> {
@@ -185,7 +131,10 @@ class SentenceValidationService(
     // either case. If an end date is null it will be set to the start date in the transformation.
     val invalid = sentencesAndOffence.offence.offenceStartDate == null
     if (invalid) {
-      return ValidationMessage(ValidationCode.OFFENCE_MISSING_DATE, validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence))
+      return ValidationMessage(
+        ValidationCode.OFFENCE_MISSING_DATE,
+        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+      )
     }
     return null
   }
@@ -195,7 +144,10 @@ class SentenceValidationService(
   ): ValidationMessage? {
     val offence = sentencesAndOffence.offence
     if (offence.offenceStartDate != null && offence.offenceStartDate > sentencesAndOffence.sentenceDate) {
-      return ValidationMessage(ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE, validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence))
+      return ValidationMessage(
+        ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE,
+        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+      )
     }
     return null
   }
@@ -204,7 +156,10 @@ class SentenceValidationService(
     val offence = sentencesAndOffence.offence
     val invalid = offence.offenceEndDate != null && offence.offenceEndDate > sentencesAndOffence.sentenceDate
     if (invalid) {
-      return ValidationMessage(ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE, validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence))
+      return ValidationMessage(
+        ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE,
+        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
+      )
     }
     return null
   }
