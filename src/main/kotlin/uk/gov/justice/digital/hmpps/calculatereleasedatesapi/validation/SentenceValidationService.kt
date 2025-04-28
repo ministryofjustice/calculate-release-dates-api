@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
+import java.time.LocalDate
 import java.time.Period
 
 @Service
@@ -84,21 +85,13 @@ class SentenceValidationService(
       .flatten()
       .takeIf { it.isNotEmpty() } ?: return emptyList()
 
-    val rootSentence = sentences.firstOrNull { it.sentenceSequence == duplicateConsecutiveSequences.first() } ?: return emptyList()
-    val childSentences = consecutiveSentences.filter { it.consecutiveToSequence == rootSentence.sentenceSequence }.distinct()
+    val longestDuration = duplicateConsecutiveSequences.mapNotNull {
+      val rootSentence = sentences.firstOrNull { it.sentenceSequence == duplicateConsecutiveSequences.first() } ?: return@mapNotNull null
+      val childSentences = consecutiveSentences.filter { it.consecutiveToSequence == rootSentence.sentenceSequence }.distinct()
+      computeLongestChain(rootSentence, childSentences, consecutiveSentences)
+    }.maxBy { it.first }
 
-    val affectedSentenceChains = childSentences.associate { childSentence ->
-      val chain = mutableListOf<ValidateConsecutiveSentenceRecord>().apply {
-        add(childSentence)
-        walkConsecutiveSentence(consecutiveSentences, childSentences = this)
-      }
-      childSentence.sentenceSequence to (chain.flatMap { it.terms } + rootSentence.terms)
-    }
-
-    val longestTerm =
-      affectedSentenceChains.maxBy { it -> it.value.sumOf { it.years + it.months + it.weeks + it.days } }
-
-    val duration = longestTerm.value.fold(
+    val duration = longestDuration.second.fold(
       mapOf("days" to 0, "weeks" to 0, "months" to 0, "years" to 0),
     ) { acc, term ->
       acc.mapValues { (unit, value) ->
@@ -123,6 +116,35 @@ class SentenceValidationService(
         ),
       ),
     )
+  }
+
+  /**
+   * Return the longest sentence chain relative to the root sentence.
+   * @return Pair of the relative date of the longest chain and the list of terms in the chain.
+   */
+  private fun computeLongestChain(
+    rootSentence: SentenceAndOffence,
+    childSentences: List<ValidateConsecutiveSentenceRecord>,
+    consecutiveSentences: List<ValidateConsecutiveSentenceRecord>,
+  ): Pair<LocalDate, List<SentenceTerms>> {
+    val affectedSentenceChains = childSentences.associate { childSentence ->
+      val chain = mutableListOf<ValidateConsecutiveSentenceRecord>().apply {
+        add(childSentence)
+        walkConsecutiveSentence(consecutiveSentences, childSentences = this)
+      }
+      childSentence.sentenceSequence to (chain.flatMap { it.terms } + rootSentence.terms)
+    }
+
+    val aggregateTerms = affectedSentenceChains.map { (_, terms) ->
+      val date = terms.fold(rootSentence.sentenceDate) { acc, it ->
+        acc.plusYears(it.years.toLong())
+          .plusMonths(it.months.toLong())
+          .plusDays(it.days.toLong())
+      }
+      date to terms
+    }
+
+    return aggregateTerms.maxBy { it.first }
   }
 
   /** Start from the last sentence in the chain, then work backwards until there are no more parent sentences. */
