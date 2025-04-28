@@ -59,6 +59,9 @@ generic-service:
     groups:
       - internal
 
+  retryDlqCronjob:
+    enabled: true
+
 generic-prometheus-alerts:
   targetApplication: calculate-release-dates-api
 
