@@ -31,6 +31,7 @@ class SentenceValidationService(
 
   internal fun validateSentences(sentences: List<SentenceAndOffence>): MutableList<ValidationMessage> {
     val validationMessages = sentences.map { validateSentence(it) }.flatten().toMutableList()
+    validateNoBrokenConsecutiveChains(sentences)?.let { validationMessages += it }
     validationMessages += if (featuresToggles.concurrentConsecutiveSentencesEnabled) {
       validateConsecutiveSentenceUniqueWithDuration(sentences)
     } else {
@@ -137,10 +138,7 @@ class SentenceValidationService(
     // either case. If an end date is null it will be set to the start date in the transformation.
     val invalid = sentencesAndOffence.offence.offenceStartDate == null
     if (invalid) {
-      return ValidationMessage(
-        ValidationCode.OFFENCE_MISSING_DATE,
-        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
-      )
+      return ValidationMessage(ValidationCode.OFFENCE_MISSING_DATE, validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence))
     }
     return null
   }
@@ -150,10 +148,7 @@ class SentenceValidationService(
   ): ValidationMessage? {
     val offence = sentencesAndOffence.offence
     if (offence.offenceStartDate != null && offence.offenceStartDate > sentencesAndOffence.sentenceDate) {
-      return ValidationMessage(
-        ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE,
-        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
-      )
+      return ValidationMessage(ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE, validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence))
     }
     return null
   }
@@ -162,10 +157,7 @@ class SentenceValidationService(
     val offence = sentencesAndOffence.offence
     val invalid = offence.offenceEndDate != null && offence.offenceEndDate > sentencesAndOffence.sentenceDate
     if (invalid) {
-      return ValidationMessage(
-        ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE,
-        validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence),
-      )
+      return ValidationMessage(ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE, validationUtilities.getCaseSeqAndLineSeq(sentencesAndOffence))
     }
     return null
   }
@@ -325,5 +317,25 @@ class SentenceValidationService(
       }
     }
     return messages
+  }
+
+  fun validateNoBrokenConsecutiveChains(sentences: List<SentenceAndOffence>): ValidationMessage? {
+    val sentenceSequences = mutableSetOf<Int>()
+    val consecutiveToSequences = mutableSetOf<Int>()
+
+    for (sentence in sentences) {
+      sentenceSequences += sentence.sentenceSequence
+      sentence.consecutiveToSequence?.let { consecutiveToSequences += it }
+    }
+
+    if (consecutiveToSequences.isEmpty()) return null
+
+    val hasBrokenChain = consecutiveToSequences.any { it !in sentenceSequences }
+
+    return if (hasBrokenChain) {
+      ValidationMessage(ValidationCode.BROKEN_CONSECUTIVE_CHAINS)
+    } else {
+      null
+    }
   }
 }

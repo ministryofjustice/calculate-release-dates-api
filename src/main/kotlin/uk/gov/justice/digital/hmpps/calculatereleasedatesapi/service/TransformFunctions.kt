@@ -296,22 +296,23 @@ fun transform(
   sentencesAndOffences: List<SentenceAndOffence>,
 ): Adjustments {
   val adjustments = Adjustments()
-  adjustmentsSource.forEach {
-    val sentence: SentenceAndOffence? = if (it.sentenceSequence != null) sentencesAndOffences.find { sentence -> it.sentenceSequence == sentence.sentenceSequence } else null
-    val adjustmentType = transform(it.adjustmentType, sentence)
-    if (adjustmentType != null) {
-      adjustments.addAdjustment(
-        adjustmentType,
-        Adjustment(
-          fromDate = it.fromDate,
-          toDate = it.toDate,
-          appliesToSentencesFrom = sentence?.sentenceDate ?: it.fromDate!!,
-          numberOfDays = it.effectiveDays!!,
+  adjustmentsSource
+    .forEach {
+      val sentence: SentenceAndOffence? = if (it.sentenceSequence != null) sentencesAndOffences.find { sentence -> it.sentenceSequence == sentence.sentenceSequence } else null
+      val adjustmentType = transform(it.adjustmentType, sentence)
+      if (adjustmentType != null) {
+        adjustments.addAdjustment(
+          adjustmentType,
+          Adjustment(
+            fromDate = it.fromDate,
+            toDate = it.toDate,
+            appliesToSentencesFrom = sentence?.sentenceDate ?: it.fromDate!!,
+            numberOfDays = it.effectiveDays!!,
 
-        ),
-      )
+          ),
+        )
+      }
     }
-  }
   return adjustments
 }
 
