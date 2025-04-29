@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.config.FeatureToggles
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.enumerations.TermType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.AbstractSentence
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.ExtendedDeterminateSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceCalculation
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SentenceGroup
@@ -15,6 +16,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesEx
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.Consecutil
 import java.time.Period
 import java.time.temporal.ChronoUnit
+import kotlin.to
 
 @Service
 class SentenceValidationService(
@@ -71,12 +73,14 @@ class SentenceValidationService(
       Consecutil.createConsecChains(distinctSentences, { it.sentenceSequence }, { it.consecutiveToSequence })
 
     val duplicateChains =
-      chainsOfSentences.filter { chain -> chain.any { it.consecutiveToSequence != null && duplicateConsecutiveSequences.contains(it.consecutiveToSequence) } }
+      chainsOfSentences.filter { chain ->
+        chain.any { it.consecutiveToSequence != null && duplicateConsecutiveSequences.contains(it.consecutiveToSequence) }
+      }.takeIf { it.isNotEmpty() } ?: return emptyList()
 
     val aggregatedDurations = duplicateChains.map { chain ->
       chain to chain.flatMap { sentence ->
         sentence.terms.map {
-          uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Duration(
+          Duration(
             mapOf(
               ChronoUnit.YEARS to it.years.toLong(),
               ChronoUnit.MONTHS to it.months.toLong(),

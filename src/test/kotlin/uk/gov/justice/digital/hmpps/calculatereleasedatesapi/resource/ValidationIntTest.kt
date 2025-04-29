@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_MISSING_DATE
@@ -79,7 +79,7 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
         ValidationMessage(code = SENTENCE_HAS_MULTIPLE_TERMS, arguments = listOf("2", "2")),
         ValidationMessage(code = SEC_91_SENTENCE_TYPE_INCORRECT, arguments = listOf("2", "4")),
         ValidationMessage(code = SEC_91_SENTENCE_TYPE_INCORRECT, arguments = listOf("2", "4")),
-        ValidationMessage(code = MULTIPLE_SENTENCES_CONSECUTIVE_TO, arguments = listOf("2", "2")),
+        ValidationMessage(code = CONCURRENT_CONSECUTIVE_SENTENCES, arguments = listOf("3", "0", "0", "0")),
         ValidationMessage(code = REMAND_FROM_TO_DATES_REQUIRED),
         ValidationMessage(code = REMAND_FROM_TO_DATES_REQUIRED),
         ValidationMessage(code = ADJUSTMENT_FUTURE_DATED_ADA),
