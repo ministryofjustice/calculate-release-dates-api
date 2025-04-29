@@ -66,7 +66,8 @@ class CalculationSourceDataService(
         listOf(AdjustmentDto.Status.ACTIVE, AdjustmentDto.Status.INACTIVE)
       }
       val earliestSentenceDate = sentenceAndOffences.minOfOrNull { it.sentenceDate }
-      adjustmentsApiClient.getAdjustmentsByPerson(prisonerDetails.offenderNo, earliestSentenceDate, statuses).right()
+      adjustmentsApiClient.getAdjustmentsByPerson(prisonerDetails.offenderNo, earliestSentenceDate, statuses)
+        .right()
     } else {
       prisonService.getBookingAndSentenceAdjustments(prisonerDetails.bookingId, activeOnly).left()
     }

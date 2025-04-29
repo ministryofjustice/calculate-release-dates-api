@@ -1,3 +1,4 @@
+
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service
 
 import org.slf4j.LoggerFactory
@@ -29,5 +30,9 @@ class AdjustmentsApiClient(@Qualifier("adjustmentsApiWebClient") private val web
       .retrieve()
       .bodyToMono(typeReference<List<AdjustmentDto>>())
       .block()!!
+      .filter {
+        val isNomisAdjustmentWithZeroOrLessDays = it.source == AdjustmentDto.Source.NOMIS && it.effectiveDays!! <= 0
+        !isNomisAdjustmentWithZeroOrLessDays
+      }
   }
 }
