@@ -119,4 +119,5 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   DATES_MISSING_REQUIRED_TYPE("You cannot select a %s and a %s without a %s"),
   DATES_PAIRINGS_INVALID("%s and %s cannot be selected together"),
   CONCURRENT_CONSECUTIVE_SENTENCES("%s years %s months %s weeks %s days", CONCURRENT_CONSECUTIVE),
+  BROKEN_CONSECUTIVE_CHAINS("You cannot have a sentence consecutive to an inactive sentence."),
 }
