@@ -69,8 +69,10 @@ class SentenceValidationService(
 
     val chainsOfSentences =
       Consecutil.createConsecChains(distinctSentences, { it.sentenceSequence }, { it.consecutiveToSequence })
+
     val duplicateChains =
-      chainsOfSentences.filter { chain -> chain.any { duplicateConsecutiveSequences.contains(it.consecutiveToSequence) } }
+      chainsOfSentences.filter { chain -> chain.any { it.consecutiveToSequence != null && duplicateConsecutiveSequences.contains(it.consecutiveToSequence) } }
+
     val aggregatedDurations = duplicateChains.map { chain ->
       chain to chain.flatMap { sentence ->
         sentence.terms.map {
@@ -87,9 +89,9 @@ class SentenceValidationService(
         acc.appendAll(duration.durationElements)
       }
     }
-    val maximumDuration = aggregatedDurations.maxBy {
-      val chain = it.first
-      val combinedDuration = it.second
+    val maximumDuration = aggregatedDurations.maxBy { duration ->
+      val chain = duration.first
+      val combinedDuration = duration.second
       val earliestSentenceDate = chain.minOf { it.sentenceDate }
       combinedDuration.getLengthInDays(earliestSentenceDate)
     }.second

@@ -215,6 +215,31 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
     runValidationAndCheckMessages("ZERO", emptyList())
   }
 
+  @Test
+  fun `Run validation for multiple sentences consecutive to the same parent`() {
+    mockManageOffencesClient.noneInPCSC(listOf("AW06005B", "HP25001", "PU86003B", "RF96105", "TM94004B"))
+    runValidationAndCheckMessages(
+      "CRS-2283-1",
+      listOf(
+        ValidationMessage(ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES, listOf("0", "12", "0", "0")),
+      ),
+    )
+
+    mockManageOffencesClient.noneInPCSC(listOf("CJ91015", "DX56013A", "PH98001", "RD78005", "SZ07011"))
+    runValidationAndCheckMessages(
+      "CRS-2283-2",
+      listOf(
+        ValidationMessage(ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES, listOf("0", "3", "1", "0")),
+      ),
+    )
+
+    mockManageOffencesClient.noneInPCSC(listOf("CJ91015", "DX56013A", "PH98001", "RD78005", "SZ07011"))
+    runValidationAndCheckMessages(
+      "CRS-2283-3",
+      emptyList(),
+    )
+  }
+
   private fun runSupportedValidationAndCheckMessages(prisonerId: String, messages: List<ValidationMessage>) {
     val validationMessages = webTestClient.get()
       .uri("/validation/$prisonerId/supported-validation")
