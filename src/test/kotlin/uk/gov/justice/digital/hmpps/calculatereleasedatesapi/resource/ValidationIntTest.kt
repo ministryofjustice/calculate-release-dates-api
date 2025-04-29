@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.Validati
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_RADA
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.ADJUSTMENT_FUTURE_DATED_UAL
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.A_FINE_SENTENCE_WITH_PAYMENTS
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.BROKEN_CONSECUTIVE_CHAINS
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.MULTIPLE_SENTENCES_CONSECUTIVE_TO
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_RANGE_DATE
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.validation.ValidationCode.OFFENCE_DATE_AFTER_SENTENCE_START_DATE
@@ -203,6 +204,14 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
   }
 
   @Test
+  fun `Run validate for broken consecutive chain`() {
+    runValidationAndCheckMessages(
+      BROKEN_CONSECUTIVE_CHAIN_SENTENCE,
+      listOf(ValidationMessage(BROKEN_CONSECUTIVE_CHAINS)),
+    )
+  }
+
+  @Test
   fun `Run validate for manual entry missing offence start date`() {
     runValidateForManualEntry(
       MISSING_OFFENCE_START_DATE_SENTENCE,
@@ -265,5 +274,6 @@ class ValidationIntTest(private val mockManageOffencesClient: MockManageOffences
     const val UNSUPPORTED_PRISONER_PRISONER_ID = "UNSUPP_PRIS"
     const val INACTIVE_PRISONER_ID = "INACTIVE"
     const val MISSING_OFFENCE_START_DATE_SENTENCE = "CRS-1634-no-offence-start-date"
+    const val BROKEN_CONSECUTIVE_CHAIN_SENTENCE = "CRS-2338"
   }
 }
