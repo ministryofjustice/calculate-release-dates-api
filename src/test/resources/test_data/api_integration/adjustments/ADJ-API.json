@@ -97,5 +97,38 @@
     "createdDate": "2025-03-25T11:17:10.028323",
     "effectiveDays": 60,
     "source": "DPS"
+  },
+  {
+    "id": "65b87bbc-46e3-4e91-87bb-f242cdc6d8fd",
+    "bookingId": 1085415,
+    "person": "ADJ-API",
+    "adjustmentType": "REMAND",
+    "toDate": "2022-06-09",
+    "fromDate": "2022-06-10",
+    "days": 0,
+    "remand": {
+      "chargeId": [
+        3453261
+      ]
+    },
+    "additionalDaysAwarded": null,
+    "unlawfullyAtLarge": null,
+    "lawfullyAtLarge": null,
+    "specialRemission": null,
+    "taggedBail": null,
+    "timeSpentInCustodyAbroad": null,
+    "timeSpentAsAnAppealApplicant": null,
+    "sentenceSequence": 1,
+    "recallId": null,
+    "adjustmentTypeText": "Remand",
+    "adjustmentArithmeticType": "DEDUCTION",
+    "prisonName": "Moorland (HMP & YOI)",
+    "prisonId": "MDI",
+    "lastUpdatedBy": "ADJUSTMENTS_USER",
+    "status": "ACTIVE",
+    "lastUpdatedDate": "2025-03-25T11:17:10.028323",
+    "createdDate": "2025-03-25T11:17:10.028323",
+    "effectiveDays": 0,
+    "source": "NOMIS"
   }
 ]
