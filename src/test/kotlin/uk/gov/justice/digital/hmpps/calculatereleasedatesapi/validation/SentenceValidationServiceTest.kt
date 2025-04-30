@@ -127,8 +127,132 @@ class SentenceValidationServiceTest {
     assertTrue(result.count() == 0)
   }
 
+  @Test
+  fun `Bulk calculation validation returns multiple sentences for consecutive chain warning`() {
+    val sentences = listOf(
+      activeOffence,
+      activeOffence.copy(
+        caseSequence = 2,
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+      ),
+      activeOffence.copy(
+        caseSequence = 3,
+        sentenceSequence = 3,
+        consecutiveToSequence = 2,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+      ),
+      activeOffence.copy(
+        caseSequence = 4,
+        sentenceSequence = 4,
+        consecutiveToSequence = 2,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+      ),
+    )
+    val result = sentenceValidationService.validateSentences(sentences, bulkCalcValidation = true)
+    assertTrue(result.count() == 1)
+    assertEquals("More than one sentence consecutive to the same sentence", result.first().message)
+  }
+
+  @Test
+  fun `Bulk calculation validation returns multiple offences for consecutive chain warning`() {
+    val sentences = listOf(
+      activeOffence,
+      activeOffence.copy(
+        caseSequence = 2,
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+      ),
+      activeOffence.copy(
+        caseSequence = 3,
+        sentenceSequence = 3,
+        consecutiveToSequence = 2,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+      ),
+      activeOffence.copy(
+        caseSequence = 3,
+        sentenceSequence = 3,
+        consecutiveToSequence = 2,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+        offence = OffenderOffence(
+          2L,
+          LocalDate.of(2015, 1, 1),
+          null,
+          "ADIMP_ORA",
+          "description",
+          listOf("C"),
+        ),
+      ),
+    )
+    val result = sentenceValidationService.validateSentences(sentences, bulkCalcValidation = true)
+    assertTrue(result.count() == 1)
+    assertEquals("Sentence with multiple offences is consecutive to another sentence", result.first().message)
+  }
+
+  @Test
+  fun `Bulk calculation validation passes for legitimate consecutive chain`() {
+    val sentences = listOf(
+      activeOffence,
+      activeOffence.copy(
+        caseSequence = 2,
+        sentenceSequence = 2,
+        consecutiveToSequence = 1,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+      ),
+      activeOffence.copy(
+        caseSequence = 3,
+        sentenceSequence = 3,
+        consecutiveToSequence = 2,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+      ),
+      activeOffence.copy(
+        caseSequence = 4,
+        sentenceSequence = 4,
+        consecutiveToSequence = 3,
+        terms = listOf(
+          SentenceTerms(1, 0, 0, 0, code = "IMP"),
+        ),
+        offence = OffenderOffence(
+          2L,
+          LocalDate.of(2015, 1, 1),
+          null,
+          "ADIMP_ORA",
+          "description",
+          listOf("C"),
+        ),
+      ),
+    )
+    val result = sentenceValidationService.validateSentences(sentences, bulkCalcValidation = true)
+    assertTrue(result.count() == 0)
+  }
+
   companion object {
-    val offence = OffenderOffence(1L, LocalDate.of(2015, 1, 1), null, "ADIMP", "description", listOf("A"))
+    val offence = OffenderOffence(
+      1L,
+      LocalDate.of(2015, 1, 1),
+      null,
+      "ADIMP",
+      "description",
+      listOf("A"),
+    )
     val prisonApiSentenceAndOffences = PrisonApiSentenceAndOffences(
       1,
       1,

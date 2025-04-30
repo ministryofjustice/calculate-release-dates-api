@@ -97,7 +97,7 @@ class ComparisonEventIntTest(private val mockManageOffencesClient: MockManageOff
   @Test
   fun `Run comparison on a prison must compare where there are fatal errors`() {
     doThrow(IllegalArgumentException("An exception"))
-      .whenever(validationService).validateBeforeCalculation(any(), any())
+      .whenever(validationService).validateBeforeCalculation(any(), any(), any())
 
     val result = createComparison("PRIS")
 
