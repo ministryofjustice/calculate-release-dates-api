@@ -1,0 +1,153 @@
+[
+  {
+    "bookingId": 1218809,
+    "sentenceSequence": 1,
+    "lineSequence": 1,
+    "caseSequence": 1,
+    "courtDescription": "Barrow Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "Sentencing Code Standard Determinate Sentence",
+    "sentenceDate": "2025-04-23",
+    "sentenceStartDate": "2025-04-23",
+    "sentenceEndDate": "2025-08-22",
+    "terms": [
+      {
+        "years": 0,
+        "months": 4,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3936299,
+        "offenceStartDate": "2025-02-02",
+        "offenceStatute": "AW06",
+        "offenceCode": "AW06005B",
+        "offenceDescription": "Aid / abet responsible person to permit another to carry out prohibited procedure on an animal - Animal Welfare Act 2006",
+        "indicators": []
+      }
+    ]
+  },
+  {
+    "bookingId": 1218809,
+    "sentenceSequence": 2,
+    "consecutiveToSequence": 1,
+    "lineSequence": 2,
+    "caseSequence": 1,
+    "courtDescription": "Barrow Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "Sentencing Code Standard Determinate Sentence",
+    "sentenceDate": "2025-04-23",
+    "sentenceStartDate": "2025-08-23",
+    "sentenceEndDate": "2025-11-22",
+    "terms": [
+      {
+        "years": 0,
+        "months": 3,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3936300,
+        "offenceStartDate": "2025-02-02",
+        "offenceStatute": "HP25",
+        "offenceCode": "HP25001",
+        "offenceDescription": "Accept / obtain for self / other a gift as inducement / reward for procuring the grant of a title of honour",
+        "indicators": [
+          "99"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1218809,
+    "sentenceSequence": 9,
+    "consecutiveToSequence": 1,
+    "lineSequence": 3,
+    "caseSequence": 1,
+    "courtDescription": "Barrow Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "Sentencing Code Standard Determinate Sentence",
+    "sentenceDate": "2025-04-23",
+    "sentenceStartDate": "2025-08-23",
+    "sentenceEndDate": "2026-02-22",
+    "terms": [
+      {
+        "years": 0,
+        "months": 6,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3936301,
+        "offenceStartDate": "2025-02-02",
+        "offenceStatute": "RF96",
+        "offenceCode": "RF96105",
+        "offenceDescription": "A person, knowing a member of a reserve force (soldier) to be a deserter, procures or persuades or assists him to remai",
+        "indicators": [
+          "99"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1218809,
+    "sentenceSequence": 16,
+    "consecutiveToSequence": 2,
+    "lineSequence": 4,
+    "caseSequence": 1,
+    "courtDescription": "Barrow Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "Sentencing Code Standard Determinate Sentence",
+    "sentenceDate": "2025-04-23",
+    "sentenceStartDate": "2025-11-23",
+    "sentenceEndDate": "2026-04-22",
+    "terms": [
+      {
+        "years": 0,
+        "months": 5,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3936324,
+        "offenceStartDate": "2025-02-02",
+        "offenceStatute": "PU86",
+        "offenceCode": "PU86003B",
+        "offenceDescription": "Aid / abet an affray",
+        "indicators": [
+          "S15/CJIB"
+        ]
+      },
+      {
+        "offenderChargeId": 3936325,
+        "offenceStartDate": "2025-02-02",
+        "offenceStatute": "TM94",
+        "offenceCode": "TM94004B",
+        "offenceDescription": "Aid abet sale of goods - sign / packaging identical / similar to registered trade mark",
+        "indicators": [
+          "99"
+        ]
+      }
+    ]
+  }
+]

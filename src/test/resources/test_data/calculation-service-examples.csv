@@ -696,11 +696,6 @@ custom-examples,crs-2291-timeline-bug,,,,,
 custom-examples,crs-2293-ada-during-recall-1,,,,,
 custom-examples,crs-2293-ada-during-recall-2,,,,,
 custom-examples,crs-2293-ada-during-recall-3,,,,,
-consecutive-sentences,crs-2283-ac5-1,,,,CONCURRENT_CONSECUTIVE_SENTENCES,2 years 24 months 0 weeks 0 days
-consecutive-sentences,crs-2283-ac5-2,,,,CONCURRENT_CONSECUTIVE_SENTENCES,2 years 24 months 0 weeks 0 days
-consecutive-sentences,crs-2283-ac5-3,,,,CONCURRENT_CONSECUTIVE_SENTENCES,8 years 24 months 0 weeks 0 days
-consecutive-sentences,crs-2283-ac5-4,,,,CONCURRENT_CONSECUTIVE_SENTENCES,2 years 24 months 2 weeks 0 days
-consecutive-sentences,crs-2283-ac5-5,,,,CONCURRENT_CONSECUTIVE_SENTENCES,2 years 149 months 0 weeks 0 days
 custom-examples,crs-2331-bug,,,,,
 custom-examples,crs-2332-bug,,,,,
 custom-examples,crs-2343,,,,,
