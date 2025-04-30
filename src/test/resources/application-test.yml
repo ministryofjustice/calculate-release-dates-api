@@ -75,6 +75,7 @@ feature-toggles:
   hdc365: true
   externalMovementsSds40: true
   externalMovementsAdjustmentSharing: true
+  concurrentConsecutiveSentencesEnabled: true
 
 hdced4:
   hdc4-commencement-date: 2025-01-01

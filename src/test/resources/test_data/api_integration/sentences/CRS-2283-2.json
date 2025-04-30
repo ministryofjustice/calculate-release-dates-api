@@ -1,0 +1,155 @@
+[
+  {
+    "bookingId": 1117981,
+    "sentenceSequence": 1,
+    "lineSequence": 1,
+    "caseSequence": 1,
+    "caseReference": "T20160117",
+    "courtDescription": "Carlisle Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2003",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "CJA03 Standard Determinate Sentence",
+    "sentenceDate": "2016-07-22",
+    "sentenceStartDate": "2016-09-04",
+    "sentenceEndDate": "2020-09-03",
+    "terms": [
+      {
+        "years": 4,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3590122,
+        "offenceStartDate": "2016-05-12",
+        "offenceStatute": "SC07",
+        "offenceCode": "SZ07011",
+        "offenceDescription": "Encourage / assist in commission of eitherway offences believing one / more will be committed",
+        "indicators": []
+      }
+    ]
+  },
+  {
+    "bookingId": 1117981,
+    "sentenceSequence": 2,
+    "lineSequence": 2,
+    "caseSequence": 2,
+    "courtDescription": "Carlisle Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "Sentencing Code Standard Determinate Sentence",
+    "sentenceDate": "2025-04-25",
+    "sentenceStartDate": "2025-04-25",
+    "sentenceEndDate": "2025-07-01",
+    "terms": [
+      {
+        "years": 0,
+        "months": 2,
+        "weeks": 1,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3936328,
+        "offenceStartDate": "2025-02-01",
+        "offenceStatute": "RD78",
+        "offenceCode": "RD78005",
+        "offenceDescription": "Abandon property on a highway, on land in the open air - Refuse Disposal (Amenity) Act 1978",
+        "indicators": [
+          "99"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1117981,
+    "sentenceSequence": 3,
+    "consecutiveToSequence": 2,
+    "lineSequence": 3,
+    "caseSequence": 2,
+    "courtDescription": "Carlisle Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "Sentencing Code Standard Determinate Sentence",
+    "sentenceDate": "2025-04-25",
+    "sentenceStartDate": "2025-07-02",
+    "sentenceEndDate": "2025-07-15",
+    "terms": [
+      {
+        "years": 0,
+        "months": 0,
+        "weeks": 2,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3936329,
+        "offenceStartDate": "2025-02-01",
+        "offenceStatute": "ZZ",
+        "offenceCode": "DX56013A",
+        "offenceDescription": "ATTEMPTED BUGGERY",
+        "indicators": [
+          "20",
+          "CJIA08/SX56"
+        ]
+      }
+    ]
+  },
+  {
+    "bookingId": 1117981,
+    "sentenceSequence": 10,
+    "consecutiveToSequence": 2,
+    "lineSequence": 4,
+    "caseSequence": 2,
+    "courtDescription": "Carlisle Crown Court",
+    "sentenceStatus": "A",
+    "sentenceCategory": "2020",
+    "sentenceCalculationType": "ADIMP",
+    "sentenceTypeDescription": "Sentencing Code Standard Determinate Sentence",
+    "sentenceDate": "2025-04-25",
+    "sentenceStartDate": "2025-07-02",
+    "sentenceEndDate": "2025-08-01",
+    "terms": [
+      {
+        "years": 0,
+        "months": 1,
+        "weeks": 0,
+        "days": 0,
+        "code": "IMP"
+      }
+    ],
+    "offences": [
+      {
+        "offenderChargeId": 3936330,
+        "offenceStartDate": "2025-02-01",
+        "offenceStatute": "PH98",
+        "offenceCode": "PH98001",
+        "offenceDescription": "Accept private hire booking while not holder of PHV operators licence - London",
+        "indicators": [
+          "101",
+          "99"
+        ]
+      },
+      {
+        "offenderChargeId": 3936331,
+        "offenceStartDate": "2025-02-01",
+        "offenceStatute": "ZZ",
+        "offenceCode": "CJ91015",
+        "offenceDescription": "ASSAULT COURT/PRISON OFFICER",
+        "indicators": [
+          "111"
+        ]
+      }
+    ]
+  }
+]

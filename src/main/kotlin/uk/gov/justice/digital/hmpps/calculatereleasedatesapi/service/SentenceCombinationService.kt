@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermed
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import java.util.UUID
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.Consecutil
 
 @Service
 class SentenceCombinationService(
@@ -28,9 +28,11 @@ class SentenceCombinationService(
     return getAllExtractableSentences(singleSentences, singleTermed, consecutiveSentences)
   }
 
-  private fun allSdsBeforeLaspo(sentences: List<AbstractSentence>): Boolean = sentences.all { it is StandardDeterminateSentence && it.isBeforeCJAAndLASPO() }
+  private fun allSdsBeforeLaspo(sentences: List<AbstractSentence>): Boolean =
+    sentences.all { it is StandardDeterminateSentence && it.isBeforeCJAAndLASPO() }
 
-  private fun allDtos(sentences: List<AbstractSentence>): Boolean = sentences.all { it is DetentionAndTrainingOrderSentence }
+  private fun allDtos(sentences: List<AbstractSentence>): Boolean =
+    sentences.all { it is DetentionAndTrainingOrderSentence }
 
   fun createSingleTermSentences(sentences: List<AbstractSentence>, offender: Offender): SingleTermed? {
     if (sentences.size > 1 &&
@@ -51,20 +53,11 @@ class SentenceCombinationService(
   }
 
   fun createConsecutiveSentences(sentences: List<AbstractSentence>, offender: Offender): List<ConsecutiveSentence> {
-    val (baseSentences, consecutiveSentenceParts) = sentences.partition { it.consecutiveSentenceUUIDs.isEmpty() }
-    val sentencesByPrevious = consecutiveSentenceParts.groupBy {
-      it.consecutiveSentenceUUIDs.first()
-    }
-
-    val chains: MutableList<MutableList<AbstractSentence>> = mutableListOf(mutableListOf())
-
-    baseSentences.forEach {
-      val chain: MutableList<AbstractSentence> = mutableListOf()
-      chains.add(chain)
-      chain.add(it)
-      createSentenceChain(it, chain, sentencesByPrevious, chains)
-    }
-
+    val chains = Consecutil.createConsecChains(
+      sentences,
+      { it.identifier },
+      { it.consecutiveSentenceUUIDs.firstOrNull() },
+    )
     val consecutiveSentences = collapseDuplicateConsecutiveSentences(
       chains.filter { it.size > 1 }
         .map { ConsecutiveSentence(it) },
@@ -84,28 +77,6 @@ class SentenceCombinationService(
   private fun collapseDuplicateConsecutiveSentences(consecutiveSentences: List<ConsecutiveSentence>): List<ConsecutiveSentence> {
     return consecutiveSentences.distinctBy {
       it.orderedSentences.joinToString { sentence -> "${sentence.sentencedAt}${sentence.identificationTrack}${sentence.totalDuration()}${sentence.javaClass}${sentence.recallType}" }
-    }
-  }
-
-  private fun createSentenceChain(
-    start: AbstractSentence,
-    chain: MutableList<AbstractSentence>,
-    sentencesByPrevious: Map<UUID, List<AbstractSentence>>,
-    chains: MutableList<MutableList<AbstractSentence>> = mutableListOf(mutableListOf()),
-  ) {
-    val originalChain = chain.toMutableList()
-    sentencesByPrevious[start.identifier]?.forEachIndexed { index, it ->
-      if (index == 0) {
-        chain.add(it)
-        createSentenceChain(it, chain, sentencesByPrevious, chains)
-      } else {
-        // This sentence has two sentences consecutive to it. This is not allowed in practice, however it can happen
-        // when a sentence in NOMIS has multiple offices, which means it becomes multiple sentences in our model.
-        val chainCopy = originalChain.toMutableList()
-        chains.add(chainCopy)
-        chainCopy.add(it)
-        createSentenceChain(it, chainCopy, sentencesByPrevious, chains)
-      }
     }
   }
 
