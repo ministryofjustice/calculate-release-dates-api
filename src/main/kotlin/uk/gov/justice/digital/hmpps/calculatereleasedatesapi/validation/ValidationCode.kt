@@ -118,6 +118,8 @@ enum class ValidationCode(val message: String, val validationType: ValidationTyp
   REMAND_ON_OR_AFTER_SENTENCE_DATE("The 'From' or 'To' date of the remand period must be earlier than the sentence date for court case %s count %s."),
   DATES_MISSING_REQUIRED_TYPE("You cannot select a %s and a %s without a %s"),
   DATES_PAIRINGS_INVALID("%s and %s cannot be selected together"),
-  CONCURRENT_CONSECUTIVE_SENTENCES("%s years %s months %s weeks %s days", CONCURRENT_CONSECUTIVE),
+  CONCURRENT_CONSECUTIVE_SENTENCES_DURATION("%s years %s months %s weeks %s days", CONCURRENT_CONSECUTIVE),
+  CONCURRENT_CONSECUTIVE_SENTENCES_NOTIFICATION("More than one sentence consecutive to the same sentence", CONCURRENT_CONSECUTIVE),
+  CONSECUTIVE_SENTENCE_WITH_MULTIPLE_OFFENCES("Sentence with multiple offences is consecutive to another sentence"),
   BROKEN_CONSECUTIVE_CHAINS("You cannot have a sentence consecutive to an inactive sentence."),
 }

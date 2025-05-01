@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.Offender
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermSentence
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.SingleTermed
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.StandardDeterminateSentence
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.Consecutil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.ConsecutiveSentenceUtil
 
 @Service
 class SentenceCombinationService(
@@ -53,7 +53,7 @@ class SentenceCombinationService(
   }
 
   fun createConsecutiveSentences(sentences: List<AbstractSentence>, offender: Offender): List<ConsecutiveSentence> {
-    val chains = Consecutil.createConsecChains(
+    val chains = ConsecutiveSentenceUtil.createConsecutiveChains(
       sentences,
       { it.identifier },
       { it.consecutiveSentenceUUIDs.firstOrNull() },

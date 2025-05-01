@@ -52,7 +52,7 @@ class CalculationTransactionalServiceValidationTest {
 
     // Mocking the behaviour of services
     whenever(calculationSourceDataService.getCalculationSourceData(prisonerId, InactiveDataOptions.default())).thenReturn(fakeSourceData)
-    whenever(validationService.validateBeforeCalculation(any(), eq(calculationUserInputs))).thenReturn(fakeMessages)
+    whenever(validationService.validateBeforeCalculation(any(), eq(calculationUserInputs), any())).thenReturn(fakeMessages)
     whenever(bookingService.getBooking(any(), eq(calculationUserInputs))).thenReturn(BOOKING)
     whenever(calculationService.calculateReleaseDates(any(), eq(calculationUserInputs))).thenReturn(calculationOutput)
     whenever(validationService.validateBookingAfterCalculation(any(), any())).thenReturn(fakeMessages)
@@ -61,7 +61,7 @@ class CalculationTransactionalServiceValidationTest {
     calculationTransactionalService().fullValidation(prisonerId, calculationUserInputs)
 
     val inOrder = inOrder(validationService)
-    inOrder.verify(validationService).validateBeforeCalculation(any(), eq(calculationUserInputs))
+    inOrder.verify(validationService).validateBeforeCalculation(any(), eq(calculationUserInputs), any())
     inOrder.verify(validationService).validateBeforeCalculation(any())
     inOrder.verify(validationService).validateBookingAfterCalculation(any(), any())
 
