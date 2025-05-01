@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util
 
-class Consecutil {
+class ConsecutiveSentenceUtil {
 
   companion object {
-    fun <S, K : Any> createConsecChains(
+    fun <S, K : Any> createConsecutiveChains(
       sentences: List<S>,
       keyMapper: (s: S) -> K,
       consecToMapper: (s: S) -> K?,

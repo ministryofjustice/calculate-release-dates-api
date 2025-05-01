@@ -13,9 +13,10 @@ import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.Sent
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceCalculationType
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.model.external.SentenceTerms
 import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.service.SentencesExtractionService
-import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.Consecutil
+import uk.gov.justice.digital.hmpps.calculatereleasedatesapi.util.ConsecutiveSentenceUtil
 import java.time.Period
 import java.time.temporal.ChronoUnit
+import kotlin.collections.plusAssign
 import kotlin.to
 
 @Service
@@ -29,14 +30,16 @@ class SentenceValidationService(
   private val featuresToggles: FeatureToggles,
 ) {
 
-  internal fun validateSentences(sentences: List<SentenceAndOffence>): MutableList<ValidationMessage> {
+  internal fun validateSentences(sentences: List<SentenceAndOffence>, bulkCalcValidation: Boolean = false): MutableList<ValidationMessage> {
     val validationMessages = sentences.map { validateSentence(it) }.flatten().toMutableList()
     validateNoBrokenConsecutiveChains(sentences)?.let { validationMessages += it }
-    validationMessages += if (featuresToggles.concurrentConsecutiveSentencesEnabled) {
-      validateConsecutiveSentenceUniqueWithDuration(sentences)
+
+    if (bulkCalcValidation && featuresToggles.concurrentConsecutiveSentencesEnabled) {
+      validateConsecutiveChainsForBulkCalculation(sentences)?.let { validationMessages += it }
     } else {
-      validateConsecutiveSentenceUnique(sentences)
+      validationMessages += validateConsecutiveChains(sentences)
     }
+
     return validationMessages
   }
 
@@ -45,6 +48,22 @@ class SentenceValidationService(
     val lineSequence: Int,
     val caseSequence: Int,
   )
+
+  private fun validateConsecutiveChains(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
+    return if (featuresToggles.concurrentConsecutiveSentencesEnabled) {
+      validateConsecutiveSentenceUniqueWithDuration(sentences)
+    } else {
+      validateConsecutiveSentenceUnique(sentences)
+    }
+  }
+
+  private fun validateConsecutiveChainsForBulkCalculation(sentences: List<SentenceAndOffence>): ValidationMessage? {
+    if (validateConsecutiveSentenceUniqueWithDuration(sentences).isNotEmpty()) {
+      return ValidationMessage(ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_NOTIFICATION)
+    }
+
+    return validateConsecutiveChainForMultipleOffencesViolation(sentences)
+  }
 
   private fun validateConsecutiveSentenceUnique(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
     val consecutiveSentences = sentences.filter { it.consecutiveToSequence != null }
@@ -60,6 +79,21 @@ class SentenceValidationService(
     }
   }
 
+  private fun validateConsecutiveChainForMultipleOffencesViolation(sentences: List<SentenceAndOffence>): ValidationMessage? {
+    if (sentences.none { it.consecutiveToSequence is Int }) return null
+
+    val hasDuplicateSequences = sentences
+      .groupingBy { it.sentenceSequence }
+      .eachCount()
+      .any { it.value > 1 }
+
+    return if (hasDuplicateSequences) {
+      ValidationMessage(ValidationCode.CONSECUTIVE_SENTENCE_WITH_MULTIPLE_OFFENCES)
+    } else {
+      null
+    }
+  }
+
   private fun validateConsecutiveSentenceUniqueWithDuration(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
     val distinctSentences = sentences.distinctBy { it.sentenceSequence }
     val duplicateConsecutiveSequences = distinctSentences
@@ -71,7 +105,7 @@ class SentenceValidationService(
       .takeIf { it.isNotEmpty() } ?: return emptyList()
 
     val chainsOfSentences =
-      Consecutil.createConsecChains(distinctSentences, { it.sentenceSequence }, { it.consecutiveToSequence })
+      ConsecutiveSentenceUtil.createConsecutiveChains(distinctSentences, { it.sentenceSequence }, { it.consecutiveToSequence })
 
     val duplicateChains =
       chainsOfSentences.filter { chain ->
@@ -103,7 +137,7 @@ class SentenceValidationService(
 
     return listOf(
       ValidationMessage(
-        ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES,
+        ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_DURATION,
         listOf(
           maximumDuration.durationElements[ChronoUnit.YEARS]?.toString() ?: "0",
           maximumDuration.durationElements[ChronoUnit.MONTHS]?.toString() ?: "0",

@@ -22,6 +22,7 @@ class ValidationService(
   fun validateBeforeCalculation(
     sourceData: CalculationSourceData,
     calculationUserInputs: CalculationUserInputs,
+    bulkCalcValidation: Boolean = false,
   ): List<ValidationMessage> {
     log.info("Pre-calculation validation of source data")
     val sentencesAndOffences = sourceData.sentenceAndOffences
@@ -59,7 +60,7 @@ class ValidationService(
       return se20offenceViolations
     }
 
-    val validationMessages = sentenceValidationService.validateSentences(sortedSentences)
+    val validationMessages = sentenceValidationService.validateSentences(sortedSentences, bulkCalcValidation)
     validationMessages += adjustmentValidationService.validateAdjustmentsBeforeCalculation(adjustments)
     validationMessages += recallValidationService.validateFixedTermRecall(sourceData)
     validationMessages += recallValidationService.validateRemandPeriodsAgainstSentenceDates(sourceData)
