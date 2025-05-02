@@ -128,7 +128,7 @@ class SentenceValidationServiceTest {
   }
 
   @Test
-  fun `Bulk calculation validation returns both `() {
+  fun `Bulk calculation validation returns both multiple sentences for one parent and multiple offences against any consecutive sentence`() {
     val sentences = listOf(
       activeOffence,
       activeOffence.copy(
