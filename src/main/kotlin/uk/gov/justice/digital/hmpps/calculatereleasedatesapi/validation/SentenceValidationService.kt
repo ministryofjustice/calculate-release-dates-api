@@ -80,9 +80,8 @@ class SentenceValidationService(
   }
 
   private fun validateConsecutiveChainForMultipleOffencesViolation(sentences: List<SentenceAndOffence>): ValidationMessage? {
-    if (sentences.none { it.consecutiveToSequence is Int }) return null
-
     val hasDuplicateSequences = sentences
+      .filter { it.consecutiveToSequence is Int }
       .groupingBy { it.sentenceSequence }
       .eachCount()
       .any { it.value > 1 }
