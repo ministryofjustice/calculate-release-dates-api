@@ -57,12 +57,13 @@ class SentenceValidationService(
     }
   }
 
-  private fun validateConsecutiveChainsForBulkCalculation(sentences: List<SentenceAndOffence>): ValidationMessage? {
+  private fun validateConsecutiveChainsForBulkCalculation(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
+    val validationMessages = mutableListOf<ValidationMessage>()
     if (validateConsecutiveSentenceUniqueWithDuration(sentences).isNotEmpty()) {
-      return ValidationMessage(ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_NOTIFICATION)
+      validationMessages += ValidationMessage(ValidationCode.CONCURRENT_CONSECUTIVE_SENTENCES_NOTIFICATION)
     }
-
-    return validateConsecutiveChainForMultipleOffencesViolation(sentences)
+    validateConsecutiveChainForMultipleOffencesViolation(sentences)?.let { validationMessages += it }
+    return validationMessages
   }
 
   private fun validateConsecutiveSentenceUnique(sentences: List<SentenceAndOffence>): List<ValidationMessage> {
@@ -80,13 +81,26 @@ class SentenceValidationService(
   }
 
   private fun validateConsecutiveChainForMultipleOffencesViolation(sentences: List<SentenceAndOffence>): ValidationMessage? {
-    val hasDuplicateSequences = sentences
-      .filter { it.consecutiveToSequence is Int }
+    val consecutiveSentences = sentences.filter { it.consecutiveToSequence != null }
+
+    val hasDuplicateSequences = consecutiveSentences
       .groupingBy { it.sentenceSequence }
       .eachCount()
       .any { it.value > 1 }
 
-    return if (hasDuplicateSequences) {
+    if (hasDuplicateSequences) {
+      return ValidationMessage(ValidationCode.CONSECUTIVE_SENTENCE_WITH_MULTIPLE_OFFENCES)
+    }
+
+    val rootSequences = consecutiveSentences.mapNotNull { it.consecutiveToSequence }.toSet()
+
+    val hasRootSentenceWithMultipleOffences = sentences
+      .filter { it.consecutiveToSequence == null && it.sentenceSequence in rootSequences }
+      .groupingBy { it.sentenceSequence }
+      .eachCount()
+      .any { it.value > 1 }
+
+    return if (hasRootSentenceWithMultipleOffences) {
       ValidationMessage(ValidationCode.CONSECUTIVE_SENTENCE_WITH_MULTIPLE_OFFENCES)
     } else {
       null
